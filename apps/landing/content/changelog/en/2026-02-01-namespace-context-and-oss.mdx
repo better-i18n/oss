@@ -1,0 +1,30 @@
+---
+title: "Namespace Context, Fallback Languages & Open Source"
+slug: "namespace-context-and-oss"
+date: "2026-02-01"
+version: "1.2.0"
+category: feature
+tags: [namespace, context, fallback, oss, mcp, cdn]
+---
+
+A major update bringing intelligent namespace context for AI models, localization fallback support, and our move to open source.
+
+## What's New
+
+- **Namespace Context for AI** - AI models can now attach rich context (description, team, domain, AI prompt, tags) when creating or updating keys. This helps models understand how translations should be crafted for each namespace.
+- **Localization Fallback** - When adding a new language, missing keys automatically inherit from the fallback language. No more broken translations or key errors in your app.
+- **Relational Namespaces** - Translation keys now have a proper relational connection to namespaces for better organization and querying.
+- **Open Source Release** - Packages, MCP server, and landing page are now public at [github.com/better-i18n/oss](https://github.com/better-i18n/oss)
+
+## Improvements
+
+- **Faster Gemini Streaming** - Optimized system prompts for significantly faster streaming with Gemini models
+- **Smarter Key Mentions** - Keys mentioned in AI chat now include their namespace context, enabling precise AI targeting
+- **Redesigned Project Settings** - Completely revamped project settings interface for better usability
+- **Enhanced Filter UI** - Improved filtering experience across the translation dashboard
+- **CDN Republish Support** - Deleting CDN files now resets the published status, allowing clean republishing
+
+## Platform Changes
+
+- **GitHub Integration** - Moved to "Coming Soon" as we prioritize CDN stability and performance
+- **Organization Repository** - Migrated to a proper org structure for better maintainability
