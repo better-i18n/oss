@@ -9,7 +9,7 @@ import {
   IconGlobe,
   IconZap,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { ZedIcon } from "@better-i18n/ui";
+import { ZedIcon } from "@/components/ZedIcon";
 
 const ideConfigs = [
   {
