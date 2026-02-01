@@ -38,8 +38,11 @@ export function createBetterI18nClient(
   // Track logged requests to avoid duplicate logs (tRPC batching can call headers multiple times)
   let lastLoggedUrl = "";
 
-  // Create untyped tRPC client and cast to typed interface
-  // This is safe because the API implements the MCPClient contract
+  // tRPC requires the actual Router type for createTRPCClient<T>.
+  // Since the router is in the private platform repo, we can't import it here.
+  // Instead, we use 'any' for tRPC's generic and cast the result to our
+  // APIClient interface which provides equivalent type safety for consumers.
+  // This is a standard pattern for external/standalone tRPC clients.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const client = createTRPCClient<any>({
     links: [
