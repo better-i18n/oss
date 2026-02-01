@@ -1,0 +1,162 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@source "../../../packages/ui/components/**/*.{ts,tsx}";
+
+/* Dark mode'u komple devre dışı bırak - landing sadece light tema */
+/* Asla eşleşmeyecek selector ile dark stilleri tamamen devre dışı */
+@custom-variant dark (&:where(.force-dark));
+
+@source inline("{dark:,}{bg,text}-{gray,blue,orange}-{50,400}");
+
+@theme {
+  --font-sans: "Geist", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  --color-mist-50: #f7f8f8;
+  --color-mist-100: #eef0f1;
+  --color-mist-200: #dfe4e6;
+  --color-mist-300: #c9d1d5;
+  --color-mist-400: #9ba8af;
+  --color-mist-500: #6d7d85;
+  --color-mist-600: #566268;
+  --color-mist-700: #475257;
+  --color-mist-800: #333b3f;
+  --color-mist-900: #262d30;
+  --color-mist-950: #181c1e;
+
+  /* Demo component colors (from apps/app design system) */
+  --color-background: #ffffff;
+  --color-foreground: #181c1e;
+  --color-card: #ffffff;
+  --color-border: #dfe4e6;
+  --color-muted: #eef0f1;
+  --color-muted-foreground: #6d7d85;
+
+  /* Gray scale for shared UI components (checkbox, etc.) */
+  --color-white: oklch(1 0 0);
+  --color-gray-50: oklch(0.985 0 0);
+  --color-gray-100: oklch(0.97 0 0);
+  --color-gray-200: oklch(0.922 0 0);
+  --color-gray-300: oklch(0.855 0 0);
+  --color-gray-400: oklch(0.708 0 0);
+  --color-gray-500: oklch(0.556 0 0);
+  --color-gray-600: oklch(0.439 0 0);
+  --color-gray-700: oklch(0.371 0 0);
+  --color-gray-800: oklch(0.269 0 0);
+  --color-gray-900: oklch(0.205 0 0);
+  --color-black: oklch(0 0 0);
+}
+
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    scroll-padding-top: 5.25rem;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-mist-100);
+    color: var(--color-mist-950);
+  }
+}
+
+@layer components {
+  .wallpaper {
+    background: linear-gradient(to bottom, #4a5568 0%, #5a6577 100%);
+    position: relative;
+  }
+
+  .wallpaper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0.3;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 100 100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='turbulence' baseFrequency='1.4' numOctaves='1' seed='2' stitchTiles='stitch' result='n'/%3E%3CfeComponentTransfer result='g'%3E%3CfeFuncR type='linear' slope='4' intercept='1'/%3E%3CfeFuncG type='linear' slope='4' intercept='1'/%3E%3CfeFuncB type='linear' slope='4' intercept='1'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix type='saturate' values='0' in='g'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wallpaper > * {
+    position: relative;
+  }
+
+  .feature-card {
+    background: rgba(24, 28, 30, 0.025);
+    border-radius: 12px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .feature-card-inner {
+    border-radius: 8px;
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .feature-demo-area {
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem 1.5rem;
+    place-items: center;
+  }
+
+  @media (min-width: 640px) {
+    .logo-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .logo-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+  }
+  .animate-in {
+    animation: animate-enter 300ms ease-out forwards;
+  }
+
+  @keyframes animate-enter {
+    from {
+      opacity: var(--enter-opacity, 1);
+      transform: translate3d(
+          var(--enter-translate-x, 0),
+          var(--enter-translate-y, 0),
+          0
+        )
+        scale3d(var(--enter-scale, 1), var(--enter-scale, 1), 1);
+    }
+  }
+
+  .fade-in {
+    --enter-opacity: 0;
+  }
+  .slide-in-from-bottom-2 {
+    --enter-translate-y: 0.5rem;
+  }
+  .slide-in-from-top-1 {
+    --enter-translate-y: -0.25rem;
+  }
+  .slide-in-from-left-2 {
+    --enter-translate-x: -0.5rem;
+  }
+  .zoom-in {
+    --enter-scale: 0.95;
+  }
+}

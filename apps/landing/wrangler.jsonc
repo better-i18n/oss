@@ -1,0 +1,35 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "betteri18n-landing",
+  "main": "dist/server/server.js",
+  "compatibility_date": "2025-01-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "assets": {
+    "directory": "dist/client",
+    "binding": "ASSETS",
+    "not_found_handling": "none"
+  },
+  "observability": {
+    "logs": {
+      "enabled": true
+    },
+    "enabled": true
+  },
+  "routes": [
+    {
+      "pattern": "better-i18n.com/*",
+      "zone_name": "better-i18n.com"
+    },
+    {
+      "pattern": "www.better-i18n.com/*",
+      "zone_name": "better-i18n.com"
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "APP_ORIGIN": "https://better-i18n.com",
+    "CDN_URL": "https://cdn.better-i18n.com",
+    "GHOST_API_URL": "https://ghost.better-i18n.com"
+  }
+}
