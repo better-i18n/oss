@@ -21,6 +21,9 @@
     "version-packages": "bunx changeset version && bun update",
     "docs:dev": "bun --filter docs dev",
     "docs:build": "bun --filter docs build",
+    "landing:dev": "bun --filter tanstack-landing dev",
+    "landing:build": "bun --filter tanstack-landing build",
+    "link-all": "for dir in packages/*; do (cd \"$dir\" && bun link); done",
     "prepare": "husky"
   },
   "devDependencies": {

@@ -1,0 +1,53 @@
+{
+  "name": "tanstack-landing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 3001",
+    "build": "vite build",
+    "preview": "wrangler dev --port 8990",
+    "deploy": "bun run build && wrangler deploy --env-file ../../.env",
+    "logs": "wrangler tail --env-file ../../.env",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@better-i18n/schemas": "workspace:*",
+    "@better-i18n/ui": "workspace:*",
+    "@better-i18n/use-intl": "workspace:*",
+    "@better-i18n/core": "workspace:*",
+    "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.90",
+    "@remotion/player": "^4.0.409",
+    "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/react-devtools": "^0.7.0",
+    "@tanstack/react-router": "~1.149.0",
+    "@tanstack/react-router-devtools": "~1.149.0",
+    "@tanstack/react-start": "~1.149.0",
+    "@tanstack/router-plugin": "~1.149.0",
+    "@tanstack/start-server-functions-server": "^1.131.2",
+    "@unitalkai/icons": "^1.0.0",
+    "framer-motion": "^12.29.0",
+    "gray-matter": "^4.0.3",
+    "lucide-react": "^0.561.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "remotion": "^4.0.409",
+    "tailwindcss": "^4.1.18",
+    "use-intl": "^4.7.0",
+    "vite-tsconfig-paths": "^6.0.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
+    "@tanstack/devtools-vite": "^0.3.11",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.2.0",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "jsdom": "^27.0.0",
+    "typescript": "^5.7.2",
+    "vite": "~7.1.5",
+    "vitest": "^3.0.5",
+    "web-vitals": "^5.1.0"
+  }
+}
