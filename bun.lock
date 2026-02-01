@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@better-i18n/root",
@@ -118,7 +119,7 @@
     },
     "packages/mcp": {
       "name": "@better-i18n/mcp",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "bin": {
         "better-i18n-mcp": "./dist/index.js",
       },
