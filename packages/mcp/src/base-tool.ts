@@ -30,7 +30,7 @@ export const projectInputProperty = {
 /**
  * Creates a successful tool result
  */
-export function success(data: Record<string, unknown>): ToolResult {
+export function success(data: object): ToolResult {
   return {
     content: [
       {

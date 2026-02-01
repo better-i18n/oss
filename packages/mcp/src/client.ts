@@ -2,14 +2,8 @@
  * tRPC client for Better i18n API with API key authentication
  */
 
-import {
-  createTRPCClient,
-  httpBatchLink,
-} from "@trpc/client";
-
-// Generic router type for untyped tRPC client
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type UntypedRouter = any;
+import { createTRPCClient, httpBatchLink } from "@trpc/client";
+import type { APIClient } from "@better-i18n/mcp-types";
 
 export interface ClientConfig {
   apiUrl: string;
@@ -18,22 +12,20 @@ export interface ClientConfig {
 }
 
 /**
- * Loosely typed client for MCP server usage.
- * The MCP package runs standalone without API router types,
- * so we allow arbitrary nested property access on the tRPC client.
+ * Type-safe tRPC client for MCP server usage.
+ * Uses the APIClient type from @better-i18n/mcp-types for full type safety.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BetterI18nClient = Record<string, any>;
+export type BetterI18nClient = APIClient;
 
 /**
  * Create a tRPC client authenticated with API key
  *
  * @param config - API URL, API key, and optional organization ID
- * @returns Configured tRPC client
+ * @returns Configured tRPC client with full type safety
  */
 export function createBetterI18nClient(
-  config: ClientConfig & { organizationId?: string },
-) {
+  config: ClientConfig & { organizationId?: string }
+): BetterI18nClient {
   // Ensure URL ends with /api/trpc for tRPC endpoint
   const url = config.apiUrl.endsWith("/api/trpc")
     ? config.apiUrl
@@ -46,7 +38,10 @@ export function createBetterI18nClient(
   // Track logged requests to avoid duplicate logs (tRPC batching can call headers multiple times)
   let lastLoggedUrl = "";
 
-  return createTRPCClient<UntypedRouter>({
+  // Create untyped tRPC client and cast to typed interface
+  // This is safe because the API implements the MCPClient contract
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const client = createTRPCClient<any>({
     links: [
       httpBatchLink({
         url,
@@ -86,7 +81,7 @@ export function createBetterI18nClient(
               try {
                 const text = await clonedResponse.text();
                 console.error(
-                  `[better-i18n] ← ${response.status} ERROR: ${text.substring(0, 200)}`,
+                  `[better-i18n] ← ${response.status} ERROR: ${text.substring(0, 200)}`
                 );
               } catch {
                 console.error(`[better-i18n] ← ${response.status} ERROR`);
@@ -99,4 +94,6 @@ export function createBetterI18nClient(
       }),
     ],
   });
+
+  return client as unknown as APIClient;
 }
