@@ -2,7 +2,7 @@
  * createKeys MCP Tool
  *
  * Creates one or more translation keys with source text and optional translations.
- * Readable input schema mapped to compact API payload (k=[{n, ns, v, t}]).
+ * Readable input schema mapped to compact API payload (k=[{n, ns, v, t, nc}]).
  */
 
 import { z } from "zod";
@@ -14,6 +14,14 @@ import {
 } from "../base-tool.js";
 import type { Tool } from "../types/index.js";
 
+const namespaceContextSchema = z.object({
+  description: z.string().optional(),
+  team: z.string().optional(),
+  domain: z.string().optional(),
+  aiPrompt: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+}).optional();
+
 const inputSchema = projectSchema.extend({
   keys: z.array(
     z.object({
@@ -21,6 +29,7 @@ const inputSchema = projectSchema.extend({
       namespace: z.string().optional(),
       sourceText: z.string().optional(),
       translations: z.record(z.string(), z.string()).optional(),
+      namespaceContext: namespaceContextSchema,
     }),
   ),
 });
@@ -43,6 +52,17 @@ export const createKeys: Tool = {
               namespace: { type: "string", description: "Namespace (default: 'default')" },
               sourceText: { type: "string", description: "Source language text" },
               translations: { type: "object", description: "Target translations as {langCode: text}" },
+              namespaceContext: {
+                type: "object",
+                description: "Optional context for the namespace (description, team, domain, aiPrompt, tags). Applied once per namespace.",
+                properties: {
+                  description: { type: "string", description: "What this namespace is about" },
+                  team: { type: "string", description: "Team owning this namespace" },
+                  domain: { type: "string", description: "Business domain (e.g., 'auth', 'billing')" },
+                  aiPrompt: { type: "string", description: "Custom AI prompt for translations in this namespace" },
+                  tags: { type: "array", items: { type: "string" }, description: "Tags for categorization" },
+                },
+              },
             },
             required: ["name"],
           },
@@ -65,6 +85,7 @@ export const createKeys: Tool = {
             ns: item.namespace || "default",
             v: item.sourceText,
             t: item.translations,
+            nc: item.namespaceContext,
           })),
         });
 

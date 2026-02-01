@@ -1,5 +1,22 @@
 # @better-i18n/mcp
 
+## 0.5.0
+
+### Minor Changes
+
+- Namespace context support for `createKeys` and `updateKeys`
+  - Both tools now accept optional `namespaceContext` per item: `{ description, team, domain, aiPrompt, tags }`
+  - Mapped to compact `nc` field in API payload
+  - Backend groups by namespace and applies context after key resolve (last context wins per namespace)
+- Rich namespace metadata in read endpoints
+  - `getProject` now returns namespaces as rich objects: `{ name, keyCount, description, context }`
+  - `listKeys` response now includes `namespaceDetails` map with metadata for all namespaces in the result
+- Updated tool descriptions to reflect new response shapes
+
+### Dependencies
+
+- @better-i18n/mcp-types@0.4.0
+
 ## 0.4.1
 
 ### Patch Changes
