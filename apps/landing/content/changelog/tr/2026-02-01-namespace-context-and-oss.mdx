@@ -1,0 +1,30 @@
+---
+title: "Namespace Context, Fallback Diller ve Açık Kaynak"
+slug: "namespace-context-and-oss"
+date: "2026-02-01"
+version: "1.2.0"
+category: feature
+tags: [namespace, context, fallback, oss, mcp, cdn]
+---
+
+AI modeller için akıllı namespace context, localization fallback desteği ve açık kaynağa geçişimizi içeren büyük bir güncelleme.
+
+## Yenilikler
+
+- **AI için Namespace Context** - AI modeller artık key oluştururken veya güncellerken zengin bağlam bilgisi (açıklama, takım, domain, AI prompt, etiketler) ekleyebiliyor. Bu sayede modeller her namespace için çevirilerin nasıl yapılması gerektiğini anlıyor.
+- **Localization Fallback** - Yeni dil eklerken eksik key'ler otomatik olarak fallback dilinden alınıyor. Artık uygulamanızda kırık çeviriler veya key hataları yok.
+- **İlişkisel Namespace'ler** - Translation key'ler artık namespace'lerle düzgün bir ilişkisel bağlantıya sahip, daha iyi organizasyon ve sorgulama imkanı sunuyor.
+- **Açık Kaynak Yayını** - Paketler, MCP server ve landing sayfası artık [github.com/better-i18n/oss](https://github.com/better-i18n/oss) adresinde herkese açık
+
+## İyileştirmeler
+
+- **Daha Hızlı Gemini Streaming** - Gemini modelleriyle önemli ölçüde daha hızlı streaming için optimize edilmiş sistem promptları
+- **Daha Akıllı Key Mention'ları** - AI sohbetinde bahsedilen key'ler artık namespace context'lerini de içeriyor, AI nokta atışı yapabiliyor
+- **Yeniden Tasarlanan Proje Ayarları** - Daha iyi kullanılabilirlik için komple yenilenmiş proje ayarları arayüzü
+- **Geliştirilmiş Filtre Arayüzü** - Çeviri dashboard'unda iyileştirilmiş filtreleme deneyimi
+- **CDN Yeniden Yayınlama Desteği** - CDN dosyalarını silmek artık yayın durumunu sıfırlıyor, temiz yeniden yayınlama mümkün
+
+## Platform Değişiklikleri
+
+- **GitHub Entegrasyonu** - CDN kararlılığı ve performansına öncelik verdiğimiz için "Coming Soon"a alındı
+- **Organization Reposu** - Daha iyi sürdürülebilirlik için düzgün bir org yapısına geçildi
