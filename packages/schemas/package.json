@@ -1,26 +1,19 @@
 {
   "name": "@better-i18n/schemas",
-  "version": "0.1.1",
-  "description": "Shared validation schemas for API and frontend",
+  "version": "0.2.0",
+  "description": "Public schemas and types for Better i18n SDK and MCP",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./projects": "./src/projects/index.ts",
-    "./organizations": "./src/organizations/index.ts",
-    "./languages": "./src/languages/index.ts",
-    "./github": "./src/github.ts",
-    "./translations": "./src/translations.ts"
+    "./ai-models": "./src/ai-models.ts"
   },
   "files": [
     "src"
   ],
   "scripts": {
     "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "zod": "^3.25.76"
   },
   "devDependencies": {
     "typescript": "~5.9.2"
