@@ -1,0 +1,59 @@
+{
+  "name": "@better-i18n/cli",
+  "version": "0.1.8",
+  "description": "CLI tool for detecting hardcoded strings in React/Next.js apps",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "better-i18n": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/better-i18n/better-i18n.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://better-i18n.com",
+  "bugs": {
+    "url": "https://github.com/better-i18n/better-i18n/issues"
+  },
+  "keywords": [
+    "i18n",
+    "internationalization",
+    "translation",
+    "lint",
+    "cli",
+    "react",
+    "nextjs",
+    "better-i18n"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "bun run src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.2.0",
+    "commander": "^12.1.0",
+    "glob": "^11.0.0",
+    "ora": "^8.1.1",
+    "typescript": "~5.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

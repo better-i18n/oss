@@ -1,0 +1,396 @@
+---
+title: Locale Management
+description: useLocale, useLocaleRouter, useLanguages, and LanguageSwitcher
+icon: Globe
+---
+
+## useLocale
+
+Access and update the current locale:
+
+```tsx
+import { useLocale } from '@better-i18n/use-intl'
+
+function LocaleDisplay() {
+  const { locale, setLocale, isLoading } = useLocale()
+
+  return (
+    <div>
+      <p>Current locale: {locale}</p>
+      <button onClick={() => setLocale('tr')}>
+        Switch to Turkish
+      </button>
+    </div>
+  )
+}
+```
+
+### Return Value
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `locale` | `string` | Current locale code (e.g., `"en"`, `"tr"`) |
+| `setLocale` | `(locale: string) => void` | Function to change the locale |
+| `isLoading` | `boolean` | Whether new messages are being loaded |
+
+### Locale Switching Flow
+
+When you call `setLocale()`, the provider:
+
+1. Fetches new messages from the CDN
+2. Updates the React context
+3. Triggers re-render with new translations
+4. Calls `onLocaleChange` callback (if provided)
+
+```tsx
+function LanguageButtons() {
+  const { locale, setLocale, isLoading } = useLocale()
+
+  if (isLoading) {
+    return <p>Switching language...</p>
+  }
+
+  return (
+    <div className="flex gap-2">
+      <button
+        onClick={() => setLocale('en')}
+        className={locale === 'en' ? 'font-bold' : ''}
+      >
+        English
+      </button>
+      <button
+        onClick={() => setLocale('tr')}
+        className={locale === 'tr' ? 'font-bold' : ''}
+      >
+        Türkçe
+      </button>
+    </div>
+  )
+}
+```
+
+---
+
+## useLocaleRouter
+
+Navigation-first hook for locale switching with TanStack Router integration. Uses `router.navigate()` instead of state updates.
+
+### Why useLocaleRouter?
+
+Traditional i18n libraries use `setLocale()` which changes React state but doesn't trigger router navigation:
+
+- ❌ URL not updated
+- ❌ Loaders don't re-execute
+- ❌ Browser history not updated
+
+`useLocaleRouter` solves these:
+
+- ✅ Triggers proper SPA navigation
+- ✅ Re-executes loaders (fresh messages)
+- ✅ Updates URL correctly
+- ✅ Works with browser history
+
+### Usage
+
+```tsx
+import { useLocaleRouter } from '@better-i18n/use-intl'
+
+function LanguageSwitcher() {
+  const { locale, locales, navigate, isReady } = useLocaleRouter()
+
+  if (!isReady) return <Skeleton />
+
+  return (
+    <select value={locale} onChange={(e) => navigate(e.target.value)}>
+      {locales.map((loc) => (
+        <option key={loc} value={loc}>{loc}</option>
+      ))}
+    </select>
+  )
+}
+```
+
+### Return Value
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `locale` | `string` | Current locale from URL |
+| `locales` | `string[]` | Available locale codes from CDN manifest |
+| `defaultLocale` | `string` | Default locale (no URL prefix) |
+| `navigate` | `(locale: string) => void` | Navigate to same page with new locale |
+| `localePath` | `(path: string, locale?: string) => string` | Get localized path |
+| `isReady` | `boolean` | Whether languages are loaded from CDN |
+
+### URL Strategy
+
+The default locale has **no prefix** in the URL:
+
+| Locale | URL |
+|--------|-----|
+| English (default) | `/about` |
+| Turkish | `/tr/about` |
+| German | `/de/about` |
+
+This provides cleaner URLs for the primary language while supporting SEO-friendly URLs for all locales.
+
+### Using localePath
+
+Generate localized paths for links:
+
+```tsx
+function Navigation() {
+  const { localePath, locale } = useLocaleRouter()
+
+  return (
+    <nav>
+      <Link to={localePath('/about')}>About</Link>
+      <Link to={localePath('/contact')}>Contact</Link>
+
+      {/* Force a specific locale */}
+      <Link to={localePath('/about', 'tr')}>About (Turkish)</Link>
+    </nav>
+  )
+}
+```
+
+### useLocale vs useLocaleRouter
+
+| Feature | useLocale | useLocaleRouter |
+|---------|-----------|-----------------|
+| **State update** | React context only | Router navigation |
+| **URL update** | Manual | Automatic |
+| **Loader re-execution** | No | Yes |
+| **History update** | No | Yes |
+| **Use case** | Simple CSR apps | TanStack Router apps |
+
+<Callout type="tip">
+  Use `useLocaleRouter` for TanStack Start/Router apps. Use `useLocale` for simple Vite apps without router integration.
+</Callout>
+
+---
+
+## useLanguages
+
+Fetch available languages dynamically from the CDN manifest:
+
+```tsx
+import { useLanguages } from '@better-i18n/use-intl'
+
+function LanguageList() {
+  const { languages, isLoading } = useLanguages()
+
+  if (isLoading) {
+    return <p>Loading languages...</p>
+  }
+
+  return (
+    <ul>
+      {languages.map((lang) => (
+        <li key={lang.code}>
+          {lang.nativeName} ({lang.code})
+        </li>
+      ))}
+    </ul>
+  )
+}
+```
+
+### Return Value
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `languages` | `LanguageOption[]` | Array of available languages |
+| `isLoading` | `boolean` | Whether languages are being fetched |
+
+### LanguageOption Type
+
+```ts
+interface LanguageOption {
+  code: string       // "en", "tr", "de"
+  name?: string      // "English", "Turkish", "German"
+  nativeName?: string // "English", "Türkçe", "Deutsch"
+  flagUrl?: string   // URL to flag image
+}
+```
+
+### Dynamic Languages
+
+Languages are fetched from your project's CDN manifest. When you add a new language in the dashboard, it automatically appears:
+
+```
+Dashboard: Add "Spanish" language
+     ↓
+CDN manifest updated
+     ↓
+useLanguages() returns updated list
+     ↓
+Language switcher shows "Español"
+```
+
+<Callout type="tip">
+  No need to maintain a static list of languages in your code!
+</Callout>
+
+---
+
+## LanguageSwitcher Component
+
+A ready-to-use language selector component:
+
+```tsx
+import { LanguageSwitcher } from '@better-i18n/use-intl'
+
+function Header() {
+  return (
+    <header>
+      <nav>
+        <Logo />
+        <LanguageSwitcher />
+      </nav>
+    </header>
+  )
+}
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `className` | `string` | | CSS class for the select element |
+| `loadingLabel` | `string` | `"Loading..."` | Text shown while loading |
+| `renderOption` | `(lang: LanguageOption) => ReactNode` | | Custom option renderer |
+
+### Styling
+
+```tsx
+<LanguageSwitcher
+  className="
+    w-40 px-4 py-2
+    bg-white border border-gray-200 rounded-lg
+    focus:ring-2 focus:ring-blue-500
+    text-sm font-medium text-gray-700
+  "
+/>
+```
+
+---
+
+## Building Custom Switchers
+
+For more control, build your own using the hooks:
+
+### Button Group
+
+```tsx
+import { useLocale, useLanguages } from '@better-i18n/use-intl'
+
+function ButtonGroupSwitcher() {
+  const { locale, setLocale } = useLocale()
+  const { languages, isLoading } = useLanguages()
+
+  if (isLoading) return null
+
+  return (
+    <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
+      {languages.map((lang) => (
+        <button
+          key={lang.code}
+          onClick={() => setLocale(lang.code)}
+          className={`
+            px-3 py-1.5 rounded-md text-sm font-medium
+            transition-colors
+            ${locale === lang.code
+              ? 'bg-white shadow text-gray-900'
+              : 'text-gray-600 hover:text-gray-900'
+            }
+          `}
+        >
+          {lang.code.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  )
+}
+```
+
+### With Flags
+
+```tsx
+function FlagSwitcher() {
+  const { locale, setLocale } = useLocale()
+  const { languages, isLoading } = useLanguages()
+
+  if (isLoading) return null
+
+  return (
+    <div className="flex gap-2">
+      {languages.map((lang) => (
+        <button
+          key={lang.code}
+          onClick={() => setLocale(lang.code)}
+          className={`
+            flex items-center gap-2 px-3 py-2 rounded border
+            ${locale === lang.code
+              ? 'bg-blue-50 border-blue-500'
+              : 'border-gray-200 hover:border-gray-300'
+            }
+          `}
+        >
+          {lang.flagUrl && (
+            <img
+              src={lang.flagUrl}
+              alt=""
+              className="w-5 h-4 object-cover rounded-sm"
+            />
+          )}
+          <span>{lang.nativeName}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+```
+
+### With Router Integration
+
+```tsx
+import { useLocaleRouter, useLanguages } from '@better-i18n/use-intl'
+
+function RouterLanguageSwitcher() {
+  const { locale, navigate, isReady } = useLocaleRouter()
+  const { languages } = useLanguages()
+
+  if (!isReady) {
+    return <div className="h-10 w-24 bg-gray-200 animate-pulse rounded" />
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      {languages.map((lang) => (
+        <button
+          key={lang.code}
+          onClick={() => navigate(lang.code)}
+          className={`
+            flex items-center gap-2 px-3 py-2 rounded
+            ${locale === lang.code
+              ? 'bg-blue-100 border-blue-500'
+              : 'bg-white border-gray-200'
+            } border
+          `}
+        >
+          {lang.flagUrl && (
+            <img src={lang.flagUrl} alt="" className="w-5 h-4 object-cover rounded-sm" />
+          )}
+          <span>{lang.nativeName}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+```
+
+## Related
+
+- [Provider](/frameworks/provider) - Configure locale handling
+- [Translations](/frameworks/translations) - Access translations
+- [TanStack Routing](/frameworks/tanstack-start/routing) - Path-based routing setup

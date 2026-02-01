@@ -1,0 +1,99 @@
+---
+title: Getting Started
+description: Complete i18n setup for TanStack Start with SSR support
+---
+
+## Overview
+
+TanStack Start is a full-stack React framework with excellent SSR support. Our integration provides:
+
+- **Dynamic language discovery** - Languages are fetched from the CDN manifest
+- **Server-side message loading** - No flash of untranslated content
+- **Middleware-based locale detection** - From cookies, headers, or URL
+- **Hydration-safe** - Consistent rendering between server and client
+
+## Installation
+
+<Tabs items={["npm", "yarn", "pnpm", "bun"]}>
+  <Tab value="npm">
+  ```bash
+  npm install @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn add @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+  <Tab value="bun">
+  ```bash
+  bun add @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+</Tabs>
+
+## Quick Start
+
+Get up and running with the basic setup:
+
+<Cards>
+  <Card title="1. Setup" icon="Settings" href="/frameworks/tanstack-start/setup">
+    Configuration, provider, and basic usage.
+  </Card>
+  <Card title="2. SSR" icon="Server" href="/frameworks/tanstack-start/ssr">
+    Server-side rendering and hydration.
+  </Card>
+  <Card title="3. Routing" icon="Route" href="/frameworks/tanstack-start/routing">
+    Path-based locale routing for SEO.
+  </Card>
+  <Card title="4. Middleware" icon="Shield" href="/frameworks/tanstack-start/middleware">
+    Automatic locale detection.
+  </Card>
+</Cards>
+
+## Features
+
+### Dynamic Languages
+
+Languages are automatically fetched from your CDN manifest. Add a new language in the dashboard and it appears in your app without code changes.
+
+### SSR Support
+
+Messages are loaded on the server and hydrated on the client:
+
+```tsx
+// Server: Loads messages in loader
+loader: async ({ context }) => {
+  const messages = await getMessages({ project: 'org/project', locale: 'en' })
+  return { messages }
+}
+
+// Client: Hydrates with same messages
+<BetterI18nProvider messages={messages} ... />
+```
+
+### Path-Based Routing
+
+SEO-friendly URLs with locale prefixes:
+
+```
+/about         → Default locale (English)
+/tr/about      → Turkish
+/de/about      → German
+```
+
+### Middleware Detection
+
+Automatic locale detection from:
+- URL path (`/tr/about`)
+- Cookies (`locale=tr`)
+- Accept-Language header
+
+## Next Steps
+
+Start with the [Setup Guide](/frameworks/tanstack-start/setup) for step-by-step instructions.

@@ -1,0 +1,403 @@
+---
+title: Translations
+description: Access translations with useTranslations, interpolation, and namespaces
+icon: Type
+---
+
+## useTranslations Hook
+
+Access namespaced translations in any component:
+
+```tsx
+import { useTranslations } from '@better-i18n/use-intl'
+
+function HomePage() {
+  const t = useTranslations('home')
+
+  return (
+    <div>
+      <h1>{t('title')}</h1>
+      <p>{t('description')}</p>
+    </div>
+  )
+}
+```
+
+### API Reference
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `namespace` | `string` | ✅ | The namespace to scope translations to |
+
+### Return Methods
+
+| Method | Description |
+|--------|-------------|
+| `t(key, values?)` | Get translated string with optional interpolation |
+| `t.rich(key, values)` | Get translated string with React components |
+| `t.raw(key)` | Get raw translation string |
+| `t.has(key)` | Check if translation exists |
+
+---
+
+## Namespaces
+
+Namespaces help organize translations into logical groups, making large translation files manageable.
+
+### What Are Namespaces?
+
+A namespace is a top-level key in your translation file:
+
+```json title="en.json"
+{
+  "home": {
+    "title": "Welcome",
+    "description": "The best app ever"
+  },
+  "about": {
+    "title": "About Us",
+    "mission": "Our mission is..."
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading..."
+  }
+}
+```
+
+### Namespace Patterns
+
+**By Page:**
+```tsx
+// app/routes/about.tsx
+const t = useTranslations('about')
+```
+
+**By Feature:**
+```tsx
+// components/LoginForm.tsx
+const t = useTranslations('auth')
+t('login.title')
+```
+
+**Shared Namespace:**
+```tsx
+const t = useTranslations('common')
+<button>{t('actions.save')}</button>
+```
+
+### Nested Keys
+
+Access nested keys with dot notation:
+
+```json
+{
+  "settings": {
+    "profile": {
+      "title": "Profile Settings",
+      "fields": {
+        "name": "Full Name",
+        "email": "Email Address"
+      }
+    }
+  }
+}
+```
+
+```tsx
+const t = useTranslations('settings')
+
+t('profile.title')           // "Profile Settings"
+t('profile.fields.name')     // "Full Name"
+```
+
+### Multiple Namespaces
+
+Use multiple namespaces in one component:
+
+```tsx
+function CheckoutPage() {
+  const tCheckout = useTranslations('checkout')
+  const tCommon = useTranslations('common')
+
+  return (
+    <div>
+      <h1>{tCheckout('title')}</h1>
+      <button>{tCommon('actions.save')}</button>
+      <button>{tCommon('actions.cancel')}</button>
+    </div>
+  )
+}
+```
+
+---
+
+## Interpolation
+
+Interpolation lets you insert dynamic values into translations using ICU Message Format.
+
+### Basic Interpolation
+
+Insert variables with curly braces:
+
+```json title="en.json"
+{
+  "greeting": {
+    "hello": "Hello, {name}!",
+    "welcome": "Welcome back, {firstName} {lastName}"
+  }
+}
+```
+
+```tsx
+const t = useTranslations('greeting')
+
+t('hello', { name: 'John' })
+// "Hello, John!"
+
+t('welcome', { firstName: 'John', lastName: 'Doe' })
+// "Welcome back, John Doe"
+```
+
+### Pluralization
+
+Handle plural forms with `plural`:
+
+```json
+{
+  "cart": {
+    "items": "{count, plural, =0 {No items} one {# item} other {# items}}"
+  }
+}
+```
+
+```tsx
+t('items', { count: 0 })   // "No items"
+t('items', { count: 1 })   // "1 item"
+t('items', { count: 5 })   // "5 items"
+```
+
+#### Plural Categories
+
+| Category | Description | Example |
+|----------|-------------|---------|
+| `=0`, `=1`, `=N` | Exact match | `=0 {Empty}` |
+| `zero` | Zero form (some languages) | `zero {No items}` |
+| `one` | Singular | `one {# item}` |
+| `two` | Dual (some languages) | `two {# items}` |
+| `few` | Few (some languages) | `few {# items}` |
+| `many` | Many (some languages) | `many {# items}` |
+| `other` | Default/plural | `other {# items}` |
+
+<Callout type="info">
+  `#` is replaced with the count value. Use `one` and `other` for English; other languages may need more categories.
+</Callout>
+
+### Select (Gender/Variants)
+
+Choose based on a string value:
+
+```json
+{
+  "notifications": {
+    "liked": "{gender, select, male {He} female {She} other {They}} liked your post"
+  }
+}
+```
+
+```tsx
+t('liked', { gender: 'male' })    // "He liked your post"
+t('liked', { gender: 'female' })  // "She liked your post"
+t('liked', { gender: 'other' })   // "They liked your post"
+```
+
+### SelectOrdinal
+
+Handle ordinal numbers (1st, 2nd, 3rd):
+
+```json
+{
+  "ranking": {
+    "place": "You finished in {position, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place"
+  }
+}
+```
+
+```tsx
+t('place', { position: 1 })   // "You finished in 1st place"
+t('place', { position: 2 })   // "You finished in 2nd place"
+t('place', { position: 3 })   // "You finished in 3rd place"
+```
+
+### Rich Text
+
+Insert React components with `.rich()`:
+
+```json
+{
+  "legal": {
+    "terms": "By signing up, you agree to our <link>Terms of Service</link> and <bold>Privacy Policy</bold>."
+  }
+}
+```
+
+```tsx
+const t = useTranslations('legal')
+
+t.rich('terms', {
+  link: (chunks) => <a href="/terms">{chunks}</a>,
+  bold: (chunks) => <strong>{chunks}</strong>,
+})
+```
+
+#### Self-Closing Tags
+
+For elements without children:
+
+```json
+{
+  "message": "Loading<spinner/> Please wait..."
+}
+```
+
+```tsx
+t.rich('message', {
+  spinner: () => <Spinner />,
+})
+```
+
+### Number & Date Formatting
+
+Format numbers and dates inline:
+
+```json
+{
+  "stats": {
+    "users": "{count, number} active users",
+    "created": "Created on {date, date, medium}"
+  }
+}
+```
+
+```tsx
+t('users', { count: 1234567 })
+// "1,234,567 active users"
+
+t('created', { date: new Date() })
+// "Created on Jan 18, 2026"
+```
+
+### Escaping
+
+Use single quotes to escape:
+
+```json
+{
+  "code": "Use '{name}' to insert the user''s name"
+}
+```
+
+```tsx
+t('code')
+// "Use {name} to insert the user's name"
+```
+
+---
+
+## TypeScript Support
+
+Enable type-safe translation keys:
+
+```ts title="src/types/i18n.d.ts"
+import en from '../locales/en.json'
+
+type Messages = typeof en
+
+declare global {
+  interface IntlMessages extends Messages {}
+}
+```
+
+Now you get autocomplete for translation keys:
+
+```tsx
+const t = useTranslations('home')
+t('title')       // ✅ Valid
+t('typoTitle')   // ❌ TypeScript error
+```
+
+---
+
+## Best Practices
+
+### Keep Namespaces Focused
+
+```json
+// ✅ Good - focused namespaces (~20-30 keys each)
+{
+  "home": { ... },
+  "dashboard": { ... },
+  "settings": { ... }
+}
+
+// ❌ Bad - giant namespace
+{
+  "app": { /* 500+ nested keys */ }
+}
+```
+
+### Use Consistent Naming
+
+```json
+// ✅ Good - consistent patterns
+{
+  "home": {
+    "meta.title": "...",
+    "hero.title": "...",
+    "hero.cta": "..."
+  }
+}
+
+// ❌ Bad - inconsistent
+{
+  "home": {
+    "pageTitle": "...",
+    "HeroTitle": "...",
+    "button_text": "..."
+  }
+}
+```
+
+### Avoid Deep Nesting
+
+```json
+// ✅ Good - reasonable depth (2-3 levels)
+{
+  "settings": {
+    "profile.name": "Name",
+    "profile.email": "Email"
+  }
+}
+
+// ❌ Bad - too deep
+{
+  "settings": {
+    "user": {
+      "profile": {
+        "personal": {
+          "details": {
+            "name": "Name"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## Related
+
+- [Formatting](/frameworks/formatting) - Formatting dates and numbers
+- [Server Utilities](/frameworks/server) - Server-side translation
+- [Provider](/frameworks/provider) - Provider configuration

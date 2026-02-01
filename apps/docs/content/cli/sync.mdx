@@ -1,0 +1,186 @@
+---
+title: sync
+description: Compare local translation keys with Better i18n cloud
+icon: RefreshCw
+---
+
+Compare your codebase's `t()` calls with translations stored in Better i18n (remote) and audit your project for consistency.
+
+## When to use sync
+
+The `sync` command is a powerful auditing tool. Common scenarios include:
+
+- **Before opening a PR**: Ensure all new translation keys are present in Better i18n.
+- **After adding new pages**: Automatically identify and log missing keys.
+- **After refactors**: Detect "dead" keys that are no longer referenced in code.
+- **Before shipping a new locale**: Verify that the source keys are stable.
+- **Debugging**: Use `--verbose` to trace why certain keys are not being picked up.
+- **CI Gating**: Use `--format json` to fail builds if missing keys are detected.
+
+---
+
+## Workflow
+
+1.  **Run `sync`**: See the tree of missing or unused keys.
+2.  **Dashboard/AI**: Add the missing keys via the Better i18n dashboard or AI suggestions.
+3.  **Verify**: Run `sync --summary` to confirm `missingCount` is 0.
+4.  **Enforce**: Integrate into CI to prevent missing keys from reaching production.
+
+---
+
+## Usage
+
+```bash
+better-i18n sync                # Grouped tree output (default)
+better-i18n sync --summary      # High-level metrics only
+better-i18n sync --verbose      # Deep audit & verification
+better-i18n sync --format json  # JSON output for automation
+better-i18n sync -d ./src       # Scan specific directory
+```
+
+## Options
+
+| Option | Description |
+|--------|-------------|
+| `--format <type>` | `eslint` (default) for humans, `json` for machines. |
+| `--verbose` | Detailed audit log: invariant checks (PASS/FAIL), scoping summary, dynamic key skips, and specific key probes. |
+| `--summary` | Show only top-level percentage coverage and counts without the detailed tree. |
+| `-d, --dir <path>` | Specify the directory to scan (default: current directory). |
+
+---
+
+## Output Example
+
+The default output provides a 2-level compact tree of mismatches.
+
+```text
+📊 Translation Keys Comparison
+Source locale: en
+
+Coverage:
+  Local → Remote: 59%
+  Remote Used: 63%
+
+⊕ Missing in Remote (473 keys)
+  Keys used in code but not uploaded to Better i18n
+
+pages (300)
+  affordableEnglishLearning (meta.title, meta.description, meta.keywords, hero.badge, ...+12)
+  bestApps (hero.badge, title_prefix, title_accent, subtitle)
+
+hero (5)
+  hero (ariaLabel, imageAlt, ...)
+
+⊖ Unused in Code (386 keys)
+  Keys in Better i18n but not detected in code usage
+
+features (25)
+  practiceSpeaking (title, subtitle, icon)
+
+Scanned 246 files in 0.85s
+✓ Comparison complete
+```
+
+---
+
+## How namespace binding works
+
+The CLI uses **Lexical Scope Tracking** to resolve namespaces automatically for both client and server components.
+
+### Client Components (React Hooks)
+
+```tsx
+// All t() calls inside this scope become 'hero.key'
+const t = useTranslations('hero');
+
+return <h1>{t('title')}</h1>; // Detected as: hero.title
+```
+
+### Server Components (Async Functions)
+
+```tsx
+// ✅ Direct string namespace
+const t = await getTranslations('welcome');
+return <h1>{t('title')}</h1>; // Detected as: welcome.title
+
+// ✅ Object with namespace property
+const t = await getTranslations({
+  locale: params.locale,
+  namespace: 'maintenance'
+});
+return <p>{t('message')}</p>; // Detected as: maintenance.message
+
+// ⚠️  Root scoped (no namespace)
+const t = await getTranslations();
+return <p>{t('global.title')}</p>; // Detected as: global.title (root scope)
+```
+
+### Supported Patterns
+
+- **`useTranslations('namespace')`** - Client component with namespace
+- **`getTranslations('namespace')`** - Server component with namespace
+- **`getTranslations({ locale, namespace: 'namespace' })`** - Server with locale
+- **`useTranslations()` / `getTranslations()`** - Root scoped (no namespace prefix)
+- **Standard Methods**: All patterns support `t()`, `t.raw()`, `t.rich()`, and `t.has()`.
+
+### Dynamic Namespaces
+
+If a namespace is a variable or template literal (e.g., ``useTranslations(`pages.${slug}`)``), it is reported as **unknown-scoped** in `--verbose` mode and skipped from metrics to prevent false positives.
+
+---
+
+## Flattening rules
+
+To ensure CLI metrics match the Better i18n UI:
+
+1.  **Primitives are leaves**: Strings, numbers, and booleans are counted as keys.
+2.  **Arrays are leaves**: `meta.keywords: ["i18n", "cli"]` is counted as **one key**, not two. This matches the UI's "Base Key" counting.
+3.  **Objects are containers**: Keys like `pages.home.hero` representing a grouping of sub-keys are ignored in the final key count.
+
+---
+
+## JSON Output
+
+Use `--format json` for CI scripts and automation.
+
+```json
+{
+  "project": {
+    "workspace": "my-org",
+    "slug": "my-app",
+    "sourceLocale": "en"
+  },
+  "localKeys": {
+    "total": 1223
+  },
+  "comparison": {
+    "missingInRemote": { "pages.bestApps": ["pages.bestApps.meta.title"] },
+    "unusedInCode": { "old": ["old.unused_key"] },
+    "missingCount": 473,
+    "unusedCount": 386
+  },
+  "coverage": {
+    "local": 59,
+    "remote": 63
+  },
+  "files": 246,
+  "duration": 850
+}
+```
+
+---
+
+## CI Integration
+
+### Fail build on missing keys
+
+```bash
+# Using jq to check missingCount
+better-i18n sync --format json | jq -e '.comparison.missingCount == 0' > /dev/null || exit 1
+```
+
+### List missing keys in CI logs
+
+```bash
+better-i18n sync --format json | jq '.comparison.missingInRemote'
+```

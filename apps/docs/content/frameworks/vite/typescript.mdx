@@ -1,0 +1,146 @@
+---
+title: TypeScript
+description: Type-safe translation keys and autocomplete for Vite + React
+---
+
+# TypeScript
+
+Enable autocomplete and type safety for your translation keys in Vite + React applications.
+
+## Setup
+
+### Step 1: Create Type Declaration
+
+Create a type declaration file that references your translation messages:
+
+```ts title="src/types/i18n.d.ts"
+import messages from '../locales/en.json'
+
+type Messages = typeof messages
+
+declare global {
+  interface IntlMessages extends Messages {}
+}
+```
+
+<Callout type="info">
+  The `IntlMessages` interface is used by `use-intl` to provide type safety for translation keys.
+</Callout>
+
+### Step 2: Add Local Translation File
+
+For TypeScript to infer types, you need a local copy of your translations:
+
+```json title="src/locales/en.json"
+{
+  "home": {
+    "title": "Welcome to our app",
+    "description": "Get started by editing src/App.tsx"
+  },
+  "greeting": {
+    "hello": "Hello, {name}!"
+  }
+}
+```
+
+<Callout type="warn">
+  This file is only for type inference. At runtime, translations are still fetched from the Better i18n CDN.
+</Callout>
+
+## Usage
+
+Once configured, you'll get autocomplete for translation keys:
+
+```tsx
+import { useTranslations } from '@better-i18n/use-intl'
+
+export function HomePage() {
+  const t = useTranslations('home')
+
+  return (
+    <div>
+      {/* ✅ TypeScript knows 'title' exists */}
+      <h1>{t('title')}</h1>
+
+      {/* ❌ TypeScript error: 'invalid' doesn't exist */}
+      <p>{t('invalid')}</p>
+    </div>
+  )
+}
+```
+
+## Namespaced Types
+
+For namespaced translations, your type file should reflect the structure:
+
+```ts title="src/types/i18n.d.ts"
+import home from '../locales/en/home.json'
+import common from '../locales/en/common.json'
+
+type Messages = {
+  home: typeof home
+  common: typeof common
+}
+
+declare global {
+  interface IntlMessages extends Messages {}
+}
+```
+
+## Syncing Types
+
+### Manual Sync
+
+Download your translations from the Better i18n dashboard or CDN:
+
+```bash
+curl -o src/locales/en.json https://cdn.better-i18n.com/your-org/your-project/en.json
+```
+
+### CLI Sync (Recommended)
+
+Use the Better i18n CLI to keep types in sync:
+
+```bash
+# Install CLI
+npm install -D @better-i18n/cli
+
+# Pull translations
+npx better-i18n pull --locale en --output src/locales
+```
+
+Add to your `package.json` scripts:
+
+```json title="package.json"
+{
+  "scripts": {
+    "i18n:pull": "better-i18n pull --locale en --output src/locales"
+  }
+}
+```
+
+## Type Checking in CI
+
+Add type checking to your CI pipeline to catch missing translations:
+
+```yaml title=".github/workflows/ci.yml"
+- name: Pull translations
+  run: npm run i18n:pull
+
+- name: Type check
+  run: npx tsc --noEmit
+```
+
+## Next Steps
+
+<Cards>
+  <Card title="Setup" icon="Settings" href="/frameworks/vite/setup">
+    Return to the setup guide.
+  </Card>
+  <Card title="React Router" icon="Route" href="/frameworks/vite/react-router">
+    Integrate with React Router for URL-based locales.
+  </Card>
+  <Card title="Hooks Reference" icon="Hook" href="/react/hooks">
+    Explore all available hooks.
+  </Card>
+</Cards>

@@ -1,0 +1,95 @@
+---
+title: Setup
+description: Configure MCP server for your AI assistant
+icon: Rocket
+---
+
+Better i18n MCP (Model Context Protocol) allows AI assistants like Claude and Cursor to directly interact with your translation workspace.
+
+<Steps>
+
+<Step>
+### Get your API Key
+
+1. Sign in to [dash.better-i18n.com](https://dash.better-i18n.com).
+2. Go to **Settings > API Keys**.
+3. Create a new key and copy it.
+</Step>
+
+<Step>
+### Configure Project Context
+
+The MCP server needs to know which project to manage. It looks for a `project` identifier in your `i18n.config.ts`.
+
+```ts title="i18n.config.ts"
+import { createI18n } from "@better-i18n/next";
+
+export const i18n = createI18n({
+  project: "your-org/your-project", // MCP uses this ID
+  defaultLocale: "en",
+});
+```
+
+</Step>
+
+<Step>
+### Configure your AI Assistant
+
+Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
+
+<Tabs items={['Cursor', 'Claude Desktop']}>
+  <Tab value="Cursor">
+    Add this to your MCP settings in Cursor (`~/.cursor/mcp.json`):
+    ```json title="~/.cursor/mcp.json"
+    {
+      "mcpServers": {
+        "better-i18n": {
+          "command": "npx",
+          "args": ["@better-i18n/mcp"],
+          "env": {
+            "BETTER_I18N_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab value="Claude Desktop">
+    Add this to your Claude Desktop config:
+    ```json
+    {
+      "mcpServers": {
+        "better-i18n": {
+          "command": "npx",
+          "args": ["@better-i18n/mcp"],
+          "env": {
+            "BETTER_I18N_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+</Step>
+
+<Step>
+### Verify Connectivity
+
+Ask your AI assistant a translation-related question to verify the setup:
+
+> "Show me the translation status for my current project."
+
+If configured correctly, the AI will use the `getProject` tool to fetch your real-time stats.
+
+</Step>
+
+</Steps>
+
+## Environment Variables
+
+| Variable              | Required | Description                                    |
+| --------------------- | -------- | ---------------------------------------------- |
+| `BETTER_I18N_API_KEY` | Yes      | Your organization API key                      |
+| `BETTER_I18N_API_URL` | No       | Custom API URL (default: dash.better-i18n.com) |
+| `BETTER_I18N_DEBUG`   | No       | Enable detailed debug logging                  |

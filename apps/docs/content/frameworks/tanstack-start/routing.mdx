@@ -1,0 +1,282 @@
+---
+title: Path-Based Routing
+description: SEO-friendly locale URLs with TanStack Router
+---
+
+# Path-Based Routing
+
+This guide covers setting up SEO-friendly URLs like `/en/about` or `/tr/about` with TanStack Router.
+
+## URL Strategy
+
+The default locale has **no prefix** (like next-intl):
+
+| Locale | URL |
+|--------|-----|
+| English (default) | `/about` |
+| Turkish | `/tr/about` |
+| German | `/de/about` |
+
+This provides:
+- Clean URLs for the primary language
+- SEO-friendly URLs for all locales
+- Easy sharing of localized links
+
+## Setup
+
+### Step 1: Create Locale Route Segment
+
+Create a `$locale` folder in your routes directory:
+
+```
+app/routes/
+├── __root.tsx
+├── index.tsx           # Redirects to /$locale
+└── $locale/
+    ├── index.tsx       # /$locale home
+    ├── about.tsx       # /$locale/about
+    └── contact.tsx     # /$locale/contact
+```
+
+### Step 2: Root Index Redirect
+
+Redirect the root to the detected locale:
+
+```tsx title="app/routes/index.tsx"
+import { createFileRoute, redirect } from "@tanstack/react-router"
+import { i18nConfig } from "../i18n.config"
+
+export const Route = createFileRoute("/")({
+  beforeLoad: ({ context }) => {
+    throw redirect({
+      to: "/$locale",
+      params: { locale: context.locale || i18nConfig.defaultLocale },
+    })
+  },
+})
+```
+
+### Step 3: Update Root Layout
+
+Extract locale from the URL path:
+
+```tsx title="app/routes/__root.tsx"
+import { getMessages } from "@better-i18n/use-intl/server"
+import { i18nConfig } from "../i18n.config"
+
+export const Route = createRootRouteWithContext<{ locale: string }>()({
+  loader: async ({ context, location }) => {
+    // Extract locale from path: /tr/about → "tr"
+    const pathParts = location.pathname.split("/")
+    const pathLocale = pathParts[1]
+
+    // Validate it's a 2-letter locale code
+    const locale = pathLocale && pathLocale.length === 2
+      ? pathLocale
+      : context.locale || i18nConfig.defaultLocale
+
+    const messages = await getMessages({
+      project: i18nConfig.project,
+      locale,
+    })
+
+    return { messages, locale }
+  },
+
+  component: RootComponent,
+})
+```
+
+### Step 4: Locale Pages
+
+Create pages inside the `$locale` folder:
+
+```tsx title="app/routes/$locale/index.tsx"
+import { createFileRoute } from "@tanstack/react-router"
+import { useTranslations } from "@better-i18n/use-intl"
+
+export const Route = createFileRoute("/$locale/")({
+  component: HomePage,
+})
+
+function HomePage() {
+  const t = useTranslations("home")
+
+  return (
+    <div>
+      <h1>{t("title")}</h1>
+      <p>{t("description")}</p>
+    </div>
+  )
+}
+```
+
+## Language Switcher with Router
+
+Use `useLocaleRouter` for router-integrated switching:
+
+```tsx
+import { useLocaleRouter, useLanguages } from "@better-i18n/use-intl"
+
+function LanguageSwitcher() {
+  const { locale, navigate, isReady } = useLocaleRouter()
+  const { languages } = useLanguages()
+
+  if (!isReady) {
+    return <div className="h-10 w-24 bg-gray-200 animate-pulse rounded" />
+  }
+
+  return (
+    <div className="flex gap-2">
+      {languages.map((lang) => (
+        <button
+          key={lang.code}
+          onClick={() => navigate(lang.code)}
+          className={`px-3 py-2 rounded ${
+            locale === lang.code
+              ? "bg-blue-100 border-blue-500"
+              : "border-gray-200"
+          } border`}
+        >
+          {lang.flagUrl && (
+            <img src={lang.flagUrl} alt="" className="w-5 h-4 mr-2 inline" />
+          )}
+          {lang.nativeName}
+        </button>
+      ))}
+    </div>
+  )
+}
+```
+
+### Why useLocaleRouter?
+
+Unlike `useLocale().setLocale()`, `useLocaleRouter().navigate()`:
+
+- ✅ Triggers proper SPA navigation
+- ✅ Re-executes loaders (fresh messages)
+- ✅ Updates URL correctly
+- ✅ Works with browser history
+
+```tsx
+// ❌ State-only change (loaders don't re-run)
+const { setLocale } = useLocale()
+setLocale('tr')
+
+// ✅ Router navigation (loaders re-run)
+const { navigate } = useLocaleRouter()
+navigate('tr')
+```
+
+## Generating Locale Paths
+
+Use `localePath` to generate localized links:
+
+```tsx
+import { useLocaleRouter } from "@better-i18n/use-intl"
+import { Link } from "@tanstack/react-router"
+
+function Navigation() {
+  const { localePath } = useLocaleRouter()
+
+  return (
+    <nav>
+      <Link to={localePath("/")}>Home</Link>
+      <Link to={localePath("/about")}>About</Link>
+      <Link to={localePath("/contact")}>Contact</Link>
+    </nav>
+  )
+}
+```
+
+### Cross-Locale Links
+
+Link to a specific locale:
+
+```tsx
+function Footer() {
+  const { localePath } = useLocaleRouter()
+
+  return (
+    <footer>
+      <p>Also available in:</p>
+      <Link to={localePath("/about", "tr")}>Türkçe</Link>
+      <Link to={localePath("/about", "de")}>Deutsch</Link>
+    </footer>
+  )
+}
+```
+
+## SEO Considerations
+
+### Alternate Links
+
+Add `hreflang` tags for search engines:
+
+```tsx title="app/routes/__root.tsx"
+export const Route = createRootRouteWithContext<{ locale: string }>()({
+  head: ({ loaderData }) => {
+    const { locale } = loaderData
+    const locales = ["en", "tr", "de"]
+    const baseUrl = "https://example.com"
+    const path = location.pathname.replace(`/${locale}`, "")
+
+    return {
+      links: [
+        // Canonical
+        { rel: "canonical", href: `${baseUrl}${location.pathname}` },
+        // Alternates
+        ...locales.map((loc) => ({
+          rel: "alternate",
+          hreflang: loc,
+          href: loc === "en" ? `${baseUrl}${path}` : `${baseUrl}/${loc}${path}`,
+        })),
+        // x-default
+        { rel: "alternate", hreflang: "x-default", href: `${baseUrl}${path}` },
+      ],
+    }
+  },
+})
+```
+
+### Sitemap
+
+Generate a sitemap with all locale variants:
+
+```ts title="scripts/generate-sitemap.ts"
+const locales = ["en", "tr", "de"]
+const pages = ["/", "/about", "/contact", "/pricing"]
+
+const urls = pages.flatMap((page) =>
+  locales.map((locale) => ({
+    url: locale === "en" ? page : `/${locale}${page}`,
+    alternates: locales.map((alt) => ({
+      hreflang: alt,
+      href: alt === "en" ? page : `/${alt}${page}`,
+    })),
+  }))
+)
+```
+
+## Default Locale Handling
+
+For the default locale (English), you may want to handle both:
+- `/about` (no prefix)
+- `/en/about` (with prefix)
+
+```tsx title="app/routes/en/index.tsx"
+import { createFileRoute, redirect } from "@tanstack/react-router"
+
+// Redirect /en to /
+export const Route = createFileRoute("/en/")({
+  beforeLoad: () => {
+    throw redirect({ to: "/" })
+  },
+})
+```
+
+## Related
+
+- [useLocaleRouter](/react/hooks/use-locale-router) - Hook reference
+- [Middleware](/frameworks/tanstack-start/middleware) - Locale detection
+- [URL Strategy](/concepts/url-strategy) - Default locale patterns

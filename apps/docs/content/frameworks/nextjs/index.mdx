@@ -1,0 +1,128 @@
+---
+title: Getting Started
+description: Set up @better-i18n/next in 5 minutes
+---
+
+Get started with Better i18n in your Next.js app. Our SDK integrates seamlessly with `next-intl` to provide a type-safe, CDN-powered translation experience.
+
+<Callout type="info">
+**Prerequisite:** Before starting, create a project at [dash.better-i18n.com](https://dash.better-i18n.com). Your project identifier will be in the format `org/project` (e.g., `my-company/web-app`).
+</Callout>
+
+<Steps>
+
+<Step>
+### Install the SDK
+
+Install the package via your preferred package manager:
+
+<Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
+  <Tab value="npm">
+  ```bash
+  npm install @better-i18n/next
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn add @better-i18n/next
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add @better-i18n/next
+  ```
+  </Tab>
+  <Tab value="bun">
+  ```bash
+  bun add @better-i18n/next
+  ```
+  </Tab>
+</Tabs>
+</Step>
+
+<Step>
+### Configure i18n
+
+Create an `i18n.config.ts` file in your project root. This file is shared between the SDK and the Better i18n CLI.
+
+```ts title="i18n.config.ts"
+import { createI18n } from "@better-i18n/next";
+
+export const i18n = createI18n({
+  project: "my-company/web-app",
+  defaultLocale: "en",
+});
+```
+</Step>
+
+<Step>
+### Set Up next-intl
+
+Configure the `next-intl` request handler using the exported configuration.
+
+```ts title="src/i18n/request.ts"
+import { i18n } from "../i18n.config";
+
+export default i18n.requestConfig;
+```
+</Step>
+
+<Step>
+### Add Middleware
+
+Register the i18n middleware in your `middleware.ts`.
+
+```ts title="middleware.ts"
+import { i18n } from "./i18n.config";
+
+// Simple usage
+export default i18n.betterMiddleware();
+
+export const config = {
+  matcher: ["/((?!api|_next|.*\\..*).*)"],
+};
+```
+
+For apps with authentication, use the callback pattern:
+
+```ts title="middleware.ts"
+import { i18n } from "./i18n.config";
+import { NextResponse } from "next/server";
+
+export default i18n.betterMiddleware(async (request, { locale, response }) => {
+  const isLoggedIn = !!request.cookies.get("session")?.value;
+
+  if (!isLoggedIn && request.nextUrl.pathname.includes("/dashboard")) {
+    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+  }
+});
+
+export const config = {
+  matcher: ["/((?!api|_next|.*\\..*).*)"],
+};
+```
+</Step>
+
+<Step>
+### Use Translations
+
+Now you can use standard `next-intl` hooks. The CLI will automatically track these scopes for syncing.
+
+```tsx title="app/page.tsx"
+import { useTranslations } from "next-intl";
+
+export default function Home() {
+  const t = useTranslations("common");
+
+  return <h1>{t("welcome")}</h1>;
+}
+```
+</Step>
+
+</Steps>
+
+## Next Steps
+
+- Configure [caching and revalidation](/frameworks/nextjs/configuration)
+- Set up [middleware options](/frameworks/nextjs/middleware)
+- Explore the [API reference](/frameworks/nextjs/api-reference)

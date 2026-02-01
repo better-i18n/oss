@@ -1,0 +1,505 @@
+---
+title: API Reference
+description: Detailed API documentation for @better-i18n/next
+---
+
+Complete API reference for the Next.js SDK.
+
+## Architecture
+
+`@better-i18n/next` is built on top of `@better-i18n/core` and adds Next.js-specific optimizations:
+
+- **ISR (Incremental Static Regeneration)** - Automatic cache revalidation via `next.revalidate`
+- **Manifest caching** - 1 hour default (3600s)
+- **Messages caching** - 30 seconds default for fast updates
+
+---
+
+## Middleware
+
+<Accordion>
+<AccordionItem title="createBetterI18nMiddleware(config, callback?)">
+The modern way to define middleware with **Clerk-style callback pattern** for auth integration.
+
+```ts
+import { createBetterI18nMiddleware } from "@better-i18n/next";
+import { NextResponse } from "next/server";
+
+// Simple usage (no callback)
+export default createBetterI18nMiddleware({
+  project: "org/project",
+  defaultLocale: "en",
+  localePrefix: "always",
+});
+
+// With callback (recommended for auth)
+export default createBetterI18nMiddleware({
+  project: "org/project",
+  defaultLocale: "en",
+  localePrefix: "always",
+}, async (request, { locale, response }) => {
+  // Auth logic here - locale is available!
+  if (needsLogin) {
+    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+  }
+  // Return nothing = i18n response is used (headers preserved!)
+});
+```
+
+**Config Options:**
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `project` | `string` | Required | Project identifier in `org/project` format |
+| `defaultLocale` | `string` | Required | Fallback locale |
+| `localePrefix` | `"always" \| "as-needed" \| "never"` | `"as-needed"` | URL locale prefix behavior |
+| `detection.cookie` | `boolean` | `true` | Enable cookie-based detection |
+| `detection.browserLanguage` | `boolean` | `true` | Enable Accept-Language header detection |
+| `detection.cookieName` | `string` | `"locale"` | Cookie name for storing preference |
+| `detection.cookieMaxAge` | `number` | `31536000` | Cookie max age in seconds |
+
+**Callback Context:**
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `locale` | `string` | Detected locale (e.g., `"en"`, `"tr"`) |
+| `response` | `NextResponse` | i18n response with headers already set |
+
+**Return Values:**
+
+| Return | Behavior |
+| --- | --- |
+| `NextResponse` | Short-circuits (e.g., redirect to login) |
+| `void` / `undefined` | Uses i18n response (headers preserved) |
+
+</AccordionItem>
+
+<AccordionItem title="composeMiddleware(...middlewares) [DEPRECATED]">
+
+<Callout type="warn">
+  **Deprecated:** Use `createBetterI18nMiddleware` with a callback instead.
+</Callout>
+
+Chains multiple middleware functions. May lose headers between middlewares.
+
+```ts
+// ❌ Deprecated - headers can be lost
+import { createBetterI18nMiddleware, composeMiddleware } from "@better-i18n/next";
+
+const i18n = createBetterI18nMiddleware(config);
+const auth = authMiddleware;
+
+export default composeMiddleware(i18n, auth);
+```
+
+**Migration:**
+
+```ts
+// ✅ Recommended - use callback pattern instead
+export default createBetterI18nMiddleware(config, async (req, { locale }) => {
+  // Auth logic here
+});
+```
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## createI18n
+
+The main entry point for the SDK. Returns an object with everything needed for Next.js i18n integration.
+
+```ts
+import { createI18n } from "@better-i18n/next";
+
+const i18n = createI18n({
+  project: "org/project",
+  defaultLocale: "en",
+  // Optional
+  localePrefix: "as-needed", // "as-needed" | "always" | "never"
+  manifestRevalidateSeconds: 3600, // ISR for manifest
+  messagesRevalidateSeconds: 30, // ISR for messages
+  debug: false,
+});
+```
+
+### Return Properties
+
+<Accordion>
+<AccordionItem title="requestConfig">
+Configuration object for `next-intl` request handler.
+
+```ts
+// src/i18n/request.ts
+export default i18n.requestConfig;
+```
+
+</AccordionItem>
+
+<AccordionItem title="betterMiddleware(callback?)">
+Create middleware with optional Clerk-style callback for auth integration. **Recommended over `middleware`.**
+
+```ts
+// middleware.ts - Simple usage
+export default i18n.betterMiddleware();
+
+// middleware.ts - With auth callback
+export default i18n.betterMiddleware(async (request, { locale, response }) => {
+  if (needsLogin) {
+    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+  }
+  // Return nothing = i18n response is used (headers preserved!)
+});
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `callback` | `MiddlewareCallback` | Optional callback for auth/custom logic |
+
+</AccordionItem>
+
+<AccordionItem title="middleware [DEPRECATED]">
+Legacy middleware function. Use `betterMiddleware()` instead for Clerk-style callback support.
+
+```ts
+// middleware.ts
+export default i18n.middleware;
+```
+
+</AccordionItem>
+
+<AccordionItem title="getManifest(options?)">
+Fetches the project manifest from CDN. Cached with ISR.
+
+```ts
+const manifest = await i18n.getManifest();
+
+// Force refresh (bypass cache)
+const manifest = await i18n.getManifest({ forceRefresh: true });
+```
+
+</AccordionItem>
+
+<AccordionItem title="getMessages(locale)">
+Fetches translation messages for a locale. Cached with 30s ISR.
+
+```ts
+const messages = await i18n.getMessages("tr");
+// { common: { welcome: "Hoş geldiniz" }, ... }
+```
+
+</AccordionItem>
+
+<AccordionItem title="getLocales()">
+Returns available locale codes from manifest.
+
+```ts
+const locales = await i18n.getLocales();
+// ["en", "tr", "de", "fr"]
+```
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## createNextI18nCore
+
+Low-level factory that wraps `@better-i18n/core` with Next.js ISR support. Use this when you need direct access to the core instance.
+
+```ts
+import { createNextI18nCore } from "@better-i18n/next";
+
+const i18nCore = createNextI18nCore({
+  project: "org/project",
+  defaultLocale: "en",
+  manifestRevalidateSeconds: 3600,
+  messagesRevalidateSeconds: 30,
+});
+
+// All core methods available
+const manifest = await i18nCore.getManifest();
+const messages = await i18nCore.getMessages("en");
+const locales = await i18nCore.getLocales();
+const languages = await i18nCore.getLanguages();
+```
+
+---
+
+## Server Utilities
+
+Import from `@better-i18n/next/server`:
+
+```ts
+import {
+  createNextIntlRequestConfig,
+  getManifest,
+  getMessages,
+  getLocales,
+  getManifestLanguages,
+} from "@better-i18n/next/server";
+```
+
+<Accordion>
+<AccordionItem title="createNextIntlRequestConfig(config)">
+Creates a `next-intl` request config with Better i18n CDN.
+
+```ts
+// src/i18n/request.ts
+import { createNextIntlRequestConfig } from "@better-i18n/next/server";
+
+export default createNextIntlRequestConfig({
+  project: "org/project",
+  defaultLocale: "en",
+});
+```
+
+</AccordionItem>
+
+<AccordionItem title="getMessages(config, locale)">
+Standalone function to fetch messages.
+
+```ts
+import { getMessages } from "@better-i18n/next/server";
+
+const messages = await getMessages(
+  { project: "org/project", defaultLocale: "en" },
+  "tr"
+);
+```
+
+</AccordionItem>
+
+<AccordionItem title="getLocales(config)">
+Standalone function to fetch available locales.
+
+```ts
+import { getLocales } from "@better-i18n/next/server";
+
+const locales = await getLocales({
+  project: "org/project",
+  defaultLocale: "en",
+});
+```
+
+</AccordionItem>
+
+<AccordionItem title="getManifestLanguages(config)">
+Get languages with full metadata (name, native name, flag URL).
+
+```ts
+import { getManifestLanguages } from "@better-i18n/next/server";
+
+const languages = await getManifestLanguages({
+  project: "org/project",
+  defaultLocale: "en",
+});
+// [{ code: "tr", name: "Turkish", nativeName: "Türkçe", flagUrl: "..." }]
+```
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Client Utilities
+
+Import from `@better-i18n/next/client`:
+
+```ts
+import { useManifestLanguages } from "@better-i18n/next/client";
+```
+
+<Accordion>
+<AccordionItem title="useManifestLanguages(config)">
+React hook to fetch available languages on the client. Includes request deduplication.
+
+```tsx
+"use client";
+
+import { useManifestLanguages } from "@better-i18n/next/client";
+
+function LanguageSwitcher() {
+  const { languages, isLoading, error } = useManifestLanguages({
+    project: "org/project",
+    defaultLocale: "en",
+  });
+
+  if (isLoading) return <span>Loading...</span>;
+  if (error) return <span>Error: {error.message}</span>;
+
+  return (
+    <select>
+      {languages.map((lang) => (
+        <option key={lang.code} value={lang.code}>
+          {lang.nativeName || lang.name || lang.code}
+        </option>
+      ))}
+    </select>
+  );
+}
+```
+
+| Return | Type | Description |
+| --- | --- | --- |
+| `languages` | `LanguageOption[]` | Available languages |
+| `isLoading` | `boolean` | Loading state |
+| `error` | `Error \| null` | Error if fetch failed |
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Configuration
+
+### I18nConfig
+
+Main configuration type for `createI18n` and server utilities.
+
+```ts
+interface I18nConfig {
+  // Required
+  project: string; // "org/project" format
+  defaultLocale: string; // Fallback locale
+
+  // Optional - CDN
+  cdnBaseUrl?: string; // Default: "https://cdn.better-i18n.com"
+
+  // Optional - Next.js ISR
+  manifestRevalidateSeconds?: number; // Default: 3600 (1 hour)
+  messagesRevalidateSeconds?: number; // Default: 30
+
+  // Optional - Routing
+  localePrefix?: "as-needed" | "always" | "never"; // Default: "as-needed"
+
+  // Optional - Debugging
+  debug?: boolean; // Enable debug logging
+  logLevel?: "debug" | "info" | "warn" | "error" | "silent";
+}
+```
+
+### I18nMiddlewareConfig
+
+Configuration for `createBetterI18nMiddleware`.
+
+```ts
+interface I18nMiddlewareConfig {
+  project: string;
+  defaultLocale: string;
+  /** URL locale prefix behavior (passed to next-intl) */
+  localePrefix?: "as-needed" | "always" | "never"; // Default: "as-needed"
+  detection?: {
+    cookie?: boolean;        // Default: true
+    browserLanguage?: boolean; // Default: true
+    cookieName?: string;     // Default: "locale"
+    cookieMaxAge?: number;   // Default: 31536000 (1 year)
+  };
+}
+```
+
+---
+
+## Types
+
+<Accordion>
+<AccordionItem title="Exported Types">
+Commonly used types for manual integrations and custom logic.
+
+```ts
+import type {
+  // Main configuration
+  I18nConfig,
+  I18nMiddlewareConfig,
+
+  // Middleware callback types (Clerk-style pattern)
+  MiddlewareContext,
+  MiddlewareCallback,
+
+  // Language metadata from manifest
+  LanguageOption,
+  ManifestLanguage,
+  ManifestResponse,
+
+  // Locale types
+  Locale,
+  LocalePrefix,
+  LogLevel,
+
+  // Translation messages
+  Messages,
+} from "@better-i18n/next";
+```
+
+</AccordionItem>
+
+<AccordionItem title="MiddlewareContext">
+Context passed to the middleware callback.
+
+```ts
+interface MiddlewareContext {
+  /** Detected locale from the request */
+  locale: string;
+  /** The i18n response with headers already set - can be modified */
+  response: NextResponse;
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="MiddlewareCallback">
+Callback function signature for Clerk-style middleware composition.
+
+```ts
+type MiddlewareCallback = (
+  request: NextRequest,
+  context: MiddlewareContext
+) => Promise<NextResponse | void> | NextResponse | void;
+```
+
+**Usage:**
+
+```ts
+const myCallback: MiddlewareCallback = async (request, { locale, response }) => {
+  // Return NextResponse to short-circuit (e.g., redirect)
+  // Return void to continue with i18n response
+};
+```
+
+</AccordionItem>
+
+<AccordionItem title="LanguageOption">
+Language metadata from the CDN manifest.
+
+```ts
+interface LanguageOption {
+  code: string; // "en", "tr", etc.
+  name?: string; // "English", "Turkish"
+  nativeName?: string; // "English", "Türkçe"
+  flagUrl?: string | null; // URL to flag image
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="Messages">
+Translation messages dictionary.
+
+```ts
+type Messages = Record<string, unknown>;
+
+// Example
+const messages: Messages = {
+  common: {
+    welcome: "Welcome",
+    goodbye: "Goodbye",
+  },
+  errors: {
+    notFound: "Page not found",
+  },
+};
+```
+
+</AccordionItem>
+</Accordion>

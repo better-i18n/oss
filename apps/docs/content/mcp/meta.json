@@ -1,0 +1,13 @@
+{
+  "title": "MCP Server",
+  "description": "AI-powered translation tools",
+  "icon": "Bot",
+  "root": true,
+  "pages": [
+    "index",
+    "---Setup---",
+    "getting-started",
+    "---Tools---",
+    "tool-reference"
+  ]
+}

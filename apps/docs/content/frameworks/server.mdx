@@ -1,0 +1,384 @@
+---
+title: Server Utilities
+description: Server-side utilities for pre-loading translations and server-side translation
+icon: Server
+---
+
+Import from `@better-i18n/use-intl/server`:
+
+```ts
+import {
+  getMessages,
+  getLocales,
+  getLanguages,
+  createServerTranslator,
+  createServerFormatter,
+} from '@better-i18n/use-intl/server'
+```
+
+## Quick Reference
+
+| Function | Description |
+|----------|-------------|
+| [`getMessages`](#getmessages) | Fetch messages for a locale |
+| [`getLocales`](#getlocales) | Get available locale codes |
+| [`getLanguages`](#getlanguages) | Get languages with metadata |
+| [`createServerTranslator`](#createservertranslator) | Create a translator for server use |
+| [`createServerFormatter`](#createserverformatter) | Create a formatter for server use |
+
+---
+
+## getMessages
+
+Fetch translation messages for a locale from the CDN. Use this in server loaders to pre-load messages for SSR.
+
+### Basic Usage
+
+```ts
+import { getMessages } from '@better-i18n/use-intl/server'
+
+const messages = await getMessages({
+  project: 'org/project',
+  locale: 'en',
+})
+```
+
+### Options
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `project` | `string` | ✅ | Project identifier in `org/project` format |
+| `locale` | `string` | ✅ | Locale to fetch messages for |
+| `cdnBaseUrl` | `string` | | Custom CDN URL |
+| `debug` | `boolean` | | Enable debug logging |
+
+### TanStack Start Integration
+
+Pre-load messages in your root loader:
+
+```tsx title="app/routes/__root.tsx"
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
+import { BetterI18nProvider } from '@better-i18n/use-intl'
+import { getMessages } from '@better-i18n/use-intl/server'
+
+export const Route = createRootRouteWithContext<{ locale: string }>()({
+  loader: async ({ context }) => {
+    const messages = await getMessages({
+      project: 'org/project',
+      locale: context.locale || 'en',
+    })
+
+    return { messages, locale: context.locale }
+  },
+
+  component: function RootComponent() {
+    const { messages, locale } = Route.useLoaderData()
+
+    return (
+      <BetterI18nProvider
+        project="org/project"
+        locale={locale}
+        messages={messages}
+        timeZone="UTC"
+      >
+        <Outlet />
+      </BetterI18nProvider>
+    )
+  },
+})
+```
+
+### Path-Based Locale Detection
+
+```tsx
+loader: async ({ context, location }) => {
+  // Extract locale from path
+  const pathParts = location.pathname.split('/')
+  const pathLocale = pathParts[1]
+
+  // Validate it's a 2-letter code
+  const locale = pathLocale?.length === 2
+    ? pathLocale
+    : context.locale || 'en'
+
+  const messages = await getMessages({
+    project: 'org/project',
+    locale,
+  })
+
+  return { messages, locale }
+}
+```
+
+### Error Handling
+
+Handle fetch failures gracefully:
+
+```ts
+try {
+  const messages = await getMessages({
+    project: 'org/project',
+    locale,
+  })
+  return { messages, locale }
+} catch (error) {
+  console.error(`Failed to load messages for ${locale}:`, error)
+
+  // Fallback to default locale
+  const fallbackMessages = await getMessages({
+    project: 'org/project',
+    locale: 'en',
+  })
+
+  return { messages: fallbackMessages, locale: 'en' }
+}
+```
+
+---
+
+## getLocales
+
+Get available locale codes from the manifest:
+
+```ts
+import { getLocales } from '@better-i18n/use-intl/server'
+
+const locales = await getLocales({
+  project: 'org/project',
+})
+// ['en', 'tr', 'de', 'es']
+```
+
+---
+
+## getLanguages
+
+Get languages with full metadata:
+
+```ts
+import { getLanguages } from '@better-i18n/use-intl/server'
+
+const languages = await getLanguages({
+  project: 'org/project',
+})
+// [
+//   { code: 'en', name: 'English', nativeName: 'English', flagUrl: '...' },
+//   { code: 'tr', name: 'Turkish', nativeName: 'Türkçe', flagUrl: '...' },
+// ]
+```
+
+---
+
+## createServerTranslator
+
+Create a translator function for use outside React components. Perfect for route loaders, API routes, and email templates.
+
+### Basic Usage
+
+```ts
+import { getMessages, createServerTranslator } from '@better-i18n/use-intl/server'
+
+const messages = await getMessages({
+  project: 'org/project',
+  locale: 'en',
+})
+
+const t = createServerTranslator({
+  locale: 'en',
+  messages,
+  namespace: 'emails',
+})
+
+const subject = t('welcomeEmail.subject')
+const body = t('welcomeEmail.body', { name: 'John' })
+```
+
+### Options
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `locale` | `string` | ✅ | Locale for the translator |
+| `messages` | `Messages` | ✅ | Pre-loaded messages |
+| `namespace` | `string` | | Default namespace to use |
+| `timeZone` | `string` | | Timezone for date formatting |
+
+### Use Cases
+
+#### Route Metadata
+
+Generate translated meta tags in loaders:
+
+```tsx title="app/routes/about.tsx"
+import { createFileRoute } from '@tanstack/react-router'
+import { getMessages, createServerTranslator } from '@better-i18n/use-intl/server'
+
+export const Route = createFileRoute('/about')({
+  loader: async ({ context }) => {
+    const messages = await getMessages({
+      project: 'org/project',
+      locale: context.locale,
+    })
+
+    const t = createServerTranslator({
+      locale: context.locale,
+      messages,
+      namespace: 'about',
+    })
+
+    return {
+      messages,
+      meta: {
+        title: t('meta.title'),
+        description: t('meta.description'),
+      },
+    }
+  },
+
+  head: ({ loaderData }) => ({
+    meta: [
+      { title: loaderData.meta.title },
+      { name: 'description', content: loaderData.meta.description },
+    ],
+  }),
+
+  component: AboutPage,
+})
+```
+
+#### API Routes
+
+Return translated responses:
+
+```ts title="app/routes/api/welcome.ts"
+import { json } from '@tanstack/react-start'
+import { getMessages, createServerTranslator } from '@better-i18n/use-intl/server'
+
+export async function loader({ request }) {
+  const locale = request.headers.get('accept-language')?.split(',')[0] || 'en'
+
+  const messages = await getMessages({
+    project: 'org/project',
+    locale,
+  })
+
+  const t = createServerTranslator({
+    locale,
+    messages,
+    namespace: 'api',
+  })
+
+  return json({
+    message: t('welcome'),
+    status: t('status.ok'),
+  })
+}
+```
+
+#### Email Templates
+
+Generate translated emails:
+
+```ts title="lib/emails/welcome.ts"
+import { getMessages, createServerTranslator } from '@better-i18n/use-intl/server'
+
+export async function generateWelcomeEmail(user: User) {
+  const messages = await getMessages({
+    project: 'org/project',
+    locale: user.locale,
+  })
+
+  const t = createServerTranslator({
+    locale: user.locale,
+    messages,
+    namespace: 'emails',
+  })
+
+  return {
+    subject: t('welcome.subject'),
+    body: t('welcome.body', {
+      name: user.name,
+      company: 'Acme Inc',
+    }),
+    cta: t('welcome.cta'),
+  }
+}
+```
+
+#### Background Workers
+
+```ts title="workers/notifications.ts"
+import { getMessages, createServerTranslator } from '@better-i18n/use-intl/server'
+
+export async function sendDailyDigest(users: User[]) {
+  for (const user of users) {
+    const messages = await getMessages({
+      project: 'org/project',
+      locale: user.locale,
+    })
+
+    const t = createServerTranslator({
+      locale: user.locale,
+      messages,
+      namespace: 'notifications',
+    })
+
+    await sendNotification(user, {
+      title: t('dailyDigest.title'),
+      body: t('dailyDigest.body', { count: user.unreadCount }),
+    })
+  }
+}
+```
+
+---
+
+## createServerFormatter
+
+Create a formatter for use outside React components:
+
+```ts
+import { createServerFormatter } from '@better-i18n/use-intl/server'
+
+const format = createServerFormatter({
+  locale: 'en',
+  timeZone: 'America/New_York',
+})
+
+const date = format.dateTime(new Date(), { dateStyle: 'full' })
+const price = format.number(99.99, { style: 'currency', currency: 'USD' })
+```
+
+---
+
+## Caching
+
+Messages are fetched from the CDN which has built-in caching:
+
+| Resource | CDN Cache | Browser Cache |
+|----------|-----------|---------------|
+| Messages | 1 hour | 5 minutes |
+
+For additional caching, you can wrap `getMessages`:
+
+```ts
+const messageCache = new Map<string, Promise<Messages>>()
+
+async function getCachedMessages(locale: string) {
+  const key = `${locale}`
+
+  if (!messageCache.has(key)) {
+    messageCache.set(key, getMessages({
+      project: 'org/project',
+      locale,
+    }))
+  }
+
+  return messageCache.get(key)!
+}
+```
+
+## Related
+
+- [Provider](/frameworks/provider) - Pass messages to provider
+- [Translations](/frameworks/translations) - Client-side translation
+- [TanStack SSR](/frameworks/tanstack-start/ssr) - Complete SSR guide

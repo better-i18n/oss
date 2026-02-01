@@ -1,0 +1,3 @@
+# Cloudflare Pages redirects
+# Redirect to Quick Start guide as the default entry point
+/ /frameworks/quick-start 301

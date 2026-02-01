@@ -1,0 +1,41 @@
+---
+title: Introduction
+description: AI assistant integration for translation management
+icon: BookOpen
+---
+
+Better i18n MCP (Model Context Protocol) is the bridge between your AI assistant and your translation workspace. It allows tools like Cursor and Claude to directly manage your project's I18n lifecycle without you leaving your IDE.
+
+## Core Features
+
+- 🤖 **AI-Native Workflow** - Empower your AI to fix missing translations and create keys.
+- ⚡ **Zero Scan Latency** - Uses your `i18n.config.ts` to immediately connect to the cloud.
+- 🔄 **Efficient Bulk Updates** - Single commands to update hundreds of values in seconds.
+- 🔍 **Context-Aware** - AI understands your namespaces and project structure.
+
+## Quick Start
+
+The fastest way to get started is by configuring your favorite AI assistant:
+
+<Tabs items={['Cursor', 'Claude']}>
+  <Tab value="Cursor">
+    Add the server to Cursor's MCP pool:
+    ```bash
+    npx @better-i18n/mcp
+    ```
+    See the [Setup Guide](/docs/mcp/setup) for detailed environment configuration.
+  </Tab>
+  <Tab value="Claude">
+    Configure Claude Desktop to include `@better-i18n/mcp`. See [Setup](/docs/mcp/setup).
+  </Tab>
+</Tabs>
+
+## Why use MCP?
+
+Instead of manually copying keys and text to the dashboard, you can simply ask:
+> "Translate the new auth namespace to Turkish and German."
+
+The AI assistant will:
+1.  Verify the keys exist.
+2.  Generate accurate translations in context.
+3.  Apply them directly to your project using the [Available Tools](/docs/mcp/tools).

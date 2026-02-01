@@ -1,0 +1,45 @@
+# Compiled output
+**/dist/
+**/*.tsbuildinfo
+**/src/**/*.js
+**/src/**/*.js.map
+**/src/**/*.d.ts
+**/src/**/*.d.ts.map
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# Cache
+/.cache
+.eslintcache
+
+# Testing
+/coverage
+*.lcov
+
+# Environment variables
+.env.*.local
+.env.local
+.env
+*.env
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+
+# Next.js
+**/.next
+**/out
+
+# macOS
+.DS_Store
+
+# Local development files
+*.local.md
+*.local.json
+*.local.jsonc

@@ -1,0 +1,10 @@
+{
+  "title": "Next.js",
+  "defaultOpen": false,
+  "pages": [
+    "index",
+    "configuration",
+    "middleware",
+    "api-reference"
+  ]
+}

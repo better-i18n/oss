@@ -1,0 +1,183 @@
+---
+title: Available Tools
+description: MCP tools for translation management
+icon: Wrench
+---
+
+The Better i18n MCP server provides tools for AI assistants to manage translations directly from your IDE.
+
+<Callout type="info">
+  All project-scoped tools require a `project` parameter in `org/project` format
+  (e.g., `"aliosman-co/personal"`). Call `listProjects` first to discover available projects.
+</Callout>
+
+## Discovery Tools
+
+<Accordion>
+
+<AccordionItem title="listProjects">
+List all projects you have access to across all organizations.
+
+**Use this first** to discover available projects before other operations.
+
+**Returns:** Project slugs, source/target languages, organization names.
+
+</AccordionItem>
+
+<AccordionItem title="getProject">
+Get project details including namespaces, languages, key count, and translation coverage.
+
+**Returns:** Namespaces, languages with coverage percentages, total key count.
+
+</AccordionItem>
+
+</Accordion>
+
+## Reading Tools
+
+<Accordion>
+
+<AccordionItem title="listKeys">
+Get all translation keys with their id, source text, and translations.
+
+**Parameters:**
+
+- `search` (optional): Text to search for (case-insensitive). Accepts a single string or an array of strings for multi-term search (e.g., `["login", "signup"]`). Searches source text by default, or target translations when `languages` is specified.
+- `languages` (optional): Language codes to search in AND return translations for (e.g., `["tr", "de"]`). If omitted with `search`, searches source text only.
+- `namespaces` (optional): Filter by specific namespaces.
+- `keys` (optional): Fetch specific keys by exact name (e.g., `["auth.login.title"]`).
+- `status` (optional): Filter by translation status — `"missing"`, `"draft"`, `"approved"`, or `"all"` (default).
+
+**Search examples:**
+
+```json
+// Find "login" in source text
+{ "search": "login" }
+
+// Find multiple terms at once
+{ "search": ["login", "signup", "forgot"] }
+
+// Find "Giriş" in Turkish translations
+{ "search": "Giriş", "languages": ["tr"] }
+
+// Get all keys missing Turkish translation
+{ "languages": ["tr"], "status": "missing" }
+```
+
+**Returns:** Array of keys with `id`, `key`, `namespace`, `sourceText`, and `translations` object.
+
+</AccordionItem>
+
+</Accordion>
+
+## Writing Tools
+
+<Accordion>
+
+<AccordionItem title="createKeys">
+Create one or more translation keys with source text and optional target translations.
+
+**Parameters:**
+
+- `keys`: Array of keys to create:
+  - `name`: Key name (e.g., `"submit_button"`, `"nav.home"`)
+  - `namespace`: Namespace (optional, default: `"default"`)
+  - `sourceText`: Source language text
+  - `translations`: Target translations object (e.g., `{ "tr": "Gönder", "de": "Senden" }`)
+
+Source language text goes in `sourceText`, not in `translations`.
+
+```json
+{
+  "keys": [
+    {
+      "name": "auth.login.title",
+      "namespace": "common",
+      "sourceText": "Sign In",
+      "translations": { "tr": "Giriş Yap" }
+    }
+  ]
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="updateKeys">
+Update source text and/or target translations. Each entry updates ONE language for ONE key.
+
+**Parameters:**
+
+- `translations`: Array of translation updates:
+  - `key`: Key name (e.g., `"submit_button"`)
+  - `namespace`: Namespace (optional, default: `"default"`)
+  - `language`: Language code (e.g., `"en"`, `"tr"`, `"de"`)
+  - `text`: New text value
+  - `isSource`: Set `true` to update source text (optional)
+  - `status`: `"approved"`, `"pending"`, `"reviewed"` (optional, default: `"approved"`)
+
+```json
+{
+  "translations": [
+    { "key": "auth.login.title", "language": "en", "text": "Sign In", "isSource": true },
+    { "key": "auth.login.title", "language": "tr", "text": "Giriş Yap" }
+  ]
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="deleteKeys">
+Soft-delete translation keys by UUID. Keys are removed from CDN/GitHub on next publish.
+
+**Parameters:**
+
+- `keyIds`: Array of key UUIDs (1-100). Get UUIDs from `listKeys`.
+
+</AccordionItem>
+
+<AccordionItem title="addLanguage">
+Add a new target language to the project.
+
+**Parameters:**
+
+- `languageCode`: ISO 639-1 code (e.g., `"fr"`, `"ja"`, `"de"`)
+
+</AccordionItem>
+
+</Accordion>
+
+## Sync Tools
+
+<Accordion>
+
+<AccordionItem title="getSyncs">
+List recent sync operations for a project.
+
+**Parameters:**
+
+- `limit` (optional): Max results (default: 10, max: 50)
+- `status` (optional): `"pending"`, `"in_progress"`, `"completed"`, `"failed"`
+- `type` (optional): `"initial_import"`, `"source_sync"`, `"cdn_upload"`, `"publish_batch"`
+
+</AccordionItem>
+
+<AccordionItem title="getSync">
+Get details about a specific sync operation including logs and affected keys.
+
+**Parameters:**
+
+- `syncId`: Sync job ID from `getSyncs` response.
+
+</AccordionItem>
+
+</Accordion>
+
+---
+
+## Best Practices
+
+1. **Discover First**: Start with `listProjects` → `getProject` to understand the project.
+2. **Find Gaps**: Use `listKeys` to see all keys and find missing translations.
+3. **Batch Operations**: `createKeys` and `updateKeys` handle single and bulk operations efficiently.
+4. **Source Text**: Use `updateKeys` with `isSource: true` to update source text.
+5. **Clean Up**: Use `deleteKeys` to remove unused keys (soft delete until publish).

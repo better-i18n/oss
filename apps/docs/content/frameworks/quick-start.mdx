@@ -1,0 +1,147 @@
+---
+title: Quick Start
+description: Get Better i18n running in your React app in under 5 minutes
+icon: Rocket
+---
+
+## Installation
+
+<Tabs items={["npm", "yarn", "pnpm", "bun"]}>
+  <Tab value="npm">
+  ```bash
+  npm install @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn add @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+  <Tab value="bun">
+  ```bash
+  bun add @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+</Tabs>
+
+## Add the Provider
+
+Wrap your app with `BetterI18nProvider`:
+
+```tsx title="src/App.tsx"
+import { BetterI18nProvider } from '@better-i18n/use-intl'
+
+function App() {
+  return (
+    <BetterI18nProvider
+      project="your-org/your-project"  // From dashboard
+      locale="en"
+    >
+      <YourApp />
+    </BetterI18nProvider>
+  )
+}
+```
+
+<Callout type="info">
+  The `project` value uses `org/project` format from your Better i18n dashboard.
+</Callout>
+
+## Use Translations
+
+Use the `useTranslations` hook in any component:
+
+```tsx title="src/components/Welcome.tsx"
+import { useTranslations } from '@better-i18n/use-intl'
+
+export function Welcome() {
+  const t = useTranslations('home')
+
+  return (
+    <div>
+      <h1>{t('title')}</h1>
+      <p>{t('description')}</p>
+    </div>
+  )
+}
+```
+
+## That's It!
+
+Your app now:
+- ✅ Fetches translations from the Better i18n CDN
+- ✅ Supports dynamic language switching
+- ✅ Auto-discovers available languages from your project
+
+---
+
+## Choose Your Framework
+
+Each guide covers framework-specific patterns like SSR, routing, and middleware.
+
+<Cards>
+  <Card title="TanStack Start" icon="Rocket" href="/frameworks/tanstack-start">
+    Full-stack React with SSR support, path-based routing, and middleware.
+  </Card>
+  <Card title="Vite + React" icon="Zap" href="/frameworks/vite">
+    Client-side React applications with Vite bundler.
+  </Card>
+  <Card title="Next.js" icon="Box" href="/frameworks/nextjs">
+    Deep integration with Next.js App Router via `@better-i18n/next`.
+  </Card>
+</Cards>
+
+### Framework Comparison
+
+| Framework | Rendering | Routing | Best For |
+|-----------|-----------|---------|----------|
+| **TanStack Start** | SSR + CSR | File-based | Full-stack React, SEO |
+| **Vite + React** | CSR | Optional | SPAs, prototypes |
+| **Next.js** | SSR + CSR | App Router | Production apps |
+
+### Feature Matrix
+
+| Feature | TanStack Start | Vite | Next.js |
+|---------|----------------|------|---------|
+| Server messages | ✅ | ❌ | ✅ |
+| Path-based locale | ✅ | Manual | ✅ |
+| Middleware | ✅ | ❌ | ✅ |
+| Static generation | ❌ | ❌ | ✅ |
+| Edge runtime | ✅ | ❌ | ✅ |
+| Bundle size | ~2KB | ~2KB | ~5KB |
+
+<Callout type="tip">
+  **Not sure?** Start with [Vite + React](/frameworks/vite) for the simplest setup, then upgrade to TanStack Start or Next.js when you need SSR.
+</Callout>
+
+---
+
+## Core Concepts
+
+Learn the fundamentals that apply to all frameworks:
+
+<Cards>
+  <Card title="How It Works" icon="Globe" href="/frameworks/how-it-works">
+    CDN architecture, caching, and URL strategy.
+  </Card>
+  <Card title="Provider" icon="Box" href="/frameworks/provider">
+    Configure the BetterI18nProvider for your app.
+  </Card>
+  <Card title="Translations" icon="Type" href="/frameworks/translations">
+    useTranslations hook, namespaces, and interpolation.
+  </Card>
+  <Card title="Locale Management" icon="Globe" href="/frameworks/locale">
+    useLocale, useLanguages, and LanguageSwitcher.
+  </Card>
+  <Card title="Formatting" icon="Calendar" href="/frameworks/formatting">
+    Format dates, numbers, and lists with useFormatter.
+  </Card>
+  <Card title="Server Utilities" icon="Server" href="/frameworks/server">
+    Pre-load messages for SSR and server-side translation.
+  </Card>
+</Cards>

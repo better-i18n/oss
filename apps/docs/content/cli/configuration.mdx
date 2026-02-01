@@ -1,0 +1,75 @@
+---
+title: Configuration
+description: Configure CLI behavior and project context with i18n.config.ts
+icon: Settings
+---
+
+Better i18n CLI automatically detects your project context from `i18n.config.ts`. This file is the source of truth for your translation workflow.
+
+## Basic Configuration
+
+For simple projects, you only need to export the project slug and default locale.
+
+```ts title="i18n.config.ts"
+export const project = "your-org/your-project";
+export const defaultLocale = "en";
+```
+
+## Workspace Configuration
+
+For full control over scanning and linting behavior, use the `i18nWorkspaceConfig` export.
+
+```ts title="i18n.config.ts"
+export const project = "your-org/your-project";
+export const defaultLocale = "en";
+
+export const i18nWorkspaceConfig = {
+  project,
+  defaultLocale,
+  lint: {
+    // Glob patterns for files to scan
+    include: ["src/**/*.tsx", "app/**/*.tsx"],
+
+    // Files to explicitly ignore (merges with defaults)
+    exclude: [
+      "**/skeletons.tsx", // UI skeletons
+      "**/*.stories.tsx", // Storybook
+      "**/*.test.tsx",    // Tests
+      "**/components/ui/**", // UI library components (e.g., shadcn)
+    ],
+
+    // Rule configuration
+    rules: {
+      "jsx-text": "warning",    // Show as warning
+      "jsx-attribute": "warning",
+      "ternary-locale": "error", // Block CI if detected
+    },
+  },
+};
+```
+
+## Lint Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `lint.include` | `string[]` | Files to scan. Default: `["src", "app", "components", "pages"]` |
+| `lint.exclude` | `string[]` | Files to ignore. These are merged with system defaults like `node_modules`. |
+| `lint.rules` | `object` | Customize the severity of detection rules. |
+
+## Rule Severities
+
+You can set each rule to one of three levels:
+
+- **`error`**: Reports as an error and causes `better-i18n scan --ci` to fail with exit code 1.
+- **`warning`**: Reports as a warning but does not fail the CI (unless `--ci` is combined with specific flags).
+- **`off`**: Disables the rule entirely.
+
+## Default Exclusions
+
+The CLI automatically ignores these directories to ensure high performance and fewer false positives:
+
+- `node_modules/**`
+- `.next/**` (Next.js build artifacts)
+- `dist/**` / `build/**` (Production bundles)
+- `.git/**`
+- `public/**` (Static assets)

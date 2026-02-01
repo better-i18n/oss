@@ -1,0 +1,85 @@
+---
+title: Getting Started
+description: Client-side i18n setup for Vite and React applications
+---
+
+## Overview
+
+For Vite + React apps, translations are loaded on the client after the initial render. The SDK handles:
+
+- **Automatic message fetching** - Loads translations from CDN on mount
+- **Locale switching** - Change languages without page reload
+- **Caching** - Efficient in-memory caching for repeated requests
+
+<Callout type="info">
+  Vite apps are client-side only (no SSR). For server-side rendering, see [TanStack Start](/frameworks/tanstack-start) or [Next.js](/frameworks/nextjs).
+</Callout>
+
+## Features
+
+<Cards>
+  <Card title="Zero Config" icon="Sparkles">
+    Point to your project and go - translations load automatically from the CDN.
+  </Card>
+  <Card title="React Suspense" icon="Pause">
+    Native Suspense support for elegant loading states.
+  </Card>
+  <Card title="Type Safety" icon="Shield">
+    Full TypeScript support with autocomplete for translation keys.
+  </Card>
+  <Card title="Locale Storage" icon="Database">
+    Built-in localStorage persistence for user locale preference.
+  </Card>
+</Cards>
+
+## Quick Start
+
+```tsx title="src/App.tsx"
+import { BetterI18nProvider } from '@better-i18n/use-intl'
+
+function App() {
+  return (
+    <BetterI18nProvider
+      project="your-org/your-project"
+      locale="en"
+    >
+      <YourApp />
+    </BetterI18nProvider>
+  )
+}
+```
+
+```tsx title="src/components/Hello.tsx"
+import { useTranslations } from '@better-i18n/use-intl'
+
+export function Hello() {
+  const t = useTranslations('home')
+
+  return <h1>{t('title')}</h1>
+}
+```
+
+## Guide
+
+<Cards>
+  <Card title="Setup" icon="Settings" href="/frameworks/vite/setup">
+    Installation, provider configuration, and loading states.
+  </Card>
+  <Card title="React Router" icon="Route" href="/frameworks/vite/react-router">
+    URL-based locale routing with React Router.
+  </Card>
+  <Card title="TypeScript" icon="FileCode" href="/frameworks/vite/typescript">
+    Type-safe translation keys and autocomplete.
+  </Card>
+</Cards>
+
+## Comparison
+
+| Feature | Vite | TanStack Start | Next.js |
+|---------|------|----------------|---------|
+| Rendering | CSR only | CSR + SSR | CSR + SSR |
+| URL routing | Optional | Built-in | Built-in |
+| Middleware | ❌ | ✅ | ✅ |
+| SEO | Limited | Full | Full |
+
+Choose Vite for simple SPAs where SEO isn't critical. For SSR-capable apps, see [TanStack Start](/frameworks/tanstack-start) or [Next.js](/frameworks/nextjs).

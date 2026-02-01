@@ -1,0 +1,5 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "better-i18n-docs",
+  "pages_build_output_dir": "out"
+}

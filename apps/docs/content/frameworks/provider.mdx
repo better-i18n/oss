@@ -1,0 +1,199 @@
+---
+title: Provider
+description: Configure the BetterI18nProvider for your application
+icon: Package
+---
+
+## Basic Usage
+
+```tsx
+import { BetterI18nProvider } from '@better-i18n/use-intl'
+
+function App() {
+  return (
+    <BetterI18nProvider
+      project="your-org/your-project"
+      locale="en"
+    >
+      <YourApp />
+    </BetterI18nProvider>
+  )
+}
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `project` | `string` | ✅ | Project identifier in `org/project` format |
+| `locale` | `string` | ✅ | Current locale code (e.g., `"en"`, `"tr"`) |
+| `messages` | `Messages` | | Pre-loaded messages (for SSR) |
+| `timeZone` | `string` | | Timezone for date formatting |
+| `now` | `Date` | | Current time (for SSR hydration) |
+| `onLocaleChange` | `(locale: string) => void` | | Callback when locale changes |
+| `onError` | `(error: IntlError) => void` | | Error handler for missing translations |
+| `cdnBaseUrl` | `string` | | Custom CDN URL |
+| `debug` | `boolean` | | Enable debug logging |
+| `logLevel` | `LogLevel` | | Logging verbosity |
+
+## Client-Side Rendering
+
+For CSR apps, messages are fetched automatically:
+
+```tsx
+function App() {
+  const [locale, setLocale] = useState('en')
+
+  return (
+    <BetterI18nProvider
+      project="org/project"
+      locale={locale}
+      onLocaleChange={setLocale}
+    >
+      <YourApp />
+    </BetterI18nProvider>
+  )
+}
+```
+
+<Callout type="info">
+  Without pre-loaded `messages`, children won't render until messages are fetched from the CDN.
+</Callout>
+
+## Server-Side Rendering
+
+For SSR, pre-load messages to prevent flash of untranslated content:
+
+```tsx
+import { getMessages } from '@better-i18n/use-intl/server'
+
+// In your loader
+const messages = await getMessages({
+  project: 'org/project',
+  locale: 'en',
+})
+
+// In your component
+<BetterI18nProvider
+  project="org/project"
+  locale="en"
+  messages={messages}
+  timeZone="UTC"
+>
+  <YourApp />
+</BetterI18nProvider>
+```
+
+<Callout type="warning">
+  **Timezone Requirement:** For SSR, always set `timeZone` to prevent hydration mismatches. Use `"UTC"` as a safe default.
+</Callout>
+
+## Locale Persistence
+
+Handle locale changes with persistence:
+
+```tsx
+function App() {
+  const [locale, setLocale] = useState(() => {
+    return localStorage.getItem('locale') || 'en'
+  })
+
+  const handleLocaleChange = (newLocale: string) => {
+    localStorage.setItem('locale', newLocale)
+    setLocale(newLocale)
+  }
+
+  return (
+    <BetterI18nProvider
+      project="org/project"
+      locale={locale}
+      onLocaleChange={handleLocaleChange}
+    >
+      <App />
+    </BetterI18nProvider>
+  )
+}
+```
+
+## Error Handling
+
+Handle missing translations gracefully:
+
+```tsx
+<BetterI18nProvider
+  project="org/project"
+  locale="en"
+  onError={(error) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(`Missing translation: ${error.message}`)
+    }
+    // In production, you might want to report to error tracking
+  }}
+>
+  <YourApp />
+</BetterI18nProvider>
+```
+
+## Debug Mode
+
+Enable debug logging during development:
+
+```tsx
+<BetterI18nProvider
+  project="org/project"
+  locale="en"
+  debug={process.env.NODE_ENV === 'development'}
+  logLevel="debug"
+>
+  <YourApp />
+</BetterI18nProvider>
+```
+
+This logs:
+- CDN requests and responses
+- Cache hits and misses
+- Locale changes
+- Message loading states
+
+## Custom CDN
+
+For enterprise or self-hosted deployments:
+
+```tsx
+<BetterI18nProvider
+  project="org/project"
+  locale="en"
+  cdnBaseUrl="https://cdn.your-company.com"
+>
+  <YourApp />
+</BetterI18nProvider>
+```
+
+## Types
+
+```ts
+interface BetterI18nProviderConfig {
+  project: string
+  locale: string
+  messages?: Messages
+  timeZone?: string
+  now?: Date
+  onLocaleChange?: (locale: string) => void
+  onError?: (error: IntlError) => void
+  cdnBaseUrl?: string
+  debug?: boolean
+  logLevel?: 'debug' | 'info' | 'warn' | 'error' | 'silent'
+}
+
+type Messages = {
+  [namespace: string]: {
+    [key: string]: string | Messages
+  }
+}
+```
+
+## Related
+
+- [Locale Management](/frameworks/locale) - Access locale from context
+- [Server Utilities](/frameworks/server) - Pre-load messages for SSR
+- [Translations](/frameworks/translations) - Access translations in components

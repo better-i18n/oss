@@ -1,0 +1,11 @@
+{
+  "title": "TanStack Start",
+  "defaultOpen": false,
+  "pages": [
+    "index",
+    "setup",
+    "ssr",
+    "routing",
+    "middleware"
+  ]
+}

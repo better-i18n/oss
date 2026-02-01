@@ -1,0 +1,15 @@
+{
+  "title": "CLI",
+  "description": "Detect and sync translation keys",
+  "icon": "Terminal",
+  "root": true,
+  "pages": [
+    "index",
+    "---Commands---",
+    "scan",
+    "check",
+    "sync",
+    "---Setup---",
+    "configuration"
+  ]
+}

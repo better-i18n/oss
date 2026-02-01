@@ -1,0 +1,66 @@
+{
+  "name": "@better-i18n/use-intl",
+  "version": "0.1.6",
+  "description": "Better i18n integration for use-intl (React, TanStack Start)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/better-i18n/better-i18n.git",
+    "directory": "packages/use-intl"
+  },
+  "bugs": {
+    "url": "https://github.com/better-i18n/better-i18n/issues"
+  },
+  "homepage": "https://github.com/better-i18n/better-i18n/tree/main/packages/use-intl",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/server.ts",
+    "./middleware": "./src/middleware/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "package.json",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "i18n",
+    "localization",
+    "internationalization",
+    "react",
+    "tanstack",
+    "use-intl",
+    "next-intl"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@better-i18n/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "use-intl": ">=4.0.0",
+    "@tanstack/react-router": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-router": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@tanstack/react-router": "^1.120.3",
+    "react": "^19.0.0",
+    "use-intl": "^4.7.0",
+    "typescript": "~5.9.2"
+  }
+}

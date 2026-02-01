@@ -1,0 +1,334 @@
+---
+title: How It Works
+description: How Better i18n serves translations from the edge
+icon: Building
+---
+
+## Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Better i18n Platform                     │
+│                                                             │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐ │
+│  │  Dashboard  │ →  │   Storage   │ →  │      CDN        │ │
+│  │   /GitHub   │    │  (Origin)   │    │   (Edge)        │ │
+│  └─────────────┘    └─────────────┘    └─────────────────┘ │
+│                                               ↓            │
+└───────────────────────────────────────────────│────────────┘
+                                               ↓
+                              ┌─────────────────────────────┐
+                              │      Your Application       │
+                              │   (React, Next.js, etc.)    │
+                              └─────────────────────────────┘
+```
+
+## CDN URL Structure
+
+All resources follow a predictable URL pattern:
+
+```
+https://cdn.better-i18n.com/{org}/{project}/{resource}
+```
+
+### Resources
+
+| Resource | URL | Description |
+|----------|-----|-------------|
+| Manifest | `/org/project/manifest.json` | Available languages |
+| Messages | `/org/project/{locale}.json` | Translations for a locale |
+| Flags | `/flags/{code}.svg` | Country flag images |
+
+### Examples
+
+```
+https://cdn.better-i18n.com/acme/webapp/manifest.json
+https://cdn.better-i18n.com/acme/webapp/en.json
+https://cdn.better-i18n.com/acme/webapp/tr.json
+https://cdn.better-i18n.com/flags/us.svg
+```
+
+## The Manifest
+
+Every project has a `manifest.json` that describes available languages:
+
+```json title="manifest.json"
+{
+  "defaultLocale": "en",
+  "locales": ["en", "tr", "de", "es"],
+  "languages": [
+    {
+      "code": "en",
+      "name": "English",
+      "nativeName": "English",
+      "flagUrl": "https://cdn.better-i18n.com/flags/en.svg"
+    },
+    {
+      "code": "tr",
+      "name": "Turkish",
+      "nativeName": "Türkçe",
+      "flagUrl": "https://cdn.better-i18n.com/flags/tr.svg"
+    }
+  ]
+}
+```
+
+The manifest powers:
+- `useLanguages()` hook for building language switchers
+- Automatic locale validation
+- Default locale fallback
+
+## Translation Files
+
+Each locale has its own JSON file with namespaced translations:
+
+```json title="en.json"
+{
+  "home": {
+    "title": "Welcome to our app",
+    "description": "The best app ever built"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel"
+  }
+}
+```
+
+---
+
+## Caching Strategy
+
+The CDN uses aggressive caching with smart invalidation:
+
+| Resource | Cache Duration | Invalidation |
+|----------|----------------|--------------|
+| `manifest.json` | 5 minutes | On publish |
+| `{locale}.json` | 1 hour | On publish |
+| Flag images | 1 year | Never (immutable) |
+
+### Cache Headers
+
+```http
+# Manifest
+Cache-Control: public, max-age=300, s-maxage=300
+
+# Messages
+Cache-Control: public, max-age=3600, s-maxage=3600
+
+# Flags
+Cache-Control: public, max-age=31536000, immutable
+```
+
+## Publishing
+
+When you publish translations:
+
+1. New files are uploaded to origin storage
+2. CDN cache is purged globally
+3. New requests hit origin, then cache at edge
+4. Subsequent requests served from edge cache
+
+```
+Publish → Purge Cache → First Request (Origin) → Cache at Edge → Subsequent Requests (Edge)
+```
+
+### Purge Timing
+
+Cache purge propagates globally within **5-10 seconds**. During this window, some users may see old content.
+
+## Edge Locations
+
+Translations are served from edge locations worldwide:
+
+- North America (US, Canada)
+- Europe (UK, Germany, France, Netherlands)
+- Asia Pacific (Japan, Singapore, Australia)
+- South America (Brazil)
+
+Users are routed to the nearest edge location automatically.
+
+---
+
+## URL Strategy
+
+How to structure URLs for internationalized applications. Better i18n follows the "default locale without prefix" pattern.
+
+### Default Pattern
+
+The default locale has **no prefix**, other locales have prefixes:
+
+| Locale | URL | Notes |
+|--------|-----|-------|
+| English (default) | `/about` | Clean URL for primary audience |
+| Turkish | `/tr/about` | Locale prefix |
+| German | `/de/about` | Locale prefix |
+
+### Benefits
+
+**Clean URLs for Primary Audience:**
+```
+https://example.com/pricing       ← Most users
+https://example.com/tr/pricing    ← Turkish users
+```
+
+**SEO Friendly:**
+- Each locale has unique, indexable URLs
+- Search engines can crawl all versions
+- `hreflang` tags link translations together
+
+### SEO Considerations
+
+#### Hreflang Tags
+
+Tell search engines about language alternatives:
+
+```html
+<link rel="alternate" hreflang="en" href="https://example.com/about" />
+<link rel="alternate" hreflang="tr" href="https://example.com/tr/about" />
+<link rel="alternate" hreflang="de" href="https://example.com/de/about" />
+<link rel="alternate" hreflang="x-default" href="https://example.com/about" />
+```
+
+`x-default` indicates the fallback for unmatched languages.
+
+#### Canonical URLs
+
+Each page should have a canonical URL:
+
+```html
+<!-- On /about -->
+<link rel="canonical" href="https://example.com/about" />
+
+<!-- On /tr/about -->
+<link rel="canonical" href="https://example.com/tr/about" />
+```
+
+#### Sitemap
+
+Include all locale variants in your sitemap:
+
+```xml
+<url>
+  <loc>https://example.com/about</loc>
+  <xhtml:link rel="alternate" hreflang="en" href="https://example.com/about"/>
+  <xhtml:link rel="alternate" hreflang="tr" href="https://example.com/tr/about"/>
+  <xhtml:link rel="alternate" hreflang="de" href="https://example.com/de/about"/>
+</url>
+```
+
+---
+
+## Custom CDN
+
+For enterprise deployments, you can use a custom CDN URL:
+
+```tsx
+<BetterI18nProvider
+  project="org/project"
+  locale="en"
+  cdnBaseUrl="https://cdn.your-company.com"
+>
+  <App />
+</BetterI18nProvider>
+```
+
+### Self-Hosting
+
+To self-host translations:
+
+1. Export JSON files from dashboard
+2. Host on your own CDN/server
+3. Configure `cdnBaseUrl` in provider
+
+```
+https://cdn.your-company.com/org/project/manifest.json
+https://cdn.your-company.com/org/project/en.json
+```
+
+---
+
+## Preloading
+
+For faster initial load, preload translations:
+
+```html
+<head>
+  <link
+    rel="preload"
+    href="https://cdn.better-i18n.com/org/project/en.json"
+    as="fetch"
+    crossorigin
+  />
+</head>
+```
+
+This starts the fetch before JavaScript loads.
+
+## Offline Support
+
+For offline-first apps, cache translations in a service worker:
+
+```js
+// sw.js
+const TRANSLATION_CACHE = 'translations-v1'
+const TRANSLATION_URLS = [
+  'https://cdn.better-i18n.com/org/project/manifest.json',
+  'https://cdn.better-i18n.com/org/project/en.json',
+  'https://cdn.better-i18n.com/org/project/tr.json',
+]
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(TRANSLATION_CACHE).then((cache) => {
+      return cache.addAll(TRANSLATION_URLS)
+    })
+  )
+})
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.includes('cdn.better-i18n.com')) {
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        return response || fetch(event.request)
+      })
+    )
+  }
+})
+```
+
+---
+
+## Troubleshooting
+
+### Stale Translations
+
+If translations aren't updating:
+
+1. Check cache headers with browser DevTools
+2. Try hard refresh (Ctrl+Shift+R)
+3. Verify publish completed in dashboard
+
+### CORS Errors
+
+The CDN sets appropriate CORS headers:
+
+```http
+Access-Control-Allow-Origin: *
+```
+
+If you see CORS errors, check if you're using a custom CDN without proper headers.
+
+### Slow Initial Load
+
+If translations load slowly:
+
+1. Use preload links
+2. Check edge location (use CDN debug headers)
+3. Consider server-side rendering
+
+## Related
+
+- [Provider](/frameworks/provider) - Client-side setup
+- [Server Utilities](/frameworks/server) - Server-side fetching
+- [TanStack SSR](/frameworks/tanstack-start/ssr) - SSR integration

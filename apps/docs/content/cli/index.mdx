@@ -1,0 +1,53 @@
+---
+title: Introduction
+description: Detect and sync translation keys in your React/Next.js apps
+icon: BookOpen
+---
+
+Better i18n CLI helps you manage the entire lifecycle of your translation keys, from detecting hardcoded strings to auditing remote sync status.
+
+## Core Capabilities
+
+- **`scan`**: Find hardcoded strings that need translation.
+- **`check`**: Interactive checker for missing and unused translation keys (focused, user-friendly).
+- **`sync`**: Compare your local `t()` calls with Better i18n cloud (Remote) and detect missing or unused keys (full audit).
+
+## Why use the CLI?
+
+Managing i18n manually is error-prone. The CLI provides a "Senior Tooling" experience to ensure your translations are always consistent and fully covered.
+
+```tsx
+// ❌ Detected by 'scan'
+<h1>Welcome to our app</h1>
+
+// ✅ Analyzed by 'sync'
+<h1>{t('welcome')}</h1> // Linked to 'home.welcome' namespace
+```
+
+## Installation
+
+```bash
+# With npx (no install needed)
+npx @better-i18n/cli scan
+
+# Or install globally
+npm install -g @better-i18n/cli
+```
+
+## Workflow
+
+1.  **Scan**: Run `better-i18n scan` to find untranslated text.
+2.  **Translate**: Wrap text with `t()` calls using `@better-i18n/next`.
+3.  **Check**: Run `better-i18n check` for interactive, focused checks (missing OR unused).
+4.  **Sync**: Run `better-i18n sync` for full audit (both missing AND unused).
+
+## Features
+
+- ✅ **Lexical Scope Tracking** - Smart namespace detection for both `useTranslations` and `getTranslations`.
+- ✅ **Server Component Support** - Full support for Next.js App Router async server functions.
+- ✅ **Compact Tree Output** - Human-readable grouping of missing/unused keys.
+- ✅ **Senior Audit Log** - Deep transparency with `--verbose`.
+- ✅ **CI/CD Ready** - Enforce 100% key coverage in your pipeline.
+- ✅ **Smart Filtering** - Automatically ignores CSS, URLs, and constants.
+
+**Cmd+Click** on any file path in the terminal to jump directly to the code in VS Code!

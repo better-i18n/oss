@@ -1,0 +1,65 @@
+{
+  "name": "@better-i18n/root",
+  "version": "0.0.0",
+  "packageManager": "bun@1.2.21",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "bun": ">=1.2.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "lint": "eslint --cache --report-unused-disable-directives .",
+    "test": "vitest",
+    "typecheck": "tsc --build",
+    "build": "bun run build:packages",
+    "build:packages": "for dir in packages/*; do (cd \"$dir\" && [ -f package.json ] && bun run build 2>/dev/null || true); done",
+    "release": "for dir in packages/*; do (cd \"$dir\" && [ -f package.json ] && grep -q '\"private\": true' package.json || bun publish --access public); done; bunx changeset tag",
+    "version-packages": "bunx changeset version && bun update",
+    "docs:dev": "bun --filter docs dev",
+    "docs:build": "bun --filter docs build",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.8",
+    "@eslint/js": "^9.39.2",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.54.0",
+    "vitest": "~3.2.4",
+    "zod": "^4.3.6"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": false,
+    "quoteProps": "as-needed",
+    "jsxSingleQuote": false,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "bracketSameLine": false,
+    "arrowParens": "always",
+    "endOfLine": "lf"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "bunx eslint --max-warnings=0 --report-unused-disable-directives"
+    ],
+    "*": [
+      "bunx prettier --check --ignore-unknown"
+    ]
+  }
+}

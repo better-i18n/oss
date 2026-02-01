@@ -1,0 +1,286 @@
+---
+title: check
+description: Interactive checker for missing and unused translation keys
+icon: CheckCircle
+---
+
+Focused translation key checker with interactive prompts and targeted analysis. Check for missing keys, unused keys, or both with a user-friendly interface.
+
+## When to use check
+
+The `check` command provides a streamlined experience for specific auditing scenarios:
+
+- **Before pushing code**: Quickly verify new translation keys are uploaded.
+- **Cleaning up translations**: Focus only on unused keys without noise.
+- **Interactive workflow**: Let the CLI guide you through what to check.
+- **Targeted analysis**: Get only the report you need (missing OR unused).
+- **First-time users**: Interactive prompts make it easy to get started.
+
+---
+
+## Commands
+
+### `better-i18n check`
+
+Interactive mode - the CLI asks what you want to check and shows only relevant results.
+
+```bash
+better-i18n check
+
+# Interactive prompt:
+? What would you like to check?
+  ❯ Missing translation keys
+    Unused translation keys
+    Both (Full Comparison)
+```
+
+### `better-i18n check:missing`
+
+Check for keys used in code but not in Better i18n remote (skips unused analysis).
+
+```bash
+better-i18n check:missing
+
+# Output includes:
+# ✓ Coverage: Local → Remote
+# ⊕ Missing in Remote (N keys)
+```
+
+### `better-i18n check:unused`
+
+Check for keys in Better i18n but not detected in code (skips missing analysis).
+
+```bash
+better-i18n check:unused
+
+# Output includes:
+# ✓ Coverage: Remote Used
+# 🔍 Used via Dynamic Patterns
+# ⊖ Possibly Unused (N keys)
+```
+
+---
+
+## Difference from `sync`
+
+| Feature | `check` | `sync` |
+|---------|---------|--------|
+| **Interactive** | ✅ Asks what to check | ❌ Always full comparison |
+| **Targeted reports** | ✅ Only shows what you need | ❌ Shows everything |
+| **Subcommands** | ✅ `check:missing`, `check:unused` | ❌ Single command |
+| **Best for** | Quick focused checks | Full audits & CI |
+| **Output** | Filtered by selection | Complete comparison |
+
+**Use `check` when**: You want a quick, focused check with interactive guidance.
+**Use `sync` when**: You need the full picture or running in CI/CD.
+
+---
+
+## Usage
+
+```bash
+# Interactive - asks what to check
+better-i18n check
+
+# Direct - check only missing keys
+better-i18n check:missing
+
+# Direct - check only unused keys
+better-i18n check:unused
+
+# With options
+better-i18n check:missing --verbose
+better-i18n check:unused -d ./src
+better-i18n check --format json
+```
+
+## Options
+
+All `check` commands support the same options:
+
+| Option | Description |
+|--------|-------------|
+| `-d, --dir <path>` | Directory to scan (default: current directory) |
+| `--format <type>` | Output format: `eslint` (human-readable) or `json` (machine) |
+| `--verbose` | Show detailed audit log with scoping summary and key probes |
+
+---
+
+## Output Examples
+
+### Missing Keys Only
+
+```bash
+$ better-i18n check:missing
+```
+
+```text
+🔍 Checking for Missing Translation Keys
+Keys used in code but not in Better i18n remote
+
+⠋ Extracting keys... (120/120)
+✔ Extracted 1223 keys from 120 files
+✔ Fetched 750 keys from remote
+
+📊 Translation Keys Comparison
+Source locale: en
+
+Coverage:
+  Local → Remote: 59% (keys in code that exist in remote)
+
+⊕ Missing in Remote (473 keys)
+  Keys used in code but not uploaded to Better i18n
+
+pages (300)
+  affordableEnglishLearning (meta.title, meta.description, meta.keywords, ...+12)
+  bestApps (hero.badge, title_prefix, title_accent, subtitle)
+
+hero (5)
+  hero (ariaLabel, imageAlt, ...)
+
+Scanned 120 files in 0.85s
+✓ Comparison complete
+```
+
+### Unused Keys Only
+
+```bash
+$ better-i18n check:unused
+```
+
+```text
+🔍 Checking for Unused Translation Keys
+Keys in Better i18n but not detected in code
+
+⠋ Extracting keys... (120/120)
+✔ Extracted 1223 keys from 120 files
+✔ Fetched 750 keys from remote
+
+📊 Translation Keys Comparison
+Source locale: en
+
+Coverage:
+  Remote Used: 63% (remote keys detected in code)
+
+🔍 Used via Dynamic Patterns (127 keys)
+  These keys are accessed through template literals like t(`plans.${x}.name`)
+  Detected patterns:
+
+  plans.${planId}.name (15 keys)
+    └─ PricingPage.tsx:42
+       → plans.starter.name
+       → plans.pro.name
+       → plans.enterprise.name
+       ... and 12 more
+
+  ⚠️  WARNING: Do NOT delete these keys without manual verification!
+  The CLI detected these keys through pattern matching, but cannot guarantee
+  100% accuracy. Review the source code before deleting any keys.
+
+⊖ Possibly Unused (386 keys)
+  Static keys not detected in code - safe to review for deletion
+
+features (25)
+  features.practiceSpeaking.title
+  features.practiceSpeaking.subtitle
+  features.practiceSpeaking.icon
+  ... and 22 more
+
+Scanned 120 files in 0.85s
+✓ Comparison complete
+```
+
+### Interactive Mode
+
+```bash
+$ better-i18n check
+```
+
+```text
+🔍 Better i18n Translation Checker
+
+? What would you like to check?
+❯ Missing translation keys
+  Unused translation keys
+  Both (Full Comparison)
+
+# After selection, shows the appropriate filtered report
+```
+
+---
+
+## Workflow Examples
+
+### Before Opening a PR
+
+```bash
+# Quick check for missing keys
+better-i18n check:missing
+
+# If issues found, add them via Dashboard/AI
+# Then verify
+better-i18n check:missing  # Should show 0 missing
+```
+
+### Cleaning Up Old Translations
+
+```bash
+# Focus only on unused keys
+better-i18n check:unused
+
+# Review the "Possibly Unused" section
+# Check dynamic patterns warnings
+# Delete safe-to-remove keys via Dashboard
+```
+
+### First Time Running
+
+```bash
+# Interactive mode guides you
+better-i18n check
+
+# Choose what matters most right now:
+# - Missing: Ensure your new features are translated
+# - Unused: Clean up technical debt
+# - Both: Full audit (same as 'sync')
+```
+
+---
+
+## Advanced: Dynamic Pattern Detection
+
+The `check:unused` command includes intelligent pattern matching for template literals:
+
+```tsx
+// This code pattern...
+const planId = 'pro';
+t(`plans.${planId}.name`);  // Dynamic key access
+
+// ...will detect these remote keys as "used":
+// - plans.starter.name
+// - plans.pro.name
+// - plans.enterprise.name
+```
+
+**Why this matters**: Keys matched by dynamic patterns are NOT marked as "unused" even if no static `t('plans.pro.name')` call exists. The CLI shows these as "Used via Dynamic Patterns" with a warning to review before deletion.
+
+---
+
+## JSON Output
+
+All `check` commands support `--format json`:
+
+```bash
+better-i18n check:missing --format json | jq '.comparison.missingCount'
+# Output: 473
+
+better-i18n check:unused --format json | jq '.comparison.possiblyUnusedCount'
+# Output: 386
+```
+
+---
+
+## Related Commands
+
+- **[`sync`](/cli/sync)** - Full comparison with both missing and unused (default behavior)
+- **[`scan`](/cli/scan)** - Find hardcoded strings that need translation

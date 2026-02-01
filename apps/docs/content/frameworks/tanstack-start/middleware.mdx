@@ -1,0 +1,248 @@
+---
+title: Middleware
+description: Automatic locale detection with TanStack Start middleware
+---
+
+# Middleware
+
+Configure automatic locale detection using TanStack Start middleware.
+
+## Basic Setup
+
+Create a middleware using the built-in helper:
+
+```ts title="app/middleware/i18n.ts"
+import { createBetterI18nMiddleware } from "@better-i18n/use-intl/middleware"
+import { i18nConfig } from "../i18n.config"
+
+export const i18nMiddleware = createBetterI18nMiddleware({
+  project: i18nConfig.project,
+  defaultLocale: i18nConfig.defaultLocale,
+})
+```
+
+## Register Middleware
+
+Add the middleware to your TanStack Start configuration:
+
+```ts title="app/ssr.ts"
+import { createStart } from "@tanstack/react-start/server"
+import { i18nMiddleware } from "./middleware/i18n"
+
+export default createStart({
+  middleware: [i18nMiddleware],
+})
+```
+
+## Configuration Options
+
+```ts
+export const i18nMiddleware = createBetterI18nMiddleware({
+  // Required
+  project: "org/project",
+  defaultLocale: "en",
+
+  // Optional detection settings
+  detection: {
+    // Use Accept-Language header
+    browserLanguage: true,
+
+    // Use locale cookie
+    cookie: true,
+
+    // Cookie name (default: "locale")
+    cookieName: "locale",
+
+    // Cookie max age in seconds (default: 1 year)
+    cookieMaxAge: 60 * 60 * 24 * 365,
+  },
+})
+```
+
+## Detection Order
+
+The middleware detects locale in this order:
+
+1. **URL Path** - `/tr/about` → `tr`
+2. **Cookie** - `locale=tr` → `tr`
+3. **Accept-Language Header** - `tr-TR,tr;q=0.9` → `tr`
+4. **Default** - Falls back to `defaultLocale`
+
+## How It Works
+
+```
+Request: GET /about
+Headers: Accept-Language: tr-TR,tr;q=0.9,en;q=0.8
+
+1. Check URL path → No locale prefix
+2. Check cookie → No cookie
+3. Check Accept-Language → "tr" detected
+4. Set context.locale = "tr"
+5. Set-Cookie: locale=tr
+```
+
+## Cookie Persistence
+
+The middleware sets a cookie to persist the user's preference:
+
+```ts
+// First visit (Accept-Language: tr)
+// → Cookie set: locale=tr; path=/; max-age=31536000
+
+// Second visit (cookie exists)
+// → Locale from cookie, no header check
+```
+
+## Disable Cookie
+
+To disable cookie-based persistence:
+
+```ts
+export const i18nMiddleware = createBetterI18nMiddleware({
+  project: "org/project",
+  defaultLocale: "en",
+  detection: {
+    cookie: false,
+    browserLanguage: true,
+  },
+})
+```
+
+## Disable Browser Detection
+
+To ignore Accept-Language header:
+
+```ts
+export const i18nMiddleware = createBetterI18nMiddleware({
+  project: "org/project",
+  defaultLocale: "en",
+  detection: {
+    cookie: true,
+    browserLanguage: false,
+  },
+})
+```
+
+## Custom Middleware
+
+For advanced use cases, create a custom middleware:
+
+```ts title="app/middleware/i18n.ts"
+import { createMiddleware } from "@tanstack/react-start/server"
+
+export const i18nMiddleware = createMiddleware().server(async ({ next, request }) => {
+  // Extract locale from various sources
+  const pathLocale = new URL(request.url).pathname.split("/")[1]
+  const cookieLocale = getCookie(request, "locale")
+  const browserLocale = request.headers.get("accept-language")?.split(",")[0]?.slice(0, 2)
+
+  // Determine locale with priority
+  let locale = "en"
+
+  if (pathLocale && isValidLocale(pathLocale)) {
+    locale = pathLocale
+  } else if (cookieLocale && isValidLocale(cookieLocale)) {
+    locale = cookieLocale
+  } else if (browserLocale && isValidLocale(browserLocale)) {
+    locale = browserLocale
+  }
+
+  // Set cookie for persistence
+  if (locale !== cookieLocale) {
+    response.headers.set(
+      "Set-Cookie",
+      `locale=${locale}; path=/; max-age=31536000; SameSite=Lax`
+    )
+  }
+
+  // Continue with locale in context
+  return next({ context: { locale } })
+})
+
+function isValidLocale(locale: string): boolean {
+  const supportedLocales = ["en", "tr", "de", "es"]
+  return supportedLocales.includes(locale)
+}
+
+function getCookie(request: Request, name: string): string | null {
+  const cookies = request.headers.get("cookie")
+  if (!cookies) return null
+  const match = cookies.match(new RegExp(`${name}=([^;]+)`))
+  return match ? match[1] : null
+}
+```
+
+## Accessing Locale in Routes
+
+The middleware sets `context.locale` which is accessible in all routes:
+
+```tsx title="app/routes/__root.tsx"
+export const Route = createRootRouteWithContext<{ locale: string }>()({
+  loader: async ({ context }) => {
+    console.log("Detected locale:", context.locale)
+
+    const messages = await getMessages({
+      project: "org/project",
+      locale: context.locale,
+    })
+
+    return { messages, locale: context.locale }
+  },
+})
+```
+
+## Debugging
+
+Enable logging to debug locale detection:
+
+```ts
+export const i18nMiddleware = createMiddleware().server(async ({ next, request }) => {
+  const pathLocale = new URL(request.url).pathname.split("/")[1]
+  const cookieLocale = getCookie(request, "locale")
+  const browserLocale = request.headers.get("accept-language")
+
+  console.log("Locale detection:", {
+    path: pathLocale,
+    cookie: cookieLocale,
+    browser: browserLocale,
+    url: request.url,
+  })
+
+  // ... rest of middleware
+})
+```
+
+## Common Issues
+
+### Locale Not Persisting
+
+**Symptom:** User's language preference resets on each visit.
+
+**Solution:** Ensure cookie is set correctly:
+
+```ts
+detection: {
+  cookie: true,
+  cookieMaxAge: 60 * 60 * 24 * 365,  // 1 year
+}
+```
+
+### Wrong Locale Detected
+
+**Symptom:** Browser in Turkish but app shows English.
+
+**Solution:** Check detection order and cookie:
+
+```ts
+// Debug by logging
+console.log({
+  cookie: request.headers.get("cookie"),
+  acceptLanguage: request.headers.get("accept-language"),
+})
+```
+
+## Related
+
+- [Setup](/frameworks/tanstack-start/setup) - Basic configuration
+- [Routing](/frameworks/tanstack-start/routing) - Path-based locales
+- [SSR](/frameworks/tanstack-start/ssr) - Server rendering

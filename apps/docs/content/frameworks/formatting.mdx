@@ -1,0 +1,294 @@
+---
+title: Formatting
+description: Format dates, numbers, lists, and relative times with useFormatter
+icon: Calendar
+---
+
+## Basic Usage
+
+```tsx
+import { useFormatter } from '@better-i18n/use-intl'
+
+function ProductInfo({ price, date }) {
+  const format = useFormatter()
+
+  return (
+    <div>
+      <span>{format.number(price, { style: 'currency', currency: 'USD' })}</span>
+      <time>{format.dateTime(date, { dateStyle: 'medium' })}</time>
+    </div>
+  )
+}
+```
+
+## Available Methods
+
+| Method | Description |
+|--------|-------------|
+| `dateTime(date, options)` | Format a date/time |
+| `number(value, options)` | Format a number |
+| `list(items, options)` | Format a list of items |
+| `relativeTime(date, options)` | Format relative time (e.g., "2 hours ago") |
+
+---
+
+## Date & Time Formatting
+
+### Date Styles
+
+```tsx
+const format = useFormatter()
+
+// Short date
+format.dateTime(new Date(), { dateStyle: 'short' })
+// "1/18/26"
+
+// Medium date
+format.dateTime(new Date(), { dateStyle: 'medium' })
+// "Jan 18, 2026"
+
+// Long date
+format.dateTime(new Date(), { dateStyle: 'long' })
+// "January 18, 2026"
+
+// Full date
+format.dateTime(new Date(), { dateStyle: 'full' })
+// "Sunday, January 18, 2026"
+```
+
+### Time Styles
+
+```tsx
+// Short time
+format.dateTime(new Date(), { timeStyle: 'short' })
+// "3:30 PM"
+
+// With timezone
+format.dateTime(new Date(), {
+  timeStyle: 'long',
+  timeZone: 'America/New_York'
+})
+// "3:30:00 PM EST"
+```
+
+### Combined Date & Time
+
+```tsx
+format.dateTime(new Date(), {
+  dateStyle: 'medium',
+  timeStyle: 'short'
+})
+// "Jan 18, 2026, 3:30 PM"
+```
+
+### Custom Patterns
+
+```tsx
+format.dateTime(new Date(), {
+  year: 'numeric',
+  month: 'long',
+  day: '2-digit',
+  weekday: 'short'
+})
+// "Sun, January 18, 2026"
+```
+
+---
+
+## Number Formatting
+
+### Basic Numbers
+
+```tsx
+const format = useFormatter()
+
+format.number(1234567.89)
+// "1,234,567.89"
+```
+
+### Currency
+
+```tsx
+format.number(99.99, {
+  style: 'currency',
+  currency: 'USD'
+})
+// "$99.99"
+
+format.number(99.99, {
+  style: 'currency',
+  currency: 'EUR'
+})
+// "€99.99"
+```
+
+### Percentages
+
+```tsx
+format.number(0.75, { style: 'percent' })
+// "75%"
+```
+
+### Compact Notation
+
+```tsx
+format.number(1000000, { notation: 'compact' })
+// "1M"
+
+format.number(1234, { notation: 'compact', compactDisplay: 'long' })
+// "1 thousand"
+```
+
+### Units
+
+```tsx
+format.number(100, {
+  style: 'unit',
+  unit: 'kilometer',
+  unitDisplay: 'short'
+})
+// "100 km"
+```
+
+---
+
+## List Formatting
+
+### Conjunction (and)
+
+```tsx
+const format = useFormatter()
+
+format.list(['Apple', 'Banana', 'Orange'], { type: 'conjunction' })
+// "Apple, Banana, and Orange"
+```
+
+### Disjunction (or)
+
+```tsx
+format.list(['Red', 'Blue', 'Green'], { type: 'disjunction' })
+// "Red, Blue, or Green"
+```
+
+### Unit Lists
+
+```tsx
+format.list(['5 km', '10 km', '15 km'], { type: 'unit' })
+// "5 km, 10 km, 15 km"
+```
+
+---
+
+## Relative Time
+
+### Automatic Updates
+
+```tsx
+import { useFormatter, useNow } from '@better-i18n/use-intl'
+
+function TimeAgo({ date }) {
+  const format = useFormatter()
+  const now = useNow({ updateInterval: 60000 }) // Update every minute
+
+  return <time>{format.relativeTime(date, now)}</time>
+}
+```
+
+### Examples
+
+```tsx
+const format = useFormatter()
+const now = new Date()
+
+// Past times
+format.relativeTime(new Date(now - 60000))       // "1 minute ago"
+format.relativeTime(new Date(now - 3600000))     // "1 hour ago"
+format.relativeTime(new Date(now - 86400000))    // "yesterday"
+
+// Future times
+format.relativeTime(new Date(now + 86400000))    // "tomorrow"
+format.relativeTime(new Date(now + 604800000))   // "in 1 week"
+```
+
+---
+
+## Real-World Examples
+
+### E-commerce Price Display
+
+```tsx
+function PriceTag({ price, originalPrice, currency = 'USD' }) {
+  const format = useFormatter()
+
+  const discount = ((originalPrice - price) / originalPrice) * 100
+
+  return (
+    <div>
+      <span className="text-2xl font-bold">
+        {format.number(price, { style: 'currency', currency })}
+      </span>
+      {originalPrice > price && (
+        <>
+          <span className="line-through text-gray-500">
+            {format.number(originalPrice, { style: 'currency', currency })}
+          </span>
+          <span className="text-green-600">
+            {format.number(discount / 100, { style: 'percent' })} off
+          </span>
+        </>
+      )}
+    </div>
+  )
+}
+```
+
+### Activity Feed
+
+```tsx
+function ActivityItem({ action, users, timestamp }) {
+  const format = useFormatter()
+
+  return (
+    <div>
+      <span>{format.list(users, { type: 'conjunction' })}</span>
+      <span> {action}</span>
+      <time className="text-gray-500">
+        {format.relativeTime(timestamp)}
+      </time>
+    </div>
+  )
+}
+```
+
+### Statistics Dashboard
+
+```tsx
+function StatCard({ label, value, type }) {
+  const format = useFormatter()
+
+  const formattedValue = () => {
+    switch (type) {
+      case 'currency':
+        return format.number(value, { style: 'currency', currency: 'USD' })
+      case 'percent':
+        return format.number(value / 100, { style: 'percent' })
+      case 'compact':
+        return format.number(value, { notation: 'compact' })
+      default:
+        return format.number(value)
+    }
+  }
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow">
+      <p className="text-sm text-gray-500">{label}</p>
+      <p className="text-2xl font-bold">{formattedValue()}</p>
+    </div>
+  )
+}
+```
+
+## Related
+
+- [Translations](/frameworks/translations) - Translation strings with inline formatting
+- [Provider](/frameworks/provider) - Configure timezone for formatting

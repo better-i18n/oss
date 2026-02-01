@@ -1,0 +1,20 @@
+{
+  "title": "Frameworks",
+  "description": "React SDKs for Next.js, Vite & TanStack",
+  "icon": "Layers",
+  "root": true,
+  "pages": [
+    "---Introduction---",
+    "quick-start",
+    "how-it-works",
+    "provider",
+    "translations",
+    "locale",
+    "formatting",
+    "server",
+    "---Frameworks---",
+    "nextjs",
+    "tanstack-start",
+    "vite"
+  ]
+}

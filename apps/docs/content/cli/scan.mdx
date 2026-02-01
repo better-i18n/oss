@@ -1,0 +1,101 @@
+---
+title: scan
+description: Find hardcoded strings in your codebase
+icon: Search
+---
+
+Scan your codebase for hardcoded strings that need translation. Better i18n CLI uses a robust AST parser to differentiate between UI text and developer symbols.
+
+## Usage
+
+```bash
+better-i18n scan                    # Scan current directory
+better-i18n scan --dir ./src        # Scan specific directory
+better-i18n scan --format json      # JSON output for tooling
+better-i18n scan --ci               # Exit code 1 if issues found
+better-i18n scan --staged           # Only staged files
+better-i18n scan --verbose          # Detailed output with scan stats
+```
+
+## Options
+
+| Option | Description |
+|--------|-------------|
+| `--dir <path>` | Directory to scan |
+| `--format <type>` | `eslint` (default) or `json` |
+| `--ci` | Exit with code 1 if issues found. Useful for blocking PRs. |
+| `--staged` | Only scan git staged files. Perfect for pre-commit hooks. |
+| `--verbose` | Shows detailed output and a **Scan Audit** summary. |
+
+## Example Output
+
+```text
+✓ Project: better-i18n/landing
+✓ Found 246 files
+
+components/sign-up.tsx (3)
+  24:13  missing  "Create an account"  i18n/jsx-text
+  32:22  missing  "Name"  i18n/jsx-text
+  40:22  missing  "Email"  i18n/jsx-text
+
+✖ 87 problems (87 missing translations)
+
+Scanned 246 files in 0.85s
+```
+
+### Scan Details (with --verbose)
+
+When running with `--verbose`, the CLI provides a breakdown of its discovery process:
+
+```text
+🔍 Scan Details:
+  - Root-scoped translators: 4
+  - Unbound translators: 0
+  - Dynamic namespaces skipped: 12
+  - Dynamic keys skipped: 5
+```
+
+## Detection Rules
+
+| Rule | Catches | Example |
+|------|---------|---------|
+| `jsx-text` | Hardcoded JSX text | `<h1>Hello</h1>` |
+| `jsx-attribute` | Hardcoded attributes | `<img alt="Logo" />` |
+| `toast-message` | Toast notifications | `toast.error("Failed")` |
+| `ternary-locale` | Locale-based logic | `locale === 'en' ? 'Hi' : 'Hola'` |
+| `string-variable` | String variables | `const x = "Hello"` |
+
+## Ignored Patterns
+
+The CLI is smart enough to ignore common developer symbols and technical strings:
+- **HTML entities**: `&quot;`, `&amp;`, `&#39;`
+- **Tailwind/CSS classes**: `className="flex items-center bg-blue-500"`
+- **URLs & Paths**: `href="https://..."`, `src="/images/..."`
+- **Technical strings**: `SCREAMING_CASE`, variables, and numbers.
+
+## CI/CD Integration
+
+### GitHub Actions
+
+Enforce zero hardcoded strings in your main branch:
+
+```yaml
+name: i18n Check
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx @better-i18n/cli scan --ci
+```
+
+### Pre-commit Hook
+
+Catch issues before they are even committed:
+
+```bash
+# Using husky
+npx husky init
+echo "npx @better-i18n/cli scan --staged --ci" > .husky/pre-commit
+```

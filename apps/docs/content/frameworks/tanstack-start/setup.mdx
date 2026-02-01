@@ -1,0 +1,178 @@
+---
+title: Setup
+description: Basic TanStack Start setup with Better i18n
+---
+
+# TanStack Start Setup
+
+This guide covers the basic setup for Better i18n with TanStack Start.
+
+## Step 1: Create i18n Configuration
+
+Create a minimal configuration file:
+
+```ts title="app/i18n.config.ts"
+export const i18nConfig = {
+  project: "your-org/your-project",
+  defaultLocale: "en",
+} as const
+```
+
+<Callout type="info">
+  Available languages are **automatically fetched** from the Better i18n CDN manifest. No need to maintain a static list!
+</Callout>
+
+## Step 2: Setup Root Layout
+
+Load messages on the server and provide them to the client:
+
+```tsx title="app/routes/__root.tsx"
+import {
+  createRootRouteWithContext,
+  Outlet,
+  HeadContent,
+  Scripts,
+} from "@tanstack/react-router"
+import { BetterI18nProvider } from "@better-i18n/use-intl"
+import { getMessages } from "@better-i18n/use-intl/server"
+import { i18nConfig } from "../i18n.config"
+
+interface RouterContext {
+  locale: string
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
+  loader: async ({ context }) => {
+    const locale = context.locale || i18nConfig.defaultLocale
+
+    const messages = await getMessages({
+      project: i18nConfig.project,
+      locale,
+    })
+
+    return { messages, locale }
+  },
+
+  component: RootComponent,
+})
+
+function RootComponent() {
+  const { messages, locale } = Route.useLoaderData()
+
+  return (
+    <html lang={locale}>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        <BetterI18nProvider
+          project={i18nConfig.project}
+          locale={locale}
+          messages={messages}
+          timeZone="UTC"
+        >
+          <Outlet />
+        </BetterI18nProvider>
+        <Scripts />
+      </body>
+    </html>
+  )
+}
+```
+
+<Callout type="warning">
+  **Timezone Requirement:** `use-intl` v4+ requires a `timeZone` during SSR to prevent markup mismatches. Use `"UTC"` as a safe default.
+</Callout>
+
+## Step 3: Use Translations
+
+Use the `useTranslations` hook in any component:
+
+```tsx title="app/routes/index.tsx"
+import { createFileRoute } from "@tanstack/react-router"
+import { useTranslations } from "@better-i18n/use-intl"
+
+export const Route = createFileRoute("/")({
+  component: HomePage,
+})
+
+function HomePage() {
+  const t = useTranslations("home")
+
+  return (
+    <div>
+      <h1>{t("title")}</h1>
+      <p>{t("description")}</p>
+    </div>
+  )
+}
+```
+
+## Step 4: Add Language Switcher
+
+Use the built-in component or build your own:
+
+```tsx
+import { LanguageSwitcher } from "@better-i18n/use-intl"
+
+function Header() {
+  return (
+    <header>
+      <nav>
+        <LanguageSwitcher className="locale-select" />
+      </nav>
+    </header>
+  )
+}
+```
+
+## Interpolation
+
+Pass dynamic values to translations:
+
+```tsx
+function Greeting({ user }) {
+  const t = useTranslations("greeting")
+
+  return <p>{t("welcome", { name: user.name })}</p>
+}
+```
+
+```json title="Translation file"
+{
+  "greeting.welcome": "Welcome back, {name}!"
+}
+```
+
+## Date & Number Formatting
+
+Use the `useFormatter` hook:
+
+```tsx
+import { useFormatter } from "@better-i18n/use-intl"
+
+function ProductPrice({ price, date }) {
+  const format = useFormatter()
+
+  return (
+    <div>
+      <span>{format.number(price, { style: "currency", currency: "USD" })}</span>
+      <time>{format.dateTime(date, { dateStyle: "medium" })}</time>
+    </div>
+  )
+}
+```
+
+## Next Steps
+
+<Cards>
+  <Card title="SSR & Hydration" icon="Server" href="/frameworks/tanstack-start/ssr">
+    Configure server-side rendering properly.
+  </Card>
+  <Card title="Path-Based Routing" icon="Route" href="/frameworks/tanstack-start/routing">
+    Add SEO-friendly locale URLs.
+  </Card>
+  <Card title="Middleware" icon="Shield" href="/frameworks/tanstack-start/middleware">
+    Automatic locale detection.
+  </Card>
+</Cards>

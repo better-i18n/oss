@@ -1,0 +1,287 @@
+---
+title: React Router
+description: Integrate Better i18n with React Router
+---
+
+# React Router Integration
+
+Sync locale with URL parameters using React Router.
+
+## Setup
+
+### URL Structure
+
+```
+/en/about    → English
+/tr/about    → Turkish
+/de/about    → German
+```
+
+### Router Configuration
+
+```tsx title="src/App.tsx"
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BetterI18nProvider } from '@better-i18n/use-intl'
+import { i18nConfig } from './i18n.config'
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/:locale/*" element={<LocalizedApp />} />
+        <Route path="*" element={<Navigate to={`/${i18nConfig.defaultLocale}`} replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App
+```
+
+### Localized App Wrapper
+
+```tsx title="src/LocalizedApp.tsx"
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { BetterI18nProvider } from '@better-i18n/use-intl'
+import { i18nConfig } from './i18n.config'
+import { AppRoutes } from './routes'
+
+export function LocalizedApp() {
+  const { locale } = useParams()
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const handleLocaleChange = (newLocale: string) => {
+    // Replace locale in current path
+    const newPath = location.pathname.replace(`/${locale}`, `/${newLocale}`)
+    navigate(newPath)
+  }
+
+  return (
+    <BetterI18nProvider
+      project={i18nConfig.project}
+      locale={locale || i18nConfig.defaultLocale}
+      onLocaleChange={handleLocaleChange}
+    >
+      <AppRoutes />
+    </BetterI18nProvider>
+  )
+}
+```
+
+### Routes
+
+```tsx title="src/routes/index.tsx"
+import { Routes, Route } from 'react-router-dom'
+import { HomePage } from '../pages/HomePage'
+import { AboutPage } from '../pages/AboutPage'
+import { Layout } from '../components/Layout'
+
+export function AppRoutes() {
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<HomePage />} />
+        <Route path="about" element={<AboutPage />} />
+      </Route>
+    </Routes>
+  )
+}
+```
+
+## Language Switcher
+
+Create a switcher that updates the URL:
+
+```tsx title="src/components/LanguageSwitcher.tsx"
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { useLanguages } from '@better-i18n/use-intl'
+
+export function LanguageSwitcher() {
+  const { locale } = useParams()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { languages, isLoading } = useLanguages()
+
+  const handleChange = (newLocale: string) => {
+    const newPath = location.pathname.replace(`/${locale}`, `/${newLocale}`)
+    navigate(newPath)
+  }
+
+  if (isLoading) {
+    return <select disabled><option>Loading...</option></select>
+  }
+
+  return (
+    <select
+      value={locale}
+      onChange={(e) => handleChange(e.target.value)}
+      className="px-3 py-2 border rounded"
+    >
+      {languages.map((lang) => (
+        <option key={lang.code} value={lang.code}>
+          {lang.nativeName}
+        </option>
+      ))}
+    </select>
+  )
+}
+```
+
+## Localized Links
+
+Create a helper component for localized links:
+
+```tsx title="src/components/LocaleLink.tsx"
+import { Link, useParams } from 'react-router-dom'
+
+interface LocaleLinkProps {
+  to: string
+  children: React.ReactNode
+  className?: string
+}
+
+export function LocaleLink({ to, children, className }: LocaleLinkProps) {
+  const { locale } = useParams()
+
+  // Prepend locale to path
+  const localizedPath = to.startsWith('/')
+    ? `/${locale}${to}`
+    : `/${locale}/${to}`
+
+  return (
+    <Link to={localizedPath} className={className}>
+      {children}
+    </Link>
+  )
+}
+```
+
+Usage:
+
+```tsx
+import { LocaleLink } from './components/LocaleLink'
+
+function Navigation() {
+  return (
+    <nav>
+      <LocaleLink to="/">Home</LocaleLink>
+      <LocaleLink to="/about">About</LocaleLink>
+      <LocaleLink to="/contact">Contact</LocaleLink>
+    </nav>
+  )
+}
+```
+
+## Locale Validation
+
+Validate the locale parameter:
+
+```tsx title="src/LocalizedApp.tsx"
+import { useParams, Navigate } from 'react-router-dom'
+import { useLanguages } from '@better-i18n/use-intl'
+import { i18nConfig } from './i18n.config'
+
+export function LocalizedApp() {
+  const { locale } = useParams()
+  const { languages, isLoading } = useLanguages()
+
+  // Wait for languages to load
+  if (isLoading) {
+    return <LoadingScreen />
+  }
+
+  // Validate locale
+  const validLocales = languages.map((l) => l.code)
+  if (locale && !validLocales.includes(locale)) {
+    return <Navigate to={`/${i18nConfig.defaultLocale}`} replace />
+  }
+
+  return (
+    <BetterI18nProvider ...>
+      <AppRoutes />
+    </BetterI18nProvider>
+  )
+}
+```
+
+## Default Locale Without Prefix
+
+To hide the prefix for the default locale:
+
+```tsx title="src/App.tsx"
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { i18nConfig } from './i18n.config'
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Default locale without prefix */}
+        <Route
+          path="/*"
+          element={<LocalizedApp locale={i18nConfig.defaultLocale} />}
+        />
+        {/* Other locales with prefix */}
+        <Route path="/:locale/*" element={<LocalizedAppWithParam />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+```
+
+```tsx title="src/LocalizedAppWithParam.tsx"
+import { useParams, Navigate } from 'react-router-dom'
+import { i18nConfig } from './i18n.config'
+
+export function LocalizedAppWithParam() {
+  const { locale } = useParams()
+
+  // Redirect /en/about to /about for default locale
+  if (locale === i18nConfig.defaultLocale) {
+    return <Navigate to={location.pathname.replace(`/${locale}`, '')} replace />
+  }
+
+  return <LocalizedApp locale={locale} />
+}
+```
+
+## SEO Considerations
+
+Add `hreflang` links for search engines:
+
+```tsx title="src/components/LocaleHead.tsx"
+import { Helmet } from 'react-helmet-async'
+import { useLocation } from 'react-router-dom'
+import { useLanguages } from '@better-i18n/use-intl'
+
+export function LocaleHead() {
+  const location = useLocation()
+  const { languages } = useLanguages()
+  const baseUrl = 'https://example.com'
+
+  // Remove locale prefix from path
+  const path = location.pathname.replace(/^\/[a-z]{2}/, '')
+
+  return (
+    <Helmet>
+      <link rel="canonical" href={`${baseUrl}${location.pathname}`} />
+      {languages.map((lang) => (
+        <link
+          key={lang.code}
+          rel="alternate"
+          hreflang={lang.code}
+          href={`${baseUrl}/${lang.code}${path}`}
+        />
+      ))}
+      <link rel="alternate" hreflang="x-default" href={`${baseUrl}${path}`} />
+    </Helmet>
+  )
+}
+```
+
+## Related
+
+- [Vite Setup](/frameworks/vite) - Basic Vite configuration
+- [useLocale](/react/hooks/use-locale) - Locale hook
+- [useLanguages](/react/hooks/use-languages) - Languages hook

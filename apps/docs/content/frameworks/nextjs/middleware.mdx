@@ -1,0 +1,274 @@
+---
+title: Middleware
+description: Next.js middleware configuration with Clerk-style callback pattern
+---
+
+Better i18n provides a powerful middleware architecture for Next.js that handles locale detection, routing, and header management. Our middleware uses a **Clerk-style callback pattern** that makes it easy to integrate with authentication and other middleware logic while preserving all i18n headers.
+
+## Recommended Setup (Unified Config)
+
+Define your i18n config once, use it everywhere:
+
+```ts title="i18n/config.ts"
+import { createI18n } from "@better-i18n/next";
+
+export const i18n = createI18n({
+  project: "your-org/your-project",
+  defaultLocale: "en",
+  localePrefix: "always",
+});
+```
+
+```ts title="middleware.ts"
+import { i18n } from "./i18n/config";
+
+// Simple usage
+export default i18n.betterMiddleware();
+
+// Or with auth callback (Clerk-style)
+export default i18n.betterMiddleware(async (request, { locale }) => {
+  // Auth logic here - locale is available!
+});
+
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};
+```
+
+```ts title="i18n/request.ts"
+import { i18n } from "./config";
+
+// Just re-export - config is already set!
+export default i18n.requestConfig;
+```
+
+<Callout type="info">
+  Using `createI18n` lets you define your project config once and reuse it across middleware, request config, and data fetching.
+</Callout>
+
+## Standalone Setup
+
+If you prefer standalone middleware without the unified config:
+
+```ts title="middleware.ts"
+import { createBetterI18nMiddleware } from "@better-i18n/next";
+
+export default createBetterI18nMiddleware({
+  project: "your-org/your-project",
+  defaultLocale: "en",
+  localePrefix: "always", // "always" | "as-needed" | "never"
+});
+
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};
+```
+
+## Configuration Options
+
+| Option                      | Type      | Default      | Description                                       |
+| --------------------------- | --------- | ------------ | ------------------------------------------------- |
+| `project`                   | `string`  | **Required** | Your project identifier (e.g., `acme/web`).       |
+| `defaultLocale`             | `string`  | **Required** | Fallback locale code (e.g., `en`).                |
+| `localePrefix`              | `string`  | `"as-needed"`| URL prefix behavior: `"always"`, `"as-needed"`, or `"never"`. |
+| `detection.browserLanguage` | `boolean` | `true`       | Auto-detect language from browser headers.        |
+| `detection.cookie`          | `boolean` | `true`       | Use cookie for language persistence.              |
+| `detection.cookieName`      | `string`  | `"locale"`   | Name of the cookie to store preference.           |
+| `detection.cookieMaxAge`    | `number`  | `31536000`   | Cookie max age in seconds (default: 1 year).      |
+
+## Auth Integration (Clerk-style Pattern)
+
+The recommended way to combine i18n with authentication is using the **callback pattern**. This ensures all i18n headers are preserved while giving you full access to the detected locale.
+
+```ts title="middleware.ts"
+import { createBetterI18nMiddleware } from "@better-i18n/next";
+import { NextResponse } from "next/server";
+
+export default createBetterI18nMiddleware({
+  project: "acme/dashboard",
+  defaultLocale: "en",
+  localePrefix: "always",
+}, async (request, { locale, response }) => {
+  // Auth logic runs AFTER i18n detection
+  // You have access to: locale, response (with headers already set)
+
+  const isLoggedIn = !!request.cookies.get("session")?.value;
+  const isProtectedRoute = request.nextUrl.pathname.includes("/dashboard");
+
+  if (!isLoggedIn && isProtectedRoute) {
+    // Redirect to login with locale prefix
+    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+  }
+
+  // Return nothing = i18n response is used (all headers preserved!)
+});
+
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};
+```
+
+### Callback Context
+
+The callback receives two arguments:
+
+| Argument | Type | Description |
+|----------|------|-------------|
+| `request` | `NextRequest` | The incoming Next.js request |
+| `context.locale` | `string` | The detected locale (e.g., `"en"`, `"tr"`) |
+| `context.response` | `NextResponse` | The i18n response with headers already set |
+
+### Return Values
+
+| Return | Behavior |
+|--------|----------|
+| `NextResponse` | Short-circuits and uses your response (e.g., redirect) |
+| `void` / `undefined` | Continues with the i18n response (headers preserved) |
+
+## Advanced: NextAuth.js Integration
+
+```ts title="middleware.ts"
+import { createBetterI18nMiddleware } from "@better-i18n/next";
+import { getToken } from "next-auth/jwt";
+import { NextResponse } from "next/server";
+
+const protectedRoutes = ["/dashboard", "/settings", "/profile"];
+
+export default createBetterI18nMiddleware({
+  project: "acme/app",
+  defaultLocale: "en",
+  localePrefix: "always",
+}, async (request, { locale }) => {
+  const token = await getToken({ req: request });
+  const isProtected = protectedRoutes.some(route =>
+    request.nextUrl.pathname.includes(route)
+  );
+
+  if (!token && isProtected) {
+    const loginUrl = new URL(`/${locale}/auth/signin`, request.url);
+    loginUrl.searchParams.set("callbackUrl", request.url);
+    return NextResponse.redirect(loginUrl);
+  }
+});
+```
+
+## Advanced: Better Auth Integration
+
+```ts title="middleware.ts"
+import { createBetterI18nMiddleware } from "@better-i18n/next";
+import { NextResponse } from "next/server";
+
+const publicRoutes = ["/", "/login", "/register", "/forgot-password"];
+
+export default createBetterI18nMiddleware({
+  project: "acme/app",
+  defaultLocale: "en",
+  localePrefix: "always",
+}, async (request, { locale }) => {
+  const sessionCookie = request.cookies.get("better-auth.session_token")?.value;
+  const pathname = request.nextUrl.pathname;
+
+  // Remove locale prefix to check route
+  const pathWithoutLocale = pathname.replace(/^\/(en|tr|de)/, "") || "/";
+  const isPublicRoute = publicRoutes.includes(pathWithoutLocale);
+
+  if (!sessionCookie && !isPublicRoute) {
+    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+  }
+
+  // Redirect logged-in users away from auth pages
+  if (sessionCookie && ["/login", "/register"].includes(pathWithoutLocale)) {
+    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+  }
+});
+```
+
+## How It Works
+
+1. **Detection Priority:**
+   - Path parameter (`/tr/about` → `tr`)
+   - Cookie (`locale` → value)
+   - Accept-Language header (Browser preference)
+   - Fallback to `defaultLocale`
+
+2. **Headers Set:**
+   - `x-middleware-request-x-next-intl-locale` - For `next-intl` compatibility
+   - `x-locale` - For Server Components access
+
+3. **Cookie Persistence:** If no cookie is present, the middleware sets one to persist the detected language.
+
+### Accessing Locale in Server Components
+
+```ts title="app/[locale]/page.tsx"
+import { headers } from "next/headers";
+
+export default async function Page() {
+  const headersList = await headers();
+  const locale = headersList.get("x-locale") ?? "en";
+  // Use locale for server-side logic
+}
+```
+
+## Migration from composeMiddleware
+
+<Callout type="warn">
+  `composeMiddleware` is deprecated. Please migrate to the callback pattern.
+</Callout>
+
+The callback pattern is more reliable because it guarantees header preservation:
+
+```ts title="Before (deprecated)"
+import { createBetterI18nMiddleware, composeMiddleware } from "@better-i18n/next";
+
+const i18n = createBetterI18nMiddleware({ ... });
+const auth = async (req) => { /* auth logic */ };
+
+// Headers could be lost!
+export default composeMiddleware(i18n, auth);
+```
+
+```ts title="After (recommended)"
+import { createBetterI18nMiddleware } from "@better-i18n/next";
+
+export default createBetterI18nMiddleware({
+  project: "acme/app",
+  defaultLocale: "en",
+}, async (request, { locale, response }) => {
+  // Auth logic here - headers are ALWAYS preserved!
+  if (needsRedirect) {
+    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+  }
+});
+```
+
+### Why the Callback Pattern is Better
+
+| Feature | `composeMiddleware` | Callback Pattern |
+|---------|---------------------|------------------|
+| Header preservation | ⚠️ Can be lost | ✅ Always preserved |
+| Locale access | ❌ Manual parsing | ✅ `context.locale` |
+| Response modification | ❌ Complex | ✅ `context.response` |
+| API simplicity | ❌ Multiple functions | ✅ Single function |
+
+## Legacy Integration
+
+If you are using the legacy `createI18n` factory pattern:
+
+```ts title="i18n.ts"
+import { createI18n } from "@better-i18n/next";
+
+export const i18n = createI18n({
+  project: "my-project",
+  defaultLocale: "en",
+});
+```
+
+```ts title="middleware.ts"
+import { i18n } from "./i18n";
+export const middleware = i18n.middleware;
+```
+
+<Callout type="info">
+  While `i18n.middleware` is still supported, we recommend switching to
+  `createBetterI18nMiddleware` with the callback pattern for better reliability.
+</Callout>

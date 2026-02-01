@@ -1,0 +1,240 @@
+---
+title: Setup
+description: Installation and provider setup for Vite + React applications
+---
+
+# Setup
+
+This guide walks you through installing Better i18n and setting up the provider in your Vite + React application.
+
+## Installation
+
+<Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
+  <Tab value="npm">
+  ```bash
+  npm install @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn add @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+  <Tab value="bun">
+  ```bash
+  bun add @better-i18n/use-intl use-intl
+  ```
+  </Tab>
+</Tabs>
+
+## Configuration
+
+### Step 1: Create i18n Configuration
+
+Create a configuration file to centralize your i18n settings:
+
+```ts title="src/i18n.config.ts"
+export const i18nConfig = {
+  project: 'your-org/your-project',
+  defaultLocale: 'en',
+} as const
+```
+
+### Step 2: Setup Provider
+
+Wrap your app with `BetterI18nProvider`:
+
+```tsx title="src/App.tsx"
+import { BetterI18nProvider } from '@better-i18n/use-intl'
+import { useState } from 'react'
+import { i18nConfig } from './i18n.config'
+import { Router } from './Router'
+
+function App() {
+  // Get initial locale from localStorage or browser
+  const [locale, setLocale] = useState(() => {
+    return localStorage.getItem('locale') || navigator.language.split('-')[0] || 'en'
+  })
+
+  const handleLocaleChange = (newLocale: string) => {
+    localStorage.setItem('locale', newLocale)
+    setLocale(newLocale)
+  }
+
+  return (
+    <BetterI18nProvider
+      project={i18nConfig.project}
+      locale={locale}
+      onLocaleChange={handleLocaleChange}
+    >
+      <Router />
+    </BetterI18nProvider>
+  )
+}
+
+export default App
+```
+
+<Callout type="info">
+  Without pre-loaded `messages`, the provider fetches them from the CDN on mount. Children won't render until messages are ready.
+</Callout>
+
+### Step 3: Add Loading State
+
+For a better UX, handle the loading state with Suspense:
+
+```tsx title="src/App.tsx"
+import { BetterI18nProvider } from '@better-i18n/use-intl'
+import { Suspense } from 'react'
+
+function App() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <BetterI18nProvider
+        project="your-org/your-project"
+        locale="en"
+      >
+        <Router />
+      </BetterI18nProvider>
+    </Suspense>
+  )
+}
+
+function LoadingScreen() {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+    </div>
+  )
+}
+```
+
+## Using Translations
+
+### Basic Usage
+
+```tsx title="src/pages/HomePage.tsx"
+import { useTranslations } from '@better-i18n/use-intl'
+
+export function HomePage() {
+  const t = useTranslations('home')
+
+  return (
+    <div>
+      <h1>{t('title')}</h1>
+      <p>{t('description')}</p>
+    </div>
+  )
+}
+```
+
+### With Variables
+
+```tsx
+function WelcomeMessage({ user }) {
+  const t = useTranslations('greeting')
+
+  return (
+    <p>{t('hello', { name: user.name, count: user.notifications })}</p>
+  )
+}
+```
+
+### Formatting
+
+```tsx
+import { useFormatter } from '@better-i18n/use-intl'
+
+function OrderSummary({ order }) {
+  const format = useFormatter()
+
+  return (
+    <div>
+      <p>Total: {format.number(order.total, { style: 'currency', currency: 'USD' })}</p>
+      <p>Date: {format.dateTime(order.date, { dateStyle: 'long' })}</p>
+      <p>Items: {format.list(order.items, { type: 'conjunction' })}</p>
+    </div>
+  )
+}
+```
+
+## Language Switcher
+
+### Simple Select
+
+```tsx title="src/components/LanguageSwitcher.tsx"
+import { useLocale, useLanguages } from '@better-i18n/use-intl'
+
+export function LanguageSwitcher() {
+  const { locale, setLocale } = useLocale()
+  const { languages, isLoading } = useLanguages()
+
+  if (isLoading) {
+    return <select disabled><option>Loading...</option></select>
+  }
+
+  return (
+    <select
+      value={locale}
+      onChange={(e) => setLocale(e.target.value)}
+      className="px-3 py-2 border rounded"
+    >
+      {languages.map((lang) => (
+        <option key={lang.code} value={lang.code}>
+          {lang.nativeName}
+        </option>
+      ))}
+    </select>
+  )
+}
+```
+
+### Built-in Component
+
+Use the included `LanguageSwitcher` component:
+
+```tsx
+import { LanguageSwitcher } from '@better-i18n/use-intl'
+
+function Header() {
+  return (
+    <header className="flex justify-between items-center p-4">
+      <Logo />
+      <LanguageSwitcher className="border rounded px-3 py-2" />
+    </header>
+  )
+}
+```
+
+## Performance Tips
+
+<Cards>
+  <Card title="Preload Default Locale" icon="Download">
+    For faster initial load, preload messages in your HTML:
+    ```html
+    <link rel="preload" href="https://cdn.better-i18n.com/org/project/en.json" as="fetch" crossorigin>
+    ```
+  </Card>
+  <Card title="Use Suspense" icon="Pause">
+    Wrap your app in Suspense to show a loading state while translations load.
+  </Card>
+  <Card title="Cache in Service Worker" icon="Database">
+    For offline support, cache translation files in a service worker.
+  </Card>
+</Cards>
+
+## Next Steps
+
+<Cards>
+  <Card title="React Router" icon="Route" href="/frameworks/vite/react-router">
+    Integrate with React Router for URL-based locales.
+  </Card>
+  <Card title="TypeScript" icon="FileCode" href="/frameworks/vite/typescript">
+    Enable type-safe translation keys.
+  </Card>
+</Cards>

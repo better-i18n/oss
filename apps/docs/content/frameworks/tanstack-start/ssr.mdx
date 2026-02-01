@@ -1,0 +1,260 @@
+---
+title: SSR & Hydration
+description: Server-side rendering with Better i18n and TanStack Start
+---
+
+# SSR & Hydration
+
+This guide covers server-side rendering (SSR) with Better i18n and TanStack Start, ensuring consistent rendering between server and client.
+
+## How SSR Works
+
+```
+1. Request arrives at server
+2. Middleware detects locale (URL, cookie, header)
+3. Loader fetches messages from CDN
+4. React renders HTML with translations
+5. HTML sent to client
+6. Client hydrates with same messages
+7. No flash of untranslated content!
+```
+
+## Loading Messages on Server
+
+Use `getMessages` in your route loaders:
+
+```tsx title="app/routes/__root.tsx"
+import { getMessages } from "@better-i18n/use-intl/server"
+
+export const Route = createRootRouteWithContext<{ locale: string }>()({
+  loader: async ({ context }) => {
+    const messages = await getMessages({
+      project: "org/project",
+      locale: context.locale || "en",
+    })
+
+    return { messages, locale: context.locale }
+  },
+
+  component: RootComponent,
+})
+```
+
+## Providing Messages to Client
+
+Pass messages to the provider to avoid client-side fetching:
+
+```tsx
+function RootComponent() {
+  const { messages, locale } = Route.useLoaderData()
+
+  return (
+    <BetterI18nProvider
+      project="org/project"
+      locale={locale}
+      messages={messages}  // Pre-loaded from server
+      timeZone="UTC"
+    >
+      <Outlet />
+    </BetterI18nProvider>
+  )
+}
+```
+
+<Callout type="info">
+  When `messages` is provided, the provider skips client-side CDN fetching entirely.
+</Callout>
+
+## Timezone Configuration
+
+`use-intl` v4+ requires a timezone during SSR to prevent hydration mismatches:
+
+```tsx
+<BetterI18nProvider
+  project="org/project"
+  locale={locale}
+  messages={messages}
+  timeZone="UTC"  // Required for SSR
+>
+  {children}
+</BetterI18nProvider>
+```
+
+### Why Timezone Matters
+
+Date formatting can differ between server and client:
+
+```tsx
+// Server (UTC): "January 18, 2026"
+// Client (PST): "January 17, 2026"  ← Hydration mismatch!
+```
+
+By setting a consistent `timeZone`, both render identically.
+
+### User Timezone
+
+To use the user's timezone, detect it on the client and update:
+
+```tsx
+function RootComponent() {
+  const { messages, locale } = Route.useLoaderData()
+  const [timeZone, setTimeZone] = useState("UTC")
+
+  useEffect(() => {
+    setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
+  }, [])
+
+  return (
+    <BetterI18nProvider
+      project="org/project"
+      locale={locale}
+      messages={messages}
+      timeZone={timeZone}
+    >
+      <Outlet />
+    </BetterI18nProvider>
+  )
+}
+```
+
+## Route-Level Messages
+
+For route-specific namespaces, you can load additional messages:
+
+```tsx title="app/routes/dashboard.tsx"
+export const Route = createFileRoute("/dashboard")({
+  loader: async ({ context }) => {
+    // Dashboard-specific translations
+    const dashboardMessages = await getMessages({
+      project: "org/project",
+      locale: context.locale,
+      namespace: "dashboard",  // Load only dashboard namespace
+    })
+
+    return { dashboardMessages }
+  },
+})
+```
+
+## Server-Side Translation
+
+Use translations in loaders for metadata:
+
+```tsx title="app/routes/about.tsx"
+import { getMessages, createServerTranslator } from "@better-i18n/use-intl/server"
+
+export const Route = createFileRoute("/about")({
+  loader: async ({ context }) => {
+    const messages = await getMessages({
+      project: "org/project",
+      locale: context.locale,
+    })
+
+    const t = createServerTranslator({
+      locale: context.locale,
+      messages,
+      namespace: "about",
+    })
+
+    return {
+      messages,
+      meta: {
+        title: t("meta.title"),
+        description: t("meta.description"),
+      },
+    }
+  },
+
+  head: ({ loaderData }) => ({
+    meta: [
+      { title: loaderData.meta.title },
+      { name: "description", content: loaderData.meta.description },
+    ],
+  }),
+
+  component: AboutPage,
+})
+```
+
+## Caching Considerations
+
+Messages are cached at multiple levels:
+
+| Level | Duration | Invalidation |
+|-------|----------|--------------|
+| CDN | 1 hour | On publish |
+| Server | Request | Per request |
+| Client | Session | On navigation |
+
+For production, consider adding server-side caching:
+
+```tsx
+const messageCache = new Map<string, Messages>()
+
+async function getCachedMessages(locale: string) {
+  if (!messageCache.has(locale)) {
+    messageCache.set(locale, await getMessages({
+      project: "org/project",
+      locale,
+    }))
+  }
+  return messageCache.get(locale)!
+}
+```
+
+## Debug Mode
+
+Enable debug logging to troubleshoot SSR issues:
+
+```tsx
+const messages = await getMessages({
+  project: "org/project",
+  locale: context.locale,
+  debug: true,  // Logs CDN requests
+})
+```
+
+## Common Issues
+
+### Hydration Mismatch
+
+**Symptom:** Console warning about hydration mismatch.
+
+**Solution:** Ensure `timeZone` is set consistently:
+
+```tsx
+<BetterI18nProvider timeZone="UTC" ... />
+```
+
+### Flash of English
+
+**Symptom:** Page briefly shows English before correct locale.
+
+**Solution:** Pre-load messages in the loader:
+
+```tsx
+loader: async ({ context }) => {
+  const messages = await getMessages({ ... })
+  return { messages }  // Pass to provider
+}
+```
+
+### Wrong Locale on First Load
+
+**Symptom:** First page load shows wrong locale.
+
+**Solution:** Ensure middleware sets locale in context:
+
+```tsx
+// middleware/i18n.ts
+export const i18nMiddleware = createBetterI18nMiddleware({
+  project: "org/project",
+  defaultLocale: "en",
+})
+```
+
+## Related
+
+- [Middleware](/frameworks/tanstack-start/middleware) - Locale detection
+- [Routing](/frameworks/tanstack-start/routing) - Path-based locales
+- [getMessages](/react/server/get-messages) - Server utility

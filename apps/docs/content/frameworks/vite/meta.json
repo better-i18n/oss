@@ -1,0 +1,10 @@
+{
+  "title": "Vite",
+  "defaultOpen": false,
+  "pages": [
+    "index",
+    "setup",
+    "react-router",
+    "typescript"
+  ]
+}
