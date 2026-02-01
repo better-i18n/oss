@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/mcp-types",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Type definitions and schemas for Better i18n MCP API",
   "type": "module",
   "main": "./src/index.ts",
@@ -21,6 +21,14 @@
   },
   "devDependencies": {
     "typescript": "~5.9.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/better-i18n/better-i18n.git",
+    "directory": "packages/mcp-types"
   },
   "license": "MIT"
 }
