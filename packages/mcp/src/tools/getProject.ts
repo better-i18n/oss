@@ -18,7 +18,7 @@ export const getProject: Tool = {
   definition: {
     name: "getProject",
     description:
-      "Get project details including namespaces, languages, key count, and translation coverage. Use this after listProjects to understand a specific project's structure.",
+      "Get project details including namespaces, languages, key count, and translation coverage. Use this after listProjects to understand a specific project's structure. Namespaces include rich metadata: name, keyCount, description, and context (team, domain, aiPrompt, tags).",
     inputSchema: {
       type: "object",
       properties: {

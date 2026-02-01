@@ -47,7 +47,9 @@ EXAMPLES:
 - Find "Giriş" in Turkish: { search: "Giriş", languages: ["tr"] }
 - Get all Turkish translations: { languages: ["tr"] }
 - Get missing Turkish translations: { languages: ["tr"], status: "missing" }
-- Get specific keys: { keys: ["auth.login.title", "auth.login.button"] }`,
+- Get specific keys: { keys: ["auth.login.title", "auth.login.button"] }
+
+Response includes namespaceDetails: a map of namespace metadata (name, keyCount, description, context with team/domain/aiPrompt/tags) for all namespaces present in the result.`,
     inputSchema: {
       type: "object",
       properties: {
