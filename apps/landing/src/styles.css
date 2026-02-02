@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
-@source "../../../packages/ui/components/**/*.{ts,tsx}";
+@source "../node_modules/@better-i18n/ui/components/**/*.{ts,tsx}";
 
 /* Dark mode'u komple devre dışı bırak - landing sadece light tema */
 /* Asla eşleşmeyecek selector ile dark stilleri tamamen devre dışı */

@@ -6,8 +6,8 @@
     "dev": "vite dev --port 3001",
     "build": "vite build",
     "preview": "wrangler dev --port 8990",
-    "deploy": "bun run build && wrangler deploy --env-file ../../.env",
-    "logs": "wrangler tail --env-file ../../.env",
+    "deploy": "bun run build && wrangler deploy",
+    "logs": "wrangler tail",
     "test": "vitest run"
   },
   "dependencies": {
