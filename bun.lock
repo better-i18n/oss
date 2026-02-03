@@ -14,6 +14,7 @@
         "globals": "^16.5.0",
         "husky": "^9.1.7",
         "lint-staged": "^16.2.7",
+        "nodemailer": "^7.0.13",
         "prettier": "^3.8.1",
         "typescript": "~5.9.3",
         "typescript-eslint": "^8.54.0",
@@ -122,12 +123,12 @@
     },
     "packages/mcp": {
       "name": "@better-i18n/mcp",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "bin": {
         "better-i18n-mcp": "./dist/index.js",
       },
       "dependencies": {
-        "@better-i18n/mcp-types": "^0.4.0",
+        "@better-i18n/mcp-types": "^0.5.0",
         "@modelcontextprotocol/sdk": "^1.0.4",
         "@trpc/client": "^11.0.0",
         "zod": "^3.25.1",
@@ -282,7 +283,7 @@
 
     "@better-i18n/mcp": ["@better-i18n/mcp@workspace:packages/mcp"],
 
-    "@better-i18n/mcp-types": ["@better-i18n/mcp-types@0.4.0", "", { "dependencies": { "zod": "^3.25.76" } }, "sha512-8K8Z5FwbzHl/p1Q1+w8/NQXDI0/nnhNk68LIIJVG1YaQQej00q6ywTkucsqHW+2IAT0l6eEk5zX4ow+9fmWU4g=="],
+    "@better-i18n/mcp-types": ["@better-i18n/mcp-types@0.5.0", "", { "dependencies": { "zod": "^3.25.76" } }, "sha512-iI/Cnhw3SvCMcxT7T278Yq87aMMTwMlclyRh9hcBC9R2w7gTdPpyGkVz2zttMpw4byPNZs7JPjr4j0EbeuvZNA=="],
 
     "@better-i18n/next": ["@better-i18n/next@workspace:packages/next"],
 
@@ -2167,6 +2168,8 @@
     "node-addon-api": ["node-addon-api@7.1.1", "", {}, "sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ=="],
 
     "node-releases": ["node-releases@2.0.27", "", {}, "sha512-nmh3lCkYZ3grZvqcCH+fjmQ7X+H0OeZgP40OierEaAptX4XofMh5kwNbWh7lBduUzCcV/8kZ+NDLCwm2iorIlA=="],
+
+    "nodemailer": ["nodemailer@7.0.13", "", {}, "sha512-PNDFSJdP+KFgdsG3ZzMXCgquO7I6McjY2vlqILjtJd0hy8wEvtugS9xKRF2NWlPNGxvLCXlTNIae4serI7dinw=="],
 
     "normalize-path": ["normalize-path@3.0.0", "", {}, "sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA=="],
 
