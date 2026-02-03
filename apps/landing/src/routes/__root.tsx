@@ -8,7 +8,13 @@ import { BetterI18nProvider, getLocaleFromPath } from "@better-i18n/use-intl";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
 import appCss from "../styles.css?url";
-import { getLocalizedMeta, formatMetaTags } from "../lib/meta";
+import {
+  getLocalizedMeta,
+  formatMetaTags,
+  getAlternateLinks,
+  getCanonicalLink,
+} from "../lib/meta";
+import { getHomePageStructuredData } from "../lib/structured-data";
 
 interface RouterContext {
   locale: string;
@@ -43,8 +49,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   },
 
   head: ({ loaderData }) => {
-    const meta = getLocalizedMeta(loaderData?.messages || {}, "home");
     const locale = loaderData?.locale || "en";
+    const meta = getLocalizedMeta(loaderData?.messages || {}, "home", {
+      locale,
+      pathname: "/",
+    });
 
     return {
       meta: [
@@ -55,7 +64,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           name: "viewport",
           content: "width=device-width, initial-scale=1",
         },
-        ...formatMetaTags(meta),
+        ...formatMetaTags(meta, { locale }),
       ],
       links: [
         {
@@ -75,29 +84,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           rel: "stylesheet",
           href: appCss,
         },
-        {
-          rel: "alternate",
-          href: "https://better-i18n.com",
-          hreflang: "en",
-        },
-        {
-          rel: "alternate",
-          href: "https://better-i18n.com/tr",
-          hreflang: "tr",
-        },
-        {
-          rel: "alternate",
-          href: "https://better-i18n.com",
-          hreflang: "x-default",
-        },
-        {
-          rel: "canonical",
-          href:
-            locale === "en"
-              ? "https://better-i18n.com"
-              : `https://better-i18n.com/${locale}`,
-        },
+        ...getAlternateLinks("/", ["en", "tr"]),
+        getCanonicalLink(locale, "/"),
       ],
+      scripts: getHomePageStructuredData(),
     };
   },
 

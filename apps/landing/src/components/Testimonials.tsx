@@ -2,19 +2,22 @@ import { useTranslations } from "@better-i18n/use-intl";
 
 const testimonialsData = [
   {
-    name: "Sarah Chen",
-    title: "Product Lead, TechCorp",
-    gradient: "from-orange-400 to-pink-500",
+    name: "Eray Gündoğmuş",
+    title: "Software Engineer, Masraff",
+    image:
+      "https://media.licdn.com/dms/image/v2/D4D03AQE4tAgXhARBpw/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1718267370776?e=1771459200&v=beta&t=xwSXKZhDWNEGrP0m40m9tsPTs0YFwpO7RsVr5h0eTVQ",
   },
   {
-    name: "Marcus Weber",
-    title: "Senior Developer, Stripe",
-    gradient: "from-blue-400 to-purple-500",
+    name: "Tevfik Can Karanfil",
+    title: "Founder, Carna",
+    image:
+      "https://media.licdn.com/dms/image/v2/C5603AQHBw0V8PnHrPg/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1612295592429?e=1771459200&v=beta&t=_kMklQoZd4r16mC2et2Dztps4WTWvZelnHpckmlszbU",
   },
   {
-    name: "Nina Patel",
-    title: "Engineering Manager, Notion",
-    gradient: "from-emerald-400 to-cyan-500",
+    name: "Mehmet Hanifi Şentürk",
+    title: "AI Engineer, Enuygun",
+    image:
+      "https://media.licdn.com/dms/image/v2/D4D03AQFRnF6DlMSPww/profile-displayphoto-shrink_800_800/B4DZbahcvIHEAg-/0/1747422924230?e=1771459200&v=beta&t=6hO0RCV_MGmJg-K1JluwnAraxlViZKXAGMbopDrIb4s",
   },
 ];
 
@@ -42,8 +45,10 @@ export default function Testimonials() {
                 </blockquote>
                 <figcaption className="flex items-center gap-4">
                   <div className="flex w-10 h-10 overflow-hidden rounded-full outline outline-1 -outline-offset-1 outline-black/5">
-                    <div
-                      className={`w-full h-full bg-gradient-to-br ${testimonial.gradient}`}
+                    <img
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      className="w-full h-full object-cover"
                     />
                   </div>
                   <div>

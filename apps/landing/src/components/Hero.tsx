@@ -1,5 +1,5 @@
 import { useTranslations } from "@better-i18n/use-intl";
-import { Link } from "@tanstack/react-router";
+import { Link, useParams } from "@tanstack/react-router";
 import { Demo } from "../demo";
 import {
   IconChevronRight,
@@ -8,6 +8,7 @@ import {
 
 export default function Hero() {
   const t = useTranslations("hero");
+  const { locale } = useParams({ strict: false });
 
   return (
     <section className="flex flex-col gap-16 px-2 pb-16 lg:gap-20 mx-auto w-full max-w-[1400px]">
@@ -20,7 +21,8 @@ export default function Hero() {
             <div className="flex shrink-0 flex-col items-start justify-center gap-4 pt-16 pb-8 min-[900px]:py-0 max-w-full lg:max-w-[calc(100%-620px)] xl:max-w-[calc(100%-750px)]">
               {/* Announcement Badge */}
               <Link
-                to="/changelog"
+                to="/$locale/changelog"
+                params={{ locale: locale || "en" }}
                 className="inline-flex items-center gap-x-3 rounded-full bg-white/10 px-3 py-1.5 text-sm text-white/80 hover:bg-white/15 transition-colors"
               >
                 <span>{t("badge")}</span>

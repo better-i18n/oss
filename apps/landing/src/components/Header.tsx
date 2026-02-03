@@ -12,6 +12,7 @@ import {
   IconSparklesSoft,
   IconNewspaper,
   IconApiConnection,
+  IconArrowRight,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { useTranslations } from "@better-i18n/use-intl";
 
@@ -41,9 +42,8 @@ export default function Header({ className }: { className?: string }) {
           </div>
           <div className="hidden lg:flex items-center gap-8">
             <Link
-              to="/$locale"
+              to="/$locale/features"
               params={{ locale: locale || "en" }}
-              hash="features"
               className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
             >
               {t("features")}
@@ -152,10 +152,88 @@ export default function Header({ className }: { className?: string }) {
                 </div>
               </div>
             </div>
+            {/* Developers Mega Menu */}
+            <div className="relative group">
+              <button className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+                {t("developers.title", { defaultValue: "Developers" })}
+                <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
+              </button>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[520px] shadow-lg">
+                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm">
+                    <p className="px-2.5 py-1.5 text-xs font-medium text-mist-500 uppercase tracking-wider">
+                      {t("developers.frameworkGuides", { defaultValue: "Framework Guides" })}
+                    </p>
+                    <div className="grid grid-cols-3 gap-1 mt-1">
+                      <Link
+                        to="/$locale/i18n/react"
+                        params={{ locale: locale || "en" }}
+                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
+                      >
+                        <span className="text-sm font-medium text-mist-950">React</span>
+                        <IconArrowRight className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                      </Link>
+                      <Link
+                        to="/$locale/i18n/nextjs"
+                        params={{ locale: locale || "en" }}
+                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
+                      >
+                        <span className="text-sm font-medium text-mist-950">Next.js</span>
+                        <IconArrowRight className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                      </Link>
+                      <Link
+                        to="/$locale/i18n/vue"
+                        params={{ locale: locale || "en" }}
+                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
+                      >
+                        <span className="text-sm font-medium text-mist-950">Vue</span>
+                        <IconArrowRight className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                      </Link>
+                      <Link
+                        to="/$locale/i18n/nuxt"
+                        params={{ locale: locale || "en" }}
+                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
+                      >
+                        <span className="text-sm font-medium text-mist-950">Nuxt</span>
+                        <IconArrowRight className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                      </Link>
+                      <Link
+                        to="/$locale/i18n/angular"
+                        params={{ locale: locale || "en" }}
+                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
+                      >
+                        <span className="text-sm font-medium text-mist-950">Angular</span>
+                        <IconArrowRight className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                      </Link>
+                      <Link
+                        to="/$locale/i18n/svelte"
+                        params={{ locale: locale || "en" }}
+                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
+                      >
+                        <span className="text-sm font-medium text-mist-950">Svelte</span>
+                        <IconArrowRight className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="px-3 py-2.5 flex items-center justify-between">
+                    <p className="text-sm text-mist-500">
+                      {t("developers.viewDocs", { defaultValue: "View full documentation" })}
+                    </p>
+                    <a
+                      href="https://docs.better-i18n.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium text-mist-950 hover:underline"
+                    >
+                      {t("documentation")}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
             <Link
-              to="/$locale"
+              to="/$locale/pricing"
               params={{ locale: locale || "en" }}
-              hash="pricing"
               className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
             >
               {t("pricing")}

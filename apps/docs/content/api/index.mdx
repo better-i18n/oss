@@ -1,0 +1,50 @@
+---
+title: API Reference
+description: Complete API reference for Better i18n MCP tools and REST endpoints.
+---
+
+Better i18n provides two main APIs:
+
+1. **MCP Tools** - For AI assistants (Claude, Cursor, etc.)
+2. **REST API** - For direct integrations
+
+## MCP Tools
+
+The MCP (Model Context Protocol) server exposes these tools for AI-powered translation management:
+
+| Tool | Description |
+|------|-------------|
+| [listProjects](/api/list-projects) | List all projects you have access to |
+| [getProject](/api/get-project) | Get project details including languages and namespaces |
+| [addLanguage](/api/add-language) | Add a new target language to a project |
+| [listKeys](/api/list-keys) | Get translation keys with search and filters |
+| [createKeys](/api/create-keys) | Create new translation keys |
+| [updateKeys](/api/update-keys) | Update translations for existing keys |
+| [deleteKeys](/api/delete-keys) | Soft-delete translation keys |
+| [getSyncs](/api/get-syncs) | List recent sync operations |
+| [getSync](/api/get-sync) | Get details of a specific sync |
+
+## Authentication
+
+All API calls require an API key. Get yours from the [dashboard](https://dash.better-i18n.com/settings/api-keys).
+
+```bash
+# For MCP Server
+export BETTER_I18N_API_KEY="your-api-key"
+
+# For REST API
+curl -H "Authorization: Bearer your-api-key" \
+  https://dash.better-i18n.com/api/...
+```
+
+## Project Identifier
+
+Most tools require a `project` parameter in `org/project` format:
+
+```json
+{
+  "project": "my-org/my-project"
+}
+```
+
+You can find this in your project's `i18n.ts` config file.

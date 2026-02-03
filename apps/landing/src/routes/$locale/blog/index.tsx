@@ -8,13 +8,24 @@ import {
   IconArrowRight,
   IconPageText,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { getLocalizedMeta, formatMetaTags } from "@/lib/meta";
+import {
+  getLocalizedMeta,
+  formatMetaTags,
+  getAlternateLinks,
+  getCanonicalLink,
+  SITE_URL,
+} from "@/lib/meta";
+import {
+  getDefaultStructuredData,
+  getBreadcrumbSchema,
+  formatStructuredData,
+  getOrganizationSchema,
+  getWebSiteSchema,
+} from "@/lib/structured-data";
 
 export const Route = createFileRoute("/$locale/blog/")({
   loader: async ({ params, context }) => {
-    // Load blog posts (specific to this route)
     const { posts, pagination } = await getPosts(params.locale, { limit: 12 });
-    // Use messages from parent context
     return {
       posts,
       pagination,
@@ -23,9 +34,29 @@ export const Route = createFileRoute("/$locale/blog/")({
     };
   },
   head: ({ loaderData }) => {
-    const meta = getLocalizedMeta(loaderData?.messages || {}, "blog");
+    const locale = loaderData?.locale || "en";
+    const pathname = "/blog";
+    const meta = getLocalizedMeta(loaderData?.messages || {}, "blog", {
+      locale,
+      pathname,
+    });
+
+    const breadcrumbSchema = getBreadcrumbSchema([
+      { name: "Home", url: SITE_URL },
+      { name: "Blog", url: `${SITE_URL}/blog` },
+    ]);
+
     return {
-      meta: formatMetaTags(meta),
+      meta: formatMetaTags(meta, { locale }),
+      links: [
+        ...getAlternateLinks(pathname, ["en", "tr"]),
+        getCanonicalLink(locale, pathname),
+      ],
+      scripts: formatStructuredData([
+        getOrganizationSchema(),
+        getWebSiteSchema(),
+        breadcrumbSchema,
+      ]),
     };
   },
   component: BlogPage,

@@ -1,0 +1,93 @@
+---
+title: listKeys
+description: Get translation keys with search, filters, and translations.
+---
+
+Get all translation keys with their ID, source text, and translations. Supports full-text search and filtering.
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | Yes | Project identifier in `org/project` format |
+| `search` | string | No | Text to search for (case-insensitive) |
+| `languages` | string[] | No | Language codes to search in and return |
+| `namespaces` | string[] | No | Filter by namespace(s) |
+| `keys` | string[] | No | Fetch specific keys by exact name |
+| `status` | string | No | Filter by status: `missing`, `draft`, `approved`, `all` |
+
+## Examples
+
+### Search in source text
+
+```json
+{
+  "project": "my-org/my-app",
+  "search": "login"
+}
+```
+
+### Search in Turkish translations
+
+```json
+{
+  "project": "my-org/my-app",
+  "search": "Giriş",
+  "languages": ["tr"]
+}
+```
+
+### Get missing Turkish translations
+
+```json
+{
+  "project": "my-org/my-app",
+  "languages": ["tr"],
+  "status": "missing"
+}
+```
+
+### Get specific keys
+
+```json
+{
+  "project": "my-org/my-app",
+  "keys": ["auth.login.title", "auth.login.button"]
+}
+```
+
+## Response
+
+```json
+{
+  "keys": [
+    {
+      "id": "key_abc123",
+      "name": "auth.login.title",
+      "namespace": "auth",
+      "sourceText": "Sign in to your account",
+      "translations": {
+        "tr": "Hesabınıza giriş yapın",
+        "de": "Melden Sie sich an"
+      }
+    }
+  ],
+  "namespaceDetails": {
+    "auth": {
+      "name": "auth",
+      "keyCount": 25,
+      "description": "Authentication flows",
+      "context": {
+        "team": "auth-team",
+        "domain": "auth"
+      }
+    }
+  }
+}
+```
+
+## Search Behavior
+
+- If `languages` is specified, searches in those languages
+- If `languages` is omitted, searches in source text
+- Search is case-insensitive and matches partial strings

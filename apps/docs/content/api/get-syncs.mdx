@@ -1,0 +1,68 @@
+---
+title: getSyncs
+description: List recent sync operations for a project.
+---
+
+List recent sync operations for a project. Returns sync jobs with status, type, and timing. Use to check if syncs succeeded or failed.
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | Yes | Project identifier in `org/project` format |
+| `limit` | number | No | Maximum results (1-50, default: 10) |
+| `status` | string | No | Filter by status |
+| `type` | string | No | Filter by sync type |
+
+### Status Values
+
+- `pending` - Waiting to start
+- `in_progress` - Currently running
+- `completed` - Finished successfully
+- `failed` - Finished with errors
+
+### Sync Types
+
+- `initial_import` - First sync from GitHub
+- `source_sync` - Pull changes from GitHub
+- `cdn_upload` - Push to CDN
+- `publish_batch` - Batch publish operation
+
+## Example
+
+```json
+{
+  "project": "my-org/my-app",
+  "limit": 5,
+  "status": "completed"
+}
+```
+
+## Response
+
+```json
+{
+  "syncs": [
+    {
+      "id": "sync_abc123",
+      "type": "cdn_upload",
+      "status": "completed",
+      "startedAt": "2024-01-15T10:30:00Z",
+      "completedAt": "2024-01-15T10:30:05Z",
+      "keysAffected": 15
+    },
+    {
+      "id": "sync_def456",
+      "type": "source_sync",
+      "status": "completed",
+      "startedAt": "2024-01-15T09:00:00Z",
+      "completedAt": "2024-01-15T09:00:10Z",
+      "keysAffected": 3
+    }
+  ]
+}
+```
+
+## Usage
+
+Use `getSyncs` to monitor sync operations, then use `getSync` with a specific `syncId` for detailed logs and affected keys.

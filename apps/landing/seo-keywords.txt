@@ -1,0 +1,299 @@
+# Better i18n SEO Keywords
+# Legend: [SAME] = Same in EN/TR | [TR] = Needs Turkish translation
+
+## Main Slogan
+The most comprehensive internationalization framework for all languages and frameworks [TR] → En kapsamlı uluslararasılaştırma framework'ü - tüm diller ve framework'ler için
+
+## General / Brand [SAME - Technical terms]
+i18n
+localization
+i18n tool
+localization tool
+localization platform
+localization software
+translation management system
+
+## Localization Software
+software localization [TR] → yazılım yerelleştirme
+website localization [TR] → web sitesi yerelleştirme
+app localization [TR] → uygulama yerelleştirme
+translation management system [SAME]
+translation management software [SAME]
+multilingual website [TR] → çok dilli web sitesi
+localization software [SAME]
+best localization software [TR] → en iyi yerelleştirme yazılımı
+localization tool for developers [TR] → geliştiriciler için yerelleştirme aracı
+localization tool for SaaS [SAME]
+translation management platform [SAME]
+translation workflow software [SAME]
+automated localization [TR] → otomatik yerelleştirme
+AI localization [TR] → yapay zeka yerelleştirme
+machine translation software [TR] → makine çeviri yazılımı
+
+## Developer Tools [Mostly SAME - technical]
+i18n tools [SAME]
+i18n library [SAME]
+i18n framework [SAME]
+localization for developers [TR] → geliştiriciler için yerelleştirme
+developer localization tool [TR] → geliştirici yerelleştirme aracı
+localization API [SAME]
+localization SDK [SAME]
+manage translations in code [TR] → kodda çevirileri yönetme
+git based localization [SAME]
+continuous localization [TR] → sürekli yerelleştirme
+
+## Multilingual SEO
+multilingual SEO [TR] → çok dilli SEO
+international SEO [TR] → uluslararası SEO
+SEO localization [TR] → SEO yerelleştirme
+localization for SEO [TR] → SEO için yerelleştirme
+multilingual SEO strategy [TR] → çok dilli SEO stratejisi
+hreflang SEO [SAME]
+hreflang implementation [TR] → hreflang uygulaması
+international SEO best practices [TR] → uluslararası SEO en iyi uygulamaları
+SEO for multilingual websites [TR] → çok dilli web siteleri için SEO
+
+## Workflow & Automation
+localization workflow [TR] → yerelleştirme iş akışı
+translation workflow [TR] → çeviri iş akışı
+manage app translations [TR] → uygulama çevirilerini yönetme
+automate translations [TR] → çevirileri otomatikleştirme
+translation version control [TR] → çeviri sürüm kontrolü
+keep translations in sync [TR] → çevirileri senkronize tutma
+localization at scale [TR] → ölçeklenebilir yerelleştirme
+scaling localization [TR] → yerelleştirmeyi ölçeklendirme
+localization automation tool [TR] → yerelleştirme otomasyon aracı
+
+## AI Translation
+AI translation [TR] → yapay zeka çeviri
+AI translation tool [TR] → yapay zeka çeviri aracı
+AI translation software [TR] → yapay zeka çeviri yazılımı
+AI powered localization [TR] → yapay zeka destekli yerelleştirme
+context aware translation [TR] → bağlam farkındalığına sahip çeviri
+translation quality automation [TR] → çeviri kalitesi otomasyonu
+machine translation management [TR] → makine çeviri yönetimi
+
+## Comparisons & Alternatives [Brand names SAME]
+best translation management system [TR] → en iyi çeviri yönetim sistemi
+best localization tool for developers [TR] → geliştiriciler için en iyi yerelleştirme aracı
+localization software comparison [TR] → yerelleştirme yazılımı karşılaştırması
+translation management system comparison [TR] → çeviri yönetim sistemi karşılaştırması
+crowdin alternative [SAME]
+lokalise alternative [SAME]
+phrase alternative [SAME]
+transifex alternative [SAME]
+
+## Long-tail Keywords
+localization tool for SaaS products [TR] → SaaS ürünleri için yerelleştirme aracı
+translation management for developers [TR] → geliştiriciler için çeviri yönetimi
+i18n workflow for SaaS [SAME]
+automate software localization [TR] → yazılım yerelleştirmesini otomatikleştirme
+manage multilingual content at scale [TR] → çok dilli içeriği ölçeklenebilir yönetme
+localization tool with git integration [TR] → git entegrasyonlu yerelleştirme aracı
+AI localization for developers [TR] → geliştiriciler için yapay zeka yerelleştirme
+
+## Framework-specific: React [SAME - Technical]
+i18n react
+react i18n
+react i18n library
+best i18n library for react
+
+## Framework-specific: Vue [SAME]
+vue i18n
+i18n vue
+
+## Framework-specific: Angular [SAME]
+angular i18n
+i18n angular
+
+## Framework-specific: Nuxt [SAME]
+nuxt i18n
+i18n nuxt
+
+## Framework-specific: Svelte [SAME]
+svelte i18n
+i18n svelte
+
+## Framework-specific: Next.js [SAME]
+next i18n
+i18n next
+i18n nextjs
+nextjs i18n
+next 13 i18n
+next 14 i18n
+next app router i18n
+nextjs localization
+nextjs internationalization
+next i18n tool
+best i18n for nextjs
+nextjs localization tool
+alternative to next-intl
+next-intl vs i18next
+
+## CLI Tools [SAME - Technical]
+i18n cli
+i18n next cli
+localization cli
+translation cli
+i18n command line tool
+localization command line
+translation management cli
+
+## AI & MCP Integration [SAME - Technical]
+i18n mcp
+localization mcp
+translation mcp
+ai i18n
+ai translation workflow
+agent based localization
+llm localization
+
+## CI/CD & Pipeline [SAME - Technical]
+localization pipeline
+i18n pipeline
+localization automation
+translation automation
+localization CI/CD
+i18n CI
+localization in monorepo
+
+## Dashboard & Management
+string management dashboard [TR] → string yönetim paneli
+translation namespaces [SAME]
+project translations JSON [SAME]
+get project translations [SAME]
+translation versioning [TR] → çeviri sürümleme
+
+## Machine Translation Providers [Brand names SAME]
+machine translation with DeepL [SAME]
+machine translation with OpenAI [SAME]
+automatic machine translation [TR] → otomatik makine çeviri
+context-aware translations [TR] → bağlam farkındalığına sahip çeviriler
+multilingual translations [TR] → çok dilli çeviriler
+
+## API & CDN [SAME - Technical]
+global CDN translations
+RESTful translation API
+get translations by language
+GET translations by language and namespace
+POST import strings
+post create string
+
+## CLI Commands [SAME - Technical]
+CLI translation download
+translation CLI commands
+versioned translation files
+
+## i18nexus Integration [SAME - Brand/Technical]
+react i18nexus integration
+nextjs i18nexus integration
+i18nexus and i18next
+i18nexus react-intl support
+i18nexus next-intl integration
+i18nexus with React
+i18nexus with Next.js
+i18nexus API
+i18nexus CLI
+i18next internationalization for React and Next.js
+i18n library integration
+
+## Workflow Updates
+localization workflow automation [TR] → yerelleştirme iş akışı otomasyonu
+continuous localization updates [TR] → sürekli yerelleştirme güncellemeleri
+
+## Educational / Beginner [TR - All need translation]
+what is internationalization [TR] → uluslararasılaştırma nedir
+internationalization best practices [TR] → uluslararasılaştırma en iyi uygulamaları
+what is app localization [TR] → uygulama yerelleştirme nedir
+software localization 101 [TR] → yazılım yerelleştirme 101
+mastering website localization [TR] → web sitesi yerelleştirmede uzmanlaşma
+internationalization vs localization [TR] → uluslararasılaştırma vs yerelleştirme
+localization for global audience [TR] → küresel kitle için yerelleştirme
+i18n and l10n basics [TR] → i18n ve l10n temelleri
+
+## Integration Examples
+example integration with Next.js [TR] → Next.js ile örnek entegrasyon
+example integration with React [TR] → React ile örnek entegrasyon
+
+## AI & Machine Translation
+AI translations [TR] → yapay zeka çevirileri
+AI powered localization [TR] → yapay zeka destekli yerelleştirme
+context-aware translations [TR] → bağlam farkındalığına sahip çeviriler
+machine translation [TR] → makine çeviri
+translation memory [TR] → çeviri belleği
+translation quality control [TR] → çeviri kalite kontrolü
+
+## Automation & Workflow
+continuous localization [TR] → sürekli yerelleştirme
+automated localization [TR] → otomatik yerelleştirme
+workflow automation [TR] → iş akışı otomasyonu
+translation workflow automation [TR] → çeviri iş akışı otomasyonu
+automated content sync [TR] → otomatik içerik senkronizasyonu
+automate website localization [TR] → web sitesi yerelleştirmesini otomatikleştirme
+localize content automatically [TR] → içeriği otomatik yerelleştirme
+synchronized translations [TR] → senkronize çeviriler
+agile localization [TR] → çevik yerelleştirme
+
+## Cloud & Collaboration
+cloud based localization [TR] → bulut tabanlı yerelleştirme
+collaboration tools [TR] → işbirliği araçları
+translation collaboration [TR] → çeviri işbirliği
+localization project management [TR] → yerelleştirme proje yönetimi
+
+## Content Types
+support multilingual content [TR] → çok dilli içerik desteği
+website localization [TR] → web sitesi yerelleştirme
+mobile app localization [TR] → mobil uygulama yerelleştirme
+software localization [TR] → yazılım yerelleştirme
+help documentation localization [TR] → yardım dokümantasyonu yerelleştirme
+game localization [TR] → oyun yerelleştirme
+multilingual documentation [TR] → çok dilli dokümantasyon
+
+## Advanced Features
+integrations (700+ integrations) [TR] → entegrasyonlar (700+ entegrasyon)
+file versioning [TR] → dosya sürümleme
+glossary management [TR] → terim sözlüğü yönetimi
+real-time translations tracking [TR] → gerçek zamanlı çeviri takibi
+in-context editor [TR] → bağlam içi düzenleyici
+website translator integration [TR] → web sitesi çevirmen entegrasyonu
+CSS selector translation control [SAME]
+localized metadata translation [TR] → yerelleştirilmiş metadata çevirisi
+API based translation [SAME]
+translation context [TR] → çeviri bağlamı
+translation consistency [TR] → çeviri tutarlılığı
+
+## Integrations & Technical [Mostly SAME]
+Crowdin CLI integration [SAME]
+Git integration [SAME]
+webhook translation triggers [SAME]
+over-the-air localization [TR] → kablosuz yerelleştirme (OTA)
+localization GitHub integration [SAME]
+localization with webhooks [SAME]
+localization API endpoints [SAME]
+ICU message syntax support [SAME]
+
+## Strategy & Planning
+localization workflow [TR] → yerelleştirme iş akışı
+scalable localization [TR] → ölçeklenebilir yerelleştirme
+localization strategy [TR] → yerelleştirme stratejisi
+SEO localization [TR] → SEO yerelleştirme
+global SEO localization [TR] → küresel SEO yerelleştirme
+
+## Guides & Tutorials [TR - All need translation]
+what is localization [TR] → yerelleştirme nedir
+product localization [TR] → ürün yerelleştirme
+software localization best practices [TR] → yazılım yerelleştirme en iyi uygulamaları
+localization vs internationalization [TR] → yerelleştirme vs uluslararasılaştırma
+SEO localization guide [TR] → SEO yerelleştirme rehberi
+localization strategy guide [TR] → yerelleştirme stratejisi rehberi
+continuous localization best practices [TR] → sürekli yerelleştirme en iyi uygulamaları
+how to localize a website [TR] → bir web sitesi nasıl yerelleştirilir
+localization step-by-step [TR] → adım adım yerelleştirme
+mobile app localization tutorial [TR] → mobil uygulama yerelleştirme eğitimi
+
+## Framework Integrations
+localization for React [SAME]
+localization for Next.js [SAME]
+localization for iOS [SAME]
+localization for SwiftUI apps [SAME]
+localization integration with CMS [TR] → CMS ile yerelleştirme entegrasyonu
