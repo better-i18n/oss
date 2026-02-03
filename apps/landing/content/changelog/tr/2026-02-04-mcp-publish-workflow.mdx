@@ -1,0 +1,30 @@
+---
+title: "MCP Publish Akışı ve Güvenilirlik İyileştirmeleri"
+slug: "mcp-publish-workflow"
+date: "2026-02-04"
+version: "1.3.0"
+category: feature
+tags: [mcp, publish, ai, reliability]
+---
+
+AI asistanlar artık çevirileri doğrudan IDE'nizden yayınlayabiliyor. Bu sürüm, MCP iş akışını publish araçlarıyla tamamlıyor, kritik veri bütünlüğü sorunlarını düzeltiyor ve genel geliştirici deneyimini iyileştiriyor.
+
+## Yenilikler
+
+- **MCP Publish Araçları** - İki yeni MCP aracı: Neyin deploy edileceğini önizlemek için `getPendingChanges` ve çevirileri CDN veya GitHub'a deploy etmek için `publish` — hepsi IDE'nizden
+- **Tam MCP İş Akışı** - AI asistanlar artık editörden çıkmadan tam döngüyü takip edebiliyor: oku → çevir → doğrula → yayınla → onayla
+- **Pending Publish İpuçları** - Yazma işlemleri (`createKeys`, `updateKeys`) artık değişiklikler hazır olduğunda AI'a `publish` çağırmasını hatırlatan ipuçları dönüyor
+- **MCP Router Dokümantasyonu** - Kategorilere ayrılmış (READ, QUERY, WRITE, PUBLISH, MONITOR) kapsamlı araç dokümantasyonu ve önerilen iş akışı rehberi
+
+## İyileştirmeler
+
+- **Daha Güvenli Key Yeniden Oluşturma** - Soft-delete rename işlemi tek bir veritabanı transaction'ına alınarak Hyperdrive bağlantı havuzundaki çakışmalar önlendi
+- **Daha İyi Chat Sıkıştırma** - `/compact` komutu artık kullanıcı mesajını sohbette gösteriyor ve placeholder metni gerçek özetleme içeriğiyle değiştiriyor
+- **Varsayılan CDN Formatı** - Varsayılan format `JSON_FLAT`'ten `JSON_NESTED`'a değiştirildi, i18n kütüphaneleriyle daha iyi uyumluluk
+- **Varsayılan CDN Fallback** - Yeni projeler otomatik olarak fallback dil desteğiyle oluşturuluyor
+- **Dil Sıralaması** - Diller artık duruma göre sıralanıyor: aktif → taslak → arşivlenmiş
+
+## Hata Düzeltmeleri
+
+- Slash komut otomatik gönderiminde çift gönderim sorunu giderildi
+- Kullanımdan kaldırılan özetleme aracı sunucu tarafından kaldırıldı (artık sadece istemci tarafında)
