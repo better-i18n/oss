@@ -90,23 +90,46 @@ export default function Hero() {
       </div>
 
       {/* Logo Grid Footer */}
-      <div className="w-full px-6 lg:px-10 mt-[-24px] mb-8">
-        <div className="logo-grid mx-auto w-full">
-          {[
-            {
-              src: "https://carna.ai/_next/image?url=%2Flogo_full.svg&w=640&q=75",
-              alt: "Carna",
-              className: "h-8 w-auto opacity-50 grayscale",
-            },
-            ...[9, 10, 11, 12, 13].map((num) => ({
-              src: `https://assets.tailwindplus.com/logos/${num}.svg?color=black&height=32`,
-              alt: "Logo",
-              className: "h-8 w-auto opacity-50",
-            })),
-          ].map((logo, index) => (
-            <span key={index} className="flex h-8 items-stretch justify-center">
-              <img src={logo.src} alt={logo.alt} className={logo.className} />
-            </span>
+      <div className="w-full mt-[-24px] mb-8 overflow-hidden">
+        <div className="logo-grid">
+          {[0, 1].map((i) => (
+            <div key={i} className="logo-track">
+              {/* Carna */}
+              <span className="flex h-8 items-center justify-center shrink-0">
+                <img
+                  src="https://carna.ai/_next/image?url=%2Flogo_full.svg&w=640&q=75"
+                  alt="Carna"
+                  className="h-7 w-auto opacity-50 grayscale"
+                />
+              </span>
+              {/* Nomad Work */}
+              <span className="flex h-8 items-center justify-center gap-2 opacity-50 grayscale shrink-0">
+                <img
+                  src="https://hellonomad.app/logo.svg"
+                  alt="Nomad Work"
+                  className="h-7 w-7"
+                />
+                <span className="text-xl font-semibold text-mist-950 whitespace-nowrap">
+                  Nomad Work
+                </span>
+              </span>
+              {/* NomadVibe */}
+              <span className="flex h-8 items-center justify-center shrink-0">
+                <img
+                  src="https://hellonomad.app/companies/nomadvibe.png"
+                  alt="NomadVibe"
+                  className="h-6 w-auto opacity-50 grayscale"
+                />
+              </span>
+              {/* Cloudflare */}
+              <span className="flex h-8 items-center justify-center shrink-0">
+                <img
+                  src="/cloudflare.png"
+                  alt="Cloudflare"
+                  className="h-8 w-auto opacity-50 grayscale"
+                />
+              </span>
+            </div>
           ))}
         </div>
       </div>

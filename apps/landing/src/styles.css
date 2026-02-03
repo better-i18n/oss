@@ -107,25 +107,35 @@
   }
 
   .logo-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem 1.5rem;
-    place-items: center;
+    display: flex;
+    overflow: hidden;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 10%,
+      black 90%,
+      transparent
+    );
   }
 
-  @media (min-width: 640px) {
-    .logo-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2.5rem;
+  .logo-track {
+    display: flex;
+    flex-shrink: 0;
+    gap: 10rem;
+    padding-right: 10rem;
+    animation: marquee 25s linear infinite;
+  }
+
+  .logo-grid:hover .logo-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
     }
-  }
-
-  @media (min-width: 1024px) {
-    .logo-grid {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
+    100% {
+      transform: translateX(-100%);
     }
   }
   .animate-in {

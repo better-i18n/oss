@@ -37,9 +37,10 @@ export default function Changelog() {
         </h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {changelogs.map((item, index) => (
-            <a
+            <Link
               key={index}
-              href="#"
+              to="/$locale/changelog"
+              params={{ locale: locale || "en" }}
               className="group flex flex-col rounded-xl bg-mist-950/[0.025] p-5 hover:bg-mist-950/[0.05] transition-colors"
             >
               <div className="flex items-center gap-3 text-mist-500 mb-3">
@@ -53,7 +54,7 @@ export default function Changelog() {
               <p className="text-base/7 text-mist-950 group-hover:text-mist-700">
                 {item.title}
               </p>
-            </a>
+            </Link>
           ))}
         </div>
         <div className="mt-6">
