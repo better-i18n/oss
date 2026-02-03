@@ -7,7 +7,6 @@ import {
   IconCodeBrackets,
   IconSettings,
   IconCalendar,
-  IconTranslate,
   IconCheckmark1,
   IconArrowRight,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
