@@ -3,18 +3,33 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { LegalLayout } from "../../components/LegalLayout";
 import { useTranslations } from "@better-i18n/use-intl";
-import { getLocalizedMeta, formatMetaTags } from "@/lib/meta";
+import {
+  getLocalizedMeta,
+  formatMetaTags,
+  getAlternateLinks,
+  getCanonicalLink,
+} from "@/lib/meta";
+import { getDefaultStructuredData } from "@/lib/structured-data";
 
 export const Route = createFileRoute("/$locale/privacy")({
-  // Expose parent context as loaderData for head() function
   loader: ({ context }) => ({
     messages: context.messages,
     locale: context.locale,
   }),
   head: ({ loaderData }) => {
-    const meta = getLocalizedMeta(loaderData?.messages || {}, "privacy");
+    const locale = loaderData?.locale || "en";
+    const pathname = "/privacy";
+    const meta = getLocalizedMeta(loaderData?.messages || {}, "privacy", {
+      locale,
+      pathname,
+    });
     return {
-      meta: formatMetaTags(meta),
+      meta: formatMetaTags(meta, { locale }),
+      links: [
+        ...getAlternateLinks(pathname, ["en", "tr"]),
+        getCanonicalLink(locale, pathname),
+      ],
+      scripts: getDefaultStructuredData(),
     };
   },
   component: PrivacyPage,

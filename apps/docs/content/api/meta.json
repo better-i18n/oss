@@ -1,0 +1,14 @@
+{
+  "title": "API",
+  "pages": [
+    "list-projects",
+    "get-project",
+    "add-language",
+    "list-keys",
+    "create-keys",
+    "update-keys",
+    "delete-keys",
+    "get-syncs",
+    "get-sync"
+  ]
+}

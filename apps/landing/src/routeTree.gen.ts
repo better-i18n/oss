@@ -10,18 +10,50 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as StatusRouteImport } from './routes/status'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as IntegrationsRouteImport } from './routes/integrations'
+import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as ChangelogRouteImport } from './routes/changelog'
+import { Route as CareersRouteImport } from './routes/careers'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LocaleIndexRouteImport } from './routes/$locale/index'
+import { Route as ApiOgRouteImport } from './routes/api/og'
 import { Route as ApiChangelogRouteImport } from './routes/api/changelog'
+import { Route as LocaleWhatIsLocalizationRouteImport } from './routes/$locale/what-is-localization'
+import { Route as LocaleWhatIsInternationalizationRouteImport } from './routes/$locale/what-is-internationalization'
+import { Route as LocaleWhatIsRouteImport } from './routes/$locale/what-is'
 import { Route as LocaleTermsRouteImport } from './routes/$locale/terms'
+import { Route as LocaleStatusRouteImport } from './routes/$locale/status'
 import { Route as LocalePrivacyRouteImport } from './routes/$locale/privacy'
+import { Route as LocalePricingRouteImport } from './routes/$locale/pricing'
+import { Route as LocaleIntegrationsRouteImport } from './routes/$locale/integrations'
 import { Route as LocaleForTranslatorsRouteImport } from './routes/$locale/for-translators'
 import { Route as LocaleForProductTeamsRouteImport } from './routes/$locale/for-product-teams'
 import { Route as LocaleForDevelopersRouteImport } from './routes/$locale/for-developers'
+import { Route as LocaleFeaturesRouteImport } from './routes/$locale/features'
 import { Route as LocaleChangelogRouteImport } from './routes/$locale/changelog'
+import { Route as LocaleCareersRouteImport } from './routes/$locale/careers'
+import { Route as LocaleAboutRouteImport } from './routes/$locale/about'
+import { Route as LocaleI18nIndexRouteImport } from './routes/$locale/i18n/index'
+import { Route as LocaleCompareIndexRouteImport } from './routes/$locale/compare/index'
 import { Route as LocaleBlogIndexRouteImport } from './routes/$locale/blog/index'
+import { Route as LocaleI18nVueRouteImport } from './routes/$locale/i18n/vue'
+import { Route as LocaleI18nSvelteRouteImport } from './routes/$locale/i18n/svelte'
+import { Route as LocaleI18nReactRouteImport } from './routes/$locale/i18n/react'
+import { Route as LocaleI18nNuxtRouteImport } from './routes/$locale/i18n/nuxt'
+import { Route as LocaleI18nNextjsRouteImport } from './routes/$locale/i18n/nextjs'
+import { Route as LocaleI18nForDevelopersRouteImport } from './routes/$locale/i18n/for-developers'
+import { Route as LocaleI18nBestTmsRouteImport } from './routes/$locale/i18n/best-tms'
+import { Route as LocaleI18nBestLibraryRouteImport } from './routes/$locale/i18n/best-library'
+import { Route as LocaleI18nAngularRouteImport } from './routes/$locale/i18n/angular'
+import { Route as LocaleCompareTransifexRouteImport } from './routes/$locale/compare/transifex'
+import { Route as LocaleComparePhraseRouteImport } from './routes/$locale/compare/phrase'
+import { Route as LocaleCompareLokaliseRouteImport } from './routes/$locale/compare/lokalise'
+import { Route as LocaleCompareCrowdinRouteImport } from './routes/$locale/compare/crowdin'
 import { Route as LocaleBlogSlugRouteImport } from './routes/$locale/blog/$slug'
 
 const TermsRoute = TermsRouteImport.update({
@@ -29,14 +61,49 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StatusRoute = StatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationsRoute = IntegrationsRouteImport.update({
+  id: '/integrations',
+  path: '/integrations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeaturesRoute = FeaturesRouteImport.update({
+  id: '/features',
+  path: '/features',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChangelogRoute = ChangelogRouteImport.update({
   id: '/changelog',
   path: '/changelog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,9 +116,31 @@ const LocaleIndexRoute = LocaleIndexRouteImport.update({
   path: '/$locale/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiOgRoute = ApiOgRouteImport.update({
+  id: '/api/og',
+  path: '/api/og',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChangelogRoute = ApiChangelogRouteImport.update({
   id: '/api/changelog',
   path: '/api/changelog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleWhatIsLocalizationRoute =
+  LocaleWhatIsLocalizationRouteImport.update({
+    id: '/$locale/what-is-localization',
+    path: '/$locale/what-is-localization',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LocaleWhatIsInternationalizationRoute =
+  LocaleWhatIsInternationalizationRouteImport.update({
+    id: '/$locale/what-is-internationalization',
+    path: '/$locale/what-is-internationalization',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LocaleWhatIsRoute = LocaleWhatIsRouteImport.update({
+  id: '/$locale/what-is',
+  path: '/$locale/what-is',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleTermsRoute = LocaleTermsRouteImport.update({
@@ -59,9 +148,24 @@ const LocaleTermsRoute = LocaleTermsRouteImport.update({
   path: '/$locale/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleStatusRoute = LocaleStatusRouteImport.update({
+  id: '/$locale/status',
+  path: '/$locale/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LocalePrivacyRoute = LocalePrivacyRouteImport.update({
   id: '/$locale/privacy',
   path: '/$locale/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocalePricingRoute = LocalePricingRouteImport.update({
+  id: '/$locale/pricing',
+  path: '/$locale/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleIntegrationsRoute = LocaleIntegrationsRouteImport.update({
+  id: '/$locale/integrations',
+  path: '/$locale/integrations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleForTranslatorsRoute = LocaleForTranslatorsRouteImport.update({
@@ -79,14 +183,104 @@ const LocaleForDevelopersRoute = LocaleForDevelopersRouteImport.update({
   path: '/$locale/for-developers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleFeaturesRoute = LocaleFeaturesRouteImport.update({
+  id: '/$locale/features',
+  path: '/$locale/features',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LocaleChangelogRoute = LocaleChangelogRouteImport.update({
   id: '/$locale/changelog',
   path: '/$locale/changelog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleCareersRoute = LocaleCareersRouteImport.update({
+  id: '/$locale/careers',
+  path: '/$locale/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleAboutRoute = LocaleAboutRouteImport.update({
+  id: '/$locale/about',
+  path: '/$locale/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleI18nIndexRoute = LocaleI18nIndexRouteImport.update({
+  id: '/$locale/i18n/',
+  path: '/$locale/i18n/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleCompareIndexRoute = LocaleCompareIndexRouteImport.update({
+  id: '/$locale/compare/',
+  path: '/$locale/compare/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LocaleBlogIndexRoute = LocaleBlogIndexRouteImport.update({
   id: '/$locale/blog/',
   path: '/$locale/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleI18nVueRoute = LocaleI18nVueRouteImport.update({
+  id: '/$locale/i18n/vue',
+  path: '/$locale/i18n/vue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleI18nSvelteRoute = LocaleI18nSvelteRouteImport.update({
+  id: '/$locale/i18n/svelte',
+  path: '/$locale/i18n/svelte',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleI18nReactRoute = LocaleI18nReactRouteImport.update({
+  id: '/$locale/i18n/react',
+  path: '/$locale/i18n/react',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleI18nNuxtRoute = LocaleI18nNuxtRouteImport.update({
+  id: '/$locale/i18n/nuxt',
+  path: '/$locale/i18n/nuxt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleI18nNextjsRoute = LocaleI18nNextjsRouteImport.update({
+  id: '/$locale/i18n/nextjs',
+  path: '/$locale/i18n/nextjs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleI18nForDevelopersRoute = LocaleI18nForDevelopersRouteImport.update({
+  id: '/$locale/i18n/for-developers',
+  path: '/$locale/i18n/for-developers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleI18nBestTmsRoute = LocaleI18nBestTmsRouteImport.update({
+  id: '/$locale/i18n/best-tms',
+  path: '/$locale/i18n/best-tms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleI18nBestLibraryRoute = LocaleI18nBestLibraryRouteImport.update({
+  id: '/$locale/i18n/best-library',
+  path: '/$locale/i18n/best-library',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleI18nAngularRoute = LocaleI18nAngularRouteImport.update({
+  id: '/$locale/i18n/angular',
+  path: '/$locale/i18n/angular',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleCompareTransifexRoute = LocaleCompareTransifexRouteImport.update({
+  id: '/$locale/compare/transifex',
+  path: '/$locale/compare/transifex',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleComparePhraseRoute = LocaleComparePhraseRouteImport.update({
+  id: '/$locale/compare/phrase',
+  path: '/$locale/compare/phrase',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleCompareLokaliseRoute = LocaleCompareLokaliseRouteImport.update({
+  id: '/$locale/compare/lokalise',
+  path: '/$locale/compare/lokalise',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleCompareCrowdinRoute = LocaleCompareCrowdinRouteImport.update({
+  id: '/$locale/compare/crowdin',
+  path: '/$locale/compare/crowdin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleBlogSlugRoute = LocaleBlogSlugRouteImport.update({
@@ -97,119 +291,343 @@ const LocaleBlogSlugRoute = LocaleBlogSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/careers': typeof CareersRoute
   '/changelog': typeof ChangelogRoute
+  '/features': typeof FeaturesRoute
+  '/integrations': typeof IntegrationsRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/status': typeof StatusRoute
   '/terms': typeof TermsRoute
+  '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/careers': typeof LocaleCareersRoute
   '/$locale/changelog': typeof LocaleChangelogRoute
+  '/$locale/features': typeof LocaleFeaturesRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
   '/$locale/for-product-teams': typeof LocaleForProductTeamsRoute
   '/$locale/for-translators': typeof LocaleForTranslatorsRoute
+  '/$locale/integrations': typeof LocaleIntegrationsRoute
+  '/$locale/pricing': typeof LocalePricingRoute
   '/$locale/privacy': typeof LocalePrivacyRoute
+  '/$locale/status': typeof LocaleStatusRoute
   '/$locale/terms': typeof LocaleTermsRoute
+  '/$locale/what-is': typeof LocaleWhatIsRoute
+  '/$locale/what-is-internationalization': typeof LocaleWhatIsInternationalizationRoute
+  '/$locale/what-is-localization': typeof LocaleWhatIsLocalizationRoute
   '/api/changelog': typeof ApiChangelogRoute
+  '/api/og': typeof ApiOgRoute
   '/$locale': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
+  '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
+  '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
+  '/$locale/compare/phrase': typeof LocaleComparePhraseRoute
+  '/$locale/compare/transifex': typeof LocaleCompareTransifexRoute
+  '/$locale/i18n/angular': typeof LocaleI18nAngularRoute
+  '/$locale/i18n/best-library': typeof LocaleI18nBestLibraryRoute
+  '/$locale/i18n/best-tms': typeof LocaleI18nBestTmsRoute
+  '/$locale/i18n/for-developers': typeof LocaleI18nForDevelopersRoute
+  '/$locale/i18n/nextjs': typeof LocaleI18nNextjsRoute
+  '/$locale/i18n/nuxt': typeof LocaleI18nNuxtRoute
+  '/$locale/i18n/react': typeof LocaleI18nReactRoute
+  '/$locale/i18n/svelte': typeof LocaleI18nSvelteRoute
+  '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/blog': typeof LocaleBlogIndexRoute
+  '/$locale/compare': typeof LocaleCompareIndexRoute
+  '/$locale/i18n': typeof LocaleI18nIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/careers': typeof CareersRoute
   '/changelog': typeof ChangelogRoute
+  '/features': typeof FeaturesRoute
+  '/integrations': typeof IntegrationsRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/status': typeof StatusRoute
   '/terms': typeof TermsRoute
+  '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/careers': typeof LocaleCareersRoute
   '/$locale/changelog': typeof LocaleChangelogRoute
+  '/$locale/features': typeof LocaleFeaturesRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
   '/$locale/for-product-teams': typeof LocaleForProductTeamsRoute
   '/$locale/for-translators': typeof LocaleForTranslatorsRoute
+  '/$locale/integrations': typeof LocaleIntegrationsRoute
+  '/$locale/pricing': typeof LocalePricingRoute
   '/$locale/privacy': typeof LocalePrivacyRoute
+  '/$locale/status': typeof LocaleStatusRoute
   '/$locale/terms': typeof LocaleTermsRoute
+  '/$locale/what-is': typeof LocaleWhatIsRoute
+  '/$locale/what-is-internationalization': typeof LocaleWhatIsInternationalizationRoute
+  '/$locale/what-is-localization': typeof LocaleWhatIsLocalizationRoute
   '/api/changelog': typeof ApiChangelogRoute
+  '/api/og': typeof ApiOgRoute
   '/$locale': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
+  '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
+  '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
+  '/$locale/compare/phrase': typeof LocaleComparePhraseRoute
+  '/$locale/compare/transifex': typeof LocaleCompareTransifexRoute
+  '/$locale/i18n/angular': typeof LocaleI18nAngularRoute
+  '/$locale/i18n/best-library': typeof LocaleI18nBestLibraryRoute
+  '/$locale/i18n/best-tms': typeof LocaleI18nBestTmsRoute
+  '/$locale/i18n/for-developers': typeof LocaleI18nForDevelopersRoute
+  '/$locale/i18n/nextjs': typeof LocaleI18nNextjsRoute
+  '/$locale/i18n/nuxt': typeof LocaleI18nNuxtRoute
+  '/$locale/i18n/react': typeof LocaleI18nReactRoute
+  '/$locale/i18n/svelte': typeof LocaleI18nSvelteRoute
+  '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/blog': typeof LocaleBlogIndexRoute
+  '/$locale/compare': typeof LocaleCompareIndexRoute
+  '/$locale/i18n': typeof LocaleI18nIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/careers': typeof CareersRoute
   '/changelog': typeof ChangelogRoute
+  '/features': typeof FeaturesRoute
+  '/integrations': typeof IntegrationsRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/status': typeof StatusRoute
   '/terms': typeof TermsRoute
+  '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/careers': typeof LocaleCareersRoute
   '/$locale/changelog': typeof LocaleChangelogRoute
+  '/$locale/features': typeof LocaleFeaturesRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
   '/$locale/for-product-teams': typeof LocaleForProductTeamsRoute
   '/$locale/for-translators': typeof LocaleForTranslatorsRoute
+  '/$locale/integrations': typeof LocaleIntegrationsRoute
+  '/$locale/pricing': typeof LocalePricingRoute
   '/$locale/privacy': typeof LocalePrivacyRoute
+  '/$locale/status': typeof LocaleStatusRoute
   '/$locale/terms': typeof LocaleTermsRoute
+  '/$locale/what-is': typeof LocaleWhatIsRoute
+  '/$locale/what-is-internationalization': typeof LocaleWhatIsInternationalizationRoute
+  '/$locale/what-is-localization': typeof LocaleWhatIsLocalizationRoute
   '/api/changelog': typeof ApiChangelogRoute
+  '/api/og': typeof ApiOgRoute
   '/$locale/': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
+  '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
+  '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
+  '/$locale/compare/phrase': typeof LocaleComparePhraseRoute
+  '/$locale/compare/transifex': typeof LocaleCompareTransifexRoute
+  '/$locale/i18n/angular': typeof LocaleI18nAngularRoute
+  '/$locale/i18n/best-library': typeof LocaleI18nBestLibraryRoute
+  '/$locale/i18n/best-tms': typeof LocaleI18nBestTmsRoute
+  '/$locale/i18n/for-developers': typeof LocaleI18nForDevelopersRoute
+  '/$locale/i18n/nextjs': typeof LocaleI18nNextjsRoute
+  '/$locale/i18n/nuxt': typeof LocaleI18nNuxtRoute
+  '/$locale/i18n/react': typeof LocaleI18nReactRoute
+  '/$locale/i18n/svelte': typeof LocaleI18nSvelteRoute
+  '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/blog/': typeof LocaleBlogIndexRoute
+  '/$locale/compare/': typeof LocaleCompareIndexRoute
+  '/$locale/i18n/': typeof LocaleI18nIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
+    | '/careers'
     | '/changelog'
+    | '/features'
+    | '/integrations'
+    | '/pricing'
     | '/privacy'
+    | '/sitemap.xml'
+    | '/status'
     | '/terms'
+    | '/$locale/about'
+    | '/$locale/careers'
     | '/$locale/changelog'
+    | '/$locale/features'
     | '/$locale/for-developers'
     | '/$locale/for-product-teams'
     | '/$locale/for-translators'
+    | '/$locale/integrations'
+    | '/$locale/pricing'
     | '/$locale/privacy'
+    | '/$locale/status'
     | '/$locale/terms'
+    | '/$locale/what-is'
+    | '/$locale/what-is-internationalization'
+    | '/$locale/what-is-localization'
     | '/api/changelog'
+    | '/api/og'
     | '/$locale'
     | '/$locale/blog/$slug'
+    | '/$locale/compare/crowdin'
+    | '/$locale/compare/lokalise'
+    | '/$locale/compare/phrase'
+    | '/$locale/compare/transifex'
+    | '/$locale/i18n/angular'
+    | '/$locale/i18n/best-library'
+    | '/$locale/i18n/best-tms'
+    | '/$locale/i18n/for-developers'
+    | '/$locale/i18n/nextjs'
+    | '/$locale/i18n/nuxt'
+    | '/$locale/i18n/react'
+    | '/$locale/i18n/svelte'
+    | '/$locale/i18n/vue'
     | '/$locale/blog'
+    | '/$locale/compare'
+    | '/$locale/i18n'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
+    | '/careers'
     | '/changelog'
+    | '/features'
+    | '/integrations'
+    | '/pricing'
     | '/privacy'
+    | '/sitemap.xml'
+    | '/status'
     | '/terms'
+    | '/$locale/about'
+    | '/$locale/careers'
     | '/$locale/changelog'
+    | '/$locale/features'
     | '/$locale/for-developers'
     | '/$locale/for-product-teams'
     | '/$locale/for-translators'
+    | '/$locale/integrations'
+    | '/$locale/pricing'
     | '/$locale/privacy'
+    | '/$locale/status'
     | '/$locale/terms'
+    | '/$locale/what-is'
+    | '/$locale/what-is-internationalization'
+    | '/$locale/what-is-localization'
     | '/api/changelog'
+    | '/api/og'
     | '/$locale'
     | '/$locale/blog/$slug'
+    | '/$locale/compare/crowdin'
+    | '/$locale/compare/lokalise'
+    | '/$locale/compare/phrase'
+    | '/$locale/compare/transifex'
+    | '/$locale/i18n/angular'
+    | '/$locale/i18n/best-library'
+    | '/$locale/i18n/best-tms'
+    | '/$locale/i18n/for-developers'
+    | '/$locale/i18n/nextjs'
+    | '/$locale/i18n/nuxt'
+    | '/$locale/i18n/react'
+    | '/$locale/i18n/svelte'
+    | '/$locale/i18n/vue'
     | '/$locale/blog'
+    | '/$locale/compare'
+    | '/$locale/i18n'
   id:
     | '__root__'
     | '/'
+    | '/about'
+    | '/careers'
     | '/changelog'
+    | '/features'
+    | '/integrations'
+    | '/pricing'
     | '/privacy'
+    | '/sitemap.xml'
+    | '/status'
     | '/terms'
+    | '/$locale/about'
+    | '/$locale/careers'
     | '/$locale/changelog'
+    | '/$locale/features'
     | '/$locale/for-developers'
     | '/$locale/for-product-teams'
     | '/$locale/for-translators'
+    | '/$locale/integrations'
+    | '/$locale/pricing'
     | '/$locale/privacy'
+    | '/$locale/status'
     | '/$locale/terms'
+    | '/$locale/what-is'
+    | '/$locale/what-is-internationalization'
+    | '/$locale/what-is-localization'
     | '/api/changelog'
+    | '/api/og'
     | '/$locale/'
     | '/$locale/blog/$slug'
+    | '/$locale/compare/crowdin'
+    | '/$locale/compare/lokalise'
+    | '/$locale/compare/phrase'
+    | '/$locale/compare/transifex'
+    | '/$locale/i18n/angular'
+    | '/$locale/i18n/best-library'
+    | '/$locale/i18n/best-tms'
+    | '/$locale/i18n/for-developers'
+    | '/$locale/i18n/nextjs'
+    | '/$locale/i18n/nuxt'
+    | '/$locale/i18n/react'
+    | '/$locale/i18n/svelte'
+    | '/$locale/i18n/vue'
     | '/$locale/blog/'
+    | '/$locale/compare/'
+    | '/$locale/i18n/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  CareersRoute: typeof CareersRoute
   ChangelogRoute: typeof ChangelogRoute
+  FeaturesRoute: typeof FeaturesRoute
+  IntegrationsRoute: typeof IntegrationsRoute
+  PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StatusRoute: typeof StatusRoute
   TermsRoute: typeof TermsRoute
+  LocaleAboutRoute: typeof LocaleAboutRoute
+  LocaleCareersRoute: typeof LocaleCareersRoute
   LocaleChangelogRoute: typeof LocaleChangelogRoute
+  LocaleFeaturesRoute: typeof LocaleFeaturesRoute
   LocaleForDevelopersRoute: typeof LocaleForDevelopersRoute
   LocaleForProductTeamsRoute: typeof LocaleForProductTeamsRoute
   LocaleForTranslatorsRoute: typeof LocaleForTranslatorsRoute
+  LocaleIntegrationsRoute: typeof LocaleIntegrationsRoute
+  LocalePricingRoute: typeof LocalePricingRoute
   LocalePrivacyRoute: typeof LocalePrivacyRoute
+  LocaleStatusRoute: typeof LocaleStatusRoute
   LocaleTermsRoute: typeof LocaleTermsRoute
+  LocaleWhatIsRoute: typeof LocaleWhatIsRoute
+  LocaleWhatIsInternationalizationRoute: typeof LocaleWhatIsInternationalizationRoute
+  LocaleWhatIsLocalizationRoute: typeof LocaleWhatIsLocalizationRoute
   ApiChangelogRoute: typeof ApiChangelogRoute
+  ApiOgRoute: typeof ApiOgRoute
   LocaleIndexRoute: typeof LocaleIndexRoute
   LocaleBlogSlugRoute: typeof LocaleBlogSlugRoute
+  LocaleCompareCrowdinRoute: typeof LocaleCompareCrowdinRoute
+  LocaleCompareLokaliseRoute: typeof LocaleCompareLokaliseRoute
+  LocaleComparePhraseRoute: typeof LocaleComparePhraseRoute
+  LocaleCompareTransifexRoute: typeof LocaleCompareTransifexRoute
+  LocaleI18nAngularRoute: typeof LocaleI18nAngularRoute
+  LocaleI18nBestLibraryRoute: typeof LocaleI18nBestLibraryRoute
+  LocaleI18nBestTmsRoute: typeof LocaleI18nBestTmsRoute
+  LocaleI18nForDevelopersRoute: typeof LocaleI18nForDevelopersRoute
+  LocaleI18nNextjsRoute: typeof LocaleI18nNextjsRoute
+  LocaleI18nNuxtRoute: typeof LocaleI18nNuxtRoute
+  LocaleI18nReactRoute: typeof LocaleI18nReactRoute
+  LocaleI18nSvelteRoute: typeof LocaleI18nSvelteRoute
+  LocaleI18nVueRoute: typeof LocaleI18nVueRoute
   LocaleBlogIndexRoute: typeof LocaleBlogIndexRoute
+  LocaleCompareIndexRoute: typeof LocaleCompareIndexRoute
+  LocaleI18nIndexRoute: typeof LocaleI18nIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -221,6 +639,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/status': {
+      id: '/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof StatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -228,11 +660,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integrations': {
+      id: '/integrations'
+      path: '/integrations'
+      fullPath: '/integrations'
+      preLoaderRoute: typeof IntegrationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/features': {
+      id: '/features'
+      path: '/features'
+      fullPath: '/features'
+      preLoaderRoute: typeof FeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/changelog': {
       id: '/changelog'
       path: '/changelog'
       fullPath: '/changelog'
       preLoaderRoute: typeof ChangelogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -249,11 +716,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/og': {
+      id: '/api/og'
+      path: '/api/og'
+      fullPath: '/api/og'
+      preLoaderRoute: typeof ApiOgRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/changelog': {
       id: '/api/changelog'
       path: '/api/changelog'
       fullPath: '/api/changelog'
       preLoaderRoute: typeof ApiChangelogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/what-is-localization': {
+      id: '/$locale/what-is-localization'
+      path: '/$locale/what-is-localization'
+      fullPath: '/$locale/what-is-localization'
+      preLoaderRoute: typeof LocaleWhatIsLocalizationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/what-is-internationalization': {
+      id: '/$locale/what-is-internationalization'
+      path: '/$locale/what-is-internationalization'
+      fullPath: '/$locale/what-is-internationalization'
+      preLoaderRoute: typeof LocaleWhatIsInternationalizationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/what-is': {
+      id: '/$locale/what-is'
+      path: '/$locale/what-is'
+      fullPath: '/$locale/what-is'
+      preLoaderRoute: typeof LocaleWhatIsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/terms': {
@@ -263,11 +758,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleTermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/status': {
+      id: '/$locale/status'
+      path: '/$locale/status'
+      fullPath: '/$locale/status'
+      preLoaderRoute: typeof LocaleStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/privacy': {
       id: '/$locale/privacy'
       path: '/$locale/privacy'
       fullPath: '/$locale/privacy'
       preLoaderRoute: typeof LocalePrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/pricing': {
+      id: '/$locale/pricing'
+      path: '/$locale/pricing'
+      fullPath: '/$locale/pricing'
+      preLoaderRoute: typeof LocalePricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/integrations': {
+      id: '/$locale/integrations'
+      path: '/$locale/integrations'
+      fullPath: '/$locale/integrations'
+      preLoaderRoute: typeof LocaleIntegrationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/for-translators': {
@@ -291,6 +807,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleForDevelopersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/features': {
+      id: '/$locale/features'
+      path: '/$locale/features'
+      fullPath: '/$locale/features'
+      preLoaderRoute: typeof LocaleFeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/changelog': {
       id: '/$locale/changelog'
       path: '/$locale/changelog'
@@ -298,11 +821,130 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleChangelogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/careers': {
+      id: '/$locale/careers'
+      path: '/$locale/careers'
+      fullPath: '/$locale/careers'
+      preLoaderRoute: typeof LocaleCareersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/about': {
+      id: '/$locale/about'
+      path: '/$locale/about'
+      fullPath: '/$locale/about'
+      preLoaderRoute: typeof LocaleAboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/': {
+      id: '/$locale/i18n/'
+      path: '/$locale/i18n'
+      fullPath: '/$locale/i18n'
+      preLoaderRoute: typeof LocaleI18nIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/compare/': {
+      id: '/$locale/compare/'
+      path: '/$locale/compare'
+      fullPath: '/$locale/compare'
+      preLoaderRoute: typeof LocaleCompareIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/blog/': {
       id: '/$locale/blog/'
       path: '/$locale/blog'
       fullPath: '/$locale/blog'
       preLoaderRoute: typeof LocaleBlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/vue': {
+      id: '/$locale/i18n/vue'
+      path: '/$locale/i18n/vue'
+      fullPath: '/$locale/i18n/vue'
+      preLoaderRoute: typeof LocaleI18nVueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/svelte': {
+      id: '/$locale/i18n/svelte'
+      path: '/$locale/i18n/svelte'
+      fullPath: '/$locale/i18n/svelte'
+      preLoaderRoute: typeof LocaleI18nSvelteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/react': {
+      id: '/$locale/i18n/react'
+      path: '/$locale/i18n/react'
+      fullPath: '/$locale/i18n/react'
+      preLoaderRoute: typeof LocaleI18nReactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/nuxt': {
+      id: '/$locale/i18n/nuxt'
+      path: '/$locale/i18n/nuxt'
+      fullPath: '/$locale/i18n/nuxt'
+      preLoaderRoute: typeof LocaleI18nNuxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/nextjs': {
+      id: '/$locale/i18n/nextjs'
+      path: '/$locale/i18n/nextjs'
+      fullPath: '/$locale/i18n/nextjs'
+      preLoaderRoute: typeof LocaleI18nNextjsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/for-developers': {
+      id: '/$locale/i18n/for-developers'
+      path: '/$locale/i18n/for-developers'
+      fullPath: '/$locale/i18n/for-developers'
+      preLoaderRoute: typeof LocaleI18nForDevelopersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/best-tms': {
+      id: '/$locale/i18n/best-tms'
+      path: '/$locale/i18n/best-tms'
+      fullPath: '/$locale/i18n/best-tms'
+      preLoaderRoute: typeof LocaleI18nBestTmsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/best-library': {
+      id: '/$locale/i18n/best-library'
+      path: '/$locale/i18n/best-library'
+      fullPath: '/$locale/i18n/best-library'
+      preLoaderRoute: typeof LocaleI18nBestLibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/angular': {
+      id: '/$locale/i18n/angular'
+      path: '/$locale/i18n/angular'
+      fullPath: '/$locale/i18n/angular'
+      preLoaderRoute: typeof LocaleI18nAngularRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/compare/transifex': {
+      id: '/$locale/compare/transifex'
+      path: '/$locale/compare/transifex'
+      fullPath: '/$locale/compare/transifex'
+      preLoaderRoute: typeof LocaleCompareTransifexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/compare/phrase': {
+      id: '/$locale/compare/phrase'
+      path: '/$locale/compare/phrase'
+      fullPath: '/$locale/compare/phrase'
+      preLoaderRoute: typeof LocaleComparePhraseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/compare/lokalise': {
+      id: '/$locale/compare/lokalise'
+      path: '/$locale/compare/lokalise'
+      fullPath: '/$locale/compare/lokalise'
+      preLoaderRoute: typeof LocaleCompareLokaliseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/compare/crowdin': {
+      id: '/$locale/compare/crowdin'
+      path: '/$locale/compare/crowdin'
+      fullPath: '/$locale/compare/crowdin'
+      preLoaderRoute: typeof LocaleCompareCrowdinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/blog/$slug': {
@@ -317,19 +959,51 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  CareersRoute: CareersRoute,
   ChangelogRoute: ChangelogRoute,
+  FeaturesRoute: FeaturesRoute,
+  IntegrationsRoute: IntegrationsRoute,
+  PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StatusRoute: StatusRoute,
   TermsRoute: TermsRoute,
+  LocaleAboutRoute: LocaleAboutRoute,
+  LocaleCareersRoute: LocaleCareersRoute,
   LocaleChangelogRoute: LocaleChangelogRoute,
+  LocaleFeaturesRoute: LocaleFeaturesRoute,
   LocaleForDevelopersRoute: LocaleForDevelopersRoute,
   LocaleForProductTeamsRoute: LocaleForProductTeamsRoute,
   LocaleForTranslatorsRoute: LocaleForTranslatorsRoute,
+  LocaleIntegrationsRoute: LocaleIntegrationsRoute,
+  LocalePricingRoute: LocalePricingRoute,
   LocalePrivacyRoute: LocalePrivacyRoute,
+  LocaleStatusRoute: LocaleStatusRoute,
   LocaleTermsRoute: LocaleTermsRoute,
+  LocaleWhatIsRoute: LocaleWhatIsRoute,
+  LocaleWhatIsInternationalizationRoute: LocaleWhatIsInternationalizationRoute,
+  LocaleWhatIsLocalizationRoute: LocaleWhatIsLocalizationRoute,
   ApiChangelogRoute: ApiChangelogRoute,
+  ApiOgRoute: ApiOgRoute,
   LocaleIndexRoute: LocaleIndexRoute,
   LocaleBlogSlugRoute: LocaleBlogSlugRoute,
+  LocaleCompareCrowdinRoute: LocaleCompareCrowdinRoute,
+  LocaleCompareLokaliseRoute: LocaleCompareLokaliseRoute,
+  LocaleComparePhraseRoute: LocaleComparePhraseRoute,
+  LocaleCompareTransifexRoute: LocaleCompareTransifexRoute,
+  LocaleI18nAngularRoute: LocaleI18nAngularRoute,
+  LocaleI18nBestLibraryRoute: LocaleI18nBestLibraryRoute,
+  LocaleI18nBestTmsRoute: LocaleI18nBestTmsRoute,
+  LocaleI18nForDevelopersRoute: LocaleI18nForDevelopersRoute,
+  LocaleI18nNextjsRoute: LocaleI18nNextjsRoute,
+  LocaleI18nNuxtRoute: LocaleI18nNuxtRoute,
+  LocaleI18nReactRoute: LocaleI18nReactRoute,
+  LocaleI18nSvelteRoute: LocaleI18nSvelteRoute,
+  LocaleI18nVueRoute: LocaleI18nVueRoute,
   LocaleBlogIndexRoute: LocaleBlogIndexRoute,
+  LocaleCompareIndexRoute: LocaleCompareIndexRoute,
+  LocaleI18nIndexRoute: LocaleI18nIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -3,8 +3,14 @@ import { createServerFn } from "@tanstack/react-start";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useTranslations } from "@better-i18n/use-intl";
-import { getLocalizedMeta, formatMetaTags } from "@/lib/meta";
+import {
+  getLocalizedMeta,
+  formatMetaTags,
+  getAlternateLinks,
+  getCanonicalLink,
+} from "@/lib/meta";
 import { getChangelogs, type ChangelogEntry } from "@/lib/changelog";
+import { getDefaultStructuredData } from "@/lib/structured-data";
 
 type SupportedLocale = "en" | "tr";
 
@@ -27,9 +33,19 @@ export const Route = createFileRoute("/$locale/changelog")({
     };
   },
   head: ({ loaderData }) => {
-    const meta = getLocalizedMeta(loaderData?.messages || {}, "changelog");
+    const locale = loaderData?.locale || "en";
+    const pathname = "/changelog";
+    const meta = getLocalizedMeta(loaderData?.messages || {}, "changelog", {
+      locale,
+      pathname,
+    });
     return {
-      meta: formatMetaTags(meta),
+      meta: formatMetaTags(meta, { locale }),
+      links: [
+        ...getAlternateLinks(pathname, ["en", "tr"]),
+        getCanonicalLink(locale, pathname),
+      ],
+      scripts: getDefaultStructuredData(),
     };
   },
   component: ChangelogPage,

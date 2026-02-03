@@ -1,0 +1,89 @@
+---
+title: getSync
+description: Get details about a specific sync operation.
+---
+
+Get details about a specific sync operation including logs and affected keys. Use `syncId` from `getSyncs` response.
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `syncId` | string | Yes | Sync operation ID |
+
+## Example
+
+```json
+{
+  "syncId": "sync_abc123"
+}
+```
+
+## Response
+
+```json
+{
+  "id": "sync_abc123",
+  "type": "cdn_upload",
+  "status": "completed",
+  "startedAt": "2024-01-15T10:30:00Z",
+  "completedAt": "2024-01-15T10:30:05Z",
+  "keysAffected": 15,
+  "logs": [
+    {
+      "timestamp": "2024-01-15T10:30:00Z",
+      "level": "info",
+      "message": "Starting CDN upload"
+    },
+    {
+      "timestamp": "2024-01-15T10:30:03Z",
+      "level": "info",
+      "message": "Uploaded 15 keys to CDN"
+    },
+    {
+      "timestamp": "2024-01-15T10:30:05Z",
+      "level": "info",
+      "message": "CDN upload completed"
+    }
+  ],
+  "affectedKeys": [
+    {
+      "id": "key_abc",
+      "name": "auth.login.title",
+      "action": "updated"
+    },
+    {
+      "id": "key_def",
+      "name": "auth.login.button",
+      "action": "created"
+    }
+  ]
+}
+```
+
+## Error Response
+
+For failed syncs:
+
+```json
+{
+  "id": "sync_xyz789",
+  "type": "source_sync",
+  "status": "failed",
+  "startedAt": "2024-01-15T11:00:00Z",
+  "completedAt": "2024-01-15T11:00:02Z",
+  "error": "GitHub rate limit exceeded",
+  "logs": [
+    {
+      "timestamp": "2024-01-15T11:00:00Z",
+      "level": "info",
+      "message": "Starting source sync"
+    },
+    {
+      "timestamp": "2024-01-15T11:00:02Z",
+      "level": "error",
+      "message": "GitHub API error: rate limit exceeded"
+    }
+  ]
+}
+```

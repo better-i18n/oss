@@ -1,0 +1,88 @@
+---
+title: createKeys
+description: Create new translation keys with source text and translations.
+---
+
+Create translation keys with source text and optional translations. Don't include the source language in translations - use `sourceText` instead.
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | Yes | Project identifier in `org/project` format |
+| `keys` | array | Yes | Array of keys to create |
+
+### Key Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | Yes | Key name (e.g., 'submit_button', 'nav.home') |
+| `namespace` | string | No | Namespace (default: 'default') |
+| `sourceText` | string | No | Source language text |
+| `translations` | object | No | Target translations as `{langCode: text}` |
+| `namespaceContext` | object | No | Context for the namespace |
+
+### Namespace Context
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `description` | string | What this namespace is about |
+| `team` | string | Team owning this namespace |
+| `domain` | string | Business domain (e.g., 'auth', 'billing') |
+| `aiPrompt` | string | Custom AI prompt for translations |
+| `tags` | string[] | Tags for categorization |
+
+## Example
+
+```json
+{
+  "project": "my-org/my-app",
+  "keys": [
+    {
+      "name": "auth.login.title",
+      "namespace": "auth",
+      "sourceText": "Sign in to your account",
+      "translations": {
+        "tr": "Hesabınıza giriş yapın",
+        "de": "Melden Sie sich bei Ihrem Konto an"
+      },
+      "namespaceContext": {
+        "description": "Authentication related strings",
+        "team": "auth-team",
+        "domain": "auth"
+      }
+    },
+    {
+      "name": "auth.login.button",
+      "namespace": "auth",
+      "sourceText": "Sign in"
+    }
+  ]
+}
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "project": "my-org/my-app",
+  "keysCreated": 2,
+  "keys": [
+    {
+      "id": "key_abc123",
+      "name": "auth.login.title"
+    },
+    {
+      "id": "key_def456",
+      "name": "auth.login.button"
+    }
+  ]
+}
+```
+
+## Notes
+
+- Namespace context is applied once per namespace
+- If a key already exists, it will be skipped
+- Source text goes in `sourceText`, not in `translations`

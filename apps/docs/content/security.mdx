@@ -1,0 +1,112 @@
+---
+title: Security
+description: Security practices and policies for Better i18n.
+---
+
+Better i18n takes security seriously. This page outlines our security practices and how we protect your data.
+
+## Infrastructure
+
+### Hosting
+
+- **Cloudflare Workers** - Edge computing with built-in DDoS protection
+- **Cloudflare R2** - Object storage for translation files
+- **PlanetScale** - Serverless MySQL with automatic backups
+
+### Data Centers
+
+All data is processed and stored in secure data centers with:
+
+- SOC 2 Type II certification
+- ISO 27001 compliance
+- GDPR compliance
+
+## Authentication
+
+### API Keys
+
+- API keys are hashed before storage (bcrypt)
+- Keys can be scoped to specific projects
+- Keys can be revoked instantly from the dashboard
+- Rate limiting prevents brute force attacks
+
+### OAuth
+
+- GitHub OAuth for dashboard access
+- No passwords stored - delegated to OAuth providers
+- Session tokens expire after 30 days of inactivity
+
+## Data Protection
+
+### Encryption
+
+- **In Transit**: All connections use TLS 1.3
+- **At Rest**: Database encryption using AES-256
+
+### Access Control
+
+- Role-based access control (RBAC) at organization level
+- Audit logs for all sensitive operations
+- Principle of least privilege for internal access
+
+## Translation Data
+
+### What We Store
+
+- Translation keys and values
+- Namespace metadata
+- Sync history and logs
+
+### What We Don't Store
+
+- Source code (only translation files)
+- Credentials or secrets
+- Personal user data beyond what's needed for the service
+
+## GitHub Integration
+
+### Permissions
+
+We request minimal GitHub permissions:
+
+- **Repository Contents**: Read/write translation files only
+- **Pull Requests**: Create PRs for translation updates
+- **Webhooks**: Receive push events for sync
+
+### Data Flow
+
+1. We only access files matching your configured patterns (e.g., `locales/**/*.json`)
+2. Translation files are synced to our database
+3. Updates are pushed back as pull requests
+4. You maintain full control over merging
+
+## Responsible Disclosure
+
+If you discover a security vulnerability, please report it to:
+
+**security@better-i18n.com**
+
+We will:
+
+- Acknowledge receipt within 24 hours
+- Provide an initial assessment within 72 hours
+- Keep you informed of our progress
+- Credit you in our security acknowledgments (if desired)
+
+Please do not disclose vulnerabilities publicly until we've had a chance to address them.
+
+## Compliance
+
+### GDPR
+
+- Data processing agreements available
+- Right to erasure supported
+- Data export available on request
+
+### SOC 2
+
+We are currently working toward SOC 2 Type II certification.
+
+## Questions?
+
+For security-related questions, contact us at **security@better-i18n.com**.

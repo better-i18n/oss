@@ -1,0 +1,60 @@
+---
+title: deleteKeys
+description: Soft-delete translation keys by UUID.
+---
+
+Soft-delete translation keys by UUID. Keys are marked for deletion and removed from CDN/GitHub on next publish.
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | Yes | Project identifier in `org/project` format |
+| `keyIds` | string[] | Yes | Array of key UUIDs to delete (max 100) |
+
+## Example
+
+```json
+{
+  "project": "my-org/my-app",
+  "keyIds": [
+    "550e8400-e29b-41d4-a716-446655440000",
+    "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+  ]
+}
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "project": "my-org/my-app",
+  "markedCount": 2,
+  "marked": [
+    "550e8400-e29b-41d4-a716-446655440000",
+    "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+  ],
+  "skipped": []
+}
+```
+
+## Getting Key UUIDs
+
+Use `listKeys` to get key UUIDs:
+
+```json
+{
+  "project": "my-org/my-app",
+  "keys": ["auth.old_key"]
+}
+```
+
+Response includes `id` field with the UUID.
+
+## Notes
+
+- This is a soft delete - keys are marked with `deletedAt` timestamp
+- Keys are permanently removed on the next publish/sync
+- Maximum 100 keys can be deleted in a single request
+- Already deleted keys are skipped (appear in `skipped` array)

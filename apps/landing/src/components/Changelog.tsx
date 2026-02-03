@@ -1,5 +1,6 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useParams } from "@tanstack/react-router";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { useTranslations } from "@better-i18n/use-intl";
 
 const changelogs = [
   {
@@ -25,11 +26,14 @@ const changelogs = [
 ];
 
 export default function Changelog() {
+  const { locale } = useParams({ strict: false });
+  const t = useTranslations("changelog");
+
   return (
     <section className="py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 mb-8 sm:text-4xl/[1.1]">
-          Changelog
+          {t("title")}
         </h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {changelogs.map((item, index) => (
@@ -54,10 +58,11 @@ export default function Changelog() {
         </div>
         <div className="mt-6">
           <Link
-            to="/changelog"
+            to="/$locale/changelog"
+            params={{ locale: locale || "en" }}
             className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950"
           >
-            See what's new in Better I18N
+            {t("seeWhatsNew")}
             <IconArrowRight className="w-4 h-4" />
           </Link>
         </div>
