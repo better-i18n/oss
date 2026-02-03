@@ -7,17 +7,37 @@ const footerLinks = [
   {
     category: "product",
     links: [
-      { key: "features", label: "Features", href: "/#features" },
-      { key: "pricing", label: "Pricing", href: "/#pricing" },
-      { key: "integrations", label: "Integrations", href: "#" },
+      { key: "features", label: "Features", href: "/$locale/features" },
+      { key: "pricing", label: "Pricing", href: "/$locale/pricing" },
+      { key: "integrations", label: "Integrations", href: "/$locale/integrations" },
+    ],
+  },
+  {
+    category: "frameworks",
+    links: [
+      { key: "react", label: "React", href: "/$locale/i18n/react" },
+      { key: "nextjs", label: "Next.js", href: "/$locale/i18n/nextjs" },
+      { key: "vue", label: "Vue", href: "/$locale/i18n/vue" },
+      { key: "nuxt", label: "Nuxt", href: "/$locale/i18n/nuxt" },
+      { key: "angular", label: "Angular", href: "/$locale/i18n/angular" },
+      { key: "svelte", label: "Svelte", href: "/$locale/i18n/svelte" },
+    ],
+  },
+  {
+    category: "compare",
+    links: [
+      { key: "crowdin", label: "vs Crowdin", href: "/$locale/compare/crowdin" },
+      { key: "lokalise", label: "vs Lokalise", href: "/$locale/compare/lokalise" },
+      { key: "phrase", label: "vs Phrase", href: "/$locale/compare/phrase" },
+      { key: "transifex", label: "vs Transifex", href: "/$locale/compare/transifex" },
     ],
   },
   {
     category: "company",
     links: [
-      { key: "about", label: "About", href: "#" },
-      { key: "careers", label: "Careers", href: "#" },
-      { key: "blog", label: "Blog", href: "#" },
+      { key: "about", label: "About", href: "/$locale/about" },
+      { key: "careers", label: "Careers", href: "/$locale/careers" },
+      { key: "blog", label: "Blog", href: "/$locale/blog" },
     ],
   },
   {
@@ -33,7 +53,8 @@ const footerLinks = [
         label: "API Docs",
         href: "https://docs.better-i18n.com/",
       },
-      { key: "status", label: "Status", href: "#" },
+      { key: "whatIs", label: "What is i18n?", href: "/$locale/what-is" },
+      { key: "status", label: "Status", href: "/$locale/status" },
       { key: "changelog", label: "Changelog", href: "/$locale/changelog" },
     ],
   },
@@ -42,15 +63,15 @@ const footerLinks = [
     links: [
       { key: "privacy", label: "Privacy", href: "/$locale/privacy" },
       { key: "terms", label: "Terms", href: "/$locale/terms" },
-      { key: "security", label: "Security", href: "#" },
+      { key: "security", label: "Security", href: "https://docs.better-i18n.com/security" },
     ],
   },
   {
     category: "connect",
     links: [
-      { key: "x", label: "X", href: "#" },
-      { key: "github", label: "GitHub", href: "#" },
-      { key: "youtube", label: "YouTube", href: "#" },
+      { key: "x", label: "X", href: "https://x.com/betteri18n" },
+      { key: "github", label: "GitHub", href: "https://github.com/better-i18n" },
+      { key: "youtube", label: "YouTube", href: "https://youtube.com/@betteri18n" },
     ],
   },
 ];
@@ -63,7 +84,7 @@ export default function Footer() {
   return (
     <footer className="py-16 bg-mist-950/[0.025]">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5 mb-12">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-7 mb-12">
           {footerLinks.map((group) => (
             <div key={group.category}>
               <h3 className="text-sm font-medium text-mist-950 mb-4">
@@ -73,7 +94,6 @@ export default function Footer() {
                 {group.links.map((link) => {
                   const label = t(`${group.category}.${link.key}`);
                   const isExternal = link.href.startsWith("http");
-                  const isHash = link.href.startsWith("/#");
 
                   return (
                     <li key={link.key}>
@@ -89,19 +109,8 @@ export default function Footer() {
                         </a>
                       ) : (
                         <Link
-                          to={
-                            isHash
-                              ? "/$locale"
-                              : (link.href as
-                                  | "/$locale"
-                                  | "/$locale/changelog"
-                                  | "/$locale/privacy"
-                                  | "/$locale/terms")
-                          }
+                          to={link.href as "/$locale" | "/$locale/features" | "/$locale/pricing" | "/$locale/integrations" | "/$locale/about" | "/$locale/careers" | "/$locale/blog" | "/$locale/status" | "/$locale/changelog" | "/$locale/privacy" | "/$locale/terms" | "/$locale/what-is" | "/$locale/compare/crowdin" | "/$locale/compare/lokalise" | "/$locale/compare/phrase" | "/$locale/compare/transifex" | "/$locale/i18n/react" | "/$locale/i18n/nextjs" | "/$locale/i18n/vue" | "/$locale/i18n/nuxt" | "/$locale/i18n/angular" | "/$locale/i18n/svelte"}
                           params={{ locale: currentLocale }}
-                          hash={
-                            isHash ? link.href.replace("/#", "") : undefined
-                          }
                           className="hover:text-mist-950"
                         >
                           {label}

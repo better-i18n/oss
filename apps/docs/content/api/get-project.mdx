@@ -1,0 +1,68 @@
+---
+title: getProject
+description: Get project details including namespaces, languages, and translation coverage.
+---
+
+Get project details including namespaces, languages, key count, and translation coverage. Use this after `listProjects` to understand a specific project's structure.
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | Yes | Project identifier in `org/project` format |
+
+## Example
+
+```json
+{
+  "project": "my-org/my-app"
+}
+```
+
+## Response
+
+Returns detailed project information:
+
+```json
+{
+  "id": "proj_abc123",
+  "name": "My App",
+  "slug": "my-app",
+  "sourceLanguage": "en",
+  "targetLanguages": ["tr", "de", "fr"],
+  "keyCount": 150,
+  "namespaces": [
+    {
+      "name": "common",
+      "keyCount": 45,
+      "description": "Common UI elements",
+      "context": {
+        "team": "frontend",
+        "domain": "ui",
+        "aiPrompt": "Keep translations concise",
+        "tags": ["ui", "buttons"]
+      }
+    },
+    {
+      "name": "auth",
+      "keyCount": 25,
+      "description": "Authentication flows"
+    }
+  ],
+  "coverage": {
+    "tr": 95.5,
+    "de": 80.0,
+    "fr": 60.0
+  }
+}
+```
+
+## Namespace Context
+
+Namespaces include rich metadata that helps with organization and AI translation:
+
+- **description**: What this namespace is about
+- **team**: Team owning this namespace
+- **domain**: Business domain (e.g., 'auth', 'billing')
+- **aiPrompt**: Custom instructions for AI translations
+- **tags**: Tags for categorization
