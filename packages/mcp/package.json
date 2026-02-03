@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/mcp",
-  "version": "0.6.0",
+  "version": "0.8.0",
   "description": "MCP server for Better i18n translation management - AI-powered translation workflow for Cursor, Claude, and other AI assistants",
   "license": "MIT",
   "type": "module",
@@ -47,7 +47,7 @@
     "prepublishOnly": "npm run clean && npm run build && chmod +x ./dist/index.js"
   },
   "dependencies": {
-    "@better-i18n/mcp-types": "^0.4.0",
+    "@better-i18n/mcp-types": "^0.5.0",
     "@modelcontextprotocol/sdk": "^1.0.4",
     "@trpc/client": "^11.0.0",
     "zod": "^3.25.1"

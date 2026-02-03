@@ -1,5 +1,19 @@
 # @better-i18n/mcp
 
+## 0.8.0
+
+### Minor Changes
+
+- Add getPendingChanges and publish MCP tools. Remove duplicate getAllTranslations tool (listKeys already provides this functionality). Update getSyncs to use batch_publish instead of publish_batch. Upgrade to @better-i18n/mcp-types@0.5.0 for full type safety without type assertions.
+
+  New tools:
+  - getPendingChanges: Preview pending changes before publishing
+  - publish: Deploy translations to production (CDN/GitHub)
+
+  Breaking changes:
+  - Removed getAllTranslations tool (use listKeys instead)
+  - getSyncs now uses "batch_publish" instead of "publish_batch" for type filter
+
 ## 0.6.0
 
 ### Minor Changes

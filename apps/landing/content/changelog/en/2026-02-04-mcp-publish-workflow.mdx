@@ -1,0 +1,31 @@
+---
+title: "MCP Publish Workflow & Reliability Fixes"
+slug: "mcp-publish-workflow"
+date: "2026-02-04"
+version: "1.3.0"
+category: feature
+tags: [mcp, publish, ai, reliability]
+---
+
+AI assistants can now publish translations directly from your IDE. This release completes the MCP workflow with publish tools, fixes critical data integrity issues, and improves the overall developer experience.
+
+## What's New
+
+- **MCP Publish Tools** - Two new MCP tools: `getPendingChanges` to preview what will be deployed, and `publish` to deploy translations to CDN or GitHub — all from your IDE
+- **Complete MCP Workflow** - AI assistants can now follow the full cycle: read → translate → verify → publish → confirm, without leaving the editor
+- **Pending Publish Hints** - Write operations (`createKeys`, `updateKeys`) now return hints reminding AI to call `publish` when changes are ready
+- **MCP Router Documentation** - Comprehensive tool documentation with categories (READ, QUERY, WRITE, PUBLISH, MONITOR) and recommended workflow guide
+
+## Improvements
+
+- **Safer Key Recreation** - Fixed soft-delete rename by combining find, rename, and insert into a single database transaction, preventing conflicts on Hyperdrive connection pools
+- **Better Chat Compaction** - `/compact` command now shows the user message in chat and replaces the placeholder text with actual summarization content
+- **Default CDN Format** - Changed default format from `JSON_FLAT` to `JSON_NESTED` for better compatibility with i18n libraries
+- **CDN Fallback by Default** - New projects automatically get fallback language support enabled
+- **Language Sorting** - Languages are now sorted by status: active → draft → archived
+
+## Bug Fixes
+
+- Fixed `SyncJobType` naming inconsistency (`publish_batch` → `batch_publish`)
+- Fixed slash command auto-submit preventing double submission
+- Removed deprecated `summarize-chat` tool from server-side (now client-only)

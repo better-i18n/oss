@@ -17,7 +17,7 @@ const inputSchema = projectSchema.extend({
   limit: z.number().min(1).max(50).optional(),
   status: z.enum(["pending", "in_progress", "completed", "failed"]).optional(),
   type: z
-    .enum(["initial_import", "source_sync", "cdn_upload", "publish_batch"])
+    .enum(["initial_import", "source_sync", "cdn_upload", "batch_publish"])
     .optional(),
 });
 
@@ -37,7 +37,7 @@ export const getSyncs: Tool = {
         },
         type: {
           type: "string",
-          enum: ["initial_import", "source_sync", "cdn_upload", "publish_batch"],
+          enum: ["initial_import", "source_sync", "cdn_upload", "batch_publish"],
         },
       },
       required: ["project"],
