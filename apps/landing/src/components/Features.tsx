@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { cn } from "@better-i18n/ui/lib/utils";
 import { useTranslations } from "@better-i18n/use-intl";
+import { Link, useParams } from "@tanstack/react-router";
 import {
   IconCircleInfo,
   IconCheckmark1,
@@ -433,6 +434,7 @@ function AIContextCard() {
 
 export default function Features() {
   const t = useTranslations("features");
+  const { locale } = useParams({ strict: false });
 
   return (
     <section id="features" className="py-16 bg-mist-100">
@@ -445,13 +447,14 @@ export default function Features() {
               </h2>
               <p className="mt-4 text-lg/8 text-mist-700">{t("subtitle")}</p>
             </div>
-            <a
-              href="#"
+            <Link
+              to="/$locale/features"
+              params={{ locale: locale || "en" }}
               className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950 w-fit"
             >
               {t("seeHowItWorks")}
               <IconArrowRight className="w-4 h-4" />
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 items-stretch">

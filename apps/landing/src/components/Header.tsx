@@ -138,7 +138,7 @@ export default function Header({ className }: { className?: string }) {
                     <p className="text-sm text-mist-500">
                       {t("menu.interested", { defaultValue: "Interested?" })}{" "}
                       <a
-                        href="https://cal.com/aliosman/30min"
+                        href="https://cal.com/better-i18n/30min?overlayCalendar=true"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-medium text-mist-950 hover:underline"

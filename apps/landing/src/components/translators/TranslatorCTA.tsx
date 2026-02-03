@@ -31,7 +31,7 @@ export default function TranslatorCTA() {
                 <IconArrowRight className="size-4" />
               </a>
               <a
-                href="https://cal.com/better-i18n/demo"
+                href="https://cal.com/better-i18n/30min?overlayCalendar=true"
                 className="inline-flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white transition-colors"
               >
                 {t("cta.bookDemo")}

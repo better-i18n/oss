@@ -14,13 +14,13 @@ export default function CTA() {
           <p className="text-base/7 text-mist-700 max-w-2xl">{t("subtitle")}</p>
           <div className="flex items-center gap-4">
             <a
-              href="#"
+              href="https://dash.better-i18n.com"
               className="inline-flex items-center justify-center rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800"
             >
               {t("startTrial")}
             </a>
             <a
-              href="#"
+              href="https://cal.com/better-i18n/30min?overlayCalendar=true"
               className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950"
             >
               {t("bookDemo")}

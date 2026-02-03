@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3001",
-    "build": "vite build",
+    "build": "vite build && bun run build:worker",
+    "build:worker": "esbuild worker-entry.ts --outfile=dist/worker-entry.js --format=esm --platform=neutral",
     "preview": "wrangler dev --port 8990",
     "deploy": "bun run build && wrangler deploy",
     "logs": "wrangler tail",
@@ -25,7 +26,6 @@
     "@tanstack/router-plugin": "~1.149.0",
     "@tanstack/start-server-functions-server": "^1.131.2",
     "@unitalkai/icons": "^1.0.0",
-    "@vercel/og": "^0.8.6",
     "framer-motion": "^12.29.0",
     "gray-matter": "^4.0.3",
     "html-react-parser": "^5.2.15",
@@ -35,7 +35,8 @@
     "remotion": "^4.0.409",
     "tailwindcss": "^4.1.18",
     "use-intl": "^4.7.0",
-    "vite-tsconfig-paths": "^6.0.2"
+    "vite-tsconfig-paths": "^6.0.2",
+    "workers-og": "^0.0.27"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
@@ -46,10 +47,12 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.0.4",
+    "esbuild": "^0.27.2",
     "jsdom": "^27.0.0",
     "typescript": "^5.7.2",
     "vite": "~7.1.5",
     "vitest": "^3.0.5",
-    "web-vitals": "^5.1.0"
+    "web-vitals": "^5.1.0",
+    "wrangler": "^4.62.0"
   }
 }
