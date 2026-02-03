@@ -1,0 +1,44 @@
+---
+title: listProjects
+description: List all projects you have access to across all organizations.
+---
+
+List all projects you have access to. Call this first to discover available projects before using other tools.
+
+## Parameters
+
+This tool takes no parameters.
+
+## Example
+
+```json
+{}
+```
+
+## Response
+
+Returns an array of projects with their details:
+
+```json
+{
+  "projects": [
+    {
+      "id": "proj_abc123",
+      "name": "My App",
+      "slug": "my-app",
+      "organization": {
+        "id": "org_xyz",
+        "name": "My Org",
+        "slug": "my-org"
+      },
+      "sourceLanguage": "en",
+      "targetLanguages": ["tr", "de", "fr"],
+      "keyCount": 150
+    }
+  ]
+}
+```
+
+## Usage
+
+Use this tool first to discover your projects, then use `getProject` for detailed information about a specific project.

@@ -25,6 +25,7 @@
     "@tanstack/router-plugin": "~1.149.0",
     "@tanstack/start-server-functions-server": "^1.131.2",
     "@unitalkai/icons": "^1.0.0",
+    "@vercel/og": "^0.8.6",
     "framer-motion": "^12.29.0",
     "gray-matter": "^4.0.3",
     "html-react-parser": "^5.2.15",

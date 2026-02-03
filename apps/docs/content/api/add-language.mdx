@@ -1,0 +1,55 @@
+---
+title: addLanguage
+description: Add a new target language to a project.
+---
+
+Add a new target language to the project. Use ISO 639-1 language codes.
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | Yes | Project identifier in `org/project` format |
+| `languageCode` | string | Yes | ISO 639-1 language code (e.g., 'fr', 'ja', 'de') |
+
+## Example
+
+```json
+{
+  "project": "my-org/my-app",
+  "languageCode": "ja"
+}
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Language 'ja' added successfully",
+  "languageCode": "ja",
+  "project": "my-org/my-app",
+  "alreadyExists": false
+}
+```
+
+## Common Language Codes
+
+| Code | Language |
+|------|----------|
+| `en` | English |
+| `tr` | Turkish |
+| `de` | German |
+| `fr` | French |
+| `es` | Spanish |
+| `ja` | Japanese |
+| `ko` | Korean |
+| `zh` | Chinese |
+| `ar` | Arabic |
+| `pt` | Portuguese |
+
+## Notes
+
+- If the language already exists, `alreadyExists` will be `true`
+- Adding a language creates empty translations for all existing keys
+- Use AI translation to populate the new language quickly

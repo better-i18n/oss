@@ -7,26 +7,42 @@ import TranslatorFeatures from "@/components/translators/TranslatorFeatures";
 import TranslatorDeepLSection from "@/components/translators/TranslatorDeepLSection";
 import TranslatorWorkflow from "@/components/translators/TranslatorWorkflow";
 import TranslatorCTA from "@/components/translators/TranslatorCTA";
-import { getLocalizedMeta, formatMetaTags } from "@/lib/meta";
+import { RelatedPages } from "@/components/RelatedPages";
+import {
+  getLocalizedMeta,
+  formatMetaTags,
+  getAlternateLinks,
+  getCanonicalLink,
+} from "@/lib/meta";
+import { getDefaultStructuredData } from "@/lib/structured-data";
 
 export const Route = createFileRoute("/$locale/for-translators")({
-  loader: ({ context }) => {
-    return {
-      messages: context.messages,
-      locale: context.locale,
-    };
-  },
+  loader: ({ context }) => ({
+    messages: context.messages,
+    locale: context.locale,
+  }),
   head: ({ loaderData }) => {
-    const meta = getLocalizedMeta(loaderData?.messages || {}, "forTranslators");
-
+    const locale = loaderData?.locale || "en";
+    const pathname = "/for-translators";
+    const meta = getLocalizedMeta(loaderData?.messages || {}, "forTranslators", {
+      locale,
+      pathname,
+    });
     return {
-      meta: formatMetaTags(meta),
+      meta: formatMetaTags(meta, { locale }),
+      links: [
+        ...getAlternateLinks(pathname, ["en", "tr"]),
+        getCanonicalLink(locale, pathname),
+      ],
+      scripts: getDefaultStructuredData(),
     };
   },
   component: ForTranslatorsPage,
 });
 
 function ForTranslatorsPage() {
+  const { locale } = Route.useParams();
+
   return (
     <div className="bg-mist-100">
       <Header />
@@ -36,6 +52,7 @@ function ForTranslatorsPage() {
         <TranslatorFeatures />
         <TranslatorDeepLSection />
         <TranslatorWorkflow />
+        <RelatedPages currentPage="for-translators" locale={locale} variant="for" />
         <TranslatorCTA />
       </main>
       <Footer />

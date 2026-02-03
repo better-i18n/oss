@@ -8,8 +8,18 @@ import {
   IconArrowLeft,
   IconCircleInfo,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import {
+  SITE_URL,
+  getAlternateLinks,
+  getCanonicalLink,
+} from "@/lib/meta";
+import {
+  getArticleSchema,
+  formatStructuredData,
+  getOrganizationSchema,
+  getBreadcrumbSchema,
+} from "@/lib/structured-data";
 
-// Map tag slugs to badge colors
 function getTagColor(slug: string): string {
   const colors: Record<string, string> = {
     news: "bg-emerald-500/10 text-emerald-700",
@@ -30,34 +40,84 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     }
     return { post, locale: params.locale };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      {
-        title: `${loaderData?.post?.title ?? "Post"} — Better i18n Blog`,
+  head: ({ loaderData }) => {
+    const post = loaderData?.post;
+    const locale = loaderData?.locale || "en";
+    const pathname = `/blog/${post?.slug || ""}`;
+    const canonicalUrl = locale === "en"
+      ? `${SITE_URL}${pathname}`
+      : `${SITE_URL}/${locale}${pathname}`;
+
+    // Generate dynamic OG image URL
+    const ogImageParams = new URLSearchParams({
+      title: post?.title || "Blog Post",
+      ...(post?.primary_author?.name && { author: post.primary_author.name }),
+      ...(post?.published_at && {
+        date: new Date(post.published_at).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+      }),
+    });
+    const dynamicOgImage = `${SITE_URL}/api/og?${ogImageParams.toString()}`;
+    // Use feature_image if available, otherwise use dynamic OG
+    const ogImage = post?.feature_image || dynamicOgImage;
+
+    const articleSchema = post ? getArticleSchema({
+      title: post.title,
+      description: post.excerpt || "",
+      url: canonicalUrl,
+      image: ogImage,
+      publishedTime: post.published_at,
+      modifiedTime: post.updated_at,
+      author: {
+        name: post.primary_author?.name || "Better i18n Team",
+        url: post.primary_author?.website,
       },
-      {
-        name: "description",
-        content: loaderData?.post?.excerpt ?? "",
-      },
-      // Open Graph
-      {
-        property: "og:title",
-        content: loaderData?.post?.title ?? "",
-      },
-      {
-        property: "og:description",
-        content: loaderData?.post?.excerpt ?? "",
-      },
-      {
-        property: "og:image",
-        content: loaderData?.post?.feature_image ?? "",
-      },
-      {
-        property: "og:type",
-        content: "article",
-      },
-    ],
-  }),
+    }) : null;
+
+    const breadcrumbSchema = getBreadcrumbSchema([
+      { name: "Home", url: SITE_URL },
+      { name: "Blog", url: `${SITE_URL}/blog` },
+      { name: post?.title || "Post", url: canonicalUrl },
+    ]);
+
+    const schemas = [getOrganizationSchema(), breadcrumbSchema];
+    if (articleSchema) {
+      schemas.push(articleSchema);
+    }
+
+    return {
+      meta: [
+        { title: `${post?.title ?? "Post"} - Better i18n Blog` },
+        { name: "description", content: post?.excerpt ?? "" },
+        { property: "og:title", content: post?.title ?? "" },
+        { property: "og:description", content: post?.excerpt ?? "" },
+        { property: "og:image", content: ogImage },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: canonicalUrl },
+        { property: "og:site_name", content: "Better i18n" },
+        { property: "og:locale", content: locale },
+        { property: "article:published_time", content: post?.published_at ?? "" },
+        { property: "article:modified_time", content: post?.updated_at ?? "" },
+        { property: "article:author", content: post?.primary_author?.name ?? "" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:site", content: "@betteri18n" },
+        { name: "twitter:title", content: post?.title ?? "" },
+        { name: "twitter:description", content: post?.excerpt ?? "" },
+        { name: "twitter:image", content: ogImage },
+        { name: "robots", content: "index, follow" },
+      ],
+      links: [
+        ...getAlternateLinks(pathname, ["en", "tr"]),
+        getCanonicalLink(locale, pathname),
+      ],
+      scripts: formatStructuredData(schemas),
+    };
+  },
   component: BlogPostPage,
   notFoundComponent: BlogPostNotFound,
 });

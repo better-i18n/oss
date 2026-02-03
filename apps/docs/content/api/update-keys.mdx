@@ -1,0 +1,121 @@
+---
+title: updateKeys
+description: Update translations for existing keys.
+---
+
+Update translations. Each entry updates ONE language for ONE key. Set `isSource=true` to update the source text.
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | Yes | Project identifier in `org/project` format |
+| `translations` | array | Yes | Array of translation updates |
+
+### Translation Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `key` | string | Yes | Key name (e.g., 'submit_button') |
+| `language` | string | Yes | Language code (e.g., 'en', 'tr', 'de') |
+| `text` | string | Yes | Translation text |
+| `namespace` | string | No | Namespace (default: 'default') |
+| `isSource` | boolean | No | Set to `true` to update source text |
+| `status` | string | No | Translation status (e.g., 'approved') |
+| `namespaceContext` | object | No | Context for the namespace |
+
+## Examples
+
+### Update a translation
+
+```json
+{
+  "project": "my-org/my-app",
+  "translations": [
+    {
+      "key": "auth.login.title",
+      "language": "tr",
+      "text": "Giriş yap"
+    }
+  ]
+}
+```
+
+### Update source text
+
+```json
+{
+  "project": "my-org/my-app",
+  "translations": [
+    {
+      "key": "auth.login.title",
+      "language": "en",
+      "text": "Log in to your account",
+      "isSource": true
+    }
+  ]
+}
+```
+
+### Approve a translation
+
+```json
+{
+  "project": "my-org/my-app",
+  "translations": [
+    {
+      "key": "auth.login.title",
+      "language": "tr",
+      "text": "Hesabınıza giriş yapın",
+      "status": "approved"
+    }
+  ]
+}
+```
+
+### Batch update
+
+```json
+{
+  "project": "my-org/my-app",
+  "translations": [
+    {
+      "key": "auth.login.title",
+      "language": "tr",
+      "text": "Giriş"
+    },
+    {
+      "key": "auth.login.button",
+      "language": "tr",
+      "text": "Giriş yap"
+    },
+    {
+      "key": "auth.login.button",
+      "language": "de",
+      "text": "Anmelden"
+    }
+  ]
+}
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "project": "my-org/my-app",
+  "keysUpdated": 2,
+  "updates": [
+    {
+      "key": "auth.login.title",
+      "language": "tr",
+      "status": "updated"
+    },
+    {
+      "key": "auth.login.button",
+      "language": "tr",
+      "status": "updated"
+    }
+  ]
+}
+```
