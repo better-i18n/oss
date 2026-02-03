@@ -87,7 +87,21 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         ...getAlternateLinks("/", ["en", "tr"]),
         getCanonicalLink(locale, "/"),
       ],
-      scripts: getHomePageStructuredData(),
+      scripts: [
+        // Google Ads (gtag.js)
+        {
+          src: "https://www.googletagmanager.com/gtag/js?id=AW-17928422726",
+          async: true,
+        },
+        {
+          children: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'AW-17928422726');`,
+        },
+        // Structured data
+        ...getHomePageStructuredData(),
+      ],
     };
   },
 
