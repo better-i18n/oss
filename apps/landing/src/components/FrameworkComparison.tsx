@@ -11,7 +11,7 @@ interface FrameworkHeroProps {
   badgeText?: string;
 }
 
-export function FrameworkHero({ framework, title, subtitle, badgeText }: FrameworkHeroProps) {
+export function FrameworkHero({ framework: _framework, title, subtitle, badgeText }: FrameworkHeroProps) {
   return (
     <section className="py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">

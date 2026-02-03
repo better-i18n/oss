@@ -16,7 +16,6 @@ import {
   SITE_URL,
 } from "@/lib/meta";
 import {
-  getDefaultStructuredData,
   getBreadcrumbSchema,
   formatStructuredData,
   getOrganizationSchema,

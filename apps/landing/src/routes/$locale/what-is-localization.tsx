@@ -4,7 +4,6 @@ import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
   IconTranslate,
-  IconGlobe,
   IconImage,
   IconCurrency,
   IconCheckmark1,
