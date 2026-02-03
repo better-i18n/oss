@@ -5,8 +5,8 @@ import { useTranslations } from "@better-i18n/use-intl";
 import {
   IconGlobe,
   IconCodeBrackets,
-  IconSettings,
-  IconCalendar,
+  IconSettingsGear1,
+  IconCalendar1,
   IconCheckmark1,
   IconArrowRight,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
@@ -31,8 +31,8 @@ function WhatIsInternationalizationPage() {
 
   const keyPrinciples = [
     { icon: IconCodeBrackets, titleKey: "principles.separation.title", descKey: "principles.separation.description" },
-    { icon: IconCalendar, titleKey: "principles.formatting.title", descKey: "principles.formatting.description" },
-    { icon: IconSettings, titleKey: "principles.configuration.title", descKey: "principles.configuration.description" },
+    { icon: IconCalendar1, titleKey: "principles.formatting.title", descKey: "principles.formatting.description" },
+    { icon: IconSettingsGear1, titleKey: "principles.configuration.title", descKey: "principles.configuration.description" },
   ];
 
   const benefits = [

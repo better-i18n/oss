@@ -26,19 +26,19 @@ export const getModelIcon = (
   iconClassName: string,
 ): Record<ModelIcon, React.ReactNode> => {
   // Strip dark classes from icon className
-  const lightIconClass = stripDarkClasses(iconClassName);
+  const lightIconBook = stripDarkClasses(iconClassName);
 
   return {
     BetterAI: (
       <img
         src="https://better-i18n.com/cdn-cgi/image/width=48/logo.png"
         alt="Better AI"
-        className={cn("h-4 w-4", lightIconClass)}
+        className={cn("h-4 w-4", lightIconBook)}
       />
     ),
-    OpenAI: <OpenAI className={cn("h-4 w-4 text-white", lightIconClass)} />,
-    Gemini: <Gemini className={cn("h-4 w-4 text-white", lightIconClass)} />,
-    Claude: <Claude className={cn("h-4 w-4 text-white", lightIconClass)} />,
+    OpenAI: <OpenAI className={cn("h-4 w-4 text-white", lightIconBook)} />,
+    Gemini: <Gemini className={cn("h-4 w-4 text-white", lightIconBook)} />,
+    Claude: <Claude className={cn("h-4 w-4 text-white", lightIconBook)} />,
   };
 };
 
