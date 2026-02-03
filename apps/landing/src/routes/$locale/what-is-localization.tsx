@@ -3,11 +3,11 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
-  IconTranslate,
-  IconImage,
-  IconCurrency,
+  IconGlobe,
+  IconImages1,
+  IconCoin1,
   IconCheckmark1,
-  IconDocument,
+  IconFiles,
   IconArrowRight,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
@@ -30,10 +30,10 @@ function WhatIsLocalizationPage() {
   const { locale } = Route.useParams();
 
   const elements = [
-    { icon: IconTranslate, titleKey: "elements.translation.title", descKey: "elements.translation.description" },
-    { icon: IconCurrency, titleKey: "elements.formatting.title", descKey: "elements.formatting.description" },
-    { icon: IconImage, titleKey: "elements.cultural.title", descKey: "elements.cultural.description" },
-    { icon: IconDocument, titleKey: "elements.legal.title", descKey: "elements.legal.description" },
+    { icon: IconGlobe, titleKey: "elements.translation.title", descKey: "elements.translation.description" },
+    { icon: IconCoin1, titleKey: "elements.formatting.title", descKey: "elements.formatting.description" },
+    { icon: IconImages1, titleKey: "elements.cultural.title", descKey: "elements.cultural.description" },
+    { icon: IconFiles, titleKey: "elements.legal.title", descKey: "elements.legal.description" },
   ];
 
   const types = [
@@ -61,7 +61,7 @@ function WhatIsLocalizationPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mist-100 text-mist-700 text-sm font-medium mb-6">
-              <IconTranslate className="size-4" />
+              <IconGlobe className="size-4" />
               {t("badge")}
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1] lg:text-6xl/[1.1]">
