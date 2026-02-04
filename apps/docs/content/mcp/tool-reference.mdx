@@ -146,6 +146,67 @@ Add a new target language to the project.
 
 </Accordion>
 
+## Publish Tools
+
+<Callout type="warning">
+  **Production Impact:** Publishing deploys changes to live CDN or GitHub. Always call `getPendingChanges` first to verify what will be deployed.
+</Callout>
+
+<Accordion>
+
+<AccordionItem title="getPendingChanges">
+Preview what will be deployed before publishing. Shows translations, deleted keys, and publish destination.
+
+**Returns:**
+
+- `hasPendingChanges`: Boolean indicating if there's anything to publish
+- `summary`: Object with translation counts, deleted keys, and total changes
+- `byLanguage`: Breakdown of pending translations by language code
+- `deletedKeys`: Keys that will be permanently removed on publish
+- `publishDestination`: `"github"`, `"cdn"`, or `"none"`
+- `cannotPublishReason`: Error message if publishing is blocked
+
+**Workflow:**
+
+1. Call `getPendingChanges` to see what's pending
+2. Review the changes
+3. Call `publishTranslations` only if changes look correct
+
+</AccordionItem>
+
+<AccordionItem title="publishTranslations">
+Deploy pending changes to production (CDN or GitHub). Returns immediately with sync job IDs for tracking.
+
+**Parameters:**
+
+- `translations` (optional): Array of specific translations to publish with `keyId` and `languageCode`. If omitted, publishes ALL pending changes.
+
+**Returns:**
+
+- `success`: Boolean indicating if publish was initiated
+- `published`: Number of translations published
+- `repositories`: Number of repositories updated
+- `syncJobIds`: Array of sync job IDs for tracking with `getSync`
+
+**Important:**
+
+- This is an async operation - jobs typically complete in 5-30 seconds
+- Use `getSync(syncId)` to verify completion
+- Deleted keys are permanently removed from CDN/GitHub and database
+
+```json
+{
+  "translations": [
+    { "keyId": "uuid-1", "languageCode": "tr" },
+    { "keyId": "uuid-2", "languageCode": "de" }
+  ]
+}
+```
+
+</AccordionItem>
+
+</Accordion>
+
 ## Sync Tools
 
 <Accordion>
@@ -157,7 +218,7 @@ List recent sync operations for a project.
 
 - `limit` (optional): Max results (default: 10, max: 50)
 - `status` (optional): `"pending"`, `"in_progress"`, `"completed"`, `"failed"`
-- `type` (optional): `"initial_import"`, `"source_sync"`, `"cdn_upload"`, `"publish_batch"`
+- `type` (optional): `"initial_import"`, `"source_sync"`, `"cdn_upload"`, `"batch_publish"`
 
 </AccordionItem>
 
@@ -166,7 +227,18 @@ Get details about a specific sync operation including logs and affected keys.
 
 **Parameters:**
 
-- `syncId`: Sync job ID from `getSyncs` response.
+- `syncId`: Sync job ID from `getSyncs` or `publishTranslations` response.
+
+**Returns:**
+
+- `id`: Sync job ID
+- `type`: Job type (e.g., `"batch_publish"`)
+- `status`: `"completed"`, `"failed"`, `"in_progress"`, `"pending"`, `"cancelled"`
+- `startedAt`: ISO timestamp
+- `completedAt`: ISO timestamp (null if still running)
+- `errorMessage`: Error details if failed
+- `logs`: Array of log messages
+- `affectedKeys`: Keys modified in this sync
 
 </AccordionItem>
 
@@ -181,3 +253,5 @@ Get details about a specific sync operation including logs and affected keys.
 3. **Batch Operations**: `createKeys` and `updateKeys` handle single and bulk operations efficiently.
 4. **Source Text**: Use `updateKeys` with `isSource: true` to update source text.
 5. **Clean Up**: Use `deleteKeys` to remove unused keys (soft delete until publish).
+6. **Safe Publishing**: Always call `getPendingChanges` before `publishTranslations` to verify changes.
+7. **Track Deployment**: Use `getSync(syncId)` to verify publish jobs completed successfully.

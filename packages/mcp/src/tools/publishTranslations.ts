@@ -18,9 +18,9 @@ const inputSchema = projectSchema.extend({
     .optional(),
 });
 
-export const publish: Tool = {
+export const publishTranslations: Tool = {
   definition: {
-    name: "publish",
+    name: "publishTranslations",
     description: `Deploy pending changes to production (CDN or GitHub).
 
 ⚠️ PRODUCTION IMPACT - deploys to live systems.
@@ -56,7 +56,7 @@ Returns syncJobIds - use getSync(syncId) to verify deployment completed successf
   },
   execute: (client, args) =>
     executeTool(args, inputSchema, async (input, { workspaceId, projectSlug }) => {
-      const result = await client.mcp.publish.mutate({
+      const result = await client.mcp.publishTranslations.mutate({
         orgSlug: workspaceId,
         projectSlug,
         translations: input.translations,
