@@ -25,7 +25,7 @@ import { getSync } from "./tools/getSync.js";
 import { getSyncs } from "./tools/getSyncs.js";
 import { listKeys } from "./tools/listKeys.js";
 import { listProjects } from "./tools/listProjects.js";
-import { publish } from "./tools/publish.js";
+import { publishTranslations } from "./tools/publishTranslations.js";
 import { updateKeys } from "./tools/updateKeys.js";
 
 class BetterI18nServer {
@@ -96,7 +96,7 @@ class BetterI18nServer {
         updateKeys.definition,
         deleteKeys.definition,
         getPendingChanges.definition,
-        publish.definition,
+        publishTranslations.definition,
         getSyncs.definition,
         getSync.definition,
       ],
@@ -143,8 +143,8 @@ class BetterI18nServer {
           case "getPendingChanges":
             result = await getPendingChanges.execute(client, args);
             break;
-          case "publish":
-            result = await publish.execute(client, args);
+          case "publishTranslations":
+            result = await publishTranslations.execute(client, args);
             break;
           case "getSync":
             result = await getSync.execute(client, args);

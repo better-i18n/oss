@@ -113,14 +113,6 @@ export default function Hero() {
                   Nomad Work
                 </span>
               </span>
-              {/* NomadVibe */}
-              <span className="flex h-8 items-center justify-center shrink-0">
-                <img
-                  src="https://hellonomad.app/companies/nomadvibe.png"
-                  alt="NomadVibe"
-                  className="h-6 w-auto opacity-50 grayscale"
-                />
-              </span>
               {/* Cloudflare */}
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
