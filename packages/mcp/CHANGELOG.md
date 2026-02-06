@@ -1,5 +1,28 @@
 # @better-i18n/mcp
 
+## 0.10.0
+
+### Minor Changes
+
+- 70b1694: Upgrade to @better-i18n/mcp-types@0.6.0 with compact response format for read endpoints
+
+  **Breaking: Compact response format**
+
+  Read endpoints now return compact field names for efficient AI communication:
+  - `getProject` → `{ prj, sl, nss, lng, tk, cov }`
+  - `getSyncs` → `{ prj, tot, sy }`
+  - `getSync` → `{ id, tp, st, st_at, cp_at, log, aff_k }`
+  - `getPendingChanges` → `{ prj, has_chg, sum, by_lng, del_k }`
+
+  Write endpoints (`createKeys`, `updateKeys`, `deleteKeys`, `publishTranslations`) remain verbose.
+
+  **listKeys: multi-term search**
+  - `search` parameter now accepts `string | string[]` for OR-based multi-term search
+
+  **Other changes:**
+  - Removed `approveTranslations` tool — use `updateKeys` with `status` parameter instead
+  - Updated README with all 11 tools and compact field legend
+
 ## 0.9.0
 
 ### Minor Changes
@@ -9,7 +32,6 @@
   **Breaking: Compact response format for read endpoints**
 
   Read endpoints now return compact field names for efficient AI communication:
-
   - `getProject` → `{ prj, sl, nss, lng, tk, cov }` (was `{ project, sourceLanguage, ... }`)
   - `getSyncs` → `{ prj, tot, sy }` (was `{ project, total, syncs }`)
   - `getSync` → `{ id, tp, st, st_at, cp_at, log, aff_k }` (was `{ id, type, status, ... }`)
@@ -18,12 +40,10 @@
   Write endpoints (`createKeys`, `updateKeys`, `deleteKeys`, `publishTranslations`) remain verbose.
 
   **listKeys: multi-term search**
-
   - `search` parameter now accepts `string | string[]` for OR-based multi-term search
   - Example: `{ search: ["login", "signup", "forgot_password"] }`
 
   **README update**
-
   - Added all 11 tools to Available Tools table (was missing 5)
   - Added Compact Response Format field legend
   - Added publish workflow example prompts
