@@ -6,6 +6,7 @@
  *
  * EXAMPLES:
  * - Find "login" in source: { search: "login" }
+ * - Multi-term search: { search: ["login", "signup", "forgot"] }
  * - Find "Giriş" in Turkish: { search: "Giriş", languages: ["tr"] }
  * - Get Turkish translations: { languages: ["tr"] }
  * - Get specific keys: { keys: ["auth.login.title", "auth.login.button"] }
@@ -21,7 +22,7 @@ import {
 import type { Tool } from "../types/index.js";
 
 const inputSchema = projectSchema.extend({
-  search: z.string().optional(),
+  search: z.union([z.string(), z.array(z.string())]).optional(),
   languages: z.array(z.string()).optional(),
   namespaces: z.array(z.string()).optional(),
   keys: z.array(z.string()).optional(),
@@ -44,6 +45,7 @@ FILTER OPTIONS:
 
 EXAMPLES:
 - Find "login" in source: { search: "login" }
+- Multi-term search: { search: ["login", "signup", "forgot_password"] }
 - Find "Giriş" in Turkish: { search: "Giriş", languages: ["tr"] }
 - Get all Turkish translations: { languages: ["tr"] }
 - Get missing Turkish translations: { languages: ["tr"], status: "missing" }
@@ -57,7 +59,7 @@ Response includes namespaceDetails: a map of namespace metadata (name, keyCount,
         search: {
           type: "string",
           description:
-            "Text to search for in source text or translations (case-insensitive). If languages is specified, searches in those languages; otherwise searches source text.",
+            "Text to search for in source text or translations (case-insensitive). Single string or array of strings for multi-term search (OR matching). If languages is specified, searches in those languages; otherwise searches source text.",
         },
         languages: {
           type: "array",

@@ -1,5 +1,37 @@
 # @better-i18n/mcp
 
+## 0.9.0
+
+### Minor Changes
+
+- Upgrade `@better-i18n/mcp-types` from `^0.5.1` to `^0.6.0` for compact response format support.
+
+  **Breaking: Compact response format for read endpoints**
+
+  Read endpoints now return compact field names for efficient AI communication:
+
+  - `getProject` → `{ prj, sl, nss, lng, tk, cov }` (was `{ project, sourceLanguage, ... }`)
+  - `getSyncs` → `{ prj, tot, sy }` (was `{ project, total, syncs }`)
+  - `getSync` → `{ id, tp, st, st_at, cp_at, log, aff_k }` (was `{ id, type, status, ... }`)
+  - `getPendingChanges` → `{ prj, has_chg, sum, by_lng, del_k }` (was `{ project, hasPendingChanges, ... }`)
+
+  Write endpoints (`createKeys`, `updateKeys`, `deleteKeys`, `publishTranslations`) remain verbose.
+
+  **listKeys: multi-term search**
+
+  - `search` parameter now accepts `string | string[]` for OR-based multi-term search
+  - Example: `{ search: ["login", "signup", "forgot_password"] }`
+
+  **README update**
+
+  - Added all 11 tools to Available Tools table (was missing 5)
+  - Added Compact Response Format field legend
+  - Added publish workflow example prompts
+
+### Dependencies
+
+- @better-i18n/mcp-types@0.6.0
+
 ## 0.8.1
 
 ### Patch Changes

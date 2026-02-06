@@ -9,6 +9,7 @@ MCP (Model Context Protocol) server for [Better i18n](https://better-i18n.com). 
 - 📝 **Create & Update Keys** - Add new keys with source text and translations
 - 🔄 **Bulk Operations** - Create/update multiple keys at once
 - 🔍 **Smart Filtering** - Find keys by name, namespace, or search
+- 🚀 **Publish Workflow** - Preview and deploy translations to CDN/GitHub
 
 ## Installation
 
@@ -64,15 +65,61 @@ Add to `~/.cursor/mcp.json`:
 
 All tools require a `project` parameter in `org/project` format (e.g., `aliosman-co/personal`).
 
-| Tool                 | Description                                                              |
-| -------------------- | ------------------------------------------------------------------------ |
-| `listProjects`       | List all accessible projects                                             |
-| `getProject`         | Get project overview: namespaces, languages, coverage stats              |
-| `getAllTranslations` | Fetch all keys with translations (no pagination)                         |
-| `listKeys`           | List translation keys with filtering and pagination                      |
-| `createKeys`         | Create one or more keys (Compact: `n`, `ns`, `v`, `t`)                   |
-| `updateKeys`         | Update one or more translations (Compact: `k`, `n`, `ns`, `l`, `t`, `s`) |
-| `addLanguage`        | Add a new target language to the project                                 |
+### Read Tools
+
+| Tool                | Description                                                              |
+| ------------------- | ------------------------------------------------------------------------ |
+| `listProjects`      | List all accessible projects                                             |
+| `getProject`        | Get project overview: namespaces, languages, coverage stats              |
+| `listKeys`          | Get all keys with translations — search, filter by namespace/status      |
+| `getPendingChanges` | Preview what will be deployed when you call publish                      |
+| `getSyncs`          | List recent sync operations with status and timing                       |
+| `getSync`           | Get detailed sync info including logs and affected keys                  |
+
+### Write Tools
+
+| Tool                    | Description                                                          |
+| ----------------------- | -------------------------------------------------------------------- |
+| `createKeys`            | Create keys with source text and translations (`name`, `sourceText`, `translations`) |
+| `updateKeys`            | Update translations — each entry = one language for one key          |
+| `deleteKeys`            | Soft-delete keys by UUID — permanently removed on next publish       |
+| `addLanguage`           | Add a new target language to the project (ISO 639-1)                 |
+| `publishTranslations`   | Deploy pending changes to production (CDN or GitHub)                 |
+
+## Compact Response Format
+
+Read endpoints (`getProject`, `getSyncs`, `getSync`, `getPendingChanges`) return compact field names for efficient AI communication:
+
+| Compact | Full Name            | Context                    |
+| ------- | -------------------- | -------------------------- |
+| `prj`   | project              | All responses              |
+| `sl`    | sourceLanguage       | getProject                 |
+| `nss`   | namespaces           | getProject                 |
+| `lng`   | languages            | getProject                 |
+| `tk`    | totalKeys            | getProject                 |
+| `cov`   | coverage             | getProject                 |
+| `nm`    | name                 | Namespace/key items        |
+| `kc`    | keyCount             | Namespace items            |
+| `tr`    | translated           | Coverage items             |
+| `pct`   | percentage           | Coverage items             |
+| `tp`    | type                 | Sync items                 |
+| `st`    | status               | Sync items                 |
+| `st_at` | startedAt            | Sync items                 |
+| `cp_at` | completedAt          | Sync items                 |
+| `err_msg` | errorMessage       | Sync items                 |
+| `sy`    | syncs                | getSyncs                   |
+| `tot`   | total                | getSyncs                   |
+| `has_chg` | hasPendingChanges  | getPendingChanges          |
+| `sum`   | summary              | getPendingChanges          |
+| `by_lng` | byLanguage          | getPendingChanges          |
+| `del_k` | deletedKeys          | getPendingChanges          |
+| `pub_dst` | publishDestination | getPendingChanges          |
+| `aff_k` | affectedKeys         | getSync                    |
+| `log`   | logs                 | getSync                    |
+| `trig_by` | triggeredBy        | Sync items                 |
+| `kp`    | keysProcessed        | Sync metadata              |
+
+Write endpoints (`createKeys`, `updateKeys`, `deleteKeys`, `publishTranslations`) return verbose (full field name) responses.
 
 ## Example Prompts
 
@@ -85,6 +132,12 @@ Ask your AI assistant:
 > "Create a new key nav.home with text 'Home' and translate to German and Turkish"
 
 > "Show me translation coverage stats"
+
+> "Show me what's pending for publish"
+
+> "Publish all pending translations to production"
+
+> "Check the status of recent sync jobs"
 
 ## How It Works
 
