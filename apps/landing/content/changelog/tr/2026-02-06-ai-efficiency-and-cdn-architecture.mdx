@@ -1,0 +1,34 @@
+---
+title: "AI Verimliliği, Tool Ayrıştırma & CDN Mimarisi"
+slug: "ai-efficiency-and-cdn-architecture"
+date: "2026-02-06"
+version: "1.4.0"
+category: feature
+tags: [ai, streaming, cdn, r2, billing, mcp]
+---
+
+Bu sürüm tüm endpoint'lerde AI token tüketimini önemli ölçüde azaltıyor, tool UI mimarisini bakım kolaylığı için yeniden yapılandırıyor ve statik dosyaları özel bir R2 CDN bucket'ına taşıyor.
+
+## Yenilikler
+
+- **Optimize Edilmiş AI Yanıtları** - Tüm okuma endpoint'leri (`getProject`, `getPendingChanges`, `getSyncs`, `getSync`) artık %40-50 daha küçük yanıtlar döndürüyor, AI token maliyetlerini önemli ölçüde düşürüyor
+- **Optimize Edilmiş Tool Çıktısı** - `getKeyDetails` tool'u doğrudan daha verimli bir format döndürüyor (%55 token azalması), AI modellerinin şemayı anlaması için yerleşik alan sözlüğüyle birlikte
+- **Anında HTTP Streaming** - AI sohbeti, kurulum işlemlerinden önce HTTP bağlantısını anında açıyor ve model/context başlatma sırasındaki algılanan "takılma" sorununu ortadan kaldırıyor
+- **R2 Çift Bucket Mimarisi** - Bayrak görselleri ve statik dosyalar flagcdn.com'dan özel bir R2 bucket'ına (`s3.better-i18n.com`) taşındı, çeviri dosyalarından (`cdn.better-i18n.com`) ayrı tutuldu
+- **Not Aktivite Türü** - Kullanıcılar artık çeviri key'lerine not ekleyebiliyor, aktivite akışında takip ediliyor
+- **Faturalandırma Döngüsü Seçimi** - Aylık/yıllık fiyatlandırma geçişi, %20 yıllık tasarruf rozetiyle
+
+## İyileştirmeler
+
+- **Tool UI Ayrıştırma** - 2.376 satırlık monolitik `tool.tsx`, 11 odaklı dosyaya ayrıştırıldı (`propose-translations`, `propose-edits`, `propose-delete-keys`, `translation-list`, `translation-row`, `tool-shell`, `use-tool-approval` vb.) — görsel değişiklik sıfır
+- **Otomatik Onay UX** - Sabit kodlanmış koruma kuralları yerine semantik XML etiketleriyle daha net otomatik onay akışı
+- **Publish Sorgu Optimizasyonu** - `getPublishPreview`'da paralel sorgular ile daha hızlı yanıt süreleri
+- **AI Context Penceresi** - Token sayımı artık kümülatif toplam yerine son adım kullanımını esas alıyor, çok adımlı tool zincirlerinde şişmeyi önlüyor
+- **Kullanıcı Atıfı** - Sync işleri artık hangi kullanıcının tetiklediğini takip ediyor
+
+## Hata Düzeltmeleri
+
+- CDN etkin ancak henüz dosya yüklenmemişken MCP publish'in başarısız olması düzeltildi
+- Soft-delete rename transaction'ı find+rename+insert için tek bağlantı kullanacak şekilde düzeltildi
+- Küçük çeviri listeleri (<20 öğe) için VList yükseklik uyumsuzluğu düzeltildi
+- Organizasyon ayarları cache invalidation key'i düzeltildi

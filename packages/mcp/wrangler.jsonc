@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "better-i18n-mcp",
+  "main": "dist/worker.js",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Custom domain: mcp.better-i18n.com
+  // Zone must be in same CF account as the worker
+  "routes": [
+    {
+      "pattern": "mcp.better-i18n.com",
+      "custom_domain": true
+    }
+  ],
+
+  "vars": {
+    "BETTER_I18N_API_URL": "https://dash.better-i18n.com",
+    "BETTER_I18N_AUTH_URL": "https://dash.better-i18n.com"
+  },
+
+  // Service Binding to the API worker for direct Worker-to-Worker calls.
+  // Bypasses CF same-zone subrequest limitation that returns SPA HTML
+  // instead of API responses when fetching dash.better-i18n.com from a worker.
+  "services": [
+    {
+      "binding": "AUTH_API",
+      "service": "betteri18n-api"
+    }
+  ]
+}
