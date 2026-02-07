@@ -1,14 +1,14 @@
 {
-  "name": "@better-i18n/mcp",
-  "version": "0.10.0",
-  "description": "MCP server for Better i18n translation management - AI-powered translation workflow for Cursor, Claude, and other AI assistants",
+  "name": "@better-i18n/mcp-content",
+  "version": "0.0.1",
+  "description": "MCP server for Better i18n content management - headless CMS with AI-powered content creation for Cursor, Claude, and other AI assistants",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "better-i18n-mcp": "./dist/index.js",
-    "better-i18n-mcp-http": "./dist/http.js"
+    "better-i18n-mcp-content": "./dist/index.js",
+    "better-i18n-mcp-content-http": "./dist/http.js"
   },
   "files": [
     "dist",
@@ -21,7 +21,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/better-i18n/better-i18n.git",
-    "directory": "packages/mcp"
+    "directory": "packages/mcp-content"
   },
   "homepage": "https://better-i18n.com",
   "bugs": {
@@ -39,7 +39,10 @@
     "ai",
     "openai",
     "codex",
-    "localization"
+    "localization",
+    "cms",
+    "headless-cms",
+    "content"
   ],
   "scripts": {
     "build": "tsc",

@@ -44,12 +44,6 @@ export const deleteKeys: Tool = {
         keyIds: input.keyIds,
       });
 
-      return success({
-        success: true,
-        project: input.project,
-        markedCount: result.markedCount,
-        marked: result.marked,
-        skipped: result.skipped,
-      });
+      return success(result);
     }),
 };

@@ -8,6 +8,7 @@
     { "path": "./packages/mcp" },
     { "path": "./packages/mcp-types" },
     { "path": "./packages/schemas" },
+    { "path": "./packages/sdk" },
     { "path": "./packages/ui" }
   ]
 }

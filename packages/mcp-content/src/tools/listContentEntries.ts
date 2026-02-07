@@ -1,0 +1,100 @@
+/**
+ * listContentEntries MCP Tool
+ *
+ * Lists content entries with filtering and pagination.
+ * Supports filtering by model, status, language, and text search.
+ *
+ * EXAMPLES:
+ * - List all entries: { project: "org/proj" }
+ * - Filter by model: { project: "org/proj", modelSlug: "blog-posts" }
+ * - Search: { project: "org/proj", search: "getting started" }
+ * - Filter by status: { project: "org/proj", status: "published" }
+ * - Paginate: { project: "org/proj", page: 2, limit: 10 }
+ */
+
+import { z } from "zod";
+import {
+  executeTool,
+  projectInputProperty,
+  projectSchema,
+  success,
+} from "../base-tool.js";
+import type { Tool } from "../types/index.js";
+
+const inputSchema = projectSchema.extend({
+  modelSlug: z.string().optional(),
+  search: z.string().optional(),
+  status: z.enum(["draft", "published", "archived"]).optional(),
+  language: z.string().optional(),
+  page: z.number().min(1).optional(),
+  limit: z.number().min(1).max(50).optional(),
+});
+
+export const listContentEntries: Tool = {
+  definition: {
+    name: "listContentEntries",
+    description: `List content entries with filtering and pagination.
+
+FILTER OPTIONS:
+- modelSlug: Filter by content model (e.g., "blog-posts")
+- search: Search in title or excerpt
+- status: Filter by status ("draft", "published", "archived")
+- language: Filter entries that have this language translation
+
+PAGINATION:
+- page: Page number (default: 1)
+- limit: Results per page (default: 20, max: 50)
+
+EXAMPLES:
+- All blog posts: { modelSlug: "blog-posts" }
+- Published only: { status: "published" }
+- Search: { search: "getting started" }`,
+    inputSchema: {
+      type: "object",
+      properties: {
+        ...projectInputProperty,
+        modelSlug: {
+          type: "string",
+          description: "Filter by content model slug",
+        },
+        search: {
+          type: "string",
+          description: "Search in title or excerpt",
+        },
+        status: {
+          type: "string",
+          enum: ["draft", "published", "archived"],
+          description: "Filter by entry status",
+        },
+        language: {
+          type: "string",
+          description: "Filter by language code (entries with this translation)",
+        },
+        page: {
+          type: "number",
+          description: "Page number (default: 1)",
+        },
+        limit: {
+          type: "number",
+          description: "Results per page (default: 20, max: 50)",
+        },
+      },
+      required: ["project"],
+    },
+  },
+
+  execute: (client, args) =>
+    executeTool(args, inputSchema, async (input, { workspaceId, projectSlug }) => {
+      const result = await client.mcpContent.listContentEntries.query({
+        orgSlug: workspaceId,
+        projectSlug,
+        modelSlug: input.modelSlug,
+        search: input.search,
+        status: input.status,
+        language: input.language,
+        page: input.page,
+        limit: input.limit,
+      });
+      return success(result);
+    }),
+};
