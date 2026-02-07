@@ -1,0 +1,187 @@
+---
+title: AI Assistants
+description: Connect ChatGPT, Claude, and Gemini to your translation workspace
+icon: Globe
+---
+
+Better i18n provides a **remote MCP server** that AI assistants can connect to directly via URL. No installation required — just paste the server URL and sign in with your Better i18n account.
+
+```
+https://mcp.better-i18n.com/mcp
+```
+
+<Callout type="info">
+  Unlike [coding agents](/mcp/getting-started) that run a local MCP process via `npx`, AI assistants connect to the hosted server over HTTP and authenticate via OAuth.
+</Callout>
+
+## Supported Assistants
+
+<Tabs items={['ChatGPT', 'Claude', 'Gemini']}>
+  <Tab value="ChatGPT">
+    <Steps>
+      <Step>
+        ### Open ChatGPT Settings
+
+        Go to **Settings > MCP Tools** (or click the MCP icon in the chat input).
+      </Step>
+
+      <Step>
+        ### Add MCP Server
+
+        Click **"Add MCP server"** and paste the server URL:
+
+        ```
+        https://mcp.better-i18n.com/mcp
+        ```
+      </Step>
+
+      <Step>
+        ### Authorize
+
+        ChatGPT will redirect you to the Better i18n sign-in page. Log in with your account and authorize access.
+
+        Once authorized, ChatGPT will discover all available **translation tools** automatically.
+      </Step>
+
+      <Step>
+        ### Start Using
+
+        Ask ChatGPT to manage your translations:
+
+        > "Show me all projects in my Better i18n workspace."
+
+        > "Find all missing Turkish translations in my project."
+
+        > "Create a new key `auth.welcome` with source text 'Welcome back' and translate it to German and French."
+      </Step>
+    </Steps>
+
+  </Tab>
+  <Tab value="Claude">
+    <Steps>
+      <Step>
+        ### Open Claude Settings
+
+        Go to [claude.ai](https://claude.ai) and navigate to **Settings > Integrations**.
+      </Step>
+
+      <Step>
+        ### Add MCP Integration
+
+        Click **"Add integration"** and enter the server URL:
+
+        ```
+        https://mcp.better-i18n.com/mcp
+        ```
+      </Step>
+
+      <Step>
+        ### Authorize
+
+        Claude will redirect you to sign in to your Better i18n account. Authorize the connection.
+      </Step>
+
+      <Step>
+        ### Start Using
+
+        Ask Claude to work with your translations:
+
+        > "List my translation projects and show coverage for each language."
+
+        > "Update the Turkish translation for `nav.home` to 'Ana Sayfa'."
+      </Step>
+    </Steps>
+
+    <Callout type="info">
+      This is for **Claude on the web** (claude.ai). For **Claude Desktop** (the desktop app), use the [local MCP setup](/mcp/getting-started) instead, which runs via `npx`.
+    </Callout>
+  </Tab>
+  <Tab value="Gemini">
+    <Steps>
+      <Step>
+        ### Open Gemini Settings
+
+        Go to [gemini.google.com](https://gemini.google.com) and navigate to **Settings > Extensions** or the MCP tools section.
+      </Step>
+
+      <Step>
+        ### Add MCP Server
+
+        Add the server URL:
+
+        ```
+        https://mcp.better-i18n.com/mcp
+        ```
+      </Step>
+
+      <Step>
+        ### Authorize
+
+        Sign in to your Better i18n account when prompted and authorize access.
+      </Step>
+
+      <Step>
+        ### Start Using
+
+        Ask Gemini to manage your translations:
+
+        > "What projects do I have in Better i18n?"
+
+        > "Translate all missing keys in `common` namespace to Japanese."
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## How It Works
+
+```
+AI Assistant → HTTPS → mcp.better-i18n.com/mcp → Better i18n API
+                              │
+                        OAuth 2.1 Auth
+                              │
+                     dash.better-i18n.com
+```
+
+1. **Connect**: The AI assistant connects to the remote MCP server over HTTPS.
+2. **Authenticate**: OAuth 2.1 flow redirects you to sign in with your Better i18n account.
+3. **Discover**: The assistant discovers all available translation tools automatically.
+4. **Execute**: When you ask a question, the assistant calls the appropriate tools on your behalf.
+
+Your OAuth session lasts **30 days**. After that, the assistant will prompt you to re-authorize.
+
+## Remote vs Local MCP
+
+| | Remote (AI Assistants) | Local (Coding Agents) |
+|---|---|---|
+| **Setup** | Paste URL + sign in | `npx @better-i18n/mcp` + API key |
+| **Auth** | OAuth 2.1 (browser sign-in) | API key in env variable |
+| **Clients** | ChatGPT, Claude, Gemini | Cursor, Claude Desktop, Windsurf |
+| **Transport** | Streamable HTTP | stdio |
+| **Use case** | Chat-based translation management | IDE-integrated workflows |
+
+Both methods give access to the same set of [translation tools](/mcp/tool-reference).
+
+## Content MCP Server
+
+If you also use Better i18n's headless CMS, a separate content MCP server is available:
+
+```
+https://mcp-content.better-i18n.com/mcp
+```
+
+Add it as a second MCP server in your assistant's settings. It provides 8 content management tools (models, entries, publishing) and uses the same OAuth flow for authentication.
+
+## Troubleshooting
+
+### Tools not showing after connecting
+
+Disconnect and reconnect the MCP server in your AI assistant's settings. This forces a fresh tool discovery.
+
+### "Authentication required" when calling tools
+
+Your OAuth session may have expired. Disconnect and reconnect to trigger a new sign-in flow.
+
+### Tools visible but returning errors
+
+Ensure your Better i18n account has access to at least one project. Try asking the assistant to "list my projects" first.

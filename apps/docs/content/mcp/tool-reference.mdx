@@ -1,14 +1,15 @@
 ---
 title: Available Tools
-description: MCP tools for translation management
+description: MCP tools for translation and content management
 icon: Wrench
 ---
 
-The Better i18n MCP server provides tools for AI assistants to manage translations directly from your IDE.
+Better i18n provides two MCP servers with focused toolsets. All project-scoped tools require a `project` parameter in `org/project` format (e.g., `"aliosman-co/personal"`).
+
+## Translation Tools (`@better-i18n/mcp`)
 
 <Callout type="info">
-  All project-scoped tools require a `project` parameter in `org/project` format
-  (e.g., `"aliosman-co/personal"`). Call `listProjects` first to discover available projects.
+  Call `listProjects` first to discover available projects before using other tools.
 </Callout>
 
 ## Discovery Tools
@@ -239,6 +240,133 @@ Get details about a specific sync operation including logs and affected keys.
 - `errorMessage`: Error details if failed
 - `logs`: Array of log messages
 - `affectedKeys`: Keys modified in this sync
+
+</AccordionItem>
+
+</Accordion>
+
+---
+
+## Content Tools (`@better-i18n/mcp-content`)
+
+These tools manage headless CMS content — models, entries, and localized content fields.
+
+<Callout type="info">
+  Content tools are in a separate MCP package. Install `@better-i18n/mcp-content` alongside `@better-i18n/mcp` if you use both translation and content features.
+</Callout>
+
+### Model Tools
+
+<Accordion>
+
+<AccordionItem title="listContentModels">
+List all content models in a project with entry counts.
+
+**Returns:** Array of models with `slug`, `displayName`, `entryCount`, and field definitions.
+
+</AccordionItem>
+
+<AccordionItem title="getContentModel">
+Get a content model's full details including all field definitions.
+
+**Parameters:**
+
+- `modelSlug`: The model's URL slug (e.g., `"blog-post"`)
+
+**Returns:** Model with fields, each containing `name`, `type`, `required`, `description`.
+
+</AccordionItem>
+
+</Accordion>
+
+### Entry Tools
+
+<Accordion>
+
+<AccordionItem title="listContentEntries">
+List content entries with filtering and pagination.
+
+**Parameters:**
+
+- `modelSlug` (optional): Filter by content model
+- `search` (optional): Text search across title and body
+- `language` (optional): Language code for translated content
+- `status` (optional): `"draft"`, `"published"`, or `"all"`
+
+**Returns:** Paginated list of entries with `id`, `slug`, `title`, `status`, `publishedAt`.
+
+</AccordionItem>
+
+<AccordionItem title="getContentEntry">
+Get a single content entry with all translations and custom field values.
+
+**Parameters:**
+
+- `entryId`: The entry UUID
+
+**Returns:** Full entry with `title`, `body`, `bodyMarkdown`, `bodyHtml`, `translations`, `customFields`.
+
+</AccordionItem>
+
+<AccordionItem title="createContentEntry">
+Create a new content entry in a model.
+
+**Parameters:**
+
+- `modelSlug`: Target content model slug
+- `title`: Entry title
+- `slug` (optional): URL slug (auto-generated from title if omitted)
+- `bodyMarkdown` (optional): Entry body as Markdown (automatically converted to HTML and editor JSON)
+- `language` (optional): Language code for the content (defaults to project source language)
+
+```json
+{
+  "modelSlug": "blog-post",
+  "title": "Getting Started with i18n",
+  "bodyMarkdown": "# Welcome\n\nThis guide covers..."
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="updateContentEntry">
+Update an existing content entry's translations or metadata.
+
+**Parameters:**
+
+- `entryId`: The entry UUID
+- `languageCode`: Language to update
+- `title` (optional): Updated title
+- `bodyMarkdown` (optional): Updated body as Markdown
+- `excerpt` (optional): Short summary
+- `metaTitle` (optional): SEO title
+- `metaDescription` (optional): SEO description
+
+</AccordionItem>
+
+</Accordion>
+
+### Publish Tools
+
+<Accordion>
+
+<AccordionItem title="publishContentEntry">
+Publish a content entry to CDN. Sets status to `"published"` and triggers async CDN upload.
+
+**Parameters:**
+
+- `entryId`: The entry UUID
+
+**Returns:** Updated entry with `publishedAt` timestamp.
+
+</AccordionItem>
+
+<AccordionItem title="deleteContentEntry">
+Soft-delete a content entry.
+
+**Parameters:**
+
+- `entryId`: The entry UUID
 
 </AccordionItem>
 

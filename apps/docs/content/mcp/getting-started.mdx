@@ -1,10 +1,14 @@
 ---
-title: Setup
-description: Configure MCP server for your AI assistant
+title: Coding Agents
+description: Configure MCP server for Cursor, Claude Desktop, and Windsurf
 icon: Rocket
 ---
 
-Better i18n MCP (Model Context Protocol) allows AI assistants like Claude and Cursor to directly interact with your translation workspace.
+Set up the local MCP server for coding agents like Cursor, Claude Desktop, and Windsurf. This runs a local process via `npx` and authenticates with an API key.
+
+<Callout type="info">
+  For **ChatGPT**, **Claude** (web), or **Gemini**, use the [AI Assistants](/mcp/ai-assistants) guide instead — no installation required.
+</Callout>
 
 <Steps>
 
@@ -85,6 +89,61 @@ If configured correctly, the AI will use the `getProject` tool to fetch your rea
 </Step>
 
 </Steps>
+
+## Content Management MCP
+
+If you also use Better i18n's headless CMS features, add the content MCP server separately:
+
+<Tabs items={['Cursor', 'Claude Desktop']}>
+  <Tab value="Cursor">
+    ```json title="~/.cursor/mcp.json"
+    {
+      "mcpServers": {
+        "better-i18n": {
+          "command": "npx",
+          "args": ["@better-i18n/mcp"],
+          "env": {
+            "BETTER_I18N_API_KEY": "your-api-key"
+          }
+        },
+        "better-i18n-content": {
+          "command": "npx",
+          "args": ["@better-i18n/mcp-content"],
+          "env": {
+            "BETTER_I18N_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab value="Claude Desktop">
+    ```json
+    {
+      "mcpServers": {
+        "better-i18n": {
+          "command": "npx",
+          "args": ["@better-i18n/mcp"],
+          "env": {
+            "BETTER_I18N_API_KEY": "your-api-key"
+          }
+        },
+        "better-i18n-content": {
+          "command": "npx",
+          "args": ["@better-i18n/mcp-content"],
+          "env": {
+            "BETTER_I18N_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Callout type="info">
+  The translation and content MCP servers are separate packages to keep each focused. You can install one or both depending on your needs.
+</Callout>
 
 ## Environment Variables
 
