@@ -1,0 +1,34 @@
+---
+title: "AI Efficiency, Tool Decomposition & CDN Architecture"
+slug: "ai-efficiency-and-cdn-architecture"
+date: "2026-02-06"
+version: "1.4.0"
+category: feature
+tags: [ai, streaming, cdn, r2, billing, mcp]
+---
+
+This release significantly reduces AI token consumption across all endpoints, rebuilds the tool UI architecture for maintainability, and migrates static assets to a dedicated R2 CDN bucket.
+
+## What's New
+
+- **Optimized AI Responses** - All read endpoints (`getProject`, `getPendingChanges`, `getSyncs`, `getSync`) now return 40-50% smaller responses, reducing AI token costs significantly
+- **Optimized Tool Output** - `getKeyDetails` tool returns a more efficient format directly (55% token reduction) with a built-in field legend so AI models understand the schema
+- **Immediate HTTP Streaming** - AI chat opens the HTTP connection instantly before setup work, eliminating perceived "hanging" during model/context initialization
+- **R2 Dual-Bucket Architecture** - Flag images and static assets migrated from flagcdn.com to a dedicated R2 bucket (`s3.better-i18n.com`), separate from translation files (`cdn.better-i18n.com`)
+- **Note Activity Type** - Users can now annotate translation keys with notes, tracked in the activity feed
+- **Billing Cycle Toggle** - Monthly/yearly pricing toggle with 20% yearly savings badge
+
+## Improvements
+
+- **Tool UI Decomposition** - Monolithic 2,376-line `tool.tsx` decomposed into 11 focused files (`propose-translations`, `propose-edits`, `propose-delete-keys`, `translation-list`, `translation-row`, `tool-shell`, `use-tool-approval`, etc.) with zero visual changes
+- **Auto-Approve UX** - Clearer auto-approve prompt flow with semantic XML tags replacing hardcoded guardrails
+- **Publish Query Optimization** - Parallelized queries in `getPublishPreview` for faster response times
+- **AI Context Window** - Token counting now uses last step usage instead of cumulative totals, preventing inflation in multi-step tool chains
+- **User Attribution** - Sync jobs now track which user triggered them
+
+## Bug Fixes
+
+- Fixed MCP publish failing when CDN is enabled but no files uploaded yet
+- Fixed soft-delete rename transaction using single connection for find+rename+insert
+- Fixed VList height mismatch for small translation lists (<20 items)
+- Fixed organization settings cache invalidation key

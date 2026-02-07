@@ -7,7 +7,8 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "better-i18n-mcp": "./dist/index.js"
+    "better-i18n-mcp": "./dist/index.js",
+    "better-i18n-mcp-http": "./dist/http.js"
   },
   "files": [
     "dist",
@@ -36,6 +37,8 @@
     "cursor",
     "claude",
     "ai",
+    "openai",
+    "codex",
     "localization"
   ],
   "scripts": {
@@ -44,11 +47,12 @@
     "dev": "bun run src/index.ts",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build && chmod +x ./dist/index.js"
+    "deploy": "npm run build && wrangler deploy -c wrangler.jsonc",
+    "prepublishOnly": "npm run clean && npm run build && chmod +x ./dist/index.js ./dist/http.js"
   },
   "dependencies": {
     "@better-i18n/mcp-types": "^0.6.0",
-    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@modelcontextprotocol/sdk": "^1.25.3",
     "@trpc/client": "^11.0.0",
     "zod": "^3.25.1"
   },
