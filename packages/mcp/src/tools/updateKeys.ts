@@ -2,8 +2,8 @@
  * updateKeys MCP Tool
  *
  * Updates source text and/or target translations for one or more keys.
- * Readable input schema mapped to compact API payload (t=[{k, ns, l, t, s, st, nc}]).
- * Each entry = one language update for one key. isSource=true for source text.
+ * Uses compact schema matching the API: t=[{k, ns, l, t, s, st, nc}].
+ * Each entry = one language update for one key. s=true for source text.
  */
 
 import { z } from "zod";
@@ -24,40 +24,41 @@ const namespaceContextSchema = z.object({
 }).optional();
 
 const inputSchema = projectSchema.extend({
-  translations: z.array(
+  t: z.array(
     z.object({
-      key: z.string(),
-      namespace: z.string().optional(),
-      language: z.string(),
-      text: z.string(),
-      isSource: z.boolean().optional(),
-      status: z.string().optional(),
-      namespaceContext: namespaceContextSchema,
+      k: z.string().describe("Key name (e.g., 'submit_button')"),
+      ns: z.string().optional().describe("Namespace (default: 'default')"),
+      l: z.string().describe("Language code (e.g., 'en', 'tr', 'de')"),
+      t: z.string().describe("Translation text"),
+      s: z.boolean().optional().describe("true if updating source language text"),
+      st: z.string().optional().describe("Translation status (e.g., 'approved')"),
+      nc: namespaceContextSchema,
     }),
-  ),
+  ).min(1),
 });
 
 export const updateKeys: Tool = {
   definition: {
     name: "updateKeys",
     description:
-      "Update translations. Each entry updates ONE language for ONE key. Set isSource=true to update the source text.",
+      "Update translations. Each entry updates ONE language for ONE key. Set s=true to update the source text.",
     inputSchema: {
       type: "object",
       properties: {
         ...projectInputProperty,
-        translations: {
+        t: {
           type: "array",
+          description: "Array of translation updates. Each entry updates ONE language for ONE key.",
           items: {
             type: "object",
             properties: {
-              key: { type: "string", description: "Key name (e.g., 'submit_button')" },
-              namespace: { type: "string", description: "Namespace (default: 'default')" },
-              language: { type: "string", description: "Language code (e.g., 'en', 'tr', 'de')" },
-              text: { type: "string", description: "Translation text" },
-              isSource: { type: "boolean", description: "true if updating source language text" },
-              status: { type: "string", description: "Translation status (e.g., 'approved')" },
-              namespaceContext: {
+              k: { type: "string", description: "Key name (e.g., 'submit_button')" },
+              ns: { type: "string", description: "Namespace (default: 'default')" },
+              l: { type: "string", description: "Language code (e.g., 'en', 'tr', 'de')" },
+              t: { type: "string", description: "Translation text" },
+              s: { type: "boolean", description: "true if updating source language text" },
+              st: { type: "string", description: "Translation status (e.g., 'approved')" },
+              nc: {
                 type: "object",
                 description: "Optional context for the namespace (description, team, domain, aiPrompt, tags). Applied once per namespace.",
                 properties: {
@@ -69,11 +70,11 @@ export const updateKeys: Tool = {
                 },
               },
             },
-            required: ["key", "language", "text"],
+            required: ["k", "l", "t"],
           },
         },
       },
-      required: ["project", "translations"],
+      required: ["project", "t"],
     },
   },
 
@@ -85,23 +86,10 @@ export const updateKeys: Tool = {
         const result = await client.mcp.updateKeys.mutate({
           orgSlug: workspaceId,
           projectSlug,
-          t: input.translations.map((item) => ({
-            k: item.key,
-            ns: item.namespace || "default",
-            l: item.language,
-            t: item.text,
-            s: item.isSource,
-            st: item.status,
-            nc: item.namespaceContext,
-          })),
+          t: input.t,
         });
 
-        return success({
-          success: true,
-          project: input.project,
-          keysUpdated: result.keysUpdated,
-          updates: result.updates,
-        });
+        return success(result);
       },
     ),
 };

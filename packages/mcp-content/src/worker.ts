@@ -1,5 +1,5 @@
 /**
- * Better i18n MCP Server — Cloudflare Worker
+ * Better i18n MCP Content Server — Cloudflare Worker
  *
  * Streamable HTTP transport using Web Standard APIs.
  * Deploy to Cloudflare Workers for a hosted MCP endpoint
@@ -15,7 +15,7 @@
  *   npm run deploy
  *
  * Usage:
- *   MCP Server URL: https://mcp.better-i18n.com/mcp
+ *   MCP Server URL: https://mcp-content.better-i18n.com/mcp
  */
 
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
@@ -99,13 +99,18 @@ async function resolveOAuthUserId(
       }),
     );
 
+    const rawBody = await res.text();
+    console.log(
+      `[mcp-content] get-session response: status=${res.status} body=${rawBody.slice(0, 500)}`,
+    );
+
     if (!res.ok) {
       return { error: "Invalid or expired OAuth token", status: 401 };
     }
 
     let data: { userId?: string; user?: { id?: string } } | null;
     try {
-      data = (await res.json()) as typeof data;
+      data = JSON.parse(rawBody);
     } catch {
       return { error: "Invalid session response", status: 502 };
     }
@@ -193,7 +198,7 @@ export default {
 
     // Log every request for debugging
     console.log(
-      `[mcp] ${request.method} ${pathname} from ${request.headers.get("user-agent")?.slice(0, 80)}`,
+      `[mcp-content] ${request.method} ${pathname} from ${request.headers.get("user-agent")?.slice(0, 80)}`,
     );
 
     // CORS preflight
@@ -306,6 +311,10 @@ export default {
         // Resolve token → auth context
         let auth: ResolvedAuth | { error: string; status: number };
 
+        console.log(
+          `[mcp-content] token: prefix=${token.slice(0, 8)}... len=${token.length}`,
+        );
+
         if (token.startsWith(API_KEY_PREFIX)) {
           auth = { type: "apiKey", apiKey: token };
         } else if (env.AUTH_API && env.MCP_SERVICE_SECRET) {
@@ -323,15 +332,38 @@ export default {
           };
         }
 
+        console.log(
+          "[mcp-content] auth result:",
+          JSON.stringify(
+            "error" in auth
+              ? { error: auth.error }
+              : auth.type === "apiKey"
+                ? { type: "apiKey" }
+                : { type: "serviceAuth", userId: auth.userId },
+          ),
+        );
+
         if ("error" in auth) {
           return corsResponse(auth.status, { error: auth.error });
         }
 
         try {
-          const response = await handleMcpRequest(request, auth, env);
+          const body = await request.text();
+          console.log("[mcp-content] request body:", body.slice(0, 500));
+
+          // Reconstruct request with the body text
+          const newRequest = new Request(request.url, {
+            method: request.method,
+            headers: request.headers,
+            body,
+          });
+
+          const response = await handleMcpRequest(newRequest, auth, env);
+          const responseBody = await response.clone().text();
+          console.log("[mcp-content] response:", responseBody.slice(0, 500));
           return response;
         } catch (err) {
-          console.error("[better-i18n-mcp] Error:", err);
+          console.error("[mcp-content] Error:", err);
           if (err instanceof Error && err.message.includes("Unauthorized")) {
             return corsResponse(401, { error: "Invalid API key" });
           }

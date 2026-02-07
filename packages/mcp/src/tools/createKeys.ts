@@ -2,7 +2,7 @@
  * createKeys MCP Tool
  *
  * Creates one or more translation keys with source text and optional translations.
- * Readable input schema mapped to compact API payload (k=[{n, ns, v, t, nc}]).
+ * Uses compact schema matching the API: k=[{n, ns, v, t, nc}].
  */
 
 import { z } from "zod";
@@ -23,36 +23,37 @@ const namespaceContextSchema = z.object({
 }).optional();
 
 const inputSchema = projectSchema.extend({
-  keys: z.array(
+  k: z.array(
     z.object({
-      name: z.string(),
-      namespace: z.string().optional(),
-      sourceText: z.string().optional(),
-      translations: z.record(z.string(), z.string()).optional(),
-      namespaceContext: namespaceContextSchema,
+      n: z.string().describe("Key name (e.g., 'submit_button', 'nav.home')"),
+      ns: z.string().default("default").describe("Namespace (default: 'default')"),
+      v: z.string().optional().describe("Source language text"),
+      t: z.record(z.string(), z.string()).optional().describe("Target translations as {langCode: text}"),
+      nc: namespaceContextSchema,
     }),
-  ),
+  ).min(1),
 });
 
 export const createKeys: Tool = {
   definition: {
     name: "createKeys",
     description:
-      "Create translation keys with source text and optional translations. Don't include the source language in translations — use sourceText instead.",
+      "Create translation keys with source text and optional translations. Don't include the source language in translations \u2014 use v (source value) instead.",
     inputSchema: {
       type: "object",
       properties: {
         ...projectInputProperty,
-        keys: {
+        k: {
           type: "array",
+          description: "Array of keys to create",
           items: {
             type: "object",
             properties: {
-              name: { type: "string", description: "Key name (e.g., 'submit_button', 'nav.home')" },
-              namespace: { type: "string", description: "Namespace (default: 'default')" },
-              sourceText: { type: "string", description: "Source language text" },
-              translations: { type: "object", description: "Target translations as {langCode: text}" },
-              namespaceContext: {
+              n: { type: "string", description: "Key name (e.g., 'submit_button', 'nav.home')" },
+              ns: { type: "string", description: "Namespace (default: 'default')" },
+              v: { type: "string", description: "Source language text" },
+              t: { type: "object", description: "Target translations as {langCode: text}" },
+              nc: {
                 type: "object",
                 description: "Optional context for the namespace (description, team, domain, aiPrompt, tags). Applied once per namespace.",
                 properties: {
@@ -64,11 +65,11 @@ export const createKeys: Tool = {
                 },
               },
             },
-            required: ["name"],
+            required: ["n"],
           },
         },
       },
-      required: ["project", "keys"],
+      required: ["project", "k"],
     },
   },
 
@@ -80,21 +81,10 @@ export const createKeys: Tool = {
         const result = await client.mcp.createKeys.mutate({
           orgSlug: workspaceId,
           projectSlug,
-          k: input.keys.map((item) => ({
-            n: item.name,
-            ns: item.namespace || "default",
-            v: item.sourceText,
-            t: item.translations,
-            nc: item.namespaceContext,
-          })),
+          k: input.k,
         });
 
-        return success({
-          success: true,
-          project: input.project,
-          keysCreated: result.keysCreated,
-          keys: result.keys,
-        });
+        return success(result);
       },
     ),
 };
