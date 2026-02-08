@@ -1,6 +1,6 @@
 // ─── Client Configuration ────────────────────────────────────────────
 
-/** Configuration for creating a Better i18n client. */
+/** Configuration for creating a Better i18n content client. */
 export interface ClientConfig {
   /** Organization slug (e.g., "acme-corp"). */
   org: string;
@@ -8,9 +8,7 @@ export interface ClientConfig {
   project: string;
   /** API key for authenticating content requests. Required. */
   apiKey: string;
-  /** CDN base URL for translations. Defaults to `https://cdn.better-i18n.com`. */
-  cdnBase?: string;
-  /** REST API base URL for content. Defaults to `https://api.better-i18n.com`. */
+  /** REST API base URL. Defaults to `https://api.better-i18n.com`. */
   apiBase?: string;
 }
 
@@ -58,27 +56,11 @@ export interface ContentModel {
   entryCount: number;
 }
 
-// ─── Translation Types ───────────────────────────────────────────────
-
-/** Manifest describing project languages and translation coverage. */
-export interface TranslationManifest {
-  projectSlug: string;
-  sourceLanguage: string;
-  languages: Array<{
-    code: string;
-    name: string;
-    nativeName: string;
-    isSource: boolean;
-    keyCount: number;
-  }>;
-  updatedAt: string;
-}
-
-// ─── Client Interfaces ──────────────────────────────────────────────
+// ─── Client Interface ───────────────────────────────────────────────
 
 /** Options for listing content entries. */
 export interface ListEntriesOptions {
-  /** Language code for localized content. Defaults to `"en"`. */
+  /** Language code for localized content. Defaults to source language. */
   language?: string;
   /** Page number (1-based). */
   page?: number;
@@ -88,13 +70,7 @@ export interface ListEntriesOptions {
 
 /** Options for fetching a single content entry. */
 export interface GetEntryOptions {
-  /** Language code for localized content. Defaults to `"en"`. */
-  language?: string;
-}
-
-/** Options for fetching translations. */
-export interface GetTranslationsOptions {
-  /** Language code. Defaults to `"en"`. */
+  /** Language code for localized content. Defaults to source language. */
   language?: string;
 }
 
@@ -113,23 +89,4 @@ export interface ContentClient {
     entrySlug: string,
     options?: GetEntryOptions,
   ): Promise<ContentEntry>;
-}
-
-/** Client for fetching translation strings. */
-export interface TranslationsClient {
-  /** Fetch translations for a namespace. */
-  get(
-    namespace: string,
-    options?: GetTranslationsOptions,
-  ): Promise<Record<string, string>>;
-  /** Fetch the project translation manifest. */
-  getManifest(): Promise<TranslationManifest>;
-}
-
-/** The unified Better i18n client. */
-export interface BetterI18nClient {
-  /** Content sub-client for headless CMS operations. */
-  content: ContentClient;
-  /** Translations sub-client for i18n string fetching. */
-  translations: TranslationsClient;
 }
