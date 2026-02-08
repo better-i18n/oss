@@ -31,7 +31,7 @@ export const Route = createFileRoute("/$locale/for-product-teams")({
     return {
       meta: formatMetaTags(meta, { locale }),
       links: [
-        ...getAlternateLinks(pathname, ["en", "tr"]),
+        ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
       scripts: getDefaultStructuredData(),

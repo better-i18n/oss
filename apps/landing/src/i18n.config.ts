@@ -3,5 +3,5 @@ export const i18nConfig = {
   defaultLocale: "en",
   // Supported locales - these should match what's configured in the CDN
   // The default locale (en) has no URL prefix, others have prefix
-  locales: ["en", "tr"],
+  locales: ["en", "tr", "zh"],
 };

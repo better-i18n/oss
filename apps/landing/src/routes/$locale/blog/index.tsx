@@ -48,7 +48,7 @@ export const Route = createFileRoute("/$locale/blog/")({
     return {
       meta: formatMetaTags(meta, { locale }),
       links: [
-        ...getAlternateLinks(pathname, ["en", "tr"]),
+        ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
       scripts: formatStructuredData([

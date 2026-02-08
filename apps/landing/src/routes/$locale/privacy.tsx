@@ -26,7 +26,7 @@ export const Route = createFileRoute("/$locale/privacy")({
     return {
       meta: formatMetaTags(meta, { locale }),
       links: [
-        ...getAlternateLinks(pathname, ["en", "tr"]),
+        ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
       scripts: getDefaultStructuredData(),

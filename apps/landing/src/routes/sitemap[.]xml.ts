@@ -8,7 +8,7 @@ interface SitemapEntry {
   priority?: number;
 }
 
-const LOCALES = ["en", "tr"];
+const LOCALES = ["en", "tr", "zh"];
 
 // Static pages with their priorities
 const PAGES = [

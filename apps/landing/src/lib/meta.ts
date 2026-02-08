@@ -147,7 +147,7 @@ export function formatMetaTags(
 /**
  * Get alternate language links for hreflang tags
  */
-export function getAlternateLinks(pathname: string = "/", locales: string[] = ["en", "tr"]) {
+export function getAlternateLinks(pathname: string = "/", locales: string[] = ["en", "tr", "zh"]) {
   const cleanPath = pathname.replace(/^\/[a-z]{2}\//, "/").replace(/^\/+/, "");
 
   const links = locales.map((locale) => ({

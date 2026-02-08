@@ -12,12 +12,10 @@ import {
 import { getChangelogs, type ChangelogEntry } from "@/lib/changelog";
 import { getDefaultStructuredData } from "@/lib/structured-data";
 
-type SupportedLocale = "en" | "tr";
-
 const loadChangelogs = createServerFn({ method: "GET" })
   .inputValidator((data: { locale: string }) => data)
   .handler(async ({ data }) => {
-    return getChangelogs((data.locale === "tr" ? "tr" : "en") as SupportedLocale);
+    return getChangelogs(data.locale === "tr" ? "tr" : "en");
   });
 
 export const Route = createFileRoute("/$locale/changelog")({
@@ -42,7 +40,7 @@ export const Route = createFileRoute("/$locale/changelog")({
     return {
       meta: formatMetaTags(meta, { locale }),
       links: [
-        ...getAlternateLinks(pathname, ["en", "tr"]),
+        ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
       scripts: getDefaultStructuredData(),

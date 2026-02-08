@@ -84,7 +84,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           rel: "stylesheet",
           href: appCss,
         },
-        ...getAlternateLinks("/", ["en", "tr"]),
+        ...getAlternateLinks("/", i18nConfig.locales),
         getCanonicalLink(locale, "/"),
       ],
       scripts: [
