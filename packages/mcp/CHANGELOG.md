@@ -1,5 +1,11 @@
 # @better-i18n/mcp
 
+## 0.11.1
+
+### Patch Changes
+
+- d2b320b: Fix npx executable resolution by removing duplicate HTTP bin entry. Having multiple bin entries caused `npx @better-i18n/mcp` to fail with "could not determine executable to run" on npm v10+. HTTP transport is still available via `node dist/http.js`.
+
 ## 0.11.0
 
 ### Minor Changes
