@@ -1,14 +1,11 @@
 export { createClient } from "./client";
+export { createContentAPIClient } from "./content-api";
 export type {
   ClientConfig,
-  BetterI18nClient,
   ContentClient,
-  TranslationsClient,
   ContentEntry,
   ContentEntryListItem,
   ContentModel,
-  TranslationManifest,
   ListEntriesOptions,
   GetEntryOptions,
-  GetTranslationsOptions,
 } from "./types";
