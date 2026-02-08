@@ -97,7 +97,7 @@ export function getPageHead(options: PageSEOOptions) {
     locale,
     pageKey,
     pathname,
-    locales = ["en", "tr"],
+    locales = ["en", "tr", "zh"],
     isHomepage = false,
     pageType,
     structuredDataOptions,

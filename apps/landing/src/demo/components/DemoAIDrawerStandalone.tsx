@@ -25,6 +25,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@better-i18n/ui/components/collapsible";
+import { useTranslations, useLocale } from "@better-i18n/use-intl";
 
 // Flag icon component with real flag images
 function FlagIcon({
@@ -118,6 +119,84 @@ const DEMO_MENTIONS: MentionItem[] = [
     description: "dashboard namespace",
   },
 ];
+
+// ── Locale-aware demo typing content ──────────────────────────────
+interface DemoSegment {
+  type: "text" | "mention";
+  value: string; // text content for "text", mention ID for "mention"
+}
+
+interface DemoPhaseContent {
+  segments: DemoSegment[];
+  userMessage: string;
+}
+
+interface DemoContent {
+  phase1: DemoPhaseContent;
+  phase2: DemoPhaseContent;
+}
+
+const DEMO_CONTENT: Record<string, DemoContent> = {
+  en: {
+    phase1: {
+      segments: [
+        { type: "text", value: "Translate " },
+        { type: "mention", value: "lang:tr" },
+        { type: "text", value: " keys in " },
+        { type: "mention", value: "ns:auth" },
+      ],
+      userMessage: "Translate @Turkish keys in @auth",
+    },
+    phase2: {
+      segments: [
+        { type: "text", value: "Now add " },
+        { type: "mention", value: "lang:de" },
+        { type: "text", value: " and publish all" },
+      ],
+      userMessage: "Now add @German and publish all",
+    },
+  },
+  tr: {
+    phase1: {
+      segments: [
+        { type: "text", value: "Çevir " },
+        { type: "mention", value: "lang:tr" },
+        { type: "text", value: " anahtarları " },
+        { type: "mention", value: "ns:auth" },
+        { type: "text", value: " içinde" },
+      ],
+      userMessage: "Çevir @Turkish anahtarları @auth içinde",
+    },
+    phase2: {
+      segments: [
+        { type: "text", value: "Şimdi " },
+        { type: "mention", value: "lang:de" },
+        { type: "text", value: " ekle ve tümünü yayınla" },
+      ],
+      userMessage: "Şimdi @German ekle ve tümünü yayınla",
+    },
+  },
+  zh: {
+    phase1: {
+      segments: [
+        { type: "text", value: "翻译 " },
+        { type: "mention", value: "ns:auth" },
+        { type: "text", value: " 中的 " },
+        { type: "mention", value: "lang:tr" },
+        { type: "text", value: " 键" },
+      ],
+      userMessage: "翻译 @auth 中的 @Turkish 键",
+    },
+    phase2: {
+      segments: [
+        { type: "text", value: "现在添加 " },
+        { type: "mention", value: "lang:de" },
+        { type: "text", value: " 并发布全部" },
+      ],
+      userMessage: "现在添加 @German 并发布全部",
+    },
+  },
+};
 
 // Status icons logic matching real app
 const StatusIcon = ({ status }: { status: "approved" | "published" }) => {
@@ -224,25 +303,6 @@ function renderMessageWithMentions(content: string, mentions: MentionItem[]) {
   });
 }
 
-// Autocomplete suggestions - matching production drawer-suggestions.ts
-const SUGGESTIONS = [
-  {
-    text: "Find untranslated keys",
-    icon: IconMagnifyingGlass,
-    value: "Find all untranslated keys",
-  },
-  {
-    text: "Translate missing keys",
-    icon: IconMagicWand,
-    value: "Propose translations for all missing keys",
-  },
-  {
-    text: "Translate auth namespace",
-    icon: IconGlobe,
-    value: "Translate all missing keys in @ns:auth",
-  },
-];
-
 interface ToolWrapperProps {
   children: React.ReactNode;
   header: React.ReactNode;
@@ -274,7 +334,7 @@ const ToolWrapper = ({ children, header }: ToolWrapperProps) => {
 };
 
 // Collapsible Input Component
-function CollapsibleInput({ input }: { input: Record<string, unknown> }) {
+function CollapsibleInput({ input, label }: { input: Record<string, unknown>; label: string }) {
   const [isOpen, setIsOpen] = useState(true);
 
   if (!input) return null;
@@ -286,7 +346,7 @@ function CollapsibleInput({ input }: { input: Record<string, unknown> }) {
         className="flex items-center justify-between mb-1.5 w-full hover:opacity-80 transition-opacity"
       >
         <h4 className="text-[10px] font-semibold uppercase tracking-wide text-gray-500">
-          Input Parameters
+          {label}
         </h4>
         <IconChevronBottom
           className={cn(
@@ -313,6 +373,9 @@ function CollapsibleInput({ input }: { input: Record<string, unknown> }) {
 const INITIAL_MESSAGES: Message[] = [];
 
 export function DemoAIDrawerStandalone() {
+  const t = useTranslations("demo");
+  const { locale } = useLocale();
+
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -329,6 +392,28 @@ export function DemoAIDrawerStandalone() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Localized suggestions
+  const suggestions = useMemo(() => [
+    {
+      text: t("suggestions.findUntranslated"),
+      icon: IconMagnifyingGlass,
+      value: "Find all untranslated keys",
+    },
+    {
+      text: t("suggestions.translateMissing"),
+      icon: IconMagicWand,
+      value: "Propose translations for all missing keys",
+    },
+    {
+      text: t("suggestions.translateAuth"),
+      icon: IconGlobe,
+      value: "Translate all missing keys in @ns:auth",
+    },
+  ], [t]);
+
+  // Get demo content for current locale (fallback to en)
+  const demoContent = useMemo(() => DEMO_CONTENT[locale] || DEMO_CONTENT.en, [locale]);
 
   // Filter mentions based on query
   const filteredMentions = useMemo(() => {
@@ -359,10 +444,10 @@ export function DemoAIDrawerStandalone() {
     let messagesState: Message[] = [];
 
     const scheduleNext = (fn: () => void, delay: number) => {
-      const t = setTimeout(() => {
+      const tid = setTimeout(() => {
         if (!cancelled) fn();
       }, delay);
-      timeouts.push(t);
+      timeouts.push(tid);
     };
 
     // Helper to create mention chip
@@ -392,123 +477,106 @@ export function DemoAIDrawerStandalone() {
       return mentionSpan;
     };
 
-    // Helper to type text character by character
-    const typeText = (
-      text: string,
-      onChar: (partial: string) => void,
-      onDone: () => void,
-      charIndex = 0,
+    // ── Generic segment-based typing animation ──────────────────────
+    const animateSegments = (
+      segments: DemoSegment[],
+      idx: number,
+      onComplete: () => void,
     ) => {
-      if (cancelled) return;
-      if (charIndex < text.length) {
-        onChar(text.slice(0, charIndex + 1));
-        scheduleNext(
-          () => typeText(text, onChar, onDone, charIndex + 1),
-          50 + Math.random() * 30,
-        );
-      } else {
-        onDone();
+      if (cancelled || idx >= segments.length) {
+        if (!cancelled) scheduleNext(onComplete, 500);
+        return;
       }
-    };
 
-    const turkishMention = DEMO_MENTIONS.find((m) => m.id === "lang:tr")!;
-    const germanMention = DEMO_MENTIONS.find((m) => m.id === "lang:de")!;
-    const authMention = DEMO_MENTIONS.find((m) => m.id === "ns:auth")!;
+      const seg = segments[idx];
 
-    // ═══════════════════════════════════════════════════════════════
-    // PHASE 1: Type "Translate @Turkish keys in @auth"
-    // ═══════════════════════════════════════════════════════════════
-    const phase1_typeStart = () => {
-      typeText(
-        "Translate ",
-        (partial) => {
-          editor.textContent = partial;
-          setInput(partial);
-        },
-        phase1_showTurkishDropdown,
-      );
-    };
+      if (seg.type === "text") {
+        // Get or create trailing text node
+        let textNode: Text;
+        const lastChild = editor.childNodes[editor.childNodes.length - 1];
+        if (lastChild && lastChild.nodeType === Node.TEXT_NODE) {
+          textNode = lastChild as Text;
+        } else {
+          textNode = document.createTextNode("");
+          editor.appendChild(textNode);
+        }
 
-    const phase1_showTurkishDropdown = () => {
-      editor.textContent = "Translate @";
-      setInput("Translate @");
-      setShowMentionDropdown(true);
-      setMentionQuery("");
-      scheduleNext(phase1_filterTurkish, 400);
-    };
+        const existingText = textNode.textContent || "";
+        let charIdx = 0;
 
-    const phase1_filterTurkish = () => {
-      editor.textContent = "Translate @tu";
-      setInput("Translate @tu");
-      setMentionQuery("tu");
-      setMentionIndex(0);
-      scheduleNext(phase1_selectTurkish, 400);
-    };
-
-    const phase1_selectTurkish = () => {
-      setShowMentionDropdown(false);
-      editor.innerHTML = "";
-      editor.appendChild(document.createTextNode("Translate "));
-      editor.appendChild(createMentionChip(turkishMention));
-      editor.appendChild(document.createTextNode(" "));
-      setInput("Translate @Turkish ");
-      scheduleNext(phase1_typeMiddle, 200);
-    };
-
-    const phase1_typeMiddle = () => {
-      const lastNode = editor.childNodes[editor.childNodes.length - 1];
-      typeText(
-        "keys in ",
-        (partial) => {
-          if (lastNode && lastNode.nodeType === Node.TEXT_NODE) {
-            lastNode.textContent = " " + partial;
+        const typeNextChar = () => {
+          if (cancelled) return;
+          if (charIdx < seg.value.length) {
+            charIdx++;
+            textNode.textContent = existingText + seg.value.slice(0, charIdx);
+            scheduleNext(typeNextChar, 50 + Math.random() * 30);
+          } else {
+            animateSegments(segments, idx + 1, onComplete);
           }
-          setInput("Translate @Turkish " + partial);
-        },
-        phase1_showAuthDropdown,
-      );
-    };
+        };
+        typeNextChar();
+      } else if (seg.type === "mention") {
+        const mention = DEMO_MENTIONS.find((m) => m.id === seg.value)!;
+        const filterText = mention.label.slice(0, 2).toLowerCase();
 
-    const phase1_showAuthDropdown = () => {
-      const lastNode = editor.childNodes[editor.childNodes.length - 1];
-      if (lastNode && lastNode.nodeType === Node.TEXT_NODE) {
-        lastNode.textContent = " keys in @";
+        // Append "@" to editor
+        const lastChild = editor.childNodes[editor.childNodes.length - 1];
+        if (lastChild && lastChild.nodeType === Node.TEXT_NODE) {
+          (lastChild as Text).textContent += "@";
+        } else {
+          editor.appendChild(document.createTextNode("@"));
+        }
+
+        setShowMentionDropdown(true);
+        setMentionQuery("");
+
+        scheduleNext(() => {
+          if (cancelled) return;
+          // Filter
+          const textNode = editor.childNodes[editor.childNodes.length - 1];
+          if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+            textNode.textContent = textNode.textContent!.replace(/@\w*$/, `@${filterText}`);
+          }
+          setMentionQuery(filterText);
+          setMentionIndex(0);
+
+          scheduleNext(() => {
+            if (cancelled) return;
+            // Select - rebuild editor with all segments up to current
+            setShowMentionDropdown(false);
+            editor.innerHTML = "";
+
+            for (let i = 0; i <= idx; i++) {
+              const s = segments[i];
+              if (s.type === "text") {
+                editor.appendChild(document.createTextNode(s.value));
+              } else {
+                const m = DEMO_MENTIONS.find((mm) => mm.id === s.value)!;
+                editor.appendChild(createMentionChip(m));
+              }
+            }
+            editor.appendChild(document.createTextNode(""));
+
+            scheduleNext(() => {
+              animateSegments(segments, idx + 1, onComplete);
+            }, 200);
+          }, 400);
+        }, 400);
       }
-      setInput("Translate @Turkish keys in @");
-      setShowMentionDropdown(true);
-      setMentionQuery("");
-      scheduleNext(phase1_filterAuth, 400);
     };
 
-    const phase1_filterAuth = () => {
-      const lastNode = editor.childNodes[editor.childNodes.length - 1];
-      if (lastNode && lastNode.nodeType === Node.TEXT_NODE) {
-        lastNode.textContent = " keys in @au";
-      }
-      setInput("Translate @Turkish keys in @au");
-      setMentionQuery("au");
-      setMentionIndex(0);
-      scheduleNext(phase1_selectAuth, 400);
-    };
-
-    const phase1_selectAuth = () => {
-      setShowMentionDropdown(false);
-      // Rebuild editor with both mentions
-      editor.innerHTML = "";
-      editor.appendChild(document.createTextNode("Translate "));
-      editor.appendChild(createMentionChip(turkishMention));
-      editor.appendChild(document.createTextNode(" keys in "));
-      editor.appendChild(createMentionChip(authMention));
-      editor.appendChild(document.createTextNode(" "));
-      setInput("Translate @Turkish keys in @auth ");
-      scheduleNext(phase1_send, 500);
+    // ═══════════════════════════════════════════════════════════════
+    // PHASE 1: Type localized command with mentions
+    // ═══════════════════════════════════════════════════════════════
+    const phase1_type = () => {
+      animateSegments(demoContent.phase1.segments, 0, phase1_send);
     };
 
     const phase1_send = () => {
       const userMessage: Message = {
         id: `msg-${Date.now()}`,
         role: "user",
-        content: "Translate @Turkish keys in @auth",
+        content: demoContent.phase1.userMessage,
         timestamp: new Date(),
       };
       messagesState = [userMessage];
@@ -523,8 +591,7 @@ export function DemoAIDrawerStandalone() {
       const aiResponse: Message = {
         id: `msg-${Date.now()}-ai`,
         role: "assistant",
-        content:
-          "I found 3 untranslated keys in the auth namespace. Here are my proposed Turkish translations:",
+        content: t("phase1.aiResponse"),
         timestamp: new Date(),
         toolCall: {
           id: generateToolCallId(),
@@ -577,12 +644,10 @@ export function DemoAIDrawerStandalone() {
     };
 
     const phase1_approve = () => {
-      // Auto-click approve - check all boxes first, then wait for visual effect
       setSelectedRows(
         new Set(["auth.login.title", "auth.login.submit", "auth.signup.title"]),
       );
       scheduleNext(() => {
-        // Now click approve
         setShowApprovalButtons(false);
         messagesState = messagesState.map((msg, idx) =>
           idx === messagesState.length - 1 && msg.toolCall
@@ -593,73 +658,25 @@ export function DemoAIDrawerStandalone() {
             : msg,
         );
         setMessages(messagesState);
-        // Keep checkboxes checked, clear them when phase2 starts typing
         scheduleNext(() => {
-          setSelectedRows(new Set()); // Clear checkboxes just before typing
-          phase2_start();
+          setSelectedRows(new Set());
+          phase2_type();
         }, 800);
-      }, 1000); // Longer delay to show checkboxes checked
+      }, 1000);
     };
 
     // ═══════════════════════════════════════════════════════════════
-    // PHASE 2: Type "Now add @German translations too"
+    // PHASE 2: Type localized "add German and publish"
     // ═══════════════════════════════════════════════════════════════
-    const phase2_start = () => {
-      typeText(
-        "Now add ",
-        (partial) => {
-          editor.textContent = partial;
-          setInput(partial);
-        },
-        phase2_showGermanDropdown,
-      );
-    };
-
-    const phase2_showGermanDropdown = () => {
-      editor.textContent = "Now add @";
-      setInput("Now add @");
-      setShowMentionDropdown(true);
-      setMentionQuery("");
-      scheduleNext(phase2_filterGerman, 400);
-    };
-
-    const phase2_filterGerman = () => {
-      editor.textContent = "Now add @ge";
-      setInput("Now add @ge");
-      setMentionQuery("ge");
-      setMentionIndex(0);
-      scheduleNext(phase2_selectGerman, 400);
-    };
-
-    const phase2_selectGerman = () => {
-      setShowMentionDropdown(false);
-      editor.innerHTML = "";
-      editor.appendChild(document.createTextNode("Now add "));
-      editor.appendChild(createMentionChip(germanMention));
-      editor.appendChild(document.createTextNode(" "));
-      setInput("Now add @German ");
-      scheduleNext(phase2_typeRest, 200);
-    };
-
-    const phase2_typeRest = () => {
-      const lastNode = editor.childNodes[editor.childNodes.length - 1];
-      typeText(
-        "and publish all",
-        (partial) => {
-          if (lastNode && lastNode.nodeType === Node.TEXT_NODE) {
-            lastNode.textContent = " " + partial;
-          }
-          setInput("Now add @German " + partial);
-        },
-        phase2_send,
-      );
+    const phase2_type = () => {
+      animateSegments(demoContent.phase2.segments, 0, phase2_send);
     };
 
     const phase2_send = () => {
       const userMessage: Message = {
         id: `msg-${Date.now()}`,
         role: "user",
-        content: "Now add @German and publish all",
+        content: demoContent.phase2.userMessage,
         timestamp: new Date(),
       };
       messagesState = [...messagesState, userMessage];
@@ -674,8 +691,7 @@ export function DemoAIDrawerStandalone() {
       const aiResponse: Message = {
         id: `msg-${Date.now()}-ai`,
         role: "assistant",
-        content:
-          "Here are the German translations. I'll publish everything to the CDN once you approve:",
+        content: t("phase2.aiResponse"),
         timestamp: new Date(),
         toolCall: {
           id: generateToolCallId(),
@@ -728,12 +744,10 @@ export function DemoAIDrawerStandalone() {
     };
 
     const phase2_approve = () => {
-      // Auto-click approve - check all boxes first, then wait for visual effect
       setSelectedRows(
         new Set(["auth.login.title", "auth.login.submit", "auth.signup.title"]),
       );
       scheduleNext(() => {
-        // Now click approve
         setShowApprovalButtons(false);
         messagesState = messagesState.map((msg, idx) =>
           idx === messagesState.length - 1 && msg.toolCall
@@ -744,12 +758,11 @@ export function DemoAIDrawerStandalone() {
             : msg,
         );
         setMessages(messagesState);
-        // Keep checkboxes checked, clear them when publish starts
         scheduleNext(() => {
-          setSelectedRows(new Set()); // Clear checkboxes just before publish
+          setSelectedRows(new Set());
           phase3_publish();
         }, 600);
-      }, 1000); // Longer delay to show checkboxes checked
+      }, 1000);
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -797,7 +810,6 @@ export function DemoAIDrawerStandalone() {
         messagesState = [...messagesState, syncMessage];
         setMessages(messagesState);
         setIsTyping(false);
-        // Animate publish completion
         scheduleNext(() => {
           messagesState = messagesState.map((msg, idx) =>
             idx === messagesState.length - 1 && msg.toolCall
@@ -822,8 +834,7 @@ export function DemoAIDrawerStandalone() {
         const successMessage: Message = {
           id: `msg-${Date.now()}-success`,
           role: "assistant",
-          content:
-            "🎉 All done! Your auth namespace is now fully translated to Turkish and German — and already live on your CDN. Users worldwide can see the changes instantly!",
+          content: t("celebration"),
           timestamp: new Date(),
         };
         messagesState = [...messagesState, successMessage];
@@ -833,13 +844,13 @@ export function DemoAIDrawerStandalone() {
     };
 
     // Start the epic demo!
-    scheduleNext(phase1_typeStart, 600);
+    scheduleNext(phase1_type, 600);
 
     return () => {
       cancelled = true;
       timeouts.forEach(clearTimeout);
     };
-  }, [demoKey]);
+  }, [demoKey, demoContent, t]);
 
   // Handle contenteditable input with @ mention detection
   const handleEditorInput = () => {
@@ -1096,6 +1107,8 @@ export function DemoAIDrawerStandalone() {
     );
   };
 
+  const inputParametersLabel = t("inputParameters");
+
   return (
     <div className="static h-full w-full bg-white border-l border-gray-200 flex flex-col overflow-hidden rounded-tl-xl">
       {/* Messages Area - Scrollable */}
@@ -1116,14 +1129,10 @@ export function DemoAIDrawerStandalone() {
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  AI Translation Assistant
+                  {t("emptyState.title")}
                 </h2>
                 <p className="text-sm text-gray-500 mt-2">
-                  Start typing or use{" "}
-                  <span className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded">
-                    @
-                  </span>{" "}
-                  to mention keys, languages, or namespaces
+                  {t("emptyState.description")}
                 </p>
               </div>
             </div>
@@ -1209,15 +1218,15 @@ export function DemoAIDrawerStandalone() {
                             )}
                           >
                             {msg.toolCall.state === "pending"
-                              ? "Publishing..."
-                              : "Published"}
+                              ? t("status.publishing")
+                              : t("status.published")}
                           </span>
                         </div>
                       }
                     >
                       {/* Input Parameters - Collapsible */}
                       {msg.toolCall.input && (
-                        <CollapsibleInput input={msg.toolCall.input} />
+                        <CollapsibleInput input={msg.toolCall.input} label={inputParametersLabel} />
                       )}
                       {/* Sync Content - File Changes */}
                       <div className="px-3 py-1.5 space-y-2">
@@ -1249,7 +1258,7 @@ export function DemoAIDrawerStandalone() {
                             <div className="flex items-center gap-2">
                               {file.added > 0 && (
                                 <span className="text-xs font-medium text-emerald-600">
-                                  +{file.added} keys
+                                  +{file.added} {t("keys")}
                                 </span>
                               )}
                               {file.modified > 0 && (
@@ -1326,15 +1335,15 @@ export function DemoAIDrawerStandalone() {
                             )}
                           >
                             {msg.toolCall.state === "completed"
-                              ? "Completed"
-                              : "Ready"}
+                              ? t("status.completed")
+                              : t("status.ready")}
                           </span>
                         </div>
                       }
                     >
                       {/* Input Parameters - Collapsible */}
                       {msg.toolCall.input && (
-                        <CollapsibleInput input={msg.toolCall.input} />
+                        <CollapsibleInput input={msg.toolCall.input} label={inputParametersLabel} />
                       )}
 
                       {/* Tool Content */}
@@ -1344,7 +1353,7 @@ export function DemoAIDrawerStandalone() {
                           showApprovalButtons && (
                             <div className="flex items-center justify-between">
                               <span className="text-sm font-medium text-gray-700">
-                                Translation Proposals (
+                                {t("translationProposals")} (
                                 {msg.toolCall.translations.length})
                               </span>
                               <Button
@@ -1352,16 +1361,16 @@ export function DemoAIDrawerStandalone() {
                                 size="sm"
                                 className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
                               >
-                                Approve All
+                                {t("approveAll")}
                               </Button>
                             </div>
                           )}
                         {/* Group by language */}
                         {(() => {
                           const byLang: Record<string, Translation[]> = {};
-                          msg.toolCall.translations!.forEach((t) => {
-                            if (!byLang[t.l]) byLang[t.l] = [];
-                            byLang[t.l].push(t);
+                          msg.toolCall.translations!.forEach((tr) => {
+                            if (!byLang[tr.l]) byLang[tr.l] = [];
+                            byLang[tr.l].push(tr);
                           });
 
                           return Object.entries(byLang).map(
@@ -1376,8 +1385,8 @@ export function DemoAIDrawerStandalone() {
                                   <span className="text-xs text-gray-500">
                                     ({items.length}{" "}
                                     {items.length === 1
-                                      ? "translation"
-                                      : "translations"}
+                                      ? t("translationSingular")
+                                      : t("translationPlural")}
                                     )
                                   </span>
                                 </div>
@@ -1415,13 +1424,13 @@ export function DemoAIDrawerStandalone() {
                                           </div>
                                         </th>
                                         <th className="px-2 py-1.5 text-left text-gray-600 font-semibold w-[30%]">
-                                          Key
+                                          {t("table.key")}
                                         </th>
                                         <th className="px-2 py-1.5 text-left text-gray-600 font-semibold">
-                                          Translation
+                                          {t("table.translation")}
                                         </th>
                                         <th className="px-2 py-1.5 text-right text-gray-600 font-semibold w-20">
-                                          Action
+                                          {t("table.action")}
                                         </th>
                                       </tr>
                                     </thead>
@@ -1482,7 +1491,7 @@ export function DemoAIDrawerStandalone() {
                                             "completed" ? (
                                               <div className="flex justify-end">
                                                 <span className="inline-flex items-center gap-1 text-emerald-600 text-[10px] font-medium">
-                                                  Approved
+                                                  {t("approved")}
                                                 </span>
                                               </div>
                                             ) : null}
@@ -1537,7 +1546,7 @@ export function DemoAIDrawerStandalone() {
         {/* Prompt Suggestions - Always visible */}
         <div className="mb-2 overflow-x-auto scrollbar-hide">
           <div className="flex items-center gap-2 pb-2">
-            {SUGGESTIONS.map((item, idx) => {
+            {suggestions.map((item, idx) => {
               const Icon = item.icon;
               return (
                 <button
@@ -1568,7 +1577,7 @@ export function DemoAIDrawerStandalone() {
               contentEditable={!isTyping}
               onInput={handleEditorInput}
               onKeyDown={handleEditorKeyDown}
-              data-placeholder="Ask me anything about your translations... (use @ to mention)"
+              data-placeholder={t("placeholder")}
               className={cn(
                 "flex-1 w-full px-3 py-1.5 text-sm bg-transparent border-none focus:outline-none min-h-[100px] max-h-[120px] text-gray-900 overflow-y-auto",
                 "empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400 empty:before:pointer-events-none",
@@ -1586,7 +1595,7 @@ export function DemoAIDrawerStandalone() {
                 {filteredMentions.some((m) => m.type === "special") && (
                   <div>
                     <div className="px-2 py-1 text-[10px] font-medium text-gray-400">
-                      Quick Actions
+                      {t("dropdown.quickActions")}
                     </div>
                     {filteredMentions
                       .filter((m) => m.type === "special")
@@ -1624,7 +1633,7 @@ export function DemoAIDrawerStandalone() {
                 {filteredMentions.some((m) => m.type === "language") && (
                   <div>
                     <div className="px-2 py-1 text-[10px] font-medium text-gray-400">
-                      Languages
+                      {t("dropdown.languages")}
                     </div>
                     {filteredMentions
                       .filter((m) => m.type === "language")
@@ -1666,7 +1675,7 @@ export function DemoAIDrawerStandalone() {
                 {filteredMentions.some((m) => m.type === "namespace") && (
                   <div>
                     <div className="px-2 py-1 text-[10px] font-medium text-gray-400">
-                      Namespaces
+                      {t("dropdown.namespaces")}
                     </div>
                     {filteredMentions
                       .filter((m) => m.type === "namespace")
@@ -1749,7 +1758,7 @@ export function DemoAIDrawerStandalone() {
             }}
             className="text-xs text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
           >
-            Restart Demo
+            {t("restartDemo")}
           </button>
 
           <Context
