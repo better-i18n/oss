@@ -7,8 +7,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "better-i18n-mcp-content": "./dist/index.js",
-    "better-i18n-mcp-content-http": "./dist/http.js"
+    "better-i18n-mcp-content": "./dist/index.js"
   },
   "files": [
     "dist",
