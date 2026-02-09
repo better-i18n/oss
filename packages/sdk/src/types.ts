@@ -14,18 +14,30 @@ export interface ClientConfig {
 
 // ─── Content Types ───────────────────────────────────────────────────
 
-/** A full content entry with all localized fields. */
-export interface ContentEntry {
+/**
+ * A full content entry with all localized fields.
+ *
+ * @typeParam CF - Custom fields shape. Defaults to `Record<string, string | null>`.
+ *
+ * @example
+ * ```typescript
+ * // Typed custom fields
+ * interface BlogFields { readingTime: string | null; category: string | null }
+ * const post = await client.getEntry<BlogFields>("blog", "hello-world");
+ * post.customFields.readingTime; // string | null (typed!)
+ * ```
+ */
+export interface ContentEntry<CF extends Record<string, string | null> = Record<string, string | null>> {
   id: string;
   slug: string;
-  status: string;
+  status: "draft" | "published" | "archived";
   publishedAt: string | null;
   sourceLanguage: string;
   availableLanguages: string[];
   featuredImage: string | null;
   tags: string[];
   author: { name: string; image: string | null } | null;
-  customFields: Record<string, string | null>;
+  customFields: CF;
   // Localized content
   title: string;
   excerpt: string | null;
@@ -36,6 +48,9 @@ export interface ContentEntry {
   metaDescription: string | null;
 }
 
+/** Entry status filter values. */
+export type ContentEntryStatus = "draft" | "published" | "archived";
+
 /** A summary item for content entry lists. */
 export interface ContentEntryListItem {
   slug: string;
@@ -45,6 +60,13 @@ export interface ContentEntryListItem {
   featuredImage: string | null;
   tags: string[];
   author: { name: string; image: string | null } | null;
+}
+
+/** Paginated response wrapper. */
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  hasMore: boolean;
 }
 
 /** A content model definition. */
@@ -58,13 +80,22 @@ export interface ContentModel {
 
 // ─── Client Interface ───────────────────────────────────────────────
 
+/** Sortable fields for content entries. */
+export type ContentEntrySortField = "publishedAt" | "createdAt" | "updatedAt" | "title";
+
 /** Options for listing content entries. */
 export interface ListEntriesOptions {
   /** Language code for localized content. Defaults to source language. */
   language?: string;
+  /** Filter by entry status. */
+  status?: ContentEntryStatus;
+  /** Field to sort by. Defaults to `"updatedAt"`. */
+  sort?: ContentEntrySortField;
+  /** Sort direction. Defaults to `"desc"`. */
+  order?: "asc" | "desc";
   /** Page number (1-based). */
   page?: number;
-  /** Max entries per page. */
+  /** Max entries per page (1-100). Defaults to 50. */
   limit?: number;
 }
 
@@ -78,15 +109,15 @@ export interface GetEntryOptions {
 export interface ContentClient {
   /** List all content models in the project. */
   getModels(): Promise<ContentModel[]>;
-  /** List entries for a content model. */
+  /** List entries for a content model with pagination. */
   getEntries(
     modelSlug: string,
     options?: ListEntriesOptions,
-  ): Promise<ContentEntryListItem[]>;
+  ): Promise<PaginatedResponse<ContentEntryListItem>>;
   /** Fetch a single content entry by slug. */
-  getEntry(
+  getEntry<CF extends Record<string, string | null> = Record<string, string | null>>(
     modelSlug: string,
     entrySlug: string,
     options?: GetEntryOptions,
-  ): Promise<ContentEntry>;
+  ): Promise<ContentEntry<CF>>;
 }

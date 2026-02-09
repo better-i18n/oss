@@ -1,0 +1,195 @@
+---
+title: API Reference
+description: Complete SDK method and type reference
+icon: Code
+---
+
+## `createClient(config)`
+
+Creates a content client for fetching models and entries.
+
+```typescript
+import { createClient } from "@better-i18n/sdk";
+
+const client = createClient({
+  org: "acme",
+  project: "web-app",
+  apiKey: "bi-your-api-key",
+});
+```
+
+**Parameters:**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `org` | `string` | Yes | Organization slug |
+| `project` | `string` | Yes | Project slug |
+| `apiKey` | `string` | Yes | API key (prefix: `bi-`) |
+| `apiBase` | `string` | No | API URL. Default: `https://api.better-i18n.com` |
+
+**Returns:** `ContentClient`
+
+---
+
+## `client.getModels()`
+
+List all content models in the project.
+
+```typescript
+const models = await client.getModels();
+```
+
+**Returns:** `Promise<ContentModel[]>`
+
+<Accordion>
+<AccordionItem title="ContentModel">
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `slug` | `string` | URL-safe identifier |
+| `displayName` | `string` | Human-readable name |
+| `description` | `string \| null` | Model description |
+| `kind` | `string` | `"collection"` or `"single"` |
+| `entryCount` | `number` | Number of entries |
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## `client.getEntries(modelSlug, options?)`
+
+List entries for a content model with filtering, sorting, and pagination.
+
+```typescript
+const result = await client.getEntries("blog-posts", {
+  status: "published",
+  sort: "publishedAt",
+  order: "desc",
+  language: "en",
+  page: 1,
+  limit: 10,
+});
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `modelSlug` | `string` | Yes | Content model slug |
+| `options` | `ListEntriesOptions` | No | Filtering, sorting, pagination |
+
+<Accordion>
+<AccordionItem title="ListEntriesOptions">
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `language` | `string` | source language | Language code for localized content |
+| `status` | `ContentEntryStatus` | all | `"draft"`, `"published"`, or `"archived"` |
+| `sort` | `ContentEntrySortField` | `"updatedAt"` | `"publishedAt"`, `"createdAt"`, `"updatedAt"`, or `"title"` |
+| `order` | `"asc" \| "desc"` | `"desc"` | Sort direction |
+| `page` | `number` | `1` | Page number (1-based) |
+| `limit` | `number` | `50` | Entries per page (1–100) |
+
+</AccordionItem>
+</Accordion>
+
+**Returns:** `Promise<PaginatedResponse<ContentEntryListItem>>`
+
+<Accordion>
+<AccordionItem title="PaginatedResponse<ContentEntryListItem>">
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `items` | `ContentEntryListItem[]` | Array of entry summaries |
+| `total` | `number` | Total matching entries |
+| `hasMore` | `boolean` | Whether more pages exist |
+
+**ContentEntryListItem fields:**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `slug` | `string` | URL-safe identifier |
+| `title` | `string` | Entry title |
+| `excerpt` | `string \| null` | Short summary |
+| `publishedAt` | `string \| null` | ISO 8601 publish date |
+| `featuredImage` | `string \| null` | Image URL |
+| `tags` | `string[]` | Tag list |
+| `author` | `{ name: string; image: string \| null } \| null` | Author info |
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## `client.getEntry<CF>(modelSlug, entrySlug, options?)`
+
+Fetch a single content entry by slug with all fields and localized content.
+
+```typescript
+const post = await client.getEntry("blog-posts", "hello-world", {
+  language: "fr",
+});
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `modelSlug` | `string` | Yes | Content model slug |
+| `entrySlug` | `string` | Yes | Entry slug |
+| `options` | `GetEntryOptions` | No | Language selection |
+
+<Accordion>
+<AccordionItem title="GetEntryOptions">
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `language` | `string` | source language | Language code for localized content |
+
+</AccordionItem>
+</Accordion>
+
+**Type Parameter:** `CF extends Record<string, string | null>` — Custom fields shape. Defaults to `Record<string, string | null>`. See [TypeScript guide](/sdk/typescript).
+
+**Returns:** `Promise<ContentEntry<CF>>`
+
+<Accordion>
+<AccordionItem title="ContentEntry<CF>">
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Unique entry ID |
+| `slug` | `string` | URL-safe identifier |
+| `status` | `"draft" \| "published" \| "archived"` | Entry status |
+| `publishedAt` | `string \| null` | ISO 8601 publish date |
+| `sourceLanguage` | `string` | Source language code |
+| `availableLanguages` | `string[]` | Languages with translations |
+| `featuredImage` | `string \| null` | Image URL |
+| `tags` | `string[]` | Tag list |
+| `author` | `{ name: string; image: string \| null } \| null` | Author info |
+| `customFields` | `CF` | Custom field values (typed via generic) |
+| `title` | `string` | Localized title |
+| `excerpt` | `string \| null` | Localized excerpt |
+| `body` | `unknown` | Plate JSON (rich text editor format) |
+| `bodyHtml` | `string \| null` | HTML content |
+| `bodyMarkdown` | `string \| null` | Markdown content |
+| `metaTitle` | `string \| null` | SEO title |
+| `metaDescription` | `string \| null` | SEO description |
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## REST API Endpoints
+
+The SDK calls these REST endpoints under the hood:
+
+| Method | Endpoint | SDK Method |
+| --- | --- | --- |
+| `GET` | `/api/v1/content/{org}/{project}/models` | `getModels()` |
+| `GET` | `/api/v1/content/{org}/{project}/models/{model}/entries` | `getEntries()` |
+| `GET` | `/api/v1/content/{org}/{project}/models/{model}/entries/{slug}` | `getEntry()` |
+
+All requests use the `x-api-key` header for authentication.

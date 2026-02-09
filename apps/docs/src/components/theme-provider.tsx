@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 
 /**
  * ThemeSync component that sets a data attribute on the document
- * based on the current documentation section (Frameworks, MCP, CLI).
+ * based on the current documentation section (Frameworks, SDK, MCP, CLI).
  * This enables CSS to apply section-specific theme colors.
  */
 export function ThemeSync() {
@@ -18,6 +18,8 @@ export function ThemeSync() {
     let section = 'default';
     if (pathname.startsWith('/docs/frameworks')) {
       section = 'frameworks';
+    } else if (pathname.startsWith('/docs/sdk')) {
+      section = 'sdk';
     } else if (pathname.startsWith('/docs/mcp')) {
       section = 'mcp';
     } else if (pathname.startsWith('/docs/cli')) {

@@ -1,0 +1,63 @@
+---
+title: Introduction
+description: Headless CMS client for Better i18n content
+icon: BookOpen
+---
+
+The Better i18n Content SDK (`@better-i18n/sdk`) is a lightweight TypeScript client for fetching content models and entries from your Better i18n project. It connects to the REST API using an API key and returns fully typed responses.
+
+## Why use the SDK?
+
+- **Zero dependencies** — Uses native `fetch()`, works in any JavaScript runtime
+- **Type-safe** — Full TypeScript types with generic custom fields support
+- **Language-aware** — Fetch localized content by language code with automatic fallback
+- **Pagination** — Built-in pagination with total count and `hasMore` indicator
+- **Filtering & sorting** — Filter by status, sort by date or title
+
+## Quick Example
+
+```typescript
+import { createClient } from "@better-i18n/sdk";
+
+const client = createClient({
+  org: "acme",
+  project: "web-app",
+  apiKey: process.env.BETTER_I18N_API_KEY!,
+});
+
+// List content models
+const models = await client.getModels();
+
+// Get published blog posts
+const { items, total } = await client.getEntries("blog-posts", {
+  status: "published",
+  sort: "publishedAt",
+  order: "desc",
+});
+
+// Get a single entry in French
+const post = await client.getEntry("blog-posts", "hello-world", {
+  language: "fr",
+});
+```
+
+## Next Steps
+
+<Cards>
+  <Card title="Getting Started" href="/sdk/getting-started">
+    Install the SDK and fetch your first content
+  </Card>
+  <Card title="Models & Entries" href="/sdk/models-and-entries">
+    Working with content models, entries, and pagination
+  </Card>
+  <Card title="API Reference" href="/sdk/api-reference">
+    Complete method and type reference
+  </Card>
+  <Card title="TypeScript" href="/sdk/typescript">
+    Generic custom fields and advanced typing
+  </Card>
+</Cards>
+
+<Callout type="tip">
+  For AI-powered content management (create, edit, publish), see the [MCP Content Server](/mcp) instead.
+</Callout>

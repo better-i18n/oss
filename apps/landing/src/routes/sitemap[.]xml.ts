@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SITE_URL } from "@/lib/meta";
+import { getLocales } from "@better-i18n/use-intl/server";
+import { i18nConfig } from "../i18n.config";
 
 interface SitemapEntry {
   loc: string;
@@ -7,8 +9,6 @@ interface SitemapEntry {
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: number;
 }
-
-const LOCALES = ["en", "tr", "zh"];
 
 // Static pages with their priorities
 const PAGES = [
@@ -59,12 +59,12 @@ const PAGES = [
   { path: "terms", priority: 0.3, changefreq: "yearly" as const },
 ];
 
-function generateSitemapEntries(): SitemapEntry[] {
+function generateSitemapEntries(locales: string[]): SitemapEntry[] {
   const entries: SitemapEntry[] = [];
   const today = new Date().toISOString().split("T")[0];
 
   for (const page of PAGES) {
-    for (const locale of LOCALES) {
+    for (const locale of locales) {
       const path = page.path ? `/${page.path}` : "";
       const loc = locale === "en"
         ? `${SITE_URL}${path}`
@@ -112,7 +112,8 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const entries = generateSitemapEntries();
+        const locales = await getLocales({ project: i18nConfig.project });
+        const entries = generateSitemapEntries(locales);
         const xml = generateSitemapXml(entries);
 
         return new Response(xml, {

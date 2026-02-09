@@ -65,5 +65,8 @@
     "*": [
       "bunx prettier --check --ignore-unknown"
     ]
+  },
+  "dependencies": {
+    "@better-i18n/mcp-types": "^0.7.1"
   }
 }

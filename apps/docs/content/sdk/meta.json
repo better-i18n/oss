@@ -1,0 +1,16 @@
+{
+  "title": "Content SDK",
+  "description": "Headless CMS client for fetching content",
+  "icon": "FileText",
+  "root": true,
+  "pages": [
+    "index",
+    "---Setup---",
+    "getting-started",
+    "---Usage---",
+    "models-and-entries",
+    "api-reference",
+    "---Advanced---",
+    "typescript"
+  ]
+}

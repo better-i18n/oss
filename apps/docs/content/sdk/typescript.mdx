@@ -1,0 +1,106 @@
+---
+title: TypeScript
+description: Type-safe content with generic custom fields
+icon: Braces
+---
+
+The Content SDK is built with TypeScript and provides full type safety for all responses, including support for typed custom fields via generics.
+
+## Generic Custom Fields
+
+Content models can define custom fields (e.g., `readingTime`, `category`). By default, `customFields` is typed as `Record<string, string | null>`. Use the generic type parameter to get exact typing:
+
+```typescript
+// Define your custom fields interface
+interface BlogFields {
+  readingTime: string | null;
+  category: string | null;
+  featured: string | null;
+}
+
+// Pass it to getEntry
+const post = await client.getEntry<BlogFields>("blog-posts", "hello-world");
+
+post.customFields.readingTime; // string | null
+post.customFields.category;   // string | null
+post.customFields.featured;   // string | null
+post.customFields.unknown;    // TypeScript error!
+```
+
+## Creating a Typed Client Wrapper
+
+For repeated use, create a wrapper function:
+
+```typescript
+import { createClient, type ContentEntry, type PaginatedResponse, type ContentEntryListItem } from "@better-i18n/sdk";
+
+interface BlogFields {
+  readingTime: string | null;
+  category: string | null;
+}
+
+const client = createClient({
+  org: "acme",
+  project: "web-app",
+  apiKey: process.env.BETTER_I18N_API_KEY!,
+});
+
+export async function getBlogPost(slug: string, language?: string) {
+  return client.getEntry<BlogFields>("blog-posts", slug, { language });
+}
+
+export async function listBlogPosts(page = 1) {
+  return client.getEntries("blog-posts", {
+    status: "published",
+    sort: "publishedAt",
+    order: "desc",
+    page,
+    limit: 10,
+  });
+}
+```
+
+## Status Type Narrowing
+
+The `status` field is a union type, enabling exhaustive checks:
+
+```typescript
+import type { ContentEntryStatus } from "@better-i18n/sdk";
+
+function getStatusLabel(status: ContentEntryStatus): string {
+  switch (status) {
+    case "draft":
+      return "Draft";
+    case "published":
+      return "Published";
+    case "archived":
+      return "Archived";
+  }
+}
+```
+
+## Exported Types
+
+All types are re-exported from the package root:
+
+```typescript
+import type {
+  // Configuration
+  ClientConfig,
+  ContentClient,
+
+  // Content types
+  ContentModel,
+  ContentEntry,
+  ContentEntryListItem,
+  ContentEntryStatus,
+
+  // Query options
+  ListEntriesOptions,
+  GetEntryOptions,
+  ContentEntrySortField,
+
+  // Response
+  PaginatedResponse,
+} from "@better-i18n/sdk";
+```

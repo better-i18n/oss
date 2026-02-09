@@ -7,6 +7,7 @@ import {
 import { BetterI18nProvider, getLocaleFromPath } from "@better-i18n/use-intl";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
+import { fetchLocales, getCachedLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
 import {
   getLocalizedMeta,
@@ -21,13 +22,13 @@ interface RouterContext {
   messages: Record<string, string>;
 }
 
-const localeConfig = {
-  locales: i18nConfig.locales,
-  defaultLocale: i18nConfig.defaultLocale,
-};
-
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async ({ location }) => {
+    const locales = await fetchLocales();
+    const localeConfig = {
+      locales,
+      defaultLocale: i18nConfig.defaultLocale,
+    };
     const locale = getLocaleFromPath(location.pathname, localeConfig);
 
     const messages = await getMessages({
@@ -84,7 +85,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           rel: "stylesheet",
           href: appCss,
         },
-        ...getAlternateLinks("/", i18nConfig.locales),
+        ...getAlternateLinks("/", getCachedLocales()),
         getCanonicalLink(locale, "/"),
       ],
       scripts: [

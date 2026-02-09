@@ -1,10 +1,10 @@
 ---
 title: Coding Agents
-description: Configure MCP server for Cursor, Claude Desktop, and Windsurf
+description: Configure MCP server for Cursor, Claude Code, Windsurf, Zed, Codex, and more
 icon: Rocket
 ---
 
-Set up the local MCP server for coding agents like Cursor, Claude Desktop, and Windsurf. This runs a local process via `npx` and authenticates with an API key.
+Set up the local MCP server for coding agents like Cursor, Claude Code, Windsurf, Zed, Codex, and Antigravity. This runs a local process via `npx` and authenticates with an API key.
 
 <Callout type="info">
   For **ChatGPT**, **Claude** (web), or **Gemini**, use the [AI Assistants](/mcp/ai-assistants) guide instead — no installation required.
@@ -41,7 +41,7 @@ export const i18n = createI18n({
 
 Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
 
-<Tabs items={['Cursor', 'Claude Desktop']}>
+<Tabs items={['Cursor', 'Claude Code', 'Claude Desktop', 'Windsurf', 'Zed', 'Codex', 'Antigravity']}>
   <Tab value="Cursor">
     Add this to your MCP settings in Cursor (`~/.cursor/mcp.json`):
     ```json title="~/.cursor/mcp.json"
@@ -58,6 +58,14 @@ Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
     }
     ```
   </Tab>
+  <Tab value="Claude Code">
+    Run this command in your terminal:
+    ```bash title="Terminal"
+    claude mcp add better-i18n -s user -e BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp
+    ```
+
+    Claude Code automatically manages the `.mcp.json` configuration. You can view and manage servers with `claude mcp list`.
+  </Tab>
   <Tab value="Claude Desktop">
     Add this to your Claude Desktop config:
     ```json
@@ -72,6 +80,67 @@ Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
         }
       }
     }
+    ```
+  </Tab>
+  <Tab value="Windsurf">
+    Add this to your Windsurf MCP config (`~/.codeium/windsurf/mcp_config.json`):
+    ```json title="~/.codeium/windsurf/mcp_config.json"
+    {
+      "mcpServers": {
+        "better-i18n": {
+          "command": "npx",
+          "args": ["@better-i18n/mcp"],
+          "env": {
+            "BETTER_I18N_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab value="Zed">
+    Add this to your Zed settings (`~/.config/zed/settings.json`):
+    ```json title="~/.config/zed/settings.json"
+    {
+      "context_servers": {
+        "better-i18n": {
+          "command": {
+            "path": "npx",
+            "args": ["@better-i18n/mcp"],
+            "env": {
+              "BETTER_I18N_API_KEY": "your-api-key"
+            }
+          },
+          "settings": {}
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab value="Codex">
+    **Option 1: CLI command**
+    ```bash title="Terminal"
+    codex mcp add better-i18n --env BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp
+    ```
+
+    **Option 2: Manual config** (`~/.codex/config.toml`)
+    ```toml title="~/.codex/config.toml"
+    [mcp_servers.better-i18n]
+    command = "npx"
+    args = ["-y", "@better-i18n/mcp"]
+
+    [mcp_servers.better-i18n.env]
+    BETTER_I18N_API_KEY = "your-api-key"
+    ```
+  </Tab>
+  <Tab value="Antigravity">
+    Add this to your `GEMINI.md` or `.rules` file:
+    ```markdown title="GEMINI.md"
+    MCP Servers:
+    - better-i18n: @better-i18n/mcp (stdio)
+
+    Environment Variables:
+    BETTER_I18N_API_KEY: your-api-key
     ```
   </Tab>
 </Tabs>
@@ -94,7 +163,7 @@ If configured correctly, the AI will use the `getProject` tool to fetch your rea
 
 If you also use Better i18n's headless CMS features, add the content MCP server separately:
 
-<Tabs items={['Cursor', 'Claude Desktop']}>
+<Tabs items={['Cursor', 'Claude Code', 'Claude Desktop', 'Windsurf', 'Zed', 'Codex', 'Antigravity']}>
   <Tab value="Cursor">
     ```json title="~/.cursor/mcp.json"
     {
@@ -117,6 +186,13 @@ If you also use Better i18n's headless CMS features, add the content MCP server 
     }
     ```
   </Tab>
+  <Tab value="Claude Code">
+    Run both commands in your terminal:
+    ```bash title="Terminal"
+    claude mcp add better-i18n -s user -e BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp
+    claude mcp add better-i18n-content -s user -e BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp-content
+    ```
+  </Tab>
   <Tab value="Claude Desktop">
     ```json
     {
@@ -137,6 +213,90 @@ If you also use Better i18n's headless CMS features, add the content MCP server 
         }
       }
     }
+    ```
+  </Tab>
+  <Tab value="Windsurf">
+    ```json title="~/.codeium/windsurf/mcp_config.json"
+    {
+      "mcpServers": {
+        "better-i18n": {
+          "command": "npx",
+          "args": ["@better-i18n/mcp"],
+          "env": {
+            "BETTER_I18N_API_KEY": "your-api-key"
+          }
+        },
+        "better-i18n-content": {
+          "command": "npx",
+          "args": ["@better-i18n/mcp-content"],
+          "env": {
+            "BETTER_I18N_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab value="Zed">
+    ```json title="~/.config/zed/settings.json"
+    {
+      "context_servers": {
+        "better-i18n": {
+          "command": {
+            "path": "npx",
+            "args": ["@better-i18n/mcp"],
+            "env": {
+              "BETTER_I18N_API_KEY": "your-api-key"
+            }
+          },
+          "settings": {}
+        },
+        "better-i18n-content": {
+          "command": {
+            "path": "npx",
+            "args": ["@better-i18n/mcp-content"],
+            "env": {
+              "BETTER_I18N_API_KEY": "your-api-key"
+            }
+          },
+          "settings": {}
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab value="Codex">
+    **Option 1: CLI commands**
+    ```bash title="Terminal"
+    codex mcp add better-i18n --env BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp
+    codex mcp add better-i18n-content --env BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp-content
+    ```
+
+    **Option 2: Manual config** (`~/.codex/config.toml`)
+    ```toml title="~/.codex/config.toml"
+    [mcp_servers.better-i18n]
+    command = "npx"
+    args = ["-y", "@better-i18n/mcp"]
+
+    [mcp_servers.better-i18n.env]
+    BETTER_I18N_API_KEY = "your-api-key"
+
+    [mcp_servers.better-i18n-content]
+    command = "npx"
+    args = ["-y", "@better-i18n/mcp-content"]
+
+    [mcp_servers.better-i18n-content.env]
+    BETTER_I18N_API_KEY = "your-api-key"
+    ```
+  </Tab>
+  <Tab value="Antigravity">
+    ```markdown title="GEMINI.md"
+    MCP Servers:
+    - better-i18n: @better-i18n/mcp (stdio)
+    - better-i18n-content: @better-i18n/mcp-content (stdio)
+
+    Environment Variables:
+    BETTER_I18N_API_KEY: your-api-key
     ```
   </Tab>
 </Tabs>

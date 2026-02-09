@@ -5,7 +5,10 @@ export type {
   ContentClient,
   ContentEntry,
   ContentEntryListItem,
+  ContentEntryStatus,
+  ContentEntrySortField,
   ContentModel,
   ListEntriesOptions,
   GetEntryOptions,
+  PaginatedResponse,
 } from "./types";

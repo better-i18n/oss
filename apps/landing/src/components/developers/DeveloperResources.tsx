@@ -1,6 +1,7 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import {
   IconChevronRight,
+  IconCodeBrackets,
   IconConsole,
   IconServer1,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
@@ -34,6 +35,11 @@ const resourceKeys = [
     ),
   },
   {
+    key: "sdk",
+    href: "https://docs.better-i18n.com/sdk",
+    icon: <IconCodeBrackets className="size-6" />,
+  },
+  {
     key: "cli",
     href: "https://docs.better-i18n.com/cli",
     icon: <IconConsole className="size-6" />,
@@ -60,7 +66,7 @@ export default function DeveloperResources() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {resourceKeys.map((resource) => (
             <a
               key={resource.key}
