@@ -1,5 +1,15 @@
 # @better-i18n/sdk
 
+## 0.4.0
+
+### Minor Changes
+
+- Simplify client config to single `project` identifier
+  - **Single project param**: Replace separate `org` + `project` with single `project: "org/project"` format, matching the dashboard URL path
+  - **Debug mode**: Add `debug` option to log all request URLs, status codes, and response bodies
+  - **Fix API base URL**: Default to `https://dash.better-i18n.com` instead of non-existent `api.better-i18n.com`
+  - **Body type fix**: Change `body` type from `unknown` to `Record<string, any> | null` for TanStack Start serialization compatibility
+
 ## 0.3.0
 
 ### Minor Changes
