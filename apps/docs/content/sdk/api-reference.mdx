@@ -12,8 +12,7 @@ Creates a content client for fetching models and entries.
 import { createClient } from "@better-i18n/sdk";
 
 const client = createClient({
-  org: "acme",
-  project: "web-app",
+  project: "acme/web-app",
   apiKey: "bi-your-api-key",
 });
 ```
@@ -22,10 +21,10 @@ const client = createClient({
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `org` | `string` | Yes | Organization slug |
-| `project` | `string` | Yes | Project slug |
+| `project` | `string` | Yes | Project identifier in `org/project` format |
 | `apiKey` | `string` | Yes | API key (prefix: `bi-`) |
-| `apiBase` | `string` | No | API URL. Default: `https://api.better-i18n.com` |
+| `apiBase` | `string` | No | API URL. Default: `https://dash.better-i18n.com` |
+| `debug` | `boolean` | No | Log request URLs and responses to console |
 
 **Returns:** `ContentClient`
 
@@ -171,7 +170,7 @@ const post = await client.getEntry("blog-posts", "hello-world", {
 | `customFields` | `CF` | Custom field values (typed via generic) |
 | `title` | `string` | Localized title |
 | `excerpt` | `string \| null` | Localized excerpt |
-| `body` | `unknown` | Plate JSON (rich text editor format) |
+| `body` | `object \| null` | Plate JSON (rich text editor format) |
 | `bodyHtml` | `string \| null` | HTML content |
 | `bodyMarkdown` | `string \| null` | Markdown content |
 | `metaTitle` | `string \| null` | SEO title |

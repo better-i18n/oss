@@ -11,8 +11,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     define: {
-      "import.meta.env.GHOST_CONTENT_API_KEY": JSON.stringify(
-        env.GHOST_CONTENT_API_KEY,
+      "import.meta.env.BETTER_I18N_CONTENT_API_KEY": JSON.stringify(
+        env.BETTER_I18N_CONTENT_API_KEY,
+      ),
+      "import.meta.env.BETTER_I18N_PROJECT": JSON.stringify(
+        env.BETTER_I18N_PROJECT,
       ),
     },
     resolve: {

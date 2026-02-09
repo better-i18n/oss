@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { getPosts, type GhostPost } from "@/lib/ghost";
+import { createServerFn } from "@tanstack/react-start";
+import { getBlogPosts, type BlogPostListItem } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/blog/BlogCard";
@@ -22,12 +23,17 @@ import {
   getWebSiteSchema,
 } from "@/lib/structured-data";
 
+const loadBlogPosts = createServerFn({ method: "GET" })
+  .inputValidator((data: { locale: string }) => data)
+  .handler(async ({ data }) => {
+    return getBlogPosts(data.locale, { limit: 12 });
+  });
+
 export const Route = createFileRoute("/$locale/blog/")({
   loader: async ({ params, context }) => {
-    const { posts, pagination } = await getPosts(params.locale, { limit: 12 });
+    const { posts } = await loadBlogPosts({ data: { locale: params.locale } });
     return {
       posts,
-      pagination,
       messages: context.messages,
       locale: context.locale,
     };
@@ -93,11 +99,11 @@ function BlogPage() {
             </Link>
           </div>
 
-          {/* Posts Grid - matching Changelog grid style */}
+          {/* Posts Grid */}
           {posts.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {posts.map((post: GhostPost) => (
-                <BlogCard key={post.id} post={post} locale={locale} />
+              {posts.map((post: BlogPostListItem) => (
+                <BlogCard key={post.slug} post={post} locale={locale} />
               ))}
             </div>
           ) : (
@@ -118,7 +124,7 @@ function BlogPage() {
             </div>
           )}
 
-          {/* See all link - matching Changelog style */}
+          {/* Post count */}
           {posts.length > 0 && (
             <div className="mt-8 flex justify-center">
               <span className="inline-flex items-center gap-1 text-sm font-medium text-mist-500">

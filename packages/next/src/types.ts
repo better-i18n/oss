@@ -28,6 +28,12 @@ export interface I18nConfig extends I18nCoreConfig {
   localePrefix?: LocalePrefix;
 
   /**
+   * Cookie name used for locale persistence when localePrefix is "never"
+   * @default "locale"
+   */
+  cookieName?: string;
+
+  /**
    * Next.js ISR revalidation time for manifest (seconds)
    * @default 3600
    */
@@ -45,6 +51,7 @@ export interface I18nConfig extends I18nCoreConfig {
  */
 export interface NormalizedConfig extends CoreNormalizedConfig, Omit<I18nConfig, keyof I18nCoreConfig> {
   localePrefix: LocalePrefix;
+  cookieName: string;
   manifestRevalidateSeconds: number;
   messagesRevalidateSeconds: number;
 }

@@ -29,7 +29,6 @@
   "vars": {
     "ENVIRONMENT": "production",
     "APP_ORIGIN": "https://better-i18n.com",
-    "CDN_URL": "https://cdn.better-i18n.com",
-    "GHOST_API_URL": "https://ghost.better-i18n.com"
+    "CDN_URL": "https://cdn.better-i18n.com"
   }
 }

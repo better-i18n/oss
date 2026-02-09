@@ -23,8 +23,7 @@ npm install @better-i18n/sdk
 import { createClient } from "@better-i18n/sdk";
 
 const client = createClient({
-  org: "acme",
-  project: "web-app",
+  project: "acme/web-app",
   apiKey: process.env.BETTER_I18N_API_KEY!,
 });
 
@@ -114,10 +113,9 @@ post.customFields.category;   // string | null (typed!)
 
 | Option | Required | Description |
 | --- | --- | --- |
-| `org` | Yes | Organization slug |
-| `project` | Yes | Project slug |
+| `project` | Yes | Project identifier in `org/project` format (e.g., `"acme/web-app"`) |
 | `apiKey` | Yes | API key from [dashboard](https://dash.better-i18n.com) |
-| `apiBase` | No | API base URL (default: `https://api.better-i18n.com`) |
+| `apiBase` | No | API base URL (default: `https://dash.better-i18n.com`) |
 
 ## Documentation
 
