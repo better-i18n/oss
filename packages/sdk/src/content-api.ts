@@ -5,6 +5,7 @@ import type {
   ContentModel,
   ListEntriesOptions,
   GetEntryOptions,
+  PaginatedResponse,
 } from "./types";
 
 /**
@@ -42,9 +43,12 @@ export function createContentAPIClient(
     async getEntries(
       modelSlug: string,
       options?: ListEntriesOptions,
-    ): Promise<ContentEntryListItem[]> {
+    ): Promise<PaginatedResponse<ContentEntryListItem>> {
       const params = new URLSearchParams();
       if (options?.language) params.set("language", options.language);
+      if (options?.status) params.set("status", options.status);
+      if (options?.sort) params.set("sort", options.sort);
+      if (options?.order) params.set("order", options.order);
       if (options?.page) params.set("page", String(options.page));
       if (options?.limit) params.set("limit", String(options.limit));
       const qs = params.toString() ? `?${params}` : "";
@@ -58,16 +62,19 @@ export function createContentAPIClient(
           `API error fetching entries for ${modelSlug}: ${res.status}`,
         );
       }
-      const data: { items?: ContentEntryListItem[] } | ContentEntryListItem[] =
-        await res.json();
-      return Array.isArray(data) ? data : (data.items ?? []);
+      const data = await res.json() as { items: ContentEntryListItem[]; total: number; hasMore: boolean };
+      return {
+        items: data.items,
+        total: data.total,
+        hasMore: data.hasMore,
+      };
     },
 
-    async getEntry(
+    async getEntry<CF extends Record<string, string | null> = Record<string, string | null>>(
       modelSlug: string,
       entrySlug: string,
       options?: GetEntryOptions,
-    ): Promise<ContentEntry> {
+    ): Promise<ContentEntry<CF>> {
       const params = new URLSearchParams();
       if (options?.language) params.set("language", options.language);
       const qs = params.toString() ? `?${params}` : "";

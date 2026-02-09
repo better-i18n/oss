@@ -1,3 +1,5 @@
+import { getCachedLocales } from "./locales";
+
 const SITE_URL = "https://better-i18n.com";
 const SITE_NAME = "Better i18n";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
@@ -147,7 +149,10 @@ export function formatMetaTags(
 /**
  * Get alternate language links for hreflang tags
  */
-export function getAlternateLinks(pathname: string = "/", locales: string[] = ["en", "tr", "zh"]) {
+export function getAlternateLinks(pathname: string = "/", locales?: string[]) {
+  if (!locales) {
+    locales = getCachedLocales();
+  }
   const cleanPath = pathname.replace(/^\/[a-z]{2}\//, "/").replace(/^\/+/, "");
 
   const links = locales.map((locale) => ({

@@ -1,0 +1,111 @@
+---
+title: Getting Started
+description: Install and configure the Content SDK
+icon: Rocket
+---
+
+Get the Content SDK running in under 5 minutes.
+
+## Installation
+
+<Tabs items={['npm', 'bun', 'pnpm', 'yarn']}>
+  <Tab value="npm">
+    ```bash
+    npm install @better-i18n/sdk
+    ```
+  </Tab>
+  <Tab value="bun">
+    ```bash
+    bun add @better-i18n/sdk
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @better-i18n/sdk
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @better-i18n/sdk
+    ```
+  </Tab>
+</Tabs>
+
+## Setup
+
+<Steps>
+  <Step>
+    ### Get your API Key
+
+    1. Go to [dash.better-i18n.com](https://dash.better-i18n.com)
+    2. Navigate to **Settings** → **API Keys**
+    3. Select **Content** as the type
+    4. Create and copy your API key
+
+    <Callout type="warning">
+      Keep your API key secret. Never commit it to version control. Use environment variables instead.
+    </Callout>
+  </Step>
+
+  <Step>
+    ### Create a client
+
+    ```typescript title="lib/content.ts"
+    import { createClient } from "@better-i18n/sdk";
+
+    export const content = createClient({
+      org: "your-org-slug",
+      project: "your-project-slug",
+      apiKey: process.env.BETTER_I18N_API_KEY!,
+    });
+    ```
+
+    Find your org and project slugs in the dashboard URL: `dash.better-i18n.com/{org}/{project}`
+  </Step>
+
+  <Step>
+    ### Fetch content
+
+    ```typescript
+    import { content } from "./lib/content";
+
+    // List all content models
+    const models = await content.getModels();
+    console.log(models);
+    // [{ slug: "blog-posts", displayName: "Blog Posts", kind: "collection", entryCount: 12 }]
+
+    // List entries with pagination
+    const { items, total, hasMore } = await content.getEntries("blog-posts", {
+      status: "published",
+      limit: 10,
+    });
+
+    // Get a single entry
+    const post = await content.getEntry("blog-posts", "hello-world");
+    console.log(post.title, post.bodyMarkdown);
+    ```
+  </Step>
+</Steps>
+
+## Environment Variables
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `BETTER_I18N_API_KEY` | Yes | Your API key from the dashboard |
+
+## Configuration Options
+
+| Option | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `org` | `string` | Yes | — | Organization slug |
+| `project` | `string` | Yes | — | Project slug |
+| `apiKey` | `string` | Yes | — | API key for authentication |
+| `apiBase` | `string` | No | `https://api.better-i18n.com` | Custom API base URL |
+
+## Framework Integration
+
+The SDK works with any JavaScript framework. For framework-specific wrappers:
+
+- **Next.js** — Use [`@better-i18n/next`](/frameworks/nextjs) for server components with ISR caching
+- **React / TanStack Start** — Use [`@better-i18n/use-intl`](/frameworks/tanstack-start) for React hooks
+- **Any framework** — Use `@better-i18n/sdk` directly with `fetch()`
