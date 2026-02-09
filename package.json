@@ -33,7 +33,7 @@
     "@typescript-eslint/parser": "^8.54.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-unused-imports": "^4.3.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "^16.5.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
