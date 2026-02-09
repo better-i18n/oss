@@ -11,10 +11,10 @@ interface BlogContentProps {
 }
 
 /**
- * Parses Ghost CMS HTML and replaces code blocks with styled CodeBlock components
+ * Parses HTML content and replaces code blocks with styled CodeBlock components.
  *
- * Ghost outputs <pre><code class="language-xxx"> for code blocks.
- * We intercept these and render them using our CodeBlock component with syntax highlighting.
+ * Intercepts <pre><code class="language-xxx"> and renders them
+ * using our CodeBlock component with syntax highlighting.
  */
 export default function BlogContent({ html, className }: BlogContentProps) {
   const options: HTMLReactParserOptions = {

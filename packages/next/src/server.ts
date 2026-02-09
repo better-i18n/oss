@@ -1,4 +1,5 @@
 import { getRequestConfig } from "next-intl/server";
+import { cookies } from "next/headers";
 import { createI18nCore } from "@better-i18n/core";
 import type { I18nCore, Messages } from "@better-i18n/core";
 
@@ -98,8 +99,25 @@ export const createNextIntlRequestConfig = (config: I18nConfig) =>
     const i18n = createNextI18nCore(config);
     const normalized = normalizeConfig(config);
     const locales = await i18n.getLocales();
+
+    // 1. Middleware header (set by next-intl or our middleware)
     let locale = await requestLocale;
 
+    // 2. Cookie fallback — critical for localePrefix: "never" where
+    //    requestLocale may be undefined if middleware header isn't forwarded
+    if (!locale) {
+      try {
+        const cookieStore = await cookies();
+        const cookieLocale = cookieStore.get(normalized.cookieName)?.value;
+        if (cookieLocale && locales.includes(cookieLocale)) {
+          locale = cookieLocale;
+        }
+      } catch {
+        // cookies() throws in non-request contexts (e.g. build time)
+      }
+    }
+
+    // 3. Final fallback to defaultLocale
     if (!locale || !locales.includes(locale)) {
       locale = normalized.defaultLocale;
     }

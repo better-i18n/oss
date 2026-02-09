@@ -1,5 +1,6 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
-import { getPost, formatPostDate, getDisplayTags } from "@/lib/ghost";
+import { createServerFn } from "@tanstack/react-start";
+import { getBlogPost, formatPostDate, getTagColor } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useTranslations } from "@better-i18n/use-intl";
@@ -20,21 +21,15 @@ import {
   getBreadcrumbSchema,
 } from "@/lib/structured-data";
 
-function getTagColor(slug: string): string {
-  const colors: Record<string, string> = {
-    news: "bg-emerald-500/10 text-emerald-700",
-    feature: "bg-violet-500/10 text-violet-700",
-    tutorial: "bg-blue-500/10 text-blue-700",
-    update: "bg-amber-500/10 text-amber-700",
-    announcement: "bg-rose-500/10 text-rose-700",
-    guide: "bg-cyan-500/10 text-cyan-700",
-  };
-  return colors[slug] || "bg-mist-500/10 text-mist-700";
-}
+const loadBlogPost = createServerFn({ method: "GET" })
+  .inputValidator((data: { slug: string; locale: string }) => data)
+  .handler(async ({ data }) => {
+    return getBlogPost(data.slug, data.locale);
+  });
 
 export const Route = createFileRoute("/$locale/blog/$slug")({
   loader: async ({ params }) => {
-    const post = await getPost(params.slug, params.locale);
+    const post = await loadBlogPost({ data: { slug: params.slug, locale: params.locale } });
     if (!post) {
       throw notFound();
     }
@@ -51,9 +46,9 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     // Generate dynamic OG image URL
     const ogImageParams = new URLSearchParams({
       title: post?.title || "Blog Post",
-      ...(post?.primary_author?.name && { author: post.primary_author.name }),
-      ...(post?.published_at && {
-        date: new Date(post.published_at).toLocaleDateString("en-US", {
+      ...(post?.author?.name && { author: post.author.name }),
+      ...(post?.publishedAt && {
+        date: new Date(post.publishedAt).toLocaleDateString("en-US", {
           year: "numeric",
           month: "long",
           day: "numeric",
@@ -61,19 +56,17 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       }),
     });
     const dynamicOgImage = `${SITE_URL}/api/og?${ogImageParams.toString()}`;
-    // Use feature_image if available, otherwise use dynamic OG
-    const ogImage = post?.feature_image || dynamicOgImage;
+    const ogImage = post?.featuredImage || dynamicOgImage;
 
     const articleSchema = post ? getArticleSchema({
-      title: post.title,
-      description: post.excerpt || "",
+      title: post.metaTitle || post.title,
+      description: post.metaDescription || post.excerpt || "",
       url: canonicalUrl,
       image: ogImage,
-      publishedTime: post.published_at,
-      modifiedTime: post.updated_at,
+      publishedTime: post.publishedAt || "",
+      modifiedTime: post.publishedAt || "",
       author: {
-        name: post.primary_author?.name || "Better i18n Team",
-        url: post.primary_author?.website,
+        name: post.author?.name || "Better i18n Team",
       },
     }) : null;
 
@@ -83,17 +76,17 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       { name: post?.title || "Post", url: canonicalUrl },
     ]);
 
-    const schemas = [getOrganizationSchema(), breadcrumbSchema];
+    const schemas: object[] = [getOrganizationSchema(), breadcrumbSchema];
     if (articleSchema) {
       schemas.push(articleSchema);
     }
 
     return {
       meta: [
-        { title: `${post?.title ?? "Post"} - Better i18n Blog` },
-        { name: "description", content: post?.excerpt ?? "" },
-        { property: "og:title", content: post?.title ?? "" },
-        { property: "og:description", content: post?.excerpt ?? "" },
+        { title: `${post?.metaTitle || post?.title || "Post"} - Better i18n Blog` },
+        { name: "description", content: post?.metaDescription || post?.excerpt || "" },
+        { property: "og:title", content: post?.metaTitle || post?.title || "" },
+        { property: "og:description", content: post?.metaDescription || post?.excerpt || "" },
         { property: "og:image", content: ogImage },
         { property: "og:image:width", content: "1200" },
         { property: "og:image:height", content: "630" },
@@ -101,13 +94,13 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         { property: "og:url", content: canonicalUrl },
         { property: "og:site_name", content: "Better i18n" },
         { property: "og:locale", content: locale },
-        { property: "article:published_time", content: post?.published_at ?? "" },
-        { property: "article:modified_time", content: post?.updated_at ?? "" },
-        { property: "article:author", content: post?.primary_author?.name ?? "" },
+        { property: "article:published_time", content: post?.publishedAt || "" },
+        { property: "article:modified_time", content: post?.publishedAt || "" },
+        { property: "article:author", content: post?.author?.name || "" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:site", content: "@betteri18n" },
-        { name: "twitter:title", content: post?.title ?? "" },
-        { name: "twitter:description", content: post?.excerpt ?? "" },
+        { name: "twitter:title", content: post?.metaTitle || post?.title || "" },
+        { name: "twitter:description", content: post?.metaDescription || post?.excerpt || "" },
         { name: "twitter:image", content: ogImage },
         { name: "robots", content: "index, follow" },
       ],
@@ -125,7 +118,6 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
 function BlogPostPage() {
   const { post, locale } = Route.useLoaderData();
   const t = useTranslations("blog");
-  const displayTags = getDisplayTags(post.tags);
 
   return (
     <div className="bg-white">
@@ -145,14 +137,14 @@ function BlogPostPage() {
           {/* Header */}
           <header>
             {/* Tags */}
-            {displayTags.length > 0 && (
+            {post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4">
-                {displayTags.map((tag) => (
+                {post.tags.map((tag) => (
                   <span
-                    key={tag.id}
-                    className={`text-xs font-medium px-2.5 py-1 rounded ${getTagColor(tag.slug)}`}
+                    key={tag}
+                    className={`text-xs font-medium px-2.5 py-1 rounded ${getTagColor(tag)}`}
                   >
-                    {tag.name}
+                    {tag}
                   </span>
                 ))}
               </div>
@@ -165,30 +157,32 @@ function BlogPostPage() {
 
             {/* Meta */}
             <div className="mt-6 flex items-center gap-4 pb-8 border-b border-mist-100">
-              {post.primary_author?.profile_image && (
+              {post.author?.image && (
                 <img
-                  src={post.primary_author.profile_image}
-                  alt={post.primary_author.name}
+                  src={post.author.image}
+                  alt={post.author.name}
                   className="h-10 w-10 rounded-full object-cover"
                 />
               )}
               <div>
-                {post.primary_author && (
+                {post.author && (
                   <p className="text-sm font-medium text-mist-950">
-                    {post.primary_author.name}
+                    {post.author.name}
                   </p>
                 )}
                 <div className="flex items-center gap-2 text-sm text-mist-500">
-                  <time dateTime={post.published_at}>
-                    {formatPostDate(post.published_at, locale)}
-                  </time>
-                  {post.reading_time > 0 && (
+                  {post.publishedAt && (
+                    <time dateTime={post.publishedAt}>
+                      {formatPostDate(post.publishedAt, locale)}
+                    </time>
+                  )}
+                  {post.readingTime > 0 && (
                     <>
                       <span>·</span>
                       <span>
                         {t("readingTime", {
                           defaultValue: "{{minutes}} min read",
-                          minutes: post.reading_time,
+                          minutes: post.readingTime,
                         })}
                       </span>
                     </>
@@ -199,38 +193,32 @@ function BlogPostPage() {
           </header>
 
           {/* Feature Image */}
-          {post.feature_image && (
+          {post.featuredImage && (
             <figure className="mt-8">
               <img
-                src={post.feature_image}
-                alt={post.feature_image_alt || post.title}
+                src={post.featuredImage}
+                alt={post.title}
                 className="w-full rounded-2xl object-cover aspect-video"
               />
-              {post.feature_image_caption && (
-                <figcaption
-                  className="mt-3 text-center text-sm text-mist-500"
-                  dangerouslySetInnerHTML={{
-                    __html: post.feature_image_caption,
-                  }}
-                />
-              )}
             </figure>
           )}
 
-          {/* Content - using mist color palette */}
-          <BlogContent
-            html={post.html}
-            className="prose prose-lg max-w-none mt-10
-              prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
-              prose-p:text-mist-700 prose-p:leading-relaxed
-              prose-a:text-mist-950 prose-a:underline-offset-4 prose-a:decoration-mist-300 hover:prose-a:decoration-mist-500
-              prose-strong:text-mist-900 prose-strong:font-semibold
-              prose-code:text-mist-900 prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
-              prose-blockquote:border-l-mist-300 prose-blockquote:text-mist-600 prose-blockquote:not-italic
-              prose-img:rounded-xl
-              prose-li:text-mist-700
-              prose-hr:border-mist-100"
-          />
+          {/* Content */}
+          {post.bodyHtml && (
+            <BlogContent
+              html={post.bodyHtml}
+              className="prose prose-lg max-w-none mt-10
+                prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
+                prose-p:text-mist-700 prose-p:leading-relaxed
+                prose-a:text-mist-950 prose-a:underline-offset-4 prose-a:decoration-mist-300 hover:prose-a:decoration-mist-500
+                prose-strong:text-mist-900 prose-strong:font-semibold
+                prose-code:text-mist-900 prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
+                prose-blockquote:border-l-mist-300 prose-blockquote:text-mist-600 prose-blockquote:not-italic
+                prose-img:rounded-xl
+                prose-li:text-mist-700
+                prose-hr:border-mist-100"
+            />
+          )}
 
           {/* Footer */}
           <footer className="mt-16 pt-8 border-t border-mist-100">

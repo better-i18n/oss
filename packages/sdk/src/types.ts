@@ -2,14 +2,14 @@
 
 /** Configuration for creating a Better i18n content client. */
 export interface ClientConfig {
-  /** Organization slug (e.g., "acme-corp"). */
-  org: string;
-  /** Project slug (e.g., "web-app"). */
+  /** Project identifier in `org/project` format (e.g., "acme-corp/web-app"). Same as the dashboard URL path. */
   project: string;
   /** API key for authenticating content requests. Required. */
   apiKey: string;
-  /** REST API base URL. Defaults to `https://api.better-i18n.com`. */
+  /** REST API base URL. Defaults to `https://dash.better-i18n.com`. */
   apiBase?: string;
+  /** Enable debug logging to see request URLs, headers, and responses. */
+  debug?: boolean;
 }
 
 // ─── Content Types ───────────────────────────────────────────────────
@@ -41,7 +41,8 @@ export interface ContentEntry<CF extends Record<string, string | null> = Record<
   // Localized content
   title: string;
   excerpt: string | null;
-  body: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  body: Record<string, any> | null;
   bodyHtml: string | null;
   bodyMarkdown: string | null;
   metaTitle: string | null;

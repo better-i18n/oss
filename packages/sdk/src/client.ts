@@ -1,7 +1,7 @@
 import type { ClientConfig, ContentClient } from "./types";
 import { createContentAPIClient } from "./content-api";
 
-const DEFAULT_API_BASE = "https://api.better-i18n.com";
+const DEFAULT_API_BASE = "https://dash.better-i18n.com";
 
 /**
  * Creates a Better i18n content client.
@@ -12,8 +12,7 @@ const DEFAULT_API_BASE = "https://api.better-i18n.com";
  * @example
  * ```typescript
  * const client = createClient({
- *   org: "acme",
- *   project: "web-app",
+ *   project: "acme/web-app",
  *   apiKey: "bi18n_...",
  * });
  *
@@ -23,16 +22,23 @@ const DEFAULT_API_BASE = "https://api.better-i18n.com";
  * ```
  */
 export function createClient(config: ClientConfig): ContentClient {
-  const { org, project } = config;
   const apiBase = (config.apiBase || DEFAULT_API_BASE).replace(/\/$/, "");
+
+  const parts = config.project.split("/");
+  if (parts.length !== 2 || !parts[0] || !parts[1]) {
+    throw new Error(
+      `Invalid project format "${config.project}". Expected "org/project" (e.g., "acme/web-app").`,
+    );
+  }
+  const [org, project] = parts;
 
   if (!config.apiKey) {
     throw new Error(
       "API key is required for content API access.\n" +
         "Set apiKey in your client config:\n\n" +
-        '  createClient({ org: "...", project: "...", apiKey: "bi18n_..." })',
+        '  createClient({ project: "acme/web-app", apiKey: "bi18n_..." })',
     );
   }
 
-  return createContentAPIClient(apiBase, org, project, config.apiKey);
+  return createContentAPIClient(apiBase, org, project, config.apiKey, config.debug);
 }

@@ -54,13 +54,12 @@ Get the Content SDK running in under 5 minutes.
     import { createClient } from "@better-i18n/sdk";
 
     export const content = createClient({
-      org: "your-org-slug",
-      project: "your-project-slug",
+      project: "your-org/your-project",
       apiKey: process.env.BETTER_I18N_API_KEY!,
     });
     ```
 
-    Find your org and project slugs in the dashboard URL: `dash.better-i18n.com/{org}/{project}`
+    Find your project identifier in the dashboard URL: `dash.better-i18n.com/{org}/{project}`
   </Step>
 
   <Step>
@@ -89,18 +88,49 @@ Get the Content SDK running in under 5 minutes.
 
 ## Environment Variables
 
+```bash title=".env"
+BETTER_I18N_API_KEY=bi-your-api-key
+BETTER_I18N_PROJECT=acme/web-app
+```
+
 | Variable | Required | Description |
 | --- | --- | --- |
 | `BETTER_I18N_API_KEY` | Yes | Your API key from the dashboard |
+| `BETTER_I18N_PROJECT` | Yes | Project identifier in `org/project` format |
+
+<Callout type="tip">
+  Your project identifier matches the dashboard URL path: `dash.better-i18n.com/acme/web-app` → `"acme/web-app"`
+</Callout>
 
 ## Configuration Options
 
 | Option | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `org` | `string` | Yes | — | Organization slug |
-| `project` | `string` | Yes | — | Project slug |
+| `project` | `string` | Yes | — | Project identifier in `org/project` format |
 | `apiKey` | `string` | Yes | — | API key for authentication |
-| `apiBase` | `string` | No | `https://api.better-i18n.com` | Custom API base URL |
+| `apiBase` | `string` | No | `https://dash.better-i18n.com` | Custom API base URL |
+| `debug` | `boolean` | No | `false` | Log request URLs and responses to console |
+
+## Debugging
+
+Enable debug mode to see exactly what the SDK is doing:
+
+```typescript
+const client = createClient({
+  project: "acme/web-app",
+  apiKey: process.env.BETTER_I18N_API_KEY!,
+  debug: true,
+});
+```
+
+This logs all requests and responses to the console:
+
+```
+[better-i18n] Client initialized { apiBase: "https://dash.better-i18n.com", org: "acme", project: "web-app", base: "https://dash.better-i18n.com/api/v1/content/acme/web-app" }
+[better-i18n] → getEntries(blog-posts) https://dash.better-i18n.com/api/v1/content/acme/web-app/models/blog-posts/entries?status=published
+[better-i18n] ← 200 OK
+[better-i18n]   Response: {"items":[...],"total":24,"hasMore":true}
+```
 
 ## Framework Integration
 

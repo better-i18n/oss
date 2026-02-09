@@ -81,6 +81,7 @@ export const createI18n = (config: I18nConfig) => {
           detection: {
             cookie: true,
             browserLanguage: true,
+            cookieName: normalized.cookieName,
           },
         },
         callback
@@ -96,8 +97,9 @@ export type { MiddlewareContext, MiddlewareCallback } from "./middleware";
 // Core instance factory
 export { createNextI18nCore } from "./server";
 
-// Client hook
-export { useManifestLanguages } from "./client";
+// Client hooks & provider
+export { BetterI18nProvider, useManifestLanguages, useSetLocale } from "./client";
+export type { BetterI18nProviderProps } from "./client";
 
 // Re-export types
 export type {

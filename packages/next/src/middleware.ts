@@ -107,19 +107,12 @@ export function createBetterI18nMiddleware(
     // 1. Fetch available locales from CDN
     const availableLocales = await i18nCore.getLocales();
 
-    // 2. Create/reuse next-intl middleware (only recreate if locales changed)
-    const localesKey = availableLocales.join(",");
-    if (!cachedMiddleware || cachedLocalesKey !== localesKey) {
-      cachedMiddleware = createMiddleware({
-        locales: availableLocales,
-        defaultLocale,
-        localePrefix,
-      });
-      cachedLocalesKey = localesKey;
-    }
-
-    // 3. Our custom locale detection (for cookie logic)
-    const pathLocale = request.nextUrl.pathname.split("/")[1];
+    // 2. Our custom locale detection
+    // When localePrefix is "never", path has no locale segment — skip it
+    const pathLocale =
+      localePrefix === "never"
+        ? null
+        : request.nextUrl.pathname.split("/")[1];
     const cookieLocale = cookie ? request.cookies.get(cookieName)?.value : null;
     const headerLocale = browserLanguage
       ? request.headers.get("accept-language")?.split(",")[0]?.split("-")[0]
@@ -134,18 +127,37 @@ export function createBetterI18nMiddleware(
       availableLocales,
     });
 
-    // 4. Call next-intl middleware (sets x-middleware-request-x-next-intl-locale header)
-    const response = cachedMiddleware(request);
+    const detectedLocale = result.locale;
 
-    // 5. Get detected locale from next-intl header (more accurate than our detection)
-    const detectedLocale =
-      response.headers.get("x-middleware-request-x-next-intl-locale") ||
-      result.locale;
+    let response: NextResponse;
 
-    // 6. Add x-locale header for backwards compatibility
+    if (localePrefix === "never") {
+      // 3a. "never" mode: bypass next-intl middleware entirely.
+      // next-intl's createMiddleware tries URL rewriting which breaks cookie-only locale.
+      // We create a plain response and set the header that next-intl's getRequestConfig reads.
+      response = NextResponse.next();
+      response.headers.set(
+        "x-middleware-request-x-next-intl-locale",
+        detectedLocale
+      );
+    } else {
+      // 3b. URL-based modes: delegate to next-intl middleware as before
+      const localesKey = availableLocales.join(",");
+      if (!cachedMiddleware || cachedLocalesKey !== localesKey) {
+        cachedMiddleware = createMiddleware({
+          locales: availableLocales,
+          defaultLocale,
+          localePrefix,
+        });
+        cachedLocalesKey = localesKey;
+      }
+      response = cachedMiddleware(request);
+    }
+
+    // 4. Add x-locale header for backwards compatibility
     response.headers.set("x-locale", detectedLocale);
 
-    // 7. Set our custom cookie if needed
+    // 5. Set our custom cookie if needed
     if (cookie && result.shouldSetCookie) {
       response.cookies.set(cookieName, detectedLocale, {
         path: "/",
@@ -154,7 +166,7 @@ export function createBetterI18nMiddleware(
       });
     }
 
-    // 8. If callback provided, execute it (Clerk-style)
+    // 6. If callback provided, execute it (Clerk-style)
     if (callback) {
       const callbackResult = await callback(request, {
         locale: detectedLocale,
@@ -167,7 +179,7 @@ export function createBetterI18nMiddleware(
       }
     }
 
-    // 9. Return the i18n response (with all headers preserved)
+    // 7. Return the response
     return response;
   };
 }

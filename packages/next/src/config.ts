@@ -27,6 +27,7 @@ export const normalizeConfig = (config: I18nConfig): NormalizedConfig => {
   return {
     ...coreConfig,
     localePrefix: config.localePrefix ?? "as-needed",
+    cookieName: config.cookieName ?? "locale",
     manifestRevalidateSeconds: config.manifestRevalidateSeconds ?? 3600,
     messagesRevalidateSeconds: config.messagesRevalidateSeconds ?? 30,
   };

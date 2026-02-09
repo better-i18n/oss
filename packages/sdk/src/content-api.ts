@@ -24,6 +24,7 @@ export function createContentAPIClient(
   org: string,
   project: string,
   apiKey: string,
+  debug = false,
 ): ContentClient {
   const base = `${apiBase}/api/v1/content/${org}/${project}`;
   const headers: Record<string, string> = {
@@ -31,13 +32,32 @@ export function createContentAPIClient(
     "content-type": "application/json",
   };
 
+  const log = debug
+    ? (...args: unknown[]) => console.log("[better-i18n]", ...args)
+    : () => {};
+
+  if (debug) {
+    log("Client initialized", { apiBase, org, project, base });
+  }
+
+  async function request<T>(url: string, label: string): Promise<{ res: Response; data: T }> {
+    log(`→ ${label}`, url);
+    const res = await fetch(url, { headers });
+    log(`← ${res.status} ${res.statusText}`);
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      log("  Error body:", body);
+      throw new Error(`API error ${label}: ${res.status} ${body}`);
+    }
+    const data = await res.json() as T;
+    log("  Response:", JSON.stringify(data).slice(0, 500));
+    return { res, data };
+  }
+
   return {
     async getModels(): Promise<ContentModel[]> {
-      const res = await fetch(`${base}/models`, { headers });
-      if (!res.ok) {
-        throw new Error(`API error fetching models: ${res.status}`);
-      }
-      return res.json();
+      const { data } = await request<ContentModel[]>(`${base}/models`, "getModels");
+      return data;
     },
 
     async getEntries(
@@ -53,16 +73,10 @@ export function createContentAPIClient(
       if (options?.limit) params.set("limit", String(options.limit));
       const qs = params.toString() ? `?${params}` : "";
 
-      const res = await fetch(
+      const { data } = await request<{ items: ContentEntryListItem[]; total: number; hasMore: boolean }>(
         `${base}/models/${modelSlug}/entries${qs}`,
-        { headers },
+        `getEntries(${modelSlug})`,
       );
-      if (!res.ok) {
-        throw new Error(
-          `API error fetching entries for ${modelSlug}: ${res.status}`,
-        );
-      }
-      const data = await res.json() as { items: ContentEntryListItem[]; total: number; hasMore: boolean };
       return {
         items: data.items,
         total: data.total,
@@ -79,16 +93,11 @@ export function createContentAPIClient(
       if (options?.language) params.set("language", options.language);
       const qs = params.toString() ? `?${params}` : "";
 
-      const res = await fetch(
+      const { data } = await request<ContentEntry<CF>>(
         `${base}/models/${modelSlug}/entries/${entrySlug}${qs}`,
-        { headers },
+        `getEntry(${modelSlug}/${entrySlug})`,
       );
-      if (!res.ok) {
-        throw new Error(
-          `API error fetching entry ${modelSlug}/${entrySlug}: ${res.status}`,
-        );
-      }
-      return res.json();
+      return data;
     },
   };
 }
