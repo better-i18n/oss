@@ -1,9 +1,11 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@better-i18n/root",
+      "dependencies": {
+        "@better-i18n/mcp-types": "^0.7.1",
+      },
       "devDependencies": {
         "@changesets/cli": "^2.29.8",
         "@eslint/js": "^9.39.2",
@@ -310,7 +312,7 @@
 
     "@better-i18n/mcp-content": ["@better-i18n/mcp-content@workspace:packages/mcp-content"],
 
-    "@better-i18n/mcp-types": ["@better-i18n/mcp-types@0.7.0", "", { "dependencies": { "zod": "^3.25.76" } }, "sha512-zqxJsaEoo9ysqouZLbEo1ViyIUHyJM57JtBR6cwyLamMKKGJOkNQqE4bwTatwdcZxlzQAqcNrqd4TnyxhT3jhA=="],
+    "@better-i18n/mcp-types": ["@better-i18n/mcp-types@0.7.1", "", { "dependencies": { "zod": "^3.25.76" } }, "sha512-YfsUgGjFpP2CbZwNUOhDC4QIPNcABtpsB8iH8tVxkIZua/TwWNS0tzcPLZKpDS4YMBwxFCa+/h1MOOaZDpgxHg=="],
 
     "@better-i18n/next": ["@better-i18n/next@workspace:packages/next"],
 
