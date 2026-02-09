@@ -1,5 +1,11 @@
 # @better-i18n/mcp-content
 
+## 0.0.4
+
+### Patch Changes
+
+- f11cbbe: Initial publish of MCP Content server for headless CMS content management
+
 ## 0.0.3
 
 ### Patch Changes
