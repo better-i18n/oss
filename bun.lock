@@ -141,7 +141,7 @@
     },
     "packages/mcp-content": {
       "name": "@better-i18n/mcp-content",
-      "version": "0.0.3",
+      "version": "0.0.4",
       "bin": {
         "better-i18n-mcp-content": "./dist/index.js",
       },
