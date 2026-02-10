@@ -1,7 +1,7 @@
 import type { ClientConfig, ContentClient } from "./types";
 import { createContentAPIClient } from "./content-api";
 
-const DEFAULT_API_BASE = "https://dash.better-i18n.com";
+const DEFAULT_API_BASE = "https://content.better-i18n.com";
 
 /**
  * Creates a Better i18n content client.

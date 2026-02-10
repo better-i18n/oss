@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useTranslations } from "@better-i18n/use-intl";
@@ -9,25 +9,14 @@ import {
   getAlternateLinks,
   getCanonicalLink,
 } from "@/lib/meta";
-import { getChangelogs, type ChangelogEntry } from "@/lib/changelog";
+import { getChangelogs } from "@/lib/changelog";
 import { getDefaultStructuredData } from "@/lib/structured-data";
 
-const loadChangelogs = createServerFn({ method: "GET" })
-  .inputValidator((data: { locale: string }) => data)
-  .handler(async ({ data }) => {
-    return getChangelogs(data.locale === "tr" ? "tr" : "en");
-  });
-
 export const Route = createFileRoute("/$locale/changelog")({
-  loader: async ({ context, params }) => {
-    const releases = await loadChangelogs({
-      data: { locale: params.locale },
-    });
-
+  loader: async ({ context }) => {
     return {
       messages: context.messages,
       locale: context.locale,
-      releases,
     };
   },
   head: ({ loaderData }) => {
@@ -92,7 +81,16 @@ function renderContent(content: string): string {
 
 function ChangelogPage() {
   const t = useTranslations("changelogPage");
-  const { releases, locale } = Route.useLoaderData();
+  const { locale } = Route.useParams();
+
+  const { data: releases, isLoading } = useQuery({
+    queryKey: ["changelogs", locale],
+    queryFn: () => getChangelogs(locale === "tr" ? "tr" : "en"),
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="bg-white">
@@ -110,55 +108,63 @@ function ChangelogPage() {
             </div>
 
             <div className="flex flex-col gap-12">
-              {releases.map((release: ChangelogEntry) => (
+              {releases?.map((entry) => (
                 <article
-                  key={release.slug}
-                  id={release.slug}
+                  key={entry.slug}
+                  id={entry.slug}
                   className="pt-10 border-t border-gray-200 first:pt-0 first:border-0"
                 >
                   {/* Header */}
                   <div className="flex flex-wrap items-center gap-3 mb-4">
-                    <span
-                      className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${categoryColors[release.category] || categoryColors.feature}`}
-                    >
-                      {categoryLabels[locale]?.[release.category] ||
-                        release.category}
-                    </span>
-                    <time className="text-sm text-gray-500">
-                      {new Date(release.date).toLocaleDateString(
-                        locale === "tr" ? "tr-TR" : "en-US",
-                        {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        }
-                      )}
-                    </time>
-                    <span className="text-xs font-mono text-gray-400">
-                      v{release.version}
-                    </span>
+                    {entry.customFields.category && (
+                      <span
+                        className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${categoryColors[entry.customFields.category] || categoryColors.feature}`}
+                      >
+                        {categoryLabels[locale]?.[entry.customFields.category] ||
+                          entry.customFields.category}
+                      </span>
+                    )}
+                    {entry.publishedAt && (
+                      <time className="text-sm text-gray-500">
+                        {new Date(entry.publishedAt).toLocaleDateString(
+                          locale === "tr" ? "tr-TR" : "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}
+                      </time>
+                    )}
+                    {entry.customFields.version && (
+                      <span className="text-xs font-mono text-gray-400">
+                        v{entry.customFields.version}
+                      </span>
+                    )}
                   </div>
 
                   {/* Title */}
                   <h2 className="font-display text-2xl font-medium text-gray-900 mb-3">
-                    {release.title}
+                    {entry.title}
                   </h2>
 
                   {/* Summary */}
                   <p className="text-base text-gray-600 mb-4">
-                    {release.summary}
+                    {entry.excerpt}
                   </p>
 
                   {/* Full Content */}
-                  <div
-                    className="prose prose-sm prose-gray max-w-none"
-                    dangerouslySetInnerHTML={{ __html: renderContent(release.content) }}
-                  />
+                  {entry.bodyMarkdown && (
+                    <div
+                      className="prose prose-sm prose-gray max-w-none"
+                      dangerouslySetInnerHTML={{ __html: renderContent(entry.bodyMarkdown) }}
+                    />
+                  )}
 
                   {/* Tags */}
-                  {release.tags.length > 0 && (
+                  {entry.tags && entry.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-gray-100">
-                      {release.tags.map((tag: string) => (
+                      {entry.tags.map((tag) => (
                         <span
                           key={tag}
                           className="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-500"
@@ -171,7 +177,7 @@ function ChangelogPage() {
                 </article>
               ))}
 
-              {releases.length === 0 && (
+              {(!releases || releases.length === 0) && (
                 <div className="text-center py-12 text-gray-500">
                   {locale === "tr"
                     ? "Henuz changelog yok."

@@ -43,8 +43,10 @@ export const Route = createFileRoute("/api/changelog")({
           ? localeParam
           : "en";
 
-        const releases = getChangelogsMeta(locale);
-        const latestVersion = getLatestVersion(locale);
+        const [releases, latestVersion] = await Promise.all([
+          getChangelogsMeta(locale),
+          getLatestVersion(locale),
+        ]);
 
         return Response.json(
           {

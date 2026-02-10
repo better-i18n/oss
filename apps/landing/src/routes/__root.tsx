@@ -4,6 +4,7 @@ import {
   createRootRouteWithContext,
   Outlet,
 } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BetterI18nProvider, getLocaleFromPath } from "@better-i18n/use-intl";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
@@ -16,6 +17,15 @@ import {
   getCanonicalLink,
 } from "../lib/meta";
 import { getHomePageStructuredData } from "../lib/structured-data";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes cache
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 interface RouterContext {
   locale: string;
@@ -118,14 +128,16 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body className="no-dark text-mist-950">
-        <BetterI18nProvider
-          project={i18nConfig.project}
-          locale={locale}
-          messages={messages}
-          timeZone="UTC"
-        >
-          <Outlet />
-        </BetterI18nProvider>
+        <QueryClientProvider client={queryClient}>
+          <BetterI18nProvider
+            project={i18nConfig.project}
+            locale={locale}
+            messages={messages}
+            timeZone="UTC"
+          >
+            <Outlet />
+          </BetterI18nProvider>
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>
