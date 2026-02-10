@@ -1,5 +1,62 @@
 # @better-i18n/sdk
 
+## 1.0.0
+
+### Major Changes
+
+- **BREAKING CHANGE: Migrate to dedicated Content API**
+
+  The SDK now uses the new dedicated Content API at `content.better-i18n.com` instead of `dash.better-i18n.com/api/v1/content`.
+
+  ### What Changed
+  - **Default API Base**: `https://content.better-i18n.com` (was `https://dash.better-i18n.com`)
+  - **URL Path**: `/v1/content` (was `/api/v1/content`)
+  - **CORS Support**: Wildcard origin enabled for public access
+  - **Performance**: CDN caching with 60s cache + 1h stale-while-revalidate
+
+  ### Migration Guide
+
+  **For users without custom `apiBase`:**
+  No action required. SDK will automatically use the new endpoint.
+
+  **For users with custom `apiBase`:**
+
+  ```typescript
+  // Before
+  const client = createClient({
+    project: "acme/web-app",
+    apiKey: "bi18n_...",
+    apiBase: "https://dash.better-i18n.com", // Old endpoint
+  });
+
+  // After
+  const client = createClient({
+    project: "acme/web-app",
+    apiKey: "bi18n_...",
+    apiBase: "https://content.better-i18n.com", // New endpoint
+  });
+  ```
+
+  ### Benefits
+  - ✅ **Proper CORS** - No more CORS errors in browser
+  - ✅ **Better Performance** - CDN caching for faster responses
+  - ✅ **Clean URLs** - Professional API endpoint
+  - ✅ **Independent Scaling** - Dedicated infrastructure
+
+  ### Backward Compatibility
+
+  The old endpoint at `dash.better-i18n.com/api/v1/content` will remain operational during a transition period. However, we recommend migrating to the new endpoint as soon as possible.
+
+  To temporarily use the old endpoint:
+
+  ```typescript
+  const client = createClient({
+    project: "acme/web-app",
+    apiKey: "bi18n_...",
+    apiBase: "https://dash.better-i18n.com",
+  });
+  ```
+
 ## 0.4.0
 
 ### Minor Changes

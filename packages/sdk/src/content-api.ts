@@ -15,9 +15,9 @@ import type {
  * Requires an API key for authentication via the `x-api-key` header.
  *
  * URL patterns:
- * - Models: `{apiBase}/api/v1/content/{org}/{project}/models`
- * - Entries: `{apiBase}/api/v1/content/{org}/{project}/models/{model}/entries`
- * - Entry: `{apiBase}/api/v1/content/{org}/{project}/models/{model}/entries/{slug}`
+ * - Models: `{apiBase}/v1/content/{org}/{project}/models`
+ * - Entries: `{apiBase}/v1/content/{org}/{project}/models/{model}/entries`
+ * - Entry: `{apiBase}/v1/content/{org}/{project}/models/{model}/entries/{slug}`
  */
 export function createContentAPIClient(
   apiBase: string,
@@ -26,7 +26,7 @@ export function createContentAPIClient(
   apiKey: string,
   debug = false,
 ): ContentClient {
-  const base = `${apiBase}/api/v1/content/${org}/${project}`;
+  const base = `${apiBase}/v1/content/${org}/${project}`;
   const headers: Record<string, string> = {
     "x-api-key": apiKey,
     "content-type": "application/json",
