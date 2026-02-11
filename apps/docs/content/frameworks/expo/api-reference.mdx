@@ -1,0 +1,228 @@
+---
+title: API Reference
+description: Complete API documentation for @better-i18n/expo
+---
+
+Complete API reference for the Expo/React Native SDK.
+
+## BetterI18nBackend
+
+The main export. An i18next `BackendModule` that fetches translations from the better-i18n CDN with persistent caching.
+
+```ts
+import i18n from 'i18next';
+import { BetterI18nBackend } from '@better-i18n/expo';
+
+i18n.use(BetterI18nBackend).init({
+  backend: {
+    project: 'acme/my-app',
+  },
+  lng: 'en',
+  fallbackLng: 'en',
+});
+```
+
+### Backend Options
+
+<Accordion>
+<AccordionItem title="BetterI18nBackendOptions">
+
+All options are passed via i18next's `backend` config key.
+
+```ts
+interface BetterI18nBackendOptions {
+  project: string;
+  defaultLocale?: string;
+  cdnBaseUrl?: string;
+  cacheExpiration?: number;
+  storage?: TranslationStorage;
+  debug?: boolean;
+  fetch?: typeof fetch;
+}
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `project` | `string` | Required | Project identifier in `org/project` format |
+| `defaultLocale` | `string` | `"en"` | Fallback locale passed to `@better-i18n/core` |
+| `cdnBaseUrl` | `string` | `"https://cdn.better-i18n.com"` | Custom CDN URL |
+| `cacheExpiration` | `number` | `86400000` (24h) | In-memory cache TTL in milliseconds |
+| `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter (auto: MMKV → AsyncStorage → in-memory) |
+| `debug` | `boolean` | `false` | Enable debug logging to console |
+| `fetch` | `typeof fetch` | `globalThis.fetch` | Custom fetch function (useful for testing) |
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Locale Detection
+
+<Accordion>
+<AccordionItem title="getDeviceLocale(options?)">
+
+Returns the device's primary locale using `expo-localization`. Falls back to the provided default if expo-localization is not installed.
+
+```ts
+import { getDeviceLocale } from '@better-i18n/expo';
+
+const locale = getDeviceLocale({ fallback: 'en' });
+// "tr" on a Turkish device, "en" if detection fails
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `fallback` | `string` | `"en"` | Locale to return if detection fails |
+
+**Returns:** `string` — language code (e.g., `"en"`, `"tr"`, `"de"`)
+
+</AccordionItem>
+
+<AccordionItem title="getDeviceLocales()">
+
+Returns all device locales as language codes. Returns an empty array if `expo-localization` is not installed.
+
+```ts
+import { getDeviceLocales } from '@better-i18n/expo';
+
+const locales = getDeviceLocales();
+// ["tr", "en", "de"]
+```
+
+**Returns:** `string[]` — array of language codes
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Storage
+
+<Accordion>
+<AccordionItem title="TranslationStorage">
+
+Interface for pluggable storage adapters. Any key-value store that implements these three methods works.
+
+```ts
+interface TranslationStorage {
+  getItem(key: string): Promise<string | null>;
+  setItem(key: string, value: string): Promise<void>;
+  removeItem(key: string): Promise<void>;
+}
+```
+
+Compatible with: MMKV, AsyncStorage, SecureStore, or any custom implementation. Auto-detected at runtime (MMKV → AsyncStorage → in-memory).
+
+</AccordionItem>
+
+<AccordionItem title="createMemoryStorage()">
+
+Creates an in-memory storage adapter backed by a `Map`. Useful for testing or when persistence is not needed.
+
+```ts
+import { createMemoryStorage } from '@better-i18n/expo';
+
+const storage = createMemoryStorage();
+
+i18n.init({
+  backend: {
+    project: 'acme/app',
+    storage,
+  },
+});
+```
+
+**Returns:** `TranslationStorage`
+
+</AccordionItem>
+
+<AccordionItem title="resolveStorage(userStorage?)">
+
+Auto-detects the best available storage. If a custom storage is provided, it's returned as-is. Otherwise, tries MMKV first, then AsyncStorage, then falls back to in-memory.
+
+```ts
+import { resolveStorage } from '@better-i18n/expo';
+
+const storage = resolveStorage();
+// MMKV → AsyncStorage → in-memory Map
+```
+
+**Priority:** `react-native-mmkv` → `@react-native-async-storage/async-storage` → in-memory `Map`
+
+**Returns:** `TranslationStorage`
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Convenience Helper
+
+<Accordion>
+<AccordionItem title="initBetterI18n(options)">
+
+One-liner setup helper that configures i18next with the `BetterI18nBackend`.
+
+```ts
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import { initBetterI18n } from '@better-i18n/expo';
+
+await initBetterI18n({
+  project: 'acme/my-app',
+  i18n: i18n.use(initReactI18next),
+  useDeviceLocale: true,
+});
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `project` | `string` | Required | Project identifier in `org/project` format |
+| `i18n` | `i18n` | Required | i18next instance |
+| `defaultLocale` | `string` | `"en"` | Fallback locale |
+| `cacheExpiration` | `number` | `86400000` (24h) | Cache TTL in milliseconds |
+| `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter |
+| `useDeviceLocale` | `boolean` | `false` | Auto-detect device locale via expo-localization |
+| `debug` | `boolean` | `false` | Enable debug logging |
+
+**Returns:** `Promise<void>` — resolves when i18next is initialized
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Types
+
+<Accordion>
+<AccordionItem title="Exported Types">
+
+```ts
+import type {
+  // Backend options
+  BetterI18nBackendOptions,
+
+  // Storage
+  TranslationStorage,
+  CacheMeta,
+
+  // Helper options
+  InitBetterI18nOptions,
+} from '@better-i18n/expo';
+```
+
+</AccordionItem>
+
+<AccordionItem title="CacheMeta">
+
+Metadata stored alongside cached translations.
+
+```ts
+interface CacheMeta {
+  /** Timestamp when translations were cached */
+  cachedAt: number;
+}
+```
+
+</AccordionItem>
+</Accordion>

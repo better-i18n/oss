@@ -1,0 +1,109 @@
+---
+title: Offline & Caching
+description: How persistent caching and offline fallback works in @better-i18n/expo
+---
+
+# Offline & Caching
+
+Mobile apps need to work without network. `@better-i18n/expo` uses a **network-first** strategy with persistent storage so your app always gets fresh translations — and never crashes when the CDN is unavailable.
+
+## How It Works
+
+When `i18next` requests translations for a language, the backend plugin follows this flow:
+
+```
+read(language)
+│
+├─ 1. In-memory cache (TtlCache)
+│     └─ Hit? → Return immediately (same session, already fetched)
+│
+├─ 2. CDN fetch (network-first)
+│     ├─ Success → Cache to memory + persistent storage, return
+│     └─ Failure ↓
+│
+└─ 3. Persistent cache (MMKV / AsyncStorage)
+      ├─ Have cached data? → Return (offline fallback)
+      └─ No cache at all? → Throw (i18next falls to fallbackLng)
+```
+
+<Callout type="tip">
+  **Key guarantee:** If the user has opened the app at least once with network, the app will always have translations available — even in airplane mode.
+</Callout>
+
+## Cache Layers
+
+### 1. In-Memory Cache
+
+The fastest layer. Prevents redundant CDN fetches within the same app session.
+
+- Survives navigation and re-renders
+- Cleared when the app is killed
+- TTL matches `cacheExpiration` option (default: 24h)
+
+### 2. Persistent Cache
+
+Translations are persisted to device storage so they survive app restarts. Used as **offline fallback** when the CDN is unreachable.
+
+**Storage keys (per locale):**
+```
+@better-i18n:{project}:{locale}:translations  → JSON translation data
+@better-i18n:{project}:{locale}:meta           → { cachedAt: timestamp }
+```
+
+Each locale has a single cache entry that gets overwritten on every successful CDN fetch — no duplicate entries.
+
+## Storage Auto-Detection
+
+Storage is resolved automatically at startup. Zero config required.
+
+| Priority | Storage | Speed | Persistence |
+|----------|---------|-------|-------------|
+| 1 | `react-native-mmkv` | Sync I/O, fastest | Yes |
+| 2 | `@react-native-async-storage/async-storage` | Async | Yes |
+| 3 | In-memory `Map` | Instant | No |
+
+If you have `react-native-mmkv` installed, it's used automatically (separate MMKV instance with id `"better-i18n"`). Otherwise, AsyncStorage is used. If neither is installed, falls back to in-memory (no offline support).
+
+## Custom Storage
+
+You can provide any storage that implements the `TranslationStorage` interface:
+
+```ts
+i18n.init({
+  backend: {
+    project: 'acme/app',
+    storage: {
+      getItem: async (key: string) => /* ... */,
+      setItem: async (key: string, value: string) => /* ... */,
+      removeItem: async (key: string) => /* ... */,
+    },
+  },
+});
+```
+
+### In-Memory Only
+
+For testing or when you don't want persistence:
+
+```ts
+import { createMemoryStorage } from '@better-i18n/expo';
+
+i18n.init({
+  backend: {
+    project: 'acme/app',
+    storage: createMemoryStorage(),
+  },
+});
+```
+
+## Without Persistent Storage
+
+If neither MMKV nor AsyncStorage is installed, the plugin automatically falls back to in-memory storage. This means:
+
+- Translations are fetched from CDN on every app launch
+- No offline support between sessions
+- Works fine for development and testing
+
+<Callout type="warning">
+  For production apps, install `react-native-mmkv` or `@react-native-async-storage/async-storage` for offline support.
+</Callout>

@@ -1,0 +1,85 @@
+{
+  "name": "@better-i18n/expo",
+  "version": "0.1.0",
+  "description": "Better i18n backend plugin for i18next in Expo/React Native",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/better-i18n/better-i18n.git",
+    "directory": "packages/expo"
+  },
+  "bugs": {
+    "url": "https://github.com/better-i18n/better-i18n/issues"
+  },
+  "homepage": "https://github.com/better-i18n/better-i18n/tree/main/packages/expo",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
+  "keywords": [
+    "i18n",
+    "localization",
+    "internationalization",
+    "expo",
+    "react-native",
+    "i18next",
+    "cdn",
+    "translations",
+    "offline"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "@better-i18n/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "i18next": ">=23.0.0",
+    "react-i18next": ">=14.0.0",
+    "expo-localization": ">=15.0.0",
+    "react-native-mmkv": ">=3.0.0",
+    "@react-native-async-storage/async-storage": ">=1.19.0"
+  },
+  "peerDependenciesMeta": {
+    "react-i18next": {
+      "optional": true
+    },
+    "expo-localization": {
+      "optional": true
+    },
+    "react-native-mmkv": {
+      "optional": true
+    },
+    "@react-native-async-storage/async-storage": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "i18next": "^23.0.0",
+    "typescript": "~5.9.2"
+  }
+}

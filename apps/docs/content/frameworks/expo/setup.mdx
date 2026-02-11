@@ -1,0 +1,213 @@
+---
+title: Setup
+description: Installation and configuration for Expo and React Native
+---
+
+# Setup
+
+This guide walks you through installing `@better-i18n/expo` and setting up i18next in your Expo or React Native app.
+
+<Callout type="info">
+**Prerequisite:** Create a project at [dash.better-i18n.com](https://dash.better-i18n.com). Your project identifier will be in the format `org/project` (e.g., `my-company/mobile-app`).
+</Callout>
+
+## Installation
+
+<Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
+  <Tab value="npm">
+  ```bash
+  npm install @better-i18n/expo i18next react-i18next
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn add @better-i18n/expo i18next react-i18next
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add @better-i18n/expo i18next react-i18next
+  ```
+  </Tab>
+  <Tab value="bun">
+  ```bash
+  bun add @better-i18n/expo i18next react-i18next
+  ```
+  </Tab>
+</Tabs>
+
+### Recommended Optional Dependencies
+
+For offline caching and device locale detection:
+
+```bash
+npx expo install react-native-mmkv expo-localization
+```
+
+- **react-native-mmkv** - Fastest persistent storage for offline caching (auto-detected)
+- **expo-localization** - Enables device locale detection via `getDeviceLocale()`
+
+<Callout type="tip">
+  Both are optional. Storage is auto-detected at runtime: MMKV → AsyncStorage → in-memory.
+</Callout>
+
+## Configuration
+
+<Steps>
+
+<Step>
+### Create i18n Config
+
+Create a file to initialize i18next with the `BetterI18nBackend` plugin:
+
+```ts title="src/i18n.ts"
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import { BetterI18nBackend, getDeviceLocale } from '@better-i18n/expo';
+
+i18n
+  .use(BetterI18nBackend)
+  .use(initReactI18next)
+  .init({
+    backend: {
+      project: 'your-org/your-project',
+    },
+    lng: getDeviceLocale({ fallback: 'en' }),
+    fallbackLng: 'en',
+    interpolation: { escapeValue: false },
+  });
+
+export default i18n;
+```
+</Step>
+
+<Step>
+### Import in App Entry
+
+Import the i18n config at the top of your app entry point:
+
+```tsx title="App.tsx"
+import './src/i18n';
+import { Suspense } from 'react';
+import { ActivityIndicator, View } from 'react-native';
+import { HomeScreen } from './src/screens/HomeScreen';
+
+export default function App() {
+  return (
+    <Suspense fallback={
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    }>
+      <HomeScreen />
+    </Suspense>
+  );
+}
+```
+
+<Callout type="info">
+  The `Suspense` boundary is recommended to handle the initial translation load. Without it, `useTranslation` will return empty strings until translations are ready.
+</Callout>
+</Step>
+
+<Step>
+### Use Translations
+
+Use the standard `react-i18next` hooks — no changes to your components:
+
+```tsx title="src/screens/HomeScreen.tsx"
+import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
+
+export function HomeScreen() {
+  const { t } = useTranslation();
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontSize: 24 }}>{t('welcome')}</Text>
+      <Text>{t('description')}</Text>
+    </View>
+  );
+}
+```
+</Step>
+
+</Steps>
+
+## Language Switching
+
+Use `i18next.changeLanguage()` to switch languages at runtime. The backend plugin automatically fetches and caches translations for the new language.
+
+```tsx title="src/components/LanguageSwitcher.tsx"
+import { useTranslation } from 'react-i18next';
+import { Button, View } from 'react-native';
+
+export function LanguageSwitcher() {
+  const { i18n } = useTranslation();
+
+  return (
+    <View style={{ flexDirection: 'row', gap: 8 }}>
+      <Button title="English" onPress={() => i18n.changeLanguage('en')} />
+      <Button title="Turkce" onPress={() => i18n.changeLanguage('tr')} />
+      <Button title="Deutsch" onPress={() => i18n.changeLanguage('de')} />
+    </View>
+  );
+}
+```
+
+## One-Liner Setup
+
+For a simpler API, use the `initBetterI18n` convenience helper:
+
+```ts title="src/i18n.ts"
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import { initBetterI18n } from '@better-i18n/expo';
+
+await initBetterI18n({
+  project: 'your-org/your-project',
+  i18n: i18n.use(initReactI18next),
+  useDeviceLocale: true,
+});
+
+export default i18n;
+```
+
+This is equivalent to the manual setup but handles `BetterI18nBackend` registration, device locale detection, and default options for you.
+
+## Backend Options
+
+All options are passed via i18next's `backend` key:
+
+```ts
+i18n.init({
+  backend: {
+    project: 'your-org/your-project',  // Required
+    defaultLocale: 'en',               // Default: "en"
+    cacheExpiration: 86400000,          // Default: 24h (in ms)
+    debug: false,                       // Default: false
+    storage: customStorage,             // Default: AsyncStorage or in-memory
+    cdnBaseUrl: 'https://...',          // Default: better-i18n CDN
+  },
+});
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `project` | `string` | Required | Project identifier in `org/project` format |
+| `defaultLocale` | `string` | `"en"` | Fallback locale for core |
+| `cacheExpiration` | `number` | `86400000` (24h) | In-memory cache TTL in milliseconds |
+| `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter (MMKV → AsyncStorage → in-memory) |
+| `debug` | `boolean` | `false` | Enable debug logging |
+| `cdnBaseUrl` | `string` | CDN default | Custom CDN URL |
+
+## Next Steps
+
+<Cards>
+  <Card title="Offline & Caching" icon="WifiOff" href="/frameworks/expo/offline-caching">
+    Understand the cache-first strategy and offline support.
+  </Card>
+  <Card title="API Reference" icon="FileCode" href="/frameworks/expo/api-reference">
+    Full API documentation for all exports.
+  </Card>
+</Cards>

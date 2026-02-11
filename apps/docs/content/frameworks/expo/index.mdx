@@ -1,0 +1,93 @@
+---
+title: Getting Started
+description: i18next backend plugin for Expo and React Native with offline caching
+---
+
+## Overview
+
+`@better-i18n/expo` is an i18next backend plugin that loads translations from the better-i18n CDN. It plugs into your existing i18next + react-i18next setup with zero native modules — meaning it works in **Expo Go** out of the box.
+
+- **i18next backend plugin** - Drop into any existing i18next setup
+- **Offline-first** - Persistent caching via AsyncStorage with stale-while-revalidate
+- **Expo Go compatible** - Pure JavaScript, no native modules required
+- **Device locale detection** - Auto-detect via expo-localization
+
+<Callout type="info">
+  This package is a backend plugin for i18next. It does **not** replace react-i18next — it works alongside it. Your existing `useTranslation()` calls stay exactly the same.
+</Callout>
+
+## Features
+
+<Cards>
+  <Card title="Works in Expo Go" icon="Smartphone">
+    Pure JS implementation — no native modules, no dev client required.
+  </Card>
+  <Card title="Offline Support" icon="WifiOff">
+    AsyncStorage caching ensures translations are always available, even without network.
+  </Card>
+  <Card title="Pluggable Storage" icon="Database">
+    Uses AsyncStorage by default, but supports MMKV or any custom key-value store.
+  </Card>
+  <Card title="Device Locale" icon="Globe">
+    Auto-detect the user's language via expo-localization.
+  </Card>
+</Cards>
+
+## Quick Start
+
+```ts title="i18n.ts"
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import { BetterI18nBackend, getDeviceLocale } from '@better-i18n/expo';
+
+i18n
+  .use(BetterI18nBackend)
+  .use(initReactI18next)
+  .init({
+    backend: {
+      project: 'your-org/your-project',
+    },
+    lng: getDeviceLocale({ fallback: 'en' }),
+    fallbackLng: 'en',
+    interpolation: { escapeValue: false },
+  });
+
+export default i18n;
+```
+
+```tsx title="App.tsx"
+import './i18n';
+import { useTranslation } from 'react-i18next';
+import { Text } from 'react-native';
+
+function HomeScreen() {
+  const { t } = useTranslation();
+  return <Text>{t('welcome')}</Text>;
+}
+```
+
+## Guide
+
+<Cards>
+  <Card title="Setup" icon="Settings" href="/frameworks/expo/setup">
+    Installation, configuration, and basic usage.
+  </Card>
+  <Card title="Offline & Caching" icon="WifiOff" href="/frameworks/expo/offline-caching">
+    How persistent caching and offline fallback works.
+  </Card>
+  <Card title="API Reference" icon="FileCode" href="/frameworks/expo/api-reference">
+    Complete API documentation for all exports.
+  </Card>
+</Cards>
+
+## Comparison
+
+| Feature | Expo | Vite | TanStack Start | Next.js |
+|---------|------|------|----------------|---------|
+| Rendering | Client | Client | Client + SSR | Client + SSR |
+| i18n library | i18next | use-intl | use-intl | next-intl |
+| Offline support | Built-in | Manual | Manual | Manual |
+| Expo Go | Yes | N/A | N/A | N/A |
+| Persistent cache | AsyncStorage | N/A | N/A | N/A |
+
+Choose Expo for React Native / Expo apps. For web apps, see [Vite](/frameworks/vite), [TanStack Start](/frameworks/tanstack-start), or [Next.js](/frameworks/nextjs).
