@@ -1,6 +1,6 @@
 {
   "title": "Frameworks",
-  "description": "React SDKs for Next.js, Vite & TanStack",
+  "description": "React SDKs for Next.js, Vite, TanStack & Expo",
   "icon": "Layers",
   "root": true,
   "pages": [
@@ -15,6 +15,7 @@
     "---Frameworks---",
     "nextjs",
     "tanstack-start",
-    "vite"
+    "vite",
+    "expo"
   ]
 }

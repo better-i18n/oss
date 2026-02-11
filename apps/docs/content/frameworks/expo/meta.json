@@ -1,0 +1,10 @@
+{
+  "title": "Expo",
+  "defaultOpen": false,
+  "pages": [
+    "index",
+    "setup",
+    "offline-caching",
+    "api-reference"
+  ]
+}

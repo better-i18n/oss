@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "./packages/core" },
+    { "path": "./packages/expo" },
     { "path": "./packages/next" },
     { "path": "./packages/use-intl" },
     { "path": "./packages/cli" },

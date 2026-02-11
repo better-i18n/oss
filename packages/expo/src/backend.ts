@@ -1,0 +1,180 @@
+import { createI18nCore, TtlCache } from "@better-i18n/core";
+import type { I18nCore, Messages } from "@better-i18n/core";
+import type {
+  BackendModule,
+  CallbackError,
+  InitOptions,
+  ReadCallback,
+  Services,
+} from "i18next";
+import { readCache, resolveStorage, writeCache } from "./storage";
+import type { BetterI18nBackendOptions, TranslationStorage } from "./types";
+
+const DEFAULT_CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+/**
+ * Extract keys for a specific namespace from the flat CDN response.
+ *
+ * CDN returns: `{ "common.hero.title": "Welcome", "common.nav.home": "Home" }`
+ * i18next expects for namespace "common": `{ "hero.title": "Welcome", "nav.home": "Home" }`
+ *
+ * If keys are already nested (no namespace prefix), returns the namespace
+ * subtree or the full object if namespace doesn't exist as a top-level key.
+ */
+function extractNamespace(
+  data: Record<string, unknown>,
+  namespace: string
+): Record<string, unknown> {
+  // Case 1: Data is already nested with namespace as a top-level key
+  // e.g. { "common": { "hero": { "title": "..." } } }
+  if (
+    namespace in data &&
+    typeof data[namespace] === "object" &&
+    data[namespace] !== null
+  ) {
+    return data[namespace] as Record<string, unknown>;
+  }
+
+  // Case 2: Flat keys with namespace prefix ("common.hero.title")
+  const prefix = `${namespace}.`;
+  const result: Record<string, unknown> = {};
+  let foundAny = false;
+
+  for (const key in data) {
+    if (key.startsWith(prefix)) {
+      result[key.slice(prefix.length)] = data[key];
+      foundAny = true;
+    }
+  }
+
+  if (foundAny) return result;
+
+  // Case 3: No namespace structure found — return everything as-is
+  // (single-namespace projects or default namespace)
+  return data;
+}
+
+/**
+ * i18next backend plugin for better-i18n CDN with offline caching.
+ *
+ * Implements a network-first strategy:
+ * 1. Check in-memory cache (TtlCache) — avoids redundant fetches within a session
+ * 2. Fetch from CDN — always get fresh translations
+ * 3. On CDN failure, fall back to persistent cache (AsyncStorage)
+ *
+ * @example
+ * ```ts
+ * import i18n from 'i18next';
+ * import { BetterI18nBackend } from '@better-i18n/expo';
+ *
+ * i18n.use(BetterI18nBackend).init({
+ *   backend: { project: 'acme/my-app' },
+ *   lng: 'en',
+ *   fallbackLng: 'en',
+ * });
+ * ```
+ */
+export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions> {
+  static type = "backend" as const;
+  type = "backend" as const;
+
+  private core!: I18nCore;
+  private storage!: TranslationStorage;
+  private memoryCache = new TtlCache<Messages>();
+  private cacheExpiration = DEFAULT_CACHE_EXPIRATION_MS;
+  private project = "";
+  private debug = false;
+
+  init(
+    _services: Services,
+    backendOptions: BetterI18nBackendOptions,
+    _i18nextOptions: InitOptions
+  ): void {
+    if (!backendOptions.project) {
+      throw new Error(
+        "[better-i18n/expo] `project` is required in backend options"
+      );
+    }
+
+    this.project = backendOptions.project;
+    this.debug = backendOptions.debug ?? false;
+    this.cacheExpiration =
+      backendOptions.cacheExpiration ?? DEFAULT_CACHE_EXPIRATION_MS;
+
+    this.storage = resolveStorage(backendOptions.storage);
+
+    this.core = createI18nCore({
+      project: backendOptions.project,
+      defaultLocale: backendOptions.defaultLocale ?? "en",
+      cdnBaseUrl: backendOptions.cdnBaseUrl,
+      debug: this.debug,
+      fetch: backendOptions.fetch,
+      ...backendOptions.coreOptions,
+    });
+  }
+
+  read(language: string, namespace: string, callback: ReadCallback): void {
+    this.loadTranslations(language)
+      .then((allData) => {
+        const nsData = extractNamespace(allData, namespace);
+        this.log(
+          "namespace",
+          namespace,
+          "→",
+          Object.keys(nsData).length,
+          "keys"
+        );
+        callback(null, nsData);
+      })
+      .catch((err: CallbackError) => callback(err, null));
+  }
+
+  private async loadTranslations(
+    locale: string
+  ): Promise<Record<string, unknown>> {
+    const memoryCacheKey = `${this.project}:${locale}`;
+
+    // 1. In-memory cache — skip redundant fetches within the same session
+    const memoryHit = this.memoryCache.get(memoryCacheKey);
+    if (memoryHit) {
+      this.log("memory cache hit", locale);
+      return memoryHit;
+    }
+
+    // 2. Network-first: always try CDN, fall back to persistent cache
+    try {
+      this.log("fetching from CDN", locale);
+      const data = (await this.core.getMessages(locale)) as Record<
+        string,
+        unknown
+      >;
+
+      // Persist to both caches
+      this.memoryCache.set(memoryCacheKey, data, this.cacheExpiration);
+      writeCache(this.storage, this.project, locale, data).catch((err) => {
+        this.log("failed to write persistent cache", err);
+      });
+
+      return data;
+    } catch (err) {
+      this.log("CDN fetch failed, checking persistent cache", locale, err);
+
+      // 3. CDN down — fall back to persistent cache
+      const cached = await readCache(this.storage, this.project, locale);
+      if (cached) {
+        this.log("serving from persistent cache (offline fallback)", locale);
+        this.memoryCache.set(memoryCacheKey, cached.data, this.cacheExpiration);
+        return cached.data;
+      }
+
+      // 4. No cache, no CDN — nothing we can do
+      throw err;
+    }
+  }
+
+  private log(...args: unknown[]): void {
+    if (this.debug) {
+      console.debug("[better-i18n/expo]", ...args);
+    }
+  }
+}

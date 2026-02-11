@@ -26,7 +26,9 @@ const fetchManifest = async (
 
   logger.debug("fetching", url);
 
-  const response = await fetchFn(url);
+  const response = await fetchFn(url, {
+    headers: { "Cache-Control": "no-cache" },
+  });
 
   if (!response.ok) {
     const message = `Manifest fetch failed (${response.status})`;
@@ -78,7 +80,9 @@ const fetchMessages = async (
 
   logger.debug("fetching", url);
 
-  const response = await fetchFn(url);
+  const response = await fetchFn(url, {
+    headers: { "Cache-Control": "no-cache" },
+  });
 
   if (!response.ok) {
     const message = `Messages fetch failed for locale "${locale}" (${response.status})`;
