@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createMiddleware } from "@tanstack/react-start";
-import { getChangelogsMeta, getLatestVersion } from "@/lib/changelog";
+import { getChangelogs, getLatestVersion } from "@/lib/changelog";
 
 type SupportedLocale = "en" | "tr";
 
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/api/changelog")({
           : "en";
 
         const [releases, latestVersion] = await Promise.all([
-          getChangelogsMeta(locale),
+          getChangelogs(locale),
           getLatestVersion(locale),
         ]);
 

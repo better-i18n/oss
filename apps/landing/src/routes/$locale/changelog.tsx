@@ -9,14 +9,18 @@ import {
   getAlternateLinks,
   getCanonicalLink,
 } from "@/lib/meta";
-import { getChangelogs } from "@/lib/changelog";
+import { getChangelogs, type ChangelogEntry } from "@/lib/changelog";
 import { getDefaultStructuredData } from "@/lib/structured-data";
 
 export const Route = createFileRoute("/$locale/changelog")({
-  loader: async ({ context }) => {
+  loader: async ({ context, params }) => {
+    const locale = params.locale as "en" | "tr";
+    const releases = await getChangelogs(locale);
+
     return {
       messages: context.messages,
       locale: context.locale,
+      releases,
     };
   },
   head: ({ loaderData }) => {
@@ -81,16 +85,25 @@ function renderContent(content: string): string {
 
 function ChangelogPage() {
   const t = useTranslations("changelogPage");
+  const loaderData = Route.useLoaderData();
   const { locale } = Route.useParams();
 
-  const { data: releases, isLoading } = useQuery({
+  // Hybrid approach:
+  // - SSR: loader provides initial data (no API call visible to client)
+  // - Client navigation: useQuery calls API endpoint
+  const { data: releases = loaderData.releases } = useQuery({
     queryKey: ["changelogs", locale],
-    queryFn: () => getChangelogs(locale === "tr" ? "tr" : "en"),
+    queryFn: async () => {
+      const response = await fetch(`/api/changelog?locale=${locale}`);
+      if (!response.ok) throw new Error("Failed to fetch changelogs");
+      const json = (await response.json()) as { releases: ChangelogEntry[] };
+      return json.releases;
+    },
+    initialData: loaderData.releases,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount: false, // Don't refetch on mount if we have initialData
+    refetchOnWindowFocus: false,
   });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="bg-white">
@@ -108,7 +121,7 @@ function ChangelogPage() {
             </div>
 
             <div className="flex flex-col gap-12">
-              {releases?.map((entry) => (
+              {releases?.map((entry: ChangelogEntry) => (
                 <article
                   key={entry.slug}
                   id={entry.slug}
@@ -164,7 +177,7 @@ function ChangelogPage() {
                   {/* Tags */}
                   {entry.tags && entry.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-gray-100">
-                      {entry.tags.map((tag) => (
+                      {entry.tags.map((tag: string) => (
                         <span
                           key={tag}
                           className="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-500"

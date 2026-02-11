@@ -4,8 +4,11 @@ import { resolve } from 'node:path';
 interface PackageVersions {
   next: string;
   useIntl: string;
+  expo: string;
   cli: string;
   mcp: string;
+  mcpContent: string;
+  sdk: string;
   core: string;
 }
 
@@ -27,8 +30,11 @@ export function getPackageVersions(): PackageVersions {
   cachedVersions = {
     next: readVersion('next'),
     useIntl: readVersion('use-intl'),
+    expo: readVersion('expo'),
     cli: readVersion('cli'),
     mcp: readVersion('mcp'),
+    mcpContent: readVersion('mcp-content'),
+    sdk: readVersion('sdk'),
     core: readVersion('core'),
   };
 
@@ -46,8 +52,11 @@ Use these exact versions when installing packages:
 |---------|----------------|-----------------|
 | @better-i18n/next | ${versions.next} | npm install @better-i18n/next@${versions.next} |
 | @better-i18n/use-intl | ${versions.useIntl} | npm install @better-i18n/use-intl@${versions.useIntl} |
+| @better-i18n/expo | ${versions.expo} | npm install @better-i18n/expo@${versions.expo} |
 | @better-i18n/cli | ${versions.cli} | npx @better-i18n/cli@${versions.cli} |
 | @better-i18n/mcp | ${versions.mcp} | npx @better-i18n/mcp@${versions.mcp} |
+| @better-i18n/mcp-content | ${versions.mcpContent} | npx @better-i18n/mcp-content@${versions.mcpContent} |
+| @better-i18n/sdk | ${versions.sdk} | npm install @better-i18n/sdk@${versions.sdk} |
 | @better-i18n/core | ${versions.core} | npm install @better-i18n/core@${versions.core} |
 
 ---
