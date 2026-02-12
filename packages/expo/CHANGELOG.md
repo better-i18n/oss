@@ -1,0 +1,29 @@
+# @better-i18n/expo
+
+## 0.2.0
+
+### Minor Changes
+
+- 043c5f4: Add `@better-i18n/expo` - i18next backend plugin for Expo/React Native with offline caching
+
+  **@better-i18n/expo:**
+  - i18next `BackendModule` with network-first strategy (always fresh translations)
+  - Persistent offline fallback via MMKV or AsyncStorage (auto-detected, zero config)
+  - Device locale detection via expo-localization
+  - `initBetterI18n()` convenience helper for one-liner setup
+
+  **@better-i18n/core:**
+  - Add `Cache-Control: no-cache` header to CDN fetch requests for proper cache revalidation
+
+### Patch Changes
+
+- 1f45586: Fix broken package entry points — `main`/`exports` now point to `dist/` directly
+
+  `bun publish` does not apply `publishConfig` overrides, causing `main: "./src/index.ts"` to be published while `src/` is not included in the tarball. This broke Metro (React Native) and any bundler that doesn't fall back to `publishConfig`.
+  - Root-level `main`/`types` now point to `./dist/index.js` and `./dist/index.d.ts`
+  - Added `"bun"` conditional export for monorepo dev (`./src/index.ts`)
+  - Removed broken `publishConfig` field overrides (kept `access: "public"` only)
+
+- Updated dependencies [043c5f4]
+- Updated dependencies [1f45586]
+  - @better-i18n/core@0.1.7
