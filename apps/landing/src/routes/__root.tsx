@@ -75,6 +75,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           name: "viewport",
           content: "width=device-width, initial-scale=1",
         },
+        {
+          name: "google",
+          content: "notranslate",
+        },
         ...formatMetaTags(meta, { locale }),
       ],
       links: [
@@ -123,7 +127,7 @@ function RootComponent() {
   const { messages, locale } = Route.useRouteContext();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} translate="no" className="notranslate">
       <head>
         <HeadContent />
       </head>
