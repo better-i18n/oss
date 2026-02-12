@@ -1,5 +1,16 @@
 # @better-i18n/expo
 
+## 0.2.1
+
+### Patch Changes
+
+- Fix package entry points to resolve from dist/ instead of missing src/
+
+  Root-level main/types/exports now point to dist/ directly. Added "bun" conditional export for monorepo development.
+
+- Updated dependencies
+  - @better-i18n/core@0.1.8
+
 ## 0.2.0
 
 ### Minor Changes

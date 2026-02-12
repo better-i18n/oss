@@ -77,7 +77,7 @@ describe("readCache / writeCache", () => {
     expect(result).toBeNull();
   });
 
-  it("should return null when translations exist but meta is missing", async () => {
+  it("should return data with default meta when translations exist but meta is missing", async () => {
     storage = createMemoryStorage();
     await storage.setItem(
       "@better-i18n:acme/app:en:translations",
@@ -85,6 +85,8 @@ describe("readCache / writeCache", () => {
     );
 
     const result = await readCache(storage, "acme/app", "en");
-    expect(result).toBeNull();
+    expect(result).not.toBeNull();
+    expect(result!.data).toEqual({ hello: "world" });
+    expect(result!.meta.cachedAt).toBe(0);
   });
 });
