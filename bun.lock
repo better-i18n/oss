@@ -10,8 +10,8 @@
       "devDependencies": {
         "@changesets/cli": "^2.29.8",
         "@eslint/js": "^9.39.2",
-        "@typescript-eslint/eslint-plugin": "^8.54.0",
-        "@typescript-eslint/parser": "^8.54.0",
+        "@typescript-eslint/eslint-plugin": "^8.55.0",
+        "@typescript-eslint/parser": "^8.55.0",
         "eslint": "^9.39.2",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-unused-imports": "^4.4.1",
@@ -21,7 +21,7 @@
         "nodemailer": "^7.0.13",
         "prettier": "^3.8.1",
         "typescript": "~5.9.3",
-        "typescript-eslint": "^8.54.0",
+        "typescript-eslint": "^8.55.0",
         "vitest": "~3.2.4",
         "zod": "^4.3.6",
       },
@@ -58,7 +58,7 @@
       "dependencies": {
         "@better-i18n/core": "workspace:*",
         "@better-i18n/schemas": "workspace:*",
-        "@better-i18n/sdk": "^1.0.0",
+        "@better-i18n/sdk": "^1.0.1",
         "@better-i18n/ui": "^0.1.1",
         "@better-i18n/use-intl": "workspace:*",
         "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.90",
@@ -187,7 +187,7 @@
     },
     "packages/next": {
       "name": "@better-i18n/next",
-      "version": "0.5.2",
+      "version": "0.5.3",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
       },
@@ -207,21 +207,21 @@
     },
     "packages/schemas": {
       "name": "@better-i18n/schemas",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "devDependencies": {
         "typescript": "~5.9.2",
       },
     },
     "packages/sdk": {
       "name": "@better-i18n/sdk",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "devDependencies": {
         "typescript": "~5.9.3",
       },
     },
     "packages/use-intl": {
       "name": "@better-i18n/use-intl",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
       },
