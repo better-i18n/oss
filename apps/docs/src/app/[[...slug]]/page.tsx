@@ -41,7 +41,7 @@ export default async function Page(props: PageProps<'/[[...slug]]'>) {
 
 function ActionsBar(props: { url: string }) {
 
-  const markdownUrl = props.url + '.mdx';
+  const markdownUrl = props.url + '.txt';
 
   return (
     <div className="flex flex-row gap-2 items-center border-b pt-2 pb-6">

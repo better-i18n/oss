@@ -98,7 +98,7 @@ export async function GET() {
 
   const intro = `# Better i18n
 
-> GitHub-first localization platform for engineering teams.
+> AI-powered localization platform for engineering teams — CDN-first delivery with optional GitHub workflows.
 
 ## Docs
 - [llms.txt](/llms.txt): Table of contents with links to individual pages

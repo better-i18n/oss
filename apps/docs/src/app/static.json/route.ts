@@ -1,7 +1,8 @@
-import { exportSearchIndexes } from '@/lib/export-static-indexes';
+import { source } from '@/lib/source';
+import { createFromSource } from 'fumadocs-core/search/server';
 
 export const revalidate = false;
 
-export async function GET() {
-  return Response.json(await exportSearchIndexes());
-}
+export const { staticGET: GET } = createFromSource(source, {
+  language: 'english',
+});

@@ -16,7 +16,13 @@ export function baseOptions(): BaseLayoutProps {
     githubUrl: 'https://github.com/aliosmandev/better-i18n',
     links: [
       {
-        text: 'LLM Docs',
+        text: 'llms.txt',
+        url: '/llms.txt',
+        external: true,
+        icon: <FileText className="size-4" />,
+      },
+      {
+        text: 'llms-full.txt',
         url: '/llms-full.txt',
         external: true,
         icon: <FileText className="size-4" />,

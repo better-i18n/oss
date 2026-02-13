@@ -1,3 +1,4 @@
+import type { Messages } from "@better-i18n/core";
 import type { CacheMeta, TranslationStorage } from "./types";
 
 const CACHE_PREFIX = "@better-i18n";
@@ -85,12 +86,12 @@ export const readCache = async (
   storage: TranslationStorage,
   project: string,
   locale: string
-): Promise<{ data: Record<string, unknown>; meta: CacheMeta } | null> => {
+): Promise<{ data: Messages; meta: CacheMeta } | null> => {
   try {
     const raw = await storage.getItem(buildStorageKey(project, locale));
     if (!raw) return null;
 
-    const data = JSON.parse(raw) as Record<string, unknown>;
+    const data: Messages = JSON.parse(raw);
 
     // Meta is best-effort — default to epoch if missing/corrupt
     let meta: CacheMeta = { cachedAt: 0 };
@@ -114,7 +115,7 @@ export const writeCache = async (
   storage: TranslationStorage,
   project: string,
   locale: string,
-  data: Record<string, unknown>
+  data: Messages
 ): Promise<void> => {
   const meta: CacheMeta = { cachedAt: Date.now() };
   await Promise.all([
