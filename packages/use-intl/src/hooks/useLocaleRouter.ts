@@ -8,7 +8,7 @@ import {
   addLocalePrefix,
   type LocaleConfig,
 } from "@better-i18n/core";
-import { useBetterI18n } from "../context";
+import { useBetterI18n } from "../context.js";
 
 /**
  * Return type for useLocaleRouter hook

@@ -6,7 +6,7 @@ import type {
   ListEntriesOptions,
   GetEntryOptions,
   PaginatedResponse,
-} from "./types";
+} from "./types.js";
 
 /**
  * Creates a content client that fetches from the REST API.

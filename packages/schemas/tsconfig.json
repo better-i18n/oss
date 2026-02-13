@@ -16,8 +16,13 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "allowJs": true,
+    "composite": true,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
 }

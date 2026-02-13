@@ -14,8 +14,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { createI18nCore, parseProject } from "@better-i18n/core";
 import type { LanguageOption, Messages } from "@better-i18n/core";
 
-import { normalizeConfig } from "./config";
-import type { I18nConfig } from "./types";
+import { normalizeConfig } from "./config.js";
+import type { I18nConfig } from "./types.js";
 
 // ─── BetterI18nProvider ──────────────────────────────────────────────
 

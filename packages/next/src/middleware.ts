@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createI18nCore, createLogger, detectLocale } from "@better-i18n/core";
 import type { I18nMiddlewareConfig } from "@better-i18n/core";
 
-import { normalizeConfig } from "./config";
-import { getLocales } from "./server";
-import type { I18nConfig } from "./types";
+import { normalizeConfig } from "./config.js";
+import { getLocales } from "./server.js";
+import type { I18nConfig } from "./types.js";
 
 /**
  * Context passed to the middleware callback (Clerk-style pattern)
