@@ -1,0 +1,14 @@
+{
+  "title": "Core",
+  "description": "Platform architecture, CDN delivery, and core utilities",
+  "icon": "Box",
+  "root": true,
+  "pages": [
+    "---Platform---",
+    "how-it-works",
+    "---Package---",
+    "index",
+    "api-reference",
+    "locale-utilities"
+  ]
+}
