@@ -1,16 +1,16 @@
-import type { I18nConfig } from "./types";
-import { normalizeConfig } from "./config";
+import type { I18nConfig } from "./types.js";
+import { normalizeConfig } from "./config.js";
 import {
   createNextI18nCore,
   createNextIntlRequestConfig,
-} from "./server";
+} from "./server.js";
 import {
   createI18nMiddleware,
   createI18nProxy,
   createBetterI18nMiddleware,
   composeMiddleware,
   type MiddlewareCallback,
-} from "./middleware";
+} from "./middleware.js";
 
 /**
  * Create a complete i18n setup for Next.js
@@ -92,14 +92,14 @@ export const createI18n = (config: I18nConfig) => {
 
 // Modern standalone middleware exports
 export { createBetterI18nMiddleware, composeMiddleware };
-export type { MiddlewareContext, MiddlewareCallback } from "./middleware";
+export type { MiddlewareContext, MiddlewareCallback } from "./middleware.js";
 
 // Core instance factory
-export { createNextI18nCore } from "./server";
+export { createNextI18nCore } from "./server.js";
 
 // Client hooks & provider
-export { BetterI18nProvider, useManifestLanguages, useSetLocale } from "./client";
-export type { BetterI18nProviderProps } from "./client";
+export { BetterI18nProvider, useManifestLanguages, useSetLocale } from "./client.js";
+export type { BetterI18nProviderProps } from "./client.js";
 
 // Re-export types
 export type {
@@ -111,6 +111,6 @@ export type {
   ManifestLanguage,
   ManifestResponse,
   Messages,
-} from "./types";
+} from "./types.js";
 
 export type { I18nMiddlewareConfig } from "@better-i18n/core";

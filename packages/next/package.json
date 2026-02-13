@@ -13,33 +13,38 @@
   },
   "homepage": "https://github.com/better-i18n/better-i18n/tree/main/packages/next",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts",
+      "default": "./dist/index.js"
     },
     "./server": {
-      "types": "./src/server.ts",
-      "default": "./src/server.ts"
+      "types": "./dist/server.d.ts",
+      "bun": "./src/server.ts",
+      "default": "./dist/server.js"
     },
     "./client": {
-      "types": "./src/client.tsx",
-      "default": "./src/client.tsx"
+      "types": "./dist/client.d.ts",
+      "bun": "./src/client.tsx",
+      "default": "./dist/client.js"
     },
     "./middleware": {
-      "types": "./src/middleware.ts",
-      "default": "./src/middleware.ts"
+      "types": "./dist/middleware.d.ts",
+      "bun": "./src/middleware.ts",
+      "default": "./dist/middleware.js"
     },
     "./proxy": {
-      "types": "./src/proxy.ts",
-      "default": "./src/proxy.ts"
+      "types": "./dist/proxy.d.ts",
+      "bun": "./src/proxy.ts",
+      "default": "./dist/proxy.js"
     },
     "./package.json": "./package.json"
   },
   "files": [
-    "src",
+    "dist",
     "package.json",
     "README.md"
   ],
@@ -54,7 +59,10 @@
     "cdn"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
     "@better-i18n/core": "workspace:*"

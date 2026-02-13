@@ -1,5 +1,5 @@
-export { createClient } from "./client";
-export { createContentAPIClient } from "./content-api";
+export { createClient } from "./client.js";
+export { createContentAPIClient } from "./content-api.js";
 export type {
   ClientConfig,
   ContentClient,
@@ -11,4 +11,4 @@ export type {
   ListEntriesOptions,
   GetEntryOptions,
   PaginatedResponse,
-} from "./types";
+} from "./types.js";

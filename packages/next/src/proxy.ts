@@ -1,1 +1,1 @@
-export { createI18nProxy } from "./middleware";
+export { createI18nProxy } from "./middleware.js";

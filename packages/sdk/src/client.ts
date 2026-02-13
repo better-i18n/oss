@@ -1,5 +1,5 @@
-import type { ClientConfig, ContentClient } from "./types";
-import { createContentAPIClient } from "./content-api";
+import type { ClientConfig, ContentClient } from "./types.js";
+import { createContentAPIClient } from "./content-api.js";
 
 const DEFAULT_API_BASE = "https://content.better-i18n.com";
 

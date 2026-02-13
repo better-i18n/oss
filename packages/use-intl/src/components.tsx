@@ -1,8 +1,8 @@
 "use client";
 
 import type { ComponentProps, ReactNode } from "react";
-import { useLocaleRouter } from "./hooks/useLocaleRouter";
-import { useLanguages } from "./hooks";
+import { useLocaleRouter } from "./hooks/useLocaleRouter.js";
+import { useLanguages } from "./hooks.js";
 
 export interface LanguageSwitcherProps
   extends Omit<ComponentProps<"select">, "value" | "onChange" | "children"> {

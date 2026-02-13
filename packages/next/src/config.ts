@@ -3,7 +3,7 @@ import {
   getProjectBaseUrl as coreGetProjectBaseUrl,
   normalizeConfig as coreNormalizeConfig,
 } from "@better-i18n/core";
-import type { I18nConfig, NormalizedConfig } from "./types";
+import type { I18nConfig, NormalizedConfig } from "./types.js";
 
 // Re-export parseProject from core
 export { parseProject };

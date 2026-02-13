@@ -8,4 +8,4 @@
  * Internal tRPC validation schemas are in the platform repo.
  */
 
-export * from "./ai-models";
+export * from "./ai-models.js";

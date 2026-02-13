@@ -3,8 +3,8 @@ import { cookies } from "next/headers";
 import { createI18nCore } from "@better-i18n/core";
 import type { I18nCore, Messages } from "@better-i18n/core";
 
-import { normalizeConfig, getProjectBaseUrl } from "./config";
-import type { I18nConfig, NextFetchRequestInit } from "./types";
+import { normalizeConfig, getProjectBaseUrl } from "./config.js";
+import type { I18nConfig, NextFetchRequestInit } from "./types.js";
 
 /**
  * Next.js i18n core instance with ISR support

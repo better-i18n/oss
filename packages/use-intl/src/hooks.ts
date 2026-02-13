@@ -1,6 +1,6 @@
 "use client";
 
-import { useBetterI18n } from "./context";
+import { useBetterI18n } from "./context.js";
 
 /**
  * Hook to get available languages from CDN manifest

@@ -1,9 +1,9 @@
 // Provider
-export { BetterI18nProvider } from "./provider";
-export type { BetterI18nProviderProps } from "./provider";
+export { BetterI18nProvider } from "./provider.js";
+export type { BetterI18nProviderProps } from "./provider.js";
 
 // Context & Hooks
-export { useBetterI18n } from "./context";
+export { useBetterI18n } from "./context.js";
 export {
   useLanguages,
   useLocale,
@@ -13,22 +13,22 @@ export {
   useMessages,
   useNow,
   useTimeZone,
-} from "./hooks";
+} from "./hooks.js";
 
 // Router Integration (TanStack Router)
-export { useLocaleRouter } from "./hooks/useLocaleRouter";
-export type { UseLocaleRouterReturn } from "./hooks/useLocaleRouter";
+export { useLocaleRouter } from "./hooks/useLocaleRouter.js";
+export type { UseLocaleRouterReturn } from "./hooks/useLocaleRouter.js";
 
 // Components
-export { LanguageSwitcher } from "./components";
-export type { LanguageSwitcherProps } from "./components";
+export { LanguageSwitcher } from "./components.js";
+export type { LanguageSwitcherProps } from "./components.js";
 
 // Types
 export type {
   Messages,
   BetterI18nProviderConfig,
   BetterI18nContextValue,
-} from "./types";
+} from "./types.js";
 
 // Re-export locale utilities from core (convenience)
 export {

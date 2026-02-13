@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { BetterI18nContextValue } from "./types";
+import type { BetterI18nContextValue } from "./types.js";
 
 /**
  * Context for Better i18n specific state
