@@ -1,0 +1,9 @@
+{
+  "title": "Core",
+  "defaultOpen": false,
+  "pages": [
+    "index",
+    "api-reference",
+    "locale-utilities"
+  ]
+}

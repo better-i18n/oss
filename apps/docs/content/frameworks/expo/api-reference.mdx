@@ -22,6 +22,20 @@ i18n.use(BetterI18nBackend).init({
 });
 ```
 
+### Namespace Auto-Registration
+
+When the CDN returns multi-namespace data (nested or flat format), the backend automatically registers **all** namespaces in i18next's resource store — not just the one that was requested. This means you don't need to manually configure or discover namespaces.
+
+```
+CDN response: { "common": {...}, "auth": {...}, "settings": {...} }
+
+i18next requests "common" →
+  ✓ Returns "common" data to i18next
+  ✓ Auto-registers "auth" and "settings" in the resource store
+```
+
+Both nested (`{ "common": { "key": "value" } }`) and flat (`{ "common.key": "value" }`) formats are supported.
+
 ### Backend Options
 
 <Accordion>
@@ -184,8 +198,22 @@ await initBetterI18n({
 | `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter |
 | `useDeviceLocale` | `boolean` | `false` | Auto-detect device locale via expo-localization |
 | `debug` | `boolean` | `false` | Enable debug logging |
+| `i18nextOptions` | `Partial<InitOptions>` | `{}` | Additional i18next init options (e.g., `defaultNS`, `ns`, `react`). Merged with SDK defaults. |
 
-**Returns:** `Promise<void>` — resolves when i18next is initialized
+**Returns:** `Promise<BetterI18nResult>` — resolves when i18next is initialized
+
+```ts
+interface BetterI18nResult {
+  /** Core instance for accessing manifest, languages, etc. */
+  core: I18nCore;
+  /** Available languages from the CDN manifest */
+  languages: LanguageOption[];
+}
+```
+
+<Callout type="warning">
+  Do **not** call `i18n.init()` separately — `initBetterI18n` handles initialization internally. Use `i18nextOptions` to pass custom i18next settings.
+</Callout>
 
 </AccordionItem>
 </Accordion>

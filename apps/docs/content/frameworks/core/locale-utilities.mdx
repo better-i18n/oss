@@ -1,0 +1,213 @@
+---
+title: Locale URL Utilities
+description: URL path manipulation utilities for locale-aware routing
+---
+
+`@better-i18n/core` includes a set of locale-aware URL utilities that work with any framework. These are the same utilities used internally by the Next.js and TanStack Start SDKs.
+
+<Callout type="info">
+**Convention:** The default locale has **no URL prefix** (e.g., `/about` for English), while non-default locales are prefixed (e.g., `/tr/about` for Turkish). This follows the same pattern as next-intl and Paraglide JS.
+</Callout>
+
+## Setup
+
+All utilities require a `LocaleConfig` object:
+
+```ts
+import type { LocaleConfig } from "@better-i18n/core";
+
+const config: LocaleConfig = {
+  locales: ["en", "tr", "de", "fr"],
+  defaultLocale: "en",
+};
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `locales` | `string[]` | All supported locale codes |
+| `defaultLocale` | `string` | Default locale (no URL prefix) |
+
+---
+
+## extractLocale
+
+Extracts locale from URL pathname's first segment. Returns `null` for the default locale (no prefix).
+
+```ts
+import { extractLocale } from "@better-i18n/core";
+
+extractLocale("/tr/about", config);    // "tr"
+extractLocale("/de/settings", config); // "de"
+extractLocale("/about", config);       // null (default locale)
+extractLocale("/", config);            // null
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `pathname` | `string` | URL pathname |
+| `config` | `LocaleConfig` | Locale configuration |
+
+**Returns:** `string | null` — Locale code or `null` for default
+
+---
+
+## getLocaleFromPath
+
+Gets the effective locale from URL, always returning a string. Unlike `extractLocale`, this never returns `null`.
+
+```ts
+import { getLocaleFromPath } from "@better-i18n/core";
+
+getLocaleFromPath("/tr/about", config); // "tr"
+getLocaleFromPath("/about", config);    // "en" (default)
+getLocaleFromPath("/", config);         // "en" (default)
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `pathname` | `string` | URL pathname |
+| `config` | `LocaleConfig` | Locale configuration |
+
+**Returns:** `string` — Always a valid locale code
+
+---
+
+## hasLocalePrefix
+
+Checks if pathname has a locale prefix in the first segment.
+
+```ts
+import { hasLocalePrefix } from "@better-i18n/core";
+
+hasLocalePrefix("/tr/about", config);   // true
+hasLocalePrefix("/about", config);      // false
+hasLocalePrefix("/unknown/page", config); // false
+```
+
+---
+
+## removeLocalePrefix
+
+Removes locale prefix from pathname. Returns the path unchanged if no locale prefix is present.
+
+```ts
+import { removeLocalePrefix } from "@better-i18n/core";
+
+removeLocalePrefix("/tr/about", config);    // "/about"
+removeLocalePrefix("/de/settings", config); // "/settings"
+removeLocalePrefix("/about", config);       // "/about" (unchanged)
+removeLocalePrefix("/tr", config);          // "/"
+```
+
+---
+
+## addLocalePrefix
+
+Adds locale prefix to pathname. Default locale gets **no prefix** (convention).
+
+```ts
+import { addLocalePrefix } from "@better-i18n/core";
+
+addLocalePrefix("/about", "tr", config); // "/tr/about"
+addLocalePrefix("/about", "en", config); // "/about" (default = no prefix)
+addLocalePrefix("/", "de", config);      // "/de"
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `pathname` | `string` | URL pathname |
+| `locale` | `string` | Target locale |
+| `config` | `LocaleConfig` | Locale configuration |
+
+---
+
+## replaceLocaleInPath
+
+Replaces or adds locale in pathname. The main utility for **locale switching** in URLs.
+
+```ts
+import { replaceLocaleInPath } from "@better-i18n/core";
+
+// Switch from default to Turkish
+replaceLocaleInPath("/about", "tr", config);       // "/tr/about"
+
+// Switch from Turkish to German
+replaceLocaleInPath("/tr/about", "de", config);    // "/de/about"
+
+// Switch to default (removes prefix)
+replaceLocaleInPath("/tr/about", "en", config);    // "/about"
+
+// Switch between non-default locales
+replaceLocaleInPath("/de/settings", "fr", config); // "/fr/settings"
+```
+
+### Language Switcher Example
+
+```tsx
+import { replaceLocaleInPath } from "@better-i18n/core";
+import type { LocaleConfig } from "@better-i18n/core";
+
+const config: LocaleConfig = {
+  locales: ["en", "tr", "de"],
+  defaultLocale: "en",
+};
+
+function LanguageSwitcher({ currentPath }: { currentPath: string }) {
+  return (
+    <nav>
+      {config.locales.map((locale) => (
+        <a
+          key={locale}
+          href={replaceLocaleInPath(currentPath, locale, config)}
+        >
+          {locale.toUpperCase()}
+        </a>
+      ))}
+    </nav>
+  );
+}
+```
+
+---
+
+## createLocalePath
+
+Creates a reusable path builder with fixed configuration. Useful when you need to generate many localized paths.
+
+```ts
+import { createLocalePath } from "@better-i18n/core";
+
+const localePath = createLocalePath(config);
+
+localePath("/about", "tr");    // "/tr/about"
+localePath("/about", "en");    // "/about"
+localePath("/about");          // "/about" (uses default locale)
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `config` | `LocaleConfig` | Locale configuration |
+
+**Returns:** `(path: string, locale?: string) => string`
+
+### Navigation Example
+
+```tsx
+import { createLocalePath } from "@better-i18n/core";
+
+const localePath = createLocalePath({
+  locales: ["en", "tr", "de"],
+  defaultLocale: "en",
+});
+
+function Navigation({ locale }: { locale: string }) {
+  return (
+    <nav>
+      <a href={localePath("/", locale)}>Home</a>
+      <a href={localePath("/about", locale)}>About</a>
+      <a href={localePath("/pricing", locale)}>Pricing</a>
+      <a href={localePath("/contact", locale)}>Contact</a>
+    </nav>
+  );
+}
+```

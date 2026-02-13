@@ -1,23 +1,25 @@
-// Backend plugin (main API)
-export { BetterI18nBackend } from "./backend";
+// Main API
+export { initBetterI18n } from "./helpers";
+export type { InitBetterI18nOptions, BetterI18nResult } from "./helpers";
 
 // Storage
-export { createMemoryStorage, resolveStorage } from "./storage";
+export { createMemoryStorage } from "./storage";
 
 // Locale detection
 export { getDeviceLocale, getDeviceLocales } from "./locale";
 
-// Convenience helper
-export { initBetterI18n } from "./helpers";
+// Legacy backend plugin (prefer initBetterI18n for new projects)
+export { BetterI18nBackend } from "./backend";
 
-// Re-export core utilities for manifest/language fetching
-export { createI18nCore } from "@better-i18n/core";
-export type { LanguageOption, ManifestResponse } from "@better-i18n/core";
+// Re-export core types customers interact with via BetterI18nResult
+export type {
+  LanguageOption,
+  ManifestResponse,
+  I18nCore,
+} from "@better-i18n/core";
 
 // Types
 export type {
   BetterI18nBackendOptions,
   TranslationStorage,
-  CacheMeta,
 } from "./types";
-export type { InitBetterI18nOptions } from "./helpers";

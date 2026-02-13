@@ -164,7 +164,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { initBetterI18n } from '@better-i18n/expo';
 
-await initBetterI18n({
+const { languages } = await initBetterI18n({
   project: 'your-org/your-project',
   i18n: i18n.use(initReactI18next),
   useDeviceLocale: true,
@@ -173,7 +173,26 @@ await initBetterI18n({
 export default i18n;
 ```
 
-This is equivalent to the manual setup but handles `BetterI18nBackend` registration, device locale detection, and default options for you.
+This is equivalent to the manual setup but handles device locale detection, namespace discovery, and default options for you.
+
+Need to customize i18next? Pass any i18next init options via `i18nextOptions` — no need for a separate `i18n.init()` call:
+
+```ts title="src/i18n.ts"
+await initBetterI18n({
+  project: 'your-org/your-project',
+  i18n: i18n.use(initReactI18next),
+  useDeviceLocale: true,
+  i18nextOptions: {
+    defaultNS: 'common',
+    ns: ['common', 'auth'],
+    interpolation: { escapeValue: false },
+  },
+});
+```
+
+<Callout type="warning">
+  Do **not** call `i18n.init()` separately when using `initBetterI18n` — it already calls `init()` internally. Passing your options via `i18nextOptions` avoids double initialization conflicts.
+</Callout>
 
 ## Backend Options
 

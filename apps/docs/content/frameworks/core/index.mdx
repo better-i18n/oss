@@ -1,0 +1,159 @@
+---
+title: Getting Started
+description: Framework-agnostic core utilities for Better i18n — fetch messages, languages, and manage locale detection from any JavaScript runtime
+---
+
+## Overview
+
+`@better-i18n/core` is the foundation package that powers all Better i18n SDKs. It provides a **framework-agnostic API** for fetching translations, discovering languages, managing caches, and handling locale URLs.
+
+Use `@better-i18n/core` directly when:
+
+- You're building a **custom integration** outside Next.js, Vite, TanStack, or Expo
+- You need to **fetch available languages** with metadata (name, native name, flags)
+- You're writing **server-side scripts** or **CLI tools** that interact with the CDN
+- You want **locale URL utilities** for routing in any framework
+
+<Callout type="info">
+If you're using Next.js, Vite, TanStack Start, or Expo, you don't need to install `@better-i18n/core` directly — it's included as a dependency of each framework SDK.
+</Callout>
+
+## Install
+
+<Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
+  <Tab value="npm">
+  ```bash
+  npm install @better-i18n/core
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn add @better-i18n/core
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add @better-i18n/core
+  ```
+  </Tab>
+  <Tab value="bun">
+  ```bash
+  bun add @better-i18n/core
+  ```
+  </Tab>
+</Tabs>
+
+## Quick Start
+
+Create an i18n core instance and start fetching translations:
+
+```ts title="i18n.ts"
+import { createI18nCore } from "@better-i18n/core";
+
+const i18n = createI18nCore({
+  project: "my-company/web-app",
+  defaultLocale: "en",
+});
+
+// Fetch translation messages for a locale
+const messages = await i18n.getMessages("tr");
+// { "common.welcome": "Hoş geldiniz", "common.logout": "Çıkış" }
+
+// Get all available locale codes
+const locales = await i18n.getLocales();
+// ["en", "tr", "de", "fr"]
+
+// Get languages with full metadata (name, native name, flag)
+const languages = await i18n.getLanguages();
+// [
+//   { code: "en", name: "English", nativeName: "English", isDefault: true },
+//   { code: "tr", name: "Turkish", nativeName: "Türkçe", flagUrl: "..." },
+//   { code: "de", name: "German", nativeName: "Deutsch", flagUrl: "..." },
+// ]
+```
+
+## Common Use Cases
+
+### Fetch Available Languages
+
+The most common use case — building a language switcher or listing available translations:
+
+```ts
+import { createI18nCore } from "@better-i18n/core";
+
+const i18n = createI18nCore({
+  project: "my-company/web-app",
+  defaultLocale: "en",
+});
+
+// Get languages with metadata for UI
+const languages = await i18n.getLanguages();
+
+languages.forEach((lang) => {
+  console.log(`${lang.code}: ${lang.nativeName} ${lang.isDefault ? "(default)" : ""}`);
+});
+// en: English (default)
+// tr: Türkçe
+// de: Deutsch
+```
+
+### Fetch the Manifest
+
+The manifest contains all project metadata — languages, files, timestamps:
+
+```ts
+const manifest = await i18n.getManifest();
+
+console.log(manifest.sourceLanguage); // "en"
+console.log(manifest.languages);      // Full language metadata
+console.log(manifest.files);          // CDN file URLs and sizes
+console.log(manifest.updatedAt);      // Last update timestamp
+```
+
+### Pre-load Translations
+
+Fetch messages for multiple locales at once (useful for SSR or static generation):
+
+```ts
+const locales = await i18n.getLocales();
+
+const allMessages = await Promise.all(
+  locales.map(async (locale) => ({
+    locale,
+    messages: await i18n.getMessages(locale),
+  }))
+);
+```
+
+## Configuration
+
+```ts
+const i18n = createI18nCore({
+  // Required
+  project: "org/project",       // Project identifier
+  defaultLocale: "en",          // Fallback locale
+
+  // Optional
+  cdnBaseUrl: "https://cdn.better-i18n.com", // Custom CDN URL
+  manifestCacheTtlMs: 300_000,               // Cache TTL (default: 5 min)
+  debug: false,                              // Enable debug logging
+  logLevel: "warn",                          // "debug" | "info" | "warn" | "error" | "silent"
+  fetch: customFetch,                        // Custom fetch (for testing)
+});
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `project` | `string` | Required | Project identifier in `org/project` format |
+| `defaultLocale` | `string` | Required | Fallback locale code |
+| `cdnBaseUrl` | `string` | `"https://cdn.better-i18n.com"` | CDN base URL |
+| `manifestCacheTtlMs` | `number` | `300000` (5 min) | Manifest cache TTL in ms |
+| `debug` | `boolean` | `false` | Enable debug logging |
+| `logLevel` | `LogLevel` | `"warn"` | Log level threshold |
+| `fetch` | `typeof fetch` | `globalThis.fetch` | Custom fetch function |
+
+## Next Steps
+
+- Explore the [API Reference](/frameworks/core/api-reference) for all methods and types
+- Learn about [Locale URL Utilities](/frameworks/core/locale-utilities) for routing
+- See framework-specific guides: [Next.js](/frameworks/nextjs), [Vite](/frameworks/vite), [TanStack Start](/frameworks/tanstack-start), [Expo](/frameworks/expo)

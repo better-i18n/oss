@@ -84,12 +84,14 @@ export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions
   private cacheExpiration = DEFAULT_CACHE_EXPIRATION_MS;
   private project = "";
   private debug = false;
+  private services: Services | null = null;
 
   init(
-    _services: Services,
+    services: Services,
     backendOptions: BetterI18nBackendOptions,
     _i18nextOptions: InitOptions
   ): void {
+    this.services = services;
     if (!backendOptions.project) {
       throw new Error(
         "[better-i18n/expo] `project` is required in backend options"
@@ -124,9 +126,92 @@ export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions
           Object.keys(nsData).length,
           "keys"
         );
+
+        // Auto-register sibling namespaces so i18next discovers them
+        this.discoverAndRegisterNamespaces(language, allData, namespace);
+
         callback(null, nsData);
       })
       .catch((err: CallbackError) => callback(err, null));
+  }
+
+  /**
+   * Detect sibling namespaces from CDN data and register them in the
+   * i18next resource store so they are available without extra fetches.
+   */
+  private discoverAndRegisterNamespaces(
+    language: string,
+    allData: Record<string, unknown>,
+    requestedNamespace: string
+  ): void {
+    // Nested format: top-level keys are namespace names
+    const isNested =
+      requestedNamespace in allData &&
+      typeof allData[requestedNamespace] === "object" &&
+      allData[requestedNamespace] !== null;
+
+    if (isNested) {
+      for (const ns of Object.keys(allData)) {
+        if (ns === requestedNamespace) continue;
+        if (typeof allData[ns] === "object" && allData[ns] !== null) {
+          this.addToStore(language, ns, allData[ns] as Record<string, unknown>);
+        }
+      }
+      return;
+    }
+
+    // Flat format: "common.hero.title" → namespace "common"
+    const namespaces = new Set<string>();
+    for (const key of Object.keys(allData)) {
+      const dotIndex = key.indexOf(".");
+      if (dotIndex > 0) {
+        namespaces.add(key.slice(0, dotIndex));
+      }
+    }
+
+    for (const ns of namespaces) {
+      if (ns === requestedNamespace) continue;
+      const nsData = extractNamespace(allData, ns);
+      this.addToStore(language, ns, nsData);
+    }
+  }
+
+  /**
+   * Safely add a resource bundle to i18next's store.
+   * Uses a type assertion because `addResourceBundle` exists at runtime
+   * on the resourceStore but is missing from the TS type definitions.
+   */
+  private addToStore(
+    language: string,
+    namespace: string,
+    data: Record<string, unknown>
+  ): void {
+    try {
+      const store = this.services?.resourceStore as
+        | {
+            addResourceBundle?: (
+              lng: string,
+              ns: string,
+              resources: Record<string, unknown>,
+              deep?: boolean,
+              overwrite?: boolean
+            ) => void;
+          }
+        | undefined;
+
+      if (store?.addResourceBundle) {
+        store.addResourceBundle(language, namespace, data, true, true);
+        this.log(
+          "auto-registered namespace",
+          namespace,
+          "→",
+          Object.keys(data).length,
+          "keys"
+        );
+      }
+    } catch {
+      // Graceful fallback — resourceStore may not be available
+    }
   }
 
   private async loadTranslations(
