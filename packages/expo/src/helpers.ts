@@ -1,4 +1,4 @@
-import type { i18n, InitOptions, Resource } from "i18next";
+import type { i18n, InitOptions } from "i18next";
 import { createI18nCore } from "@better-i18n/core";
 import type { I18nCore, Messages, LanguageOption } from "@better-i18n/core";
 import { getDeviceLocale } from "./locale";
@@ -97,7 +97,7 @@ export async function initBetterI18n(
   async function loadMessages(locale: string): Promise<Messages> {
     try {
       const data = await core.getMessages(locale);
-      writeCache(storage, project, locale, data as Record<string, unknown>).catch(
+      writeCache(storage, project, locale, data).catch(
         () => {}
       );
       return data;
@@ -106,7 +106,7 @@ export async function initBetterI18n(
         console.debug(LOG_PREFIX, "CDN failed, checking cache for", locale);
       }
       const cached = await readCache(storage, project, locale);
-      if (cached) return cached.data as Messages;
+      if (cached) return cached.data;
       throw err;
     }
   }
@@ -133,7 +133,7 @@ export async function initBetterI18n(
   const defaultNS = resolveDefaultNS(namespaces);
 
   await i18nInstance.init({
-    resources: { [lng]: messages } as Resource,
+    resources: { [lng]: messages },
     lng,
     fallbackLng: defaultLocale,
     supportedLngs,

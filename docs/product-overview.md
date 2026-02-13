@@ -4,7 +4,7 @@ Date: 2025-12-19
 
 ## 1) What this is
 
-Better i18n is a GitHub-first localization platform for engineering teams. It discovers translation keys directly from your repo, keeps translations in sync, and ships changes back as PRs or direct commits. It pairs AI translation with human approval so teams can move fast without losing quality.
+Better i18n is an AI-powered localization platform for engineering teams. It delivers translations via a global CDN, discovers translation keys from your codebase, and keeps everything in sync. It pairs AI translation with human approval so teams can move fast without losing quality. GitHub integration is available for PR-based workflows.
 
 ## 2) The problem it solves
 
@@ -37,12 +37,12 @@ Similar:
 - Multi-language coverage, approval workflows, and status tracking
 
 Different (and the point):
-- GitHub-first: files remain in your repo as the source of truth.
+- CDN-first: translations delivered via edge network, no repo required to start.
 - PR-native: translation updates land as PRs or direct commits.
 - AI-native: built-in translation suggestions and batch processing.
 - Engineering workflow: teams keep their normal tools and review flows.
 
-Think of Better i18n as a developer-first, GitHub-native alternative that prioritizes speed, automation, and code-centric review over heavy TMS workflows.
+Think of Better i18n as a developer-first, CDN-native alternative that prioritizes speed, AI automation, and code-centric review over heavy TMS workflows — with optional GitHub integration for teams that want PR-based sync.
 
 ### TMS vs i18n libraries (short)
 
@@ -77,7 +77,7 @@ Think of Better i18n as a developer-first, GitHub-native alternative that priori
 
 ## 9) Key advantages
 
-- GitHub-native workflow (PRs, branches, reviews)
+- CDN-first delivery with optional GitHub workflow (PRs, branches, reviews)
 - AI-native but human-controlled
 - Fast sync via queue-based workers
 - Multi-tenant by design (orgs, teams, RBAC)
@@ -103,4 +103,4 @@ Think of Better i18n as a developer-first, GitHub-native alternative that priori
 
 ## 12) Current product boundaries
 
-This product is optimized for teams who want their repo to stay the source of truth. It does not attempt to replace the full set of capabilities in traditional translation suites. The core focus is GitHub-native automation with a high-signal UI for reviewers.
+This product is optimized for engineering teams who want fast, CDN-delivered translations with AI assistance. It does not attempt to replace the full set of capabilities in traditional translation suites. The core focus is CDN-first delivery with AI-powered automation, optional GitHub integration, and a high-signal UI for reviewers.

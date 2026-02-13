@@ -116,9 +116,10 @@ export interface LanguageOption {
 }
 
 /**
- * Translation messages (flat or nested key-value pairs)
+ * Translation messages keyed by namespace.
+ * Matches the CDN response format: `{ "common": { "key": "value" }, "auth": { ... } }`
  */
-export type Messages = Record<string, unknown>;
+export type Messages = Record<string, Record<string, any>>;
 
 /**
  * Logger interface

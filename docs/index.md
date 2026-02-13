@@ -4,7 +4,7 @@ layout: home
 
 hero:
   name: "Better i18n"
-  tagline: GitHub-first localization. AI translation with human control. PR-native workflows for modern teams.
+  tagline: CDN-first localization. AI translation with human control. Developer-native workflows for modern teams.
   actions:
     - theme: brand
       text: Product Overview
@@ -15,8 +15,8 @@ hero:
 
 features:
   - icon: "[GH]"
-    title: GitHub-First Workflow
-    details: Connect repos, import keys, and ship translations via PRs or direct pushes.
+    title: CDN-First Delivery
+    details: Upload translations, publish to the edge CDN, and optionally sync via GitHub PRs.
   - icon: "[AI]"
     title: AI With Human Control
     details: Fast AI translation with explicit approval for sensitive actions.

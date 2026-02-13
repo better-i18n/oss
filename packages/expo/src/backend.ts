@@ -229,10 +229,7 @@ export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions
     // 2. Network-first: always try CDN, fall back to persistent cache
     try {
       this.log("fetching from CDN", locale);
-      const data = (await this.core.getMessages(locale)) as Record<
-        string,
-        unknown
-      >;
+      const data = await this.core.getMessages(locale);
 
       // Persist to both caches
       this.memoryCache.set(memoryCacheKey, data, this.cacheExpiration);
