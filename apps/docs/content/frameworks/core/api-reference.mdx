@@ -1,0 +1,474 @@
+---
+title: API Reference
+description: Complete API documentation for @better-i18n/core
+---
+
+Complete API reference for the core package. All framework SDKs (Next.js, Vite, TanStack Start, Expo) are built on top of these primitives.
+
+## createI18nCore
+
+Creates an i18n core instance for fetching translations, languages, and manifests from the CDN.
+
+```ts
+import { createI18nCore } from "@better-i18n/core";
+
+const i18n = createI18nCore({
+  project: "org/project",
+  defaultLocale: "en",
+});
+```
+
+### Instance Methods
+
+<Accordion>
+<AccordionItem title="getMessages(locale)">
+Fetches translation messages for a specific locale from the CDN.
+
+```ts
+const messages = await i18n.getMessages("tr");
+// { "common.welcome": "Hoş geldiniz", "auth.login": "Giriş Yap" }
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `locale` | `string` | Locale code (e.g., `"en"`, `"tr"`, `"de"`) |
+
+**Returns:** `Promise<Messages>` — Translation key-value pairs
+
+</AccordionItem>
+
+<AccordionItem title="getLocales()">
+Returns all available locale codes for the project.
+
+```ts
+const locales = await i18n.getLocales();
+// ["en", "tr", "de", "fr"]
+```
+
+**Returns:** `Promise<string[]>` — Array of locale codes
+
+</AccordionItem>
+
+<AccordionItem title="getLanguages()">
+Returns available languages with full metadata — ideal for building language switchers and locale pickers.
+
+```ts
+const languages = await i18n.getLanguages();
+// [
+//   { code: "en", name: "English", nativeName: "English", isDefault: true },
+//   { code: "tr", name: "Turkish", nativeName: "Türkçe", flagUrl: "https://..." },
+//   { code: "de", name: "German", nativeName: "Deutsch", flagUrl: "https://..." },
+// ]
+```
+
+**Returns:** `Promise<LanguageOption[]>` — Array of language objects with metadata
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `code` | `string` | Language code (e.g., `"en"`, `"tr"`) |
+| `name` | `string?` | English name (e.g., `"Turkish"`) |
+| `nativeName` | `string?` | Native name (e.g., `"Türkçe"`) |
+| `flagUrl` | `string \| null` | URL to flag icon |
+| `isDefault` | `boolean?` | Whether this is the source/default language |
+
+</AccordionItem>
+
+<AccordionItem title="getManifest(options?)">
+Fetches the project manifest from CDN. The manifest contains all project metadata including languages, files, and timestamps.
+
+```ts
+// Use cached manifest (default)
+const manifest = await i18n.getManifest();
+
+// Force a fresh fetch (bypass cache)
+const fresh = await i18n.getManifest({ forceRefresh: true });
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `forceRefresh` | `boolean` | `false` | Skip cache and fetch fresh |
+
+**Returns:** `Promise<ManifestResponse>`
+
+```ts
+interface ManifestResponse {
+  projectSlug?: string;
+  sourceLanguage?: string;
+  languages: ManifestLanguage[];
+  files?: Record<string, ManifestFile>;
+  updatedAt?: string;
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="config">
+The resolved configuration with all defaults applied.
+
+```ts
+console.log(i18n.config.cdnBaseUrl);        // "https://cdn.better-i18n.com"
+console.log(i18n.config.manifestCacheTtlMs); // 300000
+console.log(i18n.config.workspaceId);        // "org"
+console.log(i18n.config.projectSlug);        // "project"
+```
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## clearManifestCache
+
+Clears the global manifest cache across all instances. Useful for testing or forcing a fresh fetch.
+
+```ts
+import { clearManifestCache } from "@better-i18n/core";
+
+clearManifestCache();
+```
+
+---
+
+## extractLanguages
+
+Extracts and normalizes language information from a raw manifest response. Useful when you have a manifest and need to convert it to UI-friendly language options.
+
+```ts
+import { extractLanguages } from "@better-i18n/core";
+
+const manifest = await i18n.getManifest();
+const languages = extractLanguages(manifest);
+// [{ code: "en", name: "English", nativeName: "English", isDefault: true }, ...]
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `manifest` | `ManifestResponse` | Raw manifest from CDN |
+
+**Returns:** `LanguageOption[]` — Normalized language options
+
+<Callout type="tip">
+In most cases, use `i18n.getLanguages()` instead — it handles fetching the manifest and extracting languages in one call.
+</Callout>
+
+---
+
+## TtlCache
+
+Generic in-memory cache with automatic TTL expiration. Used internally for manifest caching, but available for custom use.
+
+```ts
+import { TtlCache } from "@better-i18n/core";
+
+const cache = new TtlCache<string>();
+
+// Store with 60s TTL
+cache.set("key", "value", 60_000);
+
+// Retrieve (returns undefined if expired)
+const value = cache.get("key"); // "value"
+
+// Check existence
+cache.has("key"); // true
+
+// Manual removal
+cache.delete("key");
+
+// Clear all entries
+cache.clear();
+```
+
+### Methods
+
+| Method | Signature | Description |
+| --- | --- | --- |
+| `get` | `(key: string) => T \| undefined` | Get value (auto-deletes if expired) |
+| `set` | `(key: string, value: T, ttlMs: number) => void` | Store with TTL in ms |
+| `has` | `(key: string) => boolean` | Check if key exists and is not expired |
+| `delete` | `(key: string) => boolean` | Remove a key |
+| `clear` | `() => void` | Clear all entries |
+
+---
+
+## detectLocale
+
+Framework-agnostic locale detection with priority-based selection. Detects the best locale from path, cookie, and header sources.
+
+```ts
+import { detectLocale } from "@better-i18n/core";
+
+const result = detectLocale({
+  pathLocale: "tr",
+  cookieLocale: "en",
+  headerLocale: "de",
+  defaultLocale: "en",
+  availableLocales: ["en", "tr", "de"],
+  project: "org/project",
+});
+
+console.log(result.locale);        // "tr"
+console.log(result.detectedFrom);  // "path"
+console.log(result.shouldSetCookie); // true
+```
+
+### Detection Priority
+
+1. **Path** — Locale from URL (e.g., `/tr/about`)
+2. **Cookie** — Stored user preference
+3. **Header** — Browser's `Accept-Language` header
+4. **Default** — Fallback to `defaultLocale`
+
+### Options
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `project` | `string` | Project identifier |
+| `defaultLocale` | `string` | Fallback locale |
+| `pathLocale` | `string \| null` | Locale from URL path |
+| `cookieLocale` | `string \| null` | Locale from cookie |
+| `headerLocale` | `string \| null` | Locale from Accept-Language |
+| `availableLocales` | `string[]` | Supported locale codes |
+
+### Result
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `locale` | `string` | Detected locale code |
+| `detectedFrom` | `"path" \| "cookie" \| "header" \| "default"` | Detection source |
+| `shouldSetCookie` | `boolean` | Whether to update the locale cookie |
+
+---
+
+## Configuration Utilities
+
+<Accordion>
+<AccordionItem title="normalizeConfig(config)">
+Normalizes user configuration by applying defaults and validating required fields.
+
+```ts
+import { normalizeConfig } from "@better-i18n/core";
+
+const config = normalizeConfig({
+  project: "org/project",
+  defaultLocale: "en",
+});
+
+console.log(config.cdnBaseUrl);        // "https://cdn.better-i18n.com"
+console.log(config.manifestCacheTtlMs); // 300000
+console.log(config.workspaceId);        // "org"
+console.log(config.projectSlug);        // "project"
+```
+
+**Throws** if `project` or `defaultLocale` is empty or invalid format.
+
+</AccordionItem>
+
+<AccordionItem title="parseProject(project)">
+Parses a project identifier string into its components.
+
+```ts
+import { parseProject } from "@better-i18n/core";
+
+const parsed = parseProject("acme/dashboard");
+// { workspaceId: "acme", projectSlug: "dashboard" }
+```
+
+**Throws** if format is not `"org/project"`.
+
+</AccordionItem>
+
+<AccordionItem title="getProjectBaseUrl(config)">
+Builds the full CDN base URL for a project.
+
+```ts
+import { normalizeConfig, getProjectBaseUrl } from "@better-i18n/core";
+
+const config = normalizeConfig({ project: "acme/dashboard", defaultLocale: "en" });
+const url = getProjectBaseUrl(config);
+// "https://cdn.better-i18n.com/acme/dashboard"
+```
+
+</AccordionItem>
+
+<AccordionItem title="buildCacheKey(cdnBaseUrl, project)">
+Creates a unique cache key for manifest caching.
+
+```ts
+import { buildCacheKey } from "@better-i18n/core";
+
+const key = buildCacheKey("https://cdn.better-i18n.com", "acme/dashboard");
+// "https://cdn.better-i18n.com|acme/dashboard"
+```
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## createLogger
+
+Creates a namespaced logger instance with level filtering.
+
+```ts
+import { createLogger, normalizeConfig } from "@better-i18n/core";
+
+const config = normalizeConfig({
+  project: "org/project",
+  defaultLocale: "en",
+  debug: true,
+});
+
+const logger = createLogger(config, "my-module");
+logger.debug("loading translations"); // [better-i18n:my-module] loading translations
+logger.info("ready");                 // [better-i18n:my-module] ready
+logger.warn("cache miss");            // [better-i18n:my-module] cache miss
+logger.error("fetch failed");         // [better-i18n:my-module] fetch failed
+```
+
+### Log Levels
+
+| Level | Value | Description |
+| --- | --- | --- |
+| `"debug"` | 0 | All messages |
+| `"info"` | 1 | Info and above |
+| `"warn"` | 2 | Warnings and above (default) |
+| `"error"` | 3 | Errors only |
+| `"silent"` | 4 | No output |
+
+---
+
+## Types
+
+All types are exported from `@better-i18n/core`:
+
+```ts
+import type {
+  // Configuration
+  I18nCoreConfig,
+  NormalizedConfig,
+  ParsedProject,
+
+  // Manifest
+  ManifestResponse,
+  ManifestLanguage,
+  ManifestFile,
+  LanguageOption,
+
+  // Messages
+  Messages,
+  Locale,
+
+  // Instance
+  I18nCore,
+
+  // Cache
+  CacheEntry,
+
+  // Logger
+  Logger,
+  LogLevel,
+
+  // Locale URL utilities
+  LocaleConfig,
+
+  // Middleware/Detection
+  I18nMiddlewareConfig,
+  LocaleDetectionOptions,
+  LocaleDetectionResult,
+  LocalePrefix,
+} from "@better-i18n/core";
+```
+
+<Accordion>
+<AccordionItem title="I18nCoreConfig">
+User-provided configuration for `createI18nCore`.
+
+```ts
+interface I18nCoreConfig {
+  project: string;                // "org/project" format (required)
+  defaultLocale: string;          // Fallback locale (required)
+  cdnBaseUrl?: string;            // Default: "https://cdn.better-i18n.com"
+  manifestCacheTtlMs?: number;    // Default: 300000 (5 min)
+  debug?: boolean;                // Default: false
+  logLevel?: LogLevel;            // Default: "warn"
+  fetch?: typeof fetch;           // Custom fetch function
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="ManifestResponse">
+CDN manifest response structure.
+
+```ts
+interface ManifestResponse {
+  projectSlug?: string;
+  sourceLanguage?: string;
+  languages: ManifestLanguage[];
+  files?: Record<string, ManifestFile>;
+  updatedAt?: string;
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="ManifestLanguage">
+Language entry in manifest.
+
+```ts
+interface ManifestLanguage {
+  code: string;                   // "en", "tr", "de"
+  name?: string;                  // "Turkish"
+  nativeName?: string;            // "Türkçe"
+  flagUrl?: string | null;        // Flag icon URL
+  isSource?: boolean;             // Source language flag
+  lastUpdated?: string | null;    // Last update timestamp
+  keyCount?: number;              // Number of translation keys
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="LanguageOption">
+Simplified language option for UI components.
+
+```ts
+interface LanguageOption {
+  code: string;                   // "tr"
+  name?: string;                  // "Turkish"
+  nativeName?: string;            // "Türkçe"
+  flagUrl?: string | null;        // Flag icon URL
+  isDefault?: boolean;            // Source/default language
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="I18nCore">
+Instance returned by `createI18nCore()`.
+
+```ts
+interface I18nCore {
+  config: NormalizedConfig;
+  getManifest(options?: { forceRefresh?: boolean }): Promise<ManifestResponse>;
+  getMessages(locale: string): Promise<Messages>;
+  getLocales(): Promise<string[]>;
+  getLanguages(): Promise<LanguageOption[]>;
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="LocaleDetectionResult">
+Result from `detectLocale()`.
+
+```ts
+interface LocaleDetectionResult {
+  locale: string;
+  detectedFrom: "path" | "cookie" | "header" | "default";
+  shouldSetCookie: boolean;
+}
+```
+
+</AccordionItem>
+</Accordion>

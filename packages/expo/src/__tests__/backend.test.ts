@@ -21,6 +21,16 @@ const MOCK_NAMESPACED_TRANSLATIONS = {
   "auth.login.button": "Log In",
 };
 
+const MOCK_NESTED_TRANSLATIONS = {
+  common: {
+    hero: { title: "Welcome to My App" },
+    nav: { home: "Home", about: "About" },
+  },
+  auth: {
+    login: { title: "Sign In", button: "Log In" },
+  },
+};
+
 const createMockFetch = (data: Record<string, unknown> = MOCK_TRANSLATIONS) =>
   mock(() =>
     Promise.resolve(
@@ -49,6 +59,25 @@ const readFromBackend = (
       else resolve(data as Record<string, unknown>);
     });
   });
+
+/**
+ * Create a mock i18next Services object with a spyable resourceStore.
+ */
+const createMockServices = () => {
+  const bundles: Array<{ lng: string; ns: string; resources: Record<string, unknown> }> = [];
+  return {
+    services: {
+      resourceStore: {
+        addResourceBundle: mock(
+          (lng: string, ns: string, resources: Record<string, unknown>) => {
+            bundles.push({ lng, ns, resources });
+          }
+        ),
+      },
+    } as never,
+    bundles,
+  };
+};
 
 // ---------------------------------------------------------------------------
 // Unit tests (mock fetch)
@@ -212,6 +241,67 @@ describe("BetterI18nBackend", () => {
 
     const data = await readFromBackend(backend, "en", "nonexistent");
     expect(data).toEqual(MOCK_TRANSLATIONS);
+  });
+
+  it("should auto-register other namespaces via resourceStore (nested format)", async () => {
+    const { services, bundles } = createMockServices();
+    const backend = new BetterI18nBackend();
+    backend.init(services, {
+      project: "acme/app",
+      storage,
+      fetch: createMockFetch(MOCK_NESTED_TRANSLATIONS as Record<string, unknown>) as typeof fetch,
+    }, {});
+
+    // Read "common" — should also register "auth" in the store
+    const data = await readFromBackend(backend, "en", "common");
+    expect(data).toEqual({
+      hero: { title: "Welcome to My App" },
+      nav: { home: "Home", about: "About" },
+    });
+
+    expect(bundles).toHaveLength(1);
+    expect(bundles[0]!.lng).toBe("en");
+    expect(bundles[0]!.ns).toBe("auth");
+    expect(bundles[0]!.resources).toEqual({
+      login: { title: "Sign In", button: "Log In" },
+    });
+  });
+
+  it("should auto-register namespaces from flat keys", async () => {
+    const { services, bundles } = createMockServices();
+    const backend = new BetterI18nBackend();
+    backend.init(services, {
+      project: "acme/app",
+      storage,
+      fetch: createMockFetch(MOCK_NAMESPACED_TRANSLATIONS) as typeof fetch,
+    }, {});
+
+    // Read "common" — should also register "auth"
+    await readFromBackend(backend, "en", "common");
+
+    expect(bundles).toHaveLength(1);
+    expect(bundles[0]!.ns).toBe("auth");
+    expect(bundles[0]!.resources).toEqual({
+      "login.title": "Sign In",
+      "login.button": "Log In",
+    });
+  });
+
+  it("should not fail when resourceStore.addResourceBundle is unavailable", async () => {
+    const backend = new BetterI18nBackend();
+    // Pass empty services — no resourceStore
+    backend.init({} as never, {
+      project: "acme/app",
+      storage,
+      fetch: createMockFetch(MOCK_NESTED_TRANSLATIONS as Record<string, unknown>) as typeof fetch,
+    }, {});
+
+    // Should still return the correct namespace data without throwing
+    const data = await readFromBackend(backend, "en", "common");
+    expect(data).toEqual({
+      hero: { title: "Welcome to My App" },
+      nav: { home: "Home", about: "About" },
+    });
   });
 
   it("should handle different languages independently", async () => {
