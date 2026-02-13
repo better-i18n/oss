@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/schemas",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Public schemas and types for Better i18n SDK and MCP",
   "type": "module",
   "main": "./dist/index.js",

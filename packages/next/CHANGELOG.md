@@ -1,5 +1,11 @@
 # @better-i18n/next
 
+## 0.5.3
+
+### Patch Changes
+
+- 2744ff9: Ship compiled JavaScript instead of raw TypeScript source files. Packages now export pre-built `dist/` files with proper `.js`, `.d.ts`, and source maps — eliminating the need for `transpilePackages` workarounds in consumer projects.
+
 ## 0.5.2
 
 ### Patch Changes
