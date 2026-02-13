@@ -61,14 +61,19 @@ interface I18nCoreConfig {
 
 ## Framework Integrations
 
-This package is the foundation for:
+This package is the foundation for all Better i18n SDKs:
 
-- `@better-i18n/next` - Next.js integration with ISR support
-- `@better-i18n/react` - React/TanStack integration (coming soon)
+| Package | Framework | Built On |
+| --- | --- | --- |
+| [`@better-i18n/next`](https://www.npmjs.com/package/@better-i18n/next) | Next.js | `next-intl` |
+| [`@better-i18n/use-intl`](https://www.npmjs.com/package/@better-i18n/use-intl) | React, Vite, TanStack Start | `use-intl` |
+| [`@better-i18n/expo`](https://www.npmjs.com/package/@better-i18n/expo) | Expo / React Native | `i18next` |
+
+If you're using one of these frameworks, install the framework SDK instead — `@better-i18n/core` is included automatically as a dependency.
 
 ## Documentation
 
-Full documentation available at [docs.better-i18n.com](https://docs.better-i18n.com)
+Full documentation available at [docs.better-i18n.com/core](https://docs.better-i18n.com/core)
 
 ## License
 

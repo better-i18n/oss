@@ -16,30 +16,56 @@
    on the html element based on the current URL path.
 */
 
-/* Frameworks Theme - Clean Blue */
-[data-docs-section="frameworks"] {
+/* Core Theme - Blue */
+[data-docs-section="core"] {
   --color-fd-primary: hsl(217, 91%, 50%);
   --color-fd-primary-foreground: hsl(0, 0%, 98%);
   --color-fd-ring: hsl(217, 91%, 58%);
 }
 
-.dark[data-docs-section="frameworks"] {
+.dark[data-docs-section="core"] {
   --color-fd-primary: hsl(217, 91%, 65%);
   --color-fd-primary-foreground: hsl(217, 91%, 12%);
   --color-fd-ring: hsl(217, 91%, 55%);
 }
 
-/* MCP Theme - Claude Orange */
-[data-docs-section="mcp"] {
-  --color-fd-primary: hsl(24, 94%, 50%);
+/* Frameworks Theme - Green */
+[data-docs-section="frameworks"] {
+  --color-fd-primary: hsl(152, 69%, 40%);
   --color-fd-primary-foreground: hsl(0, 0%, 98%);
-  --color-fd-ring: hsl(24, 94%, 58%);
+  --color-fd-ring: hsl(152, 69%, 48%);
+}
+
+.dark[data-docs-section="frameworks"] {
+  --color-fd-primary: hsl(152, 69%, 58%);
+  --color-fd-primary-foreground: hsl(152, 69%, 12%);
+  --color-fd-ring: hsl(152, 69%, 48%);
+}
+
+/* Content SDK Theme - Orange */
+[data-docs-section="sdk"] {
+  --color-fd-primary: hsl(24, 90%, 50%);
+  --color-fd-primary-foreground: hsl(0, 0%, 98%);
+  --color-fd-ring: hsl(24, 90%, 58%);
+}
+
+.dark[data-docs-section="sdk"] {
+  --color-fd-primary: hsl(24, 90%, 65%);
+  --color-fd-primary-foreground: hsl(24, 90%, 12%);
+  --color-fd-ring: hsl(24, 90%, 55%);
+}
+
+/* MCP Theme - Neutral Gray */
+[data-docs-section="mcp"] {
+  --color-fd-primary: hsl(220, 9%, 42%);
+  --color-fd-primary-foreground: hsl(0, 0%, 98%);
+  --color-fd-ring: hsl(220, 9%, 50%);
 }
 
 .dark[data-docs-section="mcp"] {
-  --color-fd-primary: hsl(24, 94%, 65%);
-  --color-fd-primary-foreground: hsl(24, 94%, 12%);
-  --color-fd-ring: hsl(24, 94%, 55%);
+  --color-fd-primary: hsl(220, 9%, 62%);
+  --color-fd-primary-foreground: hsl(220, 9%, 12%);
+  --color-fd-ring: hsl(220, 9%, 52%);
 }
 
 /* CLI Theme - Neutral Gray */
@@ -55,19 +81,6 @@
   --color-fd-ring: hsl(220, 9%, 55%);
 }
 
-/* Content SDK Theme - Emerald Green */
-[data-docs-section="sdk"] {
-  --color-fd-primary: hsl(160, 84%, 39%);
-  --color-fd-primary-foreground: hsl(0, 0%, 98%);
-  --color-fd-ring: hsl(160, 84%, 47%);
-}
-
-.dark[data-docs-section="sdk"] {
-  --color-fd-primary: hsl(160, 84%, 58%);
-  --color-fd-primary-foreground: hsl(160, 84%, 12%);
-  --color-fd-ring: hsl(160, 84%, 48%);
-}
-
 /* ============================================
    Visual Polish & Enhancements
    ============================================
@@ -75,16 +88,18 @@
 
 /* Sidebar Tab Icon Colors - Must match theme primary colors */
 :root {
-  --color-frameworks: hsl(217, 91%, 50%);
-  --color-sdk: hsl(160, 84%, 39%);
-  --color-mcp: hsl(24, 94%, 50%);
+  --color-core: hsl(217, 91%, 50%);
+  --color-frameworks: hsl(152, 69%, 40%);
+  --color-sdk: hsl(24, 90%, 50%);
+  --color-mcp: hsl(220, 9%, 42%);
   --color-cli: hsl(220, 9%, 46%);
 }
 
 .dark {
-  --color-frameworks: hsl(217, 91%, 65%);
-  --color-sdk: hsl(160, 84%, 58%);
-  --color-mcp: hsl(24, 94%, 65%);
+  --color-core: hsl(217, 91%, 65%);
+  --color-frameworks: hsl(152, 69%, 58%);
+  --color-sdk: hsl(24, 90%, 65%);
+  --color-mcp: hsl(220, 9%, 62%);
   --color-cli: hsl(220, 9%, 65%);
 }
 

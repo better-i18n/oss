@@ -16,7 +16,9 @@ export function ThemeSync() {
 
     // Determine the active section from the URL path
     let section = 'default';
-    if (pathname.startsWith('/docs/frameworks')) {
+    if (pathname.startsWith('/docs/core')) {
+      section = 'core';
+    } else if (pathname.startsWith('/docs/frameworks')) {
       section = 'frameworks';
     } else if (pathname.startsWith('/docs/sdk')) {
       section = 'sdk';

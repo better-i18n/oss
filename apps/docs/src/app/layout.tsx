@@ -29,6 +29,7 @@ export const metadata: Metadata = {
 
 // Tab icon colors (CSS variable names)
 const tabColors: Record<string, string> = {
+  'root:core': 'var(--color-core)',
   'root:frameworks': 'var(--color-frameworks)',
   'root:sdk': 'var(--color-sdk)',
   'root:mcp': 'var(--color-mcp)',
