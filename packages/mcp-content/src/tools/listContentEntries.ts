@@ -26,6 +26,7 @@ const inputSchema = projectSchema.extend({
   search: z.string().optional(),
   status: z.enum(["draft", "published", "archived"]).optional(),
   language: z.string().optional(),
+  missingLanguage: z.string().optional(),
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(50).optional(),
 });
@@ -40,6 +41,7 @@ FILTER OPTIONS:
 - search: Search in title or excerpt
 - status: Filter by status ("draft", "published", "archived")
 - language: Filter entries that have this language translation
+- missingLanguage: Filter entries MISSING a translation for this language
 
 PAGINATION:
 - page: Page number (default: 1)
@@ -48,7 +50,8 @@ PAGINATION:
 EXAMPLES:
 - All blog posts: { modelSlug: "blog-posts" }
 - Published only: { status: "published" }
-- Search: { search: "getting started" }`,
+- Search: { search: "getting started" }
+- Missing Turkish: { missingLanguage: "tr" }`,
     inputSchema: {
       type: "object",
       properties: {
@@ -69,6 +72,10 @@ EXAMPLES:
         language: {
           type: "string",
           description: "Filter by language code (entries with this translation)",
+        },
+        missingLanguage: {
+          type: "string",
+          description: "Filter to entries MISSING a translation for this language code",
         },
         page: {
           type: "number",
@@ -92,6 +99,7 @@ EXAMPLES:
         search: input.search,
         status: input.status,
         language: input.language,
+        missingLanguage: input.missingLanguage,
         page: input.page,
         limit: input.limit,
       });

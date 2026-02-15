@@ -15,14 +15,31 @@ import {
 
 import { createBetterI18nClient } from "./client.js";
 import type { ToolDefinition } from "./types/index.js";
+
+// Read tools
 import { listContentModels } from "./tools/listContentModels.js";
 import { getContentModel } from "./tools/getContentModel.js";
 import { listContentEntries } from "./tools/listContentEntries.js";
 import { getContentEntry } from "./tools/getContentEntry.js";
+
+// Entry write tools
 import { createContentEntry } from "./tools/createContentEntry.js";
 import { updateContentEntry } from "./tools/updateContentEntry.js";
 import { publishContentEntry } from "./tools/publishContentEntry.js";
 import { deleteContentEntry } from "./tools/deleteContentEntry.js";
+import { duplicateContentEntry } from "./tools/duplicateContentEntry.js";
+import { bulkPublishEntries } from "./tools/bulkPublishEntries.js";
+
+// Model management tools
+import { createContentModel } from "./tools/createContentModel.js";
+import { updateContentModel } from "./tools/updateContentModel.js";
+import { deleteContentModel } from "./tools/deleteContentModel.js";
+
+// Field management tools
+import { addField } from "./tools/addField.js";
+import { updateField } from "./tools/updateField.js";
+import { removeField } from "./tools/removeField.js";
+import { reorderFields } from "./tools/reorderFields.js";
 
 export interface ServerConfig {
   apiUrl: string;
@@ -81,17 +98,52 @@ export function createConfiguredServer(
     annotations,
   });
 
+  // All tools in a map for dispatch
+  const tools = {
+    listContentModels,
+    getContentModel,
+    listContentEntries,
+    getContentEntry,
+    createContentEntry,
+    updateContentEntry,
+    publishContentEntry,
+    deleteContentEntry,
+    duplicateContentEntry,
+    bulkPublishEntries,
+    createContentModel,
+    updateContentModel,
+    deleteContentModel,
+    addField,
+    updateField,
+    removeField,
+    reorderFields,
+  };
+
   // List available tools
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: [
+      // Read
       annotate(listContentModels.definition, readOnly),
       annotate(getContentModel.definition, readOnly),
       annotate(listContentEntries.definition, readOnly),
       annotate(getContentEntry.definition, readOnly),
+      // Entry write
       annotate(createContentEntry.definition, write),
       annotate(updateContentEntry.definition, write),
       annotate(publishContentEntry.definition, write),
+      annotate(duplicateContentEntry.definition, write),
+      annotate(bulkPublishEntries.definition, write),
+      // Model management
+      annotate(createContentModel.definition, write),
+      annotate(updateContentModel.definition, write),
+      // Field management
+      annotate(addField.definition, write),
+      annotate(updateField.definition, write),
+      annotate(reorderFields.definition, write),
+      // Destructive
       annotate(deleteContentEntry.definition, destructive),
+      annotate(deleteContentModel.definition, destructive),
+      annotate(removeField.definition, destructive),
     ],
   }));
 
@@ -100,38 +152,12 @@ export function createConfiguredServer(
     const { name, arguments: args } = request.params;
 
     try {
-      let result;
-
-      switch (name) {
-        case "listContentModels":
-          result = await listContentModels.execute(apiClient, args);
-          break;
-        case "getContentModel":
-          result = await getContentModel.execute(apiClient, args);
-          break;
-        case "listContentEntries":
-          result = await listContentEntries.execute(apiClient, args);
-          break;
-        case "getContentEntry":
-          result = await getContentEntry.execute(apiClient, args);
-          break;
-        case "createContentEntry":
-          result = await createContentEntry.execute(apiClient, args);
-          break;
-        case "updateContentEntry":
-          result = await updateContentEntry.execute(apiClient, args);
-          break;
-        case "publishContentEntry":
-          result = await publishContentEntry.execute(apiClient, args);
-          break;
-        case "deleteContentEntry":
-          result = await deleteContentEntry.execute(apiClient, args);
-          break;
-        default:
-          throw new Error(`Unknown tool: ${name}`);
+      const tool = tools[name as keyof typeof tools];
+      if (!tool) {
+        throw new Error(`Unknown tool: ${name}`);
       }
 
-      return result;
+      return await tool.execute(apiClient, args);
     } catch (error) {
       return {
         content: [

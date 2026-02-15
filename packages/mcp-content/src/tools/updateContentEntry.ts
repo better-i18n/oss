@@ -2,7 +2,7 @@
  * updateContentEntry MCP Tool
  *
  * Updates a content entry's translation and/or metadata.
- * Can update translation for any language, entry metadata, and custom field values.
+ * Supports single-language or multi-language updates in one request.
  */
 
 import { z } from "zod";
@@ -14,9 +14,18 @@ import {
 } from "../base-tool.js";
 import type { Tool } from "../types/index.js";
 
+const translationValue = z.object({
+  title: z.string().optional(),
+  excerpt: z.string().optional(),
+  bodyMarkdown: z.string().optional(),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+  customFields: z.record(z.string(), z.string().nullable()).optional(),
+});
+
 const inputSchema = projectSchema.extend({
   entryId: z.string().uuid(),
-  languageCode: z.string().min(1),
+  languageCode: z.string().optional(),
   title: z.string().optional(),
   slug: z.string().optional(),
   excerpt: z.string().optional(),
@@ -27,13 +36,28 @@ const inputSchema = projectSchema.extend({
   tags: z.array(z.string()).optional(),
   status: z.enum(["draft", "published", "archived"]).optional(),
   customFields: z.record(z.string(), z.string().nullable()).optional(),
+  translations: z.record(z.string(), translationValue).optional(),
 });
 
 export const updateContentEntry: Tool = {
   definition: {
     name: "updateContentEntry",
-    description:
-      "Update a content entry's translation and/or metadata. Specify the language to update and the fields to change. Each entry updates ONE language for ONE entry.",
+    description: `Update a content entry's translation and/or metadata.
+
+Two modes:
+1. Single language: provide languageCode + top-level fields (title, bodyMarkdown, etc.)
+2. Multi-language: provide translations map — { langCode: { title, bodyMarkdown, ... } }
+
+Both can be combined. At least one of languageCode or translations is required.
+
+EXAMPLE multi-language:
+{
+  "entryId": "...",
+  "translations": {
+    "tr": { "title": "Merhaba Dünya", "bodyMarkdown": "# Merhaba" },
+    "de": { "title": "Hallo Welt" }
+  }
+}`,
     inputSchema: {
       type: "object",
       properties: {
@@ -44,7 +68,7 @@ export const updateContentEntry: Tool = {
         },
         languageCode: {
           type: "string",
-          description: "Language to update translation for (e.g., 'en', 'tr', 'de')",
+          description: "Language to update translation for (single-language mode)",
         },
         title: {
           type: "string",
@@ -88,8 +112,12 @@ export const updateContentEntry: Tool = {
           type: "object",
           description: "Updated custom field values",
         },
+        translations: {
+          type: "object",
+          description: "Multiple language translations — { langCode: { title, bodyMarkdown, excerpt, metaTitle, metaDescription, customFields } }",
+        },
       },
-      required: ["project", "entryId", "languageCode"],
+      required: ["project", "entryId"],
     },
   },
 
@@ -110,6 +138,7 @@ export const updateContentEntry: Tool = {
         tags: input.tags,
         status: input.status,
         customFields: input.customFields,
+        translations: input.translations,
       });
 
       return success({
