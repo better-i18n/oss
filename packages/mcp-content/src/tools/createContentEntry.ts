@@ -14,6 +14,15 @@ import {
 } from "../base-tool.js";
 import type { Tool } from "../types/index.js";
 
+const translationValue = z.object({
+  title: z.string(),
+  excerpt: z.string().optional(),
+  bodyMarkdown: z.string().optional(),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+  customFields: z.record(z.string(), z.string().nullable()).optional(),
+});
+
 const inputSchema = projectSchema.extend({
   modelSlug: z.string().min(1),
   title: z.string().min(1),
@@ -24,13 +33,25 @@ const inputSchema = projectSchema.extend({
   tags: z.array(z.string()).optional(),
   status: z.enum(["draft", "published"]).optional(),
   customFields: z.record(z.string(), z.string().nullable()).optional(),
+  translations: z.record(z.string(), translationValue).optional(),
 });
 
 export const createContentEntry: Tool = {
   definition: {
     name: "createContentEntry",
-    description:
-      "Create a new content entry with source language translation. Provide the model slug, title, slug, and optional body/excerpt/tags.",
+    description: `Create a new content entry with source language translation.
+Top-level title/bodyMarkdown/excerpt are for the source language.
+Use translations to add target language translations in the same request.
+
+EXAMPLE with multi-language:
+{
+  "title": "Hello World",
+  "bodyMarkdown": "# Hello",
+  "translations": {
+    "tr": { "title": "Merhaba Dünya", "bodyMarkdown": "# Merhaba" },
+    "de": { "title": "Hallo Welt" }
+  }
+}`,
     inputSchema: {
       type: "object",
       properties: {
@@ -73,6 +94,10 @@ export const createContentEntry: Tool = {
           type: "object",
           description: "Custom field values as { fieldName: value }",
         },
+        translations: {
+          type: "object",
+          description: "Target language translations — { langCode: { title, bodyMarkdown, excerpt, metaTitle, metaDescription, customFields } }",
+        },
       },
       required: ["project", "modelSlug", "title", "slug"],
     },
@@ -92,6 +117,7 @@ export const createContentEntry: Tool = {
         tags: input.tags,
         status: input.status,
         customFields: input.customFields,
+        translations: input.translations,
       });
 
       return success({
