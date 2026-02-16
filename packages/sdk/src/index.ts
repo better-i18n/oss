@@ -11,4 +11,5 @@ export type {
   ListEntriesOptions,
   GetEntryOptions,
   PaginatedResponse,
+  RelationValue,
 } from "./types.js";

@@ -16,13 +16,14 @@ import type { Tool } from "../types/index.js";
 
 const inputSchema = projectSchema.extend({
   entryId: z.string().uuid(),
+  expand: z.array(z.string()).optional(),
 });
 
 export const getContentEntry: Tool = {
   definition: {
     name: "getContentEntry",
     description:
-      "Get a content entry with all translations, custom field values, and version history. Use this to read full content for translation or editing.",
+      "Get a content entry with all translations, custom field values, and version history. Use expand to include referenced entry data for relation fields.",
     inputSchema: {
       type: "object",
       properties: {
@@ -30,6 +31,11 @@ export const getContentEntry: Tool = {
         entryId: {
           type: "string",
           description: "Content entry UUID",
+        },
+        expand: {
+          type: "array",
+          items: { type: "string" },
+          description: "Relation field names to expand (e.g., ['category', 'author'])",
         },
       },
       required: ["project", "entryId"],
@@ -42,6 +48,7 @@ export const getContentEntry: Tool = {
         orgSlug: workspaceId,
         projectSlug,
         entryId: input.entryId,
+        expand: input.expand,
       });
       return success(result);
     }),

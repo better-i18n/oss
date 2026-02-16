@@ -17,11 +17,14 @@ const inputSchema = projectSchema.extend({
   modelSlug: z.string().min(1),
   fieldName: z.string().min(1),
   displayName: z.string().min(1).max(200).optional(),
-  type: z.enum(["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select"]).optional(),
+  type: z.enum(["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select", "relation"]).optional(),
   localized: z.boolean().optional(),
   required: z.boolean().optional(),
   placeholder: z.string().max(500).optional(),
   helpText: z.string().max(500).optional(),
+  fieldConfig: z.object({
+    targetModel: z.string().optional(),
+  }).optional(),
 });
 
 export const updateField: Tool = {
@@ -46,7 +49,7 @@ export const updateField: Tool = {
         },
         type: {
           type: "string",
-          enum: ["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select"],
+          enum: ["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select", "relation"],
           description: "Updated field type",
         },
         localized: {
@@ -64,6 +67,13 @@ export const updateField: Tool = {
         helpText: {
           type: "string",
           description: "Updated help text",
+        },
+        fieldConfig: {
+          type: "object",
+          description: "Type-specific configuration (e.g., targetModel for relation fields)",
+          properties: {
+            targetModel: { type: "string", description: "Target model slug for relation fields" },
+          },
         },
       },
       required: ["project", "modelSlug", "fieldName"],
@@ -83,6 +93,7 @@ export const updateField: Tool = {
         required: input.required,
         placeholder: input.placeholder,
         helpText: input.helpText,
+        fieldConfig: input.fieldConfig,
       });
 
       return success({
