@@ -71,6 +71,7 @@ export function createContentAPIClient(
       if (options?.order) params.set("order", options.order);
       if (options?.page) params.set("page", String(options.page));
       if (options?.limit) params.set("limit", String(options.limit));
+      if (options?.expand?.length) params.set("expand", options.expand.join(","));
       const qs = params.toString() ? `?${params}` : "";
 
       const { data } = await request<{ items: ContentEntryListItem[]; total: number; hasMore: boolean }>(
@@ -91,6 +92,7 @@ export function createContentAPIClient(
     ): Promise<ContentEntry<CF>> {
       const params = new URLSearchParams();
       if (options?.language) params.set("language", options.language);
+      if (options?.expand?.length) params.set("expand", options.expand.join(","));
       const qs = params.toString() ? `?${params}` : "";
 
       const { data } = await request<ContentEntry<CF>>(

@@ -12,6 +12,20 @@ export interface ClientConfig {
   debug?: boolean;
 }
 
+// ─── Relation Types ─────────────────────────────────────────────────
+
+/** Expanded relation value returned when a relation field is expanded. */
+export interface RelationValue {
+  /** Referenced entry UUID */
+  id: string;
+  /** Referenced entry slug */
+  slug: string;
+  /** Referenced entry title (source language or requested language) */
+  title: string;
+  /** Target model slug */
+  modelSlug: string;
+}
+
 // ─── Content Types ───────────────────────────────────────────────────
 
 /**
@@ -38,6 +52,8 @@ export interface ContentEntry<CF extends Record<string, string | null> = Record<
   tags: string[];
   author: { name: string; image: string | null } | null;
   customFields: CF;
+  /** Expanded relation fields (only present when expand is used) */
+  relations?: Record<string, RelationValue | null>;
   // Localized content
   title: string;
   excerpt: string | null;
@@ -61,6 +77,8 @@ export interface ContentEntryListItem {
   featuredImage: string | null;
   tags: string[];
   author: { name: string; image: string | null } | null;
+  /** Expanded relation fields (only present when expand is used) */
+  relations?: Record<string, RelationValue | null>;
 }
 
 /** Paginated response wrapper. */
@@ -98,12 +116,16 @@ export interface ListEntriesOptions {
   page?: number;
   /** Max entries per page (1-100). Defaults to 50. */
   limit?: number;
+  /** Relation field names to expand (e.g., ["category", "author"]) */
+  expand?: string[];
 }
 
 /** Options for fetching a single content entry. */
 export interface GetEntryOptions {
   /** Language code for localized content. Defaults to source language. */
   language?: string;
+  /** Relation field names to expand (e.g., ["category", "author"]) */
+  expand?: string[];
 }
 
 /** Client for fetching content entries and models. */

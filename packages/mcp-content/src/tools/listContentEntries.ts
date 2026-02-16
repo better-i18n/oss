@@ -29,6 +29,7 @@ const inputSchema = projectSchema.extend({
   missingLanguage: z.string().optional(),
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(50).optional(),
+  expand: z.array(z.string()).optional(),
 });
 
 export const listContentEntries: Tool = {
@@ -51,7 +52,8 @@ EXAMPLES:
 - All blog posts: { modelSlug: "blog-posts" }
 - Published only: { status: "published" }
 - Search: { search: "getting started" }
-- Missing Turkish: { missingLanguage: "tr" }`,
+- Missing Turkish: { missingLanguage: "tr" }
+- Expand relations: { modelSlug: "blog-posts", expand: ["category", "author"] }`,
     inputSchema: {
       type: "object",
       properties: {
@@ -85,6 +87,11 @@ EXAMPLES:
           type: "number",
           description: "Results per page (default: 20, max: 50)",
         },
+        expand: {
+          type: "array",
+          items: { type: "string" },
+          description: "Relation field names to expand (e.g., ['category', 'author'])",
+        },
       },
       required: ["project"],
     },
@@ -102,6 +109,7 @@ EXAMPLES:
         missingLanguage: input.missingLanguage,
         page: input.page,
         limit: input.limit,
+        expand: input.expand,
       });
       return success(result);
     }),

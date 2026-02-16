@@ -16,12 +16,15 @@ import type { Tool } from "../types/index.js";
 const fieldDefinition = z.object({
   name: z.string().min(1).max(100).regex(/^[a-z_][a-z0-9_]*$/),
   displayName: z.string().min(1).max(200),
-  type: z.enum(["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select"]).default("text"),
+  type: z.enum(["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select", "relation"]).default("text"),
   localized: z.boolean().default(false),
   required: z.boolean().default(false),
   placeholder: z.string().max(500).optional(),
   helpText: z.string().max(500).optional(),
   position: z.number().int().min(0).optional(),
+  fieldConfig: z.object({
+    targetModel: z.string().optional(),
+  }).optional(),
 });
 
 const inputSchema = projectSchema.extend({
@@ -39,6 +42,9 @@ export const createContentModel: Tool = {
     name: "createContentModel",
     description: `Create a new content model with optional field definitions.
 
+Field types: text, textarea, richtext, number, boolean, date, datetime, enum, media, user_select, relation.
+For relation fields, use fieldConfig.targetModel to specify the related model slug.
+
 EXAMPLE:
 {
   "slug": "blog-posts",
@@ -46,7 +52,7 @@ EXAMPLE:
   "kind": "collection",
   "fields": [
     { "name": "author_name", "displayName": "Author", "type": "text", "required": true },
-    { "name": "read_time", "displayName": "Read Time", "type": "text" }
+    { "name": "category", "displayName": "Category", "type": "relation", "fieldConfig": { "targetModel": "categories" } }
   ]
 }`,
     inputSchema: {
@@ -86,11 +92,18 @@ EXAMPLE:
             properties: {
               name: { type: "string", description: "Field name (snake_case)" },
               displayName: { type: "string", description: "Display name" },
-              type: { type: "string", enum: ["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select"], description: "Field type" },
+              type: { type: "string", enum: ["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select", "relation"], description: "Field type" },
               localized: { type: "boolean", description: "Whether field is localized per language" },
               required: { type: "boolean", description: "Whether field is required" },
               placeholder: { type: "string", description: "Placeholder text" },
               helpText: { type: "string", description: "Help text" },
+              fieldConfig: {
+                type: "object",
+                description: "Type-specific configuration (e.g., targetModel for relation fields)",
+                properties: {
+                  targetModel: { type: "string", description: "Target model slug for relation fields" },
+                },
+              },
             },
             required: ["name", "displayName"],
           },
