@@ -1,5 +1,12 @@
 # @better-i18n/sdk
 
+## 1.1.0
+
+### Minor Changes
+
+- 4d1eb95: Add `expand` parameter to content entry queries for expanding relation fields.
+  Add `relations` field to entry responses with expanded relation data.
+
 ## 1.0.1
 
 ### Patch Changes

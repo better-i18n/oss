@@ -1,5 +1,14 @@
 # @better-i18n/mcp-content
 
+## 0.2.0
+
+### Minor Changes
+
+- 4d1eb95: Add `expand` parameter to content entry queries for expanding relation fields.
+  Add `relations` field to entry responses with expanded relation data.
+- 4d1eb95: Add `relation` field type for linking entries across content models (belongs_to).
+  Add generic `fieldConfig` object to field definitions for type-specific configuration.
+
 ## 0.1.0
 
 ### Minor Changes
