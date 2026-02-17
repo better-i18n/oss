@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/sdk",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Content SDK for Better i18n - headless CMS client for fetching content models and entries",
   "type": "module",
   "main": "./dist/index.js",

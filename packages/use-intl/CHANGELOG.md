@@ -1,5 +1,16 @@
 # @better-i18n/use-intl
 
+## 0.1.10
+
+### Patch Changes
+
+- 3836f94: Pass storage and staticData through to core in BetterI18nProvider
+  - Provider now accepts and forwards storage, staticData, fetchTimeout, retryCount
+  - CDN failure falls back to storage/staticData instead of breaking
+
+- Updated dependencies [3836f94]
+  - @better-i18n/core@0.1.9
+
 ## 0.1.9
 
 ### Patch Changes
