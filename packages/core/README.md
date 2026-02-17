@@ -8,6 +8,8 @@ Framework-agnostic core utilities for fetching translations from Better i18n CDN
 - **Edge-Ready** - Optimized for edge environments (Cloudflare, Vercel, etc.)
 - **Type-Safe** - Full TypeScript support
 - **Cached** - Built-in manifest caching with configurable TTL
+- **Offline Fallback** - 3-tier fallback chain: CDN → persistent storage → static data
+- **Resilient** - Configurable fetch timeout and retry with exponential backoff
 
 ## Installation
 
@@ -56,7 +58,63 @@ interface I18nCoreConfig {
   debug?: boolean;               // default: false
   logLevel?: LogLevel;           // default: "warn"
   fetch?: typeof fetch;          // custom fetch function
+
+  // Fallback & Resilience
+  storage?: TranslationStorage;  // persistent cache (localStorage, AsyncStorage, etc.)
+  staticData?: Record<string, Messages> | (() => Promise<Record<string, Messages>>);
+  fetchTimeout?: number;         // default: 10000 (10s) — abort if CDN doesn't respond
+  retryCount?: number;           // default: 1 — retry attempts on CDN failure
 }
+```
+
+## Offline Fallback
+
+When CDN is unavailable, translations are resolved through a 3-tier fallback chain:
+
+```
+CDN (primary) → Storage (persistent cache) → Static Data (bundled) → throw
+```
+
+### Storage Adapter
+
+Persist translations locally so they survive CDN outages and app restarts:
+
+```typescript
+import { createI18nCore, createLocalStorage } from "@better-i18n/core";
+
+const i18n = createI18nCore({
+  project: "your-org/your-project",
+  defaultLocale: "en",
+  storage: createLocalStorage(), // browser localStorage
+});
+```
+
+Built-in adapters:
+
+| Adapter | Environment | Import |
+| --- | --- | --- |
+| `createLocalStorage()` | Browser | `@better-i18n/core` |
+| `createMemoryStorage()` | Any (non-persistent) | `@better-i18n/core` |
+| `createAutoStorage()` | Auto-detect (localStorage or memory) | `@better-i18n/core` |
+
+You can also provide any object implementing `{ get, set, remove? }` for custom stores (e.g., AsyncStorage, MMKV).
+
+### Static Data
+
+Bundle translations as a last-resort fallback:
+
+```typescript
+const i18n = createI18nCore({
+  project: "your-org/your-project",
+  defaultLocale: "en",
+  // Static import
+  staticData: {
+    en: { common: { hello: "Hello" } },
+    tr: { common: { hello: "Merhaba" } },
+  },
+  // Or lazy import (code-split)
+  // staticData: () => import('./fallback-translations.json'),
+});
 ```
 
 ## Framework Integrations

@@ -139,8 +139,13 @@ const languages = await getManifestLanguages(config);
 | `defaultLocale` | `string` | required | Default/fallback locale code |
 | `cdnBaseUrl` | `string` | auto | CDN base URL (auto-detected) |
 | `localePrefix` | `"as-needed"` \| `"always"` \| `"never"` | `"as-needed"` | URL locale prefix behavior |
+| `cookieName` | `string` | `"locale"` | Cookie name for locale persistence |
 | `manifestRevalidateSeconds` | `number` | `3600` | Next.js ISR revalidation for manifest |
 | `messagesRevalidateSeconds` | `number` | `30` | Next.js ISR revalidation for messages |
+| `storage` | `TranslationStorage` | `undefined` | Persistent cache for offline fallback (see `@better-i18n/core`) |
+| `staticData` | `Record \| () => Promise` | `undefined` | Bundled translations as last-resort fallback |
+| `fetchTimeout` | `number` | `10000` | CDN fetch timeout in ms |
+| `retryCount` | `number` | `1` | Retry attempts on CDN failure |
 | `debug` | `boolean` | `false` | Enable debug logging |
 | `logLevel` | `LogLevel` | `"warn"` | Logging verbosity |
 

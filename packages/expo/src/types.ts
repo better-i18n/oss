@@ -59,6 +59,24 @@ export interface BetterI18nBackendOptions {
   storage?: TranslationStorage;
 
   /**
+   * Bundled/static translations as last-resort fallback inside core.
+   * Used when CDN is unavailable (e.g., first launch in airplane mode).
+   */
+  staticData?: I18nCoreConfig["staticData"];
+
+  /**
+   * CDN fetch timeout in milliseconds.
+   * @default 10000
+   */
+  fetchTimeout?: number;
+
+  /**
+   * Number of retry attempts on CDN fetch failure.
+   * @default 1
+   */
+  retryCount?: number;
+
+  /**
    * Enable debug logging
    * @default false
    */

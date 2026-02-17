@@ -2,6 +2,8 @@ import type { I18nCoreConfig, NormalizedConfig, ParsedProject } from "./types";
 
 const DEFAULT_CDN_BASE_URL = "https://cdn.better-i18n.com";
 const DEFAULT_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const DEFAULT_FETCH_TIMEOUT_MS = 10_000; // 10 seconds
+const DEFAULT_RETRY_COUNT = 1;
 
 /**
  * Parse project string "org/slug" into workspaceId and projectSlug
@@ -38,6 +40,8 @@ export const normalizeConfig = (config: I18nCoreConfig): NormalizedConfig => {
     projectSlug,
     cdnBaseUrl: config.cdnBaseUrl?.replace(/\/$/, "") || DEFAULT_CDN_BASE_URL,
     manifestCacheTtlMs: config.manifestCacheTtlMs ?? DEFAULT_CACHE_TTL_MS,
+    fetchTimeout: config.fetchTimeout ?? DEFAULT_FETCH_TIMEOUT_MS,
+    retryCount: config.retryCount ?? DEFAULT_RETRY_COUNT,
   };
 };
 
