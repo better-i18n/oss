@@ -1,5 +1,17 @@
 # @better-i18n/expo
 
+## 0.3.1
+
+### Patch Changes
+
+- 3836f94: Add staticData, fetchTimeout, and retryCount passthrough to core
+  - initBetterI18n and BetterI18nBackend now accept staticData, fetchTimeout, retryCount
+  - staticData enables offline-first: bundled translations work on first launch without network
+  - Backend tests updated for core's global cache behavior
+
+- Updated dependencies [3836f94]
+  - @better-i18n/core@0.1.9
+
 ## 0.3.0
 
 ### Minor Changes
