@@ -1,5 +1,17 @@
 # @better-i18n/next
 
+## 0.5.4
+
+### Patch Changes
+
+- 3836f94: Pass storage and staticData through to core on client side
+  - useManifestLanguages now uses full fallback chain
+  - setLocale uses createI18nCore().getMessages() instead of raw fetch
+  - normalizeConfig passes storage, staticData, fetchTimeout, retryCount to core
+
+- Updated dependencies [3836f94]
+  - @better-i18n/core@0.1.9
+
 ## 0.5.3
 
 ### Patch Changes
