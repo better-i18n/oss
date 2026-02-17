@@ -12,24 +12,26 @@ export { parseProject };
  * Normalize Next.js i18n config with defaults
  */
 export const normalizeConfig = (config: I18nConfig): NormalizedConfig => {
-  // Use core normalization for base config
-  const coreConfig = coreNormalizeConfig({
-    project: config.project,
-    defaultLocale: config.defaultLocale,
-    cdnBaseUrl: config.cdnBaseUrl,
-    manifestCacheTtlMs: config.manifestCacheTtlMs,
-    debug: config.debug,
-    logLevel: config.logLevel,
-    fetch: config.fetch,
-  });
+  // Destructure Next.js-specific fields, pass the rest to core as-is.
+  // This way, when core adds new fields, this file doesn't need updating.
+  const {
+    localePrefix,
+    cookieName,
+    manifestRevalidateSeconds,
+    messagesRevalidateSeconds,
+    timeZone,
+    ...coreFields
+  } = config;
 
-  // Add Next.js-specific defaults
+  const coreConfig = coreNormalizeConfig(coreFields);
+
   return {
     ...coreConfig,
-    localePrefix: config.localePrefix ?? "as-needed",
-    cookieName: config.cookieName ?? "locale",
-    manifestRevalidateSeconds: config.manifestRevalidateSeconds ?? 3600,
-    messagesRevalidateSeconds: config.messagesRevalidateSeconds ?? 30,
+    localePrefix: localePrefix ?? "as-needed",
+    cookieName: cookieName ?? "locale",
+    manifestRevalidateSeconds: manifestRevalidateSeconds ?? 3600,
+    messagesRevalidateSeconds: messagesRevalidateSeconds ?? 30,
+    timeZone,
   };
 };
 

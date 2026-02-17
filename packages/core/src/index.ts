@@ -1,5 +1,8 @@
 // Main API
-export { createI18nCore, clearManifestCache } from "./cdn";
+export { createI18nCore, clearManifestCache, clearMessagesCache } from "./cdn";
+
+// Storage adapters
+export { createAutoStorage, createLocalStorage, createMemoryStorage } from "./storage";
 
 // Configuration utilities
 export { normalizeConfig, parseProject, getProjectBaseUrl } from "./config";
@@ -47,6 +50,9 @@ export type {
 
   // Instance
   I18nCore,
+
+  // Storage
+  TranslationStorage,
 
   // Utilities
   Logger,

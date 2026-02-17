@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
-import { createI18nCore, parseProject } from "@better-i18n/core";
+import { createI18nCore } from "@better-i18n/core";
 import type { LanguageOption, Messages } from "@better-i18n/core";
 
 import { normalizeConfig } from "./config.js";
@@ -32,6 +32,11 @@ export interface BetterI18nProviderProps {
   messages: Messages;
   /** i18n config — only project and defaultLocale are required */
   config: I18nConfig;
+  /**
+   * IANA time zone for date/time formatting consistency.
+   * Falls back to `config.timeZone`, then auto-detects via `Intl.DateTimeFormat`.
+   */
+  timeZone?: string;
   children: ReactNode;
 }
 
@@ -69,14 +74,35 @@ export function BetterI18nProvider({
   locale: initialLocale,
   messages: initialMessages,
   config,
+  timeZone: timeZoneProp,
   children,
 }: BetterI18nProviderProps) {
+  // Resolve timeZone: prop > config > runtime auto-detection.
+  // This avoids next-intl's ENVIRONMENT_FALLBACK warning.
+  const timeZone = useMemo(
+    () =>
+      timeZoneProp ??
+      config.timeZone ??
+      Intl.DateTimeFormat().resolvedOptions().timeZone,
+    [timeZoneProp, config.timeZone],
+  );
+
   const normalized = useMemo(() => normalizeConfig(config), [
     config.project,
     config.defaultLocale,
     config.cookieName,
     config.cdnBaseUrl,
+    config.storage,
+    config.staticData,
+    config.fetchTimeout,
+    config.retryCount,
   ]);
+
+  // Provider-level memoized core instance — reused by setLocale
+  const i18nCore = useMemo(
+    () => createI18nCore(normalized),
+    [normalized],
+  );
 
   const [locale, setLocaleState] = useState(initialLocale);
   const [messages, setMessages] = useState<Messages>(initialMessages);
@@ -94,15 +120,9 @@ export function BetterI18nProvider({
       // 1. Set cookie for server-side persistence
       document.cookie = `${normalized.cookieName}=${newLocale}; path=/; max-age=31536000; samesite=lax`;
 
-      // 2. Fetch new messages from CDN
-      const { workspaceId, projectSlug } = parseProject(normalized.project);
-      const cdnBase = normalized.cdnBaseUrl || "https://cdn.better-i18n.com";
-      const url = `${cdnBase}/${workspaceId}/${projectSlug}/${newLocale}/translations.json`;
-
+      // 2. Fetch new messages with full fallback chain (CDN → Storage → StaticData)
       try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const newMessages: Messages = await res.json();
+        const newMessages = await i18nCore.getMessages(newLocale);
 
         // 3. Instant client-side update — no server round-trip
         setLocaleState(newLocale);
@@ -113,12 +133,12 @@ export function BetterI18nProvider({
         window.location.reload();
       }
     },
-    [locale, normalized]
+    [locale, normalized.cookieName, i18nCore],
   );
 
   return (
     <BetterI18nContext.Provider value={{ setLocale }}>
-      <NextIntlClientProvider locale={locale} messages={messages}>
+      <NextIntlClientProvider locale={locale} messages={messages} timeZone={timeZone}>
         {children}
       </NextIntlClientProvider>
     </BetterI18nContext.Provider>
@@ -181,18 +201,15 @@ export const useManifestLanguages = (config: I18nConfig): UseManifestLanguagesRe
       config.cdnBaseUrl,
       config.debug,
       config.logLevel,
+      config.storage,
+      config.staticData,
+      config.fetchTimeout,
+      config.retryCount,
     ],
   );
 
   const i18nCore = useMemo(
-    () =>
-      createI18nCore({
-        project: normalized.project,
-        defaultLocale: normalized.defaultLocale,
-        cdnBaseUrl: normalized.cdnBaseUrl,
-        debug: normalized.debug,
-        logLevel: normalized.logLevel,
-      }),
+    () => createI18nCore(normalized),
     [normalized],
   );
 

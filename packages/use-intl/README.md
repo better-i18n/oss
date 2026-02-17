@@ -93,10 +93,17 @@ Main provider that combines Better i18n CDN with use-intl.
   timeZone="Europe/Berlin" // Optional: Timezone for formatting
   now={new Date()}         // Optional: Current time (SSR)
   onLocaleChange={(l) => {}} // Optional: Locale change callback
+  // Fallback & Resilience
+  storage={storageAdapter}   // Optional: Persistent cache (localStorage, etc.)
+  staticData={bundledData}   // Optional: Bundled translations as last-resort
+  fetchTimeout={10000}       // Optional: CDN timeout in ms (default: 10s)
+  retryCount={1}             // Optional: CDN retry attempts (default: 1)
 >
   {children}
 </BetterI18nProvider>
 ```
+
+See [`@better-i18n/core`](https://www.npmjs.com/package/@better-i18n/core) for storage adapters and fallback chain details.
 
 ### Hooks
 

@@ -62,21 +62,34 @@ export const createNextI18nCore = (config: I18nConfig): NextI18nCore => {
     debug: normalized.debug,
     logLevel: normalized.logLevel,
     fetch: manifestFetch,
+    storage: normalized.storage,
+    staticData: normalized.staticData,
+    fetchTimeout: normalized.fetchTimeout,
+    retryCount: normalized.retryCount,
   });
 
   // Messages use separate ISR fetch with shorter revalidation (default 30s)
   const messagesFetch = createIsrFetch(normalized.messagesRevalidateSeconds);
 
+  // Build a core instance with ISR messages fetch for fallback support
+  const messagesCore = createI18nCore({
+    project: normalized.project,
+    defaultLocale: normalized.defaultLocale,
+    cdnBaseUrl: normalized.cdnBaseUrl,
+    manifestCacheTtlMs: normalized.manifestCacheTtlMs,
+    debug: normalized.debug,
+    logLevel: normalized.logLevel,
+    fetch: messagesFetch,
+    storage: normalized.storage,
+    staticData: normalized.staticData,
+    fetchTimeout: normalized.fetchTimeout,
+    retryCount: normalized.retryCount,
+  });
+
   return {
     ...i18nCore,
-    getMessages: async (locale: string): Promise<Messages> => {
-      const url = `${getProjectBaseUrl(normalized)}/${locale}/translations.json`;
-      const response = await messagesFetch(url);
-      if (!response.ok) {
-        throw new Error(`[better-i18n] Messages fetch failed for locale "${locale}" (${response.status})`);
-      }
-      return response.json();
-    },
+    getMessages: (locale: string): Promise<Messages> =>
+      messagesCore.getMessages(locale),
   };
 };
 
@@ -122,9 +135,16 @@ export const createNextIntlRequestConfig = (config: I18nConfig) =>
       locale = normalized.defaultLocale;
     }
 
+    // Resolve timeZone: explicit config > runtime auto-detection.
+    // Setting this explicitly avoids next-intl's ENVIRONMENT_FALLBACK warning
+    // and prevents server/client hydration mismatches for date/time formatting.
+    const timeZone =
+      normalized.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     return {
       locale,
       messages: await i18n.getMessages(locale),
+      timeZone,
     };
   });
 

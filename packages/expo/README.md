@@ -101,6 +101,9 @@ One-call setup that fetches translations from CDN and initializes i18next.
 | `i18n` | `i18n` | Required | i18next instance to configure |
 | `defaultLocale` | `string` | `"en"` | Fallback locale |
 | `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter |
+| `staticData` | `Record \| () => Promise` | `undefined` | Bundled translations for offline-first (e.g., first launch in airplane mode) |
+| `fetchTimeout` | `number` | `10000` | CDN fetch timeout in ms |
+| `retryCount` | `number` | `1` | Retry attempts on CDN failure |
 | `useDeviceLocale` | `boolean` | `false` | Auto-detect device locale via `expo-localization` |
 | `debug` | `boolean` | `false` | Enable debug logging |
 | `i18nextOptions` | `Partial<InitOptions>` | `{}` | Additional i18next init options |
@@ -123,6 +126,9 @@ i18next backend plugin class. Pass options via `backend` in `i18n.init()`:
 | `cdnBaseUrl` | `string` | `"https://cdn.better-i18n.com"` | Custom CDN URL |
 | `cacheExpiration` | `number` | `86400000` (24h) | In-memory cache TTL in ms |
 | `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter |
+| `staticData` | `Record \| () => Promise` | `undefined` | Bundled translations for offline-first |
+| `fetchTimeout` | `number` | `10000` | CDN fetch timeout in ms |
+| `retryCount` | `number` | `1` | Retry attempts on CDN failure |
 | `debug` | `boolean` | `false` | Enable debug logging |
 
 ### `getDeviceLocale(options?)`
@@ -163,9 +169,30 @@ The SDK uses a **network-first** strategy with automatic fallback:
 
 ```
 1. Check in-memory cache (TtlCache) → avoids redundant fetches within a session
-2. Fetch from CDN → always get fresh translations
-3. On CDN failure → fall back to persistent storage (MMKV/AsyncStorage)
-4. No cache, no CDN → throw error
+2. Fetch from CDN (with timeout + retry) → always get fresh translations
+3. On CDN failure → try staticData (bundled translations)
+4. On staticData miss → fall back to persistent storage (MMKV/AsyncStorage)
+5. No cache, no CDN, no static data → throw error
+```
+
+### Offline-First with Static Data
+
+For apps that must work on first launch without network (e.g., airplane mode):
+
+```ts
+const { core, languages } = await initBetterI18n({
+  project: "acme/my-app",
+  i18n,
+  // Bundle critical translations — always available
+  staticData: {
+    en: { common: { welcome: "Welcome" } },
+    tr: { common: { welcome: "Hoş geldiniz" } },
+  },
+  // Or lazy-load to keep bundle small
+  // staticData: () => import('./fallback-translations.json'),
+  fetchTimeout: 5000, // fail fast on slow networks
+  retryCount: 2,      // retry twice before falling back
+});
 ```
 
 ### Storage Priority (auto-detected)

@@ -58,6 +58,10 @@ export function BetterI18nProvider({
   debug,
   logLevel,
   fetch: customFetch,
+  storage,
+  staticData,
+  fetchTimeout,
+  retryCount,
 }: BetterI18nProviderProps) {
   // Locale is controlled by props (from URL/router)
   const locale = propLocale;
@@ -84,8 +88,12 @@ export function BetterI18nProvider({
         debug,
         logLevel,
         fetch: customFetch,
+        storage,
+        staticData,
+        fetchTimeout,
+        retryCount,
       }),
-    [project, locale, cdnBaseUrl, debug, logLevel, customFetch]
+    [project, locale, cdnBaseUrl, debug, logLevel, customFetch, storage, staticData, fetchTimeout, retryCount]
   );
 
   // Load languages on mount

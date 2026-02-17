@@ -1,6 +1,6 @@
 import type { i18n, InitOptions } from "i18next";
 import { createI18nCore } from "@better-i18n/core";
-import type { I18nCore, Messages, LanguageOption } from "@better-i18n/core";
+import type { I18nCore, I18nCoreConfig, Messages, LanguageOption } from "@better-i18n/core";
 import { getDeviceLocale } from "./locale";
 import { resolveStorage, readCache, writeCache } from "./storage";
 import type { TranslationStorage } from "./types";
@@ -19,6 +19,25 @@ export interface InitBetterI18nOptions {
 
   /** Custom storage adapter for persistent caching (auto-detects MMKV or AsyncStorage if omitted) */
   storage?: TranslationStorage;
+
+  /**
+   * Bundled/static translations as last-resort fallback inside core.
+   * Used when CDN is unavailable (e.g., first launch in airplane mode).
+   *
+   * @example
+   * ```ts
+   * staticData: { en: { common: { hello: "Hello" } } }
+   * // or lazy
+   * staticData: () => import('./fallback-translations.json')
+   * ```
+   */
+  staticData?: I18nCoreConfig["staticData"];
+
+  /** CDN fetch timeout in milliseconds @default 10000 */
+  fetchTimeout?: number;
+
+  /** Number of retry attempts on CDN fetch failure @default 1 */
+  retryCount?: number;
 
   /** Auto-detect device locale via expo-localization @default false */
   useDeviceLocale?: boolean;
@@ -78,13 +97,23 @@ export async function initBetterI18n(
     i18n: i18nInstance,
     defaultLocale = "en",
     storage: userStorage,
+    staticData,
+    fetchTimeout,
+    retryCount,
     useDeviceLocale = false,
     debug = false,
     i18nextOptions = {},
   } = options;
 
   const storage = resolveStorage(userStorage);
-  const core = createI18nCore({ project, defaultLocale, debug });
+  const core = createI18nCore({
+    project,
+    defaultLocale,
+    debug,
+    staticData,
+    fetchTimeout,
+    retryCount,
+  });
 
   const lng = useDeviceLocale
     ? getDeviceLocale({ fallback: defaultLocale })

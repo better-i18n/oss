@@ -1,4 +1,5 @@
 import { describe, expect, it, mock, beforeEach } from "bun:test";
+import { clearManifestCache, clearMessagesCache } from "@better-i18n/core";
 import { BetterI18nBackend } from "../backend";
 import { createMemoryStorage } from "../storage";
 import type { TranslationStorage } from "../types";
@@ -90,6 +91,9 @@ describe("BetterI18nBackend", () => {
   beforeEach(() => {
     storage = createMemoryStorage();
     mockFetch = createMockFetch();
+    // Clear core's global caches to prevent test cross-contamination
+    clearManifestCache();
+    clearMessagesCache();
   });
 
   it("should have correct type", () => {
@@ -147,7 +151,9 @@ describe("BetterI18nBackend", () => {
 
     await readFromBackend(backend1, "en");
 
-    // Simulate app restart with CDN down
+    // Simulate app restart: clear core's global caches
+    clearManifestCache();
+    clearMessagesCache();
     const failingFetch = createFailingFetch();
     const backend2 = new BetterI18nBackend();
     backend2.init({} as never, {
@@ -170,6 +176,10 @@ describe("BetterI18nBackend", () => {
     }, {});
 
     await readFromBackend(backend1, "en");
+
+    // Simulate app restart: clear core's global caches
+    clearManifestCache();
+    clearMessagesCache();
 
     // CDN now has updated translations
     const updatedTranslations = { welcome: "Welcome Updated", goodbye: "Goodbye" };

@@ -111,6 +111,9 @@ export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions
       cdnBaseUrl: backendOptions.cdnBaseUrl,
       debug: this.debug,
       fetch: backendOptions.fetch,
+      staticData: backendOptions.staticData,
+      fetchTimeout: backendOptions.fetchTimeout,
+      retryCount: backendOptions.retryCount,
       ...backendOptions.coreOptions,
     });
   }

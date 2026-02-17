@@ -9,6 +9,16 @@ export type Locale = string;
 export type LogLevel = "debug" | "info" | "warn" | "error" | "silent";
 
 /**
+ * Pluggable storage interface for persistent translation caching.
+ * Compatible with browser localStorage, AsyncStorage, MMKV, or any key-value store.
+ */
+export interface TranslationStorage {
+  get(key: string): Promise<string | null>;
+  set(key: string, value: string): Promise<void>;
+  remove?(key: string): Promise<void>;
+}
+
+/**
  * Core i18n configuration
  */
 export interface I18nCoreConfig {
@@ -50,6 +60,42 @@ export interface I18nCoreConfig {
    * Custom fetch function (useful for testing or custom environments)
    */
   fetch?: typeof fetch;
+
+  /**
+   * Persistent storage adapter for offline fallback.
+   * When CDN is unavailable, translations are served from storage.
+   */
+  storage?: TranslationStorage;
+
+  /**
+   * Bundled/static translations as last-resort fallback.
+   * Used when both CDN and storage are unavailable.
+   * Can be a static object or a lazy-loading function.
+   *
+   * @example
+   * ```ts
+   * // Static import
+   * staticData: { en: { common: { hello: "Hello" } } }
+   *
+   * // Lazy import
+   * staticData: () => import('./fallback-translations.json')
+   * ```
+   */
+  staticData?: Record<string, Messages> | (() => Promise<Record<string, Messages>>);
+
+  /**
+   * CDN fetch timeout in milliseconds.
+   * If a fetch does not complete within this time, the request is aborted
+   * and fallback sources are tried.
+   * @default 10000
+   */
+  fetchTimeout?: number;
+
+  /**
+   * Number of retry attempts on CDN fetch failure.
+   * @default 1
+   */
+  retryCount?: number;
 }
 
 /**
@@ -66,6 +112,8 @@ export interface ParsedProject {
 export interface NormalizedConfig extends I18nCoreConfig, ParsedProject {
   cdnBaseUrl: string;
   manifestCacheTtlMs: number;
+  fetchTimeout: number;
+  retryCount: number;
 }
 
 /**

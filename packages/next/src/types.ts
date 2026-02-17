@@ -44,6 +44,19 @@ export interface I18nConfig extends I18nCoreConfig {
    * @default 30
    */
   messagesRevalidateSeconds?: number;
+
+  /**
+   * IANA time zone identifier for consistent date/time formatting.
+   * When not provided, auto-detected via `Intl.DateTimeFormat().resolvedOptions().timeZone`.
+   *
+   * Setting this explicitly avoids next-intl's `ENVIRONMENT_FALLBACK` warning
+   * and ensures consistent server/client rendering.
+   *
+   * @example "Europe/Istanbul"
+   * @example "America/New_York"
+   * @example "UTC"
+   */
+  timeZone?: string;
 }
 
 /**

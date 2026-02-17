@@ -26,6 +26,10 @@ export async function getMessages(
     debug: config.debug,
     logLevel: config.logLevel,
     fetch: config.fetch,
+    storage: config.storage,
+    staticData: config.staticData,
+    fetchTimeout: config.fetchTimeout,
+    retryCount: config.retryCount,
   });
 
   const messages = (await i18n.getMessages(config.locale)) as Messages;
@@ -50,6 +54,10 @@ export async function getLocales(
     debug: config.debug,
     logLevel: config.logLevel,
     fetch: config.fetch,
+    storage: config.storage,
+    staticData: config.staticData,
+    fetchTimeout: config.fetchTimeout,
+    retryCount: config.retryCount,
   });
 
   return i18n.getLocales();
@@ -68,6 +76,10 @@ export async function getLanguages(
     debug: config.debug,
     logLevel: config.logLevel,
     fetch: config.fetch,
+    storage: config.storage,
+    staticData: config.staticData,
+    fetchTimeout: config.fetchTimeout,
+    retryCount: config.retryCount,
   });
 
   return i18n.getLanguages();
