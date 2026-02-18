@@ -179,7 +179,35 @@ export async function initBetterI18n(
     );
   }
 
-  // Lazy-load translations when the user switches language
+  // Override changeLanguage to pre-load translations BEFORE the language switch.
+  // This prevents the race condition where i18next switches the language
+  // before CDN translations arrive, causing fallback to English.
+  const originalChangeLanguage = i18nInstance.changeLanguage.bind(i18nInstance);
+  i18nInstance.changeLanguage = async (newLng?: string, callback?: import("i18next").Callback) => {
+    if (newLng) {
+      const anyNs = namespaces[0];
+      if (anyNs && !i18nInstance.hasResourceBundle(newLng, anyNs)) {
+        try {
+          const newMessages = await loadMessages(newLng);
+          addAllNamespaces(newLng, newMessages);
+          if (debug) {
+            console.debug(
+              `${LOG_PREFIX} Pre-loaded ${Object.keys(newMessages).length} namespaces for ${newLng}`
+            );
+          }
+        } catch (error) {
+          if (debug) {
+            console.debug(
+              `${LOG_PREFIX} Pre-load failed for ${newLng}, continuing with fallback`
+            );
+          }
+        }
+      }
+    }
+    return originalChangeLanguage(newLng, callback);
+  };
+
+  // Lazy-load translations when the user switches language (safety net)
   i18nInstance.on("languageChanged", async (newLng: string) => {
     // Skip if this language's resources are already loaded
     const anyNs = namespaces[0];

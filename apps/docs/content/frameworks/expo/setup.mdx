@@ -45,7 +45,7 @@ npx expo install react-native-mmkv expo-localization
 ```
 
 - **react-native-mmkv** - Fastest persistent storage for offline caching (auto-detected)
-- **expo-localization** - Enables device locale detection via `getDeviceLocale()`
+- **expo-localization** - Enables device locale detection via `useDeviceLocale`
 
 <Callout type="tip">
   Both are optional. Storage is auto-detected at runtime: MMKV → AsyncStorage → in-memory.
@@ -58,55 +58,68 @@ npx expo install react-native-mmkv expo-localization
 <Step>
 ### Create i18n Config
 
-Create a file to initialize i18next with the `BetterI18nBackend` plugin:
+Create a file to initialize i18next with `initBetterI18n`:
 
 ```ts title="src/i18n.ts"
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { BetterI18nBackend, getDeviceLocale } from '@better-i18n/expo';
+import { initBetterI18n } from '@better-i18n/expo';
+import type { LanguageOption } from '@better-i18n/expo';
 
-i18n
-  .use(BetterI18nBackend)
-  .use(initReactI18next)
-  .init({
-    backend: {
-      project: 'your-org/your-project',
-    },
-    lng: getDeviceLocale({ fallback: 'en' }),
-    fallbackLng: 'en',
-    interpolation: { escapeValue: false },
+i18n.use(initReactI18next);
+
+let availableLanguages: LanguageOption[] = [];
+
+export async function setupI18n() {
+  const result = await initBetterI18n({
+    project: 'your-org/your-project',
+    i18n,
+    defaultLocale: 'en',
+    debug: __DEV__,
   });
+  availableLanguages = result.languages;
+}
 
-export default i18n;
+export function getLanguages() {
+  return availableLanguages;
+}
+
+export { i18n };
 ```
 </Step>
 
 <Step>
-### Import in App Entry
+### Initialize in App Entry
 
-Import the i18n config at the top of your app entry point:
+Call `setupI18n()` before rendering your app. Since `initBetterI18n` is async and pre-loads translations, your app renders with translations already available — no `Suspense` needed.
 
 ```tsx title="App.tsx"
-import './src/i18n';
-import { Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { setupI18n } from './src/i18n';
 import { HomeScreen } from './src/screens/HomeScreen';
 
 export default function App() {
-  return (
-    <Suspense fallback={
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setupI18n().then(() => setReady(true));
+  }, []);
+
+  if (!ready) {
+    return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />
       </View>
-    }>
-      <HomeScreen />
-    </Suspense>
-  );
+    );
+  }
+
+  return <HomeScreen />;
 }
 ```
 
 <Callout type="info">
-  The `Suspense` boundary is recommended to handle the initial translation load. Without it, `useTranslation` will return empty strings until translations are ready.
+  Once `setupI18n()` resolves, all translations for the initial locale are loaded into i18next's resource store. No Suspense boundary needed — `useTranslation()` returns data immediately.
 </Callout>
 </Step>
 
@@ -136,95 +149,76 @@ export function HomeScreen() {
 
 ## Language Switching
 
-Use `i18next.changeLanguage()` to switch languages at runtime. The backend plugin automatically fetches and caches translations for the new language.
+Use `i18n.changeLanguage()` to switch languages at runtime. Translations are **pre-loaded before the switch** — no loading spinners or English flash.
 
-```tsx title="src/components/LanguageSwitcher.tsx"
+```tsx title="src/components/LanguagePicker.tsx"
 import { useTranslation } from 'react-i18next';
-import { Button, View } from 'react-native';
+import { FlatList, Pressable, Text } from 'react-native';
+import { getLanguages } from '../i18n';
 
-export function LanguageSwitcher() {
+export function LanguagePicker() {
   const { i18n } = useTranslation();
+  const languages = getLanguages();
 
   return (
-    <View style={{ flexDirection: 'row', gap: 8 }}>
-      <Button title="English" onPress={() => i18n.changeLanguage('en')} />
-      <Button title="Turkce" onPress={() => i18n.changeLanguage('tr')} />
-      <Button title="Deutsch" onPress={() => i18n.changeLanguage('de')} />
-    </View>
+    <FlatList
+      data={languages}
+      keyExtractor={(item) => item.code}
+      renderItem={({ item }) => (
+        <Pressable onPress={() => i18n.changeLanguage(item.code)}>
+          <Text>{item.nativeName ?? item.name}</Text>
+        </Pressable>
+      )}
+    />
   );
 }
 ```
 
-## One-Liner Setup
-
-For a simpler API, use the `initBetterI18n` convenience helper:
-
-```ts title="src/i18n.ts"
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import { initBetterI18n } from '@better-i18n/expo';
-
-const { languages } = await initBetterI18n({
-  project: 'your-org/your-project',
-  i18n: i18n.use(initReactI18next),
-  useDeviceLocale: true,
-});
-
-export default i18n;
-```
-
-This is equivalent to the manual setup but handles device locale detection, namespace discovery, and default options for you.
-
-Need to customize i18next? Pass any i18next init options via `i18nextOptions` — no need for a separate `i18n.init()` call:
-
-```ts title="src/i18n.ts"
-await initBetterI18n({
-  project: 'your-org/your-project',
-  i18n: i18n.use(initReactI18next),
-  useDeviceLocale: true,
-  i18nextOptions: {
-    defaultNS: 'common',
-    ns: ['common', 'auth'],
-    interpolation: { escapeValue: false },
-  },
-});
-```
-
-<Callout type="warning">
-  Do **not** call `i18n.init()` separately when using `initBetterI18n` — it already calls `init()` internally. Passing your options via `i18nextOptions` avoids double initialization conflicts.
+<Callout type="tip">
+  Language switching is instant — `initBetterI18n` overrides `changeLanguage()` to pre-load translations from CDN (or cache) before the switch happens. No loading spinners or English flash.
 </Callout>
 
-## Backend Options
+## Options
 
-All options are passed via i18next's `backend` key:
+All options are passed to `initBetterI18n`:
 
 ```ts
-i18n.init({
-  backend: {
-    project: 'your-org/your-project',  // Required
-    defaultLocale: 'en',               // Default: "en"
-    cacheExpiration: 86400000,          // Default: 24h (in ms)
-    debug: false,                       // Default: false
-    storage: customStorage,             // Default: AsyncStorage or in-memory
-    cdnBaseUrl: 'https://...',          // Default: better-i18n CDN
-  },
+await initBetterI18n({
+  project: 'your-org/your-project',  // Required
+  i18n,                               // Required
+  defaultLocale: 'en',
+  storage: customStorage,
+  staticData: { en: { common: { welcome: 'Welcome' } } },
+  fetchTimeout: 10000,
+  retryCount: 1,
+  useDeviceLocale: true,
+  debug: __DEV__,
+  i18nextOptions: { defaultNS: 'common' },
 });
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `project` | `string` | Required | Project identifier in `org/project` format |
-| `defaultLocale` | `string` | `"en"` | Fallback locale for core |
-| `cacheExpiration` | `number` | `86400000` (24h) | In-memory cache TTL in milliseconds |
-| `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter (MMKV → AsyncStorage → in-memory) |
+| `project` | `string` | Required | Project identifier (`org/project`) |
+| `i18n` | `i18n` | Required | i18next instance (call `.use(initReactI18next)` first) |
+| `defaultLocale` | `string` | `"en"` | Fallback locale |
+| `storage` | `TranslationStorage` | Auto-detected | MMKV → AsyncStorage → in-memory |
+| `staticData` | `Record<string, Messages>` | — | Bundled fallback for airplane mode first launch |
+| `fetchTimeout` | `number` | `10000` | CDN fetch timeout (ms) |
+| `retryCount` | `number` | `1` | Retry attempts on CDN failure |
+| `useDeviceLocale` | `boolean` | `false` | Auto-detect device locale |
 | `debug` | `boolean` | `false` | Enable debug logging |
-| `cdnBaseUrl` | `string` | CDN default | Custom CDN URL |
+| `i18nextOptions` | `Partial<InitOptions>` | `{}` | Extra i18next init options |
+
+<Callout type="warning">
+  Do **not** call `i18n.init()` separately when using `initBetterI18n` — it already calls `init()` internally. Pass your options via `i18nextOptions` to avoid double initialization.
+</Callout>
 
 ## Next Steps
 
 <Cards>
   <Card title="Offline & Caching" icon="WifiOff" href="/frameworks/expo/offline-caching">
-    Understand the cache-first strategy and offline support.
+    Understand the caching strategy and offline support.
   </Card>
   <Card title="API Reference" icon="FileCode" href="/frameworks/expo/api-reference">
     Full API documentation for all exports.

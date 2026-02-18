@@ -9,21 +9,25 @@ Mobile apps need to work without network. `@better-i18n/expo` uses a **network-f
 
 ## How It Works
 
-When `i18next` requests translations for a language, the backend plugin follows this flow:
+When you call `initBetterI18n()` or `changeLanguage()`, the SDK follows this flow:
 
 ```
-read(language)
+initBetterI18n() / changeLanguage()
 │
-├─ 1. In-memory cache (TtlCache)
-│     └─ Hit? → Return immediately (same session, already fetched)
+├─ 1. Resource check (hasResourceBundle?)
+│     └─ Already loaded? → Skip fetch, switch instantly
 │
 ├─ 2. CDN fetch (network-first)
-│     ├─ Success → Cache to memory + persistent storage, return
+│     ├─ Success → Inject resources + write to persistent cache
 │     └─ Failure ↓
 │
-└─ 3. Persistent cache (MMKV / AsyncStorage)
-      ├─ Have cached data? → Return (offline fallback)
-      └─ No cache at all? → Throw (i18next falls to fallbackLng)
+├─ 3. Persistent cache (MMKV / AsyncStorage)
+│     ├─ Cached? → Inject resources, switch language
+│     └─ No cache ↓
+│
+└─ 4. Static data (if configured)
+      ├─ Has locale? → Use bundled translations
+      └─ No data → i18next uses fallbackLng (graceful degradation)
 ```
 
 <Callout type="tip">
@@ -32,13 +36,13 @@ read(language)
 
 ## Cache Layers
 
-### 1. In-Memory Cache
+### 1. Resource Store (In-Memory)
 
-The fastest layer. Prevents redundant CDN fetches within the same app session.
+The fastest layer. Once translations are loaded into i18next's resource store, subsequent `changeLanguage()` calls skip the CDN entirely.
 
 - Survives navigation and re-renders
 - Cleared when the app is killed
-- TTL matches `cacheExpiration` option (default: 24h)
+- Checked via `hasResourceBundle()` before any network call
 
 ### 2. Persistent Cache
 
@@ -51,6 +55,25 @@ Translations are persisted to device storage so they survive app restarts. Used 
 ```
 
 Each locale has a single cache entry that gets overwritten on every successful CDN fetch — no duplicate entries.
+
+### 3. Static Data (Bundled Fallback)
+
+For airplane mode on first launch where there's no CDN and no cache, you can bundle translations directly in your app:
+
+```ts
+await initBetterI18n({
+  project: 'your-org/your-project',
+  i18n: i18n.use(initReactI18next),
+  staticData: {
+    en: { common: { welcome: 'Welcome' } },
+    tr: { common: { welcome: 'Hoş geldiniz' } },
+  },
+});
+```
+
+<Callout type="info">
+  `staticData` is your last-resort fallback. Useful for airplane mode first launch where there's no CDN and no cache yet. These translations are passed to `@better-i18n/core` and used only when both CDN and persistent cache fail.
+</Callout>
 
 ## Storage Auto-Detection
 
@@ -69,14 +92,13 @@ If you have `react-native-mmkv` installed, it's used automatically (separate MMK
 You can provide any storage that implements the `TranslationStorage` interface:
 
 ```ts
-i18n.init({
-  backend: {
-    project: 'acme/app',
-    storage: {
-      getItem: async (key: string) => /* ... */,
-      setItem: async (key: string, value: string) => /* ... */,
-      removeItem: async (key: string) => /* ... */,
-    },
+await initBetterI18n({
+  project: 'acme/app',
+  i18n,
+  storage: {
+    getItem: async (key: string) => /* ... */,
+    setItem: async (key: string, value: string) => /* ... */,
+    removeItem: async (key: string) => /* ... */,
   },
 });
 ```
@@ -88,17 +110,16 @@ For testing or when you don't want persistence:
 ```ts
 import { createMemoryStorage } from '@better-i18n/expo';
 
-i18n.init({
-  backend: {
-    project: 'acme/app',
-    storage: createMemoryStorage(),
-  },
+await initBetterI18n({
+  project: 'acme/app',
+  i18n,
+  storage: createMemoryStorage(),
 });
 ```
 
 ## Without Persistent Storage
 
-If neither MMKV nor AsyncStorage is installed, the plugin automatically falls back to in-memory storage. This means:
+If neither MMKV nor AsyncStorage is installed, the SDK automatically falls back to in-memory storage. This means:
 
 - Translations are fetched from CDN on every app launch
 - No offline support between sessions
