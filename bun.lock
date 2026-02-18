@@ -10,8 +10,8 @@
       "devDependencies": {
         "@changesets/cli": "^2.29.8",
         "@eslint/js": "^9.39.2",
-        "@typescript-eslint/eslint-plugin": "^8.55.0",
-        "@typescript-eslint/parser": "^8.55.0",
+        "@typescript-eslint/eslint-plugin": "^8.56.0",
+        "@typescript-eslint/parser": "^8.56.0",
         "eslint": "^9.39.2",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-unused-imports": "^4.4.1",
@@ -21,7 +21,7 @@
         "nodemailer": "^7.0.13",
         "prettier": "^3.8.1",
         "typescript": "~5.9.3",
-        "typescript-eslint": "^8.55.0",
+        "typescript-eslint": "^8.56.0",
         "vitest": "~3.2.4",
         "zod": "^4.3.6",
       },
@@ -128,7 +128,7 @@
     },
     "packages/expo": {
       "name": "@better-i18n/expo",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
       },
@@ -243,7 +243,7 @@
     },
     "tests/expo-native": {
       "name": "expo-native",
-      "version": "1.0.4",
+      "version": "1.0.5",
       "dependencies": {
         "@better-i18n/expo": "workspace:*",
         "@expo/vector-icons": "^15.0.3",
