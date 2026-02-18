@@ -22,6 +22,7 @@ import { getPendingChanges } from "./tools/getPendingChanges.js";
 import { getProject } from "./tools/getProject.js";
 import { getSync } from "./tools/getSync.js";
 import { getSyncs } from "./tools/getSyncs.js";
+import { getTranslations } from "./tools/getTranslations.js";
 import { listKeys } from "./tools/listKeys.js";
 import { listProjects } from "./tools/listProjects.js";
 import { publishTranslations } from "./tools/publishTranslations.js";
@@ -91,6 +92,7 @@ export function createConfiguredServer(
       annotate(getProject.definition, readOnly),
       annotate(addLanguage.definition, write),
       annotate(listKeys.definition, readOnly),
+      annotate(getTranslations.definition, readOnly),
       annotate(createKeys.definition, write),
       annotate(updateKeys.definition, write),
       annotate(deleteKeys.definition, destructive),
@@ -120,6 +122,9 @@ export function createConfiguredServer(
           break;
         case "listKeys":
           result = await listKeys.execute(apiClient, args);
+          break;
+        case "getTranslations":
+          result = await getTranslations.execute(apiClient, args);
           break;
         case "createKeys":
           result = await createKeys.execute(apiClient, args);

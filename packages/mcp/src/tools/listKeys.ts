@@ -1,15 +1,31 @@
 /**
  * listKeys MCP Tool
  *
- * Lists ALL translation keys with source text and translations.
- * Supports full-text search in source and target languages.
+ * Lists translation keys in compact format — optimized for browsing and exploration.
+ * Returns paginated results with namespace deduplication to minimize token usage.
+ *
+ * USE THIS for:
+ * - Browsing keys (finding what exists)
+ * - Checking which keys are missing a translation
+ * - Getting key IDs for use with updateKeys
+ *
+ * Use getTranslations instead when you need actual translation text.
+ *
+ * RESPONSE FORMAT:
+ * - tot: total matching keys (before pagination)
+ * - ret: keys returned in this page
+ * - has_more: true → increment page to fetch next batch
+ * - nss: namespace lookup table — each key's ns field is an index into this array
+ * - k: key items (k=name, ns=namespace index, id=uuid, src=source text, tl=translated langs)
+ * - note: optional warning (e.g., large project hint to use filters)
  *
  * EXAMPLES:
- * - Find "login" in source: { search: "login" }
- * - Multi-term search: { search: ["login", "signup", "forgot"] }
- * - Find "Giriş" in Turkish: { search: "Giriş", languages: ["tr"] }
- * - Get Turkish translations: { languages: ["tr"] }
- * - Get specific keys: { keys: ["auth.login.title", "auth.login.button"] }
+ * - List first page: { project: "org/project" }
+ * - Find "login" keys: { project: "org/project", search: "login" }
+ * - Find keys missing Turkish: { project: "org/project", missingLanguage: "tr" }
+ * - Filter by namespace: { project: "org/project", namespaces: ["auth", "common"] }
+ * - Next page: { project: "org/project", page: 2 }
+ * - Larger page: { project: "org/project", limit: 50 }
  */
 
 import { z } from "zod";
@@ -23,35 +39,41 @@ import type { Tool } from "../types/index.js";
 
 const inputSchema = projectSchema.extend({
   search: z.union([z.string(), z.array(z.string())]).optional(),
-  languages: z.array(z.string()).optional(),
   namespaces: z.array(z.string()).optional(),
-  keys: z.array(z.string()).optional(),
-  status: z.enum(["missing", "draft", "approved", "all"]).optional(),
+  missingLanguage: z.string().optional(),
+  page: z.number().int().min(1).default(1),
+  limit: z.number().int().min(1).max(100).default(20),
 });
 
 export const listKeys: Tool = {
   definition: {
     name: "listKeys",
-    description: `Get all translation keys with their id, source text, and translations.
+    description: `Browse translation keys in compact format. Optimized for exploration — use getTranslations when you need actual translation text.
 
-SEARCH + FILTER:
-- search: Text to search for (in source text or specified languages)
-- languages: Languages to search in AND return translations for
+PAGINATION:
+- Response includes tot (total), ret (returned), has_more — increment page for next batch
+- Default: page=1, limit=20
+
+NAMESPACE DEDUPLICATION:
+- nss field is the namespace lookup table (array of strings)
+- Each key's ns field is an index into nss (saves tokens on repeated namespaces)
+- e.g. nss=["auth","common"] and ns=0 means the key belongs to "auth"
+
+NOTE FIELD:
+- Large projects (>500 keys) return a note field warning to use filters
+- Apply search, namespaces, or missingLanguage to narrow results
 
 FILTER OPTIONS:
+- search: Key name search (partial match, single string or array for OR)
 - namespaces: Filter by namespace(s)
-- keys: Fetch specific keys by exact name
-- status: Filter by translation status ("missing", "draft", "approved", "all")
+- missingLanguage: Find keys with no translation for this language (e.g., "tr")
+- fields: Which fields to include per key (default: id, sourceText, translatedLanguages)
 
 EXAMPLES:
-- Find "login" in source: { search: "login" }
-- Multi-term search: { search: ["login", "signup", "forgot_password"] }
-- Find "Giriş" in Turkish: { search: "Giriş", languages: ["tr"] }
-- Get all Turkish translations: { languages: ["tr"] }
-- Get missing Turkish translations: { languages: ["tr"], status: "missing" }
-- Get specific keys: { keys: ["auth.login.title", "auth.login.button"] }
-
-Response includes namespaceDetails: a map of namespace metadata (name, keyCount, description, context with team/domain/aiPrompt/tags) for all namespaces present in the result.`,
+- Browse all keys: { project: "org/project" }
+- Find "login" keys: { project: "org/project", search: "login" }
+- Missing Turkish: { project: "org/project", missingLanguage: "tr" }
+- Next page: { project: "org/project", page: 2, limit: 50 }`,
     inputSchema: {
       type: "object",
       properties: {
@@ -59,29 +81,25 @@ Response includes namespaceDetails: a map of namespace metadata (name, keyCount,
         search: {
           type: "string",
           description:
-            "Text to search for in source text or translations (case-insensitive). Single string or array of strings for multi-term search (OR matching). If languages is specified, searches in those languages; otherwise searches source text.",
-        },
-        languages: {
-          type: "array",
-          items: { type: "string" },
-          description:
-            "Language codes to search in and return (e.g., ['tr', 'de']). If omitted with search, searches source text. If omitted without search, returns all languages.",
+            "Search keys by name (partial match, case-insensitive). Single string or array for multi-term OR search.",
         },
         namespaces: {
           type: "array",
           items: { type: "string" },
-          description: "Filter by namespace(s)",
+          description: "Filter to keys in these namespace(s)",
         },
-        keys: {
-          type: "array",
-          items: { type: "string" },
-          description: "Fetch specific keys by exact name",
-        },
-        status: {
+        missingLanguage: {
           type: "string",
-          enum: ["missing", "draft", "approved", "all"],
           description:
-            "Filter by translation status (default: all). Requires languages to be specified for filtering.",
+            "Return only keys missing a translation for this language code (e.g., 'tr', 'de')",
+        },
+        page: {
+          type: "number",
+          description: "Page number (1-indexed, default: 1)",
+        },
+        limit: {
+          type: "number",
+          description: "Keys per page (default: 20, max: 100)",
         },
       },
       required: ["project"],
@@ -93,14 +111,14 @@ Response includes namespaceDetails: a map of namespace metadata (name, keyCount,
       args,
       inputSchema,
       async (input, { workspaceId, projectSlug }) => {
-        const result = await client.mcp.getAllTranslations.query({
+        const result = await client.mcp.listKeys.query({
           orgSlug: workspaceId,
           projectSlug,
           search: input.search,
-          languages: input.languages,
           namespaces: input.namespaces,
-          keys: input.keys,
-          status: input.status,
+          missingLanguage: input.missingLanguage,
+          page: input.page,
+          limit: input.limit,
         });
         return success(result);
       },
