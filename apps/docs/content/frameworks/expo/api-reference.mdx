@@ -5,68 +5,94 @@ description: Complete API documentation for @better-i18n/expo
 
 Complete API reference for the Expo/React Native SDK.
 
-## BetterI18nBackend
+## initBetterI18n
 
-The main export. An i18next `BackendModule` that fetches translations from the better-i18n CDN with persistent caching.
+The primary API. Fetches translations from the better-i18n CDN, initializes i18next with all namespaces pre-loaded, and overrides `changeLanguage()` to pre-load translations before switching.
 
 ```ts
 import i18n from 'i18next';
-import { BetterI18nBackend } from '@better-i18n/expo';
+import { initReactI18next } from 'react-i18next';
+import { initBetterI18n } from '@better-i18n/expo';
 
-i18n.use(BetterI18nBackend).init({
-  backend: {
-    project: 'acme/my-app',
-  },
-  lng: 'en',
-  fallbackLng: 'en',
+i18n.use(initReactI18next);
+
+const { languages, core } = await initBetterI18n({
+  project: 'acme/my-app',
+  i18n,
+  defaultLocale: 'en',
+  useDeviceLocale: true,
+  debug: __DEV__,
 });
 ```
 
-### Namespace Auto-Registration
+### What it does
 
-When the CDN returns multi-namespace data (nested or flat format), the backend automatically registers **all** namespaces in i18next's resource store — not just the one that was requested. This means you don't need to manually configure or discover namespaces.
+1. Fetches the project manifest and initial translations from CDN in parallel
+2. Auto-discovers all namespaces and picks `"common"` as the default (or first available)
+3. Initializes i18next with translations pre-loaded into the resource store
+4. Overrides `changeLanguage()` to pre-load translations before switching (no English flash)
+5. Registers a `languageChanged` listener as a safety net for lazy loading
 
-```
-CDN response: { "common": {...}, "auth": {...}, "settings": {...} }
-
-i18next requests "common" →
-  ✓ Returns "common" data to i18next
-  ✓ Auto-registers "auth" and "settings" in the resource store
-```
-
-Both nested (`{ "common": { "key": "value" } }`) and flat (`{ "common.key": "value" }`) formats are supported.
-
-### Backend Options
+### Options
 
 <Accordion>
-<AccordionItem title="BetterI18nBackendOptions">
-
-All options are passed via i18next's `backend` config key.
+<AccordionItem title="InitBetterI18nOptions">
 
 ```ts
-interface BetterI18nBackendOptions {
+interface InitBetterI18nOptions {
   project: string;
+  i18n: i18n;
   defaultLocale?: string;
-  cdnBaseUrl?: string;
-  cacheExpiration?: number;
   storage?: TranslationStorage;
+  staticData?: Record<string, Messages> | (() => Promise<Record<string, Messages>>);
+  fetchTimeout?: number;
+  retryCount?: number;
+  useDeviceLocale?: boolean;
   debug?: boolean;
-  fetch?: typeof fetch;
+  i18nextOptions?: Partial<InitOptions>;
 }
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `project` | `string` | Required | Project identifier in `org/project` format |
-| `defaultLocale` | `string` | `"en"` | Fallback locale passed to `@better-i18n/core` |
-| `cdnBaseUrl` | `string` | `"https://cdn.better-i18n.com"` | Custom CDN URL |
-| `cacheExpiration` | `number` | `86400000` (24h) | In-memory cache TTL in milliseconds |
+| `i18n` | `i18n` | Required | i18next instance (call `.use(initReactI18next)` before passing) |
+| `defaultLocale` | `string` | `"en"` | Fallback locale |
 | `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter (auto: MMKV → AsyncStorage → in-memory) |
+| `staticData` | `Record<string, Messages>` | — | Bundled translations for airplane mode first launch |
+| `fetchTimeout` | `number` | `10000` | CDN fetch timeout in milliseconds |
+| `retryCount` | `number` | `1` | Retry attempts on CDN failure |
+| `useDeviceLocale` | `boolean` | `false` | Auto-detect device locale via expo-localization |
 | `debug` | `boolean` | `false` | Enable debug logging to console |
-| `fetch` | `typeof fetch` | `globalThis.fetch` | Custom fetch function (useful for testing) |
+| `i18nextOptions` | `Partial<InitOptions>` | `{}` | Additional i18next init options (e.g., `defaultNS`, `ns`, `react`). Merged with SDK defaults. |
 
 </AccordionItem>
 </Accordion>
+
+### Return Value
+
+<Accordion>
+<AccordionItem title="BetterI18nResult">
+
+```ts
+interface BetterI18nResult {
+  /** Core instance for accessing manifest, languages, etc. */
+  core: I18nCore;
+  /** Available languages from the CDN manifest */
+  languages: LanguageOption[];
+}
+```
+
+**`core`** — The `@better-i18n/core` instance. Use it to access the raw manifest, fetch messages for specific locales, or interact with the CDN directly.
+
+**`languages`** — Array of available languages from the CDN manifest. Use this to build a dynamic language picker.
+
+</AccordionItem>
+</Accordion>
+
+<Callout type="warning">
+  Do **not** call `i18n.init()` separately — `initBetterI18n` handles initialization internally. Use `i18nextOptions` to pass custom i18next settings.
+</Callout>
 
 ---
 
@@ -138,82 +164,14 @@ import { createMemoryStorage } from '@better-i18n/expo';
 
 const storage = createMemoryStorage();
 
-i18n.init({
-  backend: {
-    project: 'acme/app',
-    storage,
-  },
-});
-```
-
-**Returns:** `TranslationStorage`
-
-</AccordionItem>
-
-<AccordionItem title="resolveStorage(userStorage?)">
-
-Auto-detects the best available storage. If a custom storage is provided, it's returned as-is. Otherwise, tries MMKV first, then AsyncStorage, then falls back to in-memory.
-
-```ts
-import { resolveStorage } from '@better-i18n/expo';
-
-const storage = resolveStorage();
-// MMKV → AsyncStorage → in-memory Map
-```
-
-**Priority:** `react-native-mmkv` → `@react-native-async-storage/async-storage` → in-memory `Map`
-
-**Returns:** `TranslationStorage`
-
-</AccordionItem>
-</Accordion>
-
----
-
-## Convenience Helper
-
-<Accordion>
-<AccordionItem title="initBetterI18n(options)">
-
-One-liner setup helper that configures i18next with the `BetterI18nBackend`.
-
-```ts
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import { initBetterI18n } from '@better-i18n/expo';
-
 await initBetterI18n({
-  project: 'acme/my-app',
-  i18n: i18n.use(initReactI18next),
-  useDeviceLocale: true,
+  project: 'acme/app',
+  i18n,
+  storage,
 });
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `project` | `string` | Required | Project identifier in `org/project` format |
-| `i18n` | `i18n` | Required | i18next instance |
-| `defaultLocale` | `string` | `"en"` | Fallback locale |
-| `cacheExpiration` | `number` | `86400000` (24h) | Cache TTL in milliseconds |
-| `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter |
-| `useDeviceLocale` | `boolean` | `false` | Auto-detect device locale via expo-localization |
-| `debug` | `boolean` | `false` | Enable debug logging |
-| `i18nextOptions` | `Partial<InitOptions>` | `{}` | Additional i18next init options (e.g., `defaultNS`, `ns`, `react`). Merged with SDK defaults. |
-
-**Returns:** `Promise<BetterI18nResult>` — resolves when i18next is initialized
-
-```ts
-interface BetterI18nResult {
-  /** Core instance for accessing manifest, languages, etc. */
-  core: I18nCore;
-  /** Available languages from the CDN manifest */
-  languages: LanguageOption[];
-}
-```
-
-<Callout type="warning">
-  Do **not** call `i18n.init()` separately — `initBetterI18n` handles initialization internally. Use `i18nextOptions` to pass custom i18next settings.
-</Callout>
+**Returns:** `TranslationStorage`
 
 </AccordionItem>
 </Accordion>
@@ -223,33 +181,57 @@ interface BetterI18nResult {
 ## Types
 
 <Accordion>
-<AccordionItem title="Exported Types">
+<AccordionItem title="LanguageOption">
+
+Represents an available language from the CDN manifest. Returned in the `languages` array from `initBetterI18n`.
 
 ```ts
-import type {
-  // Backend options
-  BetterI18nBackendOptions,
-
-  // Storage
-  TranslationStorage,
-  CacheMeta,
-
-  // Helper options
-  InitBetterI18nOptions,
-} from '@better-i18n/expo';
+interface LanguageOption {
+  /** Language code — "en", "tr", "az" */
+  code: string;
+  /** English name — "English", "Turkish" */
+  name?: string;
+  /** Native name — "English", "Türkçe" */
+  nativeName?: string;
+  /** URL to flag image (configured in dashboard) */
+  flagUrl?: string;
+  /** true for the source language */
+  isDefault?: boolean;
+}
 ```
 
 </AccordionItem>
 
-<AccordionItem title="CacheMeta">
+<AccordionItem title="I18nCore">
 
-Metadata stored alongside cached translations.
+The core instance returned in `BetterI18nResult`. Provides low-level access to the CDN manifest and translation fetching.
 
 ```ts
-interface CacheMeta {
-  /** Timestamp when translations were cached */
-  cachedAt: number;
+interface I18nCore {
+  getLanguages(): Promise<LanguageOption[]>;
+  getMessages(locale: string): Promise<Messages>;
+  getManifest(): Promise<ManifestResponse>;
 }
+```
+
+</AccordionItem>
+
+<AccordionItem title="Exported Types">
+
+```ts
+import type {
+  // Primary API
+  InitBetterI18nOptions,
+  BetterI18nResult,
+
+  // Storage
+  TranslationStorage,
+
+  // Core types
+  LanguageOption,
+  ManifestResponse,
+  I18nCore,
+} from '@better-i18n/expo';
 ```
 
 </AccordionItem>

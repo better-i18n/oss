@@ -55,22 +55,18 @@ function extractNamespace(
 }
 
 /**
- * i18next backend plugin for better-i18n CDN with offline caching.
- *
- * Implements a network-first strategy:
- * 1. Check in-memory cache (TtlCache) — avoids redundant fetches within a session
- * 2. Fetch from CDN — always get fresh translations
- * 3. On CDN failure, fall back to persistent cache (AsyncStorage)
+ * @deprecated Use `initBetterI18n` instead. The backend plugin uses lazy-loading
+ * which can cause a brief English flash when switching languages.
+ * `initBetterI18n` pre-loads translations before switching.
  *
  * @example
  * ```ts
- * import i18n from 'i18next';
- * import { BetterI18nBackend } from '@better-i18n/expo';
+ * // Instead of BetterI18nBackend, use:
+ * import { initBetterI18n } from '@better-i18n/expo';
  *
- * i18n.use(BetterI18nBackend).init({
- *   backend: { project: 'acme/my-app' },
- *   lng: 'en',
- *   fallbackLng: 'en',
+ * await initBetterI18n({
+ *   project: 'acme/my-app',
+ *   i18n: i18n.use(initReactI18next),
  * });
  * ```
  */
