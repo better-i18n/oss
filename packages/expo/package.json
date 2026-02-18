@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/expo",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Better i18n backend plugin for i18next in Expo/React Native",
   "license": "MIT",
   "repository": {
