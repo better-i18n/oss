@@ -1,5 +1,57 @@
 # @better-i18n/mcp
 
+## 0.13.0
+
+### Minor Changes
+
+- 9620847: feat(getTranslations): Remove `limit: 0` ("fetch all") and add pagination metadata
+
+  **Breaking change:** `limit: 0` is no longer accepted. Valid range is now `1–200`.
+  This prevents token-limit crashes (e.g., 10K+ keys = 4M chars = exceeds 1M token limit).
+
+  **New response fields:**
+  - `returned`: number of keys in this response (after all filters)
+  - `total`: total keys in DB matching namespace/search/key filters (before in-memory status filter)
+  - `hasMore`: `true` when `total > limit` — use narrower filters to get specific keys
+
+  **Example response:**
+
+  ```json
+  {
+    "returned": 100,
+    "total": 10483,
+    "hasMore": true,
+    "keys": [...]
+  }
+  ```
+
+  **Migration:** Replace `limit: 0` with targeted filters — use `namespaces`, `search`, `keys[]`,
+  or `status: "missing"` to narrow results instead of fetching everything.
+
+### Patch Changes
+
+- 9620847: fix(updateKeys): Use `id` (UUID) instead of deprecated `k`/`ns` fields
+
+  The `updateKeys` tool was sending `k` (key name) and `ns` (namespace) fields to the API, but the API requires `id` (UUID) since v0.8. This caused a `BAD_REQUEST: id Required` validation error.
+
+  **Breaking change for `updateKeys` tool users:** You must now provide `id` (UUID) instead of `k`/`ns`. Get the UUID from `getAllTranslations` or `listKeys` response first.
+
+  **Before (broken):**
+
+  ```json
+  { "t": [{ "k": "auth.login.title", "ns": "auth", "l": "tr", "t": "Giriş" }] }
+  ```
+
+  **After (correct):**
+
+  ```json
+  {
+    "t": [
+      { "id": "550e8400-e29b-41d4-a716-446655440000", "l": "tr", "t": "Giriş" }
+    ]
+  }
+  ```
+
 ## 0.12.0
 
 ### Minor Changes
