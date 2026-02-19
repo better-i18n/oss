@@ -66,8 +66,6 @@ export const updateKeys: Tool = {
         const result = await client.mcp.updateKeys.mutate({
           orgSlug: workspaceId,
           projectSlug,
-          // @ts-expect-error -- mcp-types<0.9.1 has stale UpdateKeysInput (uses k/ns). API uses id since v0.8.
-          // Remove when @better-i18n/mcp-types@0.9.1 is published.
           t: input.t,
         });
 
