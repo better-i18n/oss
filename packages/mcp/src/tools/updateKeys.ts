@@ -2,8 +2,10 @@
  * updateKeys MCP Tool
  *
  * Updates source text and/or target translations for one or more keys.
- * Uses compact schema matching the API: t=[{k, ns, l, t, s, st, nc}].
- * Each entry = one language update for one key. s=true for source text.
+ * Uses UUID-based schema matching the API: t=[{id, l, t, s, st}].
+ *
+ * IMPORTANT: id (UUID) is required — get it from getAllTranslations or listKeys response.
+ * The old k/ns/nc format has been removed. Use id exclusively.
  */
 
 import { z } from "zod";
@@ -15,24 +17,14 @@ import {
 } from "../base-tool.js";
 import type { Tool } from "../types/index.js";
 
-const namespaceContextSchema = z.object({
-  description: z.string().optional(),
-  team: z.string().optional(),
-  domain: z.string().optional(),
-  aiPrompt: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-}).optional();
-
 const inputSchema = projectSchema.extend({
   t: z.array(
     z.object({
-      k: z.string().describe("Key name (e.g., 'submit_button')"),
-      ns: z.string().optional().describe("Namespace (default: 'default')"),
-      l: z.string().describe("Language code (e.g., 'en', 'tr', 'de')"),
+      id: z.string().describe("Translation key UUID — get from getAllTranslations or listKeys response (id field)"),
+      l: z.string().describe("Language code (e.g., 'tr', 'de')"),
       t: z.string().describe("Translation text"),
       s: z.boolean().optional().describe("true if updating source language text"),
       st: z.string().optional().describe("Translation status (e.g., 'approved')"),
-      nc: namespaceContextSchema,
     }),
   ).min(1),
 });
@@ -41,7 +33,7 @@ export const updateKeys: Tool = {
   definition: {
     name: "updateKeys",
     description:
-      "Update translations. Each entry updates ONE language for ONE key. Set s=true to update the source text.",
+      "Update translations for existing keys. REQUIRED: Get key UUIDs first via getAllTranslations or listKeys (id field). Each entry updates ONE language for ONE key. Set s=true to update the source text.",
     inputSchema: {
       type: "object",
       properties: {
@@ -52,25 +44,13 @@ export const updateKeys: Tool = {
           items: {
             type: "object",
             properties: {
-              k: { type: "string", description: "Key name (e.g., 'submit_button')" },
-              ns: { type: "string", description: "Namespace (default: 'default')" },
-              l: { type: "string", description: "Language code (e.g., 'en', 'tr', 'de')" },
+              id: { type: "string", description: "Translation key UUID (required). Get from getAllTranslations or listKeys response." },
+              l: { type: "string", description: "Language code (e.g., 'tr', 'de')" },
               t: { type: "string", description: "Translation text" },
               s: { type: "boolean", description: "true if updating source language text" },
               st: { type: "string", description: "Translation status (e.g., 'approved')" },
-              nc: {
-                type: "object",
-                description: "Optional context for the namespace (description, team, domain, aiPrompt, tags). Applied once per namespace.",
-                properties: {
-                  description: { type: "string", description: "What this namespace is about" },
-                  team: { type: "string", description: "Team owning this namespace" },
-                  domain: { type: "string", description: "Business domain (e.g., 'auth', 'billing')" },
-                  aiPrompt: { type: "string", description: "Custom AI prompt for translations in this namespace" },
-                  tags: { type: "array", items: { type: "string" }, description: "Tags for categorization" },
-                },
-              },
             },
-            required: ["k", "l", "t"],
+            required: ["id", "l", "t"],
           },
         },
       },
@@ -86,6 +66,8 @@ export const updateKeys: Tool = {
         const result = await client.mcp.updateKeys.mutate({
           orgSlug: workspaceId,
           projectSlug,
+          // @ts-expect-error -- mcp-types<0.9.1 has stale UpdateKeysInput (uses k/ns). API uses id since v0.8.
+          // Remove when @better-i18n/mcp-types@0.9.1 is published.
           t: input.t,
         });
 

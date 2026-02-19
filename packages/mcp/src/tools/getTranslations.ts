@@ -13,7 +13,12 @@
  * - status: Filter by translation status ("missing", "draft", "approved", "all")
  * - namespaces: Filter by namespace(s)
  * - keys: Fetch specific keys by exact name
- * - limit: Max keys to return (default: 100, safety cap: 200)
+ * - limit: Max keys to return (1–200, default 100)
+ *
+ * RESPONSE INCLUDES PAGINATION METADATA:
+ * - returned: number of keys in this response
+ * - total: total keys in DB matching your filters (before status filter)
+ * - hasMore: true when total > limit — use narrower filters to get specific keys
  *
  * EXAMPLES:
  * - Find "login" in source: { project: "org/project", search: "login" }
@@ -39,7 +44,7 @@ const inputSchema = projectSchema.extend({
   namespaces: z.array(z.string()).optional(),
   keys: z.array(z.string()).optional(),
   status: z.enum(["missing", "draft", "approved", "all"]).optional(),
-  limit: z.number().min(0).max(10000).optional(),
+  limit: z.number().min(1).max(200).optional(),
 });
 
 export const getTranslations: Tool = {
@@ -54,11 +59,14 @@ SEARCH + FILTER:
 - search: Text to search for (in source text or specified languages)
 - languages: Languages to search in AND return translations for
 - status: Filter by translation status ("missing", "draft", "approved", "all")
-
-FILTER OPTIONS:
 - namespaces: Filter by namespace(s)
 - keys: Fetch specific keys by exact name
-- limit: Max keys to return (default: 100, safety cap: 200)
+- limit: Max keys (1–200, default 100)
+
+RESPONSE METADATA:
+- returned: keys in this response (after all filters)
+- total: DB count before in-memory status filter
+- hasMore: true when total > limit — narrow your filters to get specific results
 
 EXAMPLES:
 - Find "login" in source: { search: "login" }
@@ -103,7 +111,7 @@ Response includes namespaceDetails: a map of namespace metadata (name, keyCount,
         limit: {
           type: "number",
           description:
-            "Maximum number of keys to return (default: 100, safety cap: 200). Set to 0 for all (capped at 200).",
+            "Max keys to return (1–200, default 100). Check 'returned', 'total', 'hasMore' in response to understand result size. Use narrower filters to get specific keys.",
         },
       },
       required: ["project"],
