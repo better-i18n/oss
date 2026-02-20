@@ -17,7 +17,7 @@ const inputSchema = projectSchema.extend({
   modelSlug: z.string().min(1),
   name: z.string().min(1).max(100).regex(/^[a-z_][a-z0-9_]*$/),
   displayName: z.string().min(1).max(200),
-  type: z.enum(["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select", "relation"]).default("text"),
+  type: z.enum(["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "relation"]).default("text"),
   localized: z.boolean().default(false),
   required: z.boolean().default(false),
   placeholder: z.string().max(500).optional(),
@@ -50,8 +50,8 @@ export const addField: Tool = {
         },
         type: {
           type: "string",
-          enum: ["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select", "relation"],
-          description: "Field type (default: text)",
+          enum: ["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "relation"],
+          description: "Field type (default: text). For user fields, use 'relation' with fieldConfig.targetModel = 'users'",
         },
         localized: {
           type: "boolean",

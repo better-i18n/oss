@@ -17,7 +17,7 @@ const inputSchema = projectSchema.extend({
   modelSlug: z.string().min(1),
   fieldName: z.string().min(1),
   displayName: z.string().min(1).max(200).optional(),
-  type: z.enum(["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select", "relation"]).optional(),
+  type: z.enum(["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "relation"]).optional(),
   localized: z.boolean().optional(),
   required: z.boolean().optional(),
   placeholder: z.string().max(500).optional(),
@@ -49,8 +49,8 @@ export const updateField: Tool = {
         },
         type: {
           type: "string",
-          enum: ["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select", "relation"],
-          description: "Updated field type",
+          enum: ["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "relation"],
+          description: "Updated field type. For user fields, use 'relation' with fieldConfig.targetModel = 'users'",
         },
         localized: {
           type: "boolean",

@@ -16,7 +16,7 @@ import type { Tool } from "../types/index.js";
 const fieldDefinition = z.object({
   name: z.string().min(1).max(100).regex(/^[a-z_][a-z0-9_]*$/),
   displayName: z.string().min(1).max(200),
-  type: z.enum(["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select", "relation"]).default("text"),
+  type: z.enum(["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "relation"]).default("text"),
   localized: z.boolean().default(false),
   required: z.boolean().default(false),
   placeholder: z.string().max(500).optional(),
@@ -42,8 +42,9 @@ export const createContentModel: Tool = {
     name: "createContentModel",
     description: `Create a new content model with optional field definitions.
 
-Field types: text, textarea, richtext, number, boolean, date, datetime, enum, media, user_select, relation.
+Field types: text, textarea, richtext, number, boolean, date, datetime, enum, media, relation.
 For relation fields, use fieldConfig.targetModel to specify the related model slug.
+For user fields, use 'relation' with fieldConfig.targetModel = 'users'.
 
 EXAMPLE:
 {
@@ -92,7 +93,7 @@ EXAMPLE:
             properties: {
               name: { type: "string", description: "Field name (snake_case)" },
               displayName: { type: "string", description: "Display name" },
-              type: { type: "string", enum: ["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "user_select", "relation"], description: "Field type" },
+              type: { type: "string", enum: ["text", "textarea", "richtext", "number", "boolean", "date", "datetime", "enum", "media", "relation"], description: "Field type. For user fields, use 'relation' with fieldConfig.targetModel = 'users'" },
               localized: { type: "boolean", description: "Whether field is localized per language" },
               required: { type: "boolean", description: "Whether field is required" },
               placeholder: { type: "string", description: "Placeholder text" },

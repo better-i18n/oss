@@ -74,27 +74,41 @@ claude mcp add better-i18n-content \
   -- npx -y @better-i18n/mcp-content
 ```
 
-## Available Tools
+## Available Tools (17)
 
-All tools require `orgSlug` and `projectSlug` parameters to identify the project.
+All tools require a `project` parameter (format: `"org-slug/project-slug"`) to identify the project.
 
-### Read Tools
+### Schema Management
 
 | Tool | Description |
 | --- | --- |
-| `listContentModels` | List all content models with entry counts and field definitions |
+| `createContentModel` | Create a new content model with optional field definitions |
+| `updateContentModel` | Update a content model's display name, description, or settings |
+| `deleteContentModel` | Permanently delete a content model and all its entries |
 | `getContentModel` | Get a model's details including all custom field definitions |
-| `listContentEntries` | Paginated listing with search, status, and language filters |
-| `getContentEntry` | Full entry with all translations, versions, and custom fields |
+| `listContentModels` | List all content models with entry counts and field definitions |
+| `addField` | Add a custom field to a content model |
+| `updateField` | Update a custom field's properties |
+| `removeField` | Remove a custom field from a content model |
+| `reorderFields` | Reorder custom fields within a content model |
 
-### Write Tools
+### Entry CRUD
 
 | Tool | Description |
 | --- | --- |
 | `createContentEntry` | Create entry with title, body (Markdown), tags, and custom fields |
-| `updateContentEntry` | Update translations, metadata, or custom field values |
-| `publishContentEntry` | Set entry status to published and approve translations |
+| `updateContentEntry` | Update translations, metadata, or custom fields (3 modes: single-language, multi-language, metadata-only) |
 | `deleteContentEntry` | Permanently delete a content entry |
+| `getContentEntry` | Full entry with all translations, versions, and custom fields |
+| `listContentEntries` | Paginated listing with search, status, and language filters. Use `modelSlug: "users"` to list team members |
+| `duplicateContentEntry` | Duplicate an existing content entry |
+
+### Publishing
+
+| Tool | Description |
+| --- | --- |
+| `publishContentEntry` | Set entry status to published and approve translations |
+| `bulkPublishEntries` | Publish multiple entries at once |
 
 ## Example Prompts
 

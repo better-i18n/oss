@@ -37,6 +37,9 @@ export const listContentEntries: Tool = {
     name: "listContentEntries",
     description: `List content entries with filtering and pagination.
 
+BUILT-IN MODELS:
+- "users": Lists project team members (virtual model). Returns member name, email, role, and avatar.
+
 FILTER OPTIONS:
 - modelSlug: Filter by content model (e.g., "blog-posts")
 - search: Search in title or excerpt
@@ -50,6 +53,7 @@ PAGINATION:
 
 EXAMPLES:
 - All blog posts: { modelSlug: "blog-posts" }
+- Team members: { modelSlug: "users" }
 - Published only: { status: "published" }
 - Search: { search: "getting started" }
 - Missing Turkish: { missingLanguage: "tr" }

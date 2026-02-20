@@ -44,11 +44,12 @@ export const updateContentEntry: Tool = {
     name: "updateContentEntry",
     description: `Update a content entry's translation and/or metadata.
 
-Two modes:
+Three modes:
 1. Single language: provide languageCode + top-level fields (title, bodyMarkdown, etc.)
 2. Multi-language: provide translations map — { langCode: { title, bodyMarkdown, ... } }
+3. Metadata-only: omit both languageCode and translations to update only metadata (slug, status, customFields)
 
-Both can be combined. At least one of languageCode or translations is required.
+Modes 1 & 2 can be combined. All fields are optional — send only what changed.
 
 EXAMPLE multi-language:
 {
@@ -57,6 +58,13 @@ EXAMPLE multi-language:
     "tr": { "title": "Merhaba Dünya", "bodyMarkdown": "# Merhaba" },
     "de": { "title": "Hallo Welt" }
   }
+}
+
+EXAMPLE metadata-only:
+{
+  "entryId": "...",
+  "status": "published",
+  "slug": "new-slug"
 }`,
     inputSchema: {
       type: "object",

@@ -15,7 +15,8 @@ import {
 
 import { createBetterI18nClient } from "./client.js";
 import type { ToolDefinition } from "./types/index.js";
-import { addLanguage } from "./tools/addLanguage.js";
+import { proposeLanguages } from "./tools/proposeLanguages.js";
+import { proposeLanguageEdits } from "./tools/proposeLanguageEdits.js";
 import { createKeys } from "./tools/createKeys.js";
 import { deleteKeys } from "./tools/deleteKeys.js";
 import { getPendingChanges } from "./tools/getPendingChanges.js";
@@ -90,7 +91,8 @@ export function createConfiguredServer(
     tools: [
       annotate(listProjects.definition, readOnly),
       annotate(getProject.definition, readOnly),
-      annotate(addLanguage.definition, write),
+      annotate(proposeLanguages.definition, write),
+      annotate(proposeLanguageEdits.definition, write),
       annotate(listKeys.definition, readOnly),
       annotate(getTranslations.definition, readOnly),
       annotate(createKeys.definition, write),
@@ -117,8 +119,11 @@ export function createConfiguredServer(
         case "getProject":
           result = await getProject.execute(apiClient, args);
           break;
-        case "addLanguage":
-          result = await addLanguage.execute(apiClient, args);
+        case "proposeLanguages":
+          result = await proposeLanguages.execute(apiClient, args);
+          break;
+        case "proposeLanguageEdits":
+          result = await proposeLanguageEdits.execute(apiClient, args);
           break;
         case "listKeys":
           result = await listKeys.execute(apiClient, args);
