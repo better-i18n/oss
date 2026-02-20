@@ -1,5 +1,13 @@
 # @better-i18n/mcp
 
+## 0.14.0
+
+### Minor Changes
+
+- 675ad63: - Replace `addLanguage` tool with `proposeLanguages` and `proposeLanguageEdits`
+  - `proposeLanguages`: Batch-add up to 50 target languages with optional status (active/draft)
+  - `proposeLanguageEdits`: Batch-update language statuses (active/draft/archived)
+
 ## 0.13.0
 
 ### Minor Changes
