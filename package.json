@@ -68,6 +68,6 @@
     ]
   },
   "dependencies": {
-    "@better-i18n/mcp-types": "^0.7.1"
+    "@better-i18n/mcp-types": "^0.10.0"
   }
 }

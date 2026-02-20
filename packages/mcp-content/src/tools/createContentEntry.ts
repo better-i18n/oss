@@ -92,7 +92,7 @@ EXAMPLE with multi-language:
         },
         customFields: {
           type: "object",
-          description: "Custom field values as { fieldName: value }",
+          description: "Custom field values as { fieldName: value }. For relation fields, pass the related entry ID. For media fields, pass the URL. For enum fields, pass one of the allowed values. For user fields (relation with targetModel='users'), pass the member ID from listContentEntries({ modelSlug: 'users' }).",
         },
         translations: {
           type: "object",
