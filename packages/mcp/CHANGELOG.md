@@ -1,5 +1,27 @@
 # @better-i18n/mcp
 
+## 0.15.0
+
+### Minor Changes
+
+- 91bd5e0: Add `fields` parameter to `listKeys` tool for token-efficient coverage queries.
+
+  **New parameter:** `fields` — controls which fields are returned per key.
+  - `"translatedLanguageCount"` (`tlc`) — returns count as integer instead of full array. Significantly reduces tokens for large projects.
+  - `"translatedLanguages"` (`tl`) — full list of translated language codes (existing behavior, now opt-in)
+  - `"translations"` (`tr`) — actual translation text
+  - `"id"`, `"sourceText"` — included by default
+
+  **Default changed:** Fields default is now `["id", "sourceText"]` — `translatedLanguages` must be requested explicitly.
+
+  **Example:**
+
+  ```json
+  { "project": "org/project", "fields": ["id", "translatedLanguageCount"] }
+  ```
+
+  Bumps `@better-i18n/mcp-types` to `^0.11.0`.
+
 ## 0.14.0
 
 ### Minor Changes
