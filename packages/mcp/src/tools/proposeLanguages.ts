@@ -18,7 +18,7 @@ const inputSchema = projectSchema.extend({
   languages: z
     .array(
       z.object({
-        languageCode: z.string().min(2).max(5),
+        languageCode: z.string().min(2).max(10),
         status: z.enum(["active", "draft"]).default("active").optional(),
       }),
     )
@@ -30,7 +30,7 @@ export const proposeLanguages: Tool = {
   definition: {
     name: "proposeLanguages",
     description:
-      "Add one or more target languages to the project. Use ISO 639-1 codes (e.g. 'fr', 'ja', 'de'). Already-existing languages are silently skipped.",
+      "Add one or more target languages to the project. Use ISO 639-1 codes (e.g. 'fr', 'ja', 'de') or BCP 47 locale codes (e.g. 'zh-Hans', 'pt-BR'). Already-existing languages are silently skipped.",
     inputSchema: {
       type: "object",
       properties: {
@@ -42,7 +42,7 @@ export const proposeLanguages: Tool = {
           items: {
             type: "object",
             properties: {
-              languageCode: { type: "string", description: "ISO 639-1 code (e.g. 'fr', 'de', 'ja')" },
+              languageCode: { type: "string", description: "ISO 639-1 code (e.g. 'fr', 'de', 'ja') or BCP 47 locale (e.g. 'zh-Hans', 'pt-BR')" },
               status: {
                 type: "string",
                 enum: ["active", "draft"],
