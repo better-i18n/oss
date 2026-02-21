@@ -62,11 +62,11 @@ const result = await client.getEntries("blog-posts", {
     {
       "slug": "hello-world",
       "title": "Hello World",
-      "excerpt": "Our first blog post...",
       "publishedAt": "2026-01-15T10:00:00Z",
-      "featuredImage": "https://cdn.example.com/hello.jpg",
-      "tags": ["announcement"],
-      "author": { "name": "Ali Osman", "image": null }
+      "customFields": {
+        "category": "Engineering",
+        "readingTime": "5 min"
+      }
     }
   ],
   "total": 24,
@@ -120,6 +120,24 @@ while (hasMore) {
 }
 ```
 
+### Field Selection
+
+Use `fields` to request only the fields you need. When omitted, all fields are returned.
+
+```typescript
+// List with only slug and title (faster, less data)
+const { items } = await client.getEntries("blog-posts", {
+  fields: ["title"],
+});
+
+// Include body for excerpt previews
+const { items } = await client.getEntries("blog-posts", {
+  fields: ["title", "body", "category"],
+});
+```
+
+Fields that are not requested are omitted from the response. `slug` and `publishedAt` are always included.
+
 ## Single Entry
 
 Fetch a full content entry by slug. This returns all fields including the body content, custom fields, and metadata.
@@ -140,32 +158,32 @@ const post = await client.getEntry("blog-posts", "hello-world", {
   "publishedAt": "2026-01-15T10:00:00Z",
   "sourceLanguage": "en",
   "availableLanguages": ["en", "tr", "de"],
-  "featuredImage": "https://cdn.example.com/hello.jpg",
-  "tags": ["announcement"],
-  "author": { "name": "Ali Osman", "image": null },
   "customFields": {
     "readingTime": "5 min",
     "category": "Engineering"
   },
   "title": "Hello World",
-  "excerpt": "Our first blog post...",
-  "body": [],
-  "bodyHtml": "<p>Welcome to our blog...</p>",
-  "bodyMarkdown": "Welcome to our blog...",
-  "metaTitle": "Hello World | Acme Blog",
-  "metaDescription": "Our first blog post about..."
+  "body": "## Welcome\n\nWelcome to our blog..."
 }
 ```
 
-### Body Formats
+The `body` field is always a **Markdown string**. Use a Markdown renderer like `react-markdown` or `marked` to display it.
 
-Each entry provides the body content in multiple formats:
+### Field Selection
 
-| Field | Format | Use Case |
-| --- | --- | --- |
-| `body` | Plate JSON | Rich text editor |
-| `bodyHtml` | HTML string | Direct rendering |
-| `bodyMarkdown` | Markdown string | Markdown renderers, AI processing |
+Request only the fields you need. Base fields (`id`, `slug`, `status`, `publishedAt`, `sourceLanguage`, `availableLanguages`) are always included.
+
+```typescript
+// Only fetch title and body
+const post = await client.getEntry("blog-posts", "hello-world", {
+  fields: ["title", "body"],
+});
+
+// Only fetch specific custom fields
+const post = await client.getEntry("blog-posts", "hello-world", {
+  fields: ["title", "category", "readingTime"],
+});
+```
 
 ### Language Fallback
 
@@ -183,7 +201,7 @@ Check `availableLanguages` to see which translations exist.
 
 ## Custom Fields
 
-Content models can define custom fields beyond the base fields (title, slug, body, excerpt). Custom field values are returned in the `customFields` object.
+Content models can define custom fields beyond the base fields (title, slug, body). Custom field values are returned in the `customFields` object.
 
 ```typescript
 const post = await client.getEntry("blog-posts", "hello-world");

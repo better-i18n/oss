@@ -89,6 +89,8 @@ const result = await client.getEntries("blog-posts", {
 | `order` | `"asc" \| "desc"` | `"desc"` | Sort direction |
 | `page` | `number` | `1` | Page number (1-based) |
 | `limit` | `number` | `50` | Entries per page (1–100) |
+| `fields` | `string[]` | all fields | Field names to include (e.g. `["title", "body", "category"]`) |
+| `expand` | `string[]` | — | Relation field names to expand |
 
 </AccordionItem>
 </Accordion>
@@ -108,13 +110,12 @@ const result = await client.getEntries("blog-posts", {
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `slug` | `string` | URL-safe identifier |
+| `slug` | `string` | URL-safe identifier (always included) |
+| `publishedAt` | `string \| null` | ISO 8601 publish date (always included) |
 | `title` | `string` | Entry title |
-| `excerpt` | `string \| null` | Short summary |
-| `publishedAt` | `string \| null` | ISO 8601 publish date |
-| `featuredImage` | `string \| null` | Image URL |
-| `tags` | `string[]` | Tag list |
-| `author` | `{ name: string; image: string \| null } \| null` | Author info |
+| `body` | `string \| null` | Markdown body (only when requested via `fields`) |
+| `customFields` | `Record<string, string \| null>` | Custom field values (only requested fields) |
+| `relations` | `Record<string, RelationValue \| null>` | Expanded relations (only when `expand` is used) |
 
 </AccordionItem>
 </Accordion>
@@ -137,7 +138,7 @@ const post = await client.getEntry("blog-posts", "hello-world", {
 | --- | --- | --- | --- |
 | `modelSlug` | `string` | Yes | Content model slug |
 | `entrySlug` | `string` | Yes | Entry slug |
-| `options` | `GetEntryOptions` | No | Language selection |
+| `options` | `GetEntryOptions` | No | Language, field selection |
 
 <Accordion>
 <AccordionItem title="GetEntryOptions">
@@ -145,6 +146,8 @@ const post = await client.getEntry("blog-posts", "hello-world", {
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
 | `language` | `string` | source language | Language code for localized content |
+| `fields` | `string[]` | all fields | Field names to include (e.g. `["title", "body"]`) |
+| `expand` | `string[]` | — | Relation field names to expand |
 
 </AccordionItem>
 </Accordion>
@@ -156,6 +159,8 @@ const post = await client.getEntry("blog-posts", "hello-world", {
 <Accordion>
 <AccordionItem title="ContentEntry<CF>">
 
+Base fields are always included regardless of `fields` option:
+
 | Field | Type | Description |
 | --- | --- | --- |
 | `id` | `string` | Unique entry ID |
@@ -164,17 +169,15 @@ const post = await client.getEntry("blog-posts", "hello-world", {
 | `publishedAt` | `string \| null` | ISO 8601 publish date |
 | `sourceLanguage` | `string` | Source language code |
 | `availableLanguages` | `string[]` | Languages with translations |
-| `featuredImage` | `string \| null` | Image URL |
-| `tags` | `string[]` | Tag list |
-| `author` | `{ name: string; image: string \| null } \| null` | Author info |
-| `customFields` | `CF` | Custom field values (typed via generic) |
+
+Selectable fields (omitted when not in `fields`):
+
+| Field | Type | Description |
+| --- | --- | --- |
 | `title` | `string` | Localized title |
-| `excerpt` | `string \| null` | Localized excerpt |
-| `body` | `object \| null` | Plate JSON (rich text editor format) |
-| `bodyHtml` | `string \| null` | HTML content |
-| `bodyMarkdown` | `string \| null` | Markdown content |
-| `metaTitle` | `string \| null` | SEO title |
-| `metaDescription` | `string \| null` | SEO description |
+| `body` | `string \| null` | Localized body as Markdown |
+| `customFields` | `CF` | Custom field values (typed via generic) |
+| `relations` | `Record<string, RelationValue \| null>` | Expanded relations (only when `expand` is used) |
 
 </AccordionItem>
 </Accordion>
@@ -187,8 +190,14 @@ The SDK calls these REST endpoints under the hood:
 
 | Method | Endpoint | SDK Method |
 | --- | --- | --- |
-| `GET` | `/api/v1/content/{org}/{project}/models` | `getModels()` |
-| `GET` | `/api/v1/content/{org}/{project}/models/{model}/entries` | `getEntries()` |
-| `GET` | `/api/v1/content/{org}/{project}/models/{model}/entries/{slug}` | `getEntry()` |
+| `GET` | `/v1/content/{org}/{project}/models` | `getModels()` |
+| `GET` | `/v1/content/{org}/{project}/models/{model}/entries` | `getEntries()` |
+| `GET` | `/v1/content/{org}/{project}/models/{model}/entries/{slug}` | `getEntry()` |
 
 All requests use the `x-api-key` header for authentication.
+
+### Query Parameters
+
+**`getEntries`** accepts: `language`, `status`, `sort`, `order`, `page`, `limit`, `fields`, `expand`
+
+**`getEntry`** accepts: `language`, `fields`, `expand`

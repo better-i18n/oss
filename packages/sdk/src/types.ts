@@ -48,21 +48,13 @@ export interface ContentEntry<CF extends Record<string, string | null> = Record<
   publishedAt: string | null;
   sourceLanguage: string;
   availableLanguages: string[];
-  featuredImage: string | null;
-  tags: string[];
-  author: { name: string; image: string | null } | null;
   customFields: CF;
   /** Expanded relation fields (only present when expand is used) */
   relations?: Record<string, RelationValue | null>;
   // Localized content
   title: string;
-  excerpt: string | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  body: Record<string, any> | null;
-  bodyHtml: string | null;
-  bodyMarkdown: string | null;
-  metaTitle: string | null;
-  metaDescription: string | null;
+  /** Rich text body as Markdown string. */
+  body: string | null;
 }
 
 /** Entry status filter values. */
@@ -72,11 +64,11 @@ export type ContentEntryStatus = "draft" | "published" | "archived";
 export interface ContentEntryListItem {
   slug: string;
   title: string;
-  excerpt: string | null;
   publishedAt: string | null;
-  featuredImage: string | null;
-  tags: string[];
-  author: { name: string; image: string | null } | null;
+  /** Markdown body — only present when `fields` includes `"body"`. */
+  body?: string | null;
+  /** Custom fields — only present when `fields` includes specific field names. */
+  customFields?: Record<string, string | null>;
   /** Expanded relation fields (only present when expand is used) */
   relations?: Record<string, RelationValue | null>;
 }
@@ -116,6 +108,8 @@ export interface ListEntriesOptions {
   page?: number;
   /** Max entries per page (1-100). Defaults to 50. */
   limit?: number;
+  /** Fields to include in the response (e.g., ["title", "body", "category"]). Returns all fields when omitted. */
+  fields?: string[];
   /** Relation field names to expand (e.g., ["category", "author"]) */
   expand?: string[];
 }
@@ -124,6 +118,8 @@ export interface ListEntriesOptions {
 export interface GetEntryOptions {
   /** Language code for localized content. Defaults to source language. */
   language?: string;
+  /** Fields to include in the response (e.g., ["title", "body"]). Returns all fields when omitted. */
+  fields?: string[];
   /** Relation field names to expand (e.g., ["category", "author"]) */
   expand?: string[];
 }
