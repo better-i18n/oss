@@ -83,7 +83,8 @@ All tools require a `project` parameter in `org/project` format (e.g., `aliosman
 | `createKeys`            | Create keys with source text and translations (`name`, `sourceText`, `translations`) |
 | `updateKeys`            | Update translations — each entry = one language for one key          |
 | `deleteKeys`            | Soft-delete keys by UUID — permanently removed on next publish       |
-| `addLanguage`           | Add a new target language to the project (ISO 639-1)                 |
+| `proposeLanguages`      | Add target languages — ISO 639-1 or BCP 47 (e.g. `zh-Hans`, `pt-BR`), batch 1–50  |
+| `proposeLanguageEdits`  | Change language status: active (CDN), draft (editor-only), archived (hidden)         |
 | `publishTranslations`   | Deploy pending changes to production (CDN or GitHub)                 |
 
 ## Compact Response Format

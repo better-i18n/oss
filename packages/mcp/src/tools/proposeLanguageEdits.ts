@@ -18,7 +18,7 @@ const inputSchema = projectSchema.extend({
   edits: z
     .array(
       z.object({
-        languageCode: z.string().min(2).max(5),
+        languageCode: z.string().min(2).max(10),
         newStatus: z.enum(["active", "draft", "archived"]),
       }),
     )
@@ -42,7 +42,7 @@ export const proposeLanguageEdits: Tool = {
           items: {
             type: "object",
             properties: {
-              languageCode: { type: "string", description: "ISO 639-1 code of the language to update" },
+              languageCode: { type: "string", description: "ISO 639-1 code (e.g. 'fr', 'de') or BCP 47 locale (e.g. 'zh-Hans', 'pt-BR') of the language to update" },
               newStatus: {
                 type: "string",
                 enum: ["active", "draft", "archived"],
