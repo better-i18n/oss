@@ -39,33 +39,40 @@ Get project details including namespaces, languages, key count, and translation 
 <Accordion>
 
 <AccordionItem title="listKeys">
-Get all translation keys with their id, source text, and translations.
+Browse translation keys in compact, paginated format. Optimized for exploration — use `getTranslations` when you need actual translation text for AI tasks.
 
 **Parameters:**
 
-- `search` (optional): Text to search for (case-insensitive). Accepts a single string or an array of strings for multi-term search (e.g., `["login", "signup"]`). Searches source text by default, or target translations when `languages` is specified.
-- `languages` (optional): Language codes to search in AND return translations for (e.g., `["tr", "de"]`). If omitted with `search`, searches source text only.
-- `namespaces` (optional): Filter by specific namespaces.
-- `keys` (optional): Fetch specific keys by exact name (e.g., `["auth.login.title"]`).
-- `status` (optional): Filter by translation status — `"missing"`, `"draft"`, `"approved"`, or `"all"` (default).
+- `search` (optional): Search key names by partial match. Single string or array for multi-term OR search (e.g., `["login", "signup"]`).
+- `namespaces` (optional): Filter by specific namespaces (e.g., `["auth", "common"]`).
+- `missingLanguage` (optional): Return only keys that DON'T have a translation for this language code (e.g. `"tr"`, `"zh-Hans"`).
+- `fields` (optional): Fields to include per key. Default: `["id", "sourceText"]`.
+  - `"translatedLanguageCount"` → `tlc: 5` — token-efficient count, ideal for coverage overview
+  - `"translatedLanguages"` → `tl: ["de","fr","tr"]` — full list of translated lang codes
+  - `"translations"` → `tr: {"de":"..."}` — actual translation text (heaviest)
+- `page` (optional): Page number, 1-indexed (default: 1).
+- `limit` (optional): Keys per page, max 100 (default: 20).
 
-**Search examples:**
+**Response format (compact):**
+- `tot`: total matching keys | `ret`: returned this page | `has_more`: more pages exist
+- `nss`: namespace lookup table — each key's `ns` is an index into this array
+- `k`: key items with `k` (name), `ns` (namespace index), and requested fields
+
+**Examples:**
 
 ```json
-// Find "login" in source text
-{ "search": "login" }
+// Browse first page
+{ "project": "org/project" }
 
-// Find multiple terms at once
-{ "search": ["login", "signup", "forgot"] }
+// Find keys missing Turkish
+{ "project": "org/project", "missingLanguage": "tr" }
 
-// Find "Giriş" in Turkish translations
-{ "search": "Giriş", "languages": ["tr"] }
+// Coverage overview (token-efficient)
+{ "project": "org/project", "fields": ["id", "translatedLanguageCount"] }
 
-// Get all keys missing Turkish translation
-{ "languages": ["tr"], "status": "missing" }
+// Search with full language list
+{ "project": "org/project", "search": "login", "fields": ["id", "sourceText", "translatedLanguages"] }
 ```
-
-**Returns:** Array of keys with `id`, `key`, `namespace`, `sourceText`, and `translations` object.
 
 </AccordionItem>
 
@@ -136,12 +143,43 @@ Soft-delete translation keys by UUID. Keys are removed from CDN/GitHub on next p
 
 </AccordionItem>
 
-<AccordionItem title="addLanguage">
-Add a new target language to the project.
+<AccordionItem title="proposeLanguages">
+Add one or more target languages to the project. Already-existing languages are silently skipped.
 
 **Parameters:**
 
-- `languageCode`: ISO 639-1 code (e.g., `"fr"`, `"ja"`, `"de"`)
+- `languages`: Array of languages to add (1–50):
+  - `languageCode`: ISO 639-1 code (e.g. `"fr"`, `"ja"`) or BCP 47 locale (e.g. `"zh-Hans"`, `"pt-BR"`)
+  - `status` (optional): `"active"` (published to CDN, default) or `"draft"` (visible but not deployed)
+
+```json
+{
+  "languages": [
+    { "languageCode": "tr", "status": "active" },
+    { "languageCode": "zh-Hans" }
+  ]
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="proposeLanguageEdits">
+Update the status of existing target languages — activate, deactivate, or archive them.
+
+**Parameters:**
+
+- `edits`: Array of status changes (1–50):
+  - `languageCode`: ISO 639-1 or BCP 47 locale code of the language
+  - `newStatus`: `"active"` (published to CDN), `"draft"` (visible but not deployed), or `"archived"` (hidden from editor and CDN)
+
+```json
+{
+  "edits": [
+    { "languageCode": "de", "newStatus": "active" },
+    { "languageCode": "zh-Hans", "newStatus": "archived" }
+  ]
+}
+```
 
 </AccordionItem>
 
@@ -383,3 +421,4 @@ Soft-delete a content entry.
 5. **Clean Up**: Use `deleteKeys` to remove unused keys (soft delete until publish).
 6. **Safe Publishing**: Always call `getPendingChanges` before `publishTranslations` to verify changes.
 7. **Track Deployment**: Use `getSync(syncId)` to verify publish jobs completed successfully.
+8. **Language Setup**: Use `proposeLanguages` to add new languages, `proposeLanguageEdits` to change status (active/draft/archived).
