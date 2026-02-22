@@ -59,9 +59,39 @@ Then use translations in any component:
 import { useTranslation } from "react-i18next";
 
 function HomeScreen() {
+  // Colon-notation (namespace explicit):
   const { t } = useTranslation("common");
   return <Text>{t("welcome")}</Text>;
+
+  // Dot-notation (default namespace):
+  // const { t } = useTranslation();
+  // return <Text>{t("common.welcome")}</Text>;
 }
+```
+
+## Translation Patterns
+
+`initBetterI18n` supports both i18next usage styles — choose one and use it consistently:
+
+### Colon-notation — `t('namespace:key')`
+
+```tsx
+// Scoped to a namespace via hook argument
+const { t } = useTranslation("auth");
+t("login")        // ✓
+t("auth:login")   // ✓ (namespace explicit)
+```
+
+### Dot-notation — `t('section.key')`
+
+```tsx
+// Default namespace, dot-separated path
+const { t } = useTranslation();
+t("auth.login")      // ✓
+t("common.welcome")  // ✓
+```
+
+Both patterns work simultaneously with no extra configuration — all CDN namespaces are merged into the `"translation"` default namespace in addition to being registered individually.
 ```
 
 ### Alternative: Backend Plugin
@@ -106,7 +136,7 @@ One-call setup that fetches translations from CDN and initializes i18next.
 | `retryCount` | `number` | `1` | Retry attempts on CDN failure |
 | `useDeviceLocale` | `boolean` | `false` | Auto-detect device locale via `expo-localization` |
 | `debug` | `boolean` | `false` | Enable debug logging |
-| `i18nextOptions` | `Partial<InitOptions>` | `{}` | Additional i18next init options |
+| `i18nextOptions` | `Partial<InitOptions>` | `{}` | Additional i18next init options (SDK always sets `defaultNS` and `fallbackNS` to `"translation"`) |
 
 **Returns** `Promise<BetterI18nResult>`:
 
@@ -180,16 +210,16 @@ The SDK uses a **network-first** strategy with automatic fallback:
 For apps that must work on first launch without network (e.g., airplane mode):
 
 ```ts
+import en from "./locales/en.json"; // { auth: {...}, common: {...} }
+import tr from "./locales/tr.json";
+
 const { core, languages } = await initBetterI18n({
   project: "acme/my-app",
   i18n,
-  // Bundle critical translations — always available
-  staticData: {
-    en: { common: { welcome: "Welcome" } },
-    tr: { common: { welcome: "Hoş geldiniz" } },
-  },
-  // Or lazy-load to keep bundle small
-  // staticData: () => import('./fallback-translations.json'),
+  // Pass locale messages directly — same format as CDN response
+  staticData: { en, tr },
+  // Or lazy-load to keep bundle small:
+  // staticData: () => import('./locales/fallback.json'),
   fetchTimeout: 5000, // fail fast on slow networks
   retryCount: 2,      // retry twice before falling back
 });
