@@ -1,5 +1,12 @@
 # expo-native
 
+## 1.0.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @better-i18n/expo@0.3.3
+
 ## 1.0.5
 
 ### Patch Changes
