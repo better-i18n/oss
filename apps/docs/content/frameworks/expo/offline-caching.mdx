@@ -22,13 +22,15 @@ initBetterI18n() / changeLanguage()
 │     └─ Failure ↓
 │
 ├─ 3. Persistent cache (MMKV / AsyncStorage)
-│     ├─ Cached? → Inject resources, switch language
+│     ├─ Cached? → Inject resources, switch language   ← covers most offline cases
 │     └─ No cache ↓
 │
-└─ 4. Static data (if configured)
-      ├─ Has locale? → Use bundled translations
+└─ 4. Static data (advanced, optional)
+      ├─ Has locale? → Use bundled translations         ← only needed without persistent storage
       └─ No data → i18next uses fallbackLng (graceful degradation)
 ```
+
+Most apps only need steps 1–3. Step 4 (`staticData`) is for edge cases — see [Advanced: Static Data Fallback](#advanced-static-data-fallback) below.
 
 <Callout type="tip">
   **Key guarantee:** If the user has opened the app at least once with network, the app will always have translations available — even in airplane mode.
@@ -56,7 +58,13 @@ Translations are persisted to device storage so they survive app restarts. Used 
 
 Each locale has a single cache entry that gets overwritten on every successful CDN fetch — no duplicate entries.
 
-### 3. Static Data (Bundled Fallback)
+### Advanced: Static Data Fallback
+
+<Callout type="info">
+  **Most apps don't need this.** If you use MMKV or AsyncStorage persistent storage, `staticData` is unnecessary — persistent storage already covers all offline scenarios including first launch (after the first successful fetch).
+
+  `staticData` is only needed for edge cases: when you cannot use persistent storage, or when you want to guarantee translations are available even before the very first network connection.
+</Callout>
 
 For airplane mode on first launch where there's no CDN and no cache, you can bundle translations directly in your app:
 
@@ -71,9 +79,7 @@ await initBetterI18n({
 });
 ```
 
-<Callout type="info">
-  `staticData` is your last-resort fallback. Useful for airplane mode first launch where there's no CDN and no cache yet. These translations are passed to `@better-i18n/core` and used only when both CDN and persistent cache fail.
-</Callout>
+These translations are passed to `@better-i18n/core` and used only when both CDN and persistent cache fail. Because they're bundled in your app binary, they're always available — but they also increase your bundle size and may go stale between app releases.
 
 ## Storage Auto-Detection
 

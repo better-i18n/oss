@@ -13,7 +13,10 @@ export interface ClientConfig {
    * Custom fetch function (e.g. Service Binding's fetch for Worker-to-Worker calls).
    * When provided, bypasses the global fetch.
    */
-  customFetch?: (input: Request | string | URL, init?: RequestInit) => Promise<Response>;
+  customFetch?: (
+    input: Request | string | URL,
+    init?: RequestInit,
+  ) => Promise<Response>;
   /**
    * Service auth for MCP Worker → API Worker calls via Service Binding.
    * When provided, sends X-MCP-Service-Key + X-MCP-User-Id headers
@@ -38,7 +41,7 @@ export type BetterI18nClient = APIClient;
  * @returns Configured tRPC client with full type safety
  */
 export function createBetterI18nClient(
-  config: ClientConfig & { organizationId?: string }
+  config: ClientConfig & { organizationId?: string },
 ): BetterI18nClient {
   // Ensure URL ends with /api/trpc for tRPC endpoint
   const url = config.apiUrl.endsWith("/api/trpc")
@@ -104,7 +107,7 @@ export function createBetterI18nClient(
               try {
                 const text = await clonedResponse.text();
                 console.error(
-                  `[better-i18n] ← ${response.status} ERROR: ${text.substring(0, 200)}`
+                  `[better-i18n] ← ${response.status} ERROR: ${text.substring(0, 200)}`,
                 );
               } catch {
                 console.error(`[better-i18n] ← ${response.status} ERROR`);

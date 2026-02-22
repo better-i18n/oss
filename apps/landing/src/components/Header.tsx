@@ -13,12 +13,22 @@ import {
   IconNewspaper,
   IconApiConnection,
   IconArrowRight,
+  IconLiveActivity,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { useTranslations } from "@better-i18n/use-intl";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
   const t = useTranslations("header");
+
+  const { data: statusData } = useQuery<{ status: string }>({
+    queryKey: ["site-status"],
+    queryFn: () => fetch("/api/status").then((r) => r.json()),
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
+  const isStatusOk = !statusData || statusData.status === "operational";
 
   return (
     <header className={cn("sticky top-0 z-10 bg-mist-100", className)}>
@@ -367,6 +377,24 @@ export default function Header({ className }: { className?: string }) {
                         <IconApiConnection className="size-4 text-mist-600" />
                         <span className="text-sm font-medium text-mist-950">
                           {t("apiReference")}
+                        </span>
+                      </a>
+
+                      {/* Status */}
+                      <a
+                        href="https://status.better-i18n.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
+                      >
+                        <div className="relative">
+                          <IconLiveActivity className="size-4 text-mist-600" />
+                          {!isStatusOk && (
+                            <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-red-500 ring-1 ring-white" />
+                          )}
+                        </div>
+                        <span className="text-sm font-medium text-mist-950">
+                          {t("status")}
                         </span>
                       </a>
                     </div>

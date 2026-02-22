@@ -9,6 +9,7 @@ Open-source SDKs and tools for the Better i18n localization platform.
 | [@better-i18n/core](./packages/core) | Core utilities for locale handling | [![npm](https://img.shields.io/npm/v/@better-i18n/core)](https://www.npmjs.com/package/@better-i18n/core) |
 | [@better-i18n/next](./packages/next) | Next.js SDK with middleware and hooks | [![npm](https://img.shields.io/npm/v/@better-i18n/next)](https://www.npmjs.com/package/@better-i18n/next) |
 | [@better-i18n/use-intl](./packages/use-intl) | React hooks for use-intl integration | [![npm](https://img.shields.io/npm/v/@better-i18n/use-intl)](https://www.npmjs.com/package/@better-i18n/use-intl) |
+| [@better-i18n/expo](./packages/expo) | Expo / React Native integration with offline caching | [![npm](https://img.shields.io/npm/v/@better-i18n/expo)](https://www.npmjs.com/package/@better-i18n/expo) |
 | [@better-i18n/cli](./packages/cli) | CLI for scanning and syncing translations | [![npm](https://img.shields.io/npm/v/@better-i18n/cli)](https://www.npmjs.com/package/@better-i18n/cli) |
 | [@better-i18n/mcp](./packages/mcp) | MCP server for AI agent integration | [![npm](https://img.shields.io/npm/v/@better-i18n/mcp)](https://www.npmjs.com/package/@better-i18n/mcp) |
 | [@better-i18n/schemas](./packages/schemas) | Shared Zod schemas | [![npm](https://img.shields.io/npm/v/@better-i18n/schemas)](https://www.npmjs.com/package/@better-i18n/schemas) |

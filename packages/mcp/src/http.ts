@@ -16,7 +16,11 @@
  * For stdio transport (Cursor, Claude Desktop), see index.ts.
  */
 
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import {
+  createServer,
+  type IncomingMessage,
+  type ServerResponse,
+} from "node:http";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import {
   resolveConfig,
@@ -47,10 +51,7 @@ function setCorsHeaders(res: ServerResponse) {
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization, Mcp-Session-Id, Mcp-Protocol-Version",
   );
-  res.setHeader(
-    "Access-Control-Expose-Headers",
-    "Mcp-Session-Id",
-  );
+  res.setHeader("Access-Control-Expose-Headers", "Mcp-Session-Id");
 }
 
 /**
@@ -97,7 +98,8 @@ async function handleMcpRequest(
   await server.connect(transport);
 
   // Pre-parse the body so the transport doesn't need to
-  const parsedBody = req.method === "POST" ? await readJsonBody(req) : undefined;
+  const parsedBody =
+    req.method === "POST" ? await readJsonBody(req) : undefined;
 
   await transport.handleRequest(req, res, parsedBody);
 
@@ -116,7 +118,10 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
-  const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
+  const url = new URL(
+    req.url || "/",
+    `http://${req.headers.host || "localhost"}`,
+  );
   const pathname = url.pathname;
 
   // Health check
@@ -136,7 +141,8 @@ const httpServer = createServer(async (req, res) => {
         res.writeHead(401, { "Content-Type": "application/json" });
         res.end(
           JSON.stringify({
-            error: "Missing Authorization header. Use: Authorization: Bearer <API_KEY>",
+            error:
+              "Missing Authorization header. Use: Authorization: Bearer <API_KEY>",
           }),
         );
         return;
@@ -172,8 +178,14 @@ const httpServer = createServer(async (req, res) => {
 });
 
 httpServer.listen(port, host, () => {
-  console.error(`[better-i18n-http] Mode: ${config.isLocalDev ? "LOCAL DEV" : "PRODUCTION"}`);
+  console.error(
+    `[better-i18n-http] Mode: ${config.isLocalDev ? "LOCAL DEV" : "PRODUCTION"}`,
+  );
   console.error(`[better-i18n-http] API URL: ${config.apiUrl}`);
-  console.error(`[better-i18n-http] MCP HTTP server listening on http://${host}:${port}/mcp`);
-  console.error(`[better-i18n-http] Health check: http://${host}:${port}/health`);
+  console.error(
+    `[better-i18n-http] MCP HTTP server listening on http://${host}:${port}/mcp`,
+  );
+  console.error(
+    `[better-i18n-http] Health check: http://${host}:${port}/health`,
+  );
 });
