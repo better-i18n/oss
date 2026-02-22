@@ -4,6 +4,7 @@ import {
   createRootRouteWithContext,
   Outlet,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BetterI18nProvider, getLocaleFromPath } from "@better-i18n/use-intl";
 import { getMessages } from "@better-i18n/use-intl/server";
@@ -125,6 +126,12 @@ gtag('config', 'AW-17928422726');`,
 
 function RootComponent() {
   const { messages, locale } = Route.useRouteContext();
+
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      import("react-grab");
+    }
+  }, []);
 
   return (
     <html lang={locale} translate="no" className="notranslate">

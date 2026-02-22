@@ -11,6 +11,7 @@ import type {
   NormalizedConfig,
   TranslationStorage,
 } from "./types";
+import { normalizeLocale } from "./utils/locale";
 
 const STORAGE_PREFIX = "@better-i18n";
 
@@ -260,7 +261,7 @@ const getMessagesWithFallback = async (
   locale: string,
   fetchFn: typeof fetch
 ): Promise<Messages> => {
-  const safeLng = locale.toLowerCase(); // CDN convention: always lowercase
+  const safeLng = normalizeLocale(locale);
   const logger = createLogger(config, "messages");
   const cacheKey = `${buildCacheKey(config.cdnBaseUrl, config.project)}|${safeLng}`;
   const storageKey = buildMessagesStorageKey(config.project, safeLng);

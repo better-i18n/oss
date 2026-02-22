@@ -1,6 +1,6 @@
 {
-  "short_name": "TanStack App",
-  "name": "Create TanStack App Sample",
+  "short_name": "better-i18n",
+  "name": "better-i18n — Localization for Modern Apps",
   "icons": [
     {
       "src": "favicon.ico",

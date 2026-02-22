@@ -71,6 +71,8 @@ function BlogPage() {
   const { posts, locale } = Route.useLoaderData();
   const t = useTranslations("blog");
 
+  console.log(posts, "posts burada knk");
+
   return (
     <div className="bg-white">
       <Header className="bg-white" />
@@ -100,7 +102,7 @@ function BlogPage() {
           </div>
 
           {/* Posts Grid */}
-          {posts.length > 0 ? (
+          {posts?.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {posts.map((post: BlogPostListItem) => (
                 <BlogCard key={post.slug} post={post} locale={locale} />
@@ -125,7 +127,7 @@ function BlogPage() {
           )}
 
           {/* Post count */}
-          {posts.length > 0 && (
+          {posts?.length > 0 && (
             <div className="mt-8 flex justify-center">
               <span className="inline-flex items-center gap-1 text-sm font-medium text-mist-500">
                 {t("showingPosts", {

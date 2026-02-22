@@ -6,7 +6,7 @@ export interface ClientConfig {
   project: string;
   /** API key for authenticating content requests. Required. */
   apiKey: string;
-  /** REST API base URL. Defaults to `https://dash.better-i18n.com`. */
+  /** REST API base URL. Defaults to `https://content.better-i18n.com`. */
   apiBase?: string;
   /** Enable debug logging to see request URLs, headers, and responses. */
   debug?: boolean;
@@ -24,6 +24,8 @@ export interface RelationValue {
   title: string;
   /** Target model slug */
   modelSlug: string;
+  /** The related entry's own custom field values (or user profile fields for _users). */
+  customFields?: Record<string, string | null>;
 }
 
 // ─── Content Types ───────────────────────────────────────────────────

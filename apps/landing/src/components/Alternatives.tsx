@@ -15,27 +15,31 @@ export default function Alternatives() {
   const currentLocale = locale || "en";
 
   return (
-    <section className="py-20 bg-white border-t border-mist-100">
+    <section className="py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
               {t("title")}
             </h2>
-            <p className="mt-4 text-lg text-mist-700">
-              {t("subtitle")}
-            </p>
+            <p className="mt-4 text-lg text-mist-700">{t("subtitle")}</p>
             <ul className="mt-6 space-y-3">
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 size-5 rounded-full bg-mist-900 text-white text-xs flex items-center justify-center font-medium">1</span>
+                <span className="flex-shrink-0 size-5 rounded-full bg-mist-900 text-white text-xs flex items-center justify-center font-medium">
+                  1
+                </span>
                 <span className="text-mist-700">{t("benefit1")}</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 size-5 rounded-full bg-mist-900 text-white text-xs flex items-center justify-center font-medium">2</span>
+                <span className="flex-shrink-0 size-5 rounded-full bg-mist-900 text-white text-xs flex items-center justify-center font-medium">
+                  2
+                </span>
                 <span className="text-mist-700">{t("benefit2")}</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 size-5 rounded-full bg-mist-900 text-white text-xs flex items-center justify-center font-medium">3</span>
+                <span className="flex-shrink-0 size-5 rounded-full bg-mist-900 text-white text-xs flex items-center justify-center font-medium">
+                  3
+                </span>
                 <span className="text-mist-700">{t("benefit3")}</span>
               </li>
             </ul>
@@ -45,7 +49,13 @@ export default function Alternatives() {
             {alternatives.map((alt) => (
               <Link
                 key={alt.key}
-                to={alt.href as "/$locale/compare/crowdin" | "/$locale/compare/lokalise" | "/$locale/compare/phrase" | "/$locale/compare/transifex"}
+                to={
+                  alt.href as
+                    | "/$locale/compare/crowdin"
+                    | "/$locale/compare/lokalise"
+                    | "/$locale/compare/phrase"
+                    | "/$locale/compare/transifex"
+                }
                 params={{ locale: currentLocale }}
                 className="group flex items-center justify-between p-5 rounded-xl border border-mist-200 bg-mist-50/50 hover:border-mist-300 hover:bg-white hover:shadow-md transition-all"
               >

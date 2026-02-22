@@ -18,12 +18,18 @@ import {
   getCanonicalLink,
 } from "@/lib/meta";
 import { getHomePageStructuredData } from "@/lib/structured-data";
+import { getChangelogs } from "@/lib/changelog";
 
 export const Route = createFileRoute("/$locale/")({
-  loader: ({ context }) => ({
-    messages: context.messages,
-    locale: context.locale,
-  }),
+  loader: async ({ context, params }) => {
+    const locale = params.locale as string;
+    const releases = await getChangelogs(locale);
+    return {
+      messages: context.messages,
+      locale: context.locale,
+      recentChangelogs: releases.slice(0, 4),
+    };
+  },
   head: ({ loaderData }) => {
     const locale = loaderData?.locale || "en";
     const pathname = "/";
@@ -44,6 +50,7 @@ export const Route = createFileRoute("/$locale/")({
 });
 
 function LandingPage() {
+  const { recentChangelogs } = Route.useLoaderData();
   return (
     <>
       <Header />
@@ -55,7 +62,7 @@ function LandingPage() {
         <UseCases />
         <Alternatives />
         <Testimonials />
-        <Changelog />
+        <Changelog releases={recentChangelogs} />
         <Pricing />
         <CTA />
       </main>

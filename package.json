@@ -24,6 +24,7 @@
     "docs:build": "bun --filter docs build",
     "landing:dev": "bun --filter tanstack-landing dev",
     "landing:build": "bun --filter tanstack-landing build",
+    "example:dev": "bun --filter hono-example dev",
     "link-all": "for dir in packages/*; do (cd \"$dir\" && bun link); done",
     "prepare": "husky"
   },

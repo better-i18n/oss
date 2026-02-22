@@ -212,3 +212,66 @@ console.log(post.customFields.category);    // "Engineering"
 ```
 
 For type-safe custom fields, see the [TypeScript guide](/sdk/typescript).
+
+## Relations
+
+Content entries can reference entries from other models using relation fields. Use `expand` to resolve these references inline — without a second fetch.
+
+```typescript
+const { items } = await client.getEntries("blog-posts", {
+  expand: ["author", "category"],
+});
+```
+
+When `expand` is used, a `relations` key appears on each entry with the resolved data:
+
+```json
+{
+  "slug": "hello-world",
+  "title": "Hello World",
+  "relations": {
+    "author": {
+      "id": "user-uuid",
+      "slug": "alice-johnson",
+      "title": "Alice Johnson",
+      "modelSlug": "users",
+      "customFields": {
+        "avatar": "https://cdn.example.com/avatars/alice.jpg",
+        "role": "Engineering"
+      }
+    },
+    "category": {
+      "id": "cat-uuid",
+      "slug": "engineering",
+      "title": "Engineering",
+      "modelSlug": "categories",
+      "customFields": null
+    }
+  }
+}
+```
+
+Access relation fields directly:
+
+```typescript
+const post = items[0];
+
+post.relations?.author?.title;                       // "Alice Johnson"
+post.relations?.author?.customFields?.avatar;        // "https://cdn.example.com/avatars/alice.jpg"
+post.relations?.category?.title;                     // "Engineering"
+```
+
+`expand` works the same way on `getEntry`:
+
+```typescript
+const post = await client.getEntry("blog-posts", "hello-world", {
+  expand: ["author"],
+});
+
+post.relations?.author?.title; // "Alice Johnson"
+```
+
+<Callout type="info">
+  If a relation field has no value, its key will be `null` in `relations`.
+  `expand` only fetches fields that are actually set — unreferenced fields are omitted.
+</Callout>

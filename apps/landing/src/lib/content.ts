@@ -4,20 +4,36 @@
  * Fetches blog posts from Better i18n Content API.
  */
 
-import {
-  createClient,
-  type ContentClient,
-  type ContentEntry,
-  type ContentEntryListItem,
-} from "@better-i18n/sdk";
-
-// Re-export SDK types for consumers
-export type { ContentEntry, ContentEntryListItem };
+import { createClient, type ContentClient } from "@better-i18n/sdk";
+import { marked } from "marked";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
-export type BlogPost = ContentEntry & { readingTime: number };
-export type BlogPostListItem = ContentEntryListItem & { readingTime: number };
+export interface BlogPost {
+  id: string;
+  slug: string;
+  status: string;
+  publishedAt: string | null;
+  title: string;
+  body: string | null;
+  bodyHtml: string | null;
+  readTime: string | null;
+  featured: boolean;
+  category: string | null;
+  authorName: string | null;
+  authorAvatar: string | null;
+}
+
+export interface BlogPostListItem {
+  slug: string;
+  title: string;
+  publishedAt: string | null;
+  readTime: string | null;
+  featured: boolean;
+  category: string | null;
+  authorName: string | null;
+  authorAvatar: string | null;
+}
 
 // ─── Client (singleton) ─────────────────────────────────────────────
 
@@ -28,7 +44,8 @@ export function getContentClient(): ContentClient {
     const apiKey = import.meta.env.BETTER_I18N_CONTENT_API_KEY;
     const project = import.meta.env.BETTER_I18N_PROJECT;
 
-    if (!apiKey) throw new Error("BETTER_I18N_CONTENT_API_KEY is not configured");
+    if (!apiKey)
+      throw new Error("BETTER_I18N_CONTENT_API_KEY is not configured");
     if (!project) throw new Error("BETTER_I18N_PROJECT is not configured");
 
     _client = createClient({ project, apiKey, debug: true });
@@ -38,15 +55,7 @@ export function getContentClient(): ContentClient {
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
-/** Estimate reading time from HTML content. */
-export function estimateReadingTime(html: string | null): number {
-  if (!html) return 0;
-  const text = html.replace(/<[^>]*>/g, "");
-  const words = text.split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.ceil(words / 200));
-}
-
-/** Map tag name to badge color class. */
+/** Map category name to badge color class. */
 export function getTagColor(tag: string): string {
   const colors: Record<string, string> = {
     news: "bg-emerald-500/10 text-emerald-700",
@@ -68,9 +77,27 @@ export function formatPostDate(dateString: string, locale: string): string {
   });
 }
 
+type RelationValue = {
+  title?: string;
+  customFields?: Record<string, string | null | undefined>;
+};
+
+function mapEntryBase(entry: {
+  customFields?: Record<string, string | null | undefined>;
+  relations?: Record<string, RelationValue | null | undefined>;
+}) {
+  return {
+    readTime: entry.customFields?.read_time ?? null,
+    featured: entry.customFields?.featured === "true",
+    category: entry.relations?.category?.customFields?.name ?? null,
+    authorName: entry.relations?.author?.title ?? null,
+    authorAvatar: entry.relations?.author?.customFields?.avatar ?? null,
+  };
+}
+
 // ─── Public API ──────────────────────────────────────────────────────
 
-const BLOG_MODEL = "blog-post";
+const BLOG_MODEL = "blog-posts";
 
 /** Fetch blog posts for a specific locale. */
 export async function getBlogPosts(
@@ -91,10 +118,16 @@ export async function getBlogPosts(
       order: "desc",
       limit,
       page,
+      expand: ["author", "category"],
     });
 
     return {
-      posts: result.items.map((item) => ({ ...item, readingTime: 0 })),
+      posts: result.items.map((item) => ({
+        slug: item.slug,
+        title: item.title,
+        publishedAt: item.publishedAt,
+        ...mapEntryBase(item),
+      })),
       total: result.total,
       hasMore: result.hasMore,
     };
@@ -112,8 +145,19 @@ export async function getBlogPost(
   try {
     const entry = await getContentClient().getEntry(BLOG_MODEL, slug, {
       language: locale,
+      expand: ["author", "category"],
     });
-    return { ...entry, readingTime: estimateReadingTime(entry.bodyHtml) };
+    const bodyHtml = entry.body ? String(await marked(entry.body)) : null;
+    return {
+      id: entry.id,
+      slug: entry.slug,
+      status: entry.status,
+      publishedAt: entry.publishedAt,
+      title: entry.title,
+      body: entry.body,
+      bodyHtml,
+      ...mapEntryBase(entry),
+    };
   } catch {
     return null;
   }

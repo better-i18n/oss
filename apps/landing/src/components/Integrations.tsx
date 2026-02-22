@@ -39,7 +39,7 @@ export default function Integrations() {
   const t = useTranslations("integrations");
 
   return (
-    <section className="py-20 bg-mist-50">
+    <section className="py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="text-center mb-12">
           <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">

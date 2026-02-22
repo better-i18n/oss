@@ -1,33 +1,38 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { useTranslations } from "@better-i18n/use-intl";
+import type { ChangelogEntry } from "@/lib/changelog";
 
-const changelogs = [
-  {
-    badge: { text: "New", color: "bg-emerald-500/10 text-emerald-700" },
-    date: "Jan 12, 2026",
-    title: "MCP Server Integration for AI-powered Translation Workflows",
-  },
-  {
-    badge: { text: "Integration", color: "bg-blue-500/10 text-blue-700" },
-    date: "Jan 5, 2026",
-    title: "DeepL Integration with Automatic Glossary Sync",
-  },
-  {
-    badge: { text: "Feature", color: "bg-violet-500/10 text-violet-700" },
-    date: "Dec 20, 2025",
-    title: "Custom Glossary Management and Term Consistency",
-  },
-  {
-    badge: { text: "v2.3", color: "bg-amber-500/10 text-amber-700" },
-    date: "Dec 10, 2025",
-    title: "Translation Memory, Context Detection, and Batch API",
-  },
-];
+const categoryColors: Record<string, string> = {
+  feature: "bg-blue-500/10 text-blue-700",
+  improvement: "bg-emerald-500/10 text-emerald-700",
+  fix: "bg-amber-500/10 text-amber-700",
+  security: "bg-red-500/10 text-red-700",
+};
 
-export default function Changelog() {
+const categoryLabels: Record<string, Record<string, string>> = {
+  en: {
+    feature: "New Feature",
+    improvement: "Improvement",
+    fix: "Bug Fix",
+    security: "Security",
+  },
+  tr: {
+    feature: "Yeni Özellik",
+    improvement: "İyileştirme",
+    fix: "Hata Düzeltme",
+    security: "Güvenlik",
+  },
+};
+
+interface ChangelogProps {
+  releases: ChangelogEntry[];
+}
+
+export default function Changelog({ releases }: ChangelogProps) {
   const { locale } = useParams({ strict: false });
   const t = useTranslations("changelog");
+  const lang = locale || "en";
 
   return (
     <section className="py-16">
@@ -36,31 +41,48 @@ export default function Changelog() {
           {t("title")}
         </h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {changelogs.map((item, index) => (
-            <Link
-              key={index}
-              to="/$locale/changelog"
-              params={{ locale: locale || "en" }}
-              className="group flex flex-col rounded-xl bg-mist-950/[0.025] p-5 hover:bg-mist-950/[0.05] transition-colors"
-            >
-              <div className="flex items-center gap-3 text-mist-500 mb-3">
-                <span
-                  className={`text-xs font-medium px-2 py-0.5 rounded ${item.badge.color}`}
-                >
-                  {item.badge.text}
-                </span>
-                <time className="text-sm">{item.date}</time>
-              </div>
-              <p className="text-base/7 text-mist-950 group-hover:text-mist-700">
-                {item.title}
-              </p>
-            </Link>
-          ))}
+          {releases.map((entry) => {
+            const category = entry.customFields.category ?? "";
+            const badgeColor =
+              categoryColors[category] ?? "bg-mist-500/10 text-mist-700";
+            const badgeText =
+              categoryLabels[lang]?.[category] ??
+              (entry.customFields.version
+                ? `v${entry.customFields.version}`
+                : category);
+            const dateStr = entry.publishedAt
+              ? new Date(entry.publishedAt).toLocaleDateString(
+                  lang === "tr" ? "tr-TR" : "en-US",
+                  { year: "numeric", month: "short", day: "numeric" }
+                )
+              : "";
+
+            return (
+              <Link
+                key={entry.slug}
+                to="/$locale/changelog"
+                params={{ locale: lang }}
+                className="group flex flex-col rounded-xl bg-mist-950/[0.025] p-5 hover:bg-mist-950/[0.05] transition-colors"
+              >
+                <div className="flex items-center gap-3 text-mist-500 mb-3">
+                  <span
+                    className={`text-xs font-medium px-2 py-0.5 rounded ${badgeColor}`}
+                  >
+                    {badgeText}
+                  </span>
+                  <time className="text-sm">{dateStr}</time>
+                </div>
+                <p className="text-base/7 text-mist-950 group-hover:text-mist-700">
+                  {entry.title}
+                </p>
+              </Link>
+            );
+          })}
         </div>
         <div className="mt-6">
           <Link
             to="/$locale/changelog"
-            params={{ locale: locale || "en" }}
+            params={{ locale: lang }}
             className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950"
           >
             {t("seeWhatsNew")}

@@ -1,4 +1,18 @@
 /**
+ * Normalize a BCP 47 locale code for CDN compatibility.
+ * - Lowercases the entire code (CDN convention)
+ * - Converts underscore separators to hyphens (BCP 47 canonical)
+ *
+ * @example
+ * normalizeLocale("pt-BR")      // "pt-br"
+ * normalizeLocale("zh_TW")      // "zh-tw"
+ * normalizeLocale("EN")         // "en"
+ * normalizeLocale("zh-Hant-TW") // "zh-hant-tw"
+ */
+export const normalizeLocale = (locale: string): string =>
+  locale.toLowerCase().replace(/_/g, "-");
+
+/**
  * Locale configuration for URL path handling
  */
 export interface LocaleConfig {

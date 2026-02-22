@@ -43,7 +43,7 @@ const { items, total, hasMore } = await client.getEntries("blog-posts", {
 const post = await client.getEntry("blog-posts", "hello-world", {
   language: "fr",
 });
-console.log(post.title, post.bodyMarkdown);
+console.log(post.title, post.body);
 ```
 
 ## API
@@ -64,12 +64,16 @@ console.log(post.title, post.bodyMarkdown);
 | `order` | `"asc" \| "desc"` | `"desc"` | Sort direction |
 | `page` | `number` | `1` | Page number (1-based) |
 | `limit` | `number` | `50` | Entries per page (1-100) |
+| `fields` | `string[]` | all fields | Fields to include in response |
+| `expand` | `string[]` | none | Relation field names to expand |
 
 ### `getEntry` Options
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `language` | `string` | source language | Language code for localized content |
+| `fields` | `string[]` | all fields | Fields to include in response |
+| `expand` | `string[]` | none | Relation field names to expand |
 
 ### Response Types
 
@@ -77,7 +81,7 @@ console.log(post.title, post.bodyMarkdown);
 
 ```typescript
 {
-  items: ContentEntryListItem[]; // slug, title, excerpt, publishedAt, tags, author
+  items: ContentEntryListItem[]; // id, slug, title, publishedAt, customFields, relations?
   total: number;                 // total matching entries
   hasMore: boolean;              // more pages available
 }
@@ -88,9 +92,7 @@ console.log(post.title, post.bodyMarkdown);
 ```typescript
 {
   id, slug, status, publishedAt, sourceLanguage, availableLanguages,
-  featuredImage, tags, author, customFields,
-  title, excerpt, body, bodyHtml, bodyMarkdown,
-  metaTitle, metaDescription
+  title, body, customFields, relations?
 }
 ```
 
@@ -109,13 +111,41 @@ post.customFields.readingTime; // string | null (typed!)
 post.customFields.category;   // string | null (typed!)
 ```
 
+## Expanding Relations
+
+Use `expand` to resolve related entries in a single request. Expanded relations are available under the `relations` key.
+
+```typescript
+const { items } = await client.getEntries("blog-posts", {
+  expand: ["author", "category"],
+});
+
+// Access expanded relation fields
+items[0].relations?.author?.title;                       // "Alice Johnson"
+items[0].relations?.author?.modelSlug;                  // "users"
+items[0].relations?.author?.customFields?.avatar;       // "https://..."
+items[0].relations?.category?.title;                    // "Engineering"
+```
+
+Each expanded relation is a `RelationValue` object:
+
+```typescript
+interface RelationValue {
+  id: string;
+  slug: string;
+  title: string;
+  modelSlug: string;
+  customFields?: Record<string, string | null>;
+}
+```
+
 ## Configuration
 
 | Option | Required | Description |
 | --- | --- | --- |
 | `project` | Yes | Project identifier in `org/project` format (e.g., `"acme/web-app"`) |
 | `apiKey` | Yes | API key from [dashboard](https://dash.better-i18n.com) |
-| `apiBase` | No | API base URL (default: `https://dash.better-i18n.com`) |
+| `apiBase` | No | API base URL (default: `https://content.better-i18n.com`) |
 
 ## Documentation
 

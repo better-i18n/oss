@@ -1,0 +1,79 @@
+{
+  "name": "@better-i18n/server",
+  "version": "0.1.1",
+  "description": "Framework-agnostic server-side i18n for Better i18n (Hono, Express, Fastify)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/better-i18n/better-i18n.git",
+    "directory": "packages/server"
+  },
+  "bugs": {
+    "url": "https://github.com/better-i18n/better-i18n/issues"
+  },
+  "homepage": "https://github.com/better-i18n/better-i18n/tree/main/packages/server",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./hono": {
+      "types": "./dist/hono.d.ts",
+      "bun": "./src/hono.ts",
+      "default": "./dist/hono.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "bun": "./src/node.ts",
+      "default": "./dist/node.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "i18n",
+    "localization",
+    "internationalization",
+    "hono",
+    "express",
+    "fastify",
+    "server",
+    "middleware"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "bun run build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@better-i18n/core": "workspace:*",
+    "use-intl": ">=4.0.0"
+  },
+  "peerDependencies": {
+    "hono": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "hono": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "hono": "^4.0.0",
+    "typescript": "~5.9.2",
+    "vitest": "^3.0.0"
+  }
+}
