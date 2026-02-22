@@ -1,5 +1,5 @@
 import type { i18n, InitOptions } from "i18next";
-import { createI18nCore } from "@better-i18n/core";
+import { createI18nCore, normalizeLocale } from "@better-i18n/core";
 import type { I18nCore, I18nCoreConfig, Messages, LanguageOption } from "@better-i18n/core";
 import { getDeviceLocale } from "./locale";
 import { resolveStorage, readCache, writeCache } from "./storage";
@@ -185,8 +185,8 @@ export async function initBetterI18n(
   // before CDN translations arrive, causing fallback to English.
   const originalChangeLanguage = i18nInstance.changeLanguage.bind(i18nInstance);
   i18nInstance.changeLanguage = async (newLng?: string, callback?: import("i18next").Callback) => {
-    if (newLng) {
-      const safeLng = newLng.toLowerCase();
+    const safeLng = newLng ? normalizeLocale(newLng) : undefined;
+    if (safeLng) {
       const anyNs = namespaces[0];
       if (anyNs && !i18nInstance.hasResourceBundle(safeLng, anyNs)) {
         try {
@@ -206,11 +206,12 @@ export async function initBetterI18n(
         }
       }
     }
-    return originalChangeLanguage(newLng, callback);
+    return originalChangeLanguage(safeLng, callback);
   };
 
   // Lazy-load translations when the user switches language (safety net)
-  i18nInstance.on("languageChanged", async (newLng: string) => {
+  i18nInstance.on("languageChanged", async (rawLng: string) => {
+    const newLng = normalizeLocale(rawLng);
     // Skip if this language's resources are already loaded
     const anyNs = namespaces[0];
     if (anyNs && i18nInstance.hasResourceBundle(newLng, anyNs)) return;

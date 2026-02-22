@@ -19,8 +19,9 @@ export { detectLocale } from "./i18n/detection";
 // Cache utilities
 export { TtlCache, buildCacheKey } from "./cache";
 
-// Locale URL utilities (shared between Next.js and TanStack Router)
+// Locale utilities
 export {
+  normalizeLocale,
   extractLocale,
   getLocaleFromPath,
   hasLocalePrefix,

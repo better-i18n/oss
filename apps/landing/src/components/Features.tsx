@@ -45,7 +45,7 @@ function AIFeatureCard() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-sm">
+    <div className="flex flex-col h-full rounded-2xl overflow-hidden shadow-sm">
       <div className="h-[320px] bg-mist-50 relative overflow-hidden p-5 flex flex-col shrink-0">
         <div className="flex items-center gap-2 text-xs text-mist-500 mb-4 pb-3 border-b border-mist-200">
           <div className="w-2 h-2 rounded-full bg-mist-400" />

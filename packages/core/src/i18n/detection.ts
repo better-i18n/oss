@@ -1,8 +1,9 @@
 import type { LocaleDetectionOptions, LocaleDetectionResult } from "./types";
+import { normalizeLocale } from "../utils/locale";
 
 /** Case-insensitive locale lookup — returns the canonical (CDN) form if matched */
 const findLocale = (code: string | null | undefined, available: string[]) =>
-  code ? available.find((a) => a.toLowerCase() === code.toLowerCase()) : undefined;
+  code ? available.find((a) => normalizeLocale(a) === normalizeLocale(code)) : undefined;
 
 /**
  * Framework-agnostic locale detection logic

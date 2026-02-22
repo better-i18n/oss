@@ -23,7 +23,7 @@ const client = createClient({
 | --- | --- | --- | --- |
 | `project` | `string` | Yes | Project identifier in `org/project` format |
 | `apiKey` | `string` | Yes | API key (prefix: `bi-`) |
-| `apiBase` | `string` | No | API URL. Default: `https://dash.better-i18n.com` |
+| `apiBase` | `string` | No | API URL. Default: `https://content.better-i18n.com` |
 | `debug` | `boolean` | No | Log request URLs and responses to console |
 
 **Returns:** `ContentClient`
@@ -201,3 +201,23 @@ All requests use the `x-api-key` header for authentication.
 **`getEntries`** accepts: `language`, `status`, `sort`, `order`, `page`, `limit`, `fields`, `expand`
 
 **`getEntry`** accepts: `language`, `fields`, `expand`
+
+---
+
+## Types
+
+<Accordion>
+<AccordionItem title="RelationValue">
+
+`RelationValue` is returned for each key in `relations` when `expand` is used.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Unique ID of the referenced entry |
+| `slug` | `string` | URL-safe slug of the referenced entry |
+| `title` | `string` | Display title of the referenced entry |
+| `modelSlug` | `string` | Content model the referenced entry belongs to |
+| `customFields` | `Record<string, string \| null>` | Custom fields of the referenced entry |
+
+</AccordionItem>
+</Accordion>

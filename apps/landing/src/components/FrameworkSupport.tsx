@@ -17,7 +17,7 @@ export default function FrameworkSupport() {
   const currentLocale = locale || "en";
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="text-center mb-12">
           <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
@@ -32,7 +32,15 @@ export default function FrameworkSupport() {
           {frameworks.map((framework) => (
             <Link
               key={framework.key}
-              to={framework.href as "/$locale/i18n/react" | "/$locale/i18n/nextjs" | "/$locale/i18n/vue" | "/$locale/i18n/nuxt" | "/$locale/i18n/angular" | "/$locale/i18n/svelte"}
+              to={
+                framework.href as
+                  | "/$locale/i18n/react"
+                  | "/$locale/i18n/nextjs"
+                  | "/$locale/i18n/vue"
+                  | "/$locale/i18n/nuxt"
+                  | "/$locale/i18n/angular"
+                  | "/$locale/i18n/svelte"
+              }
               params={{ locale: currentLocale }}
               className="group flex flex-col items-center justify-center p-6 rounded-xl border border-mist-200 bg-mist-50/50 hover:border-mist-300 hover:bg-white hover:shadow-md transition-all"
             >

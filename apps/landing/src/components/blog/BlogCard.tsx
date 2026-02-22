@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { BlogPostListItem } from "@/lib/content";
 import { formatPostDate, getTagColor } from "@/lib/content";
-import { useTranslations } from "@better-i18n/use-intl";
 
 interface BlogCardProps {
   post: BlogPostListItem;
@@ -9,33 +8,19 @@ interface BlogCardProps {
 }
 
 export default function BlogCard({ post, locale }: BlogCardProps) {
-  const t = useTranslations("blog");
-  const primaryTag = post.tags[0];
-
   return (
     <Link
       to="/$locale/blog/$slug"
       params={{ locale, slug: post.slug }}
       className="group flex flex-col rounded-xl bg-mist-950/[0.025] p-5 hover:bg-mist-950/[0.05] transition-colors"
     >
-      {/* Feature Image */}
-      {post.featuredImage && (
-        <div className="relative overflow-hidden rounded-lg mb-4 -mx-1 -mt-1">
-          <img
-            src={post.featuredImage}
-            alt={post.title}
-            className="aspect-[16/10] w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-          />
-        </div>
-      )}
-
-      {/* Meta: Tag + Date */}
+      {/* Meta: Category + Date */}
       <div className="flex items-center gap-3 text-mist-500 mb-3">
-        {primaryTag && (
+        {post.category && (
           <span
-            className={`text-xs font-medium px-2 py-0.5 rounded ${getTagColor(primaryTag)}`}
+            className={`text-xs font-medium px-2 py-0.5 rounded ${getTagColor(post.category)}`}
           >
-            {primaryTag}
+            {post.category}
           </span>
         )}
         {post.publishedAt && (
@@ -50,39 +35,31 @@ export default function BlogCard({ post, locale }: BlogCardProps) {
         {post.title}
       </h3>
 
-      {/* Excerpt */}
-      {post.excerpt && (
-        <p className="mt-2 text-sm text-mist-600 line-clamp-2">
-          {post.excerpt}
-        </p>
-      )}
-
       {/* Author + Reading Time */}
-      {(post.author || post.readingTime > 0) && (
+      {(post.authorName || !!post.readTime) && (
         <div className="mt-auto pt-4 flex items-center gap-2 text-sm text-mist-500">
-          {post.author?.image && (
-            <img
-              src={post.author.image}
-              alt={post.author.name}
-              className="h-5 w-5 rounded-full object-cover"
-            />
+          {post.authorName && (
+            <div className="flex-shrink-0">
+              {post.authorAvatar ? (
+                <img
+                  src={post.authorAvatar}
+                  alt={post.authorName}
+                  className="w-6 h-6 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-6 h-6 rounded-full bg-mist-200 flex items-center justify-center text-[10px] font-semibold text-mist-600">
+                  {post.authorName.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
           )}
-          {post.author && (
-            <span className="font-medium text-mist-700">
-              {post.author.name}
-            </span>
+          {post.authorName && (
+            <span className="font-medium text-mist-700">{post.authorName}</span>
           )}
-          {post.author && post.readingTime > 0 && (
+          {post.authorName && post.readTime && (
             <span className="text-mist-300">·</span>
           )}
-          {post.readingTime > 0 && (
-            <span>
-              {t("readingTime", {
-                defaultValue: "{{minutes}} min read",
-                minutes: post.readingTime,
-              })}
-            </span>
-          )}
+          {post.readTime && <span>{post.readTime}</span>}
         </div>
       )}
     </Link>

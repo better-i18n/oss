@@ -46,7 +46,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     // Generate dynamic OG image URL
     const ogImageParams = new URLSearchParams({
       title: post?.title || "Blog Post",
-      ...(post?.author?.name && { author: post.author.name }),
+      ...(post?.authorName && { author: post.authorName }),
       ...(post?.publishedAt && {
         date: new Date(post.publishedAt).toLocaleDateString("en-US", {
           year: "numeric",
@@ -56,17 +56,16 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       }),
     });
     const dynamicOgImage = `${SITE_URL}/api/og?${ogImageParams.toString()}`;
-    const ogImage = post?.featuredImage || dynamicOgImage;
 
     const articleSchema = post ? getArticleSchema({
-      title: post.metaTitle || post.title,
-      description: post.metaDescription || post.excerpt || "",
+      title: post.title,
+      description: "",
       url: canonicalUrl,
-      image: ogImage,
+      image: dynamicOgImage,
       publishedTime: post.publishedAt || "",
       modifiedTime: post.publishedAt || "",
       author: {
-        name: post.author?.name || "Better i18n Team",
+        name: post.authorName || "Better i18n Team",
       },
     }) : null;
 
@@ -83,11 +82,11 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
 
     return {
       meta: [
-        { title: `${post?.metaTitle || post?.title || "Post"} - Better i18n Blog` },
-        { name: "description", content: post?.metaDescription || post?.excerpt || "" },
-        { property: "og:title", content: post?.metaTitle || post?.title || "" },
-        { property: "og:description", content: post?.metaDescription || post?.excerpt || "" },
-        { property: "og:image", content: ogImage },
+        { title: `${post?.title || "Post"} - Better i18n Blog` },
+        { name: "description", content: "" },
+        { property: "og:title", content: post?.title || "" },
+        { property: "og:description", content: "" },
+        { property: "og:image", content: dynamicOgImage },
         { property: "og:image:width", content: "1200" },
         { property: "og:image:height", content: "630" },
         { property: "og:type", content: "article" },
@@ -96,12 +95,12 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         { property: "og:locale", content: locale },
         { property: "article:published_time", content: post?.publishedAt || "" },
         { property: "article:modified_time", content: post?.publishedAt || "" },
-        { property: "article:author", content: post?.author?.name || "" },
+        { property: "article:author", content: post?.authorName || "" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:site", content: "@betteri18n" },
-        { name: "twitter:title", content: post?.metaTitle || post?.title || "" },
-        { name: "twitter:description", content: post?.metaDescription || post?.excerpt || "" },
-        { name: "twitter:image", content: ogImage },
+        { name: "twitter:title", content: post?.title || "" },
+        { name: "twitter:description", content: "" },
+        { name: "twitter:image", content: dynamicOgImage },
         { name: "robots", content: "index, follow" },
       ],
       links: [
@@ -136,17 +135,14 @@ function BlogPostPage() {
 
           {/* Header */}
           <header>
-            {/* Tags */}
-            {post.tags.length > 0 && (
+            {/* Category */}
+            {post.category && (
               <div className="flex flex-wrap gap-2 mb-4">
-                {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className={`text-xs font-medium px-2.5 py-1 rounded ${getTagColor(tag)}`}
-                  >
-                    {tag}
-                  </span>
-                ))}
+                <span
+                  className={`text-xs font-medium px-2.5 py-1 rounded ${getTagColor(post.category)}`}
+                >
+                  {post.category}
+                </span>
               </div>
             )}
 
@@ -157,17 +153,25 @@ function BlogPostPage() {
 
             {/* Meta */}
             <div className="mt-6 flex items-center gap-4 pb-8 border-b border-mist-100">
-              {post.author?.image && (
-                <img
-                  src={post.author.image}
-                  alt={post.author.name}
-                  className="h-10 w-10 rounded-full object-cover"
-                />
+              {post.authorName && (
+                <div className="flex-shrink-0">
+                  {post.authorAvatar ? (
+                    <img
+                      src={post.authorAvatar}
+                      alt={post.authorName}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-mist-200 flex items-center justify-center text-sm font-semibold text-mist-600">
+                      {post.authorName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
               )}
               <div>
-                {post.author && (
+                {post.authorName && (
                   <p className="text-sm font-medium text-mist-950">
-                    {post.author.name}
+                    {post.authorName}
                   </p>
                 )}
                 <div className="flex items-center gap-2 text-sm text-mist-500">
@@ -176,32 +180,16 @@ function BlogPostPage() {
                       {formatPostDate(post.publishedAt, locale)}
                     </time>
                   )}
-                  {post.readingTime > 0 && (
+                  {!!post.readTime && (
                     <>
                       <span>·</span>
-                      <span>
-                        {t("readingTime", {
-                          defaultValue: "{{minutes}} min read",
-                          minutes: post.readingTime,
-                        })}
-                      </span>
+                      <span>{post.readTime}</span>
                     </>
                   )}
                 </div>
               </div>
             </div>
           </header>
-
-          {/* Feature Image */}
-          {post.featuredImage && (
-            <figure className="mt-8">
-              <img
-                src={post.featuredImage}
-                alt={post.title}
-                className="w-full rounded-2xl object-cover aspect-video"
-              />
-            </figure>
-          )}
 
           {/* Content */}
           {post.bodyHtml && (

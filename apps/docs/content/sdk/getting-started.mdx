@@ -108,7 +108,7 @@ BETTER_I18N_PROJECT=acme/web-app
 | --- | --- | --- | --- | --- |
 | `project` | `string` | Yes | — | Project identifier in `org/project` format |
 | `apiKey` | `string` | Yes | — | API key for authentication |
-| `apiBase` | `string` | No | `https://dash.better-i18n.com` | Custom API base URL |
+| `apiBase` | `string` | No | `https://content.better-i18n.com` | Custom API base URL |
 | `debug` | `boolean` | No | `false` | Log request URLs and responses to console |
 
 ## Debugging
@@ -126,8 +126,8 @@ const client = createClient({
 This logs all requests and responses to the console:
 
 ```
-[better-i18n] Client initialized { apiBase: "https://dash.better-i18n.com", org: "acme", project: "web-app", base: "https://dash.better-i18n.com/api/v1/content/acme/web-app" }
-[better-i18n] → getEntries(blog-posts) https://dash.better-i18n.com/api/v1/content/acme/web-app/models/blog-posts/entries?status=published
+[better-i18n] Client initialized { apiBase: "https://content.better-i18n.com", org: "acme", project: "web-app", base: "https://content.better-i18n.com/v1/content/acme/web-app" }
+[better-i18n] → getEntries(blog-posts) https://content.better-i18n.com/v1/content/acme/web-app/models/blog-posts/entries?status=published
 [better-i18n] ← 200 OK
 [better-i18n]   Response: {"items":[...],"total":24,"hasMore":true}
 ```

@@ -97,28 +97,32 @@ export default function Hero() {
               {/* Carna */}
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
-                  src="https://carna.ai/_next/image?url=%2Flogo_full.svg&w=640&q=75"
+                  src="/carna.png"
                   alt="Carna"
                   className="h-7 w-auto opacity-50 grayscale"
                 />
               </span>
               {/* Nomad Work */}
-              <span className="flex h-8 items-center justify-center gap-2 opacity-50 grayscale shrink-0">
+              <span className="flex h-8 items-center justify-center shrink-0">
                 <img
-                  src="https://hellonomad.app/logo.svg"
+                  src="/nomadwork.png"
                   alt="Nomad Work"
-                  className="h-7 w-7"
+                  className="h-7 w-auto opacity-50 grayscale"
                 />
-                <span className="text-xl font-semibold text-mist-950 whitespace-nowrap">
-                  Nomad Work
-                </span>
+              </span>
+              <span className="flex h-8 items-center justify-center shrink-0">
+                <img
+                  src="/hellospace.png"
+                  alt="Hellospace"
+                  className="h-7 w-auto opacity-50 grayscale"
+                />
               </span>
               {/* Cloudflare */}
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/cloudflare.png"
                   alt="Cloudflare"
-                  className="h-8 w-auto opacity-50 grayscale"
+                  className="h-7 w-auto opacity-50 grayscale"
                 />
               </span>
             </div>
