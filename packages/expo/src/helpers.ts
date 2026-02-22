@@ -58,16 +58,6 @@ export interface BetterI18nResult {
 }
 
 /**
- * Pick the default namespace from CDN-delivered namespaces.
- * Prefers "common" if present, otherwise uses the first namespace,
- * falling back to i18next's standard "translation" default.
- */
-function resolveDefaultNS(namespaces: string[]): string {
-  if (namespaces.includes("common")) return "common";
-  return namespaces[0] ?? "translation";
-}
-
-/**
  * One-call setup that fetches translations from the better-i18n CDN
  * and initializes i18next with all namespaces pre-loaded.
  *
@@ -151,6 +141,14 @@ export async function initBetterI18n(
     }
   }
 
+  /**
+   * Merges all CDN sections into the "translation" namespace for dot-notation access.
+   * Enables t('section.key') pattern in addition to t('namespace:key').
+   */
+  function addTranslationBundle(locale: string, msgs: Messages): void {
+    i18nInstance.addResourceBundle(locale, "translation", msgs, true, true);
+  }
+
   // Fetch manifest + initial translations in parallel
   const [languages, messages] = await Promise.all([
     core.getLanguages(),
@@ -159,16 +157,17 @@ export async function initBetterI18n(
 
   const supportedLngs = languages.map((l) => l.code);
   const namespaces = Object.keys(messages);
-  const defaultNS = resolveDefaultNS(namespaces);
 
   await i18nInstance.init({
-    resources: { [lng]: messages },
+    resources: { [lng]: { translation: messages, ...messages } },
+    // "translation" = tüm namespace'ler merged (dot-notation: t('section.key') çalışır)
+    // ...messages   = bireysel namespace'ler (colon-notation: t('ns:key') çalışır)
     lng,
     fallbackLng: defaultLocale,
     supportedLngs,
     lowerCaseLng: true, // CDN lowercase — match i18next BCP 47 normalization
-    defaultNS,
-    fallbackNS: defaultNS,
+    defaultNS: "translation",
+    fallbackNS: "translation",
     interpolation: { escapeValue: false },
     react: { useSuspense: false },
     ...i18nextOptions,
@@ -187,11 +186,11 @@ export async function initBetterI18n(
   i18nInstance.changeLanguage = async (newLng?: string, callback?: import("i18next").Callback) => {
     const safeLng = newLng ? normalizeLocale(newLng) : undefined;
     if (safeLng) {
-      const anyNs = namespaces[0];
-      if (anyNs && !i18nInstance.hasResourceBundle(safeLng, anyNs)) {
+      if (!i18nInstance.hasResourceBundle(safeLng, "translation")) {
         try {
           const newMessages = await loadMessages(safeLng);
           addAllNamespaces(safeLng, newMessages);
+          addTranslationBundle(safeLng, newMessages);
           if (debug) {
             console.debug(
               `${LOG_PREFIX} Pre-loaded ${Object.keys(newMessages).length} namespaces for ${safeLng}`
@@ -213,12 +212,12 @@ export async function initBetterI18n(
   i18nInstance.on("languageChanged", async (rawLng: string) => {
     const newLng = normalizeLocale(rawLng);
     // Skip if this language's resources are already loaded
-    const anyNs = namespaces[0];
-    if (anyNs && i18nInstance.hasResourceBundle(newLng, anyNs)) return;
+    if (i18nInstance.hasResourceBundle(newLng, "translation")) return;
 
     try {
       const newMessages = await loadMessages(newLng);
       addAllNamespaces(newLng, newMessages);
+      addTranslationBundle(newLng, newMessages);
 
       if (debug) {
         console.debug(
