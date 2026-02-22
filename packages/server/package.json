@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/server",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Framework-agnostic server-side i18n for Better i18n (Hono, Express, Fastify)",
   "license": "MIT",
   "repository": {
