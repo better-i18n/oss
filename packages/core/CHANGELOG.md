@@ -1,5 +1,11 @@
 # @better-i18n/core
 
+## 0.1.10
+
+### Patch Changes
+
+- fix: Normalize locale to lowercase for CDN compatibility (BCP 47 sub-locale fix)
+
 ## 0.1.9
 
 ### Patch Changes

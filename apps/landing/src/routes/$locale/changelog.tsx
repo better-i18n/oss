@@ -64,23 +64,72 @@ const categoryLabels: Record<string, Record<string, string>> = {
   },
 };
 
-// Simple markdown to HTML conversion
+// Apply inline formatting (bold) to a text segment
+function applyInline(text: string): string {
+  return text.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>');
+}
+
+// Line-by-line markdown to HTML conversion
+// Content comes from our own CMS (controlled source), so innerHTML is safe here.
 function renderContent(content: string): string {
-  return content
-    // Headers
-    .replace(/^### (.+)$/gm, '<h4 class="text-base font-semibold text-gray-900 mt-6 mb-2">$1</h4>')
-    .replace(/^## (.+)$/gm, '<h3 class="text-lg font-semibold text-gray-900 mt-8 mb-3">$1</h3>')
-    // Bold
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
-    // Lists
-    .replace(/^- (.+)$/gm, '<li class="text-gray-600">$1</li>')
-    // Wrap consecutive li elements in ul
-    .replace(
-      /(<li[^>]*>.*?<\/li>\n?)+/g,
-      '<ul class="list-disc list-inside space-y-1.5 my-3 text-sm">$&</ul>'
-    )
-    // Clean up empty lines
-    .replace(/\n\n+/g, '\n');
+  const lines = content.split('\n');
+  const output: string[] = [];
+  const listItems: string[] = [];
+
+  function flushList() {
+    if (listItems.length > 0) {
+      output.push('<ul class="list-disc list-inside space-y-1.5 my-3 text-sm">');
+      output.push(...listItems);
+      output.push('</ul>');
+      listItems.length = 0;
+    }
+  }
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    // Skip h1 — title is already shown in the card header
+    if (/^# /.test(trimmed)) {
+      flushList();
+      continue;
+    }
+
+    // ## → <h3>
+    if (/^## (.+)$/.test(trimmed)) {
+      flushList();
+      const text = trimmed.slice(3);
+      output.push(`<h3 class="text-lg font-semibold text-gray-900 mt-8 mb-3">${applyInline(text)}</h3>`);
+      continue;
+    }
+
+    // ### → <h4>
+    if (/^### (.+)$/.test(trimmed)) {
+      flushList();
+      const text = trimmed.slice(4);
+      output.push(`<h4 class="text-base font-semibold text-gray-900 mt-6 mb-2">${applyInline(text)}</h4>`);
+      continue;
+    }
+
+    // - item → buffered <li>
+    if (/^- (.+)$/.test(trimmed)) {
+      const text = trimmed.slice(2);
+      listItems.push(`<li class="text-gray-600">${applyInline(text)}</li>`);
+      continue;
+    }
+
+    // Non-empty plain text → <p>
+    if (trimmed) {
+      flushList();
+      output.push(`<p class="text-gray-600 text-sm my-2">${applyInline(trimmed)}</p>`);
+      continue;
+    }
+
+    // Empty line — flush any open list
+    flushList();
+  }
+
+  flushList();
+  return output.join('\n');
 }
 
 function ChangelogPage() {
@@ -162,30 +211,17 @@ function ChangelogPage() {
                   </h2>
 
                   {/* Summary */}
-                  <p className="text-base text-gray-600 mb-4">
-                    {entry.excerpt}
-                  </p>
+                  {entry.customFields.summary ? (
+                    <p className="text-base text-gray-600 mb-4">{entry.customFields.summary}</p>
+                  ) : null}
 
-                  {/* Full Content */}
-                  {entry.bodyMarkdown && (
+                  {/* Full Content — content is from our own CMS (controlled source) */}
+                  {entry.body && (
                     <div
                       className="prose prose-sm prose-gray max-w-none"
-                      dangerouslySetInnerHTML={{ __html: renderContent(entry.bodyMarkdown) }}
+                      // eslint-disable-next-line react/no-danger
+                      dangerouslySetInnerHTML={{ __html: renderContent(entry.body) }}
                     />
-                  )}
-
-                  {/* Tags */}
-                  {entry.tags && entry.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-gray-100">
-                      {entry.tags.map((tag: string) => (
-                        <span
-                          key={tag}
-                          className="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-500"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
                   )}
                 </article>
               ))}

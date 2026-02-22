@@ -1,5 +1,13 @@
 # @better-i18n/expo
 
+## 0.3.3
+
+### Patch Changes
+
+- fix: Normalize locale to lowercase for CDN compatibility (BCP 47 sub-locale fix)
+- Updated dependencies
+  - @better-i18n/core@0.1.10
+
 ## 0.3.2
 
 ### Patch Changes

@@ -19,6 +19,7 @@ export type { ContentEntry, ContentEntryListItem };
 export interface ChangelogCustomFields extends Record<string, string | null> {
   version: string | null;
   category: string | null;
+  summary: string | null;
 }
 
 export type ChangelogEntry = ContentEntry<ChangelogCustomFields>;

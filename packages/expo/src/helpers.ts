@@ -166,6 +166,7 @@ export async function initBetterI18n(
     lng,
     fallbackLng: defaultLocale,
     supportedLngs,
+    lowerCaseLng: true, // CDN lowercase — match i18next BCP 47 normalization
     defaultNS,
     fallbackNS: defaultNS,
     interpolation: { escapeValue: false },
@@ -185,20 +186,21 @@ export async function initBetterI18n(
   const originalChangeLanguage = i18nInstance.changeLanguage.bind(i18nInstance);
   i18nInstance.changeLanguage = async (newLng?: string, callback?: import("i18next").Callback) => {
     if (newLng) {
+      const safeLng = newLng.toLowerCase();
       const anyNs = namespaces[0];
-      if (anyNs && !i18nInstance.hasResourceBundle(newLng, anyNs)) {
+      if (anyNs && !i18nInstance.hasResourceBundle(safeLng, anyNs)) {
         try {
-          const newMessages = await loadMessages(newLng);
-          addAllNamespaces(newLng, newMessages);
+          const newMessages = await loadMessages(safeLng);
+          addAllNamespaces(safeLng, newMessages);
           if (debug) {
             console.debug(
-              `${LOG_PREFIX} Pre-loaded ${Object.keys(newMessages).length} namespaces for ${newLng}`
+              `${LOG_PREFIX} Pre-loaded ${Object.keys(newMessages).length} namespaces for ${safeLng}`
             );
           }
         } catch (error) {
           if (debug) {
             console.debug(
-              `${LOG_PREFIX} Pre-load failed for ${newLng}, continuing with fallback`
+              `${LOG_PREFIX} Pre-load failed for ${safeLng}, continuing with fallback`
             );
           }
         }

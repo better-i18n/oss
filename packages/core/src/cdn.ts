@@ -260,9 +260,10 @@ const getMessagesWithFallback = async (
   locale: string,
   fetchFn: typeof fetch
 ): Promise<Messages> => {
+  const safeLng = locale.toLowerCase(); // CDN convention: always lowercase
   const logger = createLogger(config, "messages");
-  const cacheKey = `${buildCacheKey(config.cdnBaseUrl, config.project)}|${locale}`;
-  const storageKey = buildMessagesStorageKey(config.project, locale);
+  const cacheKey = `${buildCacheKey(config.cdnBaseUrl, config.project)}|${safeLng}`;
+  const storageKey = buildMessagesStorageKey(config.project, safeLng);
 
   // 1. Memory cache
   const memoryCached = messagesCache.get(cacheKey);
@@ -270,7 +271,7 @@ const getMessagesWithFallback = async (
 
   // 2. CDN fetch
   try {
-    const messages = await fetchMessagesFromCdn(config, locale, fetchFn);
+    const messages = await fetchMessagesFromCdn(config, safeLng, fetchFn);
     messagesCache.set(cacheKey, messages, config.manifestCacheTtlMs);
 
     // Write-through to storage (fire-and-forget)
@@ -278,21 +279,21 @@ const getMessagesWithFallback = async (
 
     return messages;
   } catch (cdnError) {
-    logger.warn(`CDN fetch failed for locale "${locale}", trying fallback sources`, cdnError);
+    logger.warn(`CDN fetch failed for locale "${safeLng}", trying fallback sources`, cdnError);
 
     // 3. Persistent storage
     const stored = await readFromStorage<Messages>(config.storage, storageKey);
     if (stored) {
-      logger.info(`serving messages for "${locale}" from persistent storage (stale)`);
+      logger.info(`serving messages for "${safeLng}" from persistent storage (stale)`);
       messagesCache.set(cacheKey, stored, config.manifestCacheTtlMs);
       return stored;
     }
 
     // 4. staticData
     const resolved = await resolveStaticData(config.staticData);
-    if (resolved && resolved[locale]) {
-      logger.info(`serving messages for "${locale}" from staticData`);
-      return resolved[locale];
+    if (resolved && resolved[safeLng]) {
+      logger.info(`serving messages for "${safeLng}" from staticData`);
+      return resolved[safeLng];
     }
 
     // 5. No fallback available
