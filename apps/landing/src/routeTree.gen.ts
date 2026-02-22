@@ -21,6 +21,7 @@ import { Route as CareersRouteImport } from './routes/careers'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LocaleIndexRouteImport } from './routes/$locale/index'
+import { Route as ApiStatusRouteImport } from './routes/api/status'
 import { Route as ApiOgRouteImport } from './routes/api/og'
 import { Route as ApiChangelogRouteImport } from './routes/api/changelog'
 import { Route as LocaleWhatIsLocalizationRouteImport } from './routes/$locale/what-is-localization'
@@ -114,6 +115,11 @@ const IndexRoute = IndexRouteImport.update({
 const LocaleIndexRoute = LocaleIndexRouteImport.update({
   id: '/$locale/',
   path: '/$locale/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStatusRoute = ApiStatusRouteImport.update({
+  id: '/api/status',
+  path: '/api/status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiOgRoute = ApiOgRouteImport.update({
@@ -318,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/$locale/what-is-localization': typeof LocaleWhatIsLocalizationRoute
   '/api/changelog': typeof ApiChangelogRoute
   '/api/og': typeof ApiOgRoute
+  '/api/status': typeof ApiStatusRoute
   '/$locale': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
   '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
@@ -366,6 +373,7 @@ export interface FileRoutesByTo {
   '/$locale/what-is-localization': typeof LocaleWhatIsLocalizationRoute
   '/api/changelog': typeof ApiChangelogRoute
   '/api/og': typeof ApiOgRoute
+  '/api/status': typeof ApiStatusRoute
   '/$locale': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
   '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
@@ -415,6 +423,7 @@ export interface FileRoutesById {
   '/$locale/what-is-localization': typeof LocaleWhatIsLocalizationRoute
   '/api/changelog': typeof ApiChangelogRoute
   '/api/og': typeof ApiOgRoute
+  '/api/status': typeof ApiStatusRoute
   '/$locale/': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
   '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
@@ -465,6 +474,7 @@ export interface FileRouteTypes {
     | '/$locale/what-is-localization'
     | '/api/changelog'
     | '/api/og'
+    | '/api/status'
     | '/$locale'
     | '/$locale/blog/$slug'
     | '/$locale/compare/crowdin'
@@ -513,6 +523,7 @@ export interface FileRouteTypes {
     | '/$locale/what-is-localization'
     | '/api/changelog'
     | '/api/og'
+    | '/api/status'
     | '/$locale'
     | '/$locale/blog/$slug'
     | '/$locale/compare/crowdin'
@@ -561,6 +572,7 @@ export interface FileRouteTypes {
     | '/$locale/what-is-localization'
     | '/api/changelog'
     | '/api/og'
+    | '/api/status'
     | '/$locale/'
     | '/$locale/blog/$slug'
     | '/$locale/compare/crowdin'
@@ -610,6 +622,7 @@ export interface RootRouteChildren {
   LocaleWhatIsLocalizationRoute: typeof LocaleWhatIsLocalizationRoute
   ApiChangelogRoute: typeof ApiChangelogRoute
   ApiOgRoute: typeof ApiOgRoute
+  ApiStatusRoute: typeof ApiStatusRoute
   LocaleIndexRoute: typeof LocaleIndexRoute
   LocaleBlogSlugRoute: typeof LocaleBlogSlugRoute
   LocaleCompareCrowdinRoute: typeof LocaleCompareCrowdinRoute
@@ -714,6 +727,13 @@ declare module '@tanstack/react-router' {
       path: '/$locale'
       fullPath: '/$locale'
       preLoaderRoute: typeof LocaleIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/status': {
+      id: '/api/status'
+      path: '/api/status'
+      fullPath: '/api/status'
+      preLoaderRoute: typeof ApiStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/og': {
@@ -986,6 +1006,7 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleWhatIsLocalizationRoute: LocaleWhatIsLocalizationRoute,
   ApiChangelogRoute: ApiChangelogRoute,
   ApiOgRoute: ApiOgRoute,
+  ApiStatusRoute: ApiStatusRoute,
   LocaleIndexRoute: LocaleIndexRoute,
   LocaleBlogSlugRoute: LocaleBlogSlugRoute,
   LocaleCompareCrowdinRoute: LocaleCompareCrowdinRoute,
