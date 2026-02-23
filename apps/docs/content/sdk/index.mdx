@@ -12,7 +12,7 @@ The Better i18n Content SDK (`@better-i18n/sdk`) is a lightweight TypeScript cli
 - **Type-safe** — Full TypeScript types with generic custom fields support
 - **Language-aware** — Fetch localized content by language code with automatic fallback
 - **Pagination** — Built-in pagination with total count and `hasMore` indicator
-- **Filtering & sorting** — Filter by status, sort by date or title
+- **Chainable API** — Supabase-style `from()` query builder with filtering & sorting
 
 ## Quick Example
 
@@ -27,17 +27,20 @@ const client = createClient({
 // List content models
 const models = await client.getModels();
 
-// Get published blog posts
-const { items, total } = await client.getEntries("blog-posts", {
-  status: "published",
-  sort: "publishedAt",
-  order: "desc",
-});
+// Get published blog posts // [!code highlight]
+const { data: posts, total } = await client // [!code highlight]
+  .from("blog-posts") // [!code highlight]
+  .eq("status", "published") // [!code highlight]
+  .order("publishedAt", { ascending: false }) // [!code highlight]
+  .limit(10); // [!code highlight]
 
-// Get a single entry in French
-const post = await client.getEntry("blog-posts", "hello-world", {
-  language: "fr",
-});
+// Get a single entry in French // [!code highlight]
+const { data: post } = await client // [!code highlight]
+  .from("blog-posts") // [!code highlight]
+  .language("fr") // [!code highlight]
+  .single("hello-world"); // [!code highlight]
+
+console.log(post.title, post.body);
 ```
 
 ## Next Steps
@@ -47,7 +50,7 @@ const post = await client.getEntry("blog-posts", "hello-world", {
     Install the SDK and fetch your first content
   </Card>
   <Card title="Models & Entries" href="/sdk/models-and-entries">
-    Working with content models, entries, and pagination
+    Query content with the chainable from() API
   </Card>
   <Card title="API Reference" href="/sdk/api-reference">
     Complete method and type reference
