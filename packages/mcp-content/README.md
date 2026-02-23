@@ -82,12 +82,12 @@ All tools require a `project` parameter (format: `"org-slug/project-slug"`) to i
 
 | Tool | Description |
 | --- | --- |
-| `createContentModel` | Create a new content model with optional field definitions |
+| `createContentModel` | Create a content model with field definitions (supports enum options, relations) |
 | `updateContentModel` | Update a content model's display name, description, or settings |
 | `deleteContentModel` | Permanently delete a content model and all its entries |
 | `getContentModel` | Get a model's details including all custom field definitions |
 | `listContentModels` | List all content models with entry counts and field definitions |
-| `addField` | Add a custom field to a content model |
+| `addField` | Add a custom field to a model (with enum options, relation config) |
 | `updateField` | Update a custom field's properties |
 | `removeField` | Remove a custom field from a content model |
 | `reorderFields` | Reorder custom fields within a content model |
@@ -110,6 +110,48 @@ All tools require a `project` parameter (format: `"org-slug/project-slug"`) to i
 | `publishContentEntry` | Set entry status to published and approve translations |
 | `bulkPublishEntries` | Publish multiple entries at once |
 
+## Field Types & Options
+
+When creating content models or adding fields, the following types are available:
+
+| Type | Description | Options |
+| --- | --- | --- |
+| `text` | Single-line text | — |
+| `textarea` | Multi-line text | — |
+| `richtext` | Rich text (Markdown) | — |
+| `number` | Numeric value | — |
+| `boolean` | True/false toggle | — |
+| `date` | Date picker | — |
+| `datetime` | Date and time picker | — |
+| `enum` | Dropdown select | `options.enumValues: [{ label, value }]` |
+| `media` | Image/file upload | `options.unsplash`, `options.aiGeneration` |
+| `relation` | Link to another model | `fieldConfig.targetModel` |
+
+### Enum Fields
+
+Enum fields support a list of allowed values with display labels:
+
+```json
+{
+  "name": "status",
+  "displayName": "Status",
+  "type": "enum",
+  "options": {
+    "enumValues": [
+      { "label": "Draft", "value": "draft" },
+      { "label": "Published", "value": "published" },
+      { "label": "Archived", "value": "archived" }
+    ]
+  }
+}
+```
+
+When setting custom field values on entries, pass the enum `value` (not label):
+
+```json
+{ "customFields": { "status": "published" } }
+```
+
 ## Example Prompts
 
 Ask your AI assistant:
@@ -125,6 +167,8 @@ Ask your AI assistant:
 > "Translate the blog post 'hello-world' to German"
 
 > "Publish all draft changelog entries"
+
+> "Add an enum field called 'priority' with options Low, Medium, High to the tasks model"
 
 ## Environment Variables
 
