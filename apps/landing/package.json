@@ -14,7 +14,7 @@
   "dependencies": {
     "@better-i18n/core": "workspace:*",
     "@better-i18n/schemas": "workspace:*",
-    "@better-i18n/sdk": "^2.0.1",
+    "@better-i18n/sdk": "^3.0.0",
     "@better-i18n/ui": "^0.1.1",
     "@better-i18n/use-intl": "workspace:*",
     "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.90",
