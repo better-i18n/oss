@@ -350,12 +350,11 @@ t('typoTitle')   // ❌ TypeScript error
 ### Use Consistent Naming
 
 ```json
-// ✅ Good - consistent patterns
+// ✅ Good - consistent camelCase
 {
   "home": {
-    "meta.title": "...",
-    "hero.title": "...",
-    "hero.cta": "..."
+    "meta": { "title": "..." },
+    "hero": { "title": "...", "cta": "..." }
   }
 }
 
@@ -375,8 +374,10 @@ t('typoTitle')   // ❌ TypeScript error
 // ✅ Good - reasonable depth (2-3 levels)
 {
   "settings": {
-    "profile.name": "Name",
-    "profile.email": "Email"
+    "profile": {
+      "name": "Name",
+      "email": "Email"
+    }
   }
 }
 

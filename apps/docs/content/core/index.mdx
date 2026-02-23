@@ -57,7 +57,7 @@ const i18n = createI18nCore({
 
 // Fetch translation messages for a locale
 const messages = await i18n.getMessages("tr");
-// { "common.welcome": "Hoş geldiniz", "common.logout": "Çıkış" }
+// { common: { welcome: "Hoş geldiniz", logout: "Çıkış" } }
 
 // Get all available locale codes
 const locales = await i18n.getLocales();

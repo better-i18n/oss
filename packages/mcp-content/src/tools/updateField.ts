@@ -13,6 +13,21 @@ import {
 } from "../base-tool.js";
 import type { Tool } from "../types/index.js";
 
+const enumValueItem = z.object({
+  label: z.string().min(1).max(200),
+  value: z.string().min(1).max(200),
+});
+
+const fieldOptionsSchema = z.object({
+  enumValues: z.array(enumValueItem).max(200).optional(),
+  unsplash: z.object({ enabled: z.boolean() }).optional(),
+  aiGeneration: z.object({
+    enabled: z.boolean(),
+    prompt: z.string().max(2000).optional(),
+    model: z.string().max(100).optional(),
+  }).optional(),
+}).optional();
+
 const inputSchema = projectSchema.extend({
   modelSlug: z.string().min(1),
   fieldName: z.string().min(1),
@@ -22,6 +37,7 @@ const inputSchema = projectSchema.extend({
   required: z.boolean().optional(),
   placeholder: z.string().max(500).optional(),
   helpText: z.string().max(500).optional(),
+  options: fieldOptionsSchema,
   fieldConfig: z.object({
     targetModel: z.string().optional(),
   }).optional(),
@@ -68,6 +84,24 @@ export const updateField: Tool = {
           type: "string",
           description: "Updated help text",
         },
+        options: {
+          type: "object",
+          description: "Field-level options. For enum fields: { enumValues: [{ label, value }] }. For media: { unsplash, aiGeneration }",
+          properties: {
+            enumValues: {
+              type: "array",
+              description: "Allowed values for enum fields",
+              items: {
+                type: "object",
+                properties: {
+                  label: { type: "string", description: "Display label shown to users" },
+                  value: { type: "string", description: "Machine-readable value stored in DB" },
+                },
+                required: ["label", "value"],
+              },
+            },
+          },
+        },
         fieldConfig: {
           type: "object",
           description: "Type-specific configuration (e.g., targetModel for relation fields)",
@@ -93,6 +127,7 @@ export const updateField: Tool = {
         required: input.required,
         placeholder: input.placeholder,
         helpText: input.helpText,
+        options: input.options,
         fieldConfig: input.fieldConfig,
       });
 

@@ -13,6 +13,21 @@ import {
 } from "../base-tool.js";
 import type { Tool } from "../types/index.js";
 
+const enumValueItem = z.object({
+  label: z.string().min(1).max(200),
+  value: z.string().min(1).max(200),
+});
+
+const fieldOptionsSchema = z.object({
+  enumValues: z.array(enumValueItem).max(200).optional(),
+  unsplash: z.object({ enabled: z.boolean() }).optional(),
+  aiGeneration: z.object({
+    enabled: z.boolean(),
+    prompt: z.string().max(2000).optional(),
+    model: z.string().max(100).optional(),
+  }).optional(),
+}).optional();
+
 const fieldDefinition = z.object({
   name: z.string().min(1).max(100).regex(/^[a-z_][a-z0-9_]*$/),
   displayName: z.string().min(1).max(200),
@@ -22,6 +37,7 @@ const fieldDefinition = z.object({
   placeholder: z.string().max(500).optional(),
   helpText: z.string().max(500).optional(),
   position: z.number().int().min(0).optional(),
+  options: fieldOptionsSchema,
   fieldConfig: z.object({
     targetModel: z.string().optional(),
   }).optional(),
@@ -45,6 +61,7 @@ export const createContentModel: Tool = {
 Field types: text, textarea, richtext, number, boolean, date, datetime, enum, media, relation.
 For relation fields, use fieldConfig.targetModel to specify the related model slug.
 For user fields, use 'relation' with fieldConfig.targetModel = 'users'.
+For enum fields, use options.enumValues to define allowed values.
 
 EXAMPLE:
 {
@@ -98,6 +115,24 @@ EXAMPLE:
               required: { type: "boolean", description: "Whether field is required" },
               placeholder: { type: "string", description: "Placeholder text" },
               helpText: { type: "string", description: "Help text" },
+              options: {
+                type: "object",
+                description: "Field-level options. For enum fields: { enumValues: [{ label, value }] }",
+                properties: {
+                  enumValues: {
+                    type: "array",
+                    description: "Allowed values for enum fields",
+                    items: {
+                      type: "object",
+                      properties: {
+                        label: { type: "string", description: "Display label" },
+                        value: { type: "string", description: "Stored value" },
+                      },
+                      required: ["label", "value"],
+                    },
+                  },
+                },
+              },
               fieldConfig: {
                 type: "object",
                 description: "Type-specific configuration (e.g., targetModel for relation fields)",
