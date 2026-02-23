@@ -315,6 +315,134 @@ Get a content model's full details including all field definitions.
 
 </AccordionItem>
 
+<AccordionItem title="createContentModel">
+Create a new content model with optional initial field definitions.
+
+**Parameters:**
+
+- `slug`: Model slug (lowercase, hyphens only, e.g., `"blog-posts"`)
+- `displayName`: Human-readable model name
+- `description` (optional): Model description
+- `kind` (optional): `"collection"` (multiple entries, default) or `"single"` (one entry)
+- `icon` (optional): Icon identifier
+- `enableVersionHistory` (optional): Enable version history tracking (default: `true`)
+- `fields` (optional): Array of initial field definitions with `name`, `displayName`, `type`, `localized`, `required`, `options`, `fieldConfig`
+
+```json
+{
+  "slug": "blog-posts",
+  "displayName": "Blog Posts",
+  "kind": "collection",
+  "fields": [
+    { "name": "author_name", "displayName": "Author", "type": "text", "required": true },
+    { "name": "category", "displayName": "Category", "type": "enum", "options": { "enumValues": [{ "label": "Tech", "value": "tech" }] } }
+  ]
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="updateContentModel">
+Update a content model's metadata, including display settings.
+
+**Parameters:**
+
+- `modelSlug`: Content model slug to update
+- `displayName` (optional): Updated display name
+- `description` (optional): Updated description
+- `kind` (optional): Updated model kind (`"collection"` or `"single"`)
+- `icon` (optional): Updated icon identifier
+- `enableVersionHistory` (optional): Updated version history setting
+- `tableSettings` (optional): Table display settings for base field column visibility
+  - `baseFields`: Map of base field name → show in table (e.g., `{ "title": true, "slug": false, "body": false }`)
+
+</AccordionItem>
+
+<AccordionItem title="deleteContentModel">
+Delete a content model and all its entries.
+
+**Parameters:**
+
+- `modelSlug`: Content model slug to delete
+
+**Warning:** This permanently deletes the model and all associated entries, fields, and content.
+
+</AccordionItem>
+
+</Accordion>
+
+### Field Tools
+
+<Accordion>
+
+<AccordionItem title="addField">
+Add a custom field to a content model. Field name must be snake_case.
+
+**Parameters:**
+
+- `modelSlug`: Parent content model slug
+- `name`: Field name (snake_case, e.g., `"author_name"`)
+- `displayName`: Display name (e.g., `"Author Name"`)
+- `type` (optional): Field type — `text`, `textarea`, `richtext`, `number`, `boolean`, `date`, `datetime`, `enum`, `media`, `relation` (default: `text`)
+- `localized` (optional): Whether field is localized per language (default: `false`)
+- `required` (optional): Whether field is required (default: `false`)
+- `placeholder` (optional): Placeholder text
+- `helpText` (optional): Help text
+- `position` (optional): Sort position (auto-calculated if omitted)
+- `options` (optional): Field-level options
+  - `enumValues`: Allowed values for enum fields — `[{ "label": "Display", "value": "stored" }]`
+  - `showInTable`: Whether this field appears as a column in the content list table
+  - `unsplash`: `{ "enabled": true }` for Unsplash integration
+  - `aiGeneration`: `{ "enabled": true, "prompt": "..." }` for AI generation
+- `fieldConfig` (optional): Type-specific configuration
+  - `targetModel`: Target model slug for relation fields
+
+</AccordionItem>
+
+<AccordionItem title="updateField">
+Update a custom field's properties within a content model.
+
+**Parameters:**
+
+- `modelSlug`: Parent content model slug
+- `fieldName`: Field name to update
+- `displayName` (optional): Updated display name
+- `type` (optional): Updated field type
+- `localized` (optional): Updated localization setting
+- `required` (optional): Updated required setting
+- `placeholder` (optional): Updated placeholder text
+- `helpText` (optional): Updated help text
+- `options` (optional): Updated field-level options
+  - `enumValues`: Updated allowed values for enum fields
+  - `showInTable`: Whether this field appears as a column in the content list table
+  - `unsplash`: Updated Unsplash settings
+  - `aiGeneration`: Updated AI generation settings
+- `fieldConfig` (optional): Updated type-specific configuration
+
+</AccordionItem>
+
+<AccordionItem title="removeField">
+Remove a custom field from a content model.
+
+**Parameters:**
+
+- `modelSlug`: Parent content model slug
+- `fieldName`: Field name to remove
+
+**Warning:** This permanently removes the field and all its values from existing entries.
+
+</AccordionItem>
+
+<AccordionItem title="reorderFields">
+Reorder custom fields in a content model.
+
+**Parameters:**
+
+- `modelSlug`: Parent content model slug
+- `fieldNames`: Array of field names in desired order
+
+</AccordionItem>
+
 </Accordion>
 
 ### Entry Tools
@@ -382,6 +510,17 @@ Update an existing content entry's translations or metadata.
 
 </AccordionItem>
 
+<AccordionItem title="duplicateContentEntry">
+Duplicate an existing content entry within the same model.
+
+**Parameters:**
+
+- `entryId`: Source entry UUID to duplicate
+
+**Returns:** Newly created entry with a generated slug (original slug + `-copy`).
+
+</AccordionItem>
+
 </Accordion>
 
 ### Publish Tools
@@ -405,6 +544,18 @@ Soft-delete a content entry.
 **Parameters:**
 
 - `entryId`: The entry UUID
+
+</AccordionItem>
+
+<AccordionItem title="bulkPublishEntries">
+Publish multiple content entries at once.
+
+**Parameters:**
+
+- `modelSlug`: Content model slug
+- `entryIds`: Array of entry UUIDs to publish
+
+**Returns:** Array of published entries with updated `publishedAt` timestamps.
 
 </AccordionItem>
 

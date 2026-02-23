@@ -30,6 +30,229 @@ const client = createClient({
 
 ---
 
+## `client.from(modelSlug)`
+
+Start a chainable query builder for a content model. This is the primary API for fetching entries.
+
+```typescript
+const builder = client.from("blog-posts"); // [!code highlight]
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `modelSlug` | `string` | Yes | Content model slug |
+
+**Returns:** `ContentQueryBuilder`
+
+The builder is **immutable** — every chained method returns a new builder instance. The builder is **thenable**: `await` it directly to execute a list query.
+
+---
+
+## Query Builder Methods
+
+All methods return a new `ContentQueryBuilder` instance and can be chained in any order.
+
+| Method | Description |
+| --- | --- |
+| `.select(...fields)` | Choose which fields to include in the response |
+| `.eq(field, value)` | Filter by field value (`"status"` or any custom field) |
+| `.filter(field, value)` | Filter by custom field value |
+| `.search(term)` | Full-text search on entry titles |
+| `.language(code)` | Set language code for localized content |
+| `.order(field, opts?)` | Set sort field and direction |
+| `.limit(n)` | Limit results per page (1–100) |
+| `.page(n)` | Set page number (1-based) |
+| `.expand(...fields)` | Expand relation fields inline |
+
+### `.select(...fields)`
+
+Choose which fields to include. `slug` and `publishedAt` are always returned. When omitted, all fields are returned.
+
+```typescript
+const { data } = await client
+  .from("blog-posts")
+  .select("title", "body", "category");
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `...fields` | `string[]` | Field names to include |
+
+### `.eq(field, value)`
+
+Filter entries by exact field value. Works for the built-in `status` field and any custom field.
+
+```typescript
+const { data } = await client
+  .from("blog-posts")
+  .eq("status", "published");
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `field` | `string` | Field name (`"status"` or custom field name) |
+| `value` | `string` | Value to match |
+
+### `.filter(field, value)`
+
+Filter by a custom field value. Equivalent to `.eq()` for custom fields.
+
+```typescript
+const { data } = await client
+  .from("blog-posts")
+  .filter("category", "engineering");
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `field` | `string` | Custom field name |
+| `value` | `string` | Value to match |
+
+### `.search(term)`
+
+Full-text search on entry titles.
+
+```typescript
+const { data } = await client
+  .from("blog-posts")
+  .search("kubernetes");
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `term` | `string` | Search term |
+
+### `.language(code)`
+
+Set the language code for localized content. Falls back to the source language when the requested language has no translation.
+
+```typescript
+const { data } = await client
+  .from("blog-posts")
+  .language("fr")
+  .single("hello-world");
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `code` | `string` | BCP 47 language code (e.g. `"en"`, `"fr"`, `"tr"`) |
+
+### `.order(field, options?)`
+
+Set the sort field and direction.
+
+```typescript
+const { data } = await client
+  .from("blog-posts")
+  .order("publishedAt", { ascending: false });
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `field` | `ContentEntrySortField` | `"publishedAt"`, `"createdAt"`, `"updatedAt"`, or `"title"` |
+| `options.ascending` | `boolean` | `true` for ascending, `false` for descending. Default: `false` |
+
+### `.limit(n)`
+
+Limit the number of entries returned per page.
+
+```typescript
+const { data } = await client.from("blog-posts").limit(20);
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `n` | `number` | Entries per page (1–100). Default: `50` |
+
+### `.page(n)`
+
+Set the page number for pagination (1-based).
+
+```typescript
+const { data } = await client.from("blog-posts").limit(20).page(3);
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `n` | `number` | Page number starting at `1`. Default: `1` |
+
+### `.expand(...fields)`
+
+Expand relation fields, resolving referenced entries inline. Expanded relations appear in a `relations` key on each entry. The relation object's custom fields are flat on the relation object itself.
+
+```typescript
+const { data } = await client
+  .from("blog-posts")
+  .expand("author", "category");
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `...fields` | `string[]` | Relation field names to expand |
+
+---
+
+## Terminal Methods
+
+### `.single<CF>(slug)`
+
+Fetch a single entry by slug. Returns a `SingleQueryBuilder<CF>` which is thenable — `await` it directly.
+
+```typescript
+const { data: post, error } = await client // [!code highlight]
+  .from("blog-posts") // [!code highlight]
+  .language("en") // [!code highlight]
+  .single("hello-world"); // [!code highlight]
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `slug` | `string` | Entry slug |
+
+**Type Parameter:** `CF extends Record<string, string | null>` — Custom fields shape. Defaults to `Record<string, string | null>`. See [TypeScript guide](/sdk/typescript).
+
+**Returns:** `SingleQueryBuilder<CF>` (thenable → `SingleQueryResult<ContentEntry<CF>>`)
+
+### `await builder` (list query)
+
+Awaiting a `ContentQueryBuilder` directly executes a list query.
+
+```typescript
+const { data, error, total, hasMore } = await client
+  .from("blog-posts")
+  .eq("status", "published");
+```
+
+**Returns:** `QueryResult<ContentEntryListItem[]>`
+
+---
+
+## Return Types
+
+### `QueryResult<T>`
+
+Returned when awaiting a list query (`await client.from(...)`).
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `data` | `T \| null` | Query results, or `null` on error |
+| `error` | `Error \| null` | Error if the request failed, otherwise `null` |
+| `total` | `number` | Total matching entries across all pages |
+| `hasMore` | `boolean` | Whether more pages exist beyond the current page |
+
+### `SingleQueryResult<T>`
+
+Returned when awaiting a single query (`await client.from(...).single(...)`).
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `data` | `T \| null` | Entry data, or `null` if not found or on error |
+| `error` | `Error \| null` | Error if the request failed, otherwise `null` |
+
+---
+
 ## `client.getModels()`
 
 List all content models in the project.
@@ -56,131 +279,44 @@ const models = await client.getModels();
 
 ---
 
-## `client.getEntries(modelSlug, options?)`
+## Legacy Methods
 
-List entries for a content model with filtering, sorting, and pagination.
+<Callout type="warning">
+  These methods are deprecated. Use `from()` for all new code. They will be removed in a future major version.
+</Callout>
+
+### `client.getEntries(modelSlug, options?)` — deprecated
+
+Use `client.from(modelSlug)` instead.
 
 ```typescript
-const result = await client.getEntries("blog-posts", {
+// Deprecated
+const { items, total, hasMore } = await client.getEntries("blog-posts", {
   status: "published",
-  sort: "publishedAt",
-  order: "desc",
-  language: "en",
-  page: 1,
-  limit: 10,
 });
+
+// Preferred
+const { data, total, hasMore } = await client
+  .from("blog-posts")
+  .eq("status", "published");
 ```
 
-**Parameters:**
+### `client.getEntry(modelSlug, entrySlug, options?)` — deprecated
 
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `modelSlug` | `string` | Yes | Content model slug |
-| `options` | `ListEntriesOptions` | No | Filtering, sorting, pagination |
-
-<Accordion>
-<AccordionItem title="ListEntriesOptions">
-
-| Field | Type | Default | Description |
-| --- | --- | --- | --- |
-| `language` | `string` | source language | Language code for localized content |
-| `status` | `ContentEntryStatus` | all | `"draft"`, `"published"`, or `"archived"` |
-| `sort` | `ContentEntrySortField` | `"updatedAt"` | `"publishedAt"`, `"createdAt"`, `"updatedAt"`, or `"title"` |
-| `order` | `"asc" \| "desc"` | `"desc"` | Sort direction |
-| `page` | `number` | `1` | Page number (1-based) |
-| `limit` | `number` | `50` | Entries per page (1–100) |
-| `fields` | `string[]` | all fields | Field names to include (e.g. `["title", "body", "category"]`) |
-| `expand` | `string[]` | — | Relation field names to expand |
-
-</AccordionItem>
-</Accordion>
-
-**Returns:** `Promise<PaginatedResponse<ContentEntryListItem>>`
-
-<Accordion>
-<AccordionItem title="PaginatedResponse<ContentEntryListItem>">
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `items` | `ContentEntryListItem[]` | Array of entry summaries |
-| `total` | `number` | Total matching entries |
-| `hasMore` | `boolean` | Whether more pages exist |
-
-**ContentEntryListItem fields:**
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `slug` | `string` | URL-safe identifier (always included) |
-| `publishedAt` | `string \| null` | ISO 8601 publish date (always included) |
-| `title` | `string` | Entry title |
-| `body` | `string \| null` | Markdown body (only when requested via `fields`) |
-| `customFields` | `Record<string, string \| null>` | Custom field values (only requested fields) |
-| `relations` | `Record<string, RelationValue \| null>` | Expanded relations (only when `expand` is used) |
-
-</AccordionItem>
-</Accordion>
-
----
-
-## `client.getEntry<CF>(modelSlug, entrySlug, options?)`
-
-Fetch a single content entry by slug with all fields and localized content.
+Use `client.from(modelSlug).single(entrySlug)` instead.
 
 ```typescript
+// Deprecated
 const post = await client.getEntry("blog-posts", "hello-world", {
   language: "fr",
 });
+
+// Preferred
+const { data: post } = await client
+  .from("blog-posts")
+  .language("fr")
+  .single("hello-world");
 ```
-
-**Parameters:**
-
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `modelSlug` | `string` | Yes | Content model slug |
-| `entrySlug` | `string` | Yes | Entry slug |
-| `options` | `GetEntryOptions` | No | Language, field selection |
-
-<Accordion>
-<AccordionItem title="GetEntryOptions">
-
-| Field | Type | Default | Description |
-| --- | --- | --- | --- |
-| `language` | `string` | source language | Language code for localized content |
-| `fields` | `string[]` | all fields | Field names to include (e.g. `["title", "body"]`) |
-| `expand` | `string[]` | — | Relation field names to expand |
-
-</AccordionItem>
-</Accordion>
-
-**Type Parameter:** `CF extends Record<string, string | null>` — Custom fields shape. Defaults to `Record<string, string | null>`. See [TypeScript guide](/sdk/typescript).
-
-**Returns:** `Promise<ContentEntry<CF>>`
-
-<Accordion>
-<AccordionItem title="ContentEntry<CF>">
-
-Base fields are always included regardless of `fields` option:
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `id` | `string` | Unique entry ID |
-| `slug` | `string` | URL-safe identifier |
-| `status` | `"draft" \| "published" \| "archived"` | Entry status |
-| `publishedAt` | `string \| null` | ISO 8601 publish date |
-| `sourceLanguage` | `string` | Source language code |
-| `availableLanguages` | `string[]` | Languages with translations |
-
-Selectable fields (omitted when not in `fields`):
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `title` | `string` | Localized title |
-| `body` | `string \| null` | Localized body as Markdown |
-| `customFields` | `CF` | Custom field values (typed via generic) |
-| `relations` | `Record<string, RelationValue \| null>` | Expanded relations (only when `expand` is used) |
-
-</AccordionItem>
-</Accordion>
 
 ---
 
@@ -188,28 +324,102 @@ Selectable fields (omitted when not in `fields`):
 
 The SDK calls these REST endpoints under the hood:
 
-| Method | Endpoint | SDK Method |
+| Method | Endpoint | SDK |
 | --- | --- | --- |
 | `GET` | `/v1/content/{org}/{project}/models` | `getModels()` |
-| `GET` | `/v1/content/{org}/{project}/models/{model}/entries` | `getEntries()` |
-| `GET` | `/v1/content/{org}/{project}/models/{model}/entries/{slug}` | `getEntry()` |
+| `GET` | `/v1/content/{org}/{project}/models/{model}/entries` | `from(model)` |
+| `GET` | `/v1/content/{org}/{project}/models/{model}/entries/{slug}` | `from(model).single(slug)` |
 
 All requests use the `x-api-key` header for authentication.
-
-### Query Parameters
-
-**`getEntries`** accepts: `language`, `status`, `sort`, `order`, `page`, `limit`, `fields`, `expand`
-
-**`getEntry`** accepts: `language`, `fields`, `expand`
 
 ---
 
 ## Types
 
 <Accordion>
+<AccordionItem title="ContentEntry<CF>">
+
+Returned by `.single()`. Custom fields are spread directly onto the entry via `& CF` — there is no nested `customFields` wrapper.
+
+Base fields (always included):
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Unique entry ID |
+| `slug` | `string` | URL-safe identifier |
+| `status` | `ContentEntryStatus` | Entry status |
+| `publishedAt` | `string \| null` | ISO 8601 publish date |
+| `sourceLanguage` | `string` | Source language code |
+| `availableLanguages` | `string[]` | Languages with translations |
+| `title` | `string` | Localized title |
+| `body` | `string \| null` | Localized body as Markdown |
+| `relations` | `Record<string, RelationValue \| null>` | Expanded relations (only when `expand` is used) |
+
+Custom fields from `CF` are spread flat onto this object.
+
+</AccordionItem>
+</Accordion>
+
+<Accordion>
+<AccordionItem title="ContentEntryListItem<CF>">
+
+Returned in list query results. Custom fields are spread directly onto the item via `& CF` — there is no nested `customFields` wrapper.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `slug` | `string` | URL-safe identifier (always included) |
+| `publishedAt` | `string \| null` | ISO 8601 publish date (always included) |
+| `title` | `string` | Entry title |
+| `body` | `string \| null` | Markdown body (only when requested via `.select()`) |
+| `relations` | `Record<string, RelationValue \| null>` | Expanded relations (only when `expand` is used) |
+
+Custom fields from `CF` are spread flat onto this object.
+
+</AccordionItem>
+</Accordion>
+
+<Accordion>
+<AccordionItem title="ContentModel">
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `slug` | `string` | URL-safe identifier |
+| `displayName` | `string` | Human-readable name |
+| `description` | `string \| null` | Model description |
+| `kind` | `"collection" \| "single"` | Model kind |
+| `entryCount` | `number` | Number of entries |
+
+</AccordionItem>
+</Accordion>
+
+<Accordion>
+<AccordionItem title="QueryResult<T>">
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `data` | `T \| null` | Query results |
+| `error` | `Error \| null` | Error if request failed |
+| `total` | `number` | Total matching entries |
+| `hasMore` | `boolean` | Whether more pages exist |
+
+</AccordionItem>
+</Accordion>
+
+<Accordion>
+<AccordionItem title="SingleQueryResult<T>">
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `data` | `T \| null` | Entry data |
+| `error` | `Error \| null` | Error if request failed |
+
+</AccordionItem>
+</Accordion>
+
+<Accordion>
 <AccordionItem title="RelationValue">
 
-`RelationValue` is returned for each key in `relations` when `expand` is used.
+Returned for each key in `relations` when `.expand()` is used. Custom fields of the referenced entry are spread flat onto this object — no nested `customFields` wrapper.
 
 | Field | Type | Description |
 | --- | --- | --- |
@@ -217,7 +427,28 @@ All requests use the `x-api-key` header for authentication.
 | `slug` | `string` | URL-safe slug of the referenced entry |
 | `title` | `string` | Display title of the referenced entry |
 | `modelSlug` | `string` | Content model the referenced entry belongs to |
-| `customFields` | `Record<string, string \| null>` | Custom fields of the referenced entry |
+
+Additional `string | null` keys represent the referenced entry's custom fields.
+
+</AccordionItem>
+</Accordion>
+
+<Accordion>
+<AccordionItem title="ContentEntryStatus">
+
+```typescript
+type ContentEntryStatus = "draft" | "published" | "archived";
+```
+
+</AccordionItem>
+</Accordion>
+
+<Accordion>
+<AccordionItem title="ContentEntrySortField">
+
+```typescript
+type ContentEntrySortField = "publishedAt" | "createdAt" | "updatedAt" | "title";
+```
 
 </AccordionItem>
 </Accordion>

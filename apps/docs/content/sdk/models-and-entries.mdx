@@ -1,10 +1,10 @@
 ---
 title: Models & Entries
-description: Working with content models, entries, and pagination
+description: Query content with the chainable from() API
 icon: FileText
 ---
 
-Better i18n's headless CMS organizes content into **models** and **entries**. Models define the structure (like a database table), and entries are the individual pieces of content (like rows).
+Better i18n's headless CMS organizes content into **models** and **entries**. Models define the structure (like a database table), and entries are the individual pieces of content (like rows). The SDK exposes a Supabase-style chainable query builder that makes it easy to filter, sort, paginate, and expand content in one readable chain.
 
 ## Content Models
 
@@ -39,114 +39,164 @@ const models = await client.getModels();
 - `collection` — Multiple entries (blog posts, changelog, FAQ)
 - `single` — One entry (about page, homepage content)
 
-## Listing Entries
+## Query Builder
 
-Fetch entries for a content model with filtering, sorting, and pagination.
+`client.from(modelSlug)` starts a chainable query builder. Every method returns a **new immutable builder** — calls never mutate the original — so you can safely branch and reuse base queries.
+
+The builder is **thenable**: `await` it directly to execute the query. You do not need to call a separate `.execute()` or `.get()` method.
 
 ```typescript
-const result = await client.getEntries("blog-posts", {
-  status: "published",
-  sort: "publishedAt",
-  order: "desc",
-  language: "en",
-  page: 1,
-  limit: 10,
-});
+const { data, error, total, hasMore } = await client
+  .from("blog-posts")
+  .eq("status", "published")
+  .order("publishedAt", { ascending: false })
+  .limit(10);
 ```
 
-**Response:**
+**List result shape:**
 
-```json
-{
-  "items": [
-    {
-      "slug": "hello-world",
-      "title": "Hello World",
-      "publishedAt": "2026-01-15T10:00:00Z",
-      "customFields": {
-        "category": "Engineering",
-        "readingTime": "5 min"
-      }
-    }
-  ],
-  "total": 24,
-  "hasMore": true
-}
+| Field | Type | Description |
+| --- | --- | --- |
+| `data` | `ContentEntryListItem[] \| null` | Array of entries, or `null` on error |
+| `error` | `Error \| null` | Error object if the request failed, otherwise `null` |
+| `total` | `number` | Total matching entries across all pages |
+| `hasMore` | `boolean` | Whether more pages exist beyond the current page |
+
+## Listing Entries
+
+Chain methods to build your query, then `await` to fetch.
+
+```typescript
+// All published entries, newest first
+const { data: posts, total } = await client
+  .from("blog-posts")
+  .eq("status", "published")
+  .order("publishedAt", { ascending: false });
 ```
 
 ### Filtering by Status
 
+Use `.eq("status", value)` to filter by entry status:
+
 ```typescript
 // Only published entries
-const published = await client.getEntries("blog-posts", { status: "published" });
+const { data: published } = await client
+  .from("blog-posts")
+  .eq("status", "published");
 
 // Only drafts
-const drafts = await client.getEntries("blog-posts", { status: "draft" });
+const { data: drafts } = await client
+  .from("blog-posts")
+  .eq("status", "draft");
 
 // Archived entries
-const archived = await client.getEntries("blog-posts", { status: "archived" });
+const { data: archived } = await client
+  .from("blog-posts")
+  .eq("status", "archived");
 ```
 
-### Sorting
+### Filtering by Custom Field
+
+Use `.filter(field, value)` to filter by any custom field defined on the model:
 
 ```typescript
-// Newest first (default)
-await client.getEntries("blog-posts", { sort: "updatedAt", order: "desc" });
-
-// Oldest published first
-await client.getEntries("blog-posts", { sort: "publishedAt", order: "asc" });
-
-// By creation date
-await client.getEntries("blog-posts", { sort: "createdAt", order: "desc" });
+// Entries where "category" custom field equals "engineering"
+const { data: engineering } = await client
+  .from("blog-posts")
+  .eq("status", "published")
+  .filter("category", "engineering");
 ```
 
-### Pagination
+### Full-Text Search
+
+Use `.search(term)` to search entry titles:
 
 ```typescript
-// Page through results
+const { data: results } = await client
+  .from("blog-posts")
+  .search("kubernetes");
+```
+
+## Sorting
+
+Use `.order(field, options?)` to control sort order. The `field` must be one of `"publishedAt"`, `"createdAt"`, `"updatedAt"`, or `"title"`.
+
+```typescript
+// Newest published first (default)
+await client.from("blog-posts").order("publishedAt", { ascending: false });
+
+// Oldest created first
+await client.from("blog-posts").order("createdAt", { ascending: true });
+
+// Alphabetical by title
+await client.from("blog-posts").order("title", { ascending: true });
+```
+
+## Pagination
+
+Use `.limit(n)` to set entries per page and `.page(n)` to select the page (1-based).
+
+```typescript
+// First page, 10 entries
+const { data, total, hasMore } = await client
+  .from("blog-posts")
+  .eq("status", "published")
+  .limit(10)
+  .page(1);
+```
+
+**Pagination loop:**
+
+```typescript
 let page = 1;
 let hasMore = true;
 
 while (hasMore) {
-  const result = await client.getEntries("blog-posts", {
-    page,
-    limit: 20,
-    status: "published",
-  });
+  const result = await client
+    .from("blog-posts")
+    .eq("status", "published")
+    .limit(20)
+    .page(page);
 
-  console.log(`Page ${page}: ${result.items.length} entries (${result.total} total)`);
+  console.log(`Page ${page}: ${result.data?.length} entries (${result.total} total)`);
   hasMore = result.hasMore;
   page++;
 }
 ```
 
-### Field Selection
+## Field Selection
 
-Use `fields` to request only the fields you need. When omitted, all fields are returned.
+Use `.select(...fields)` to request only specific fields. When omitted, all fields are returned. `slug` and `publishedAt` are always included.
 
 ```typescript
-// List with only slug and title (faster, less data)
-const { items } = await client.getEntries("blog-posts", {
-  fields: ["title"],
-});
+// Only slug, title, and publishedAt (faster, less data)
+const { data } = await client
+  .from("blog-posts")
+  .select("title")
+  .eq("status", "published");
 
-// Include body for excerpt previews
-const { items } = await client.getEntries("blog-posts", {
-  fields: ["title", "body", "category"],
-});
+// Include body for excerpt previews and custom fields by name
+const { data } = await client
+  .from("blog-posts")
+  .select("title", "body", "category");
 ```
-
-Fields that are not requested are omitted from the response. `slug` and `publishedAt` are always included.
 
 ## Single Entry
 
-Fetch a full content entry by slug. This returns all fields including the body content, custom fields, and metadata.
+Use `.single(slug)` to fetch a full entry by slug. This returns a `SingleQueryBuilder` which is also thenable — `await` it directly.
 
 ```typescript
-const post = await client.getEntry("blog-posts", "hello-world", {
-  language: "en",
-});
+const { data: post, error } = await client
+  .from("blog-posts")
+  .single("hello-world");
 ```
+
+**Single result shape:**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `data` | `ContentEntry \| null` | The entry, or `null` if not found or on error |
+| `error` | `Error \| null` | Error object if the request failed, otherwise `null` |
 
 **Response:**
 
@@ -158,94 +208,79 @@ const post = await client.getEntry("blog-posts", "hello-world", {
   "publishedAt": "2026-01-15T10:00:00Z",
   "sourceLanguage": "en",
   "availableLanguages": ["en", "tr", "de"],
-  "customFields": {
-    "readingTime": "5 min",
-    "category": "Engineering"
-  },
   "title": "Hello World",
-  "body": "## Welcome\n\nWelcome to our blog..."
+  "body": "## Welcome\n\nWelcome to our blog...",
+  "category": "Engineering",
+  "readingTime": "5 min"
 }
 ```
 
 The `body` field is always a **Markdown string**. Use a Markdown renderer like `react-markdown` or `marked` to display it.
 
-### Field Selection
-
-Request only the fields you need. Base fields (`id`, `slug`, `status`, `publishedAt`, `sourceLanguage`, `availableLanguages`) are always included.
-
-```typescript
-// Only fetch title and body
-const post = await client.getEntry("blog-posts", "hello-world", {
-  fields: ["title", "body"],
-});
-
-// Only fetch specific custom fields
-const post = await client.getEntry("blog-posts", "hello-world", {
-  fields: ["title", "category", "readingTime"],
-});
-```
-
-### Language Fallback
-
-When you request a language that doesn't have a translation, the SDK falls back to the source language:
-
-```typescript
-// If "ja" translation doesn't exist, returns "en" (source) content
-const post = await client.getEntry("blog-posts", "hello-world", {
-  language: "ja",
-});
-// post.title → English title (fallback)
-```
-
-Check `availableLanguages` to see which translations exist.
-
 ## Custom Fields
 
-Content models can define custom fields beyond the base fields (title, slug, body). Custom field values are returned in the `customFields` object.
+Content models can define custom fields beyond the base fields (title, slug, body). Custom field values are **spread directly onto the entry object** — there is no nested `customFields` wrapper.
 
 ```typescript
-const post = await client.getEntry("blog-posts", "hello-world");
+const { data: post } = await client
+  .from("blog-posts")
+  .single("hello-world");
 
-// Access custom fields
-console.log(post.customFields.readingTime); // "5 min"
-console.log(post.customFields.category);    // "Engineering"
+// Access custom fields directly on the entry
+console.log(post.readingTime); // "5 min"
+console.log(post.category);    // "Engineering"
 ```
 
-For type-safe custom fields, see the [TypeScript guide](/sdk/typescript).
-
-## Relations
-
-Content entries can reference entries from other models using relation fields. Use `expand` to resolve these references inline — without a second fetch.
-
-```typescript
-const { items } = await client.getEntries("blog-posts", {
-  expand: ["author", "category"],
-});
-```
-
-When `expand` is used, a `relations` key appears on each entry with the resolved data:
+List items also return custom fields flat:
 
 ```json
 {
   "slug": "hello-world",
   "title": "Hello World",
+  "publishedAt": "2026-01-15T10:00:00Z",
+  "category": "Engineering",
+  "readingTime": "5 min"
+}
+```
+
+<Callout type="tip">
+  For type-safe access to custom fields, see the [TypeScript guide](/sdk/typescript).
+</Callout>
+
+## Relations
+
+Content entries can reference entries from other models using relation fields. Use `.expand(...fields)` to resolve these references inline — without a second fetch.
+
+```typescript
+const { data: posts } = await client
+  .from("blog-posts")
+  .eq("status", "published")
+  .expand("author", "category");
+```
+
+When `expand` is used, a `relations` key appears on each entry with the resolved data. The relation object's own custom fields are also **flat** — no nested `customFields` wrapper:
+
+```json
+{
+  "slug": "hello-world",
+  "title": "Hello World",
+  "publishedAt": "2026-01-15T10:00:00Z",
+  "category": "Engineering",
+  "readingTime": "5 min",
   "relations": {
     "author": {
       "id": "user-uuid",
       "slug": "alice-johnson",
       "title": "Alice Johnson",
       "modelSlug": "users",
-      "customFields": {
-        "avatar": "https://cdn.example.com/avatars/alice.jpg",
-        "role": "Engineering"
-      }
+      "avatar": "https://cdn.example.com/avatars/alice.jpg",
+      "role": "Engineering"
     },
     "category": {
       "id": "cat-uuid",
       "slug": "engineering",
       "title": "Engineering",
-      "modelSlug": "categories",
-      "customFields": null
+      "modelSlug": "categories"
     }
   }
 }
@@ -254,19 +289,20 @@ When `expand` is used, a `relations` key appears on each entry with the resolved
 Access relation fields directly:
 
 ```typescript
-const post = items[0];
+const post = posts[0];
 
-post.relations?.author?.title;                       // "Alice Johnson"
-post.relations?.author?.customFields?.avatar;        // "https://cdn.example.com/avatars/alice.jpg"
-post.relations?.category?.title;                     // "Engineering"
+post.relations?.author?.title;   // "Alice Johnson"
+post.relations?.author?.avatar;  // "https://cdn.example.com/avatars/alice.jpg"
+post.relations?.category?.title; // "Engineering"
 ```
 
-`expand` works the same way on `getEntry`:
+`.expand()` works the same way on single entry queries:
 
 ```typescript
-const post = await client.getEntry("blog-posts", "hello-world", {
-  expand: ["author"],
-});
+const { data: post } = await client
+  .from("blog-posts")
+  .expand("author")
+  .single("hello-world");
 
 post.relations?.author?.title; // "Alice Johnson"
 ```
@@ -275,3 +311,67 @@ post.relations?.author?.title; // "Alice Johnson"
   If a relation field has no value, its key will be `null` in `relations`.
   `expand` only fetches fields that are actually set — unreferenced fields are omitted.
 </Callout>
+
+## Language
+
+Use `.language(code)` to request localized content in a specific language.
+
+```typescript
+const { data: post } = await client
+  .from("blog-posts")
+  .language("fr")
+  .single("hello-world");
+```
+
+**Language fallback behavior:**
+
+When you request a language that does not have a translation, the SDK falls back to the source language automatically:
+
+```typescript
+// If "ja" translation doesn't exist, returns "en" (source) content
+const { data: post } = await client
+  .from("blog-posts")
+  .language("ja")
+  .single("hello-world");
+
+// post.title → English title (fallback)
+```
+
+Check `availableLanguages` on a full entry to see which translations exist before requesting a specific language.
+
+## Error Handling
+
+Every query returns `{ data, error }`. Check `error` before using `data`:
+
+```typescript
+const { data: post, error } = await client
+  .from("blog-posts")
+  .single("hello-world");
+
+if (error) {
+  console.error("Failed to fetch post:", error.message);
+  return null;
+}
+
+// data is safe to use here
+console.log(post.title);
+```
+
+For list queries:
+
+```typescript
+const { data: posts, error, total } = await client
+  .from("blog-posts")
+  .eq("status", "published");
+
+if (error) {
+  console.error("Failed to fetch posts:", error.message);
+  return [];
+}
+
+console.log(`Fetched ${posts.length} of ${total} posts`);
+```
+
+## Legacy API
+
+The `getEntries()` and `getEntry()` methods still work but are deprecated. Use `from()` for all new code. For a complete list of deprecated signatures, see the [API reference](/sdk/api-reference#legacy-methods).
