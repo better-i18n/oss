@@ -1,5 +1,13 @@
 # @better-i18n/mcp-content
 
+## 0.5.0
+
+### Minor Changes
+
+- f7005be: feat: Add showInTable field option and tableSettings model parameter
+  - addField/updateField: new `showInTable` boolean in field options
+  - updateContentModel: new `tableSettings` parameter for base field column visibility
+
 ## 0.4.0
 
 ### Minor Changes

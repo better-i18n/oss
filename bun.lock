@@ -188,7 +188,7 @@
     },
     "packages/mcp-content": {
       "name": "@better-i18n/mcp-content",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "bin": {
         "better-i18n-mcp-content": "./dist/index.js",
       },
@@ -3254,7 +3254,7 @@
 
     "react-freeze": ["react-freeze@1.0.4", "", { "peerDependencies": { "react": ">=17.0.0" } }, "sha512-r4F0Sec0BLxWicc7HEyo2x3/2icUTrRmDjaaRyzzn+7aDyFZliszMDOgLVwSnQnYENOlL1o569Ze2HZefk8clA=="],
 
-    "react-grab": ["react-grab@0.1.18", "", { "dependencies": { "@medv/finder": "^4.0.2", "bippy": "^0.5.30", "solid-js": "^1.9.10" }, "peerDependencies": { "react": ">=17.0.0" }, "optionalPeers": ["react"] }, "sha512-AMXegid4hldxGrcMiYDV8+9DCsYlYc3gY2Os9XuYfnD+wN/HubHNkwXn7D64zLQ+PvmLZfYkXRaGxAkd6/qviA=="],
+    "react-grab": ["react-grab@0.1.19", "", { "dependencies": { "@medv/finder": "^4.0.2", "bippy": "^0.5.30", "solid-js": "^1.9.10" }, "peerDependencies": { "react": ">=17.0.0" }, "optionalPeers": ["react"] }, "sha512-PX4U3p+yAKApjVhKGW+nTkAWuQpur7B6FCvdi5gVCuXNwfMS7h0OYSK3rf0me94zOvTCmAayikBP7k6yiDwgkA=="],
 
     "react-i18next": ["react-i18next@15.7.4", "", { "dependencies": { "@babel/runtime": "^7.27.6", "html-parse-stringify": "^3.0.1" }, "peerDependencies": { "i18next": ">= 23.4.0", "react": ">= 16.8.0", "typescript": "^5" }, "optionalPeers": ["typescript"] }, "sha512-nyU8iKNrI5uDJch0z9+Y5XEr34b0wkyYj3Rp+tfbahxtlswxSCjcUL9H0nqXo9IR3/t5Y5PKIA3fx3MfUyR9Xw=="],
 
