@@ -8,7 +8,7 @@ The Content SDK is built with TypeScript and provides full type safety for all r
 
 ## Generic Custom Fields
 
-Content models can define custom fields (e.g., `readingTime`, `category`). By default, `customFields` is typed as `Record<string, string | null>`. Use the generic type parameter to get exact typing:
+Content models can define custom fields (e.g., `readingTime`, `category`). Custom fields are **spread flat onto the entry object** — there is no nested `customFields` wrapper. By default, additional fields are typed as `Record<string, string | null>`. Use the generic type parameter on `.single<CF>()` to get exact typing:
 
 ```typescript
 // Define your custom fields interface
@@ -18,21 +18,27 @@ interface BlogFields {
   featured: string | null;
 }
 
-// Pass it to getEntry
-const post = await client.getEntry<BlogFields>("blog-posts", "hello-world");
+// Pass it to single()
+const { data: post } = await client
+  .from("blog-posts")
+  .single<BlogFields>("hello-world");
 
-post.customFields.readingTime; // string | null
-post.customFields.category;   // string | null
-post.customFields.featured;   // string | null
-post.customFields.unknown;    // TypeScript error!
+post.readingTime; // string | null (typed!)
+post.category;    // string | null (typed!)
+post.featured;    // string | null (typed!)
+post.unknown;     // TypeScript error!
 ```
+
+<Callout type="info">
+  Custom fields are flat on the entry — access them as `post.readingTime`, not `post.customFields.readingTime`.
+</Callout>
 
 ## Creating a Typed Client Wrapper
 
-For repeated use, create a wrapper function:
+For repeated use, create wrapper functions with your custom field types baked in:
 
 ```typescript
-import { createClient, type ContentEntry, type PaginatedResponse, type ContentEntryListItem } from "@better-i18n/sdk";
+import { createClient, type ContentEntry, type QueryResult, type ContentEntryListItem, type SingleQueryResult } from "@better-i18n/sdk";
 
 interface BlogFields {
   readingTime: string | null;
@@ -44,19 +50,32 @@ const client = createClient({
   apiKey: process.env.BETTER_I18N_API_KEY!,
 });
 
-export async function getBlogPost(slug: string, language?: string) {
-  return client.getEntry<BlogFields>("blog-posts", slug, { language });
+export async function getBlogPost(slug: string, language?: string): Promise<SingleQueryResult<ContentEntry<BlogFields>>> {
+  return client
+    .from("blog-posts")
+    .language(language ?? "en")
+    .single<BlogFields>(slug);
 }
 
-export async function listBlogPosts(page = 1) {
-  return client.getEntries("blog-posts", {
-    status: "published",
-    sort: "publishedAt",
-    order: "desc",
-    page,
-    limit: 10,
-  });
+export async function listBlogPosts(page = 1): Promise<QueryResult<ContentEntryListItem<BlogFields>[]>> {
+  return client
+    .from("blog-posts")
+    .eq("status", "published")
+    .order("publishedAt", { ascending: false })
+    .limit(10)
+    .page(page);
 }
+```
+
+Usage stays clean and fully typed:
+
+```typescript
+const { data: post } = await getBlogPost("hello-world", "en");
+post?.readingTime; // string | null
+post?.category;    // string | null
+
+const { data: posts, total } = await listBlogPosts(1);
+posts?.[0].readingTime; // string | null
 ```
 
 ## Status Type Narrowing
@@ -88,18 +107,20 @@ import type {
   ClientConfig,
   ContentClient,
 
+  // Query builder classes
+  ContentQueryBuilder,
+  SingleQueryBuilder,
+
   // Content types
   ContentModel,
   ContentEntry,
   ContentEntryListItem,
   ContentEntryStatus,
-
-  // Query options
-  ListEntriesOptions,
-  GetEntryOptions,
   ContentEntrySortField,
+  RelationValue,
 
-  // Response
-  PaginatedResponse,
+  // Response types
+  QueryResult,
+  SingleQueryResult,
 } from "@better-i18n/sdk";
 ```

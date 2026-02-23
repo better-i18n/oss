@@ -26,6 +26,7 @@ const fieldOptionsSchema = z.object({
     prompt: z.string().max(2000).optional(),
     model: z.string().max(100).optional(),
   }).optional(),
+  showInTable: z.boolean().optional(),
 }).optional();
 
 const inputSchema = projectSchema.extend({
@@ -99,6 +100,10 @@ export const updateField: Tool = {
                 },
                 required: ["label", "value"],
               },
+            },
+            showInTable: {
+              type: "boolean",
+              description: "Whether this field appears as a column in the content list table",
             },
           },
         },

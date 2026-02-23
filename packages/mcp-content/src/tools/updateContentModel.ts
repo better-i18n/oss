@@ -20,6 +20,9 @@ const inputSchema = projectSchema.extend({
   kind: z.enum(["collection", "single"]).optional(),
   icon: z.string().max(50).optional(),
   enableVersionHistory: z.boolean().optional(),
+  tableSettings: z.object({
+    baseFields: z.record(z.string(), z.boolean()).optional(),
+  }).optional(),
 });
 
 export const updateContentModel: Tool = {
@@ -55,6 +58,16 @@ export const updateContentModel: Tool = {
           type: "boolean",
           description: "Updated version history setting",
         },
+        tableSettings: {
+          type: "object",
+          description: "Table display settings for base fields (title, slug, body)",
+          properties: {
+            baseFields: {
+              type: "object",
+              description: "Map of base field name → show in table (e.g., { title: true, slug: false, body: false })",
+            },
+          },
+        },
       },
       required: ["project", "modelSlug"],
     },
@@ -71,6 +84,7 @@ export const updateContentModel: Tool = {
         kind: input.kind,
         icon: input.icon,
         enableVersionHistory: input.enableVersionHistory,
+        tableSettings: input.tableSettings,
       });
 
       return success({

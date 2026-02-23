@@ -51,12 +51,12 @@ Get the Content SDK running in under 5 minutes.
     ### Create a client
 
     ```typescript title="lib/content.ts"
-    import { createClient } from "@better-i18n/sdk";
+    import { createClient } from "@better-i18n/sdk"; // [!code highlight]
 
-    export const content = createClient({
-      project: "your-org/your-project",
-      apiKey: process.env.BETTER_I18N_API_KEY!,
-    });
+    export const content = createClient({ // [!code highlight]
+      project: "your-org/your-project", // [!code highlight]
+      apiKey: process.env.BETTER_I18N_API_KEY!, // [!code highlight]
+    }); // [!code highlight]
     ```
 
     Find your project identifier in the dashboard URL: `dash.better-i18n.com/{org}/{project}`
@@ -73,15 +73,19 @@ Get the Content SDK running in under 5 minutes.
     console.log(models);
     // [{ slug: "blog-posts", displayName: "Blog Posts", kind: "collection", entryCount: 12 }]
 
-    // List entries with pagination
-    const { items, total, hasMore } = await content.getEntries("blog-posts", {
-      status: "published",
-      limit: 10,
-    });
+    // List published entries (chainable API)
+    const { data: posts, total } = await content // [!code highlight]
+      .from("blog-posts") // [!code highlight]
+      .eq("status", "published") // [!code highlight]
+      .limit(10); // [!code highlight]
 
     // Get a single entry
-    const post = await content.getEntry("blog-posts", "hello-world");
-    console.log(post.title, post.body); // body is a Markdown string
+    const { data: post } = await content // [!code highlight]
+      .from("blog-posts") // [!code highlight]
+      .language("en") // [!code highlight]
+      .single("hello-world"); // [!code highlight]
+
+    console.log(post.title, post.body);
     ```
   </Step>
 </Steps>
@@ -89,8 +93,8 @@ Get the Content SDK running in under 5 minutes.
 ## Environment Variables
 
 ```bash title=".env"
-BETTER_I18N_API_KEY=bi-your-api-key
-BETTER_I18N_PROJECT=acme/web-app
+BETTER_I18N_API_KEY=bi-your-api-key // [!code ++]
+BETTER_I18N_PROJECT=acme/web-app // [!code ++]
 ```
 
 | Variable | Required | Description |
