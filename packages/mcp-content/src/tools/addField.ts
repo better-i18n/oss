@@ -13,6 +13,21 @@ import {
 } from "../base-tool.js";
 import type { Tool } from "../types/index.js";
 
+const enumValueItem = z.object({
+  label: z.string().min(1).max(200),
+  value: z.string().min(1).max(200),
+});
+
+const fieldOptionsSchema = z.object({
+  enumValues: z.array(enumValueItem).max(200).optional(),
+  unsplash: z.object({ enabled: z.boolean() }).optional(),
+  aiGeneration: z.object({
+    enabled: z.boolean(),
+    prompt: z.string().max(2000).optional(),
+    model: z.string().max(100).optional(),
+  }).optional(),
+}).optional();
+
 const inputSchema = projectSchema.extend({
   modelSlug: z.string().min(1),
   name: z.string().min(1).max(100).regex(/^[a-z_][a-z0-9_]*$/),
@@ -23,6 +38,7 @@ const inputSchema = projectSchema.extend({
   placeholder: z.string().max(500).optional(),
   helpText: z.string().max(500).optional(),
   position: z.number().int().min(0).optional(),
+  options: fieldOptionsSchema,
   fieldConfig: z.object({
     targetModel: z.string().optional(),
   }).optional(),
@@ -31,7 +47,7 @@ const inputSchema = projectSchema.extend({
 export const addField: Tool = {
   definition: {
     name: "addField",
-    description: "Add a custom field to a content model. Field name must be snake_case. For relation fields, use fieldConfig.targetModel to specify the related model slug.",
+    description: "Add a custom field to a content model. Field name must be snake_case. For relation fields, use fieldConfig.targetModel. For enum fields, use options.enumValues to define allowed values.",
     inputSchema: {
       type: "object",
       properties: {
@@ -73,6 +89,24 @@ export const addField: Tool = {
           type: "number",
           description: "Sort position (auto-calculated if omitted)",
         },
+        options: {
+          type: "object",
+          description: "Field-level options. For enum fields: { enumValues: [{ label, value }] }. For media: { unsplash, aiGeneration }",
+          properties: {
+            enumValues: {
+              type: "array",
+              description: "Allowed values for enum fields",
+              items: {
+                type: "object",
+                properties: {
+                  label: { type: "string", description: "Display label shown to users" },
+                  value: { type: "string", description: "Machine-readable value stored in DB" },
+                },
+                required: ["label", "value"],
+              },
+            },
+          },
+        },
         fieldConfig: {
           type: "object",
           description: "Type-specific configuration (e.g., targetModel for relation fields)",
@@ -99,6 +133,7 @@ export const addField: Tool = {
         placeholder: input.placeholder,
         helpText: input.helpText,
         position: input.position,
+        options: input.options,
         fieldConfig: input.fieldConfig,
       });
 
