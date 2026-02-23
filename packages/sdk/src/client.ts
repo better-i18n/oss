@@ -1,13 +1,14 @@
 import type { ClientConfig, ContentClient } from "./types.js";
-import { createContentAPIClient } from "./content-api.js";
+import { createHttpClient } from "./http.js";
+import { ContentQueryBuilder } from "./query-builder.js";
 
 const DEFAULT_API_BASE = "https://content.better-i18n.com";
 
 /**
  * Creates a Better i18n content client.
  *
- * Fetches content models and entries from the REST API.
- * Requires an API key for authentication.
+ * Supports both a **Supabase-style chainable API** (`from()`) and the
+ * legacy method-based API (`getEntries`, `getEntry`, `getModels`).
  *
  * @example
  * ```typescript
@@ -16,9 +17,22 @@ const DEFAULT_API_BASE = "https://content.better-i18n.com";
  *   apiKey: "bi18n_...",
  * });
  *
+ * // Chainable API (recommended)
+ * const { data, error } = await client
+ *   .from("blog-posts")
+ *   .eq("status", "published")
+ *   .order("publishedAt", { ascending: false })
+ *   .limit(10);
+ *
+ * // Single entry
+ * const { data: post } = await client
+ *   .from("blog-posts")
+ *   .language("fr")
+ *   .single("hello-world");
+ *
+ * // Legacy API (still works)
  * const models = await client.getModels();
  * const posts = await client.getEntries("blog-posts", { language: "fr" });
- * const post = await client.getEntry("blog-posts", "hello-world");
  * ```
  */
 export function createClient(config: ClientConfig): ContentClient {
@@ -40,5 +54,14 @@ export function createClient(config: ClientConfig): ContentClient {
     );
   }
 
-  return createContentAPIClient(apiBase, org, project, config.apiKey, config.debug);
+  const http = createHttpClient(apiBase, org, project, config.apiKey, config.debug);
+
+  return {
+    from(modelSlug: string) {
+      return ContentQueryBuilder.create(http, modelSlug);
+    },
+    getModels: () => http.getModels(),
+    getEntries: (model, opts) => http.getEntries(model, opts),
+    getEntry: (model, slug, opts) => http.getEntry(model, slug, opts),
+  };
 }

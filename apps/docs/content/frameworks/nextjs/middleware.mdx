@@ -23,10 +23,10 @@ export const i18n = createI18n({
 import { i18n } from "./i18n/config";
 
 // Simple usage
-export default i18n.betterMiddleware();
+export default i18n.betterMiddleware(); // [!code highlight]
 
 // Or with auth callback (Clerk-style)
-export default i18n.betterMiddleware(async (request, { locale }) => {
+export default i18n.betterMiddleware(async (request, { locale }) => { // [!code highlight]
   // Auth logic here - locale is available!
 });
 
@@ -88,7 +88,7 @@ export default createBetterI18nMiddleware({
   project: "acme/dashboard",
   defaultLocale: "en",
   localePrefix: "always",
-}, async (request, { locale, response }) => {
+}, async (request, { locale, response }) => { // [!code highlight]
   // Auth logic runs AFTER i18n detection
   // You have access to: locale, response (with headers already set)
 
@@ -97,10 +97,10 @@ export default createBetterI18nMiddleware({
 
   if (!isLoggedIn && isProtectedRoute) {
     // Redirect to login with locale prefix
-    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+    return NextResponse.redirect(new URL(`/${locale}/login`, request.url)); // [!code highlight]
   }
 
-  // Return nothing = i18n response is used (all headers preserved!)
+  // Return nothing = i18n response is used (all headers preserved!) // [!code highlight]
 });
 
 export const config = {
@@ -218,27 +218,27 @@ export default async function Page() {
 The callback pattern is more reliable because it guarantees header preservation:
 
 ```ts title="Before (deprecated)"
-import { createBetterI18nMiddleware, composeMiddleware } from "@better-i18n/next";
+import { createBetterI18nMiddleware, composeMiddleware } from "@better-i18n/next"; // [!code --]
 
-const i18n = createBetterI18nMiddleware({ ... });
-const auth = async (req) => { /* auth logic */ };
+const i18n = createBetterI18nMiddleware({ ... }); // [!code --]
+const auth = async (req) => { /* auth logic */ }; // [!code --]
 
 // Headers could be lost!
-export default composeMiddleware(i18n, auth);
+export default composeMiddleware(i18n, auth); // [!code --]
 ```
 
 ```ts title="After (recommended)"
-import { createBetterI18nMiddleware } from "@better-i18n/next";
+import { createBetterI18nMiddleware } from "@better-i18n/next"; // [!code ++]
 
-export default createBetterI18nMiddleware({
-  project: "acme/app",
-  defaultLocale: "en",
-}, async (request, { locale, response }) => {
-  // Auth logic here - headers are ALWAYS preserved!
+export default createBetterI18nMiddleware({ // [!code ++]
+  project: "acme/app", // [!code ++]
+  defaultLocale: "en", // [!code ++]
+}, async (request, { locale, response }) => { // [!code ++]
+  // Auth logic here - headers are ALWAYS preserved! // [!code ++]
   if (needsRedirect) {
     return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
   }
-});
+}); // [!code ++]
 ```
 
 ### Why the Callback Pattern is Better

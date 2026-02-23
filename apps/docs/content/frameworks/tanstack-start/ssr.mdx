@@ -24,16 +24,16 @@ This guide covers server-side rendering (SSR) with Better i18n and TanStack Star
 Use `getMessages` in your route loaders:
 
 ```tsx title="app/routes/__root.tsx"
-import { getMessages } from "@better-i18n/use-intl/server"
+import { getMessages } from "@better-i18n/use-intl/server" // [!code ++]
 
 export const Route = createRootRouteWithContext<{ locale: string }>()({
-  loader: async ({ context }) => {
-    const messages = await getMessages({
-      project: "org/project",
-      locale: context.locale || "en",
-    })
+  loader: async ({ context }) => { // [!code highlight]
+    const messages = await getMessages({ // [!code ++]
+      project: "org/project", // [!code ++]
+      locale: context.locale || "en", // [!code ++]
+    }) // [!code ++]
 
-    return { messages, locale: context.locale }
+    return { messages, locale: context.locale } // [!code ++]
   },
 
   component: RootComponent,
@@ -49,14 +49,14 @@ function RootComponent() {
   const { messages, locale } = Route.useLoaderData()
 
   return (
-    <BetterI18nProvider
-      project="org/project"
-      locale={locale}
-      messages={messages}  // Pre-loaded from server
-      timeZone="UTC"
-    >
+    <BetterI18nProvider // [!code ++]
+      project="org/project" // [!code ++]
+      locale={locale} // [!code ++]
+      messages={messages}  // Pre-loaded from server // [!code ++]
+      timeZone="UTC" // [!code ++]
+    > // [!code ++]
       <Outlet />
-    </BetterI18nProvider>
+    </BetterI18nProvider> // [!code ++]
   )
 }
 ```
@@ -74,7 +74,7 @@ function RootComponent() {
   project="org/project"
   locale={locale}
   messages={messages}
-  timeZone="UTC"  // Required for SSR
+  timeZone="UTC"  // Required for SSR // [!code highlight]
 >
   {children}
 </BetterI18nProvider>

@@ -63,13 +63,13 @@ Create a file to initialize i18next with `initBetterI18n`:
 ```ts title="src/i18n.ts"
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { initBetterI18n } from '@better-i18n/expo';
+import { initBetterI18n } from '@better-i18n/expo'; // [!code highlight]
 
-i18n.use(initReactI18next);
+i18n.use(initReactI18next); // [!code highlight]
 
 // Start at module level — the promise is cached, so multiple imports won't re-run init
-export const i18nReady = initBetterI18n({
-  project: 'your-org/your-project',
+export const i18nReady = initBetterI18n({ // [!code highlight]
+  project: 'your-org/your-project', // [!code highlight]
   i18n,
   defaultLocale: 'en',
   debug: __DEV__,
@@ -93,24 +93,24 @@ Await `i18nReady` before rendering your app. Use `SplashScreen` to keep the nati
 ```tsx title="App.tsx"
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-import { i18nReady } from './src/i18n';
+import { i18nReady } from './src/i18n'; // [!code ++]
 import { HomeScreen } from './src/screens/HomeScreen';
 
 // Hold the splash screen until the app is ready
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync(); // [!code ++]
 
 export default function App() {
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    i18nReady.then(() => {
-      setReady(true);
-      SplashScreen.hideAsync();
-    });
-  }, []);
+  useEffect(() => { // [!code ++]
+    i18nReady.then(() => { // [!code ++]
+      setReady(true); // [!code ++]
+      SplashScreen.hideAsync(); // [!code ++]
+    }); // [!code ++]
+  }, []); // [!code ++]
 
   // SplashScreen is visible, so the user sees nothing during init
-  if (!ready) return null;
+  if (!ready) return null; // [!code ++]
 
   return <HomeScreen />;
 }

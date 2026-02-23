@@ -35,25 +35,25 @@ For Vite + React apps, translations are loaded on the client after the initial r
 ## Quick Start
 
 ```tsx title="src/App.tsx"
-import { BetterI18nProvider } from '@better-i18n/use-intl'
+import { BetterI18nProvider } from '@better-i18n/use-intl' // [!code ++]
 
 function App() {
   return (
-    <BetterI18nProvider
-      project="your-org/your-project"
-      locale="en"
-    >
+    <BetterI18nProvider // [!code ++]
+      project="your-org/your-project" // [!code ++]
+      locale="en" // [!code ++]
+    > // [!code ++]
       <YourApp />
-    </BetterI18nProvider>
+    </BetterI18nProvider> // [!code ++]
   )
 }
 ```
 
 ```tsx title="src/components/Hello.tsx"
-import { useTranslations } from '@better-i18n/use-intl'
+import { useTranslations } from '@better-i18n/use-intl' // [!code highlight]
 
 export function Hello() {
-  const t = useTranslations('home')
+  const t = useTranslations('home') // [!code highlight]
 
   return <h1>{t('title')}</h1>
 }
