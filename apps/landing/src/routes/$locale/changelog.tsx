@@ -178,12 +178,12 @@ function ChangelogPage() {
                 >
                   {/* Header */}
                   <div className="flex flex-wrap items-center gap-3 mb-4">
-                    {entry.customFields.category && (
+                    {entry.category && (
                       <span
-                        className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${categoryColors[entry.customFields.category] || categoryColors.feature}`}
+                        className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${categoryColors[entry.category] || categoryColors.feature}`}
                       >
-                        {categoryLabels[locale]?.[entry.customFields.category] ||
-                          entry.customFields.category}
+                        {categoryLabels[locale]?.[entry.category] ||
+                          entry.category}
                       </span>
                     )}
                     {entry.publishedAt && (
@@ -198,9 +198,9 @@ function ChangelogPage() {
                         )}
                       </time>
                     )}
-                    {entry.customFields.version && (
+                    {entry.version && (
                       <span className="text-xs font-mono text-gray-400">
-                        v{entry.customFields.version}
+                        v{entry.version}
                       </span>
                     )}
                   </div>
@@ -211,8 +211,8 @@ function ChangelogPage() {
                   </h2>
 
                   {/* Summary */}
-                  {entry.customFields.summary ? (
-                    <p className="text-base text-gray-600 mb-4">{entry.customFields.summary}</p>
+                  {entry.summary ? (
+                    <p className="text-base text-gray-600 mb-4">{entry.summary}</p>
                   ) : null}
 
                   {/* Full Content — content is from our own CMS (controlled source) */}

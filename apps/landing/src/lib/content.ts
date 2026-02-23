@@ -79,19 +79,19 @@ export function formatPostDate(dateString: string, locale: string): string {
 
 type RelationValue = {
   title?: string;
-  customFields?: Record<string, string | null | undefined>;
+  [key: string]: string | null | undefined;
 };
 
 function mapEntryBase(entry: {
-  customFields?: Record<string, string | null | undefined>;
   relations?: Record<string, RelationValue | null | undefined>;
+  [key: string]: unknown;
 }) {
   return {
-    readTime: entry.customFields?.read_time ?? null,
-    featured: entry.customFields?.featured === "true",
-    category: entry.relations?.category?.customFields?.name ?? null,
+    readTime: (entry.read_time as string | null) ?? null,
+    featured: entry.featured === "true",
+    category: entry.relations?.category?.name ?? null,
     authorName: entry.relations?.author?.title ?? null,
-    authorAvatar: entry.relations?.author?.customFields?.avatar ?? null,
+    authorAvatar: entry.relations?.author?.avatar ?? null,
   };
 }
 
