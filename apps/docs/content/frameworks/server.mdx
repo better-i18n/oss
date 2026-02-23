@@ -59,14 +59,14 @@ Pre-load messages in your root loader:
 ```tsx title="app/routes/__root.tsx"
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { BetterI18nProvider } from '@better-i18n/use-intl'
-import { getMessages } from '@better-i18n/use-intl/server'
+import { getMessages } from '@better-i18n/use-intl/server' // [!code highlight]
 
 export const Route = createRootRouteWithContext<{ locale: string }>()({
   loader: async ({ context }) => {
-    const messages = await getMessages({
+    const messages = await getMessages({ // [!code highlight]
       project: 'org/project',
       locale: context.locale || 'en',
-    })
+    }) // [!code highlight]
 
     return { messages, locale: context.locale }
   },
@@ -78,8 +78,8 @@ export const Route = createRootRouteWithContext<{ locale: string }>()({
       <BetterI18nProvider
         project="org/project"
         locale={locale}
-        messages={messages}
-        timeZone="UTC"
+        messages={messages} // [!code highlight]
+        timeZone="UTC" // [!code highlight]
       >
         <Outlet />
       </BetterI18nProvider>

@@ -28,8 +28,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/:locale/*" element={<LocalizedApp />} />
-        <Route path="*" element={<Navigate to={`/${i18nConfig.defaultLocale}`} replace />} />
+        <Route path="/:locale/*" element={<LocalizedApp />} /> // [!code ++]
+        <Route path="*" element={<Navigate to={`/${i18nConfig.defaultLocale}`} replace />} /> // [!code ++]
       </Routes>
     </BrowserRouter>
   )
@@ -42,7 +42,7 @@ export default App
 
 ```tsx title="src/LocalizedApp.tsx"
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { BetterI18nProvider } from '@better-i18n/use-intl'
+import { BetterI18nProvider } from '@better-i18n/use-intl' // [!code highlight]
 import { i18nConfig } from './i18n.config'
 import { AppRoutes } from './routes'
 
@@ -58,7 +58,7 @@ export function LocalizedApp() {
   }
 
   return (
-    <BetterI18nProvider
+    <BetterI18nProvider // [!code highlight]
       project={i18nConfig.project}
       locale={locale || i18nConfig.defaultLocale}
       onLocaleChange={handleLocaleChange}

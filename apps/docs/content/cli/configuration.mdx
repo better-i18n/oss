@@ -11,8 +11,8 @@ Better i18n CLI automatically detects your project context from `i18n.config.ts`
 For simple projects, you only need to export the project slug and default locale.
 
 ```ts title="i18n.config.ts"
-export const project = "your-org/your-project";
-export const defaultLocale = "en";
+export const project = "your-org/your-project"; // [!code highlight]
+export const defaultLocale = "en"; // [!code highlight]
 ```
 
 ## Workspace Configuration
@@ -23,9 +23,9 @@ For full control over scanning and linting behavior, use the `i18nWorkspaceConfi
 export const project = "your-org/your-project";
 export const defaultLocale = "en";
 
-export const i18nWorkspaceConfig = {
-  project,
-  defaultLocale,
+export const i18nWorkspaceConfig = { // [!code highlight]
+  project, // [!code highlight]
+  defaultLocale, // [!code highlight]
   lint: {
     // Glob patterns for files to scan
     include: ["src/**/*.tsx", "app/**/*.tsx"],

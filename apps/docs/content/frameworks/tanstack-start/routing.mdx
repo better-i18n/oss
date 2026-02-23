@@ -47,11 +47,11 @@ import { createFileRoute, redirect } from "@tanstack/react-router"
 import { i18nConfig } from "../i18n.config"
 
 export const Route = createFileRoute("/")({
-  beforeLoad: ({ context }) => {
-    throw redirect({
-      to: "/$locale",
-      params: { locale: context.locale || i18nConfig.defaultLocale },
-    })
+  beforeLoad: ({ context }) => { // [!code highlight]
+    throw redirect({ // [!code highlight]
+      to: "/$locale", // [!code highlight]
+      params: { locale: context.locale || i18nConfig.defaultLocale }, // [!code highlight]
+    }) // [!code highlight]
   },
 })
 ```
@@ -61,19 +61,19 @@ export const Route = createFileRoute("/")({
 Extract locale from the URL path:
 
 ```tsx title="app/routes/__root.tsx"
-import { getMessages } from "@better-i18n/use-intl/server"
+import { getMessages } from "@better-i18n/use-intl/server" // [!code ++]
 import { i18nConfig } from "../i18n.config"
 
 export const Route = createRootRouteWithContext<{ locale: string }>()({
   loader: async ({ context, location }) => {
     // Extract locale from path: /tr/about → "tr"
     const pathParts = location.pathname.split("/")
-    const pathLocale = pathParts[1]
+    const pathLocale = pathParts[1] // [!code ++]
 
     // Validate it's a 2-letter locale code
-    const locale = pathLocale && pathLocale.length === 2
-      ? pathLocale
-      : context.locale || i18nConfig.defaultLocale
+    const locale = pathLocale && pathLocale.length === 2 // [!code ++]
+      ? pathLocale // [!code ++]
+      : context.locale || i18nConfig.defaultLocale // [!code ++]
 
     const messages = await getMessages({
       project: i18nConfig.project,

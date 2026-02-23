@@ -12,13 +12,13 @@ Configure automatic locale detection using TanStack Start middleware.
 Create a middleware using the built-in helper:
 
 ```ts title="app/middleware/i18n.ts"
-import { createBetterI18nMiddleware } from "@better-i18n/use-intl/middleware"
+import { createBetterI18nMiddleware } from "@better-i18n/use-intl/middleware" // [!code highlight]
 import { i18nConfig } from "../i18n.config"
 
-export const i18nMiddleware = createBetterI18nMiddleware({
-  project: i18nConfig.project,
-  defaultLocale: i18nConfig.defaultLocale,
-})
+export const i18nMiddleware = createBetterI18nMiddleware({ // [!code highlight]
+  project: i18nConfig.project, // [!code highlight]
+  defaultLocale: i18nConfig.defaultLocale, // [!code highlight]
+}) // [!code highlight]
 ```
 
 ## Register Middleware
@@ -27,10 +27,10 @@ Add the middleware to your TanStack Start configuration:
 
 ```ts title="app/ssr.ts"
 import { createStart } from "@tanstack/react-start/server"
-import { i18nMiddleware } from "./middleware/i18n"
+import { i18nMiddleware } from "./middleware/i18n" // [!code ++]
 
 export default createStart({
-  middleware: [i18nMiddleware],
+  middleware: [i18nMiddleware], // [!code ++]
 })
 ```
 

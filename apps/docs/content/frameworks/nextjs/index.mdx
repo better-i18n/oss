@@ -46,12 +46,12 @@ Install the package via your preferred package manager:
 Create an `i18n.config.ts` file in your project root. This file is shared between the SDK and the Better i18n CLI.
 
 ```ts title="i18n.config.ts"
-import { createI18n } from "@better-i18n/next";
+import { createI18n } from "@better-i18n/next"; // [!code highlight]
 
-export const i18n = createI18n({
-  project: "my-company/web-app",
-  defaultLocale: "en",
-});
+export const i18n = createI18n({ // [!code highlight]
+  project: "my-company/web-app", // [!code highlight]
+  defaultLocale: "en", // [!code highlight]
+}); // [!code highlight]
 ```
 </Step>
 
@@ -61,9 +61,9 @@ export const i18n = createI18n({
 Configure the `next-intl` request handler using the exported configuration.
 
 ```ts title="src/i18n/request.ts"
-import { i18n } from "../i18n.config";
+import { i18n } from "../i18n.config"; // [!code highlight]
 
-export default i18n.requestConfig;
+export default i18n.requestConfig; // [!code highlight]
 ```
 </Step>
 
@@ -73,13 +73,13 @@ export default i18n.requestConfig;
 Register the i18n middleware in your `middleware.ts`.
 
 ```ts title="middleware.ts"
-import { i18n } from "./i18n.config";
+import { i18n } from "./i18n.config"; // [!code highlight]
 
 // Simple usage
-export default i18n.betterMiddleware();
+export default i18n.betterMiddleware(); // [!code highlight]
 
 export const config = {
-  matcher: ["/((?!api|_next|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|.*\\..*).*)"], // [!code highlight]
 };
 ```
 
@@ -89,7 +89,7 @@ For apps with authentication, use the callback pattern:
 import { i18n } from "./i18n.config";
 import { NextResponse } from "next/server";
 
-export default i18n.betterMiddleware(async (request, { locale, response }) => {
+export default i18n.betterMiddleware(async (request, { locale, response }) => { // [!code highlight]
   const isLoggedIn = !!request.cookies.get("session")?.value;
 
   if (!isLoggedIn && request.nextUrl.pathname.includes("/dashboard")) {
@@ -109,10 +109,10 @@ export const config = {
 Now you can use standard `next-intl` hooks. The CLI will automatically track these scopes for syncing.
 
 ```tsx title="app/page.tsx"
-import { useTranslations } from "next-intl";
+import { useTranslations } from "next-intl"; // [!code highlight]
 
 export default function Home() {
-  const t = useTranslations("common");
+  const t = useTranslations("common"); // [!code highlight]
 
   return <h1>{t("welcome")}</h1>;
 }

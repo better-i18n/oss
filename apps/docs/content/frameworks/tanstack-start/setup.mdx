@@ -12,10 +12,10 @@ This guide covers the basic setup for Better i18n with TanStack Start.
 Create a minimal configuration file:
 
 ```ts title="app/i18n.config.ts"
-export const i18nConfig = {
-  project: "your-org/your-project",
-  defaultLocale: "en",
-} as const
+export const i18nConfig = { // [!code highlight]
+  project: "your-org/your-project", // [!code highlight]
+  defaultLocale: "en", // [!code highlight]
+} as const // [!code highlight]
 ```
 
 <Callout type="info">
@@ -33,9 +33,9 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router"
-import { BetterI18nProvider } from "@better-i18n/use-intl"
-import { getMessages } from "@better-i18n/use-intl/server"
-import { i18nConfig } from "../i18n.config"
+import { BetterI18nProvider } from "@better-i18n/use-intl" // [!code ++]
+import { getMessages } from "@better-i18n/use-intl/server" // [!code ++]
+import { i18nConfig } from "../i18n.config" // [!code ++]
 
 interface RouterContext {
   locale: string
@@ -45,12 +45,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   loader: async ({ context }) => {
     const locale = context.locale || i18nConfig.defaultLocale
 
-    const messages = await getMessages({
-      project: i18nConfig.project,
-      locale,
-    })
+    const messages = await getMessages({ // [!code ++]
+      project: i18nConfig.project, // [!code ++]
+      locale, // [!code ++]
+    }) // [!code ++]
 
-    return { messages, locale }
+    return { messages, locale } // [!code ++]
   },
 
   component: RootComponent,
@@ -65,14 +65,14 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body>
-        <BetterI18nProvider
-          project={i18nConfig.project}
-          locale={locale}
-          messages={messages}
-          timeZone="UTC"
-        >
+        <BetterI18nProvider // [!code ++]
+          project={i18nConfig.project} // [!code ++]
+          locale={locale} // [!code ++]
+          messages={messages} // [!code ++]
+          timeZone="UTC" // [!code highlight]
+        > // [!code ++]
           <Outlet />
-        </BetterI18nProvider>
+        </BetterI18nProvider> // [!code ++]
         <Scripts />
       </body>
     </html>
@@ -90,14 +90,14 @@ Use the `useTranslations` hook in any component:
 
 ```tsx title="app/routes/index.tsx"
 import { createFileRoute } from "@tanstack/react-router"
-import { useTranslations } from "@better-i18n/use-intl"
+import { useTranslations } from "@better-i18n/use-intl" // [!code highlight]
 
 export const Route = createFileRoute("/")({
   component: HomePage,
 })
 
 function HomePage() {
-  const t = useTranslations("home")
+  const t = useTranslations("home") // [!code highlight]
 
   return (
     <div>

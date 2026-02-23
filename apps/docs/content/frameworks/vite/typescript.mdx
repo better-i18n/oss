@@ -16,11 +16,11 @@ Create a type declaration file that references your translation messages:
 ```ts title="src/types/i18n.d.ts"
 import messages from '../locales/en.json'
 
-type Messages = typeof messages
+type Messages = typeof messages // [!code highlight]
 
-declare global {
-  interface IntlMessages extends Messages {}
-}
+declare global { // [!code highlight]
+  interface IntlMessages extends Messages {} // [!code highlight]
+} // [!code highlight]
 ```
 
 <Callout type="info">

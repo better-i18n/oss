@@ -41,12 +41,12 @@ description: i18next integration for Expo and React Native with offline caching 
 ```ts title="i18n.ts"
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { initBetterI18n } from '@better-i18n/expo';
+import { initBetterI18n } from '@better-i18n/expo'; // [!code highlight]
 
-i18n.use(initReactI18next);
+i18n.use(initReactI18next); // [!code highlight]
 
-export const { languages } = await initBetterI18n({
-  project: 'your-org/your-project',
+export const { languages } = await initBetterI18n({ // [!code highlight]
+  project: 'your-org/your-project', // [!code highlight]
   i18n,
   defaultLocale: 'en',
   debug: __DEV__,

@@ -77,8 +77,8 @@ const messages = await getMessages({
 <BetterI18nProvider
   project="org/project"
   locale="en"
-  messages={messages}
-  timeZone="UTC"
+  messages={messages} // [!code highlight]
+  timeZone="UTC" // [!code highlight]
 >
   <YourApp />
 </BetterI18nProvider>

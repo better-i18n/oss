@@ -29,7 +29,7 @@ The MCP server needs to know which project to manage. It looks for a `project` i
 import { createI18n } from "@better-i18n/next";
 
 export const i18n = createI18n({
-  project: "your-org/your-project", // MCP uses this ID
+  project: "your-org/your-project", // MCP uses this ID // [!code highlight]
   defaultLocale: "en",
 });
 ```
