@@ -141,7 +141,7 @@ export async function getLatestVersion(locale: string): Promise<string | null> {
       { language: locale }
     );
 
-    return entry.customFields.version || null;
+    return entry.version || null;
   } catch (error) {
     console.error("Changelog API error:", error);
     return null;

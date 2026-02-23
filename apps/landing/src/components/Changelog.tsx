@@ -42,13 +42,13 @@ export default function Changelog({ releases }: ChangelogProps) {
         </h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {releases.map((entry) => {
-            const category = entry.customFields.category ?? "";
+            const category = entry.category ?? "";
             const badgeColor =
               categoryColors[category] ?? "bg-mist-500/10 text-mist-700";
             const badgeText =
               categoryLabels[lang]?.[category] ??
-              (entry.customFields.version
-                ? `v${entry.customFields.version}`
+              (entry.version
+                ? `v${entry.version}`
                 : category);
             const dateStr = entry.publishedAt
               ? new Date(entry.publishedAt).toLocaleDateString(
