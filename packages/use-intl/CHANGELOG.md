@@ -1,5 +1,12 @@
 # @better-i18n/use-intl
 
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies [12210eb]
+  - @better-i18n/core@0.2.1
+
 ## 0.1.12
 
 ### Patch Changes
