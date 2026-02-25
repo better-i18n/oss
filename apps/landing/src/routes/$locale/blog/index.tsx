@@ -14,6 +14,7 @@ import {
   formatMetaTags,
   getAlternateLinks,
   getCanonicalLink,
+  buildOgImageUrl,
   SITE_URL,
 } from "@/lib/meta";
 import {
@@ -44,6 +45,11 @@ export const Route = createFileRoute("/$locale/blog/")({
     const meta = getLocalizedMeta(loaderData?.messages || {}, "blog", {
       locale,
       pathname,
+      ogImage: buildOgImageUrl("og", {
+        title: "Blog",
+        description: "Latest posts from the Better i18n team",
+        site: "blog",
+      }),
     });
 
     const breadcrumbSchema = getBreadcrumbSchema([

@@ -13,6 +13,7 @@ import {
   SITE_URL,
   getAlternateLinks,
   getCanonicalLink,
+  buildOgImageUrl,
 } from "@/lib/meta";
 import {
   getArticleSchema,
@@ -43,19 +44,20 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       ? `${SITE_URL}${pathname}`
       : `${SITE_URL}/${locale}${pathname}`;
 
-    // Generate dynamic OG image URL
-    const ogImageParams = new URLSearchParams({
+    // Generate dynamic OG image URL via external OG service
+    const dynamicOgImage = buildOgImageUrl("og/blog", {
       title: post?.title || "Blog Post",
-      ...(post?.authorName && { author: post.authorName }),
-      ...(post?.publishedAt && {
-        date: new Date(post.publishedAt).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
-      }),
+      author: post?.authorName ?? undefined,
+      authorImage: post?.authorAvatar ?? undefined,
+      date: post?.publishedAt
+        ? new Date(post.publishedAt).toLocaleDateString(locale, {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
+        : undefined,
+      tag: post?.category ?? undefined,
     });
-    const dynamicOgImage = `${SITE_URL}/api/og?${ogImageParams.toString()}`;
 
     const articleSchema = post ? getArticleSchema({
       title: post.title,
@@ -174,19 +176,13 @@ function BlogPostPage() {
                     {post.authorName}
                   </p>
                 )}
-                <div className="flex items-center gap-2 text-sm text-mist-500">
-                  {post.publishedAt && (
+                {post.publishedAt && (
+                  <p className="text-sm text-mist-500">
                     <time dateTime={post.publishedAt}>
                       {formatPostDate(post.publishedAt, locale)}
                     </time>
-                  )}
-                  {!!post.readTime && (
-                    <>
-                      <span>·</span>
-                      <span>{post.readTime}</span>
-                    </>
-                  )}
-                </div>
+                  </p>
+                )}
               </div>
             </div>
           </header>

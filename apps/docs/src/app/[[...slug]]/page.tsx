@@ -59,6 +59,8 @@ export async function generateStaticParams() {
   return source.generateParams();
 }
 
+const OG_SERVICE_URL = "https://og.better-i18n.com";
+
 export async function generateMetadata(
   props: PageProps<"/[[...slug]]">,
 ): Promise<Metadata> {
@@ -66,8 +68,20 @@ export async function generateMetadata(
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
+  const ogUrl = new URL(`${OG_SERVICE_URL}/og/docs`);
+  ogUrl.searchParams.set("title", page.data.title);
+  if (page.data.description)
+    ogUrl.searchParams.set("description", page.data.description);
+
   return {
     title: page.data.title,
     description: page.data.description,
+    openGraph: {
+      images: [{ url: ogUrl.toString(), width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: [ogUrl.toString()],
+    },
   };
 }

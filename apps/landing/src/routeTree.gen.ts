@@ -22,7 +22,6 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LocaleIndexRouteImport } from './routes/$locale/index'
 import { Route as ApiStatusRouteImport } from './routes/api/status'
-import { Route as ApiOgRouteImport } from './routes/api/og'
 import { Route as ApiChangelogRouteImport } from './routes/api/changelog'
 import { Route as LocaleWhatIsLocalizationRouteImport } from './routes/$locale/what-is-localization'
 import { Route as LocaleWhatIsInternationalizationRouteImport } from './routes/$locale/what-is-internationalization'
@@ -120,11 +119,6 @@ const LocaleIndexRoute = LocaleIndexRouteImport.update({
 const ApiStatusRoute = ApiStatusRouteImport.update({
   id: '/api/status',
   path: '/api/status',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiOgRoute = ApiOgRouteImport.update({
-  id: '/api/og',
-  path: '/api/og',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChangelogRoute = ApiChangelogRouteImport.update({
@@ -323,7 +317,6 @@ export interface FileRoutesByFullPath {
   '/$locale/what-is-internationalization': typeof LocaleWhatIsInternationalizationRoute
   '/$locale/what-is-localization': typeof LocaleWhatIsLocalizationRoute
   '/api/changelog': typeof ApiChangelogRoute
-  '/api/og': typeof ApiOgRoute
   '/api/status': typeof ApiStatusRoute
   '/$locale': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
@@ -372,7 +365,6 @@ export interface FileRoutesByTo {
   '/$locale/what-is-internationalization': typeof LocaleWhatIsInternationalizationRoute
   '/$locale/what-is-localization': typeof LocaleWhatIsLocalizationRoute
   '/api/changelog': typeof ApiChangelogRoute
-  '/api/og': typeof ApiOgRoute
   '/api/status': typeof ApiStatusRoute
   '/$locale': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
@@ -422,7 +414,6 @@ export interface FileRoutesById {
   '/$locale/what-is-internationalization': typeof LocaleWhatIsInternationalizationRoute
   '/$locale/what-is-localization': typeof LocaleWhatIsLocalizationRoute
   '/api/changelog': typeof ApiChangelogRoute
-  '/api/og': typeof ApiOgRoute
   '/api/status': typeof ApiStatusRoute
   '/$locale/': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
@@ -473,7 +464,6 @@ export interface FileRouteTypes {
     | '/$locale/what-is-internationalization'
     | '/$locale/what-is-localization'
     | '/api/changelog'
-    | '/api/og'
     | '/api/status'
     | '/$locale'
     | '/$locale/blog/$slug'
@@ -522,7 +512,6 @@ export interface FileRouteTypes {
     | '/$locale/what-is-internationalization'
     | '/$locale/what-is-localization'
     | '/api/changelog'
-    | '/api/og'
     | '/api/status'
     | '/$locale'
     | '/$locale/blog/$slug'
@@ -571,7 +560,6 @@ export interface FileRouteTypes {
     | '/$locale/what-is-internationalization'
     | '/$locale/what-is-localization'
     | '/api/changelog'
-    | '/api/og'
     | '/api/status'
     | '/$locale/'
     | '/$locale/blog/$slug'
@@ -621,7 +609,6 @@ export interface RootRouteChildren {
   LocaleWhatIsInternationalizationRoute: typeof LocaleWhatIsInternationalizationRoute
   LocaleWhatIsLocalizationRoute: typeof LocaleWhatIsLocalizationRoute
   ApiChangelogRoute: typeof ApiChangelogRoute
-  ApiOgRoute: typeof ApiOgRoute
   ApiStatusRoute: typeof ApiStatusRoute
   LocaleIndexRoute: typeof LocaleIndexRoute
   LocaleBlogSlugRoute: typeof LocaleBlogSlugRoute
@@ -734,13 +721,6 @@ declare module '@tanstack/react-router' {
       path: '/api/status'
       fullPath: '/api/status'
       preLoaderRoute: typeof ApiStatusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/og': {
-      id: '/api/og'
-      path: '/api/og'
-      fullPath: '/api/og'
-      preLoaderRoute: typeof ApiOgRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/changelog': {
@@ -1005,7 +985,6 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleWhatIsInternationalizationRoute: LocaleWhatIsInternationalizationRoute,
   LocaleWhatIsLocalizationRoute: LocaleWhatIsLocalizationRoute,
   ApiChangelogRoute: ApiChangelogRoute,
-  ApiOgRoute: ApiOgRoute,
   ApiStatusRoute: ApiStatusRoute,
   LocaleIndexRoute: LocaleIndexRoute,
   LocaleBlogSlugRoute: LocaleBlogSlugRoute,
