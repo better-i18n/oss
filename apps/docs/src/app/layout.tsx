@@ -20,6 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://docs.better-i18n.com'),
   title: {
     template: '%s - Better I18N',
     default: 'Documentation - Better I18N',

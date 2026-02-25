@@ -2,7 +2,8 @@ import { getCachedLocales } from "./locales";
 
 const SITE_URL = "https://better-i18n.com";
 const SITE_NAME = "Better i18n";
-const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
+const OG_SERVICE_URL = "https://og.better-i18n.com";
+const DEFAULT_OG_IMAGE = `${OG_SERVICE_URL}/og`;
 const TWITTER_HANDLE = "@betteri18n";
 
 interface MetaMessages {
@@ -183,4 +184,16 @@ export function getCanonicalLink(locale: string, pathname: string = "/") {
   };
 }
 
-export { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE, TWITTER_HANDLE };
+export function buildOgImageUrl(
+  endpoint: "og" | "og/blog" | "og/docs",
+  params: Record<string, string | undefined>
+): string {
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value) searchParams.set(key, value);
+  }
+  const qs = searchParams.toString();
+  return qs ? `${OG_SERVICE_URL}/${endpoint}?${qs}` : `${OG_SERVICE_URL}/${endpoint}`;
+}
+
+export { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE, OG_SERVICE_URL, TWITTER_HANDLE };

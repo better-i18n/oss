@@ -16,6 +16,7 @@ import {
   formatMetaTags,
   getAlternateLinks,
   getCanonicalLink,
+  buildOgImageUrl,
 } from "@/lib/meta";
 import { getHomePageStructuredData } from "@/lib/structured-data";
 import { getChangelogs } from "@/lib/changelog";
@@ -33,9 +34,22 @@ export const Route = createFileRoute("/$locale/")({
   head: ({ loaderData }) => {
     const locale = loaderData?.locale || "en";
     const pathname = "/";
-    const meta = getLocalizedMeta(loaderData?.messages || {}, "home", {
+    const messages = loaderData?.messages || {};
+
+    // Extract localized hero text for OG image
+    const heroNs = (messages as Record<string, unknown>)?.hero as
+      | Record<string, string>
+      | undefined;
+    const heroTitle = heroNs?.title;
+    const heroSubtitle = heroNs?.subtitle;
+
+    const meta = getLocalizedMeta(messages, "home", {
       locale,
       pathname,
+      ogImage: buildOgImageUrl("og", {
+        title: heroTitle,
+        description: heroSubtitle,
+      }),
     });
     return {
       meta: formatMetaTags(meta, { locale }),
