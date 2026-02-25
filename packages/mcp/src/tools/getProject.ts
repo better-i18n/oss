@@ -18,7 +18,12 @@ export const getProject: Tool = {
   definition: {
     name: "getProject",
     description:
-      "Get project details including namespaces, languages, key count, and translation coverage. Use this after listProjects to understand a specific project's structure. Namespaces include rich metadata: name, keyCount, description, and context (team, domain, aiPrompt, tags).",
+      "Get project details including namespaces, languages, key count, and translation coverage. " +
+      "Use this after listProjects to understand a specific project's structure. " +
+      "Namespaces include rich metadata: name, keyCount, description, and context (team, domain, aiPrompt, tags). " +
+      "Response includes CDN delivery metadata (cdn field): base URL, manifest URL, " +
+      "URL pattern with {locale}/{namespace} placeholders, and example URLs. " +
+      'IMPORTANT: "default" namespace maps to "translations" in CDN paths.',
     inputSchema: {
       type: "object",
       properties: {

@@ -41,7 +41,7 @@ const { languages, core } = await initBetterI18n({
 ```ts
 interface InitBetterI18nOptions {
   project: string;
-  i18n: i18n;
+  i18n?: i18n;
   defaultLocale?: string;
   storage?: TranslationStorage;
   staticData?: Record<string, Messages> | (() => Promise<Record<string, Messages>>);
@@ -56,7 +56,7 @@ interface InitBetterI18nOptions {
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `project` | `string` | Required | Project identifier in `org/project` format |
-| `i18n` | `i18n` | Required | i18next instance (call `.use(initReactI18next)` before passing) |
+| `i18n` | `i18n` | Global singleton | i18next instance (call `.use(initReactI18next)` before passing). Defaults to the global `import i18next from 'i18next'` singleton — safe to omit in React Native. |
 | `defaultLocale` | `string` | `"en"` | Fallback locale |
 | `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter (auto: MMKV → AsyncStorage → in-memory) |
 | `staticData` | `Record<string, Messages>` | — | Bundled translations for airplane mode first launch |
@@ -139,6 +139,76 @@ const locales = getDeviceLocales();
 ## Storage
 
 <Accordion>
+<AccordionItem title="storageAdapter(storage, options?)">
+
+Wraps an MMKV or AsyncStorage instance and normalizes it to the `TranslationStorage` interface. When `localeKey` is provided, returns a `LocaleAwareTranslationStorage` that also persists the active locale.
+
+```ts
+storageAdapter(
+  storage: MMKVLike | AsyncStorageLike,
+  options?: StorageAdapterOptions
+): TranslationStorage | LocaleAwareTranslationStorage
+```
+
+<Tabs items={['MMKV', 'AsyncStorage']}>
+  <Tab value="MMKV">
+```ts
+import { MMKV } from 'react-native-mmkv';
+import { storageAdapter } from '@better-i18n/expo';
+
+const mmkv = new MMKV({ id: 'app' });
+
+// Without localeKey — TranslationStorage (no locale persistence)
+storage: storageAdapter(mmkv)
+
+// With localeKey — LocaleAwareTranslationStorage (locale persisted)
+storage: storageAdapter(mmkv, { localeKey: '@app:locale' })
+```
+  </Tab>
+  <Tab value="AsyncStorage">
+```ts
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storageAdapter } from '@better-i18n/expo';
+
+// Without localeKey — TranslationStorage (no locale persistence)
+storage: storageAdapter(AsyncStorage)
+
+// With localeKey — LocaleAwareTranslationStorage (locale persisted)
+storage: storageAdapter(AsyncStorage, { localeKey: '@app:locale' })
+```
+  </Tab>
+</Tabs>
+
+**`StorageAdapterOptions`**
+
+```ts
+interface StorageAdapterOptions {
+  /** Key used to persist the user's locale selection in storage. */
+  localeKey?: string;
+}
+```
+
+When `localeKey` is set, the returned adapter gains `readLocale()` / `writeLocale()` methods. `initBetterI18n` detects these via duck-type check and automatically reads the saved locale on startup.
+
+</AccordionItem>
+
+<AccordionItem title="LocaleAwareTranslationStorage">
+
+Extends `TranslationStorage` with locale persistence. Returned by `storageAdapter()` when `localeKey` is provided.
+
+```ts
+interface LocaleAwareTranslationStorage extends TranslationStorage {
+  /** Returns the previously saved locale, or null if none. */
+  readLocale(): Promise<string | null>;
+  /** Persists the given locale to storage. Called on every changeLanguage(). */
+  writeLocale(lng: string): Promise<void>;
+}
+```
+
+`initBetterI18n` uses duck-type detection at runtime: if the storage object has `readLocale` and `writeLocale` methods, it automatically calls `readLocale()` during startup to restore the user's last-selected language — before device locale detection and `defaultLocale` fallback.
+
+</AccordionItem>
+
 <AccordionItem title="TranslationStorage">
 
 Interface for pluggable storage adapters. Any key-value store that implements these three methods works.
@@ -226,6 +296,8 @@ import type {
 
   // Storage
   TranslationStorage,
+  LocaleAwareTranslationStorage,
+  StorageAdapterOptions,
 
   // Core types
   LanguageOption,

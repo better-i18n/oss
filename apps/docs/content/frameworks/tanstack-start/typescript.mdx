@@ -1,0 +1,180 @@
+---
+title: TypeScript
+description: Type-safe translation keys and autocomplete for TanStack Start
+---
+
+# TypeScript
+
+Enable autocomplete and type safety for your translation keys in TanStack Start applications.
+
+## Setup
+
+### Step 1: Create Type Declaration
+
+Create a type declaration file that references your translation messages:
+
+```ts title="app/types/i18n.d.ts"
+import messages from '../locales/en.json'
+
+type Messages = typeof messages // [!code highlight]
+
+declare global { // [!code highlight]
+  interface IntlMessages extends Messages {} // [!code highlight]
+} // [!code highlight]
+```
+
+<Callout type="info">
+  The `IntlMessages` interface is used by `use-intl` to provide type safety for translation keys.
+</Callout>
+
+### Step 2: Add Local Translation File
+
+For TypeScript to infer types, you need a local copy of your translations:
+
+```json title="app/locales/en.json"
+{
+  "home": {
+    "title": "Welcome to our app",
+    "description": "Get started by editing app/routes/index.tsx"
+  },
+  "greeting": {
+    "hello": "Hello, {name}!"
+  }
+}
+```
+
+<Callout type="warn">
+  This file is only for type inference. At runtime, translations are still fetched from the Better i18n CDN.
+</Callout>
+
+## Usage
+
+Once configured, you'll get autocomplete for translation keys:
+
+```tsx
+import { useTranslations } from '@better-i18n/use-intl'
+
+function HomePage() {
+  const t = useTranslations('home')
+
+  return (
+    <div>
+      {/* ✅ TypeScript knows 'title' exists */}
+      <h1>{t('title')}</h1>
+
+      {/* ❌ TypeScript error: 'invalid' doesn't exist */}
+      <p>{t('invalid')}</p>
+    </div>
+  )
+}
+```
+
+## TanStack Start-Specific Types
+
+### RouterContext and getMessages
+
+The `getMessages` return type should match your `RouterContext` to ensure type safety across
+the SSR boundary:
+
+```ts title="app/router.tsx"
+import type { Messages } from '@better-i18n/use-intl'
+
+interface RouterContext {
+  locale: string
+  messages?: Messages
+}
+```
+
+```tsx title="app/routes/__root.tsx"
+import type { Messages } from '@better-i18n/use-intl'
+
+// Loader return type is inferred automatically
+export const Route = createRootRouteWithContext<RouterContext>()({
+  loader: async ({ context }): Promise<{ messages: Messages; locale: string }> => {
+    const locale = context.locale || 'en'
+    const messages = await getMessages({ project: 'org/project', locale })
+    return { messages, locale }
+  },
+})
+```
+
+### createServerTranslator Types
+
+When using `createServerTranslator` for server-side translation, the `Messages` type is
+inferred from the `IntlMessages` global:
+
+```ts title="app/server/translate.ts"
+import { createServerTranslator } from '@better-i18n/use-intl/server'
+
+// Messages parameter is typed as IntlMessages (your global declaration)
+const t = await createServerTranslator({ locale: 'tr', messages })
+t('home.title') // ✅ type-safe
+```
+
+## Namespaced Types
+
+For namespaced translations, your type file should reflect the structure:
+
+```ts title="app/types/i18n.d.ts"
+import home from '../locales/en/home.json'
+import common from '../locales/en/common.json'
+
+type Messages = {
+  home: typeof home
+  common: typeof common
+}
+
+declare global {
+  interface IntlMessages extends Messages {}
+}
+```
+
+## Syncing Types
+
+### CLI Sync (Recommended)
+
+Use the Better i18n CLI to keep types in sync:
+
+```bash
+# Install CLI
+npm install -D @better-i18n/cli
+
+# Pull translations
+npx better-i18n pull --locale en --output app/locales
+```
+
+Add to your `package.json` scripts:
+
+```json title="package.json"
+{
+  "scripts": {
+    "i18n:pull": "better-i18n pull --locale en --output app/locales"
+  }
+}
+```
+
+## Type Checking in CI
+
+Add type checking to your CI pipeline to catch missing translations:
+
+```yaml title=".github/workflows/ci.yml"
+- name: Pull translations
+  run: npm run i18n:pull
+
+- name: Type check
+  run: npx tsc --noEmit
+```
+
+## Next Steps
+
+<Cards>
+  <Card title="Setup" icon="Settings" href="/frameworks/tanstack-start/setup">
+    Return to the setup guide.
+  </Card>
+  <Card title="SSR & Hydration" icon="Server" href="/frameworks/tanstack-start/ssr">
+    Configure server-side rendering properly.
+  </Card>
+  <Card title="Hooks Reference" icon="Hook" href="/react/hooks">
+    Explore all available hooks.
+  </Card>
+</Cards>

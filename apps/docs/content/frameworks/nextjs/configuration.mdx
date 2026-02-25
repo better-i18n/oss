@@ -36,9 +36,15 @@ You can also configure CLI-specific options (like linting rules and file exclusi
 | `localePrefix` | `"as-needed"` \| `"always"` \| `"never"` | `"as-needed"` | URL locale prefix behavior |
 | `debug` | `boolean` | `false` | Enable debug logging |
 | `logLevel` | `LogLevel` | `"warn"` | Logging verbosity |
-| `manifestCacheTtlMs` | `number` | `60000` | Manifest cache TTL in ms |
-| `manifestRevalidateSeconds` | `number` | `60` | Next.js revalidate for manifest |
-| `messagesRevalidateSeconds` | `number` | `60` | Next.js revalidate for messages |
+| `manifestCacheTtlMs` | `number` | `300000` | Manifest cache TTL in ms |
+| `manifestRevalidateSeconds` | `number` | `3600` | Next.js revalidate for manifest |
+| `messagesRevalidateSeconds` | `number` | `30` | Next.js revalidate for messages |
+| `cookieName` | `string` | `"locale"` | Name of the locale persistence cookie |
+| `timeZone` | `string` | System tz | IANA timezone. Set explicitly to avoid `ENVIRONMENT_FALLBACK` warnings and prevent SSR/client hydration mismatches. |
+| `storage` | `TranslationStorage` | — | Persistent storage adapter (offline fallback) |
+| `staticData` | `Record<string, Messages> \| (() => Promise<...>)` | — | Last-resort bundled translations for offline use |
+| `fetchTimeout` | `number` | `10000` | CDN fetch timeout in ms |
+| `retryCount` | `number` | `1` | Retry attempts on CDN failure |
 
 ---
 
@@ -49,25 +55,27 @@ You can also configure CLI-specific options (like linting rules and file exclusi
     Control how locales appear in your URLs.
     ```ts
     // /page for default, /tr/page for others
-    createI18n({ localePrefix: "as-needed" });
+    createI18n({ project: "org/project", defaultLocale: "en", localePrefix: "as-needed" });
 
     // always includes locale: /en/page, /tr/page
-    createI18n({ localePrefix: "always" });
+    createI18n({ project: "org/project", defaultLocale: "en", localePrefix: "always" });
 
     // never includes locale in URL
-    createI18n({ localePrefix: "never" });
+    createI18n({ project: "org/project", defaultLocale: "en", localePrefix: "never" });
     ```
   </Tab>
   <Tab value="Caching">
     Configure TTL for edge and runtime caching.
     ```ts
     createI18n({
+      project: "org/project",
+      defaultLocale: "en",
       // Cache manifest in memory for 5 minutes
       manifestCacheTtlMs: 5 * 60 * 1000,
 
       // Next.js ISR revalidation times
-      manifestRevalidateSeconds: 300,
-      messagesRevalidateSeconds: 300,
+      manifestRevalidateSeconds: 3600,
+      messagesRevalidateSeconds: 30,
     });
     ```
   </Tab>
@@ -75,6 +83,8 @@ You can also configure CLI-specific options (like linting rules and file exclusi
     Enable detailed logging for troubleshooting.
     ```ts
     createI18n({
+      project: "org/project",
+      defaultLocale: "en",
       debug: true,
       logLevel: "debug",
     });

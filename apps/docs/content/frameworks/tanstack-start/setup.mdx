@@ -84,6 +84,20 @@ function RootComponent() {
   **Timezone Requirement:** `use-intl` v4+ requires a `timeZone` during SSR to prevent markup mismatches. Use `"UTC"` as a safe default.
 </Callout>
 
+### BetterI18nProvider Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `project` | `string` | Required | Project identifier (`org/project`) |
+| `locale` | `string` | Required | Current locale (from router context) |
+| `messages` | `Messages` | — | Pre-loaded SSR messages from `getMessages()` |
+| `timeZone` | `string` | System tz | IANA timezone — set explicitly to avoid SSR hydration mismatches |
+| `onLocaleChange` | `(locale: string) => void` | — | Locale switch callback |
+| `storage` | `TranslationStorage` | — | Persistent translation cache adapter |
+| `staticData` | `Record<string, Messages>` | — | Offline fallback translations |
+| `fetchTimeout` | `number` | `10000` | CDN fetch timeout in ms |
+| `retryCount` | `number` | `1` | Retry attempts on CDN failure |
+
 ## Step 3: Use Translations
 
 Use the `useTranslations` hook in any component:

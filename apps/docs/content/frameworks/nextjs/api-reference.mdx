@@ -308,10 +308,57 @@ const languages = await getManifestLanguages({
 Import from `@better-i18n/next/client`:
 
 ```ts
-import { useManifestLanguages } from "@better-i18n/next/client";
+import {
+  BetterI18nProvider,
+  useSetLocale,
+  useManifestLanguages,
+} from "@better-i18n/next/client";
 ```
 
 <Accordion>
+<AccordionItem title="BetterI18nProvider">
+Enables instant client-side locale switching via `useSetLocale` — no page navigation or router
+refresh needed. Wrap your Root Layout to activate client-side mode.
+
+```tsx
+import { BetterI18nProvider } from '@better-i18n/next/client';
+
+// In your Root Layout:
+<BetterI18nProvider config={i18n.config} locale={locale} messages={messages}>
+  {children}
+</BetterI18nProvider>
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `config` | `I18nConfig` | Required | The i18n config from `createI18n()` |
+| `locale` | `string` | From cookie | Override active locale |
+| `messages` | `Messages` | — | Pre-loaded SSR messages |
+| `timeZone` | `string` | `config.timeZone` | IANA timezone |
+| `now` | `Date` | — | Pin "now" for SSR hydration consistency |
+
+</AccordionItem>
+
+<AccordionItem title="useSetLocale(config?)">
+Switches the active locale. Behavior depends on whether `BetterI18nProvider` is in the tree.
+
+```tsx
+// With BetterI18nProvider in tree → instant CDN fetch + re-render
+const setLocale = useSetLocale();
+setLocale('tr');
+
+// Without provider → cookie update + router.refresh()
+const setLocale = useSetLocale({ config: i18n.config });
+setLocale('tr');
+```
+
+| Mode | Trigger | Result |
+| --- | --- | --- |
+| With provider | `setLocale('tr')` | Instant CDN fetch + client re-render |
+| Without provider | `setLocale('tr')` | Cookie update + `router.refresh()` |
+
+</AccordionItem>
+
 <AccordionItem title="useManifestLanguages(config)">
 React hook to fetch available languages on the client. Includes request deduplication.
 
@@ -374,6 +421,20 @@ interface I18nConfig {
   // Optional - Routing
   localePrefix?: "as-needed" | "always" | "never"; // Default: "as-needed"
 
+  // Optional - Locale persistence
+  cookieName?: string; // Default: "locale"
+
+  // Optional - Timezone
+  timeZone?: string; // IANA timezone (set explicitly to avoid ENVIRONMENT_FALLBACK warnings)
+
+  // Optional - Offline support
+  storage?: TranslationStorage; // Persistent storage adapter
+  staticData?: Record<string, Messages> | (() => Promise<Record<string, Messages>>); // Last-resort bundled translations
+
+  // Optional - Resilience
+  fetchTimeout?: number; // Default: 10000 (ms)
+  retryCount?: number; // Default: 1
+
   // Optional - Debugging
   debug?: boolean; // Enable debug logging
   logLevel?: "debug" | "info" | "warn" | "error" | "silent";
@@ -412,6 +473,9 @@ import type {
   // Main configuration
   I18nConfig,
   I18nMiddlewareConfig,
+
+  // Client-side provider
+  BetterI18nProviderProps,
 
   // Middleware callback types (Clerk-style pattern)
   MiddlewareContext,

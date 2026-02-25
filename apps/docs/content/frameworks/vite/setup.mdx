@@ -80,9 +80,26 @@ function App() {
 export default App
 ```
 
-<Callout type="info">
-  Without pre-loaded `messages`, the provider fetches them from the CDN on mount. Children won't render until messages are ready.
+<Callout type="warning">
+  `BetterI18nProvider` renders `null` until translations are loaded. If no `messages` prop is
+  provided, the component tree is invisible while the CDN fetch is in progress. Wrap with
+  a Suspense boundary or show a loading indicator via the `onLocaleChange` state.
 </Callout>
+
+### BetterI18nProvider Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `project` | `string` | Yes | Project identifier (`org/project`) |
+| `locale` | `string` | Yes | Current locale (from state/localStorage) |
+| `onLocaleChange` | `(locale: string) => void` | Yes | Called when user switches language |
+| `messages` | `Messages` | No | Pre-loaded translations (SSR or static) |
+| `timeZone` | `string` | No | IANA timezone |
+| `now` | `Date` | No | Pin current time (for testing or SSR consistency) |
+| `storage` | `TranslationStorage` | No | Persistent translation cache adapter |
+| `staticData` | `Record<string, Messages>` | No | Offline fallback translations |
+| `fetchTimeout` | `number` | No | CDN fetch timeout in ms (default: `10000`) |
+| `retryCount` | `number` | No | Retry attempts on CDN failure (default: `1`) |
 
 ### Step 3: Add Loading State
 

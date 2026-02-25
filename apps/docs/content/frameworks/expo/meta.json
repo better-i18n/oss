@@ -4,7 +4,9 @@
   "pages": [
     "index",
     "setup",
+    "expo-router",
     "offline-caching",
+    "dynamic-localizations",
     "api-reference"
   ]
 }

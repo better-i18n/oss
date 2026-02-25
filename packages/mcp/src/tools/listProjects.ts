@@ -14,7 +14,9 @@ export const listProjects: Tool = {
   definition: {
     name: "listProjects",
     description:
-      "List all projects you have access to. Call this first to discover available projects before using other tools.",
+      "List all projects you have access to. Call this first to discover available projects before using other tools. " +
+      "Each project includes a cdnFormat URL pattern: https://cdn.better-i18n.com/{orgSlug}/{projectSlug}/{locale}/{namespace}.json. " +
+      'IMPORTANT: "default" namespace maps to "translations" in CDN paths.',
     inputSchema: {
       type: "object",
       properties: {},

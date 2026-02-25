@@ -1,0 +1,240 @@
+---
+title: Expo Router Integration
+description: Production architecture for Expo Router apps with SplashScreen, locale persistence, and language switching
+---
+
+# Expo Router Integration
+
+For production apps using **Expo Router**, set up a clean, modular architecture that eliminates the "English flash" problem, persists the user's language choice, and integrates with `SplashScreen`.
+
+<Callout type="tip">
+  **What is the English flash?** When you hardcode `defaultLocale: 'en'`, the app always initializes in English — even if the user had previously selected Turkish. For one frame, translated UI renders in English before switching. Pass `localeKey` to `storageAdapter` — the locale is read from storage automatically before init, eliminating this entirely.
+</Callout>
+
+## File Structure
+
+```
+lib/
+  i18n/
+    index.ts    ← i18next instance + init + locale persistence
+  context/
+    LanguageContext.tsx  ← (optional) React context + useLanguage hook
+app/
+  _layout.tsx   ← SplashScreen gate
+```
+
+## `lib/i18n/index.ts` — i18n Instance + Init
+
+<Tabs items={['MMKV', 'AsyncStorage', 'No storage']}>
+  <Tab value="MMKV">
+```ts title="lib/i18n/index.ts"
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import { MMKV } from 'react-native-mmkv';
+import { initBetterI18n, storageAdapter } from '@better-i18n/expo';
+
+const mmkv = new MMKV({ id: 'app' });
+
+i18n.use(initReactI18next);
+
+export const i18nReady = initBetterI18n({
+  project: 'your-org/your-project',
+  i18n,
+  storage: storageAdapter(mmkv, { localeKey: '@app:locale' }), // [!code highlight]
+  defaultLocale: 'en',
+  debug: __DEV__,
+});
+
+export default i18n;
+```
+  </Tab>
+  <Tab value="AsyncStorage">
+```ts title="lib/i18n/index.ts"
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initBetterI18n, storageAdapter } from '@better-i18n/expo';
+
+i18n.use(initReactI18next);
+
+export const i18nReady = initBetterI18n({
+  project: 'your-org/your-project',
+  i18n,
+  storage: storageAdapter(AsyncStorage, { localeKey: '@app:locale' }), // [!code highlight]
+  defaultLocale: 'en',
+  debug: __DEV__,
+});
+
+export default i18n;
+```
+  </Tab>
+  <Tab value="No storage">
+```ts title="lib/i18n/index.ts"
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import { initBetterI18n } from '@better-i18n/expo';
+
+i18n.use(initReactI18next);
+
+export const i18nReady = initBetterI18n({
+  project: 'your-org/your-project',
+  i18n,
+  // No storage — in-memory only, no offline support
+  defaultLocale: 'en',
+  debug: __DEV__,
+});
+
+export default i18n;
+```
+  </Tab>
+</Tabs>
+
+<Callout type="info">
+  **`localeKey` nedir?** `storageAdapter`'a `localeKey` geçildiğinde, kullanıcının seçtiği dil her `changeLanguage()` çağrısında storage'a yazılır ve uygulama yeniden açıldığında otomatik okunur.
+
+  `localeKey` **olmadan**: uygulama her açılışta `defaultLocale` veya cihaz diline başlar — kullanıcı Türkçe seçmiş olsa bile, uygulamanın ilk açılışında 1 frame'lik "English flash" riski vardır.
+
+  `localeKey` **ile**: son seçilen dil her zaman kazanır — kayıtlı dil, cihaz dilinden ve `defaultLocale`'den önce gelir.
+</Callout>
+
+## `lib/context/LanguageContext.tsx` — React Context
+
+```tsx title="lib/context/LanguageContext.tsx"
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import i18n from 'i18next';
+import { i18nReady } from '../i18n';
+import type { LanguageOption } from '@better-i18n/expo';
+
+interface LanguageContextType {
+  currentLanguage: string;
+  isInitialized: boolean;
+  setLanguage: (lang: string) => Promise<void>;
+  supportedLanguages: LanguageOption[];
+}
+
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [supportedLanguages, setSupportedLanguages] = useState<LanguageOption[]>([]);
+
+  useEffect(() => {
+    i18nReady
+      .then(({ languages }) => {
+        setSupportedLanguages(languages);
+        setCurrentLanguage(i18n.language);
+      })
+      .catch(() => {})
+      .finally(() => setIsInitialized(true));
+
+    // Reactive updates when language changes (e.g., from LanguagePicker)
+    i18n.on('languageChanged', setCurrentLanguage);
+    return () => { i18n.off('languageChanged', setCurrentLanguage); };
+  }, []);
+
+  return (
+    <LanguageContext.Provider value={{
+      currentLanguage,
+      isInitialized,
+      setLanguage: (lang) => i18n.changeLanguage(lang),
+      supportedLanguages,
+    }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+export function useLanguage() {
+  const ctx = useContext(LanguageContext);
+  if (!ctx) throw new Error('useLanguage must be used within LanguageProvider');
+  return ctx;
+}
+```
+
+<Callout type="tip">
+  `languages` comes directly from the CDN manifest — no static array to maintain.
+  Any language added via the dashboard is immediately available in `supportedLanguages`.
+</Callout>
+
+## `app/_layout.tsx` — SplashScreen Gate
+
+```tsx title="app/_layout.tsx"
+import * as SplashScreen from 'expo-splash-screen';
+import { Stack } from 'expo-router';
+import { LanguageProvider } from '~/lib/context/LanguageContext';
+import { useLanguage } from '~/lib/context/LanguageContext';
+import React from 'react';
+
+// Keep splash visible until we're ready
+SplashScreen.preventAutoHideAsync();
+
+function AppContent() {
+  const { isInitialized } = useLanguage();
+
+  React.useEffect(() => {
+    if (isInitialized) {
+      SplashScreen.hideAsync();
+    }
+  }, [isInitialized]);
+
+  // Don't render navigation until i18n is ready — no English flash
+  if (!isInitialized) return null;
+
+  return <Stack />;
+}
+
+export default function RootLayout() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  );
+}
+```
+
+<Callout type="info">
+  The `isInitialized` gate is what prevents English flash: navigation only renders after `i18nReady` resolves with the correct locale. SplashScreen stays visible during this window.
+</Callout>
+
+## Language Switching
+
+Use `i18n.changeLanguage()` to switch languages at runtime. Translations are **pre-loaded before the switch** — no loading spinners or English flash.
+
+```tsx title="lib/components/LanguagePicker.tsx"
+import { useTranslation } from 'react-i18next';
+import { FlatList, Pressable, Text } from 'react-native';
+import { useLanguage } from '../context/LanguageContext';
+
+export function LanguagePicker() {
+  const { i18n } = useTranslation();
+  const { supportedLanguages } = useLanguage();
+
+  return (
+    <FlatList
+      data={supportedLanguages}
+      keyExtractor={(item) => item.code}
+      renderItem={({ item }) => (
+        <Pressable onPress={() => i18n.changeLanguage(item.code)}>
+          <Text>{item.nativeName ?? item.name}</Text>
+        </Pressable>
+      )}
+    />
+  );
+}
+```
+
+<Callout type="tip">
+  Language switching is instant — `initBetterI18n` overrides `changeLanguage()` to pre-load translations from CDN (or cache) before the switch happens. No loading spinners or English flash.
+</Callout>
+
+## Next Steps
+
+<Cards>
+  <Card title="Offline & Caching" icon="WifiOff" href="/frameworks/expo/offline-caching">
+    How persistent storage, cache layers, and locale persistence work.
+  </Card>
+  <Card title="API Reference" icon="FileCode" href="/frameworks/expo/api-reference">
+    Full API documentation — `storageAdapter`, `LocaleAwareTranslationStorage`, and all options.
+  </Card>
+</Cards>
