@@ -40,16 +40,21 @@ export const createMemoryStorage = (): TranslationStorage => {
  * 2. react-native-mmkv (fastest, sync I/O)
  * 3. @react-native-async-storage/async-storage (most common)
  * 4. In-memory Map (no persistence, works everywhere)
+ *
+ * Uses dynamic import() instead of require() so Metro bundler stubs
+ * always reject via Promise — safely caught by await/catch regardless
+ * of Metro version. (require() stubs can throw synchronously before
+ * try/catch runs in older Metro versions.)
  */
-export const resolveStorage = (
+export const resolveStorage = async (
   userStorage?: TranslationStorage
-): TranslationStorage => {
+): Promise<TranslationStorage> => {
   if (userStorage) return userStorage;
 
   // 1. Try MMKV — fastest persistent storage for RN
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { MMKV } = require("react-native-mmkv");
+    // @ts-ignore — optional peer dependency, may not be installed
+    const { MMKV } = await import("react-native-mmkv");
     const mmkv = new MMKV({ id: "better-i18n" });
     return {
       getItem: async (key) => mmkv.getString(key) ?? null,
@@ -62,13 +67,13 @@ export const resolveStorage = (
 
   // 2. Try AsyncStorage
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const asyncStorage = require("@react-native-async-storage/async-storage");
-    const mod = asyncStorage.default ?? asyncStorage;
+    // @ts-ignore — optional peer dependency, may not be installed
+    const mod = await import("@react-native-async-storage/async-storage");
+    const asyncStorage = (mod as any).default ?? mod;
     return {
-      getItem: (key: string) => mod.getItem(key),
-      setItem: (key: string, value: string) => mod.setItem(key, value),
-      removeItem: (key: string) => mod.removeItem(key),
+      getItem: (key: string) => asyncStorage.getItem(key),
+      setItem: (key: string, value: string) => asyncStorage.setItem(key, value),
+      removeItem: (key: string) => asyncStorage.removeItem(key),
     };
   } catch {
     // not installed

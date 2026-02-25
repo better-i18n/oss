@@ -75,7 +75,7 @@ export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions
   type = "backend" as const;
 
   private core!: I18nCore;
-  private storage!: TranslationStorage;
+  private storagePromise!: Promise<TranslationStorage>;
   private memoryCache = new TtlCache<Messages>();
   private cacheExpiration = DEFAULT_CACHE_EXPIRATION_MS;
   private project = "";
@@ -99,7 +99,7 @@ export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions
     this.cacheExpiration =
       backendOptions.cacheExpiration ?? DEFAULT_CACHE_EXPIRATION_MS;
 
-    this.storage = resolveStorage(backendOptions.storage);
+    this.storagePromise = resolveStorage(backendOptions.storage);
 
     this.core = createI18nCore({
       project: backendOptions.project,
@@ -225,6 +225,8 @@ export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions
       return memoryHit;
     }
 
+    const storage = await this.storagePromise;
+
     // 2. Network-first: always try CDN, fall back to persistent cache
     try {
       this.log("fetching from CDN", locale);
@@ -232,7 +234,7 @@ export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions
 
       // Persist to both caches
       this.memoryCache.set(memoryCacheKey, data, this.cacheExpiration);
-      writeCache(this.storage, this.project, locale, data).catch((err) => {
+      writeCache(storage, this.project, locale, data).catch((err) => {
         this.log("failed to write persistent cache", err);
       });
 
@@ -241,7 +243,7 @@ export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions
       this.log("CDN fetch failed, checking persistent cache", locale, err);
 
       // 3. CDN down — fall back to persistent cache
-      const cached = await readCache(this.storage, this.project, locale);
+      const cached = await readCache(storage, this.project, locale);
       if (cached) {
         this.log("serving from persistent cache (offline fallback)", locale);
         this.memoryCache.set(memoryCacheKey, cached.data, this.cacheExpiration);
