@@ -95,7 +95,7 @@ export async function initBetterI18n(
     i18nextOptions = {},
   } = options;
 
-  const storage = resolveStorage(userStorage);
+  const storage = await resolveStorage(userStorage);
   const core = createI18nCore({
     project,
     defaultLocale,
@@ -151,7 +151,7 @@ export async function initBetterI18n(
 
   // Fetch manifest + initial translations in parallel
   const [languages, messages] = await Promise.all([
-    core.getLanguages(),
+    core.getLanguages().catch(() => [] as LanguageOption[]),
     loadMessages(lng),
   ]);
 
