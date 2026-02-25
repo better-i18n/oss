@@ -1,5 +1,5 @@
 import type { Messages } from "@better-i18n/core";
-import type { CacheMeta, TranslationStorage } from "./types";
+import type { AsyncStorageLike, CacheMeta, LocaleAwareTranslationStorage, MMKVLike, StorageAdapterOptions, TranslationStorage } from "./types";
 
 const CACHE_PREFIX = "@better-i18n";
 
@@ -33,53 +33,78 @@ export const createMemoryStorage = (): TranslationStorage => {
 };
 
 /**
- * Auto-detect the best available storage. Zero config.
+ * Resolve storage: return user-provided storage or fall back to in-memory.
  *
- * Priority:
- * 1. User-provided custom storage
- * 2. react-native-mmkv (fastest, sync I/O)
- * 3. @react-native-async-storage/async-storage (most common)
- * 4. In-memory Map (no persistence, works everywhere)
- *
- * Uses require() so Metro bundler creates stubs with real file paths.
- * import() causes Metro to set undefined paths for missing modules →
- * path.relative(bundleDir, undefined) crash at serialization time.
- * require() stubs execute at runtime and throw → caught by try/catch.
+ * The library never imports react-native-mmkv or AsyncStorage directly —
+ * use storageAdapter() to pass your own instance.
  */
 export const resolveStorage = async (
   userStorage?: TranslationStorage
 ): Promise<TranslationStorage> => {
   if (userStorage) return userStorage;
+  return createMemoryStorage();
+};
 
-  // 1. Try MMKV — fastest persistent storage for RN
-  try {
-    // @ts-ignore — optional peer dependency, may not be installed
-    const { MMKV } = require("react-native-mmkv");
-    const mmkv = new MMKV({ id: "better-i18n" });
-    return {
+/**
+ * Adapt an external storage instance to TranslationStorage.
+ *
+ * Detects the storage type by duck-typing:
+ * - MMKV  : has `getString`, `set`, `delete` (sync → wrapped async)
+ * - AsyncStorage: has `getItem`, `setItem`, `removeItem` (already async)
+ *
+ * The library never imports react-native-mmkv or AsyncStorage directly.
+ *
+ * @example
+ * import { MMKV } from 'react-native-mmkv';
+ * storage: storageAdapter(new MMKV({ id: 'app' }))
+ *
+ * @example
+ * import AsyncStorage from '@react-native-async-storage/async-storage';
+ * storage: storageAdapter(AsyncStorage)
+ *
+ * @example
+ * // With locale persistence — readLocale() / writeLocale() added to returned adapter
+ * storage: storageAdapter(AsyncStorage, { localeKey: '@app:locale' })
+ */
+export const storageAdapter = (
+  storage: MMKVLike | AsyncStorageLike,
+  options?: StorageAdapterOptions
+): TranslationStorage | LocaleAwareTranslationStorage => {
+  let base: TranslationStorage;
+
+  // MMKV: sync API — getString / set / delete
+  if ("getString" in storage && "set" in storage && "delete" in storage) {
+    const mmkv = storage as MMKVLike;
+    base = {
       getItem: async (key) => mmkv.getString(key) ?? null,
       setItem: async (key, value) => { mmkv.set(key, value); },
       removeItem: async (key) => { mmkv.delete(key); },
     };
-  } catch {
-    // not installed
   }
-
-  // 2. Try AsyncStorage
-  try {
-    // @ts-ignore — optional peer dependency, may not be installed
-    const AsyncStorage = require("@react-native-async-storage/async-storage").default;
-    return {
-      getItem: (key: string) => AsyncStorage.getItem(key),
-      setItem: (key: string, value: string) => AsyncStorage.setItem(key, value),
-      removeItem: (key: string) => AsyncStorage.removeItem(key),
+  // AsyncStorage: async API — getItem / setItem / removeItem
+  else if ("getItem" in storage && "setItem" in storage && "removeItem" in storage) {
+    const as = storage as AsyncStorageLike;
+    base = {
+      getItem: (key) => as.getItem(key),
+      setItem: (key, value) => as.setItem(key, value),
+      removeItem: (key) => as.removeItem(key),
     };
-  } catch {
-    // not installed
+  }
+  else {
+    throw new Error(
+      "[better-i18n] storageAdapter: unrecognized storage type. " +
+      "Expected MMKV (getString/set/delete) or AsyncStorage (getItem/setItem/removeItem)."
+    );
   }
 
-  // 3. Fallback — in-memory (no persistence across restarts)
-  return createMemoryStorage();
+  if (!options?.localeKey) return base;
+
+  const key = options.localeKey;
+  return {
+    ...base,
+    readLocale: () => base.getItem(key),
+    writeLocale: (lng: string) => base.setItem(key, lng),
+  };
 };
 
 /**

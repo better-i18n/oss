@@ -1,5 +1,43 @@
 # @better-i18n/expo
 
+## 0.5.0
+
+### Minor Changes
+
+- feat(expo): storageAdapter localeKey + optional i18n instance
+
+  ### New Features
+
+  **`storageAdapter(storage, { localeKey })`** — locale persistence built-in:
+  - Adds `readLocale()` / `writeLocale()` to the adapter
+  - `initBetterI18n` reads the saved locale before init (eliminates English flash)
+  - Every `i18n.changeLanguage()` call auto-persists the new locale
+  - Works with both AsyncStorage and MMKV
+
+  **`i18n` parameter is now optional** — defaults to the global i18next singleton,
+  which is always the same module instance in React Native.
+
+  ### Migration
+
+  ```ts
+  // Before (v0.4.x) — 40 lines of boilerplate
+  const LOCALE_KEY = '@app:locale';
+  export async function initializeI18n() {
+    const stored = await AsyncStorage.getItem(LOCALE_KEY);
+    return initBetterI18n({ i18n, defaultLocale: stored ?? 'en', ... });
+  }
+  export function setLanguage(lang: string) {
+    AsyncStorage.setItem(LOCALE_KEY, lang);
+    i18n.changeLanguage(lang);
+  }
+
+  // After (v0.5.0) — 12 lines
+  export const i18nReady = initBetterI18n({
+    storage: storageAdapter(AsyncStorage, { localeKey: '@app:locale' }),
+    defaultLocale: 'en',
+  });
+  ```
+
 ## 0.4.2
 
 ### Patch Changes
