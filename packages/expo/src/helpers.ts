@@ -1,9 +1,9 @@
-import type { i18n, InitOptions } from "i18next";
+import i18nDefault, { type i18n, type InitOptions } from "i18next";
 import { createI18nCore, normalizeLocale } from "@better-i18n/core";
 import type { I18nCore, I18nCoreConfig, Messages, LanguageOption } from "@better-i18n/core";
 import { getDeviceLocale } from "./locale";
 import { resolveStorage, readCache, writeCache } from "./storage";
-import type { TranslationStorage } from "./types";
+import type { LocaleAwareTranslationStorage, TranslationStorage } from "./types";
 
 const LOG_PREFIX = "[better-i18n/expo]";
 
@@ -11,8 +11,11 @@ export interface InitBetterI18nOptions {
   /** Project identifier in "org/project" format */
   project: string;
 
-  /** i18next instance to configure */
-  i18n: i18n;
+  /**
+   * i18next instance to configure.
+   * @default global i18next singleton (import i18next from 'i18next')
+   */
+  i18n?: i18n;
 
   /** Default/fallback locale @default "en" */
   defaultLocale?: string;
@@ -58,6 +61,32 @@ export interface BetterI18nResult {
 }
 
 /**
+ * Resolve the initial locale to use for i18next initialization.
+ *
+ * Priority order:
+ * 1. Saved locale from LocaleAwareTranslationStorage (if localeKey was set)
+ * 2. Device locale (if useDeviceLocale is true)
+ * 3. defaultLocale fallback
+ */
+async function resolveInitialLocale(
+  storage: TranslationStorage,
+  useDeviceLocale: boolean,
+  defaultLocale: string
+): Promise<string> {
+  // Duck-type: does this storage have locale persistence?
+  if ("readLocale" in storage && typeof (storage as unknown as LocaleAwareTranslationStorage).readLocale === "function") {
+    try {
+      const saved = await (storage as unknown as LocaleAwareTranslationStorage).readLocale();
+      if (saved) return saved;
+    } catch {
+      // readLocale is best-effort — continue to next fallback
+    }
+  }
+  if (useDeviceLocale) return getDeviceLocale({ fallback: defaultLocale });
+  return defaultLocale;
+}
+
+/**
  * One-call setup that fetches translations from the better-i18n CDN
  * and initializes i18next with all namespaces pre-loaded.
  *
@@ -84,7 +113,7 @@ export async function initBetterI18n(
 ): Promise<BetterI18nResult> {
   const {
     project,
-    i18n: i18nInstance,
+    i18n: i18nOpt,
     defaultLocale = "en",
     storage: userStorage,
     staticData,
@@ -94,6 +123,10 @@ export async function initBetterI18n(
     debug = false,
     i18nextOptions = {},
   } = options;
+
+  // Fall back to the global i18next singleton when no instance provided.
+  // In React Native, this is always the same module instance — safe to use.
+  const i18nInstance = i18nOpt ?? i18nDefault;
 
   const storage = await resolveStorage(userStorage);
   const core = createI18nCore({
@@ -105,9 +138,7 @@ export async function initBetterI18n(
     retryCount,
   });
 
-  const lng = useDeviceLocale
-    ? getDeviceLocale({ fallback: defaultLocale })
-    : defaultLocale;
+  const lng = await resolveInitialLocale(storage, useDeviceLocale, defaultLocale);
 
   /**
    * Fetch translations from CDN with persistent cache fallback (network-first).
@@ -204,6 +235,10 @@ export async function initBetterI18n(
           }
         }
       }
+    }
+    // Persist locale if storage supports it (LocaleAwareTranslationStorage duck-type)
+    if (safeLng && "writeLocale" in storage && typeof (storage as unknown as LocaleAwareTranslationStorage).writeLocale === "function") {
+      (storage as unknown as LocaleAwareTranslationStorage).writeLocale(safeLng).catch(() => {});
     }
     return originalChangeLanguage(safeLng, callback);
   };

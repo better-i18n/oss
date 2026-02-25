@@ -1,6 +1,26 @@
 import type { I18nCoreConfig } from "@better-i18n/core";
 
 /**
+ * MMKV instance minimum API (react-native-mmkv).
+ * Sync methods — storageAdapter wraps them into async.
+ */
+export interface MMKVLike {
+  getString(key: string): string | undefined;
+  set(key: string, value: string): void;
+  delete(key: string): void;
+}
+
+/**
+ * AsyncStorage-compatible interface.
+ * Already async — storageAdapter passes through.
+ */
+export interface AsyncStorageLike {
+  getItem(key: string): Promise<string | null>;
+  setItem(key: string, value: string): Promise<void>;
+  removeItem(key: string): Promise<void>;
+}
+
+/**
  * Pluggable storage interface for persistent translation caching.
  *
  * Compatible with AsyncStorage, MMKV, or any custom key-value store.
@@ -9,6 +29,30 @@ export interface TranslationStorage {
   getItem(key: string): Promise<string | null>;
   setItem(key: string, value: string): Promise<void>;
   removeItem(key: string): Promise<void>;
+}
+
+/**
+ * Options for storageAdapter — enables locale persistence on the adapter.
+ */
+export interface StorageAdapterOptions {
+  /**
+   * Storage key for persisting the active locale.
+   * When set, returned adapter gains readLocale() / writeLocale() methods.
+   *
+   * @example
+   * storageAdapter(AsyncStorage, { localeKey: '@app:locale' })
+   */
+  localeKey?: string;
+}
+
+/**
+ * TranslationStorage extended with locale persistence.
+ * Returned by storageAdapter() when localeKey option is provided.
+ * Detected via duck-typing by initBetterI18n.
+ */
+export interface LocaleAwareTranslationStorage extends TranslationStorage {
+  readLocale(): Promise<string | null>;
+  writeLocale(lng: string): Promise<void>;
 }
 
 /**

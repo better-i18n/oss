@@ -4,6 +4,7 @@ import {
   buildStorageKey,
   createMemoryStorage,
   readCache,
+  storageAdapter,
   writeCache,
 } from "../storage";
 import type { TranslationStorage } from "../types";
@@ -39,6 +40,84 @@ describe("createMemoryStorage", () => {
     await storage.setItem("key", "value");
     await storage.removeItem("key");
     expect(await storage.getItem("key")).toBeNull();
+  });
+});
+
+describe("storageAdapter", () => {
+  it("adapts MMKV-like sync storage (getString/set/delete)", async () => {
+    const store = new Map<string, string>();
+    const mockMMKV = {
+      getString: (key: string) => store.get(key),
+      set: (key: string, value: string) => { store.set(key, value); },
+      delete: (key: string) => { store.delete(key); },
+    };
+
+    const adapted = storageAdapter(mockMMKV);
+    await adapted.setItem("k", "v");
+    expect(await adapted.getItem("k")).toBe("v");
+    await adapted.removeItem("k");
+    expect(await adapted.getItem("k")).toBeNull();
+  });
+
+  it("adapts AsyncStorage-like async storage (getItem/setItem/removeItem)", async () => {
+    const store = new Map<string, string>();
+    const mockAS = {
+      getItem: async (key: string) => store.get(key) ?? null,
+      setItem: async (key: string, value: string) => { store.set(key, value); },
+      removeItem: async (key: string) => { store.delete(key); },
+    };
+
+    const adapted = storageAdapter(mockAS);
+    await adapted.setItem("k", "v");
+    expect(await adapted.getItem("k")).toBe("v");
+    await adapted.removeItem("k");
+    expect(await adapted.getItem("k")).toBeNull();
+  });
+
+  it("throws on unrecognized storage type", () => {
+    expect(() => storageAdapter({} as any)).toThrow("unrecognized storage type");
+  });
+});
+
+describe("storageAdapter — localeKey option", () => {
+  function makeMockAS() {
+    const store = new Map<string, string>();
+    return {
+      getItem: async (key: string) => store.get(key) ?? null,
+      setItem: async (key: string, value: string) => { store.set(key, value); },
+      removeItem: async (key: string) => { store.delete(key); },
+    };
+  }
+
+  it("adds readLocale/writeLocale when localeKey provided", () => {
+    const adapted = storageAdapter(makeMockAS(), { localeKey: "@app:locale" });
+    expect(typeof (adapted as any).readLocale).toBe("function");
+    expect(typeof (adapted as any).writeLocale).toBe("function");
+  });
+
+  it("readLocale returns stored locale", async () => {
+    const adapted = storageAdapter(makeMockAS(), { localeKey: "@app:locale" }) as any;
+    await adapted.writeLocale("tr");
+    expect(await adapted.readLocale()).toBe("tr");
+  });
+
+  it("readLocale returns null when key not set", async () => {
+    const adapted = storageAdapter(makeMockAS(), { localeKey: "@app:locale" }) as any;
+    expect(await adapted.readLocale()).toBeNull();
+  });
+
+  it("writeLocale persists locale", async () => {
+    const adapted = storageAdapter(makeMockAS(), { localeKey: "@app:locale" }) as any;
+    await adapted.writeLocale("fr");
+    expect(await adapted.readLocale()).toBe("fr");
+    await adapted.writeLocale("de");
+    expect(await adapted.readLocale()).toBe("de");
+  });
+
+  it("plain TranslationStorage when no localeKey — no readLocale property", () => {
+    const adapted = storageAdapter(makeMockAS());
+    expect("readLocale" in adapted).toBe(false);
+    expect("writeLocale" in adapted).toBe(false);
   });
 });
 

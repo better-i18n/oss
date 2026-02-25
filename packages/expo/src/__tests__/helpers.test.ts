@@ -1,7 +1,7 @@
 import { describe, expect, it, mock, beforeEach } from "bun:test";
 import type { i18n as I18nType } from "i18next";
 import { initBetterI18n } from "../helpers";
-import { createMemoryStorage } from "../storage";
+import { createMemoryStorage, storageAdapter } from "../storage";
 
 // ---------------------------------------------------------------------------
 // Mutable CDN fixtures — reassign in beforeEach or individual tests
@@ -26,6 +26,7 @@ mock.module("@better-i18n/core", () => ({
   }),
   normalizeLocale: (l: string) => l.toLowerCase(),
 }));
+
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -283,6 +284,78 @@ describe("initBetterI18n", () => {
       >;
       const trCalls = calls.filter(([locale]) => locale === "tr");
       expect(trCalls).toHaveLength(0);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // LocaleAwareTranslationStorage — localeKey integration
+  // -------------------------------------------------------------------------
+
+  describe("LocaleAwareTranslationStorage via storageAdapter localeKey", () => {
+    function makeLocaleAwareStorage(localeKey = "@app:locale") {
+      const store = new Map<string, string>();
+      const mockAS = {
+        getItem: async (key: string) => store.get(key) ?? null,
+        setItem: async (key: string, value: string) => { store.set(key, value); },
+        removeItem: async (key: string) => { store.delete(key); },
+      };
+      return storageAdapter(mockAS, { localeKey });
+    }
+
+    it("reads initial locale from storage when localeKey is set", async () => {
+      const { i18n, mocks } = createMockI18n();
+      const storage = makeLocaleAwareStorage();
+
+      // Pre-store a locale
+      await (storage as any).writeLocale("tr");
+
+      await initBetterI18n({
+        project: PROJECT,
+        i18n,
+        storage,
+        defaultLocale: "en",
+      });
+
+      const initOpts = mocks.init.mock.calls[0]![0] as Record<string, unknown>;
+      expect(initOpts["lng"]).toBe("tr");
+    });
+
+    it("falls back to defaultLocale when no locale stored yet", async () => {
+      const { i18n, mocks } = createMockI18n();
+      const storage = makeLocaleAwareStorage();
+
+      await initBetterI18n({
+        project: PROJECT,
+        i18n,
+        storage,
+        defaultLocale: "en",
+      });
+
+      const initOpts = mocks.init.mock.calls[0]![0] as Record<string, unknown>;
+      expect(initOpts["lng"]).toBe("en");
+    });
+
+    it("persists locale to storage on changeLanguage", async () => {
+      const { i18n } = createMockI18n();
+      const storage = makeLocaleAwareStorage();
+
+      await initBetterI18n({
+        project: PROJECT,
+        i18n,
+        storage,
+        defaultLocale: "en",
+      });
+
+      await i18n.changeLanguage("tr");
+
+      // Allow background writeLocale to complete
+      await new Promise((r) => setTimeout(r, 0));
+      expect(await (storage as any).readLocale()).toBe("tr");
+    });
+
+    it("does not add readLocale/writeLocale to plain storage", () => {
+      const plain = createMemoryStorage();
+      expect("readLocale" in plain).toBe(false);
     });
   });
 });

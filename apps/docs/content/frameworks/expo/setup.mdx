@@ -41,14 +41,25 @@ This guide walks you through installing `@better-i18n/expo` and setting up i18ne
 For offline caching and device locale detection:
 
 ```bash
-npx expo install react-native-mmkv expo-localization
+npx expo install expo-localization
 ```
 
-- **react-native-mmkv** - Fastest persistent storage for offline caching (auto-detected)
 - **expo-localization** - Enables device locale detection via `useDeviceLocale`
 
+For persistent storage, install one of:
+
+```bash
+# Fastest — MMKV (recommended)
+npx expo install react-native-mmkv
+
+# Most common — AsyncStorage
+npx expo install @react-native-async-storage/async-storage
+```
+
 <Callout type="tip">
-  Both are optional. Storage is auto-detected at runtime: MMKV → AsyncStorage → in-memory.
+  **Bring your own storage.** Pass any storage instance — MMKV or AsyncStorage —
+  through `storageAdapter()`. The adapter detects the type automatically and normalizes it.
+  No storage passed? Falls back to in-memory (great for demos and testing).
 </Callout>
 
 ## Configuration
@@ -168,7 +179,7 @@ export function HomeScreen() {
 For production Expo apps using **Expo Router**, the pattern above can be extended into a clean, modular architecture that eliminates the "English flash" problem and integrates with `SplashScreen`.
 
 <Callout type="tip">
-  **What is the English flash?** When you hardcode `defaultLocale: 'en'`, the app always initializes in English — even if the user had previously selected Turkish. For one frame, translated UI renders in English before switching. Reading the persisted locale from storage and passing it as `defaultLocale` eliminates this entirely.
+  **What is the English flash?** When you hardcode `defaultLocale: 'en'`, the app always initializes in English — even if the user had previously selected Turkish. For one frame, translated UI renders in English before switching. Pass `localeKey` to `storageAdapter` — the locale is read from storage automatically before init, eliminating this entirely.
 </Callout>
 
 ### File Structure
@@ -176,109 +187,63 @@ For production Expo apps using **Expo Router**, the pattern above can be extende
 ```
 lib/
   i18n/
-    config.ts   ← i18next instance + MMKV storage adapter + initializeI18nBackend
-    index.ts    ← initializeI18n (reads stored locale, handles fallback)
+    index.ts    ← i18next instance + init + locale persistence
   context/
-    LanguageContext.tsx  ← React context + useLanguage hook
+    LanguageContext.tsx  ← (optional) React context + useLanguage hook
 app/
-  _layout.tsx   ← LanguageProvider wrapping + SplashScreen gate
+  _layout.tsx   ← SplashScreen gate
 ```
 
-### `lib/i18n/config.ts` — Backend Initialization
+<Callout type="tip">
+  **Bring your own storage.** Pass any storage instance through `storageAdapter()` and it's
+  normalized automatically. No storage passed? Falls back to in-memory.
+  See [Offline & Caching](/frameworks/expo/offline-caching#custom-storage) for details.
+</Callout>
 
-```ts title="lib/i18n/config.ts"
+### `lib/i18n/index.ts` — i18n Instance + Init
+
+```ts title="lib/i18n/index.ts"
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { initBetterI18n } from '@better-i18n/expo';
-import type { BetterI18nResult } from '@better-i18n/expo';
-import { storage } from '../storage'; // your MMKV instance
-
-// Use your app's existing MMKV instance — no extra storage created
-const mmkvStorage = {
-  getItem: async (key: string) => storage.getString(key) ?? null,
-  setItem: async (key: string, value: string) => { storage.set(key, value); },
-  removeItem: async (key: string) => { storage.remove(key); },
-};
+import { initBetterI18n, storageAdapter } from '@better-i18n/expo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 i18n.use(initReactI18next);
 
-let result: BetterI18nResult | null = null;
+export const i18nReady = initBetterI18n({
+  project: 'your-org/your-project',
+  i18n,
+  storage: storageAdapter(AsyncStorage, { localeKey: '@app:locale' }), // [!code highlight]
+  defaultLocale: 'en',
+  debug: __DEV__,
+});
 
-export async function initializeI18nBackend(locale: string = 'en'): Promise<void> {
-  if (result) return; // singleton guard
-
-  result = await initBetterI18n({
-    project: 'your-org/your-project',
-    i18n,
-    defaultLocale: locale,  // CDN fetches this locale on first init
-    storage: mmkvStorage,
-    debug: __DEV__,
-    i18nextOptions: { fallbackLng: 'en' },
-  });
-}
-
-export function getManifestLanguages() { return result?.languages ?? []; }
-export function getSupportedLanguageCodes() { return result?.languages.map(l => l.code) ?? []; }
-export function resetI18nSingleton() { result = null; }
 export default i18n;
 ```
 
-### `lib/i18n/index.ts` — Locale Resolution
-
-```ts title="lib/i18n/index.ts"
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import i18n, { initializeI18nBackend, getManifestLanguages } from './config';
-
-const LANGUAGE_KEY = 'app_language';
-
-export async function initializeI18n(): Promise<string> {
-  // Read persisted locale — this is the key to eliminating English flash
-  const storedLocale = await AsyncStorage.getItem(LANGUAGE_KEY);
-  const initialLocale = storedLocale || 'en';
-
-  try {
-    // Initialize backend with stored locale so CDN fetches the right language
-    await initializeI18nBackend(initialLocale);
-  } catch {
-    // CDN down, no cache — fall back to English
-    console.warn(`[i18n] Failed to init with '${initialLocale}', falling back to 'en'`);
-    await initializeI18nBackend('en');
-    return 'en';
-  }
-
-  return initialLocale;
-}
-
-export async function setLanguage(language: string): Promise<void> {
-  await AsyncStorage.setItem(LANGUAGE_KEY, language);
-  await i18n.changeLanguage(language);
-}
-
-export function subscribeToLanguageChanges(listener: (lang: string) => void) {
-  i18n.on('languageChanged', listener);
-  return () => i18n.off('languageChanged', listener);
-}
-
-export { getManifestLanguages };
-export { i18n };
-```
+<Callout type="info">
+  **Using MMKV?** Same API — just pass your instance:
+  ```ts
+  import { MMKV } from 'react-native-mmkv';
+  import { storageAdapter } from '@better-i18n/expo';
+  storage: storageAdapter(new MMKV({ id: 'app' }), { localeKey: '@app:locale' })
+  ```
+  `storageAdapter` detects MMKV's sync API and wraps it automatically. The `localeKey` option works identically with both MMKV and AsyncStorage.
+</Callout>
 
 ### `lib/context/LanguageContext.tsx` — React Context
 
 ```tsx title="lib/context/LanguageContext.tsx"
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import {
-  initializeI18n,
-  setLanguage as setI18nLanguage,
-  subscribeToLanguageChanges,
-  getManifestLanguages,
-} from '../i18n';
+import i18n from 'i18next';
+import { i18nReady } from '../i18n';
+import type { LanguageOption } from '@better-i18n/expo';
 
 interface LanguageContextType {
   currentLanguage: string;
   isInitialized: boolean;
   setLanguage: (lang: string) => Promise<void>;
-  supportedLanguages: ReturnType<typeof getManifestLanguages>;
+  supportedLanguages: LanguageOption[];
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -286,26 +251,27 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [isInitialized, setIsInitialized] = useState(false);
-  const [supportedLanguages, setSupportedLanguages] = useState<ReturnType<typeof getManifestLanguages>>([]);
+  const [supportedLanguages, setSupportedLanguages] = useState<LanguageOption[]>([]);
 
   useEffect(() => {
-    initializeI18n()
-      .then((lang) => {
-        setCurrentLanguage(lang);
-        setSupportedLanguages(getManifestLanguages());
+    i18nReady
+      .then(({ languages }) => {
+        setSupportedLanguages(languages);
+        setCurrentLanguage(i18n.language);
       })
-      .catch(() => setCurrentLanguage('en'))
+      .catch(() => {})
       .finally(() => setIsInitialized(true));
 
     // Reactive updates when language changes (e.g., from LanguagePicker)
-    return subscribeToLanguageChanges(setCurrentLanguage);
+    i18n.on('languageChanged', setCurrentLanguage);
+    return () => { i18n.off('languageChanged', setCurrentLanguage); };
   }, []);
 
   return (
     <LanguageContext.Provider value={{
       currentLanguage,
       isInitialized,
-      setLanguage: setI18nLanguage,
+      setLanguage: (lang) => i18n.changeLanguage(lang),
       supportedLanguages,
     }}>
       {children}
@@ -367,15 +333,15 @@ Use `i18n.changeLanguage()` to switch languages at runtime. Translations are **p
 ```tsx title="src/components/LanguagePicker.tsx"
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, Text } from 'react-native';
-import { getLanguages } from '../i18n';
+import { useLanguage } from '../context/LanguageContext';
 
 export function LanguagePicker() {
   const { i18n } = useTranslation();
-  const languages = getLanguages();
+  const { supportedLanguages } = useLanguage();
 
   return (
     <FlatList
-      data={languages}
+      data={supportedLanguages}
       keyExtractor={(item) => item.code}
       renderItem={({ item }) => (
         <Pressable onPress={() => i18n.changeLanguage(item.code)}>
@@ -398,9 +364,9 @@ All options are passed to `initBetterI18n`:
 ```ts
 await initBetterI18n({
   project: 'your-org/your-project',  // Required
-  i18n,                               // Required
+  i18n,                               // Optional — defaults to global i18next singleton
   defaultLocale: 'en',
-  storage: customStorage,
+  storage: storageAdapter(AsyncStorage, { localeKey: '@app:locale' }),
   staticData: { en: { common: { welcome: 'Welcome' } } },
   fetchTimeout: 10000,
   retryCount: 1,
@@ -413,9 +379,9 @@ await initBetterI18n({
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `project` | `string` | Required | Project identifier (`org/project`) |
-| `i18n` | `i18n` | Required | i18next instance (call `.use(initReactI18next)` first) |
+| `i18n` | `i18n` | Global singleton | i18next instance (call `.use(initReactI18next)` first). Defaults to the global `import i18next from 'i18next'` singleton — safe to omit in React Native. |
 | `defaultLocale` | `string` | `"en"` | Fallback locale |
-| `storage` | `TranslationStorage` | Auto-detected | MMKV → AsyncStorage → in-memory |
+| `storage` | `TranslationStorage` | In-memory | Pass via `storageAdapter(AsyncStorage)` or `storageAdapter(AsyncStorage, { localeKey: '@app:locale' })` to auto-persist locale. |
 | `staticData` | `Record<string, Messages>` | — | Bundled fallback for airplane mode first launch. Optional — not needed if you use MMKV or AsyncStorage. See [Offline & Caching](/frameworks/expo/offline-caching). |
 | `fetchTimeout` | `number` | `10000` | CDN fetch timeout (ms) |
 | `retryCount` | `number` | `1` | Retry attempts on CDN failure |

@@ -6,7 +6,8 @@ export type { InitBetterI18nOptions, BetterI18nResult } from "./helpers";
 export { getDeviceLocale, getDeviceLocales } from "./locale";
 
 // Storage
-export { createMemoryStorage } from "./storage";
+export { createMemoryStorage, storageAdapter } from "./storage";
+export type { MMKVLike, AsyncStorageLike } from "./types";
 
 // Re-exported core types
 export type { LanguageOption, ManifestResponse, I18nCore } from "@better-i18n/core";
@@ -15,4 +16,4 @@ export type { LanguageOption, ManifestResponse, I18nCore } from "@better-i18n/co
 export { BetterI18nBackend } from "./backend";
 
 // Types
-export type { BetterI18nBackendOptions, TranslationStorage } from "./types";
+export type { BetterI18nBackendOptions, TranslationStorage, LocaleAwareTranslationStorage, StorageAdapterOptions } from "./types";
