@@ -41,10 +41,10 @@ export const createMemoryStorage = (): TranslationStorage => {
  * 3. @react-native-async-storage/async-storage (most common)
  * 4. In-memory Map (no persistence, works everywhere)
  *
- * Uses dynamic import() instead of require() so Metro bundler stubs
- * always reject via Promise — safely caught by await/catch regardless
- * of Metro version. (require() stubs can throw synchronously before
- * try/catch runs in older Metro versions.)
+ * Uses require() so Metro bundler creates stubs with real file paths.
+ * import() causes Metro to set undefined paths for missing modules →
+ * path.relative(bundleDir, undefined) crash at serialization time.
+ * require() stubs execute at runtime and throw → caught by try/catch.
  */
 export const resolveStorage = async (
   userStorage?: TranslationStorage
@@ -54,7 +54,7 @@ export const resolveStorage = async (
   // 1. Try MMKV — fastest persistent storage for RN
   try {
     // @ts-ignore — optional peer dependency, may not be installed
-    const { MMKV } = await import("react-native-mmkv");
+    const { MMKV } = require("react-native-mmkv");
     const mmkv = new MMKV({ id: "better-i18n" });
     return {
       getItem: async (key) => mmkv.getString(key) ?? null,
@@ -68,12 +68,11 @@ export const resolveStorage = async (
   // 2. Try AsyncStorage
   try {
     // @ts-ignore — optional peer dependency, may not be installed
-    const mod = await import("@react-native-async-storage/async-storage");
-    const asyncStorage = (mod as any).default ?? mod;
+    const AsyncStorage = require("@react-native-async-storage/async-storage").default;
     return {
-      getItem: (key: string) => asyncStorage.getItem(key),
-      setItem: (key: string, value: string) => asyncStorage.setItem(key, value),
-      removeItem: (key: string) => asyncStorage.removeItem(key),
+      getItem: (key: string) => AsyncStorage.getItem(key),
+      setItem: (key: string, value: string) => AsyncStorage.setItem(key, value),
+      removeItem: (key: string) => AsyncStorage.removeItem(key),
     };
   } catch {
     // not installed
