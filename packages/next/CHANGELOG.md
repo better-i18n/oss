@@ -1,5 +1,12 @@
 # @better-i18n/next
 
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies [12210eb]
+  - @better-i18n/core@0.2.1
+
 ## 0.5.6
 
 ### Patch Changes
