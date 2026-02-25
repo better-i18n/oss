@@ -95,7 +95,42 @@ If you have `react-native-mmkv` installed, it's used automatically (separate MMK
 
 ## Custom Storage
 
-You can provide any storage that implements the `TranslationStorage` interface:
+### Using `storageAdapter()` (Recommended)
+
+`storageAdapter()` wraps MMKV or AsyncStorage automatically — no manual interface implementation needed.
+
+<Tabs items={['MMKV', 'AsyncStorage']}>
+  <Tab value="MMKV">
+```ts
+import { MMKV } from 'react-native-mmkv';
+import { initBetterI18n, storageAdapter } from '@better-i18n/expo';
+
+const mmkv = new MMKV({ id: 'app' });
+
+await initBetterI18n({
+  project: 'acme/app',
+  i18n,
+  storage: storageAdapter(mmkv, { localeKey: '@app:locale' }),
+});
+```
+  </Tab>
+  <Tab value="AsyncStorage">
+```ts
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initBetterI18n, storageAdapter } from '@better-i18n/expo';
+
+await initBetterI18n({
+  project: 'acme/app',
+  i18n,
+  storage: storageAdapter(AsyncStorage, { localeKey: '@app:locale' }),
+});
+```
+  </Tab>
+</Tabs>
+
+### Manual Implementation
+
+For a fully custom store, implement the `TranslationStorage` interface directly:
 
 ```ts
 await initBetterI18n({
@@ -108,6 +143,37 @@ await initBetterI18n({
   },
 });
 ```
+
+## Locale Persistence
+
+By default, locale selection is **not persisted** across app restarts. Pass `localeKey` to `storageAdapter()` to enable automatic locale persistence.
+
+### Without `localeKey`
+
+The user's language selection is lost when the app is killed. On next launch, the startup locale is resolved in this order:
+
+```
+Startup locale resolution (no localeKey):
+1. getDeviceLocale()    ← if useDeviceLocale: true
+2. defaultLocale        ← fallback
+```
+
+### With `localeKey`
+
+When `localeKey` is set, `storageAdapter()` returns a `LocaleAwareTranslationStorage` that reads and writes the active locale alongside translation data. On startup:
+
+```
+Startup locale resolution (with localeKey):
+1. storage.readLocale()    ← user's saved preference (wins if set)
+2. getDeviceLocale()       ← if useDeviceLocale: true
+3. defaultLocale           ← fallback
+```
+
+`initBetterI18n` detects the `readLocale` / `writeLocale` methods via duck-type check at runtime — no extra configuration required.
+
+<Callout type="warning">
+  Without `localeKey`, the user's language choice resets to `defaultLocale` on every app restart — even if they previously selected a different language. For production apps, always pass `localeKey` to `storageAdapter()`.
+</Callout>
 
 ### In-Memory Only
 

@@ -228,7 +228,28 @@ Language switcher shows "Español"
 ```
 
 <Callout type="tip">
-  No need to maintain a static list of languages in your code!
+  No code change needed when you add a language from the dashboard — `useLanguages` always reflects the current CDN manifest.
+</Callout>
+
+### Avoid Static Language Arrays
+
+A common mistake is maintaining a hardcoded list for validation or locale detection:
+
+```ts
+const SUPPORTED = ['tr', 'en', 'ar', 'de']       // [!code --]
+if (!SUPPORTED.includes(lang)) return 'en'         // [!code --]
+```
+
+Use CDN languages instead:
+
+```ts
+const { languages } = await i18nReady                    // [!code ++]
+const supported = languages.map(l => l.code)             // [!code ++]
+if (!supported.includes(lang)) return 'en'               // [!code ++]
+```
+
+<Callout type="warn">
+  Hardcoded lists break silently — adding a language in the dashboard works everywhere **except** wherever the static array was used.
 </Callout>
 
 ---

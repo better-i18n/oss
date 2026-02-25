@@ -5,6 +5,7 @@
     "index",
     "configuration",
     "middleware",
+    "client",
     "api-reference"
   ]
 }

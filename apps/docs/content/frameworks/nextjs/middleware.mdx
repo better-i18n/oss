@@ -250,9 +250,9 @@ export default createBetterI18nMiddleware({ // [!code ++]
 | Response modification | ❌ Complex | ✅ `context.response` |
 | API simplicity | ❌ Multiple functions | ✅ Single function |
 
-## Legacy Integration
+## Legacy: i18n.middleware
 
-If you are using the legacy `createI18n` factory pattern:
+If you are using the legacy `i18n.middleware` property:
 
 ```ts title="i18n.ts"
 import { createI18n } from "@better-i18n/next";
@@ -268,7 +268,6 @@ import { i18n } from "./i18n";
 export const middleware = i18n.middleware;
 ```
 
-<Callout type="info">
-  While `i18n.middleware` is still supported, we recommend switching to
-  `createBetterI18nMiddleware` with the callback pattern for better reliability.
+<Callout type="warn">
+  The `i18n.middleware` property is deprecated — use `i18n.betterMiddleware()` instead.
 </Callout>

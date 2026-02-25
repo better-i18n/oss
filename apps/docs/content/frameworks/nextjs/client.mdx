@@ -1,0 +1,137 @@
+---
+title: Client-Side Features
+description: Client-side components and hooks for instant locale switching in Next.js
+---
+
+Client-side features allow instant locale switching without a full page reload or server round-trip. When `BetterI18nProvider` is present in the tree, locale changes trigger a CDN fetch and client re-render — no navigation needed.
+
+## BetterI18nProvider
+
+Wrap your Root Layout with `BetterI18nProvider` to enable instant client-side locale switching via `useSetLocale`.
+
+```tsx title="app/[locale]/layout.tsx"
+import { BetterI18nProvider } from '@better-i18n/next/client';
+import { i18n } from '@/i18n.config';
+
+export default async function LocaleLayout({ children, params }) {
+  const { locale } = await params;
+  const messages = await i18n.getMessages(locale);
+
+  return (
+    <BetterI18nProvider config={i18n.config} locale={locale} messages={messages}>
+      {children}
+    </BetterI18nProvider>
+  );
+}
+```
+
+<Callout type="info">
+  `BetterI18nProvider` enables instant client-side locale switching via `useSetLocale` — no page
+  navigation or router refresh needed.
+</Callout>
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `config` | `I18nConfig` | Required | The i18n config from `createI18n()` |
+| `locale` | `string` | From cookie | Override active locale |
+| `messages` | `Messages` | — | Pre-loaded SSR messages |
+| `timeZone` | `string` | `config.timeZone` | IANA timezone |
+| `now` | `Date` | — | Pin "now" for SSR hydration consistency |
+
+---
+
+## useSetLocale()
+
+Switches the active locale. Behavior depends on whether `BetterI18nProvider` is present in the tree.
+
+### With BetterI18nProvider (instant)
+
+When the provider is in the tree, calling `setLocale` triggers an instant CDN fetch and client
+re-render. No page navigation or `router.refresh()` is needed.
+
+```tsx
+'use client';
+
+import { useSetLocale } from '@better-i18n/next/client';
+
+function LanguageSwitcher() {
+  const setLocale = useSetLocale();
+
+  return (
+    <button onClick={() => setLocale('tr')}>
+      Switch to Turkish
+    </button>
+  );
+}
+```
+
+### Without BetterI18nProvider (soft refresh)
+
+When called outside a provider, `useSetLocale` updates the locale cookie and calls
+`router.refresh()` to trigger a soft server re-render.
+
+```tsx
+'use client';
+
+import { useSetLocale } from '@better-i18n/next/client';
+import { i18n } from '@/i18n.config';
+
+function LanguageSwitcher() {
+  // Pass config explicitly when no provider is in the tree
+  const setLocale = useSetLocale({ config: i18n.config });
+
+  return (
+    <select onChange={(e) => setLocale(e.target.value)}>
+      <option value="en">English</option>
+      <option value="tr">Türkçe</option>
+    </select>
+  );
+}
+```
+
+### Behavior Comparison
+
+| Mode | Trigger | Result |
+|------|---------|--------|
+| With `BetterI18nProvider` | `setLocale('tr')` | Instant CDN fetch + client re-render |
+| Without provider | `setLocale('tr')` | Cookie update + `router.refresh()` |
+
+---
+
+## useManifestLanguages(config)
+
+Fetches available languages with full metadata on the client. Includes request deduplication.
+
+```tsx
+'use client';
+
+import { useManifestLanguages } from '@better-i18n/next/client';
+import { i18n } from '@/i18n.config';
+
+function LanguageSwitcher() {
+  const { languages, isLoading } = useManifestLanguages(i18n.config);
+  const setLocale = useSetLocale();
+
+  if (isLoading) return <select disabled><option>Loading...</option></select>;
+
+  return (
+    <select onChange={(e) => setLocale(e.target.value)}>
+      {languages.map((lang) => (
+        <option key={lang.code} value={lang.code}>
+          {lang.nativeName || lang.name || lang.code}
+        </option>
+      ))}
+    </select>
+  );
+}
+```
+
+### Return Value
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `languages` | `LanguageOption[]` | Available languages from manifest |
+| `isLoading` | `boolean` | `true` while fetching |
+| `error` | `Error \| null` | Error if fetch failed |
