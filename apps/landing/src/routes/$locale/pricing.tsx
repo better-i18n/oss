@@ -1,19 +1,46 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import Pricing from "@/components/Pricing";
-import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { getPageHead, getFAQSchema, formatStructuredData } from "@/lib/page-seo";
+import { getPricingPageStructuredData } from "@/lib/structured-data";
 import { useTranslations } from "@better-i18n/use-intl";
 import { IconCheckmark1 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/pricing")({
-  loader: createPageLoader(),
+  loader: ({ context }) => ({
+    messages: context.messages,
+    locale: context.locale,
+  }),
   head: ({ loaderData }) => {
+    const messages = loaderData?.messages || {};
+    const locale = loaderData?.locale || "en";
+
+    const pricingPageNs = (messages as Record<string, unknown>)?.pricingPage as
+      | Record<string, unknown>
+      | undefined;
+    const faqNs = pricingPageNs?.faq as Record<string, Record<string, string>> | undefined;
+
+    const faqItems = faqNs
+      ? ["tryFree", "payment", "changePlans", "enterprise", "discounts"]
+          .filter((key) => faqNs[key]?.question && faqNs[key]?.answer)
+          .map((key) => ({
+            question: faqNs[key].question,
+            answer: faqNs[key].answer,
+          }))
+      : [];
+
+    const pricingScripts = getPricingPageStructuredData();
+    const faqScript = faqItems.length > 0
+      ? formatStructuredData(getFAQSchema(faqItems))
+      : [];
+
     return getPageHead({
-      messages: loaderData?.messages || {},
-      locale: loaderData?.locale || "en",
+      messages,
+      locale,
       pageKey: "pricing",
       pathname: "/pricing",
       pageType: "pricing",
+      customStructuredData: [...pricingScripts, ...faqScript],
     });
   },
   component: PricingPage,

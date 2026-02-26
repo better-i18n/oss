@@ -17,7 +17,7 @@ export default function FrameworkSupport() {
   const currentLocale = locale || "en";
 
   return (
-    <section className="py-20">
+    <section id="frameworks" className="py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="text-center mb-12">
           <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
@@ -49,6 +49,9 @@ export default function FrameworkSupport() {
               </span>
               <span className="mt-1 text-xs text-mist-500">
                 {t(`${framework.key}.tagline`)}
+              </span>
+              <span className="mt-2 text-xs text-mist-400 text-center line-clamp-2">
+                {t(`${framework.key}.highlight`)}
               </span>
             </Link>
           ))}

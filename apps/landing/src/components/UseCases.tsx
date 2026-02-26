@@ -4,6 +4,10 @@ import {
   IconGlobe,
   IconGithub,
   IconScript,
+  IconZap,
+  IconPageText,
+  IconCircleInfo,
+  IconApiConnection,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 const features = [
@@ -23,13 +27,29 @@ const features = [
     key: "cdn",
     icon: IconGlobe,
   },
+  {
+    key: "saas",
+    icon: IconZap,
+  },
+  {
+    key: "ecommerce",
+    icon: IconPageText,
+  },
+  {
+    key: "mobile",
+    icon: IconCircleInfo,
+  },
+  {
+    key: "contentPlatforms",
+    icon: IconApiConnection,
+  },
 ];
 
 export default function UseCases() {
   const t = useTranslations("developerFeatures");
 
   return (
-    <section className="py-20">
+    <section id="developer-features" className="py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="text-center mb-12">
           <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
@@ -40,7 +60,7 @@ export default function UseCases() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4" id="use-cases">
           {features.map((feature) => {
             const Icon = feature.icon;
             return (

@@ -6,6 +6,9 @@ import {
   IconRobot,
   IconZap,
   IconCodeBrackets,
+  IconScript,
+  IconPageText,
+  IconCircleInfo,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 const integrations = [
@@ -33,13 +36,25 @@ const integrations = [
     key: "cli",
     icon: IconCodeBrackets,
   },
+  {
+    key: "vercel",
+    icon: IconScript,
+  },
+  {
+    key: "vscode",
+    icon: IconPageText,
+  },
+  {
+    key: "cloud",
+    icon: IconCircleInfo,
+  },
 ];
 
 export default function Integrations() {
   const t = useTranslations("integrations");
 
   return (
-    <section className="py-20">
+    <section id="integrations" className="py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="text-center mb-12">
           <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">

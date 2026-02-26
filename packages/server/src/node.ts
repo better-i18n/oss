@@ -61,7 +61,7 @@ export function fromNodeHeaders(nodeHeaders: IncomingHttpHeaders): Headers {
  * ```
  */
 export function betterI18nMiddleware(i18n: ServerI18n) {
-  return async (req: any, _res: any, next: () => void) => {
+  return async (req: { headers: IncomingHttpHeaders }, _res: unknown, next: () => void) => {
     const headers = fromNodeHeaders(req.headers as IncomingHttpHeaders);
     const locale = await i18n.detectLocaleFromHeaders(headers);
     const t = await i18n.getTranslator(locale);

@@ -409,6 +409,10 @@ export default function Header({ className }: { className?: string }) {
                 href="https://dash.better-i18n.com"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={t("getStartedAriaLabel", {
+                  defaultValue:
+                    "Get started with Better i18n — AI localization platform",
+                })}
                 className="inline-flex items-center justify-center rounded-full bg-mist-950 px-4 py-1.5 text-sm/7 font-medium text-white hover:bg-mist-800"
               >
                 {t("getStarted")}

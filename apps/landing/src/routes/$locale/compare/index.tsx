@@ -18,30 +18,10 @@ export const Route = createFileRoute("/$locale/compare/")({
 });
 
 const competitors = [
-  {
-    name: "Crowdin",
-    slug: "crowdin",
-    description: "Popular choice for open source projects",
-    highlight: "MCP Support & AST Discovery",
-  },
-  {
-    name: "Lokalise",
-    slug: "lokalise",
-    description: "Enterprise-focused translation platform",
-    highlight: "10x more affordable",
-  },
-  {
-    name: "Phrase",
-    slug: "phrase",
-    description: "Enterprise localization suite",
-    highlight: "No enterprise complexity",
-  },
-  {
-    name: "Transifex",
-    slug: "transifex",
-    description: "Established localization platform",
-    highlight: "Modern tech stack",
-  },
+  { key: "crowdin", name: "Crowdin", slug: "crowdin" },
+  { key: "lokalise", name: "Lokalise", slug: "lokalise" },
+  { key: "phrase", name: "Phrase", slug: "phrase" },
+  { key: "transifex", name: "Transifex", slug: "transifex" },
 ];
 
 function ComparePage() {
@@ -81,14 +61,14 @@ function ComparePage() {
                       Better i18n vs {competitor.name}
                     </h3>
                     <p className="mt-1 text-sm text-mist-600">
-                      {competitor.description}
+                      {t(`compare.index.competitors.${competitor.key}.description`)}
                     </p>
                   </div>
                   <IconArrowRight className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
                 </div>
                 <div className="mt-4 pt-4 border-t border-mist-100">
                   <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                    {competitor.highlight}
+                    {t(`compare.index.competitors.${competitor.key}.highlight`)}
                   </span>
                 </div>
               </Link>
