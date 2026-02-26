@@ -12,6 +12,7 @@ import {
   getFrameworkPageStructuredData,
   getEducationalPageStructuredData,
   getFAQSchema,
+  getReviewSchema,
   formatStructuredData,
 } from "./structured-data";
 
@@ -22,6 +23,7 @@ export {
   getFrameworkPageStructuredData,
   getEducationalPageStructuredData,
   getFAQSchema,
+  getReviewSchema,
   formatStructuredData,
 };
 

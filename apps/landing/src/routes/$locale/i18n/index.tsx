@@ -30,6 +30,13 @@ const topics = [
   { key: "bestTms", slug: "best-tms" },
   { key: "bestLibrary", slug: "best-library" },
   { key: "forDevelopers", slug: "for-developers" },
+  { key: "translationManagement", slug: "translation-management-system" },
+  { key: "softwareLocalization", slug: "software-localization" },
+  { key: "websiteLocalization", slug: "website-localization" },
+  { key: "softwareLocalizationServices", slug: "software-localization-services" },
+  { key: "localizationManagement", slug: "localization-management" },
+  { key: "l10nVsI18n", slug: "localization-vs-internationalization" },
+  { key: "reactIntl", slug: "react-intl" },
 ];
 
 function I18nIndexPage() {
