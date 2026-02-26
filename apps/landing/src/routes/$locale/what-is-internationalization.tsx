@@ -19,6 +19,11 @@ export const Route = createFileRoute("/$locale/what-is-internationalization")({
       locale: loaderData?.locale || "en",
       pageKey: "whatIsInternationalization",
       pathname: "/what-is-internationalization",
+      pageType: "educational",
+      structuredDataOptions: {
+        title: "What is Internationalization (i18n)?",
+        description: "Learn about software internationalization — the process of designing applications to support multiple languages, regions, and cultures.",
+      },
     });
   },
   component: WhatIsInternationalizationPage,

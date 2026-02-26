@@ -43,3 +43,7 @@ node_modules/
 *.local.md
 *.local.json
 *.local.jsonc
+
+.claude
+.agents
+skills-lock.json

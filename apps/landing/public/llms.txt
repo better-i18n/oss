@@ -1,0 +1,62 @@
+# Better i18n
+
+> AI-powered localization platform for developers and product teams. Ship multilingual apps faster with automated translations, context-aware AI, and seamless framework integrations.
+
+## About
+
+Better i18n is a translation management system (TMS) that combines AI-powered translations with developer-first tooling. It supports React, Next.js, Vue, Nuxt, Angular, Svelte, and Expo (React Native) through official SDK packages. The platform provides context-rich translation environments for translators, automated sync for developers, and hassle-free localization management for product teams.
+
+## Documentation
+
+- [Full Documentation](https://docs.better-i18n.com/)
+- [API Reference](https://docs.better-i18n.com/api)
+
+## Key Pages
+
+- [Home](https://better-i18n.com/)
+- [Features](https://better-i18n.com/features)
+- [Pricing](https://better-i18n.com/pricing)
+- [For Developers](https://better-i18n.com/for-developers)
+- [For Product Teams](https://better-i18n.com/for-product-teams)
+- [For Translators](https://better-i18n.com/for-translators)
+- [About](https://better-i18n.com/about)
+- [Blog](https://better-i18n.com/blog)
+- [Changelog](https://better-i18n.com/changelog)
+
+## Framework Guides
+
+- [React i18n Guide](https://better-i18n.com/i18n/react)
+- [Next.js i18n Guide](https://better-i18n.com/i18n/nextjs)
+- [Vue i18n Guide](https://better-i18n.com/i18n/vue)
+- [Nuxt i18n Guide](https://better-i18n.com/i18n/nuxt)
+- [Angular i18n Guide](https://better-i18n.com/i18n/angular)
+- [Svelte i18n Guide](https://better-i18n.com/i18n/svelte)
+
+## Comparisons
+
+- [Better i18n vs Crowdin](https://better-i18n.com/compare/crowdin)
+- [Better i18n vs Lokalise](https://better-i18n.com/compare/lokalise)
+- [Better i18n vs Phrase](https://better-i18n.com/compare/phrase)
+- [Better i18n vs Transifex](https://better-i18n.com/compare/transifex)
+
+## Educational Content
+
+- [What is Localization?](https://better-i18n.com/what-is-localization)
+- [What is Internationalization?](https://better-i18n.com/what-is-internationalization)
+- [Best i18n Library](https://better-i18n.com/i18n/best-library)
+- [Best Translation Management System](https://better-i18n.com/i18n/best-tms)
+- [Website Localization](https://better-i18n.com/i18n/website-localization)
+- [Software Localization](https://better-i18n.com/i18n/software-localization)
+- [Translation Management System Guide](https://better-i18n.com/i18n/translation-management-system)
+
+## Open Source
+
+- [GitHub](https://github.com/better-i18n)
+
+## Dashboard
+
+- [Sign Up / Log In](https://dash.better-i18n.com)
+
+## Status
+
+- [System Status](https://status.better-i18n.com)
