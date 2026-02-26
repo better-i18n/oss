@@ -227,7 +227,7 @@ export async function initBetterI18n(
               `${LOG_PREFIX} Pre-loaded ${Object.keys(newMessages).length} namespaces for ${safeLng}`
             );
           }
-        } catch (error) {
+        } catch (_error) {
           if (debug) {
             console.debug(
               `${LOG_PREFIX} Pre-load failed for ${safeLng}, continuing with fallback`

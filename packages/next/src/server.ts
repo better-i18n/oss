@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { createI18nCore } from "@better-i18n/core";
 import type { I18nCore, Messages } from "@better-i18n/core";
 
-import { normalizeConfig, getProjectBaseUrl } from "./config.js";
+import { normalizeConfig } from "./config.js";
 import type { I18nConfig, NextFetchRequestInit } from "./types.js";
 
 /**
