@@ -8,7 +8,6 @@ import {
   IconArrowRight,
   IconMagnifyingGlass,
   IconRocket,
-  IconSettingsGear1,
   IconApiConnection,
   IconGroup1,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";

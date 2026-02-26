@@ -7,7 +7,6 @@ import {
   IconArrowRight,
   IconSettingsGear1,
   IconCodeBrackets,
-  IconGlobe,
   IconShieldCheck,
   IconZap,
   IconGroup1,
