@@ -49,6 +49,30 @@ Better i18n is a translation management system (TMS) that combines AI-powered tr
 - [Software Localization](https://better-i18n.com/i18n/software-localization)
 - [Translation Management System Guide](https://better-i18n.com/i18n/translation-management-system)
 
+## Localization Guides
+
+- [Content Localization Best Practices](https://better-i18n.com/i18n/content-localization)
+- [Content Localization Services](https://better-i18n.com/i18n/content-localization-services)
+- [Cultural Adaptation for Websites](https://better-i18n.com/i18n/cultural-adaptation)
+- [Website Translation Services & Solutions](https://better-i18n.com/i18n/website-translation)
+- [Website Translation Solutions](https://better-i18n.com/i18n/translation-solutions)
+- [Localization Platform & Software](https://better-i18n.com/i18n/localization-software)
+- [Localization Management Platforms](https://better-i18n.com/i18n/localization-platforms)
+- [Website Localization Software & Tools](https://better-i18n.com/i18n/localization-tools)
+
+## Multilingual SEO Guides
+
+- [Multilingual SEO Fundamentals](https://better-i18n.com/i18n/multilingual-seo)
+- [International SEO Strategy](https://better-i18n.com/i18n/international-seo)
+- [International SEO Consulting](https://better-i18n.com/i18n/international-seo-consulting)
+- [Technical Multilingual SEO](https://better-i18n.com/i18n/technical-multilingual-seo)
+- [Technical International SEO](https://better-i18n.com/i18n/technical-international-seo)
+- [Multilingual Website SEO Optimization](https://better-i18n.com/i18n/multilingual-website-seo)
+- [Global Market Expansion SEO](https://better-i18n.com/i18n/global-market-seo)
+- [SEO for International Audiences](https://better-i18n.com/i18n/seo-international-audiences)
+- [Local SEO for International Markets](https://better-i18n.com/i18n/local-seo-international)
+- [E-Commerce Global SEO](https://better-i18n.com/i18n/ecommerce-global-seo)
+
 ## Open Source
 
 - [GitHub](https://github.com/better-i18n)

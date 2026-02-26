@@ -19,7 +19,7 @@ import {
   getCanonicalLink,
   buildOgImageUrl,
 } from "@/lib/meta";
-import { getHomePageStructuredData } from "@/lib/structured-data";
+import { getHomePageStructuredData, getReviewSchema, formatStructuredData } from "@/lib/structured-data";
 import { getChangelogs } from "@/lib/changelog";
 
 export const Route = createFileRoute("/$locale/")({
@@ -52,13 +52,34 @@ export const Route = createFileRoute("/$locale/")({
         description: heroSubtitle,
       }),
     });
+
+    // Extract testimonial quotes for Review structured data
+    const testimonialsNs = (messages as Record<string, unknown>)?.testimonials as
+      | Record<string, Record<string, string>>
+      | undefined;
+    const testimonialAuthors = [
+      "Samet Selcuk",
+      "Tevfik Can Karanfil",
+      "Mehmet Hanifi Şentürk",
+      "Eray Gündoğmuş",
+    ];
+    const reviewItems = testimonialAuthors
+      .map((author, i) => {
+        const quote = testimonialsNs?.[String(i + 1)]?.quote;
+        return quote ? { author, reviewBody: quote } : null;
+      })
+      .filter((item): item is { author: string; reviewBody: string } => item !== null);
+    const reviewScripts = reviewItems.length > 0
+      ? formatStructuredData(getReviewSchema(reviewItems))
+      : [];
+
     return {
       meta: formatMetaTags(meta, { locale }),
       links: [
         ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
-      scripts: getHomePageStructuredData(),
+      scripts: [...getHomePageStructuredData(), ...reviewScripts],
     };
   },
   component: LandingPage,

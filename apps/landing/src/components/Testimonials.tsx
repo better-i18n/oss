@@ -27,7 +27,7 @@ export default function Testimonials() {
   const t = useTranslations("testimonials");
 
   return (
-    <section className="py-16">
+    <section id="testimonials" className="py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="flex flex-col gap-10 sm:gap-16">
           <div>
