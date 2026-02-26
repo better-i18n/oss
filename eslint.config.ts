@@ -14,6 +14,8 @@ export default ts.config(
       "**/build",
       "**/dist",
       "**/node_modules",
+      "apps/docs/.source/**",
+      "tests/expo-native/**",
     ],
   },
 

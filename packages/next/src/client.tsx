@@ -317,7 +317,6 @@ export function useSetLocale(config?: I18nConfig): (locale: string) => void {
     );
   }
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   return useStandaloneSetLocale(config);
 }
 

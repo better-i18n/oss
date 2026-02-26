@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it, mock, beforeEach } from "bun:test";
 import type { i18n as I18nType } from "i18next";
 import { initBetterI18n } from "../helpers";
