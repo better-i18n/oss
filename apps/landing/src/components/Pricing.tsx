@@ -131,6 +131,9 @@ export default function Pricing() {
                         ? "mailto:sales@better-i18n.com"
                         : "/login"
                     }
+                    aria-label={t(`plans.${planKey}.ctaAriaLabel`, {
+                      defaultValue: `${cta} — Better i18n ${name}`,
+                    })}
                     className={cn(
                       "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
                       isPopular

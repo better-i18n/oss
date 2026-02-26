@@ -20,6 +20,11 @@ export const Route = createFileRoute("/$locale/what-is")({
       locale: loaderData?.locale || "en",
       pageKey: "whatIs",
       pathname: "/what-is",
+      pageType: "educational",
+      structuredDataOptions: {
+        title: "What is i18n and l10n? Internationalization & Localization Guide",
+        description: "Understand the differences between internationalization (i18n) and localization (l10n), and learn how Better i18n streamlines both processes.",
+      },
     });
   },
   component: WhatIsPage,

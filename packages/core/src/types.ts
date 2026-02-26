@@ -167,7 +167,7 @@ export interface LanguageOption {
  * Translation messages keyed by namespace.
  * Matches the CDN response format: `{ "common": { "key": "value" }, "auth": { ... } }`
  */
-export type Messages = Record<string, Record<string, any>>;
+export type Messages = Record<string, Record<string, unknown>>;
 
 /**
  * Logger interface

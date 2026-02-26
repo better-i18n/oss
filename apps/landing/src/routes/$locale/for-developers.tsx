@@ -8,34 +8,22 @@ import DeveloperRoleIntegration from "@/components/developers/DeveloperRoleInteg
 import DeveloperResources from "@/components/developers/DeveloperResources";
 import DeveloperIDESupport from "@/components/developers/DeveloperIDESupport";
 import { RelatedPages } from "@/components/RelatedPages";
-import {
-  getLocalizedMeta,
-  formatMetaTags,
-  getAlternateLinks,
-  getCanonicalLink,
-} from "@/lib/meta";
-import { getDefaultStructuredData } from "@/lib/structured-data";
+import { getPageHead, createPageLoader } from "@/lib/page-seo";
 
 export const Route = createFileRoute("/$locale/for-developers")({
-  loader: ({ context }) => ({
-    messages: context.messages,
-    locale: context.locale,
-  }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
-    const locale = loaderData?.locale || "en";
-    const pathname = "/for-developers";
-    const meta = getLocalizedMeta(loaderData?.messages || {}, "forDevelopers", {
-      locale,
-      pathname,
+    return getPageHead({
+      messages: loaderData?.messages || {},
+      locale: loaderData?.locale || "en",
+      pageKey: "forDevelopers",
+      pathname: "/for-developers",
+      pageType: "educational",
+      structuredDataOptions: {
+        title: "Better i18n for Developers",
+        description: "Developer-first internationalization with type-safe SDKs, Git integration, global CDN delivery, and automated translation workflows.",
+      },
     });
-    return {
-      meta: formatMetaTags(meta, { locale }),
-      links: [
-        ...getAlternateLinks(pathname),
-        getCanonicalLink(locale, pathname),
-      ],
-      scripts: getDefaultStructuredData(),
-    };
   },
   component: ForDevelopersPage,
 });

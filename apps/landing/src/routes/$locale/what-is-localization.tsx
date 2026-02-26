@@ -19,6 +19,11 @@ export const Route = createFileRoute("/$locale/what-is-localization")({
       locale: loaderData?.locale || "en",
       pageKey: "whatIsLocalization",
       pathname: "/what-is-localization",
+      pageType: "educational",
+      structuredDataOptions: {
+        title: "What is Software Localization?",
+        description: "Learn about software localization — adapting your application for specific markets including translation, cultural adaptation, and regional formatting.",
+      },
     });
   },
   component: WhatIsLocalizationPage,

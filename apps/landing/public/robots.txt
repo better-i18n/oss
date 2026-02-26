@@ -5,6 +5,10 @@ Allow: /
 # Sitemap
 Sitemap: https://better-i18n.com/sitemap.xml
 
+# LLMs
+# https://llmstxt.org/
+llms.txt: https://better-i18n.com/llms.txt
+
 # Disallow admin/internal paths (if any)
 Disallow: /api/
 Disallow: /_/

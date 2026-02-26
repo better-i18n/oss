@@ -219,7 +219,6 @@ function ChangelogPage() {
                   {entry.body && (
                     <div
                       className="prose prose-sm prose-gray max-w-none"
-                      // eslint-disable-next-line react/no-danger
                       dangerouslySetInnerHTML={{ __html: renderContent(entry.body) }}
                     />
                   )}
