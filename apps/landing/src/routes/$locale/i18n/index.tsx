@@ -18,18 +18,18 @@ export const Route = createFileRoute("/$locale/i18n/")({
 });
 
 const frameworks = [
-  { name: "React", slug: "react", description: "Hooks-based i18n for React apps" },
-  { name: "Next.js", slug: "nextjs", description: "App Router & Server Components support" },
-  { name: "Vue", slug: "vue", description: "Composition API & Options API support" },
-  { name: "Nuxt", slug: "nuxt", description: "Full Nuxt 3 integration" },
-  { name: "Angular", slug: "angular", description: "Standalone components support" },
-  { name: "Svelte", slug: "svelte", description: "SvelteKit compatible" },
+  { key: "react", name: "React", slug: "react" },
+  { key: "nextjs", name: "Next.js", slug: "nextjs" },
+  { key: "vue", name: "Vue", slug: "vue" },
+  { key: "nuxt", name: "Nuxt", slug: "nuxt" },
+  { key: "angular", name: "Angular", slug: "angular" },
+  { key: "svelte", name: "Svelte", slug: "svelte" },
 ];
 
 const topics = [
-  { name: "Best Translation Management System", slug: "best-tms", description: "Compare top TMS solutions" },
-  { name: "Best i18n Library", slug: "best-library", description: "Find the right library for your stack" },
-  { name: "Localization for Developers", slug: "for-developers", description: "Developer-first localization guide" },
+  { key: "bestTms", slug: "best-tms" },
+  { key: "bestLibrary", slug: "best-library" },
+  { key: "forDevelopers", slug: "for-developers" },
 ];
 
 function I18nIndexPage() {
@@ -72,7 +72,7 @@ function I18nIndexPage() {
                       {framework.name} i18n
                     </h3>
                     <p className="mt-1 text-sm text-mist-600">
-                      {framework.description}
+                      {t(`i18n.index.frameworks.${framework.key}.description`)}
                     </p>
                   </div>
                   <IconArrowRight className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
@@ -100,10 +100,10 @@ function I18nIndexPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-base font-medium text-mist-950">
-                      {topic.name}
+                      {t(`i18n.index.topics.${topic.key}.name`)}
                     </h3>
                     <p className="mt-1 text-sm text-mist-600">
-                      {topic.description}
+                      {t(`i18n.index.topics.${topic.key}.description`)}
                     </p>
                   </div>
                   <IconArrowRight className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />

@@ -407,7 +407,7 @@ export function getPricingPageStructuredData() {
       description: "AI-powered translation management system for developers",
       offers: [
         { name: "Free", price: "0", priceCurrency: "USD", description: "For hobby projects" },
-        { name: "Pro", price: "49", priceCurrency: "USD", description: "For growing teams" },
+        { name: "Pro", price: "19", priceCurrency: "USD", description: "For growing teams" },
         { name: "Enterprise", price: "0", priceCurrency: "USD", description: "Custom pricing" },
       ],
     }),

@@ -8,34 +8,22 @@ import TranslatorDeepLSection from "@/components/translators/TranslatorDeepLSect
 import TranslatorWorkflow from "@/components/translators/TranslatorWorkflow";
 import TranslatorCTA from "@/components/translators/TranslatorCTA";
 import { RelatedPages } from "@/components/RelatedPages";
-import {
-  getLocalizedMeta,
-  formatMetaTags,
-  getAlternateLinks,
-  getCanonicalLink,
-} from "@/lib/meta";
-import { getDefaultStructuredData } from "@/lib/structured-data";
+import { getPageHead, createPageLoader } from "@/lib/page-seo";
 
 export const Route = createFileRoute("/$locale/for-translators")({
-  loader: ({ context }) => ({
-    messages: context.messages,
-    locale: context.locale,
-  }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
-    const locale = loaderData?.locale || "en";
-    const pathname = "/for-translators";
-    const meta = getLocalizedMeta(loaderData?.messages || {}, "forTranslators", {
-      locale,
-      pathname,
+    return getPageHead({
+      messages: loaderData?.messages || {},
+      locale: loaderData?.locale || "en",
+      pageKey: "forTranslators",
+      pathname: "/for-translators",
+      pageType: "educational",
+      structuredDataOptions: {
+        title: "Better i18n for Translators",
+        description: "AI-powered translation with brand glossary support, human-in-the-loop review, and instant CDN publishing for professional translators.",
+      },
     });
-    return {
-      meta: formatMetaTags(meta, { locale }),
-      links: [
-        ...getAlternateLinks(pathname),
-        getCanonicalLink(locale, pathname),
-      ],
-      scripts: getDefaultStructuredData(),
-    };
   },
   component: ForTranslatorsPage,
 });

@@ -5,6 +5,7 @@ import Features from "../../components/Features";
 import FrameworkSupport from "../../components/FrameworkSupport";
 import Integrations from "../../components/Integrations";
 import UseCases from "../../components/UseCases";
+import UserSegments from "../../components/UserSegments";
 import Alternatives from "../../components/Alternatives";
 import Testimonials from "../../components/Testimonials";
 import Changelog from "../../components/Changelog";
@@ -74,6 +75,7 @@ function LandingPage() {
         <FrameworkSupport />
         <Integrations />
         <UseCases />
+        <UserSegments />
         <Alternatives />
         <Testimonials />
         <Changelog releases={recentChangelogs} />
