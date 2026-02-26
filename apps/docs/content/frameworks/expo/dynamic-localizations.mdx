@@ -3,8 +3,6 @@ title: Dynamic CFBundleLocalizations
 description: Automatically sync iOS locale support with your Better i18n CDN languages
 ---
 
-# Dynamic CFBundleLocalizations
-
 When you add a new language in the Better i18n dashboard, iOS needs to know about it at build time via `CFBundleLocalizations` in `Info.plist`. Without it, iOS system features like Siri locale and input mode may fall back incorrectly.
 
 The problem: **`app.config.ts` does not support `async`/`await`**. Expo evaluates the config file synchronously at build time, so you can't `fetch()` the manifest there. Languages end up hardcoded — and get out of sync every time the dashboard changes.
@@ -14,20 +12,51 @@ The problem: **`app.config.ts` does not support `async`/`await`**. Expo evaluate
   returns a `languages` array with every locale in your project — no new API needed.
 </Callout>
 
-<Callout type="info">
-  **`CFBundleLocalizations` does not need to match the App Store's 39 metadata languages.**
-  Adding small languages like `az` or `kk` won't cause rejection — iOS falls back gracefully
-  to `CFBundleDevelopmentRegion` for unsupported system UI languages. Your in-app translations
-  will still work correctly on those devices.
-</Callout>
+---
 
-Two approaches are documented below. Use **EAS Build Hook** for production CI environments and **execFileSync** for simple local builds.
+```ts title="app.config.ts"
+import { ExpoConfig } from 'expo/config';
+import { execFileSync } from 'child_process';
+
+const PROJECT = 'your-org/your-project';
+const url = `https://cdn.better-i18n.com/${PROJECT}/manifest.json`; // [!code highlight]
+
+let locales: string[] = ['en'];
+
+try {
+  // Array args — no shell injection risk // [!code highlight]
+  const raw = execFileSync('curl', ['-sf', '--max-time', '5', url], { // [!code highlight]
+    encoding: 'utf-8',
+  });
+  const manifest = JSON.parse(raw);
+  locales = manifest.languages.map((l: { code: string }) => l.code); // [!code highlight]
+} catch {
+  console.warn('[better-i18n] Could not fetch manifest — using fallback locales');
+}
+
+const config: ExpoConfig = {
+  name: 'my-app',
+  // ...
+  ios: {
+    infoPlist: {
+      CFBundleLocalizations: locales, // [!code highlight]
+      CFBundleAllowMixedLocalizations: true,
+    },
+  },
+};
+
+export default config;
+```
+
+<Callout type="tip">
+  This runs only during `expo prebuild` or `eas build` — not at runtime. Your users never see the CDN call; it only affects the native build output.
+</Callout>
 
 ---
 
-## Approach 1: EAS Build Hook (Recommended)
+## For CI / EAS Builds
 
-EAS Build Hooks run before the native build — they're `async`, isolated, and the right place for network calls.
+EAS Build Hooks run before the native build — they're `async`, isolated, and the right place for network calls. Use this approach when you need to avoid a `curl` dependency in CI.
 
 <Steps>
 
@@ -71,7 +100,7 @@ https.get(url, (res) => {
 </Step>
 
 <Step>
-### Register the hook in `eas.json`
+### Register the hook and read the file
 
 ```json title="eas.json"
 {
@@ -87,14 +116,10 @@ https.get(url, (res) => {
   }
 }
 ```
-</Step>
 
-<Step>
-### Read the locales in `app.config.ts`
+Then in `app.config.ts`, replace the `execFileSync` block with:
 
-```ts title="app.config.ts"
-import { ExpoConfig } from 'expo/config';
-
+```ts title="app.config.ts (EAS variant)"
 let locales: string[] = ['en'];
 
 try {
@@ -103,19 +128,6 @@ try {
 } catch {
   // File doesn't exist yet (local dev without running the hook)
 }
-
-const config: ExpoConfig = {
-  name: 'my-app',
-  // ...
-  ios: {
-    infoPlist: {
-      CFBundleLocalizations: locales, // [!code highlight]
-      CFBundleAllowMixedLocalizations: true,
-    },
-  },
-};
-
-export default config;
 ```
 </Step>
 
@@ -132,74 +144,6 @@ export default config;
 
 ---
 
-## Approach 2: execFileSync (Local Builds)
-
-If you're not using EAS or want a single-file solution, call `curl` synchronously from `app.config.ts` using Node's `execFileSync`. Passing arguments as an array (not a shell string) prevents injection.
-
-```ts title="app.config.ts"
-import { ExpoConfig } from 'expo/config';
-import { execFileSync } from 'child_process';
-
-const PROJECT = 'your-org/your-project';
-const url = `https://cdn.better-i18n.com/${PROJECT}/manifest.json`; // [!code highlight]
-
-let locales: string[] = ['en'];
-
-try {
-  // Array args — no shell injection risk // [!code highlight]
-  const raw = execFileSync('curl', ['-sf', '--max-time', '5', url], { // [!code highlight]
-    encoding: 'utf-8',
-  });
-  const manifest = JSON.parse(raw);
-  locales = manifest.languages.map((l: { code: string }) => l.code); // [!code highlight]
-} catch {
-  console.warn('[better-i18n] Could not fetch manifest — using fallback locales');
-}
-
-const config: ExpoConfig = {
-  name: 'my-app',
-  // ...
-  ios: {
-    infoPlist: {
-      CFBundleLocalizations: locales, // [!code highlight]
-      CFBundleAllowMixedLocalizations: true,
-    },
-  },
-};
-
-export default config;
-```
-
-<Callout type="tip">
-  This runs only during `expo prebuild` or `eas build` — not at runtime. Your users never see the CDN call; it only affects the native build output.
-</Callout>
-
----
-
-## Why Not a Config Plugin?
-
-Config Plugins run *after* `app.config.ts` is evaluated — they modify the native project files, but they can't change what `app.config.ts` exports. Fetching the locale list inside a Config Plugin would work for native file manipulation, but you'd still need `app.config.ts` to read a pre-generated file for the `infoPlist` key.
-
-Both approaches above follow the correct evaluation order: generate the locale list before the config is evaluated, then read it synchronously.
-
----
-
 ## Verification
 
-After running `expo prebuild` (or `eas build`), verify the locales were written to `Info.plist`:
-
-1. Open `ios/<YourApp>/Info.plist` in Xcode or a text editor
-2. Look for the `CFBundleLocalizations` key
-3. The array should contain the same locales as your Better i18n project
-
-```xml
-<key>CFBundleLocalizations</key>
-<array>
-  <string>en</string>
-  <string>tr</string>
-  <string>de</string>
-  <!-- ... all locales from your CDN manifest -->
-</array>
-<key>CFBundleAllowMixedLocalizations</key>
-<true/>
-```
+After running `expo prebuild` (or `eas build`), open `ios/<YourApp>/Info.plist` and confirm the `CFBundleLocalizations` array contains the same locales as your Better i18n project.
