@@ -39,6 +39,30 @@ const topics = [
   { key: "reactIntl", slug: "react-intl" },
 ];
 
+const localizationGuides = [
+  { key: "contentLocalization", slug: "content-localization" },
+  { key: "contentLocalizationServices", slug: "content-localization-services" },
+  { key: "culturalAdaptation", slug: "cultural-adaptation" },
+  { key: "websiteTranslation", slug: "website-translation" },
+  { key: "translationSolutions", slug: "translation-solutions" },
+  { key: "localizationSoftware", slug: "localization-software" },
+  { key: "localizationPlatforms", slug: "localization-platforms" },
+  { key: "localizationTools", slug: "localization-tools" },
+];
+
+const seoGuides = [
+  { key: "multilingualSeo", slug: "multilingual-seo" },
+  { key: "internationalSeo", slug: "international-seo" },
+  { key: "internationalSeoConsulting", slug: "international-seo-consulting" },
+  { key: "technicalMultilingualSeo", slug: "technical-multilingual-seo" },
+  { key: "technicalInternationalSeo", slug: "technical-international-seo" },
+  { key: "multilingualWebsiteSeo", slug: "multilingual-website-seo" },
+  { key: "globalMarketSeo", slug: "global-market-seo" },
+  { key: "seoInternationalAudiences", slug: "seo-international-audiences" },
+  { key: "localSeoInternational", slug: "local-seo-international" },
+  { key: "ecommerceGlobalSeo", slug: "ecommerce-global-seo" },
+];
+
 function I18nIndexPage() {
   const t = useTranslations("marketing");
   const { locale } = Route.useParams();
@@ -114,6 +138,68 @@ function I18nIndexPage() {
                     </p>
                   </div>
                   <IconArrowRight className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Localization Guides */}
+      <section className="py-16">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
+            {t("i18n.index.localizationGuides.title", { defaultValue: "Localization Guides" })}
+          </h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {localizationGuides.map((guide) => (
+              <Link
+                key={guide.slug}
+                to={`/$locale/i18n/${guide.slug}`}
+                params={{ locale }}
+                className="group relative flex flex-col rounded-2xl border border-mist-200 bg-white p-6 hover:border-mist-300 hover:shadow-lg transition-all"
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-base font-medium text-mist-950">
+                      {t(`i18n.index.localizationGuides.${guide.key}.name`, { defaultValue: guide.key })}
+                    </h3>
+                    <p className="mt-1 text-sm text-mist-600">
+                      {t(`i18n.index.localizationGuides.${guide.key}.description`, { defaultValue: "" })}
+                    </p>
+                  </div>
+                  <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Multilingual SEO Guides */}
+      <section className="py-16 bg-mist-50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
+            {t("i18n.index.seoGuides.title", { defaultValue: "Multilingual SEO Guides" })}
+          </h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {seoGuides.map((guide) => (
+              <Link
+                key={guide.slug}
+                to={`/$locale/i18n/${guide.slug}`}
+                params={{ locale }}
+                className="group relative flex flex-col rounded-2xl border border-mist-200 bg-white p-6 hover:border-mist-300 hover:shadow-lg transition-all"
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-base font-medium text-mist-950">
+                      {t(`i18n.index.seoGuides.${guide.key}.name`, { defaultValue: guide.key })}
+                    </h3>
+                    <p className="mt-1 text-sm text-mist-600">
+                      {t(`i18n.index.seoGuides.${guide.key}.description`, { defaultValue: "" })}
+                    </p>
+                  </div>
+                  <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
                 </div>
               </Link>
             ))}

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import type { TranslationStorage, Messages } from "@better-i18n/core";
 import type { BetterI18nProviderConfig } from "../types.js";
 
