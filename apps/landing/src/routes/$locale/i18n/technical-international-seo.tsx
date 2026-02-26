@@ -3,7 +3,6 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
-  IconGlobe,
   IconCheckmark1,
   IconArrowRight,
   IconMagnifyingGlass,

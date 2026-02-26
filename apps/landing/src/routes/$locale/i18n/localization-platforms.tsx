@@ -8,7 +8,6 @@ import {
   IconRocket,
   IconGroup1,
   IconChart1,
-  IconGlobe,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/localization-platforms")({
