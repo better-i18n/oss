@@ -58,7 +58,7 @@ interface InitBetterI18nOptions {
 | `project` | `string` | Required | Project identifier in `org/project` format |
 | `i18n` | `i18n` | Global singleton | i18next instance (call `.use(initReactI18next)` before passing). Defaults to the global `import i18next from 'i18next'` singleton — safe to omit in React Native. |
 | `defaultLocale` | `string` | `"en"` | Fallback locale |
-| `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter (auto: MMKV → AsyncStorage → in-memory) |
+| `storage` | `TranslationStorage` | In-memory | Persistent storage adapter — use `storageAdapter(mmkv)` or `storageAdapter(AsyncStorage)` |
 | `staticData` | `Record<string, Messages>` | — | Bundled translations for airplane mode first launch |
 | `fetchTimeout` | `number` | `10000` | CDN fetch timeout in milliseconds |
 | `retryCount` | `number` | `1` | Retry attempts on CDN failure |
@@ -221,7 +221,7 @@ interface TranslationStorage {
 }
 ```
 
-Compatible with: MMKV, AsyncStorage, SecureStore, or any custom implementation. Auto-detected at runtime (MMKV → AsyncStorage → in-memory).
+Compatible with: MMKV, AsyncStorage, SecureStore, or any custom implementation. Use `storageAdapter()` to wrap MMKV or AsyncStorage instances.
 
 </AccordionItem>
 

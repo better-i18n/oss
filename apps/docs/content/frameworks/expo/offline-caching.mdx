@@ -19,7 +19,7 @@ initBetterI18n() / changeLanguage()
 │     ├─ Success → Inject resources + write to persistent cache
 │     └─ Failure ↓
 │
-├─ 3. Persistent cache (MMKV / AsyncStorage)
+├─ 3. Persistent cache (via storageAdapter)
 │     ├─ Cached? → Inject resources, switch language   ← covers most offline cases
 │     └─ No cache ↓
 │
@@ -79,21 +79,12 @@ await initBetterI18n({
 
 These translations are passed to `@better-i18n/core` and used only when both CDN and persistent cache fail. Because they're bundled in your app binary, they're always available — but they also increase your bundle size and may go stale between app releases.
 
-## Storage Auto-Detection
+## Persistent Storage
 
-Storage is resolved automatically at startup. Zero config required.
+Persistent storage olmadan çeviriler yalnızca bellekte tutulur — uygulama kapandığında kaybolur.
+`storageAdapter()` ile MMKV veya AsyncStorage geçerek offline desteği etkinleştirin.
 
-| Priority | Storage | Speed | Persistence |
-|----------|---------|-------|-------------|
-| 1 | `react-native-mmkv` | Sync I/O, fastest | Yes |
-| 2 | `@react-native-async-storage/async-storage` | Async | Yes |
-| 3 | In-memory `Map` | Instant | No |
-
-If you have `react-native-mmkv` installed, it's used automatically (separate MMKV instance with id `"better-i18n"`). Otherwise, AsyncStorage is used. If neither is installed, falls back to in-memory (no offline support).
-
-## Custom Storage
-
-### Using `storageAdapter()` (Recommended)
+### `storageAdapter()` ile (Recommended)
 
 `storageAdapter()` wraps MMKV or AsyncStorage automatically — no manual interface implementation needed.
 
@@ -125,6 +116,11 @@ await initBetterI18n({
 ```
   </Tab>
 </Tabs>
+
+<Callout type="tip">
+  MMKV and AsyncStorage are equal choices. MMKV is faster with synchronous I/O;
+  AsyncStorage works out of the box with Expo Go and requires no native build step.
+</Callout>
 
 ### Manual Implementation
 
@@ -189,12 +185,20 @@ await initBetterI18n({
 
 ## Without Persistent Storage
 
-If neither MMKV nor AsyncStorage is installed, the SDK automatically falls back to in-memory storage. This means:
+If no `storage` is provided, the SDK automatically uses in-memory storage. This means:
 
 - Translations are fetched from CDN on every app launch
 - No offline support between sessions
 - Works fine for development and testing
 
+When started with `debug: true`, the SDK logs a warning:
+
+```
+[better-i18n/expo] No persistent storage provided. Translations won't survive app restarts.
+Pass a storage adapter (e.g., storageAdapter(new MMKV())) for offline support.
+```
+
 <Callout type="warning">
-  For production apps, install `react-native-mmkv` or `@react-native-async-storage/async-storage` for offline support.
+  In-memory fallback is suitable for development and testing.
+  For production apps, always pass `storageAdapter()`.
 </Callout>
