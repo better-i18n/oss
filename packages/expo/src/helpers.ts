@@ -128,7 +128,7 @@ export async function initBetterI18n(
   // In React Native, this is always the same module instance — safe to use.
   const i18nInstance = i18nOpt ?? i18nDefault;
 
-  const storage = await resolveStorage(userStorage);
+  const storage = await resolveStorage(userStorage, debug);
   const core = createI18nCore({
     project,
     defaultLocale,
@@ -136,6 +136,10 @@ export async function initBetterI18n(
     staticData,
     fetchTimeout,
     retryCount,
+    storage: {
+      get: (key) => storage.getItem(key),
+      set: (key, value) => storage.setItem(key, value),
+    },
   });
 
   const lng = await resolveInitialLocale(storage, useDeviceLocale, defaultLocale);
@@ -195,7 +199,7 @@ export async function initBetterI18n(
     // ...messages   = bireysel namespace'ler (colon-notation: t('ns:key') çalışır)
     lng,
     fallbackLng: defaultLocale,
-    supportedLngs,
+    supportedLngs: supportedLngs.length > 0 ? supportedLngs : false,
     lowerCaseLng: true, // CDN lowercase — match i18next BCP 47 normalization
     defaultNS: "translation",
     fallbackNS: "translation",

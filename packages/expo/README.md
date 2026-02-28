@@ -6,7 +6,7 @@ Better i18n integration for [Expo](https://expo.dev) and React Native. Fetches t
 
 - **CDN-Powered** — Translations served from the edge via Better i18n CDN
 - **Offline-First** — Network-first strategy with automatic persistent cache fallback
-- **Auto Storage Detection** — Uses MMKV, AsyncStorage, or in-memory (zero config)
+- **Persistent Storage** — Pass `storageAdapter()` with MMKV or AsyncStorage for offline caching
 - **Device Locale** — Detect device language via `expo-localization`
 - **i18next Compatible** — Works as a backend plugin or one-call init helper
 - **Namespace Auto-Discovery** — Automatically registers all namespaces from CDN data
@@ -28,7 +28,7 @@ bun add @better-i18n/expo i18next react-i18next
 | `react-native-mmkv` | Fastest persistent storage |
 | `@react-native-async-storage/async-storage` | Common persistent storage |
 
-If none of the storage packages are installed, translations are cached in-memory only (no persistence across restarts).
+Pass `storageAdapter()` with either package to enable persistent offline caching. Without it, the SDK uses in-memory storage (no persistence across restarts).
 
 ## Quick Start
 
@@ -130,7 +130,7 @@ One-call setup that fetches translations from CDN and initializes i18next.
 | `project` | `string` | Required | Project identifier in `org/project` format |
 | `i18n` | `i18n` | Required | i18next instance to configure |
 | `defaultLocale` | `string` | `"en"` | Fallback locale |
-| `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter |
+| `storage` | `TranslationStorage` | In-memory | Persistent storage via `storageAdapter()` — see [Offline & Caching](https://docs.better-i18n.com/frameworks/expo/offline-caching) |
 | `staticData` | `Record \| () => Promise` | `undefined` | Bundled translations for offline-first (e.g., first launch in airplane mode) |
 | `fetchTimeout` | `number` | `10000` | CDN fetch timeout in ms |
 | `retryCount` | `number` | `1` | Retry attempts on CDN failure |
@@ -155,7 +155,7 @@ i18next backend plugin class. Pass options via `backend` in `i18n.init()`:
 | `defaultLocale` | `string` | `"en"` | Fallback locale |
 | `cdnBaseUrl` | `string` | `"https://cdn.better-i18n.com"` | Custom CDN URL |
 | `cacheExpiration` | `number` | `86400000` (24h) | In-memory cache TTL in ms |
-| `storage` | `TranslationStorage` | Auto-detected | Custom storage adapter |
+| `storage` | `TranslationStorage` | In-memory | Persistent storage via `storageAdapter()` — see [Offline & Caching](https://docs.better-i18n.com/frameworks/expo/offline-caching) |
 | `staticData` | `Record \| () => Promise` | `undefined` | Bundled translations for offline-first |
 | `fetchTimeout` | `number` | `10000` | CDN fetch timeout in ms |
 | `retryCount` | `number` | `1` | Retry attempts on CDN failure |
@@ -225,12 +225,18 @@ const { core, languages } = await initBetterI18n({
 });
 ```
 
-### Storage Priority (auto-detected)
+### Persistent Storage
 
-1. **User-provided** — Custom `TranslationStorage` adapter
-2. **MMKV** — Fastest, sync I/O (`react-native-mmkv`)
-3. **AsyncStorage** — Most common (`@react-native-async-storage/async-storage`)
-4. **In-Memory** — No persistence, works everywhere
+Pass `storageAdapter()` with your preferred storage library:
+
+```ts
+import { MMKV } from 'react-native-mmkv';
+import { storageAdapter } from '@better-i18n/expo';
+
+storage: storageAdapter(new MMKV({ id: 'app' }))
+```
+
+Without `storage`, in-memory fallback is used (no offline support). See [Offline & Caching](https://docs.better-i18n.com/frameworks/expo/offline-caching) for details.
 
 ## Language Switching
 

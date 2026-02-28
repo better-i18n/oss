@@ -39,9 +39,16 @@ export const createMemoryStorage = (): TranslationStorage => {
  * use storageAdapter() to pass your own instance.
  */
 export const resolveStorage = async (
-  userStorage?: TranslationStorage
+  userStorage?: TranslationStorage,
+  debug?: boolean
 ): Promise<TranslationStorage> => {
   if (userStorage) return userStorage;
+  if (debug) {
+    console.warn(
+      "[better-i18n/expo] No persistent storage provided. Translations won't survive app restarts. " +
+      "Pass a storage adapter (e.g., storageAdapter(new MMKV())) for offline support."
+    );
+  }
   return createMemoryStorage();
 };
 

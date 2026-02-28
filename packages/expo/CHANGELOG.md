@@ -1,5 +1,15 @@
 # @better-i18n/expo
 
+## 0.5.1
+
+### Patch Changes
+
+- Fix offline caching: translations now survive app restarts.
+  - Bridge persistent storage to `@better-i18n/core` so both cache layers (core + expo) write and read correctly
+  - Gracefully handle manifest CDN failure — `getLanguages()` no longer kills the entire init when offline
+  - Warn in debug mode when no persistent storage is provided
+  - Handle empty `supportedLngs` when manifest is unavailable offline
+
 ## 0.5.0
 
 ### Minor Changes
