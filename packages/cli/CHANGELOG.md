@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0
+
+### Minor Changes
+
+- 5c87ca4: Add `doctor` command for i18n health analysis with CI integration.
+  - Detects missing translations, placeholder mismatches, and orphan keys
+  - Calculates health score (0-100) across 5 categories
+  - ESLint and JSON output formats
+  - `--report` flag uploads results to Better i18n via GitHub OIDC (zero secrets)
+  - `--ci` flag exits with error code if health score below threshold
+
 ## 0.1.8
 
 ### Patch Changes
