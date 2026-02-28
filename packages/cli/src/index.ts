@@ -14,6 +14,7 @@ import {
   checkMissingCommand,
   checkUnusedCommand,
 } from "./commands/check.js";
+import { doctorCommand } from "./commands/doctor.js";
 
 program
   .name("better-i18n")
@@ -73,6 +74,18 @@ program
   .option("-f, --format <type>", "Output format: eslint, json", "eslint")
   .option("--verbose", "Show detailed output")
   .action(checkUnusedCommand);
+
+program
+  .command("doctor")
+  .description("Analyze i18n health: missing translations, orphan keys, placeholder mismatches")
+  .option("-d, --dir <path>", "Directory to scan (default: current directory)")
+  .option("-f, --format <type>", "Output format: eslint, json", "eslint")
+  .option("--ci", "CI mode: exit with error code if health score below threshold")
+  .option("--report", "Upload results to Better i18n portal (requires GitHub Actions OIDC)")
+  .option("--skip-code", "Skip AST code analysis (hardcoded strings)")
+  .option("--skip-health", "Skip translation file health checks")
+  .option("--verbose", "Show detailed output")
+  .action(doctorCommand);
 
 program.parse();
 

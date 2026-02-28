@@ -1,0 +1,23 @@
+{
+  "common": {
+    "title": "Hoş Geldiniz",
+    "description": "Bu bir açıklamadır",
+    "save": "Kaydet"
+  },
+  "auth": {
+    "login": {
+      "title": "Giriş Yap",
+      "button": "Giriş"
+    },
+    "register": {
+      "title": "Hesap Oluştur",
+      "button": "Kayıt Ol"
+    }
+  },
+  "dashboard": {
+    "welcome": "Merhaba!",
+    "items": "{count} öğeniz var",
+    "lastLogin": "Son giriş: {{date}}",
+    "stats": "Toplam: items, Ortalama: %s"
+  }
+}

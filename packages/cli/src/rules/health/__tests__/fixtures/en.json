@@ -1,0 +1,30 @@
+{
+  "common": {
+    "title": "Welcome",
+    "description": "This is a description",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "button": "Log In",
+      "forgot": "Forgot Password?"
+    },
+    "register": {
+      "title": "Create Account",
+      "button": "Sign Up"
+    }
+  },
+  "dashboard": {
+    "welcome": "Hello, {name}!",
+    "items": "You have {count} items",
+    "lastLogin": "Last login: {{date}}",
+    "stats": "Total: %d items, Average: %s"
+  },
+  "orphan": {
+    "unused_key": "This key is never used in code",
+    "another_unused": "Neither is this one"
+  }
+}

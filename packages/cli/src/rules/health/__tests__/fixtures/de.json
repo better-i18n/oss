@@ -1,0 +1,16 @@
+{
+  "common": {
+    "title": "Willkommen",
+    "save": "Speichern",
+    "cancel": "Abbrechen"
+  },
+  "auth": {
+    "login": {
+      "title": "Anmelden"
+    }
+  },
+  "dashboard": {
+    "welcome": "Hallo, {name}!",
+    "items": "Sie haben {count} Artikel und {extra} mehr"
+  }
+}
