@@ -143,7 +143,7 @@ export function getPageHead(options: PageSEOOptions) {
   if (cleanPath) {
     const segments = cleanPath.split("/").filter(Boolean);
     const breadcrumbItems = [
-      { name: "Home", url: `${SITE_URL}/${locale}` },
+      { name: "Home", url: `${SITE_URL}/${locale}/` },
     ];
 
     const labelMap: Record<string, string> = {

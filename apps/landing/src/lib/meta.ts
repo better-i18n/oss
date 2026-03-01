@@ -83,7 +83,7 @@ export function getCanonicalUrl(locale: string, pathname: string = "/"): string 
 
   return cleanPath
     ? `${SITE_URL}/${locale}/${cleanPath}`
-    : `${SITE_URL}/${locale}`;
+    : `${SITE_URL}/${locale}/`;
 }
 
 /**
@@ -198,14 +198,14 @@ export function getAlternateLinks(pathname: string = "/", locales?: string[]) {
     rel: "alternate",
     href: cleanPath
       ? `${SITE_URL}/${locale}/${cleanPath}`
-      : `${SITE_URL}/${locale}`,
+      : `${SITE_URL}/${locale}/`,
     hrefLang: locale,
   }));
 
   // x-default points to the English version (default locale) with /en/ prefix to avoid redirects
   links.push({
     rel: "alternate",
-    href: cleanPath ? `${SITE_URL}/en/${cleanPath}` : `${SITE_URL}/en`,
+    href: cleanPath ? `${SITE_URL}/en/${cleanPath}` : `${SITE_URL}/en/`,
     hrefLang: "x-default",
   });
 
