@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader, getCareersPageStructuredData } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/$locale/careers")({
 
 function CareersPage() {
   const t = useTranslations("careersPage");
+  const { locale } = Route.useParams();
 
   const openPositions = [
     {
@@ -151,6 +153,9 @@ function CareersPage() {
           </a>
         </div>
       </section>
+
+      {/* Related Pages */}
+      <RelatedPages currentPage="careers" locale={locale} variant="for" />
     </MarketingLayout>
   );
 }

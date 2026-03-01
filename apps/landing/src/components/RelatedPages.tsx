@@ -26,10 +26,39 @@ const frameworkPages: PageLink[] = [
   { href: "/$locale/i18n/vue", titleKey: "vue", descKey: "vueDesc" },
 ];
 
+const comparePages: PageLink[] = [
+  { href: "/$locale/compare/crowdin", titleKey: "compareCrowdin", descKey: "compareCrowdinDesc" },
+  { href: "/$locale/compare/lokalise", titleKey: "compareLokalise", descKey: "compareLokaliseDesc" },
+  { href: "/$locale/compare/phrase", titleKey: "comparePhrase", descKey: "comparePhraseDesc" },
+];
+
+const educationalPages: PageLink[] = [
+  { href: "/$locale/what-is-internationalization", titleKey: "whatIsI18n", descKey: "whatIsI18nDesc" },
+  { href: "/$locale/what-is-localization", titleKey: "whatIsL10n", descKey: "whatIsL10nDesc" },
+  { href: "/$locale/i18n/best-library", titleKey: "bestLibrary", descKey: "bestLibraryDesc" },
+];
+
+type AllowedRoute =
+  | "/$locale/for-developers"
+  | "/$locale/for-translators"
+  | "/$locale/for-product-teams"
+  | "/$locale/features"
+  | "/$locale/pricing"
+  | "/$locale/i18n/best-tms"
+  | "/$locale/i18n/react"
+  | "/$locale/i18n/nextjs"
+  | "/$locale/i18n/vue"
+  | "/$locale/compare/crowdin"
+  | "/$locale/compare/lokalise"
+  | "/$locale/compare/phrase"
+  | "/$locale/what-is-internationalization"
+  | "/$locale/what-is-localization"
+  | "/$locale/i18n/best-library";
+
 type RelatedPagesProps = {
   currentPage: string;
   locale: string;
-  variant?: "for" | "resources" | "frameworks" | "mixed";
+  variant?: "for" | "resources" | "frameworks" | "compare" | "educational" | "mixed";
 };
 
 export function RelatedPages({ currentPage, locale, variant = "mixed" }: RelatedPagesProps) {
@@ -43,6 +72,10 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
     pages = resourcePages.filter(p => !p.href.includes(currentPage));
   } else if (variant === "frameworks") {
     pages = frameworkPages.filter(p => !p.href.includes(currentPage));
+  } else if (variant === "compare") {
+    pages = comparePages.filter(p => !p.href.includes(currentPage));
+  } else if (variant === "educational") {
+    pages = educationalPages.filter(p => !p.href.includes(currentPage));
   } else {
     // mixed: combine for pages and resources
     pages = [...forPages, ...resourcePages].filter(p => !p.href.includes(currentPage)).slice(0, 4);
@@ -58,7 +91,7 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
           {pages.map((page) => (
             <Link
               key={page.href}
-              to={page.href as "/$locale/for-developers" | "/$locale/for-translators" | "/$locale/for-product-teams" | "/$locale/features" | "/$locale/pricing" | "/$locale/i18n/best-tms" | "/$locale/i18n/react" | "/$locale/i18n/nextjs" | "/$locale/i18n/vue"}
+              to={page.href as AllowedRoute}
               params={{ locale }}
               className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
             >
