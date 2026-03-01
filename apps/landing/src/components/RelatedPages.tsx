@@ -38,6 +38,13 @@ const educationalPages: PageLink[] = [
   { href: "/$locale/i18n/best-library", titleKey: "bestLibrary", descKey: "bestLibraryDesc" },
 ];
 
+const contentPages: PageLink[] = [
+  { href: "/$locale/i18n/localization-software", titleKey: "localizationSoftware", descKey: "localizationSoftwareDesc" },
+  { href: "/$locale/i18n/translation-management-system", titleKey: "translationManagement", descKey: "translationManagementDesc" },
+  { href: "/$locale/i18n/multilingual-seo", titleKey: "multilingualSeo", descKey: "multilingualSeoDesc" },
+  { href: "/$locale/i18n/international-seo", titleKey: "internationalSeo", descKey: "internationalSeoDesc" },
+];
+
 type AllowedRoute =
   | "/$locale/for-developers"
   | "/$locale/for-translators"
@@ -53,12 +60,16 @@ type AllowedRoute =
   | "/$locale/compare/phrase"
   | "/$locale/what-is-internationalization"
   | "/$locale/what-is-localization"
-  | "/$locale/i18n/best-library";
+  | "/$locale/i18n/best-library"
+  | "/$locale/i18n/localization-software"
+  | "/$locale/i18n/translation-management-system"
+  | "/$locale/i18n/multilingual-seo"
+  | "/$locale/i18n/international-seo";
 
 type RelatedPagesProps = {
   currentPage: string;
   locale: string;
-  variant?: "for" | "resources" | "frameworks" | "compare" | "educational" | "mixed";
+  variant?: "for" | "resources" | "frameworks" | "compare" | "educational" | "content" | "mixed";
 };
 
 export function RelatedPages({ currentPage, locale, variant = "mixed" }: RelatedPagesProps) {
