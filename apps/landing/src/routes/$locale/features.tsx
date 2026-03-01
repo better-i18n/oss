@@ -1,11 +1,29 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
-import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { getPageHead } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
+import { getMarketingPages, type MarketingPageListItem } from "@/lib/content";
+import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+
+const loadFeaturePages = createServerFn({ method: "GET" })
+  .inputValidator((data: { locale: string }) => data)
+  .handler(async ({ data }) => {
+    return getMarketingPages(data.locale, "feature");
+  });
 
 export const Route = createFileRoute("/$locale/features")({
-  loader: createPageLoader(),
+  loader: async ({ params, context }) => {
+    const featurePages = await loadFeaturePages({
+      data: { locale: params.locale },
+    });
+    return {
+      messages: context.messages,
+      locale: context.locale,
+      featurePages,
+    };
+  },
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},
