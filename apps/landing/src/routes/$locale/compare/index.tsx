@@ -1,17 +1,31 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { getPageHead, createPageLoader, formatStructuredData } from "@/lib/page-seo";
+import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
+import { SITE_URL } from "@/lib/meta";
 import { useTranslations } from "@better-i18n/use-intl";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/compare/")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
+    const comparisonListSchema = getComparisonSchema({
+      title: "Better i18n Alternatives Comparison",
+      description: "Compare Better i18n with top translation management platforms.",
+      items: [
+        { name: "Crowdin", description: "Cloud-based TMS for agile teams", url: `${SITE_URL}/en/compare/crowdin` },
+        { name: "Lokalise", description: "Translation and localization platform", url: `${SITE_URL}/en/compare/lokalise` },
+        { name: "Phrase", description: "Enterprise localization platform", url: `${SITE_URL}/en/compare/phrase` },
+        { name: "Transifex", description: "Localization platform for digital content", url: `${SITE_URL}/en/compare/transifex` },
+      ],
+    });
+
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
       pageKey: "compare",
       pathname: "/compare",
+      customStructuredData: formatStructuredData([getOrganizationSchema(), comparisonListSchema]),
     });
   },
   component: ComparePage,

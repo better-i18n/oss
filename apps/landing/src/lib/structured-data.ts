@@ -431,6 +431,28 @@ export function getEducationalPageStructuredData(options: {
   ]);
 }
 
+/**
+ * CollectionPage Schema - for blog listing / index pages
+ */
+export function getCollectionPageSchema(options: {
+  name: string;
+  description: string;
+  url: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: options.name,
+    description: options.description,
+    url: options.url,
+    isPartOf: {
+      "@type": "WebSite",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+  };
+}
+
 interface ReviewItem {
   author: string;
   reviewBody: string;
@@ -461,6 +483,59 @@ export function getReviewSchema(reviews: ReviewItem[]) {
       worstRating: 1,
     },
   }));
+}
+
+interface JobPostingOptions {
+  title: string;
+  description: string;
+  employmentType: "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERN";
+  location: string;
+  remote?: boolean;
+}
+
+/**
+ * JobPosting Schema - for careers page
+ */
+export function getJobPostingSchema(jobs: JobPostingOptions[]) {
+  return jobs.map((job) => ({
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    description: job.description,
+    employmentType: job.employmentType,
+    hiringOrganization: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      sameAs: SITE_URL,
+      logo: `${SITE_URL}/logo.png`,
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: job.location,
+      },
+    },
+    ...(job.remote && {
+      jobLocationType: "TELECOMMUTE",
+      applicantLocationRequirements: {
+        "@type": "Country",
+        name: "Worldwide",
+      },
+    }),
+    datePosted: "2026-01-01",
+    validThrough: "2026-12-31",
+  }));
+}
+
+/**
+ * Get careers page structured data
+ */
+export function getCareersPageStructuredData(jobs: JobPostingOptions[]) {
+  return formatStructuredData([
+    getOrganizationSchema(),
+    ...getJobPostingSchema(jobs),
+  ]);
 }
 
 /**

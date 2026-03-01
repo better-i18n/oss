@@ -11,6 +11,11 @@ export const Route = createFileRoute("/$locale/about")({
       locale: loaderData?.locale || "en",
       pageKey: "about",
       pathname: "/about",
+      pageType: "educational",
+      structuredDataOptions: {
+        title: "About Better i18n",
+        description: "Learn about the team behind Better i18n — our mission, values, and why we are building developer-first translation management.",
+      },
     });
   },
   component: AboutPage,

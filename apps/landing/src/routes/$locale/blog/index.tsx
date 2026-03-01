@@ -22,6 +22,7 @@ import {
   formatStructuredData,
   getOrganizationSchema,
   getWebSiteSchema,
+  getCollectionPageSchema,
 } from "@/lib/structured-data";
 
 const loadBlogPosts = createServerFn({ method: "GET" })
@@ -67,6 +68,11 @@ export const Route = createFileRoute("/$locale/blog/")({
         getOrganizationSchema(),
         getWebSiteSchema(),
         breadcrumbSchema,
+        getCollectionPageSchema({
+          name: "Better i18n Blog",
+          description: "Latest updates, tutorials, and insights about internationalization and localization.",
+          url: `${SITE_URL}/${locale}/blog`,
+        }),
       ]),
     };
   },
@@ -76,8 +82,6 @@ export const Route = createFileRoute("/$locale/blog/")({
 function BlogPage() {
   const { posts, locale } = Route.useLoaderData();
   const t = useTranslations("blog");
-
-  console.log(posts, "posts burada knk");
 
   return (
     <div className="bg-white">
