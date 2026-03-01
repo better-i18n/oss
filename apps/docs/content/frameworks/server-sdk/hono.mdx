@@ -1,0 +1,129 @@
+---
+title: Hono
+description: Better i18n middleware for Hono
+---
+
+`@better-i18n/server/hono` provides a single `betterI18n(i18n)` middleware that detects the request locale from the `Accept-Language` header and injects `locale` and `t` into Hono's context variables.
+
+<Callout type="info">
+  **Works on every Hono runtime.** Hono uses Web Standards natively — `c.req.raw.headers` is already a `Headers` object, so no adapter layer is needed. The same middleware runs unchanged on:
+  - **Cloudflare Workers** (`hono/cloudflare-workers`)
+  - **Deno Deploy** (`hono/deno`)
+  - **Bun** (`hono/bun`)
+  - **Node.js** (`@hono/node-server`)
+</Callout>
+
+## Setup
+
+<Steps>
+
+<Step>
+### Create the i18n singleton
+
+```ts title="src/i18n.ts"
+import { createServerI18n } from "@better-i18n/server";
+
+export const i18n = createServerI18n({
+  project: "my-org/api",
+  defaultLocale: "en",
+});
+```
+</Step>
+
+<Step>
+### Register the middleware
+
+```ts title="src/app.ts"
+import { Hono } from "hono";
+import { betterI18n } from "@better-i18n/server/hono"; // [!code highlight]
+import { i18n } from "./i18n";
+import type { Translator } from "@better-i18n/server";
+
+const app = new Hono<{ // [!code highlight]
+  Variables: { // [!code highlight]
+    locale: string; // [!code highlight]
+    t: Translator; // [!code highlight]
+  }; // [!code highlight]
+}>(); // [!code highlight]
+
+app.use("*", betterI18n(i18n)); // [!code highlight]
+
+export default app;
+```
+
+The `Hono<{ Variables: ... }>` generic makes `c.get("locale")` and `c.get("t")` fully type-safe — no `as` casts needed.
+</Step>
+
+<Step>
+### Use in route handlers
+
+```ts title="src/routes/users.ts"
+import app from "../app";
+
+app.get("/users/:id", async (c) => {
+  const t = c.get("t"); // [!code highlight]
+  const locale = c.get("locale"); // [!code highlight]
+
+  const user = await db.users.findById(c.req.param("id"));
+
+  if (!user) {
+    return c.json({ error: t("errors.notFound") }, 404); // [!code highlight]
+  }
+
+  return c.json({ user, locale });
+});
+```
+</Step>
+
+</Steps>
+
+## TypeScript Augmentation
+
+If you use a shared `app` instance across multiple files, declare the variable types once in a `.d.ts` file to avoid repeating the generic:
+
+```ts title="src/types/hono.d.ts"
+import type { Translator } from "@better-i18n/server";
+
+declare module "hono" {
+  interface ContextVariableMap {
+    locale: string;
+    t: Translator;
+  }
+}
+```
+
+With this declaration, `c.get("locale")` and `c.get("t")` are typed globally — no need to pass `Hono<{ Variables: ... }>` at each `new Hono()` call.
+
+## Locale Override Endpoint
+
+For REST APIs where clients send a preferred locale in the request body or query params (bypassing `Accept-Language`):
+
+```ts title="src/routes/translate.ts"
+import { i18n } from "../i18n";
+
+// Override locale for a specific route
+app.post("/send-email", async (c) => {
+  const { userId, locale: requestedLocale } = await c.req.json();
+
+  // Use explicitly requested locale — bypass Accept-Language detection
+  const t = await i18n.getTranslator(requestedLocale ?? c.get("locale")); // [!code highlight]
+
+  const subject = t("emails.welcome.subject");
+  const body = t("emails.welcome.body");
+
+  await sendEmail({ userId, subject, body });
+
+  return c.json({ sent: true });
+});
+```
+
+## Related
+
+<Cards>
+  <Card title="Express & Fastify" icon="Server" href="/frameworks/server-sdk/node">
+    Node.js `IncomingHttpHeaders` adapter for Express, Fastify, and Koa.
+  </Card>
+  <Card title="API Reference" icon="FileCode" href="/frameworks/server-sdk/api-reference">
+    Full reference for `betterI18n`, `createServerI18n`, and `Translator`.
+  </Card>
+</Cards>

@@ -15,6 +15,7 @@
     "nextjs",
     "tanstack-start",
     "vite",
-    "expo"
+    "expo",
+    "server-sdk"
   ]
 }
