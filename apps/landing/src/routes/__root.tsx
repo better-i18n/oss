@@ -221,6 +221,13 @@ function RootComponent() {
             locale={locale}
             messages={messages}
             timeZone="UTC"
+            getMessageFallback={({ key }) => {
+              const lastSegment = key.split(".").pop() || key;
+              return lastSegment
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (c) => c.toUpperCase())
+                .trim();
+            }}
           >
             <Outlet />
           </BetterI18nProvider>
