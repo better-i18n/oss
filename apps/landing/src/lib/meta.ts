@@ -155,6 +155,7 @@ export function formatMetaTags(
 
     // Additional SEO
     { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+    { name: "author", content: SITE_NAME },
   ];
 
   // Add article-specific meta tags

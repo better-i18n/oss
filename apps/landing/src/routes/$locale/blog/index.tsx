@@ -55,8 +55,8 @@ export const Route = createFileRoute("/$locale/blog/")({
     });
 
     const breadcrumbSchema = getBreadcrumbSchema([
-      { name: "Home", url: SITE_URL },
-      { name: "Blog", url: `${SITE_URL}/blog` },
+      { name: "Home", url: `${SITE_URL}/${locale}` },
+      { name: "Blog", url: `${SITE_URL}/${locale}/blog` },
     ]);
 
     return {
