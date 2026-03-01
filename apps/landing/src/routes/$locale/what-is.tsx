@@ -1,7 +1,9 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { getPageHead, createPageLoader, getEducationalPageStructuredData, formatStructuredData } from "@/lib/page-seo";
+import { getHowToSchema } from "@/lib/structured-data";
 import { useTranslations } from "@better-i18n/use-intl";
+import { RelatedPages } from "@/components/RelatedPages";
 import {
   IconGlobe,
   IconTranslate,
@@ -15,16 +17,46 @@ import {
 export const Route = createFileRoute("/$locale/what-is")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
+    const messages = loaderData?.messages || {};
+    const locale = loaderData?.locale || "en";
+
+    const howItWorksNs = (messages as Record<string, unknown>)?.marketing as
+      | Record<string, unknown>
+      | undefined;
+    const whatIsPageNs = howItWorksNs?.whatIsPage as Record<string, unknown> | undefined;
+    const howItWorks = whatIsPageNs?.howItWorks as Record<string, Record<string, string>> | undefined;
+
+    const stepKeys = ["step1", "step2", "step3", "step4"];
+    const howToSteps = howItWorks
+      ? stepKeys
+          .filter((key) => howItWorks[key]?.title && howItWorks[key]?.description)
+          .map((key) => ({
+            name: howItWorks[key].title,
+            text: howItWorks[key].description,
+          }))
+      : [];
+
+    const educationalScripts = getEducationalPageStructuredData({
+      title: "What is i18n and l10n? Internationalization & Localization Guide",
+      description: "Understand the differences between internationalization (i18n) and localization (l10n), and learn how Better i18n streamlines both processes.",
+      url: `https://better-i18n.com/${locale}/what-is`,
+    });
+
+    const howToScript = howToSteps.length > 0
+      ? formatStructuredData(getHowToSchema({
+          name: "How to Internationalize Your Application with Better i18n",
+          description: "Step-by-step guide to setting up internationalization using Better i18n.",
+          steps: howToSteps,
+          totalTime: "PT15M",
+        }))
+      : [];
+
     return getPageHead({
-      messages: loaderData?.messages || {},
-      locale: loaderData?.locale || "en",
+      messages,
+      locale,
       pageKey: "whatIs",
       pathname: "/what-is",
-      pageType: "educational",
-      structuredDataOptions: {
-        title: "What is i18n and l10n? Internationalization & Localization Guide",
-        description: "Understand the differences between internationalization (i18n) and localization (l10n), and learn how Better i18n streamlines both processes.",
-      },
+      customStructuredData: [...educationalScripts, ...howToScript],
     });
   },
   component: WhatIsPage,
@@ -232,6 +264,9 @@ function WhatIsPage() {
           </div>
         </div>
       </section>
+
+      {/* Related Pages */}
+      <RelatedPages currentPage="what-is" locale={currentLocale} variant="mixed" />
     </MarketingLayout>
   );
 }
