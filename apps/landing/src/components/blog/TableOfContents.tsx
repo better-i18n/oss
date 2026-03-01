@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { slugify } from "./BlogContent";
 import { useT } from "@/lib/i18n";
 
@@ -37,10 +38,39 @@ function extractHeadings(html: string): TocItem[] {
  * Renders a table of contents navigation from blog post HTML.
  * Only displays when 3 or more headings are present.
  * h3 items are indented to show hierarchy.
+ * Active heading tracked via IntersectionObserver scroll-spy.
  */
 export default function TableOfContents({ html }: TableOfContentsProps) {
   const t = useT("blog");
   const headings = extractHeadings(html);
+  const [activeId, setActiveId] = useState<string>("");
+
+  useEffect(() => {
+    if (headings.length < 3) return;
+
+    const elements = headings
+      .map((h) => document.getElementById(h.id))
+      .filter(Boolean) as HTMLElement[];
+
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id);
+          }
+        }
+      },
+      { rootMargin: "-80px 0px -60% 0px" },
+    );
+
+    for (const el of elements) {
+      observer.observe(el);
+    }
+
+    return () => observer.disconnect();
+  }, [headings.length]);
 
   if (headings.length < 3) return null;
 
@@ -50,18 +80,25 @@ export default function TableOfContents({ html }: TableOfContentsProps) {
         {t("tableOfContents", "Contents")}
       </h2>
       <ul className="space-y-1 border-l border-mist-100">
-        {headings.map((heading) => (
-          <li key={heading.id}>
-            <a
-              href={`#${heading.id}`}
-              className={`block py-1.5 text-mist-500 hover:text-mist-950 transition-colors leading-snug border-l-2 border-transparent hover:border-mist-950 -ml-px ${
-                heading.level === 3 ? "pl-6 text-[13px]" : "pl-4"
-              }`}
-            >
-              {heading.text}
-            </a>
-          </li>
-        ))}
+        {headings.map((heading) => {
+          const isActive = activeId === heading.id;
+          return (
+            <li key={heading.id}>
+              <a
+                href={`#${heading.id}`}
+                className={`block py-1.5 transition-colors leading-snug border-l-2 -ml-px ${
+                  heading.level === 3 ? "pl-6 text-[13px]" : "pl-4"
+                } ${
+                  isActive
+                    ? "text-mist-950 border-mist-950 font-medium"
+                    : "text-mist-500 border-transparent hover:text-mist-950 hover:border-mist-950"
+                }`}
+              >
+                {heading.text}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
