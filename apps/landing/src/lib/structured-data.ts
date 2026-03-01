@@ -36,14 +36,6 @@ export function getWebSiteSchema() {
     "@type": "WebSite",
     name: SITE_NAME,
     url: SITE_URL,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/docs?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
 }
 
@@ -67,6 +59,8 @@ export function getSoftwareApplicationSchema(reviews?: SoftwareAppReview[]) {
     operatingSystem: "Web",
     url: SITE_URL,
     image: `${SITE_URL}/logo.png`,
+    datePublished: "2025-01-01",
+    dateModified: "2026-03-01",
     offers: {
       "@type": "Offer",
       price: "0",
@@ -441,7 +435,11 @@ export function getComparisonPageStructuredData(competitorName: string) {
 /**
  * Get framework page structured data
  */
-export function getFrameworkPageStructuredData(framework: string, description: string) {
+export function getFrameworkPageStructuredData(
+  framework: string,
+  description: string,
+  dependencies?: string[]
+) {
   return formatStructuredData([
     getOrganizationSchema(),
     getTechArticleSchema({
@@ -449,6 +447,7 @@ export function getFrameworkPageStructuredData(framework: string, description: s
       description,
       url: `${SITE_URL}/i18n/${framework.toLowerCase()}`,
       proficiencyLevel: "Intermediate",
+      dependencies,
     }),
   ]);
 }

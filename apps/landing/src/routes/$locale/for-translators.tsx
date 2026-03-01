@@ -13,7 +13,7 @@ import { getPageHead, createPageLoader } from "@/lib/page-seo";
 export const Route = createFileRoute("/$locale/for-translators")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
-    return getPageHead({
+    const headData = getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
       pageKey: "forTranslators",
@@ -24,6 +24,14 @@ export const Route = createFileRoute("/$locale/for-translators")({
         description: "AI-powered translation with brand glossary support, human-in-the-loop review, and instant CDN publishing for professional translators.",
       },
     });
+
+    return {
+      ...headData,
+      meta: [
+        ...headData.meta,
+        { property: "article:section", content: "Translators" },
+      ],
+    };
   },
   component: ForTranslatorsPage,
 });

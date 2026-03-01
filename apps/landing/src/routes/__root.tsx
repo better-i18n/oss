@@ -94,6 +94,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           name: "google",
           content: "notranslate",
         },
+        {
+          name: "theme-color",
+          content: "#0a0a0a",
+        },
       ],
       links: [
         {
@@ -104,6 +108,18 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           rel: "preconnect",
           href: "https://fonts.gstatic.com",
           crossOrigin: "anonymous",
+        },
+        {
+          rel: "dns-prefetch",
+          href: "https://og.better-i18n.com",
+        },
+        {
+          rel: "dns-prefetch",
+          href: "https://dash.better-i18n.com",
+        },
+        {
+          rel: "dns-prefetch",
+          href: "https://docs.better-i18n.com",
         },
         {
           rel: "stylesheet",

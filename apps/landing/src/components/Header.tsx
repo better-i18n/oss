@@ -32,7 +32,7 @@ export default function Header({ className }: { className?: string }) {
 
   return (
     <header className={cn("sticky top-0 z-10 bg-mist-100", className)}>
-      <nav>
+      <nav aria-label="Main navigation">
         <div className="mx-auto flex h-[5.25rem] max-w-7xl items-center gap-4 px-6 lg:px-10">
           <div className="flex flex-1 items-center">
             <Link
@@ -42,7 +42,9 @@ export default function Header({ className }: { className?: string }) {
             >
               <img
                 src="https://better-i18n.com/cdn-cgi/image/width=48/logo.png"
-                alt="Better I18N"
+                alt="Better i18n - Translation Management Platform"
+                width={24}
+                height={24}
                 className="w-6 h-6"
               />
               <span className="font-display font-semibold text-base">
@@ -60,14 +62,14 @@ export default function Header({ className }: { className?: string }) {
             </Link>
             {/* For Product Mega Menu */}
             <div className="relative group">
-              <button className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+              <button aria-haspopup="true" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
                 {t("forProduct", { defaultValue: "Product" })}
                 <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[480px] shadow-lg">
                   {/* Grid container with border */}
-                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm">
+                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm" role="menu">
                     <div className="grid grid-cols-2 gap-2">
                       {/* For Translators */}
                       <Link
@@ -164,13 +166,13 @@ export default function Header({ className }: { className?: string }) {
             </div>
             {/* Developers Mega Menu */}
             <div className="relative group">
-              <button className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+              <button aria-haspopup="true" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
                 {t("developers.title", { defaultValue: "Developers" })}
                 <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[520px] shadow-lg">
-                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm">
+                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm" role="menu">
                     <p className="px-2.5 py-1.5 text-xs font-medium text-mist-500 uppercase tracking-wider">
                       {t("developers.frameworkGuides", { defaultValue: "Framework Guides" })}
                     </p>
@@ -249,7 +251,7 @@ export default function Header({ className }: { className?: string }) {
               {t("pricing", { defaultValue: "Pricing" })}
             </Link>
             <div className="relative group">
-              <button className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+              <button aria-haspopup="true" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
                 {t("resources.title", { defaultValue: "Resources" })}
                 <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
               </button>
@@ -257,7 +259,7 @@ export default function Header({ className }: { className?: string }) {
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 shadow-lg min-w-[480px]">
                   <div className="flex gap-2">
                     {/* Left column - Main links with icons and descriptions */}
-                    <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm space-y-1 min-w-[260px]">
+                    <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm space-y-1 min-w-[260px]" role="menu">
                       {/* About Us */}
                       <Link
                         to="/$locale/about"
@@ -329,7 +331,7 @@ export default function Header({ className }: { className?: string }) {
                     </div>
 
                     {/* Right column - Simple links with small icons */}
-                    <div className="p-3 space-y-1 min-w-[180px]">
+                    <div className="p-3 space-y-1 min-w-[180px]" role="menu">
                       {/* Documentation */}
                       <a
                         href="https://docs.better-i18n.com/"

@@ -55,6 +55,7 @@ interface PageSEOOptions {
     competitorName?: string;
     framework?: string;
     frameworkDescription?: string;
+    dependencies?: string[];
     title?: string;
     description?: string;
     url?: string;
@@ -81,7 +82,11 @@ function getStructuredDataForPageType(
         : getDefaultStructuredData();
     case "framework":
       return options?.framework && options?.frameworkDescription
-        ? getFrameworkPageStructuredData(options.framework, options.frameworkDescription)
+        ? getFrameworkPageStructuredData(
+            options.framework,
+            options.frameworkDescription,
+            options.dependencies
+          )
         : getDefaultStructuredData();
     case "educational":
       return options?.title && options?.description && options?.url
@@ -146,6 +151,7 @@ export function getPageHead(options: PageSEOOptions) {
     const labelMap: Record<string, string> = {
       features: "Features",
       pricing: "Pricing",
+      integrations: "Integrations",
       "what-is": "What is i18n",
       "for-developers": "For Developers",
       "for-translators": "For Translators",
@@ -155,6 +161,43 @@ export function getPageHead(options: PageSEOOptions) {
       "what-is-internationalization": "What is Internationalization",
       "what-is-localization": "What is Localization",
       "best-tms": "Best TMS",
+      "best-library": "Best i18n Library",
+      blog: "Blog",
+      about: "About",
+      careers: "Careers",
+      changelog: "Changelog",
+      status: "Status",
+      crowdin: "vs Crowdin",
+      lokalise: "vs Lokalise",
+      phrase: "vs Phrase",
+      transifex: "vs Transifex",
+      privacy: "Privacy Policy",
+      terms: "Terms of Service",
+      "cli-code-scanning": "CLI Code Scanning",
+      "localization-software": "Localization Software",
+      "translation-management-system": "Translation Management System",
+      "content-localization-services": "Content Localization Services",
+      "localization-platforms": "Localization Platforms",
+      "website-localization": "Website Localization",
+      "react-intl": "React Intl",
+      "international-seo": "International SEO",
+      "multilingual-seo": "Multilingual SEO",
+      "software-localization": "Software Localization",
+      "content-localization": "Content Localization",
+      "localization-tools": "Localization Tools",
+      "website-translation": "Website Translation",
+      "localization-management": "Localization Management",
+      "react-native-localization": "React Native Localization",
+      "localization-vs-internationalization": "Localization vs Internationalization",
+      "formatting-utilities": "Formatting Utilities",
+      "security-compliance": "Security & Compliance",
+      "cultural-adaptation": "Cultural Adaptation",
+      react: "React",
+      nextjs: "Next.js",
+      vue: "Vue",
+      nuxt: "Nuxt",
+      angular: "Angular",
+      svelte: "Svelte",
     };
 
     let currentPath = "";
@@ -172,7 +215,7 @@ export function getPageHead(options: PageSEOOptions) {
   }
 
   return {
-    meta: formatMetaTags(meta, { locale }),
+    meta: formatMetaTags(meta, { locale, locales }),
     links: [
       ...getAlternateLinks(pathname, locales),
       getCanonicalLink(locale, pathname),

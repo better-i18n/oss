@@ -11,7 +11,7 @@ export default function Hero() {
   const { locale } = useParams({ strict: false });
 
   return (
-    <section className="flex flex-col gap-16 px-2 pb-16 lg:gap-20 mx-auto w-full max-w-[1400px]">
+    <section aria-labelledby="hero-title" className="flex flex-col gap-16 px-2 pb-16 lg:gap-20 mx-auto w-full max-w-[1400px]">
       {/* Wallpaper Background - relative for absolute positioning of drawer */}
       <div className="wallpaper rounded-lg relative overflow-hidden w-full flex flex-col min-[900px]:block min-[900px]:min-h-[780px]">
         {/* Content Container */}
@@ -34,6 +34,7 @@ export default function Hero() {
               </Link>
 
               <h1
+                id="hero-title"
                 className="text-3xl/[1.1] font-semibold tracking-[-0.02em] text-white sm:text-4xl/[1.1] lg:text-[3rem]/[1.1]"
                 style={{ textWrap: "balance" }}
               >
@@ -90,7 +91,7 @@ export default function Hero() {
       </div>
 
       {/* Logo Grid Footer */}
-      <div className="w-full mt-[-24px] mb-8 overflow-hidden">
+      <div aria-label="Trusted by leading companies" className="w-full mt-[-24px] mb-8 overflow-hidden">
         <div className="logo-grid">
           {[0, 1].map((i) => (
             <div key={i} className="logo-track">
@@ -98,7 +99,10 @@ export default function Hero() {
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/carna.png"
-                  alt="Carna"
+                  alt="Carna - Better i18n customer"
+                  width={112}
+                  height={28}
+                  loading="lazy"
                   className="h-7 w-auto opacity-50 grayscale"
                 />
               </span>
@@ -106,14 +110,20 @@ export default function Hero() {
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/nomadwork.png"
-                  alt="Nomad Work"
+                  alt="Nomad Work - Better i18n customer"
+                  width={112}
+                  height={28}
+                  loading="lazy"
                   className="h-7 w-auto opacity-50 grayscale"
                 />
               </span>
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/hellospace.png"
-                  alt="Hellospace"
+                  alt="Hellospace - Better i18n customer"
+                  width={112}
+                  height={28}
+                  loading="lazy"
                   className="h-7 w-auto opacity-50 grayscale"
                 />
               </span>
@@ -121,7 +131,10 @@ export default function Hero() {
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/cloudflare.png"
-                  alt="Cloudflare"
+                  alt="Cloudflare - Better i18n customer"
+                  width={112}
+                  height={28}
+                  loading="lazy"
                   className="h-7 w-auto opacity-50 grayscale"
                 />
               </span>

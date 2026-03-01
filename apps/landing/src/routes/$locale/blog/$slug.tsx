@@ -1,11 +1,17 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { getBlogPost, formatPostDate, getTagColor } from "@/lib/content";
+import {
+  getBlogPost,
+  getRelatedPosts,
+  formatPostDate,
+  getTagColor,
+} from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { RelatedPages } from "@/components/RelatedPages";
 import { useTranslations } from "@better-i18n/use-intl";
 import BlogContent from "@/components/blog/BlogContent";
+import RelatedPosts from "@/components/blog/RelatedPosts";
 import TableOfContents from "@/components/blog/TableOfContents";
 import {
   IconArrowLeft,
@@ -30,13 +36,30 @@ const loadBlogPost = createServerFn({ method: "GET" })
     return getBlogPost(data.slug, data.locale);
   });
 
+const loadRelatedPosts = createServerFn({ method: "GET" })
+  .inputValidator(
+    (data: { slug: string; category: string | null; locale: string }) => data,
+  )
+  .handler(async ({ data }) => {
+    return getRelatedPosts(data.slug, data.category, data.locale);
+  });
+
 export const Route = createFileRoute("/$locale/blog/$slug")({
   loader: async ({ params }) => {
-    const post = await loadBlogPost({ data: { slug: params.slug, locale: params.locale } });
+    const post = await loadBlogPost({
+      data: { slug: params.slug, locale: params.locale },
+    });
     if (!post) {
       throw notFound();
     }
-    return { post, locale: params.locale };
+    const relatedPosts = await loadRelatedPosts({
+      data: {
+        slug: params.slug,
+        category: post.category,
+        locale: params.locale,
+      },
+    });
+    return { post, locale: params.locale, relatedPosts };
   },
   head: ({ loaderData }) => {
     const post = loaderData?.post;
@@ -127,7 +150,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
 });
 
 function BlogPostPage() {
-  const { post, locale } = Route.useLoaderData();
+  const { post, locale, relatedPosts } = Route.useLoaderData();
   const t = useTranslations("blog");
 
   return (
@@ -247,6 +270,11 @@ function BlogPostPage() {
             </Link>
           </footer>
         </article>
+        {relatedPosts.length > 0 && (
+          <div className="mx-auto max-w-4xl px-6 lg:px-10">
+            <RelatedPosts posts={relatedPosts} locale={locale} />
+          </div>
+        )}
       </main>
       <RelatedPages currentPage="blog" locale={locale} variant="mixed" />
       <Footer />

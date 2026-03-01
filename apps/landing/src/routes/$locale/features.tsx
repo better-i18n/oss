@@ -12,11 +12,7 @@ export const Route = createFileRoute("/$locale/features")({
       locale: loaderData?.locale || "en",
       pageKey: "features",
       pathname: "/features",
-      pageType: "educational",
-      structuredDataOptions: {
-        title: "Better i18n Features",
-        description: "Explore features: AI translations, Git integration, OTA updates, CDN delivery, type-safe SDKs, and collaboration tools for developer-first i18n.",
-      },
+      pageType: "default",
     });
   },
   component: FeaturesPage,
@@ -155,32 +151,44 @@ function FeaturesPage() {
           <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-8">
             {t("additionalFeatures.title", { defaultValue: "And so much more" })}
           </h2>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <FeatureItem
-              title={t("additionalFeatures.glossary.title", { defaultValue: "Glossary Management" })}
-              description={t("additionalFeatures.glossary.description", { defaultValue: "Maintain consistent terminology across all languages with a centralized glossary." })}
-            />
-            <FeatureItem
-              title={t("additionalFeatures.memory.title", { defaultValue: "Translation Memory" })}
-              description={t("additionalFeatures.memory.description", { defaultValue: "Reuse previous translations to save time and maintain consistency." })}
-            />
-            <FeatureItem
-              title={t("additionalFeatures.collaboration.title", { defaultValue: "Team Collaboration" })}
-              description={t("additionalFeatures.collaboration.description", { defaultValue: "Review, comment, and approve translations with your team in real-time." })}
-            />
-            <FeatureItem
-              title={t("additionalFeatures.versionControl.title", { defaultValue: "Version Control" })}
-              description={t("additionalFeatures.versionControl.description", { defaultValue: "Full history of every translation change with rollback support." })}
-            />
-            <FeatureItem
-              title={t("additionalFeatures.qa.title", { defaultValue: "Quality Assurance" })}
-              description={t("additionalFeatures.qa.description", { defaultValue: "Automated checks for placeholders, formatting, and translation completeness." })}
-            />
-            <FeatureItem
-              title={t("additionalFeatures.analytics.title", { defaultValue: "Analytics & Insights" })}
-              description={t("additionalFeatures.analytics.description", { defaultValue: "Track translation progress, coverage, and team performance across projects." })}
-            />
-          </div>
+          <ul role="list" className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <li>
+              <FeatureItem
+                title={t("additionalFeatures.glossary.title", { defaultValue: "Glossary Management" })}
+                description={t("additionalFeatures.glossary.description", { defaultValue: "Maintain consistent terminology across all languages with a centralized glossary." })}
+              />
+            </li>
+            <li>
+              <FeatureItem
+                title={t("additionalFeatures.memory.title", { defaultValue: "Translation Memory" })}
+                description={t("additionalFeatures.memory.description", { defaultValue: "Reuse previous translations to save time and maintain consistency." })}
+              />
+            </li>
+            <li>
+              <FeatureItem
+                title={t("additionalFeatures.collaboration.title", { defaultValue: "Team Collaboration" })}
+                description={t("additionalFeatures.collaboration.description", { defaultValue: "Review, comment, and approve translations with your team in real-time." })}
+              />
+            </li>
+            <li>
+              <FeatureItem
+                title={t("additionalFeatures.versionControl.title", { defaultValue: "Version Control" })}
+                description={t("additionalFeatures.versionControl.description", { defaultValue: "Full history of every translation change with rollback support." })}
+              />
+            </li>
+            <li>
+              <FeatureItem
+                title={t("additionalFeatures.qa.title", { defaultValue: "Quality Assurance" })}
+                description={t("additionalFeatures.qa.description", { defaultValue: "Automated checks for placeholders, formatting, and translation completeness." })}
+              />
+            </li>
+            <li>
+              <FeatureItem
+                title={t("additionalFeatures.analytics.title", { defaultValue: "Analytics & Insights" })}
+                description={t("additionalFeatures.analytics.description", { defaultValue: "Track translation progress, coverage, and team performance across projects." })}
+              />
+            </li>
+          </ul>
         </div>
       </section>
 

@@ -23,6 +23,7 @@ export const Route = createFileRoute("/$locale/i18n/nuxt")({
       structuredDataOptions: {
         framework: "Nuxt",
         frameworkDescription: "Nuxt 3 i18n with auto-routing, middleware support, and SEO-friendly localization.",
+        dependencies: ["nuxt", "vue", "@better-i18n/nuxt"],
       },
     });
   },

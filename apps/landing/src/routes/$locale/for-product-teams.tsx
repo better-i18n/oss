@@ -13,7 +13,7 @@ import { getPageHead, createPageLoader } from "@/lib/page-seo";
 export const Route = createFileRoute("/$locale/for-product-teams")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
-    return getPageHead({
+    const headData = getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
       pageKey: "forProductTeams",
@@ -24,6 +24,14 @@ export const Route = createFileRoute("/$locale/for-product-teams")({
         description: "Centralized localization dashboard with real-time progress tracking, team collaboration, and instant deployment for product managers.",
       },
     });
+
+    return {
+      ...headData,
+      meta: [
+        ...headData.meta,
+        { property: "article:section", content: "Product Teams" },
+      ],
+    };
   },
   component: ForProductTeamsPage,
 });

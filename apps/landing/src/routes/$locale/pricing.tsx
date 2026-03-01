@@ -71,7 +71,7 @@ function PricingPage() {
           <h2 className="font-display text-2xl font-medium text-mist-950 mb-8 text-center">
             {t("faq.title")}
           </h2>
-          <div className="space-y-6">
+          <div className="space-y-4">
             <FAQItem
               question={t("faq.tryFree.question")}
               answer={t("faq.tryFree.answer")}
@@ -123,9 +123,14 @@ function PricingPage() {
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   return (
-    <div className="border-b border-mist-200 pb-6">
-      <h3 className="text-base font-medium text-mist-950">{question}</h3>
-      <p className="mt-2 text-sm text-mist-700 leading-relaxed">{answer}</p>
-    </div>
+    <details className="border-b border-mist-200 pb-6 group">
+      <summary className="text-base font-medium text-mist-950 cursor-pointer list-none flex items-center justify-between">
+        {question}
+        <span className="text-mist-400 group-open:rotate-180 transition-transform text-sm">
+          &#9662;
+        </span>
+      </summary>
+      <p className="mt-3 text-sm text-mist-700 leading-relaxed">{answer}</p>
+    </details>
   );
 }
