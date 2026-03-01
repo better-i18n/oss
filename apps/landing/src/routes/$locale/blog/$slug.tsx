@@ -13,6 +13,9 @@ import { useT } from "@/lib/i18n";
 import BlogContent from "@/components/blog/BlogContent";
 import RelatedPosts from "@/components/blog/RelatedPosts";
 import TableOfContents from "@/components/blog/TableOfContents";
+import ReadingProgress from "@/components/blog/ReadingProgress";
+import Breadcrumb from "@/components/blog/Breadcrumb";
+import ShareButtons from "@/components/blog/ShareButtons";
 import {
   IconArrowLeft,
   IconChevronBottom,
@@ -101,6 +104,8 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       wordCount,
       timeRequired,
       articleSection: post.category || undefined,
+      type: "BlogPosting",
+      inLanguage: locale,
     }) : null;
 
     const breadcrumbSchema = getBreadcrumbSchema([
@@ -137,7 +142,14 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         { name: "twitter:title", content: post?.title || "" },
         { name: "twitter:description", content: excerpt },
         { name: "twitter:image", content: dynamicOgImage },
-        { name: "robots", content: "index, follow" },
+        { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+        { name: "author", content: post?.authorName || "Better i18n Team" },
+        ...(post?.category ? [{ name: "keywords", content: post.category }] : []),
+        ...(post?.availableLanguages
+          ? post.availableLanguages
+              .filter((lang) => lang !== locale)
+              .map((lang) => ({ property: "og:locale:alternate", content: lang }))
+          : []),
       ],
       links: [
         ...getAlternateLinks(
@@ -159,20 +171,30 @@ function BlogPostPage() {
   const { post, locale, relatedPosts } = Route.useLoaderData();
   const t = useT("blog");
 
+  const canonicalUrl = `${SITE_URL}/${locale}/blog/${post.slug}`;
+
+  const heroBannerUrl = buildOgImageUrl("og/blog", {
+    title: post.title,
+    author: post.authorName ?? undefined,
+    authorImage: post.authorAvatar ?? undefined,
+    tag: post.category ?? undefined,
+    date: post.publishedAt
+      ? new Date(post.publishedAt).toLocaleDateString(locale, {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : undefined,
+  });
+
   return (
     <div className="bg-white">
+      <ReadingProgress />
       <Header className="bg-white" />
       <main>
         {/* Article header - centered, generous spacing */}
         <div className="mx-auto max-w-3xl px-6 lg:px-10 pt-12 pb-10">
-          <Link
-            to="/$locale/blog"
-            params={{ locale }}
-            className="inline-flex items-center gap-1.5 text-sm text-mist-500 hover:text-mist-950 transition-colors mb-10 group"
-          >
-            <IconArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            {t("backToBlog", { defaultValue: "Back to Blog" })}
-          </Link>
+          <Breadcrumb locale={locale} title={post.title} />
 
           {post.category && (
             <span
@@ -225,6 +247,18 @@ function BlogPostPage() {
                 </div>
               </div>
             </div>
+            <ShareButtons url={canonicalUrl} title={post.title} />
+          </div>
+
+          {/* Hero banner image */}
+          <div className="mt-10 aspect-[1200/630] rounded-xl overflow-hidden bg-mist-50">
+            <img
+              src={heroBannerUrl}
+              alt=""
+              className="w-full h-full object-cover"
+              loading="eager"
+              fetchPriority="high"
+            />
           </div>
         </div>
 

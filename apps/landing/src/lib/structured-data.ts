@@ -129,6 +129,8 @@ interface ArticleSchemaOptions {
   wordCount?: number;
   timeRequired?: string; // ISO 8601 duration, e.g. "PT5M"
   articleSection?: string;
+  type?: "Article" | "BlogPosting";
+  inLanguage?: string;
 }
 
 /**
@@ -141,7 +143,7 @@ export function getArticleSchema(options: ArticleSchemaOptions) {
   const imageUrl = options.image || `${SITE_URL}/logo.png`;
   return {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": options.type ?? "Article",
     headline: options.title,
     description: options.description,
     image: [imageUrl],
@@ -168,6 +170,7 @@ export function getArticleSchema(options: ArticleSchemaOptions) {
     ...(options.wordCount && { wordCount: options.wordCount }),
     ...(options.timeRequired && { timeRequired: options.timeRequired }),
     ...(options.articleSection && { articleSection: options.articleSection }),
+    ...(options.inLanguage && { inLanguage: options.inLanguage }),
   };
 }
 
