@@ -73,8 +73,8 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     }) : null;
 
     const breadcrumbSchema = getBreadcrumbSchema([
-      { name: "Home", url: SITE_URL },
-      { name: "Blog", url: `${SITE_URL}/blog` },
+      { name: "Home", url: `${SITE_URL}/${locale}` },
+      { name: "Blog", url: `${SITE_URL}/${locale}/blog` },
       { name: post?.title || "Post", url: canonicalUrl },
     ]);
 
@@ -99,6 +99,8 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         { property: "article:published_time", content: post?.publishedAt || "" },
         { property: "article:modified_time", content: post?.publishedAt || "" },
         { property: "article:author", content: post?.authorName || "" },
+        { property: "article:section", content: post?.category || "" },
+        { property: "article:tag", content: post?.category || "" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:site", content: "@betteri18n" },
         { name: "twitter:title", content: post?.title || "" },
