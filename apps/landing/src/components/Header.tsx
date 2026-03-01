@@ -529,7 +529,7 @@ export default function Header({ className }: { className?: string }) {
 
                       {/* What is i18n? */}
                       <Link
-                        to="/$locale/what-is-i18n"
+                        to="/$locale/what-is"
                         params={{ locale: locale || "en" }}
                         className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
                       >
