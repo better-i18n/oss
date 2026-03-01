@@ -87,9 +87,11 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
     pages = comparePages.filter(p => !p.href.includes(currentPage));
   } else if (variant === "educational") {
     pages = educationalPages.filter(p => !p.href.includes(currentPage));
+  } else if (variant === "content") {
+    pages = contentPages.filter(p => !p.href.includes(currentPage));
   } else {
-    // mixed: combine for pages and resources
-    pages = [...forPages, ...resourcePages].filter(p => !p.href.includes(currentPage)).slice(0, 4);
+    // mixed: combine for pages, resources, and top content pages
+    pages = [...forPages, ...resourcePages, ...contentPages].filter(p => !p.href.includes(currentPage)).slice(0, 4);
   }
 
   if (pages.length === 0) return null;

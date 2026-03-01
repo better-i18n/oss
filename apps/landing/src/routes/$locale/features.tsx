@@ -193,7 +193,7 @@ function FeaturesPage() {
       </section>
 
       {/* Related Pages */}
-      <RelatedPages currentPage="features" locale={locale} variant="for" />
+      <RelatedPages currentPage="features" locale={locale} variant="content" />
     </MarketingLayout>
   );
 }
