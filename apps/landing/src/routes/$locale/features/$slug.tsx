@@ -50,7 +50,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
     const pathname = `/features/${page?.slug || ""}`;
     const canonicalUrl = `${SITE_URL}/${locale}${pathname}`;
 
-    const dynamicOgImage = buildOgImageUrl("og/feature", {
+    const dynamicOgImage = buildOgImageUrl("og", {
       title: page?.title || "Feature",
     });
 

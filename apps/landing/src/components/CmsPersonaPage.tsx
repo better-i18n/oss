@@ -68,7 +68,7 @@ export function CmsPersonaPage({
               {relatedPersonas.map((persona) => (
                 <Link
                   key={persona.slug}
-                  to={`/$locale/${persona.slug}`}
+                  to={`/$locale/${persona.slug}` as string}
                   params={{ locale }}
                   className="group p-6 rounded-xl bg-mist-50 border border-mist-100 hover:border-mist-200 transition-colors"
                 >
@@ -94,10 +94,9 @@ export function CmsPersonaPage({
 
 export function CmsPersonaNotFound({
   locale,
-  slug,
 }: {
   locale: string;
-  slug: string;
+  slug?: string;
 }) {
   return (
     <div className="bg-white">
