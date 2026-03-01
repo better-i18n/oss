@@ -4,12 +4,12 @@ import {
   FrameworkHero,
   FeatureList,
   CodeExample,
-  RelatedPages,
   FrameworkCTA,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
+import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/$locale/i18n/angular")({
   loader: createPageLoader(),
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/$locale/i18n/angular")({
 });
 
 function AngularI18nPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const features = [
@@ -63,10 +63,10 @@ export class AppComponent {
   }
 }`;
 
-  const relatedPages = [
-    { name: "React i18n", href: "/$locale/i18n/react", description: t("i18n.angular.related.react") },
-    { name: "Vue i18n", href: "/$locale/i18n/vue", description: t("i18n.angular.related.vue") },
-    { name: t("i18n.angular.related.comparisons"), href: "/$locale/compare", description: t("i18n.angular.related.comparisonsDesc") },
+  const relatedLinks = [
+    { title: "React i18n", to: "/$locale/i18n/react", description: t("i18n.angular.related.react") },
+    { title: "Vue i18n", to: "/$locale/i18n/vue", description: t("i18n.angular.related.vue") },
+    { title: t("i18n.angular.related.comparisons"), to: "/$locale/compare", description: t("i18n.angular.related.comparisonsDesc") },
   ];
 
   return (
@@ -85,7 +85,7 @@ export class AppComponent {
         code={codeExample}
       />
 
-      <RelatedPages title={t("i18n.angular.relatedTitle")} pages={relatedPages} locale={locale} />
+      <ComparisonRelatedTopics heading={t("i18n.angular.relatedTitle")} links={relatedLinks} locale={locale} />
 
       <OtherFrameworks
         title={t("i18n.angular.otherFrameworks")}

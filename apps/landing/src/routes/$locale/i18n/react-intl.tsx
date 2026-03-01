@@ -4,10 +4,10 @@ import {
   FrameworkHero,
   FeatureList,
   CodeExample,
-  RelatedPages,
   FrameworkCTA,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
+import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 
