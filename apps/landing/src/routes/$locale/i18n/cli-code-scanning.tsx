@@ -60,10 +60,10 @@ function CliCodeScanningPage() {
   ];
 
   const devopsSteps = [
-    { number: "1", titleKey: "devops.ciIntegration.title", descKey: "devops.ciIntegration.description" },
-    { number: "2", titleKey: "devops.preCommitHook.title", descKey: "devops.preCommitHook.description" },
-    { number: "3", titleKey: "devops.directoryScanning.title", descKey: "devops.directoryScanning.description" },
-    { number: "4", titleKey: "devops.scopeAware.title", descKey: "devops.scopeAware.description" },
+    { number: "1", titleKey: "devops.ciIntegration.title", descKey: "devops.ciIntegration.description", defaultTitle: "CI Pipeline Integration", defaultDesc: "Add a scan step to your CI workflow that fails the build when untranslated strings or missing keys are detected." },
+    { number: "2", titleKey: "devops.preCommitHook.title", descKey: "devops.preCommitHook.description", defaultTitle: "Pre-Commit Hooks", defaultDesc: "Run scans on staged files before each commit to catch untranslated strings at the earliest possible point in development." },
+    { number: "3", titleKey: "devops.directoryScanning.title", descKey: "devops.directoryScanning.description", defaultTitle: "Directory-Scoped Scanning", defaultDesc: "Target specific directories or file patterns to scan only the parts of your codebase that contain user-facing content." },
+    { number: "4", titleKey: "devops.scopeAware.title", descKey: "devops.scopeAware.description", defaultTitle: "Scope-Aware Analysis", defaultDesc: "Automatically resolve translation namespaces through lexical scope tracking so each t() call maps to the correct key set." },
   ];
 
   const relatedPages = [
@@ -109,10 +109,10 @@ function CliCodeScanningPage() {
                   <feature.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(feature.titleKey, { defaultValue: feature.titleKey.split(".").pop() })}
+                  {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(feature.descKey, { defaultValue: "" })}
+                  {t(feature.descKey, { defaultValue: feature.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -136,10 +136,10 @@ function CliCodeScanningPage() {
             </div>
             <div className="mt-10 lg:mt-0">
               <ul className="space-y-4">
-                {cliCommands.map((cmdKey) => (
-                  <li key={cmdKey} className="flex items-start gap-3">
+                {cliCommands.map((cmd) => (
+                  <li key={cmd.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(cmdKey, { defaultValue: cmdKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(cmd.key, { defaultValue: cmd.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -167,8 +167,8 @@ function CliCodeScanningPage() {
                 <div key={format.titleKey} className="flex items-start gap-3">
                   <IconCodeBrackets className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
-                    <h4 className="text-sm font-medium text-mist-950 mb-1">{t(format.titleKey, { defaultValue: format.titleKey.split(".").pop() })}</h4>
-                    <p className="text-sm text-mist-600">{t(format.descKey, { defaultValue: "" })}</p>
+                    <h4 className="text-sm font-medium text-mist-950 mb-1">{t(format.titleKey, { defaultValue: format.defaultTitle })}</h4>
+                    <p className="text-sm text-mist-600">{t(format.descKey, { defaultValue: format.defaultDesc })}</p>
                   </div>
                 </div>
               ))}
@@ -194,10 +194,10 @@ function CliCodeScanningPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

@@ -192,10 +192,10 @@ function TechnicalMultilingualSeoPage() {
                 {t("checklist.subtitle", { defaultValue: "Use this checklist to audit your multilingual SEO setup and identify gaps before they impact your check website keyword ranking results." })}
               </p>
               <ul className="space-y-4">
-                {implementationChecklist.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {implementationChecklist.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -235,10 +235,10 @@ function TechnicalMultilingualSeoPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

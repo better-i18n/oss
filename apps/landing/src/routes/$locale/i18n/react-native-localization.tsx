@@ -34,11 +34,11 @@ export const Route = createFileRoute(
 });
 
 const coreFeatures = [
-  { icon: IconRocket, titleKey: "features.expoSupport.title", descKey: "features.expoSupport.description" },
-  { icon: IconSettingsGear1, titleKey: "features.deviceLocale.title", descKey: "features.deviceLocale.description" },
-  { icon: IconZap, titleKey: "features.offlineCaching.title", descKey: "features.offlineCaching.description" },
-  { icon: IconCodeBrackets, titleKey: "features.typeSafe.title", descKey: "features.typeSafe.description" },
-  { icon: IconSparklesSoft, titleKey: "features.otaUpdates.title", descKey: "features.otaUpdates.description" },
+  { icon: IconRocket, titleKey: "features.expoSupport.title", descKey: "features.expoSupport.description", defaultTitle: "First-Class Expo Support", defaultDesc: "Works seamlessly with Expo's managed and bare workflows. No native module linking required — just install and start translating." },
+  { icon: IconSettingsGear1, titleKey: "features.deviceLocale.title", descKey: "features.deviceLocale.description", defaultTitle: "Device Locale Detection", defaultDesc: "Automatically detects the user's device language and region settings on both iOS and Android, with graceful fallback to your default locale." },
+  { icon: IconZap, titleKey: "features.offlineCaching.title", descKey: "features.offlineCaching.description", defaultTitle: "Offline Translation Caching", defaultDesc: "Translations are cached locally on the device so your app works flawlessly in airplane mode, subways, and areas with poor connectivity." },
+  { icon: IconCodeBrackets, titleKey: "features.typeSafe.title", descKey: "features.typeSafe.description", defaultTitle: "Type-Safe SDK", defaultDesc: "Full TypeScript support with autocomplete for translation keys. Missing keys are caught at compile time, not discovered by users in production." },
+  { icon: IconSparklesSoft, titleKey: "features.otaUpdates.title", descKey: "features.otaUpdates.description", defaultTitle: "OTA Translation Updates", defaultDesc: "Push new translations and languages to production without resubmitting to the App Store or Google Play. Updates go live in seconds via CDN." },
 ];
 
 function ReactNativeLocalizationPage() {
@@ -47,18 +47,18 @@ function ReactNativeLocalizationPage() {
   const { locale } = Route.useParams();
 
   const challenges = [
-    "challenges.list.bundleSize",
-    "challenges.list.offlineFirst",
-    "challenges.list.platformFormats",
-    "challenges.list.rtlSupport",
-    "challenges.list.deepLinking",
+    { key: "challenges.list.bundleSize", defaultValue: "Keeping translation bundle size small for fast app downloads" },
+    { key: "challenges.list.offlineFirst", defaultValue: "Supporting offline-first usage when network is unavailable" },
+    { key: "challenges.list.platformFormats", defaultValue: "Handling platform-specific date, number, and currency formats on iOS vs Android" },
+    { key: "challenges.list.rtlSupport", defaultValue: "Implementing right-to-left layout support for Arabic, Hebrew, and other RTL languages" },
+    { key: "challenges.list.deepLinking", defaultValue: "Maintaining locale-aware deep linking and navigation across app screens" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "workflow.step1.title", descKey: "workflow.step1.description" },
-    { number: "2", titleKey: "workflow.step2.title", descKey: "workflow.step2.description" },
-    { number: "3", titleKey: "workflow.step3.title", descKey: "workflow.step3.description" },
-    { number: "4", titleKey: "workflow.step4.title", descKey: "workflow.step4.description" },
+    { number: "1", titleKey: "workflow.step1.title", descKey: "workflow.step1.description", defaultTitle: "Install the SDK", defaultDesc: "Add the Better i18n package to your React Native or Expo project and wrap your root component with the translation provider." },
+    { number: "2", titleKey: "workflow.step2.title", descKey: "workflow.step2.description", defaultTitle: "Extract Keys", defaultDesc: "Run the CLI to scan your components and automatically extract all translation keys into your resource files." },
+    { number: "3", titleKey: "workflow.step3.title", descKey: "workflow.step3.description", defaultTitle: "Translate with AI", defaultDesc: "Use AI-powered translation to instantly generate translations for all target languages, then review and refine as needed." },
+    { number: "4", titleKey: "workflow.step4.title", descKey: "workflow.step4.description", defaultTitle: "Deploy via CDN", defaultDesc: "Push translations to the global CDN. Your app fetches the latest translations automatically — no app store resubmission required." },
   ];
 
   const relatedPages = [

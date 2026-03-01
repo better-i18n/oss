@@ -33,10 +33,10 @@ export const Route = createFileRoute("/$locale/i18n/website-translation")({
 });
 
 const approaches = [
-  { icon: IconAiTranslate, titleKey: "approaches.manual.title", descKey: "approaches.manual.description" },
-  { icon: IconZap, titleKey: "approaches.machine.title", descKey: "approaches.machine.description" },
-  { icon: IconShieldCheck, titleKey: "approaches.hybrid.title", descKey: "approaches.hybrid.description" },
-  { icon: IconRocket, titleKey: "approaches.aiNative.title", descKey: "approaches.aiNative.description" },
+  { icon: IconAiTranslate, titleKey: "approaches.manual.title", descKey: "approaches.manual.description", defaultTitle: "Manual Translation", defaultDesc: "Professional human translators handle every string. Highest quality for marketing copy and legal content, but slower turnaround and higher per-word cost." },
+  { icon: IconZap, titleKey: "approaches.machine.title", descKey: "approaches.machine.description", defaultTitle: "Machine Translation", defaultDesc: "Automated engines like Google Translate or DeepL process content instantly. Fast and cheap, but often produces awkward phrasing that needs human review." },
+  { icon: IconShieldCheck, titleKey: "approaches.hybrid.title", descKey: "approaches.hybrid.description", defaultTitle: "Hybrid Translation", defaultDesc: "Machine translation generates a first draft, then professional translators review and polish the output. Balances speed with quality for most content types." },
+  { icon: IconRocket, titleKey: "approaches.aiNative.title", descKey: "approaches.aiNative.description", defaultTitle: "AI-Native Translation", defaultDesc: "Modern AI models trained on your glossary and brand voice produce context-aware translations that require minimal post-editing. The fastest path to high-quality multilingual content." },
 ];
 
 function WebsiteTranslationPage() {

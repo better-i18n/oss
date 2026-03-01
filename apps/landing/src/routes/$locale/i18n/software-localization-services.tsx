@@ -102,10 +102,10 @@ function SoftwareLocalizationServicesPage() {
                   <type.icon className="size-6" />
                 </div>
                 <h3 className="text-lg font-medium text-mist-950 mb-3">
-                  {t(type.titleKey, { defaultValue: type.titleKey.split(".").pop() })}
+                  {t(type.titleKey, { defaultValue: type.defaultTitle })}
                 </h3>
                 <p className="text-mist-700 leading-relaxed">
-                  {t(type.descKey, { defaultValue: "" })}
+                  {t(type.descKey, { defaultValue: type.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -127,10 +127,10 @@ function SoftwareLocalizationServicesPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {platformBenefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {platformBenefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -154,10 +154,10 @@ function SoftwareLocalizationServicesPage() {
             {mobileFeatures.map((feature) => (
               <div key={feature.titleKey} className="p-6 rounded-xl bg-mist-50 border border-mist-100">
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(feature.titleKey, { defaultValue: feature.titleKey.split(".").pop() })}
+                  {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(feature.descKey, { defaultValue: "" })}
+                  {t(feature.descKey, { defaultValue: feature.defaultDesc })}
                 </p>
               </div>
             ))}
