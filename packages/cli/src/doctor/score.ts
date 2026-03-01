@@ -1,40 +1,41 @@
 /**
  * Health Score Calculator
  *
- * Calculates a weighted health score (0-100) from diagnostics.
+ * Calculates an occurrence-based health score (0-100) from diagnostics.
  *
- * Scoring follows react-doctor's approach:
- * - Start at 100
- * - Deduct penalties per UNIQUE rule violation per category
- * - Counting unique rules (not occurrences) prevents a single noisy rule
- *   from tanking the entire score
+ * Unlike react-doctor (which counts unique rules), i18n doctor penalizes
+ * per occurrence because each hardcoded string is an independent task
+ * that requires its own t() wrapping.
  *
- * Category weights (penalty per unique error/warning):
- *   Coverage:    3.0 (error), 1.5 (warning)
- *   Quality:     2.5 (error), 1.25 (warning)
- *   Code:        1.5 (error), 0.75 (warning)
- *   Structure:   1.0 (error), 0.5 (warning)
- *   Performance: 0.75 (error), 0.4 (warning)
+ * Overall score: 100 - (errors x 3.0) - (warnings x 0.15)
+ * Category score: 100 - (errors x 5.0) - (warnings x 0.5)
+ *
+ * Calibration targets:
+ *   0E,   0W  → 100
+ *   0E, 104W  →  84
+ *  10E,  20W  →  67
+ *   5E,   0W  →  85
+ *   1E,   0W  →  97
  */
 
 import type { I18nDiagnostic } from "../rules/registry.js";
 
-/** Penalty per unique rule in a category */
-const ERROR_PENALTIES: Record<string, number> = {
-  Coverage: 3.0,
-  Quality: 2.5,
-  Code: 1.5,
-  Structure: 1.0,
-  Performance: 0.75,
-};
+// ── Penalty Constants ───────────────────────────────────────────────
 
-const WARNING_PENALTIES: Record<string, number> = {
-  Coverage: 1.5,
-  Quality: 1.25,
-  Code: 0.75,
-  Structure: 0.5,
-  Performance: 0.4,
-};
+/** Per-occurrence penalty for errors on the overall score */
+const ERROR_PENALTY = 3.0;
+/** Per-occurrence penalty for warnings on the overall score */
+const WARNING_PENALTY = 0.15;
+
+/** Per-occurrence penalty for errors within a category */
+const CAT_ERROR_PENALTY = 5.0;
+/** Per-occurrence penalty for warnings within a category */
+const CAT_WARNING_PENALTY = 0.5;
+
+/** Default pass/fail threshold */
+const PASS_THRESHOLD = 70;
+
+// ── Types ───────────────────────────────────────────────────────────
 
 export interface HealthScore {
   /** Overall score 0-100 */
@@ -47,29 +48,46 @@ export interface HealthScore {
   passThreshold: number;
 }
 
+// ── Calculator ──────────────────────────────────────────────────────
+
 /**
  * Calculate health score from diagnostics.
  *
  * Algorithm:
- * 1. Group diagnostics by category
- * 2. For each category, count unique rule IDs with errors and warnings
- * 3. Apply penalty per unique rule: score = 100 - Σ(penalties)
- * 4. Clamp to [0, 100]
- * 5. Overall = weighted average of category scores
+ * 1. Count total errors and warnings (info ignored)
+ * 2. Overall = 100 - (errors x 3.0) - (warnings x 0.15), clamped [0,100]
+ * 3. Per category = 100 - (catErrors x 5.0) - (catWarnings x 0.5), clamped [0,100]
+ * 4. passed = overall >= threshold
  */
 export function calculateHealthScore(
   diagnostics: I18nDiagnostic[],
-  passThreshold = 70,
+  passThreshold = PASS_THRESHOLD,
 ): HealthScore {
-  // Group by category
-  const byCategory = new Map<string, I18nDiagnostic[]>();
+  // Count totals
+  let totalErrors = 0;
+  let totalWarnings = 0;
+
+  // Count per category
+  const catErrors = new Map<string, number>();
+  const catWarnings = new Map<string, number>();
+
   for (const d of diagnostics) {
-    const existing = byCategory.get(d.category) || [];
-    existing.push(d);
-    byCategory.set(d.category, existing);
+    if (d.severity === "error") {
+      totalErrors++;
+      catErrors.set(d.category, (catErrors.get(d.category) || 0) + 1);
+    } else if (d.severity === "warning") {
+      totalWarnings++;
+      catWarnings.set(d.category, (catWarnings.get(d.category) || 0) + 1);
+    }
+    // "info" diagnostics don't affect score
   }
 
-  // All possible categories
+  // Overall score — flat, occurrence-based
+  const rawTotal =
+    100 - totalErrors * ERROR_PENALTY - totalWarnings * WARNING_PENALTY;
+  const total = clamp(Math.round(rawTotal));
+
+  // Per-category scores
   const allCategories = [
     "Coverage",
     "Quality",
@@ -78,65 +96,27 @@ export function calculateHealthScore(
     "Performance",
   ];
 
-  const categoryScores: Record<string, number> = {};
+  const categories: Record<string, number> = {};
 
-  for (const category of allCategories) {
-    const diags = byCategory.get(category) || [];
+  for (const cat of allCategories) {
+    const errors = catErrors.get(cat) || 0;
+    const warnings = catWarnings.get(cat) || 0;
 
-    if (diags.length === 0) {
-      categoryScores[category] = 100;
-      continue;
-    }
-
-    // Count unique rules by severity
-    const errorRules = new Set<string>();
-    const warningRules = new Set<string>();
-
-    for (const d of diags) {
-      if (d.severity === "error") {
-        errorRules.add(d.rule);
-      } else if (d.severity === "warning") {
-        warningRules.add(d.rule);
-      }
-      // "info" diagnostics don't affect score
-    }
-
-    const errorPenalty =
-      errorRules.size * (ERROR_PENALTIES[category] || 1.0);
-    const warningPenalty =
-      warningRules.size * (WARNING_PENALTIES[category] || 0.5);
-
-    categoryScores[category] = Math.max(
-      0,
-      Math.round(100 - errorPenalty - warningPenalty),
-    );
+    const rawCat =
+      100 - errors * CAT_ERROR_PENALTY - warnings * CAT_WARNING_PENALTY;
+    categories[cat] = clamp(Math.round(rawCat));
   }
-
-  // Overall score = weighted average
-  // Weights match category importance
-  const weights: Record<string, number> = {
-    Coverage: 40,
-    Quality: 25,
-    Code: 15,
-    Structure: 15,
-    Performance: 5,
-  };
-
-  let weightedSum = 0;
-  let totalWeight = 0;
-
-  for (const category of allCategories) {
-    const weight = weights[category] || 10;
-    weightedSum += categoryScores[category] * weight;
-    totalWeight += weight;
-  }
-
-  const total = Math.round(weightedSum / totalWeight);
 
   return {
     total,
-    categories: categoryScores,
+    categories,
     passed: total >= passThreshold,
     passThreshold,
   };
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────
+
+function clamp(value: number, min = 0, max = 100): number {
+  return Math.max(min, Math.min(max, value));
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1
+
+### Patch Changes
+
+- fix(doctor): switch to occurrence-based health scoring
+
+  Each hardcoded string now penalizes the score independently instead of counting unique rules only. This gives more accurate scores that reflect actual i18n work remaining.
+
 ## 0.2.0
 
 ### Minor Changes
