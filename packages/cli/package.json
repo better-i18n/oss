@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/cli",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "CLI tool for detecting hardcoded strings in React/Next.js apps",
   "license": "MIT",
   "type": "module",

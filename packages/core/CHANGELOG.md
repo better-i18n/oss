@@ -1,5 +1,11 @@
 # @better-i18n/core
 
+## 0.2.2
+
+### Patch Changes
+
+- f3403e1: fix: add .js extensions to relative imports for Node.js ESM compatibility
+
 ## 0.2.1
 
 ### Patch Changes
