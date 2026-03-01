@@ -32,10 +32,10 @@ export const Route = createFileRoute("/$locale/i18n/localization-tools")({
 });
 
 const categories = [
-  { icon: IconGroup1, titleKey: "categories.tms.title", descKey: "categories.tms.description" },
-  { icon: IconSparklesSoft, titleKey: "categories.ai.title", descKey: "categories.ai.description" },
-  { icon: IconCodeBrackets, titleKey: "categories.sdk.title", descKey: "categories.sdk.description" },
-  { icon: IconSettingsGear1, titleKey: "categories.cat.title", descKey: "categories.cat.description" },
+  { icon: IconGroup1, titleKey: "categories.tms.title", descKey: "categories.tms.description", defaultTitle: "Translation Management Systems", defaultDesc: "Centralized platforms for managing translation workflows, translator assignments, and progress tracking across all your locales." },
+  { icon: IconSparklesSoft, titleKey: "categories.ai.title", descKey: "categories.ai.description", defaultTitle: "AI Translation Engines", defaultDesc: "Context-aware machine translation powered by large language models that respect glossaries, tone, and formatting constraints." },
+  { icon: IconCodeBrackets, titleKey: "categories.sdk.title", descKey: "categories.sdk.description", defaultTitle: "Developer SDKs & CLIs", defaultDesc: "Type-safe libraries and command-line tools that integrate localization directly into your build pipeline and CI/CD workflow." },
+  { icon: IconSettingsGear1, titleKey: "categories.cat.title", descKey: "categories.cat.description", defaultTitle: "CAT Tools", defaultDesc: "Computer-assisted translation tools with translation memory, glossary management, and quality assurance checks for professional linguists." },
 ];
 
 function LocalizationToolsPage() {
@@ -44,25 +44,25 @@ function LocalizationToolsPage() {
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.fasterTTM",
-    "benefits.list.consistency",
-    "benefits.list.aiEfficiency",
-    "benefits.list.developerIntegration",
-    "benefits.list.scalability",
-    "benefits.list.costReduction",
+    { key: "benefits.list.fasterTTM", defaultValue: "Faster time-to-market for new languages and regions" },
+    { key: "benefits.list.consistency", defaultValue: "Consistent terminology across all products and platforms" },
+    { key: "benefits.list.aiEfficiency", defaultValue: "AI-powered efficiency that reduces translation cost per word" },
+    { key: "benefits.list.developerIntegration", defaultValue: "Seamless developer integration with CI/CD and version control" },
+    { key: "benefits.list.scalability", defaultValue: "Scalable workflows that handle thousands of keys across dozens of locales" },
+    { key: "benefits.list.costReduction", defaultValue: "Significant cost reduction through translation memory reuse and automation" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Audit Your Content", defaultDesc: "Inventory all translatable strings, assets, and content types to understand the scope of your localization effort." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Evaluate Tool Categories", defaultDesc: "Map your workflow needs to TMS, AI, SDK, or CAT tool categories and shortlist candidates in each." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Run a Pilot", defaultDesc: "Test your top choice on a single project or locale to validate integration, quality, and team adoption." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Roll Out & Iterate", defaultDesc: "Deploy the tool across all projects, set up automation, and continuously refine workflows based on team feedback." },
   ];
 
   const toolComparisons = [
-    { titleKey: "comparison.developerFocused.title", descKey: "comparison.developerFocused.description" },
-    { titleKey: "comparison.translatorFocused.title", descKey: "comparison.translatorFocused.description" },
-    { titleKey: "comparison.aiPowered.title", descKey: "comparison.aiPowered.description" },
+    { titleKey: "comparison.developerFocused.title", descKey: "comparison.developerFocused.description", defaultTitle: "Developer-Focused Tools", defaultDesc: "Prioritize CLI integration, type-safe SDKs, automated key extraction, and CI/CD pipelines. Best for engineering teams that own the localization workflow." },
+    { titleKey: "comparison.translatorFocused.title", descKey: "comparison.translatorFocused.description", defaultTitle: "Translator-Focused Tools", defaultDesc: "Emphasize translation memory, glossary management, QA checks, and collaborative editing. Best for teams with dedicated linguists or translation agencies." },
+    { titleKey: "comparison.aiPowered.title", descKey: "comparison.aiPowered.description", defaultTitle: "AI-Powered Tools", defaultDesc: "Leverage large language models for context-aware, instant translations with minimal post-editing. Best for teams that need speed and scale without a large translator workforce." },
   ];
 
   const relatedPages = [
@@ -140,10 +140,10 @@ function LocalizationToolsPage() {
                   <category.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(category.titleKey, { defaultValue: category.titleKey.split(".").pop() })}
+                  {t(category.titleKey, { defaultValue: category.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(category.descKey, { defaultValue: "" })}
+                  {t(category.descKey, { defaultValue: category.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -165,10 +165,10 @@ function LocalizationToolsPage() {
             {toolComparisons.map((item) => (
               <div key={item.titleKey} className="p-6 rounded-xl border border-mist-200 bg-mist-50">
                 <h3 className="text-base font-medium text-mist-950 mb-3">
-                  {t(item.titleKey, { defaultValue: item.titleKey.split(".").pop() })}
+                  {t(item.titleKey, { defaultValue: item.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(item.descKey, { defaultValue: "" })}
+                  {t(item.descKey, { defaultValue: item.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -189,10 +189,10 @@ function LocalizationToolsPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -218,10 +218,10 @@ function LocalizationToolsPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

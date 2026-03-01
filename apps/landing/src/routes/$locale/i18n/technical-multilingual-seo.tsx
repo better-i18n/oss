@@ -32,10 +32,10 @@ export const Route = createFileRoute("/$locale/i18n/technical-multilingual-seo")
 });
 
 const technicalAreas = [
-  { icon: IconCodeBrackets, titleKey: "technicalAreas.hreflang.title", descKey: "technicalAreas.hreflang.description" },
-  { icon: IconSettingsGear1, titleKey: "technicalAreas.canonicals.title", descKey: "technicalAreas.canonicals.description" },
-  { icon: IconMagnifyingGlass, titleKey: "technicalAreas.sitemaps.title", descKey: "technicalAreas.sitemaps.description" },
-  { icon: IconZap, titleKey: "technicalAreas.languageDetection.title", descKey: "technicalAreas.languageDetection.description" },
+  { icon: IconCodeBrackets, titleKey: "technicalAreas.hreflang.title", descKey: "technicalAreas.hreflang.description", defaultTitle: "Hreflang Tags", defaultDesc: "Declare every language variant with bidirectional hreflang annotations so search engines serve the correct locale to each user." },
+  { icon: IconSettingsGear1, titleKey: "technicalAreas.canonicals.title", descKey: "technicalAreas.canonicals.description", defaultTitle: "Canonical URLs", defaultDesc: "Set self-referencing canonicals on each language variant to prevent duplicate content penalties across locales." },
+  { icon: IconMagnifyingGlass, titleKey: "technicalAreas.sitemaps.title", descKey: "technicalAreas.sitemaps.description", defaultTitle: "Locale-Specific Sitemaps", defaultDesc: "Generate per-locale XML sitemaps with hreflang entries so crawlers discover and index every language version efficiently." },
+  { icon: IconZap, titleKey: "technicalAreas.languageDetection.title", descKey: "technicalAreas.languageDetection.description", defaultTitle: "Language Detection", defaultDesc: "Implement server-side language detection using Accept-Language headers and geolocation to route users to the right locale automatically." },
 ];
 
 function TechnicalMultilingualSeoPage() {
@@ -44,27 +44,27 @@ function TechnicalMultilingualSeoPage() {
   const { locale } = Route.useParams();
 
   const implementationChecklist = [
-    "checklist.hreflangAllVariants",
-    "checklist.xDefaultTag",
-    "checklist.canonicalConsistency",
-    "checklist.localeSitemaps",
-    "checklist.languageDetector",
-    "checklist.urlConsistency",
-    "checklist.robotsTxt",
-    "checklist.seoTitle",
+    { key: "checklist.hreflangAllVariants", defaultValue: "Add hreflang tags pointing to all language variants on every page" },
+    { key: "checklist.xDefaultTag", defaultValue: "Include an x-default hreflang tag for the fallback language" },
+    { key: "checklist.canonicalConsistency", defaultValue: "Ensure canonical URLs are self-referencing and consistent across locales" },
+    { key: "checklist.localeSitemaps", defaultValue: "Generate locale-specific XML sitemaps with hreflang annotations" },
+    { key: "checklist.languageDetector", defaultValue: "Implement a server-side language detector for automatic user routing" },
+    { key: "checklist.urlConsistency", defaultValue: "Maintain consistent URL structure across all language versions" },
+    { key: "checklist.robotsTxt", defaultValue: "Verify robots.txt does not block crawlers from any locale subdirectory" },
+    { key: "checklist.seoTitle", defaultValue: "Localize SEO titles and meta descriptions with region-specific keywords" },
   ];
 
   const urlOptions = [
-    { titleKey: "urlOptions.subdirectory.title", descKey: "urlOptions.subdirectory.description" },
-    { titleKey: "urlOptions.subdomain.title", descKey: "urlOptions.subdomain.description" },
-    { titleKey: "urlOptions.cctld.title", descKey: "urlOptions.cctld.description" },
+    { titleKey: "urlOptions.subdirectory.title", descKey: "urlOptions.subdirectory.description", defaultTitle: "Subdirectory (example.com/fr/)", defaultDesc: "Consolidates domain authority under one root domain. Easiest to implement and maintain, and the recommended approach for most multilingual sites." },
+    { titleKey: "urlOptions.subdomain.title", descKey: "urlOptions.subdomain.description", defaultTitle: "Subdomain (fr.example.com)", defaultDesc: "Separates locale content at the subdomain level. Useful when regional teams manage independent content, but authority is not shared with the main domain." },
+    { titleKey: "urlOptions.cctld.title", descKey: "urlOptions.cctld.description", defaultTitle: "Country-Code TLD (example.fr)", defaultDesc: "Provides the strongest geotargeting signal to search engines. Requires purchasing and maintaining separate domains for each market." },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Audit Existing Setup", defaultDesc: "Crawl your site to identify missing hreflang tags, broken canonicals, and orphaned locale pages before making changes." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Define URL Structure", defaultDesc: "Choose subdirectory, subdomain, or ccTLD and apply the pattern consistently across all existing and future pages." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Implement Hreflang & Sitemaps", defaultDesc: "Add bidirectional hreflang annotations and generate locale-specific XML sitemaps with all language variants listed." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Validate & Monitor", defaultDesc: "Use Google Search Console and crawl tools to verify correct indexing, then monitor international search performance continuously." },
   ];
 
   const relatedPages = [
@@ -142,10 +142,10 @@ function TechnicalMultilingualSeoPage() {
                   <area.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(area.titleKey, { defaultValue: area.titleKey.split(".").pop() })}
+                  {t(area.titleKey, { defaultValue: area.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(area.descKey, { defaultValue: "" })}
+                  {t(area.descKey, { defaultValue: area.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -169,11 +169,11 @@ function TechnicalMultilingualSeoPage() {
                 <div className="flex items-center gap-3 mb-3">
                   <IconSettingsGear1 className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
-                    {t(option.titleKey, { defaultValue: option.titleKey.split(".").pop() })}
+                    {t(option.titleKey, { defaultValue: option.defaultTitle })}
                   </h3>
                 </div>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(option.descKey, { defaultValue: "" })}
+                  {t(option.descKey, { defaultValue: option.defaultDesc })}
                 </p>
               </div>
             ))}
