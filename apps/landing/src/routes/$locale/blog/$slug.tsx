@@ -58,9 +58,11 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       tag: post?.category ?? undefined,
     });
 
+    const excerpt = post?.excerpt || "";
+
     const articleSchema = post ? getArticleSchema({
       title: post.title,
-      description: "",
+      description: excerpt,
       url: canonicalUrl,
       image: dynamicOgImage,
       publishedTime: post.publishedAt || "",
@@ -84,9 +86,9 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     return {
       meta: [
         { title: `${post?.title || "Post"} - Better i18n Blog` },
-        { name: "description", content: "" },
+        { name: "description", content: excerpt },
         { property: "og:title", content: post?.title || "" },
-        { property: "og:description", content: "" },
+        { property: "og:description", content: excerpt },
         { property: "og:image", content: dynamicOgImage },
         { property: "og:image:width", content: "1200" },
         { property: "og:image:height", content: "630" },
@@ -100,7 +102,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:site", content: "@betteri18n" },
         { name: "twitter:title", content: post?.title || "" },
-        { name: "twitter:description", content: "" },
+        { name: "twitter:description", content: excerpt },
         { name: "twitter:image", content: dynamicOgImage },
         { name: "robots", content: "index, follow" },
       ],

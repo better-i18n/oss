@@ -25,10 +25,10 @@ export default function Hero() {
                 params={{ locale: locale || "en" }}
                 className="inline-flex items-center gap-x-3 rounded-full bg-white/10 px-3 py-1.5 text-sm text-white/80 hover:bg-white/15 transition-colors"
               >
-                <span>{t("badge")}</span>
+                <span>{t("badge", { defaultValue: "AI-Powered Translations" })}</span>
                 <span className="h-3 w-px bg-white/20" />
                 <span className="inline-flex items-center gap-1 font-medium text-white">
-                  {t("learnMore")}
+                  {t("learnMore", { defaultValue: "Learn more" })}
                   <IconChevronRight className="w-3.5 h-3.5" />
                 </span>
               </Link>
@@ -37,22 +37,22 @@ export default function Hero() {
                 className="text-3xl/[1.1] font-semibold tracking-[-0.02em] text-white sm:text-4xl/[1.1] lg:text-[3rem]/[1.1]"
                 style={{ textWrap: "balance" }}
               >
-                {t("title")}
+                {t("title", { defaultValue: "Localization, simplified for modern teams" })}
               </h1>
 
               <p className="max-w-xl text-base/7 text-white/70">
-                {t("subtitle")}
+                {t("subtitle", { defaultValue: "AI-powered translations, git-native sync, and instant CDN delivery. Ship multilingual products without the overhead." })}
               </p>
 
               {/* Email Signup Form */}
               <div className="relative w-full max-w-sm">
                 <input
                   type="email"
-                  placeholder={t("inputPlaceholder")}
+                  placeholder={t("inputPlaceholder", { defaultValue: "Enter your work email" })}
                   className="w-full text-sm pl-5 pr-36 py-3 bg-white/10 border border-white/20 rounded-full text-white placeholder:text-white/50 focus:outline-none focus:border-white/40"
                 />
                 <button className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-white/90 transition-colors">
-                  {t("cta")}
+                  {t("cta", { defaultValue: "Get Started" })}
                   <IconArrowRight className="w-4 h-4" />
                 </button>
               </div>

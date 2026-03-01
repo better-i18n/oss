@@ -17,6 +17,7 @@ export interface BlogPost {
   title: string;
   body: string | null;
   bodyHtml: string | null;
+  excerpt: string;
   readTime: string | null;
   featured: boolean;
   category: string | null;
@@ -27,6 +28,7 @@ export interface BlogPost {
 export interface BlogPostListItem {
   slug: string;
   title: string;
+  excerpt: string;
   publishedAt: string | null;
   readTime: string | null;
   featured: boolean;
@@ -54,6 +56,54 @@ export function getContentClient(): ContentClient {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────
+
+const EXCERPT_MAX_LENGTH = 155;
+
+/**
+ * Extract a plain-text excerpt from markdown content.
+ * Strips markdown formatting, truncates at a word boundary (~155 chars),
+ * and appends an ellipsis when truncated.
+ */
+export function extractExcerpt(markdownBody: string | null): string {
+  if (!markdownBody) return "";
+
+  const plainText = markdownBody
+    // Remove images: ![alt](url)
+    .replace(/!\[.*?\]\(.*?\)/g, "")
+    // Convert links to just their text: [text](url) → text
+    .replace(/\[([^\]]*)\]\(.*?\)/g, "$1")
+    // Remove heading markers
+    .replace(/^#{1,6}\s+/gm, "")
+    // Remove bold/italic markers
+    .replace(/(\*{1,3}|_{1,3})(.*?)\1/g, "$2")
+    // Remove strikethrough
+    .replace(/~~(.*?)~~/g, "$1")
+    // Remove inline code
+    .replace(/`([^`]*)`/g, "$1")
+    // Remove code blocks (fenced)
+    .replace(/```[\s\S]*?```/g, "")
+    // Remove blockquote markers
+    .replace(/^>\s+/gm, "")
+    // Remove horizontal rules
+    .replace(/^[-*_]{3,}\s*$/gm, "")
+    // Remove list markers (unordered and ordered)
+    .replace(/^[\s]*[-*+]\s+/gm, "")
+    .replace(/^[\s]*\d+\.\s+/gm, "")
+    // Remove HTML tags
+    .replace(/<[^>]*>/g, "")
+    // Collapse whitespace (newlines, tabs, multiple spaces)
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (plainText.length <= EXCERPT_MAX_LENGTH) return plainText;
+
+  // Truncate at last word boundary within limit
+  const truncated = plainText.slice(0, EXCERPT_MAX_LENGTH);
+  const lastSpace = truncated.lastIndexOf(" ");
+  const boundary = lastSpace > 0 ? lastSpace : EXCERPT_MAX_LENGTH;
+
+  return `${truncated.slice(0, boundary)}...`;
+}
 
 /** Map category name to badge color class. */
 export function getTagColor(tag: string): string {
@@ -125,6 +175,7 @@ export async function getBlogPosts(
       posts: result.items.map((item) => ({
         slug: item.slug,
         title: item.title,
+        excerpt: extractExcerpt((item.body as string | null) ?? null),
         publishedAt: item.publishedAt,
         ...mapEntryBase(item),
       })),
@@ -148,6 +199,7 @@ export async function getBlogPost(
       expand: ["author", "category"],
     });
     const bodyHtml = entry.body ? String(await marked(entry.body)) : null;
+    const excerpt = extractExcerpt(entry.body);
     return {
       id: entry.id,
       slug: entry.slug,
@@ -156,6 +208,7 @@ export async function getBlogPost(
       title: entry.title,
       body: entry.body,
       bodyHtml,
+      excerpt,
       ...mapEntryBase(entry),
     };
   } catch {
