@@ -17,6 +17,7 @@ import {
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { useT } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
@@ -457,6 +458,7 @@ export default function Header({ className }: { className?: string }) {
             </div>
           </div>
           <div className="flex flex-1 items-center justify-end gap-4">
+            <LanguageSwitcher />
             <div className="flex shrink-0 items-center gap-5">
               <a
                 href="https://dash.better-i18n.com"

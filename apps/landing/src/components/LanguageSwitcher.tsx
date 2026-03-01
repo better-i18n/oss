@@ -68,7 +68,7 @@ export function LanguageSwitcher() {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="min-w-[160px] z-[100] bg-white"
+        className="min-w-[160px] max-h-[70vh] overflow-y-auto z-[100] bg-white"
       >
         {languages.map((lang) => (
           <DropdownMenuItem
