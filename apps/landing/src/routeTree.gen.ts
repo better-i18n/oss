@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StatusRouteImport } from './routes/status'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as IntegrationsRouteImport } from './routes/integrations'
@@ -93,11 +92,6 @@ const TermsRoute = TermsRouteImport.update({
 const StatusRoute = StatusRouteImport.update({
   id: '/status',
   path: '/status',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -500,7 +494,6 @@ export interface FileRoutesByFullPath {
   '/integrations': typeof IntegrationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/terms': typeof TermsRoute
   '/$locale/about': typeof LocaleAboutRoute
@@ -577,7 +570,6 @@ export interface FileRoutesByTo {
   '/integrations': typeof IntegrationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/terms': typeof TermsRoute
   '/$locale/about': typeof LocaleAboutRoute
@@ -655,7 +647,6 @@ export interface FileRoutesById {
   '/integrations': typeof IntegrationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/terms': typeof TermsRoute
   '/$locale/about': typeof LocaleAboutRoute
@@ -734,7 +725,6 @@ export interface FileRouteTypes {
     | '/integrations'
     | '/pricing'
     | '/privacy'
-    | '/sitemap.xml'
     | '/status'
     | '/terms'
     | '/$locale/about'
@@ -811,7 +801,6 @@ export interface FileRouteTypes {
     | '/integrations'
     | '/pricing'
     | '/privacy'
-    | '/sitemap.xml'
     | '/status'
     | '/terms'
     | '/$locale/about'
@@ -888,7 +877,6 @@ export interface FileRouteTypes {
     | '/integrations'
     | '/pricing'
     | '/privacy'
-    | '/sitemap.xml'
     | '/status'
     | '/terms'
     | '/$locale/about'
@@ -966,7 +954,6 @@ export interface RootRouteChildren {
   IntegrationsRoute: typeof IntegrationsRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatusRoute: typeof StatusRoute
   TermsRoute: typeof TermsRoute
   LocaleAboutRoute: typeof LocaleAboutRoute
@@ -1049,13 +1036,6 @@ declare module '@tanstack/react-router' {
       path: '/status'
       fullPath: '/status'
       preLoaderRoute: typeof StatusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -1574,7 +1554,6 @@ const rootRouteChildren: RootRouteChildren = {
   IntegrationsRoute: IntegrationsRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatusRoute: StatusRoute,
   TermsRoute: TermsRoute,
   LocaleAboutRoute: LocaleAboutRoute,

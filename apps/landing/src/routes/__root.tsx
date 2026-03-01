@@ -28,10 +28,10 @@ interface RouterContext {
 }
 
 /**
- * Paths that are handled by dedicated non-locale routes (API, sitemap, etc.)
+ * Paths that are handled by dedicated non-locale routes (API, etc.)
  * and should NOT be redirected to /$locale/...
  */
-const BYPASS_LOCALE_CHECK = new Set(["api", "sitemap.xml"]);
+const BYPASS_LOCALE_CHECK = new Set(["api"]);
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async ({ location }) => {
