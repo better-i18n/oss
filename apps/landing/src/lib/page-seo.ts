@@ -3,6 +3,7 @@ import {
   formatMetaTags,
   getAlternateLinks,
   getCanonicalLink,
+  getCanonicalUrl,
 } from "./meta";
 import {
   getDefaultStructuredData,
@@ -51,6 +52,7 @@ interface PageSEOOptions {
     frameworkDescription?: string;
     title?: string;
     description?: string;
+    url?: string;
   };
   /** Custom structured data (overrides pageType) */
   customStructuredData?: ReturnType<typeof formatStructuredData>;
@@ -77,11 +79,11 @@ function getStructuredDataForPageType(
         ? getFrameworkPageStructuredData(options.framework, options.frameworkDescription)
         : getDefaultStructuredData();
     case "educational":
-      return options?.title && options?.description
+      return options?.title && options?.description && options?.url
         ? getEducationalPageStructuredData({
             title: options.title,
             description: options.description,
-            url: `https://better-i18n.com${options.title}`,
+            url: options.url,
           })
         : getDefaultStructuredData();
     default:
@@ -111,12 +113,17 @@ export function getPageHead(options: PageSEOOptions) {
     pathname,
   });
 
+  // Auto-populate URL in structured data options from canonical URL
+  const enrichedStructuredDataOptions = structuredDataOptions
+    ? { ...structuredDataOptions, url: structuredDataOptions.url ?? getCanonicalUrl(locale, pathname) }
+    : structuredDataOptions;
+
   // Determine structured data: custom > pageType > isHomepage > default
   let scripts;
   if (customStructuredData) {
     scripts = customStructuredData;
   } else if (pageType) {
-    scripts = getStructuredDataForPageType(pageType, structuredDataOptions);
+    scripts = getStructuredDataForPageType(pageType, enrichedStructuredDataOptions);
   } else if (isHomepage) {
     scripts = getHomePageStructuredData();
   } else {
