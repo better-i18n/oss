@@ -72,7 +72,6 @@ export class AppComponent {
   return (
     <MarketingLayout showCTA={false}>
       <FrameworkHero
-        framework="Angular"
         title={t("i18n.angular.hero.title")}
         subtitle={t("i18n.angular.hero.subtitle")}
         badgeText="Angular i18n"

@@ -63,7 +63,6 @@ function FeatureValue({ value, highlight }: { value: boolean | string; highlight
 
 interface ComparisonHeroProps {
   competitorName: string;
-  competitorLogo?: string;
   title: string;
   subtitle: string;
 }
@@ -114,8 +113,6 @@ interface CTASectionProps {
   subtitle: string;
   primaryCTA: string;
   primaryHref: string;
-  secondaryCTA?: string;
-  secondaryHref?: string;
 }
 
 export function CTASection({ title, subtitle, primaryCTA, primaryHref }: CTASectionProps) {

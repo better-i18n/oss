@@ -69,7 +69,6 @@ export default async function Page({ params }: { params: { locale: string } }) {
   return (
     <MarketingLayout showCTA={false}>
       <FrameworkHero
-        framework="Next.js"
         title={t("i18n.nextjs.hero.title")}
         subtitle={t("i18n.nextjs.hero.subtitle")}
         badgeText="Next.js i18n"

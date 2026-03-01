@@ -71,7 +71,6 @@ function SvelteI18nPage() {
   return (
     <MarketingLayout showCTA={false}>
       <FrameworkHero
-        framework="Svelte"
         title={t("i18n.svelte.hero.title")}
         subtitle={t("i18n.svelte.hero.subtitle")}
         badgeText="Svelte i18n"

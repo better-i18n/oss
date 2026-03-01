@@ -92,7 +92,6 @@ function MyComponent() {
   return (
     <MarketingLayout showCTA={false}>
       <FrameworkHero
-        framework="React"
         title={t("i18n.react.hero.title")}
         subtitle={t("i18n.react.hero.subtitle")}
         badgeText="React i18n"
