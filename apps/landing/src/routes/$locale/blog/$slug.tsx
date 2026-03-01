@@ -241,7 +241,7 @@ function BlogPostPage() {
                   {post.readTime && (
                     <>
                       <span className="text-mist-300">&middot;</span>
-                      <span>{post.readTime}</span>
+                      <span>{t("minRead", { defaultValue: "{{count}} min read", count: post.readTime })}</span>
                     </>
                   )}
                 </div>
