@@ -35,6 +35,37 @@ const PAGES = [
   { path: "i18n/best-library", priority: 0.85, changefreq: "weekly" as const },
   { path: "i18n/for-developers", priority: 0.85, changefreq: "weekly" as const },
 
+  // i18n SEO content pages
+  { path: "i18n/localization-software", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/content-localization-services", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/translation-management-system", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/localization-platforms", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/global-market-seo", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/website-localization", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/react-intl", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/ecommerce-global-seo", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/translation-solutions", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/international-seo", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/cli-code-scanning", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/multilingual-website-seo", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/formatting-utilities", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/react-native-localization", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/localization-vs-internationalization", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/localization-tools", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/content-localization", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/software-localization", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/technical-multilingual-seo", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/security-compliance", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/cultural-adaptation", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/local-seo-international", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/multilingual-seo", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/international-seo-consulting", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/seo-international-audiences", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/website-translation", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/software-localization-services", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/technical-international-seo", priority: 0.8, changefreq: "weekly" as const },
+  { path: "i18n/localization-management", priority: 0.8, changefreq: "weekly" as const },
+
   // Comparison pages (high SEO value)
   { path: "compare", priority: 0.8, changefreq: "weekly" as const },
   { path: "compare/crowdin", priority: 0.85, changefreq: "weekly" as const },
@@ -66,9 +97,7 @@ function generateSitemapEntries(locales: string[]): SitemapEntry[] {
   for (const page of PAGES) {
     for (const locale of locales) {
       const path = page.path ? `/${page.path}` : "";
-      const loc = locale === "en"
-        ? `${SITE_URL}${path}`
-        : `${SITE_URL}/${locale}${path}`;
+      const loc = `${SITE_URL}/${locale}${path}`;
 
       entries.push({
         loc,
