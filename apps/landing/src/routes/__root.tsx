@@ -52,8 +52,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       !locales.includes(firstSegment) &&
       !BYPASS_LOCALE_CHECK.has(firstSegment)
     ) {
+      const search = location.searchStr || "";
+      const hash = location.hash || "";
       throw redirect({
-        href: `/${i18nConfig.defaultLocale}${location.pathname}`,
+        href: `/${i18nConfig.defaultLocale}${location.pathname}${search}${hash}`,
         statusCode: 301,
       });
     }
