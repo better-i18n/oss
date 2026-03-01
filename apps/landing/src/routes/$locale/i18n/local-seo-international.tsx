@@ -141,10 +141,10 @@ function LocalSeoInternationalPage() {
                   <challenge.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(challenge.titleKey, { defaultValue: challenge.titleKey.split(".").pop() })}
+                  {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(challenge.descKey, { defaultValue: "" })}
+                  {t(challenge.descKey, { defaultValue: challenge.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -168,11 +168,11 @@ function LocalSeoInternationalPage() {
                 <div className="flex items-center gap-3 mb-3">
                   <IconAiTranslate className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
-                    {t(strategy.titleKey, { defaultValue: strategy.titleKey.split(".").pop() })}
+                    {t(strategy.titleKey, { defaultValue: strategy.defaultTitle })}
                   </h3>
                 </div>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(strategy.descKey, { defaultValue: "" })}
+                  {t(strategy.descKey, { defaultValue: strategy.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -193,10 +193,10 @@ function LocalSeoInternationalPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -222,10 +222,10 @@ function LocalSeoInternationalPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

@@ -33,10 +33,10 @@ export const Route = createFileRoute("/$locale/i18n/cultural-adaptation")({
 });
 
 const dimensions = [
-  { icon: IconSparklesSoft, titleKey: "dimensions.colorsImagery.title", descKey: "dimensions.colorsImagery.description" },
-  { icon: IconAiTranslate, titleKey: "dimensions.toneFormality.title", descKey: "dimensions.toneFormality.description" },
-  { icon: IconGlobe, titleKey: "dimensions.rtlSupport.title", descKey: "dimensions.rtlSupport.description" },
-  { icon: IconRocket, titleKey: "dimensions.humorIdioms.title", descKey: "dimensions.humorIdioms.description" },
+  { icon: IconSparklesSoft, titleKey: "dimensions.colorsImagery.title", descKey: "dimensions.colorsImagery.description", defaultTitle: "Colors & Imagery", defaultDesc: "Color meanings vary across cultures — white symbolizes purity in the West but mourning in parts of Asia. Imagery must reflect local demographics, dress codes, and visual expectations to build trust." },
+  { icon: IconAiTranslate, titleKey: "dimensions.toneFormality.title", descKey: "dimensions.toneFormality.description", defaultTitle: "Tone & Formality", defaultDesc: "Formality levels differ dramatically between markets. Japanese and Korean audiences expect formal, respectful language, while US and Australian users prefer casual, direct communication." },
+  { icon: IconGlobe, titleKey: "dimensions.rtlSupport.title", descKey: "dimensions.rtlSupport.description", defaultTitle: "RTL Layout Support", defaultDesc: "Arabic, Hebrew, and Persian require right-to-left layouts. Full RTL support means mirroring navigation, reversing flex directions, flipping icons, and adjusting text alignment throughout the UI." },
+  { icon: IconRocket, titleKey: "dimensions.humorIdioms.title", descKey: "dimensions.humorIdioms.description", defaultTitle: "Humor & Idioms", defaultDesc: "Humor rarely translates directly between cultures. Idioms, wordplay, and cultural references must be adapted or replaced with locally resonant alternatives to avoid confusion or offense." },
 ];
 
 function CulturalAdaptationPage() {

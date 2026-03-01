@@ -31,10 +31,10 @@ export const Route = createFileRoute("/$locale/i18n/software-localization")({
 });
 
 const processSteps = [
-  { icon: IconCodeBrackets, titleKey: "process.internationalization.title", descKey: "process.internationalization.description" },
-  { icon: IconGlobe, titleKey: "process.translation.title", descKey: "process.translation.description" },
-  { icon: IconSettingsGear1, titleKey: "process.adaptation.title", descKey: "process.adaptation.description" },
-  { icon: IconGroup1, titleKey: "process.testing.title", descKey: "process.testing.description" },
+  { icon: IconCodeBrackets, titleKey: "process.internationalization.title", descKey: "process.internationalization.description", defaultTitle: "Internationalization (i18n)", defaultDesc: "Prepare your codebase by externalizing strings, supporting Unicode, and abstracting locale-dependent logic like dates and currencies." },
+  { icon: IconGlobe, titleKey: "process.translation.title", descKey: "process.translation.description", defaultTitle: "Translation", defaultDesc: "Translate all user-facing strings using professional translators, AI-powered tools, or a hybrid workflow managed through a TMS." },
+  { icon: IconSettingsGear1, titleKey: "process.adaptation.title", descKey: "process.adaptation.description", defaultTitle: "Cultural Adaptation", defaultDesc: "Adjust layouts for text expansion, support RTL languages, localize images and icons, and adapt content to regional cultural norms." },
+  { icon: IconGroup1, titleKey: "process.testing.title", descKey: "process.testing.description", defaultTitle: "Localization Testing", defaultDesc: "Run linguistic, functional, and visual QA across every supported locale to catch truncation, encoding issues, and cultural mismatches." },
 ];
 
 function SoftwareLocalizationPage() {
@@ -43,12 +43,12 @@ function SoftwareLocalizationPage() {
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.marketExpansion",
-    "benefits.list.userRetention",
-    "benefits.list.competitiveAdvantage",
-    "benefits.list.revenue",
-    "benefits.list.compliance",
-    "benefits.list.brandPerception",
+    { key: "benefits.list.marketExpansion", defaultValue: "Expand into new markets without rebuilding your product" },
+    { key: "benefits.list.userRetention", defaultValue: "Increase user retention with native-language experiences" },
+    { key: "benefits.list.competitiveAdvantage", defaultValue: "Gain competitive advantage over English-only alternatives" },
+    { key: "benefits.list.revenue", defaultValue: "Unlock new revenue streams from international users" },
+    { key: "benefits.list.compliance", defaultValue: "Meet regional compliance and accessibility requirements" },
+    { key: "benefits.list.brandPerception", defaultValue: "Strengthen brand perception in local markets" },
   ];
 
   const bestPractices = [

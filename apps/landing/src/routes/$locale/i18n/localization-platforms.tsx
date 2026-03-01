@@ -30,10 +30,10 @@ export const Route = createFileRoute("/$locale/i18n/localization-platforms")({
 });
 
 const capabilities = [
-  { icon: IconRocket, titleKey: "capabilities.projectManagement.title", descKey: "capabilities.projectManagement.description" },
-  { icon: IconRocket, titleKey: "capabilities.workflowAutomation.title", descKey: "capabilities.workflowAutomation.description" },
-  { icon: IconGroup1, titleKey: "capabilities.teamCollaboration.title", descKey: "capabilities.teamCollaboration.description" },
-  { icon: IconChart1, titleKey: "capabilities.analyticsReporting.title", descKey: "capabilities.analyticsReporting.description" },
+  { icon: IconRocket, titleKey: "capabilities.projectManagement.title", descKey: "capabilities.projectManagement.description", defaultTitle: "Project Management", defaultDesc: "Organize translation work by project, locale, and deadline with full visibility into progress and bottlenecks." },
+  { icon: IconRocket, titleKey: "capabilities.workflowAutomation.title", descKey: "capabilities.workflowAutomation.description", defaultTitle: "Workflow Automation", defaultDesc: "Automatically route new strings to translators, trigger reviews on completion, and publish approved translations without manual steps." },
+  { icon: IconGroup1, titleKey: "capabilities.teamCollaboration.title", descKey: "capabilities.teamCollaboration.description", defaultTitle: "Team Collaboration", defaultDesc: "Enable translators, reviewers, and developers to work together in real time with in-context comments and role-based access." },
+  { icon: IconChart1, titleKey: "capabilities.analyticsReporting.title", descKey: "capabilities.analyticsReporting.description", defaultTitle: "Analytics & Reporting", defaultDesc: "Track translation coverage, quality scores, turnaround times, and cost metrics across all projects and locales." },
 ];
 
 function LocalizationPlatformsPage() {
@@ -42,12 +42,12 @@ function LocalizationPlatformsPage() {
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.centralizedWorkflow",
-    "benefits.list.automatedRouting",
-    "benefits.list.consistentTerminology",
-    "benefits.list.realTimeVisibility",
-    "benefits.list.developerIntegration",
-    "benefits.list.offlineCapability",
+    { key: "benefits.list.centralizedWorkflow", defaultValue: "Centralize all translation work in a single dashboard across projects" },
+    { key: "benefits.list.automatedRouting", defaultValue: "Automatically route strings to the right translator or AI engine" },
+    { key: "benefits.list.consistentTerminology", defaultValue: "Enforce consistent terminology with shared glossaries and translation memory" },
+    { key: "benefits.list.realTimeVisibility", defaultValue: "Get real-time visibility into translation progress across all locales" },
+    { key: "benefits.list.developerIntegration", defaultValue: "Integrate directly with your development pipeline via CLI, API, or GitHub sync" },
+    { key: "benefits.list.offlineCapability", defaultValue: "Support offline translation workflows with sync-on-reconnect capability" },
   ];
 
   const processSteps = [
