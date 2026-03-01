@@ -9,14 +9,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BetterI18nProvider, getLocaleFromPath } from "@better-i18n/use-intl";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
-import { fetchLocales, getCachedLocales } from "../lib/locales";
+import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
-import {
-  getLocalizedMeta,
-  formatMetaTags,
-  getAlternateLinks,
-  getCanonicalLink,
-} from "../lib/meta";
+import { getLocalizedMeta, formatMetaTags } from "../lib/meta";
 import { getHomePageStructuredData } from "../lib/structured-data";
 
 const queryClient = new QueryClient({
@@ -100,8 +95,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           rel: "stylesheet",
           href: appCss,
         },
-        ...getAlternateLinks("/", getCachedLocales()),
-        getCanonicalLink(locale, "/"),
       ],
       scripts: [
         // Google Ads (gtag.js)
