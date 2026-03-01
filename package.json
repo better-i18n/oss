@@ -38,7 +38,7 @@
     "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "^16.5.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.3.0",
+    "lint-staged": "^16.3.1",
     "nodemailer": "^7.0.13",
     "prettier": "^3.8.1",
     "typescript": "~5.9.3",
