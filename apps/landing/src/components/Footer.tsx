@@ -26,6 +26,18 @@ const footerLinks = [
     ],
   },
   {
+    category: "solutions",
+    categoryTitle: "Solutions",
+    links: [
+      { key: "developers", label: "For Developers", href: "/$locale/for-developers" },
+      { key: "enterprises", label: "For Enterprises", href: "/$locale/for-enterprises" },
+      { key: "startups", label: "For Startups", href: "/$locale/for-startups" },
+      { key: "agencies", label: "For Agencies", href: "/$locale/for-agencies" },
+      { key: "ecommerce", label: "For E-Commerce", href: "/$locale/for-ecommerce" },
+      { key: "saas", label: "For SaaS", href: "/$locale/for-saas" },
+    ],
+  },
+  {
     category: "compare",
     categoryTitle: "Compare",
     links: [
