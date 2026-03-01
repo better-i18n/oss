@@ -116,7 +116,7 @@ function PricingPage() {
       </section>
 
       {/* Related Pages */}
-      <RelatedPages currentPage="pricing" locale={locale} variant="for" />
+      <RelatedPages currentPage="pricing" locale={locale} variant="content" />
     </MarketingLayout>
   );
 }

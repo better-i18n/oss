@@ -12,6 +12,7 @@ import Changelog from "../../components/Changelog";
 import Pricing from "../../components/Pricing";
 import CTA from "../../components/CTA";
 import Footer from "../../components/Footer";
+import { RelatedPages } from "@/components/RelatedPages";
 import {
   getLocalizedMeta,
   formatMetaTags,
@@ -88,6 +89,7 @@ export const Route = createFileRoute("/$locale/")({
 
 function LandingPage() {
   const { recentChangelogs } = Route.useLoaderData();
+  const { locale } = Route.useParams();
   return (
     <>
       <a
@@ -109,6 +111,7 @@ function LandingPage() {
         <Changelog releases={recentChangelogs} />
         <Pricing />
         <CTA />
+        <RelatedPages currentPage="home" locale={locale} variant="content" />
       </main>
       <Footer />
     </>
