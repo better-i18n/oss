@@ -188,6 +188,31 @@ export async function getBlogPosts(
   }
 }
 
+/** Fetch related posts, prioritizing same category. */
+export async function getRelatedPosts(
+  currentSlug: string,
+  category: string | null,
+  locale: string,
+  limit: number = 3,
+): Promise<BlogPostListItem[]> {
+  try {
+    const { posts } = await getBlogPosts(locale, { limit: limit + 1 });
+    // Filter out current post
+    const filtered = posts.filter((p) => p.slug !== currentSlug);
+
+    if (category) {
+      // Prioritize same category
+      const sameCategory = filtered.filter((p) => p.category === category);
+      const others = filtered.filter((p) => p.category !== category);
+      return [...sameCategory, ...others].slice(0, limit);
+    }
+
+    return filtered.slice(0, limit);
+  } catch {
+    return [];
+  }
+}
+
 /** Fetch a single blog post by slug. */
 export async function getBlogPost(
   slug: string,

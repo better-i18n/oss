@@ -48,13 +48,21 @@ export const Route = createFileRoute("/$locale/for-developers")({
         }))
       : [];
 
-    return getPageHead({
+    const headData = getPageHead({
       messages,
       locale,
       pageKey: "forDevelopers",
       pathname: "/for-developers",
       customStructuredData: [...educationalScripts, ...howToScript],
     });
+
+    return {
+      ...headData,
+      meta: [
+        ...headData.meta,
+        { property: "article:section", content: "Developers" },
+      ],
+    };
   },
   component: ForDevelopersPage,
 });

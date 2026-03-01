@@ -23,6 +23,7 @@ export const Route = createFileRoute("/$locale/i18n/vue")({
       structuredDataOptions: {
         framework: "Vue.js",
         frameworkDescription: "Vue.js internationalization with Composition API, SFC i18n blocks, and Nuxt integration.",
+        dependencies: ["vue", "@better-i18n/vue"],
       },
     });
   },

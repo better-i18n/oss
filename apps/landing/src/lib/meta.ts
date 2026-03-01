@@ -128,7 +128,7 @@ export function getLocalizedMeta(
  */
 export function formatMetaTags(
   meta: LocalizedMetaResult,
-  options: Partial<MetaOptions> = {}
+  options: Partial<MetaOptions> & { locales?: string[] } = {}
 ) {
   const tags = [
     // Basic meta tags
@@ -154,7 +154,7 @@ export function formatMetaTags(
     { name: "twitter:image", content: meta.ogImage },
 
     // Additional SEO
-    { name: "robots", content: "index, follow" },
+    { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
   ];
 
   // Add article-specific meta tags
@@ -167,6 +167,16 @@ export function formatMetaTags(
 
     if (options.author) {
       tags.push({ property: "article:author", content: options.author });
+    }
+  }
+
+  // Add og:locale:alternate tags for other locales
+  if (options.locales) {
+    const currentLocale = options.locale || "en";
+    for (const loc of options.locales) {
+      if (loc !== currentLocale) {
+        tags.push({ property: "og:locale:alternate", content: loc });
+      }
     }
   }
 

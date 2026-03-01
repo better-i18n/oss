@@ -24,6 +24,7 @@ export const Route = createFileRoute("/$locale/i18n/react")({
       structuredDataOptions: {
         framework: "React",
         frameworkDescription: "Type-safe React internationalization with hooks, lazy loading, and seamless integration.",
+        dependencies: ["react", "@better-i18n/use-intl"],
       },
     });
   },

@@ -16,14 +16,14 @@ interface ComparisonTableProps {
 
 export function ComparisonTable({ competitorName, features, featureLabel }: ComparisonTableProps) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
+    <div role="table" aria-label={`Feature comparison: Better i18n vs ${competitorName}`} className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
       {/* Header */}
-      <div className="grid grid-cols-3 bg-mist-50 border-b border-mist-200">
-        <div className="p-4 text-sm font-medium text-mist-600">{featureLabel ?? "Feature"}</div>
-        <div className="p-4 text-sm font-medium text-mist-950 text-center border-l border-mist-200 bg-mist-100">
+      <div role="row" className="grid grid-cols-3 bg-mist-50 border-b border-mist-200">
+        <div role="columnheader" className="p-4 text-sm font-medium text-mist-600">{featureLabel ?? "Feature"}</div>
+        <div role="columnheader" className="p-4 text-sm font-medium text-mist-950 text-center border-l border-mist-200 bg-mist-100">
           Better i18n
         </div>
-        <div className="p-4 text-sm font-medium text-mist-600 text-center border-l border-mist-200">
+        <div role="columnheader" className="p-4 text-sm font-medium text-mist-600 text-center border-l border-mist-200">
           {competitorName}
         </div>
       </div>
@@ -32,15 +32,16 @@ export function ComparisonTable({ competitorName, features, featureLabel }: Comp
       {features.map((feature, index) => (
         <div
           key={index}
+          role="row"
           className={`grid grid-cols-3 border-b border-mist-100 last:border-b-0 ${
             feature.highlight ? "bg-emerald-50/50" : ""
           }`}
         >
-          <div className="p-4 text-sm text-mist-700">{feature.name}</div>
-          <div className="p-4 text-center border-l border-mist-100 bg-mist-50/50">
+          <div role="cell" className="p-4 text-sm text-mist-700">{feature.name}</div>
+          <div role="cell" className="p-4 text-center border-l border-mist-100 bg-mist-50/50">
             <FeatureValue value={feature.betterI18n} highlight />
           </div>
-          <div className="p-4 text-center border-l border-mist-100">
+          <div role="cell" className="p-4 text-center border-l border-mist-100">
             <FeatureValue value={feature.competitor} />
           </div>
         </div>

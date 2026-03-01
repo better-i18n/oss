@@ -23,6 +23,7 @@ export const Route = createFileRoute("/$locale/i18n/angular")({
       structuredDataOptions: {
         framework: "Angular",
         frameworkDescription: "Angular localization with built-in i18n tools, AOT compilation support, and multi-language SSR.",
+        dependencies: ["@angular/core", "@better-i18n/angular"],
       },
     });
   },

@@ -23,6 +23,7 @@ export const Route = createFileRoute("/$locale/i18n/svelte")({
       structuredDataOptions: {
         framework: "Svelte",
         frameworkDescription: "Lightweight Svelte internationalization with reactive stores and SvelteKit integration.",
+        dependencies: ["svelte", "@better-i18n/svelte"],
       },
     });
   },

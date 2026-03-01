@@ -23,6 +23,7 @@ export const Route = createFileRoute("/$locale/i18n/nextjs")({
       structuredDataOptions: {
         framework: "Next.js",
         frameworkDescription: "Next.js internationalization with App Router, Server Components, ISR, and edge CDN delivery.",
+        dependencies: ["next", "react", "@better-i18n/use-intl"],
       },
     });
   },
