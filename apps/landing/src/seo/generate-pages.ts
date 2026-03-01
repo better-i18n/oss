@@ -52,26 +52,34 @@ export interface FeaturePageMeta {
  * Builds a relative path for a given locale and page path.
  * Used for prerender routes and internal routing.
  *
+ * Homepage paths include a trailing slash to match TanStack Router's
+ * /$locale/ index route and avoid 307 redirects.
+ *
  * @example
  * buildPagePath("en", "features") => "/en/features"
- * buildPagePath("tr", "")         => "/tr"
+ * buildPagePath("tr", "")         => "/tr/"
  */
 export function buildPagePath(locale: string, pagePath: string): string {
   const segments = [locale, pagePath].filter(Boolean);
-  return "/" + segments.join("/");
+  const path = "/" + segments.join("/");
+  return pagePath ? path : `${path}/`;
 }
 
 /**
  * Builds a full URL for a given locale and page path.
  * Used for sitemap hreflang alternateRefs.
  *
+ * Homepage URLs include a trailing slash to match TanStack Router's
+ * /$locale/ index route and avoid 307 redirects in hreflang.
+ *
  * @example
  * buildPageUrl("en", "features") => "https://better-i18n.com/en/features"
- * buildPageUrl("tr", "")         => "https://better-i18n.com/tr"
+ * buildPageUrl("tr", "")         => "https://better-i18n.com/tr/"
  */
 export function buildPageUrl(locale: string, pagePath: string): string {
   const segments = [SITE_URL, locale, pagePath].filter(Boolean);
-  return segments.join("/");
+  const url = segments.join("/");
+  return pagePath ? url : `${url}/`;
 }
 
 /**
