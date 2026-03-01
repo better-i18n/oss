@@ -53,6 +53,7 @@ import { Route as LocaleChangelogRouteImport } from './routes/$locale/changelog'
 import { Route as LocaleCareersRouteImport } from './routes/$locale/careers'
 import { Route as LocaleAboutRouteImport } from './routes/$locale/about'
 import { Route as LocaleI18nIndexRouteImport } from './routes/$locale/i18n/index'
+import { Route as LocaleFeaturesIndexRouteImport } from './routes/$locale/features/index'
 import { Route as LocaleCompareIndexRouteImport } from './routes/$locale/compare/index'
 import { Route as LocaleBlogIndexRouteImport } from './routes/$locale/blog/index'
 import { Route as LocaleI18nWebsiteTranslationRouteImport } from './routes/$locale/i18n/website-translation'
@@ -322,6 +323,11 @@ const LocaleI18nIndexRoute = LocaleI18nIndexRouteImport.update({
   id: '/$locale/i18n/',
   path: '/$locale/i18n/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleFeaturesIndexRoute = LocaleFeaturesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LocaleFeaturesRoute,
 } as any)
 const LocaleCompareIndexRoute = LocaleCompareIndexRouteImport.update({
   id: '/$locale/compare/',
@@ -672,6 +678,7 @@ export interface FileRoutesByFullPath {
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
   '/$locale/blog': typeof LocaleBlogIndexRoute
   '/$locale/compare': typeof LocaleCompareIndexRoute
+  '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
 }
 export interface FileRoutesByTo {
@@ -688,7 +695,6 @@ export interface FileRoutesByTo {
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/careers': typeof LocaleCareersRoute
   '/$locale/changelog': typeof LocaleChangelogRoute
-  '/$locale/features': typeof LocaleFeaturesRouteWithChildren
   '/$locale/for-agencies': typeof LocaleForAgenciesRoute
   '/$locale/for-content-teams': typeof LocaleForContentTeamsRoute
   '/$locale/for-designers': typeof LocaleForDesignersRoute
@@ -764,6 +770,7 @@ export interface FileRoutesByTo {
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
   '/$locale/blog': typeof LocaleBlogIndexRoute
   '/$locale/compare': typeof LocaleCompareIndexRoute
+  '/$locale/features': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
 }
 export interface FileRoutesById {
@@ -857,6 +864,7 @@ export interface FileRoutesById {
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
   '/$locale/blog/': typeof LocaleBlogIndexRoute
   '/$locale/compare/': typeof LocaleCompareIndexRoute
+  '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n/': typeof LocaleI18nIndexRoute
 }
 export interface FileRouteTypes {
@@ -951,6 +959,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/website-translation'
     | '/$locale/blog'
     | '/$locale/compare'
+    | '/$locale/features/'
     | '/$locale/i18n'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -967,7 +976,6 @@ export interface FileRouteTypes {
     | '/$locale/about'
     | '/$locale/careers'
     | '/$locale/changelog'
-    | '/$locale/features'
     | '/$locale/for-agencies'
     | '/$locale/for-content-teams'
     | '/$locale/for-designers'
@@ -1043,6 +1051,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/website-translation'
     | '/$locale/blog'
     | '/$locale/compare'
+    | '/$locale/features'
     | '/$locale/i18n'
   id:
     | '__root__'
@@ -1135,6 +1144,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/website-translation'
     | '/$locale/blog/'
     | '/$locale/compare/'
+    | '/$locale/features/'
     | '/$locale/i18n/'
   fileRoutesById: FileRoutesById
 }
@@ -1540,6 +1550,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/features/': {
+      id: '/$locale/features/'
+      path: '/'
+      fullPath: '/$locale/features/'
+      preLoaderRoute: typeof LocaleFeaturesIndexRouteImport
+      parentRoute: typeof LocaleFeaturesRoute
+    }
     '/$locale/compare/': {
       id: '/$locale/compare/'
       path: '/$locale/compare'
@@ -1867,10 +1884,12 @@ declare module '@tanstack/react-router' {
 
 interface LocaleFeaturesRouteChildren {
   LocaleFeaturesSlugRoute: typeof LocaleFeaturesSlugRoute
+  LocaleFeaturesIndexRoute: typeof LocaleFeaturesIndexRoute
 }
 
 const LocaleFeaturesRouteChildren: LocaleFeaturesRouteChildren = {
   LocaleFeaturesSlugRoute: LocaleFeaturesSlugRoute,
+  LocaleFeaturesIndexRoute: LocaleFeaturesIndexRoute,
 }
 
 const LocaleFeaturesRouteWithChildren = LocaleFeaturesRoute._addFileChildren(
