@@ -98,7 +98,7 @@ export function personaHead(loaderData?: {
 
   const breadcrumbScripts = formatStructuredData(
     getBreadcrumbSchema([
-      { name: "Home", url: `${SITE_URL}/${locale}` },
+      { name: "Home", url: `${SITE_URL}/${locale}/` },
       { name: page?.title || label, url: canonicalUrl },
     ]),
   );
