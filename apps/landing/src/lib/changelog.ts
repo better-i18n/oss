@@ -23,6 +23,7 @@ export interface ChangelogCustomFields extends Record<string, string | null> {
 }
 
 export type ChangelogEntry = ContentEntry<ChangelogCustomFields>;
+export type ChangelogListItem = ContentEntryListItem<ChangelogCustomFields>;
 
 // ─── Client (singleton) ─────────────────────────────────────────────
 
@@ -80,11 +81,12 @@ export async function getChangelogs(
 }
 
 /**
- * Get changelog metadata only (without full content)
+ * Get changelog metadata only (without full content).
+ * Uses a single API call — much faster than getChangelogs which does N+1 calls.
  */
 export async function getChangelogsMeta(
   locale: string
-): Promise<ContentEntryListItem[]> {
+): Promise<ChangelogListItem[]> {
   try {
     const result = await getChangelogClient().getEntries(CHANGELOG_MODEL, {
       language: locale,
@@ -94,7 +96,7 @@ export async function getChangelogsMeta(
       limit: 100,
     });
 
-    return result.items;
+    return result.items as ChangelogListItem[];
   } catch (error) {
     console.error("Changelog API error:", error);
     return [];

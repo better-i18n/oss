@@ -20,14 +20,7 @@ export default function TranslatorDeepLSection() {
         {/* Header */}
         <div className="mb-12 lg:mb-16 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1.5 text-sm text-blue-700 mb-6">
-            <img
-              src="/logo/deepl.svg"
-              alt="DeepL"
-              className="size-4"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
-            />
+            <IconGlobe className="size-4" />
             {t("deepl.badge")}
           </div>
           <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">

@@ -40,9 +40,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     const post = loaderData?.post;
     const locale = loaderData?.locale || "en";
     const pathname = `/blog/${post?.slug || ""}`;
-    const canonicalUrl = locale === "en"
-      ? `${SITE_URL}${pathname}`
-      : `${SITE_URL}/${locale}${pathname}`;
+    const canonicalUrl = `${SITE_URL}/${locale}${pathname}`;
 
     // Generate dynamic OG image URL via external OG service
     const dynamicOgImage = buildOgImageUrl("og/blog", {
