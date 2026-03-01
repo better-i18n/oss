@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+### Patch Changes
+
+- 1efe899: fix(doctor): use relative file paths in diagnostic reports for cleaner dashboard display
+
 ## 0.2.1
 
 ### Patch Changes
