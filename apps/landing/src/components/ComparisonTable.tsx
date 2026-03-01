@@ -138,6 +138,44 @@ export function CTASection({ title, subtitle, primaryCTA, primaryHref }: CTASect
   );
 }
 
+export interface RelatedTopicLink {
+  to: string;
+  title: string;
+  description: string;
+}
+
+interface ComparisonRelatedTopicsProps {
+  heading: string;
+  links: RelatedTopicLink[];
+  locale: string;
+}
+
+export function ComparisonRelatedTopics({ heading, links, locale }: ComparisonRelatedTopicsProps) {
+  return (
+    <section className="py-12 border-t border-mist-200">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <h2 className="text-lg font-medium text-mist-950 mb-6">{heading}</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {links.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to as never}
+              params={{ locale }}
+              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+            >
+              <div>
+                <h3 className="text-sm font-medium text-mist-950">{link.title}</h3>
+                <p className="text-xs text-mist-500 mt-1">{link.description}</p>
+              </div>
+              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const allComparisons = [
   { name: "Crowdin", slug: "crowdin" },
   { name: "Lokalise", slug: "lokalise" },

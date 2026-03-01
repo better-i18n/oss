@@ -88,7 +88,7 @@ export class AppComponent {
       <RelatedPages title={t("i18n.angular.relatedTitle")} pages={relatedPages} locale={locale} />
 
       <OtherFrameworks
-        title={t("i18n.react.otherFrameworks")}
+        title={t("i18n.angular.otherFrameworks")}
         currentFramework="angular"
         locale={locale}
       />

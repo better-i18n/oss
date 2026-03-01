@@ -87,7 +87,7 @@ function SvelteI18nPage() {
       <RelatedPages title={t("i18n.svelte.relatedTitle")} pages={relatedPages} locale={locale} />
 
       <OtherFrameworks
-        title={t("i18n.react.otherFrameworks")}
+        title={t("i18n.svelte.otherFrameworks")}
         currentFramework="svelte"
         locale={locale}
       />

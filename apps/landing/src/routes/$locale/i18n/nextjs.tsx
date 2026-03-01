@@ -85,7 +85,7 @@ export default async function Page({ params }: { params: { locale: string } }) {
       <RelatedPages title={t("i18n.nextjs.relatedTitle")} pages={relatedPages} locale={locale} />
 
       <OtherFrameworks
-        title={t("i18n.react.otherFrameworks")}
+        title={t("i18n.nextjs.otherFrameworks")}
         currentFramework="nextjs"
         locale={locale}
       />

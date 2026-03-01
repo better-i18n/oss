@@ -90,7 +90,7 @@ const { t } = useI18n()
       <RelatedPages title={t("i18n.nuxt.relatedTitle")} pages={relatedPages} locale={locale} />
 
       <OtherFrameworks
-        title={t("i18n.react.otherFrameworks")}
+        title={t("i18n.nuxt.otherFrameworks")}
         currentFramework="nuxt"
         locale={locale}
       />
