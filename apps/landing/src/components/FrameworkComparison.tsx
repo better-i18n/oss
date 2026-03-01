@@ -190,6 +190,9 @@ const allFrameworks = [
   { name: "Nuxt", slug: "nuxt" },
   { name: "Angular", slug: "angular" },
   { name: "Svelte", slug: "svelte" },
+  { name: "Expo", slug: "expo" },
+  { name: "TanStack Start", slug: "tanstack-start" },
+  { name: "Server / Hono", slug: "server" },
 ];
 
 export function OtherFrameworks({
@@ -215,6 +218,9 @@ export function OtherFrameworks({
                   | "/$locale/i18n/nuxt"
                   | "/$locale/i18n/angular"
                   | "/$locale/i18n/svelte"
+                  | "/$locale/i18n/expo"
+                  | "/$locale/i18n/tanstack-start"
+                  | "/$locale/i18n/server"
               }
               params={{ locale }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-mist-200 bg-white text-sm text-mist-700 hover:border-mist-400 hover:text-mist-950 transition-colors"

@@ -82,9 +82,11 @@ function colorizeBySeverity(text: string, severity: string): string {
 function sortBySeverity(
   groups: [string, I18nDiagnostic[]][],
 ): [string, I18nDiagnostic[]][] {
-  return groups.toSorted(([, a], [, b]) => {
-    return (SEVERITY_ORDER[a[0].severity] ?? 2) - (SEVERITY_ORDER[b[0].severity] ?? 2);
-  });
+  return [...groups].sort(
+    ([, a]: [string, I18nDiagnostic[]], [, b]: [string, I18nDiagnostic[]]) => {
+      return (SEVERITY_ORDER[a[0].severity] ?? 2) - (SEVERITY_ORDER[b[0].severity] ?? 2);
+    },
+  );
 }
 
 function buildFileLineMap(diagnostics: I18nDiagnostic[]): Map<string, number[]> {
