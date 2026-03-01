@@ -4,6 +4,8 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import { fileURLToPath, URL } from "url";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(async ({ mode }) => {
@@ -99,6 +101,28 @@ export default defineConfig(async ({ mode }) => {
             } satisfies Plugin,
           ]
         : []),
+      // Workaround: TanStack Start's sitemap generator omits the xhtml namespace
+      // declaration and adds spurious xmlns="" on <xhtml:link> elements.
+      // See: https://github.com/TanStack/router/issues/XXXX
+      {
+        name: "fix-sitemap-namespaces",
+        apply: "build",
+        closeBundle() {
+          const sitemapPath = path.join("dist", "client", "sitemap.xml");
+          if (!existsSync(sitemapPath)) return;
+
+          const xml = readFileSync(sitemapPath, "utf-8");
+          const fixed = xml
+            .replace(
+              '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">',
+              '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
+            )
+            .replace(/ xmlns=""/g, "");
+
+          writeFileSync(sitemapPath, fixed);
+          console.log("[SEO] Fixed sitemap xhtml namespace declaration");
+        },
+      } satisfies Plugin,
     ],
   };
 });
