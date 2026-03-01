@@ -53,9 +53,11 @@ export function ComparisonTable({ competitorName, features, featureLabel }: Comp
 function FeatureValue({ value, highlight }: { value: boolean | string; highlight?: boolean }) {
   if (typeof value === "boolean") {
     return value ? (
-      <IconCheckmark1 className={`w-5 h-5 mx-auto ${highlight ? "text-emerald-600" : "text-mist-400"}`} />
+      <span role="img" aria-label="Yes">
+        <IconCheckmark1 className={`w-5 h-5 mx-auto ${highlight ? "text-emerald-600" : "text-mist-400"}`} aria-hidden="true" />
+      </span>
     ) : (
-      <span className="w-5 h-5 mx-auto text-mist-300 flex items-center justify-center text-lg font-light">—</span>
+      <span className="w-5 h-5 mx-auto text-mist-300 flex items-center justify-center text-lg font-light" aria-label="No">—</span>
     );
   }
   return <span className={`text-sm ${highlight ? "text-mist-950 font-medium" : "text-mist-600"}`}>{value}</span>;

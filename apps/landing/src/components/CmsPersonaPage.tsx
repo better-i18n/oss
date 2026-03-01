@@ -6,6 +6,7 @@ import BlogContent from "@/components/blog/BlogContent";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import type { MarketingPage, MarketingPageListItem } from "@/lib/content";
 import { getPersonaLabel } from "@/lib/cms-persona-helpers";
+import { useT } from "@/lib/i18n";
 
 interface CmsPersonaPageProps {
   page: MarketingPage;
@@ -18,6 +19,8 @@ export function CmsPersonaPage({
   locale,
   relatedPersonas,
 }: CmsPersonaPageProps) {
+  const t = useT("persona");
+
   return (
     <div className="bg-white">
       <Header className="bg-white" />
