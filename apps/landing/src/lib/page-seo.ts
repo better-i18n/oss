@@ -220,7 +220,7 @@ export function getPageHead(options: PageSEOOptions) {
       const label = labelMap[segment] ?? segment.charAt(0).toUpperCase() + segment.slice(1);
       breadcrumbItems.push({
         name: label,
-        url: `${SITE_URL}/${locale}${currentPath}`,
+        url: `${SITE_URL}/${locale}${currentPath}/`,
       });
     }
 
