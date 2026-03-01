@@ -157,10 +157,10 @@ function SoftwareLocalizationPage() {
                   <step.icon className="size-5 text-mist-600" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -182,10 +182,10 @@ function SoftwareLocalizationPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -209,10 +209,10 @@ function SoftwareLocalizationPage() {
             {bestPractices.map((practice) => (
               <div key={practice.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(practice.titleKey, { defaultValue: practice.titleKey.split(".").pop() })}
+                  {t(practice.titleKey, { defaultValue: practice.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(practice.descKey, { defaultValue: "" })}
+                  {t(practice.descKey, { defaultValue: practice.defaultDesc })}
                 </p>
               </div>
             ))}
