@@ -1,4 +1,5 @@
 import { Link, useParams } from "@tanstack/react-router";
+
 import { cn } from "@better-i18n/ui/lib/utils";
 import {
   IconChevronBottom,
@@ -19,6 +20,7 @@ import {
 import { useT } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { MobileNav } from "./MobileNav";
 
 export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
@@ -542,7 +544,7 @@ export default function Header({ className }: { className?: string }) {
               </div>
             </div>
           </div>
-          <div className="flex flex-1 items-center justify-end gap-4">
+          <div className="hidden lg:flex flex-1 items-center justify-end gap-4">
             <LanguageSwitcher />
             <div className="flex shrink-0 items-center gap-5">
               <a
@@ -555,6 +557,7 @@ export default function Header({ className }: { className?: string }) {
               </a>
             </div>
           </div>
+          <MobileNav />
         </div>
       </nav>
     </header>
