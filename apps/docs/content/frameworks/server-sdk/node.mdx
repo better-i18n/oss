@@ -1,0 +1,132 @@
+---
+title: Express & Fastify
+description: Node.js HTTP adapter for Express, Fastify, and Koa
+---
+
+<Callout type="info">
+  **This adapter is Node.js-specific.** It bridges Node.js `IncomingHttpHeaders` to Web Standards `Headers`. If you're using Cloudflare Workers, Deno native (`Deno.serve()`), or Bun's HTTP server, skip this adapter — their `request.headers` is already a Web Standards `Headers` object and works directly with `i18n.detectLocaleFromHeaders(request.headers)`.
+</Callout>
+
+`@better-i18n/server/node` provides two utilities for Node.js HTTP servers:
+
+- **`betterI18nMiddleware(i18n)`** — drop-in Express/Connect middleware
+- **`fromNodeHeaders(nodeHeaders)`** — converts `IncomingHttpHeaders` to Web Standards `Headers` for manual use with Fastify, Koa, or raw Node.js
+
+## Express
+
+<Steps>
+
+<Step>
+### Create the i18n singleton
+
+```ts title="src/i18n.ts"
+import { createServerI18n } from "@better-i18n/server";
+
+export const i18n = createServerI18n({
+  project: "my-org/api",
+  defaultLocale: "en",
+});
+```
+</Step>
+
+<Step>
+### Register the middleware
+
+```ts title="src/app.ts"
+import express from "express";
+import { betterI18nMiddleware } from "@better-i18n/server/node"; // [!code highlight]
+import { i18n } from "./i18n";
+
+const app = express();
+
+app.use(betterI18nMiddleware(i18n)); // [!code highlight]
+
+app.get("/users/:id", async (req, res) => {
+  const user = await db.users.findById(req.params.id);
+
+  if (!user) {
+    return res.status(404).json({ error: req.t("errors.notFound") }); // [!code highlight]
+  }
+
+  res.json({ user, locale: req.locale }); // [!code highlight]
+});
+
+export default app;
+```
+</Step>
+
+<Step>
+### Add TypeScript types
+
+`betterI18nMiddleware` injects `req.locale` and `req.t` at runtime, but TypeScript doesn't know about them. Add a declaration file to augment the Express `Request` type:
+
+```ts title="src/types/express.d.ts"
+import type { Translator } from "@better-i18n/server";
+
+declare global {
+  namespace Express {
+    interface Request {
+      locale: string; // [!code ++]
+      t: Translator; // [!code ++]
+    }
+  }
+}
+```
+
+<Callout type="tip">
+  This follows the same pattern as `@types/passport` and other Express middleware packages — augmenting `Express.Request` in a global declaration file is the idiomatic TypeScript approach.
+</Callout>
+</Step>
+
+</Steps>
+
+## Fastify
+
+Fastify doesn't use Express middleware, but `fromNodeHeaders` converts Fastify's `req.headers` (`IncomingHttpHeaders`) to a Web Standards `Headers` object that `detectLocaleFromHeaders` accepts:
+
+```ts title="src/plugins/i18n.ts"
+import fp from "fastify-plugin";
+import { fromNodeHeaders } from "@better-i18n/server/node"; // [!code highlight]
+import { i18n } from "../i18n";
+
+export default fp(async (fastify) => {
+  fastify.decorateRequest("locale", "");
+  fastify.decorateRequest("t", null);
+
+  fastify.addHook("onRequest", async (request) => {
+    const headers = fromNodeHeaders(request.headers); // [!code highlight]
+    const locale = await i18n.detectLocaleFromHeaders(headers); // [!code highlight]
+    const t = await i18n.getTranslator(locale); // [!code highlight]
+
+    request.locale = locale;
+    request.t = t;
+  });
+});
+```
+
+Augment Fastify's request type:
+
+```ts title="src/types/fastify.d.ts"
+import type { Translator } from "@better-i18n/server";
+
+declare module "fastify" {
+  interface FastifyRequest {
+    locale: string;
+    t: Translator;
+  }
+}
+```
+
+## Related
+
+<Cards>
+  <Card title="Getting Started" icon="BookOpen" href="/frameworks/server-sdk">
+    Runtime-agnostic usage — workers, email senders, and scripts without middleware.
+  </Card>
+  <Card title="Hono" icon="Zap" href="/frameworks/server-sdk/hono">
+    Web Standards middleware for Hono, Cloudflare Workers, and Deno Deploy.
+  </Card>
+  <Card title="API Reference" icon="FileCode" href="/frameworks/server-sdk/api-reference">
+    Full reference for `betterI18nMiddleware`, `fromNodeHeaders`, and `ServerI18n`.
+  </Card>
+</Cards>

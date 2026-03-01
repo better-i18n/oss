@@ -1,0 +1,279 @@
+---
+title: API Reference
+description: Full API reference for @better-i18n/server
+---
+
+Complete API reference for the Server SDK.
+
+---
+
+## `createServerI18n(config)`
+
+Factory function that creates a server-side i18n instance. Call this **once at module scope** — never inside a request handler.
+
+```ts
+import { createServerI18n } from "@better-i18n/server";
+
+export const i18n = createServerI18n({
+  project: "my-org/api",
+  defaultLocale: "en",
+});
+```
+
+### Config Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `project` | `string` | Required | Project identifier in `org/project` format |
+| `defaultLocale` | `string` | Required | Fallback locale when detection fails |
+| `cdnBaseUrl` | `string` | `"https://cdn.better-i18n.com"` | CDN base URL override |
+| `fetchTimeout` | `number` | `10000` | CDN fetch timeout in milliseconds |
+| `retryCount` | `number` | `1` | Number of retries on CDN failure |
+| `debug` | `boolean` | `false` | Enable debug logging |
+| `logLevel` | `"debug" \| "info" \| "warn" \| "error" \| "silent"` | `"warn"` | Log verbosity |
+
+### Return Value
+
+Returns a `ServerI18n` instance — see the [ServerI18n interface](#serveri18n-interface) below.
+
+---
+
+## `ServerI18n` Interface
+
+The instance returned by `createServerI18n`.
+
+<Accordion>
+<AccordionItem title="getTranslator(locale, namespace?)">
+Fetches messages for the given locale and returns a `Translator` function. Messages are cached by `TtlCache` — repeat calls within the TTL window return instantly.
+
+```ts
+// Without namespace — access all keys with dot notation
+const t = await i18n.getTranslator("tr");
+t("errors.notFound"); // → "Bulunamadı"
+
+// With namespace — access keys relative to the namespace
+const t = await i18n.getTranslator("tr", "errors");
+t("notFound"); // → "Bulunamadı"
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `locale` | `string` | Locale code (e.g., `"tr"`, `"de"`) |
+| `namespace` | `string` (optional) | Namespace prefix for key lookups |
+
+**Returns:** `Promise<Translator>`
+
+</AccordionItem>
+
+<AccordionItem title="detectLocaleFromHeaders(headers)">
+Parses the `Accept-Language` header and returns the best-matching locale from your project's available locales. Falls back to `defaultLocale` if no match is found.
+
+```ts
+// Web Standards Headers object
+const locale = await i18n.detectLocaleFromHeaders(request.headers);
+
+// From Node.js IncomingHttpHeaders (use fromNodeHeaders first)
+import { fromNodeHeaders } from "@better-i18n/server/node";
+const headers = fromNodeHeaders(req.headers);
+const locale = await i18n.detectLocaleFromHeaders(headers);
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `headers` | `Headers` | Web Standards `Headers` object |
+
+**Returns:** `Promise<string>` — matched locale or `defaultLocale`
+
+</AccordionItem>
+
+<AccordionItem title="getLocales()">
+Returns the list of available locale codes from the CDN manifest. Cached with `TtlCache`.
+
+```ts
+const locales = await i18n.getLocales();
+// ["en", "tr", "de", "fr"]
+```
+
+**Returns:** `Promise<string[]>`
+
+</AccordionItem>
+
+<AccordionItem title="getLanguages()">
+Returns language metadata (name, native name, flag URL) for all available locales. Useful for building language-selection responses in your API.
+
+```ts
+const languages = await i18n.getLanguages();
+// [
+//   { code: "en", name: "English", nativeName: "English", flagUrl: "..." },
+//   { code: "tr", name: "Turkish", nativeName: "Türkçe", flagUrl: "..." },
+// ]
+```
+
+**Returns:** `Promise<LanguageOption[]>`
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## `@better-i18n/server/hono`
+
+<Accordion>
+<AccordionItem title="betterI18n(i18n)">
+Hono middleware that detects locale from the `Accept-Language` header and sets `locale` and `t` on the context.
+
+```ts
+import { Hono } from "hono";
+import { betterI18n } from "@better-i18n/server/hono";
+import { i18n } from "./i18n";
+import type { Translator } from "@better-i18n/server";
+
+const app = new Hono<{
+  Variables: {
+    locale: string;
+    t: Translator;
+  };
+}>();
+
+app.use("*", betterI18n(i18n));
+
+app.get("/", (c) => {
+  const t = c.get("t");
+  return c.json({ message: t("home.welcome") });
+});
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `i18n` | `ServerI18n` | Instance from `createServerI18n` |
+
+**Sets on context:**
+
+| Variable | Type | Description |
+| --- | --- | --- |
+| `locale` | `string` | Detected locale |
+| `t` | `Translator` | Ready-to-use translator for the detected locale |
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## `@better-i18n/server/node`
+
+<Accordion>
+<AccordionItem title="betterI18nMiddleware(i18n)">
+Express/Connect-compatible middleware. Injects `req.locale` and `req.t` into every request.
+
+```ts
+import express from "express";
+import { betterI18nMiddleware } from "@better-i18n/server/node";
+import { i18n } from "./i18n";
+
+const app = express();
+app.use(betterI18nMiddleware(i18n));
+
+app.get("/", (req, res) => {
+  res.json({ message: req.t("home.welcome") });
+});
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `i18n` | `ServerI18n` | Instance from `createServerI18n` |
+
+**Injects on `req`:**
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `req.locale` | `string` | Detected locale |
+| `req.t` | `Translator` | Ready-to-use translator |
+
+</AccordionItem>
+
+<AccordionItem title="fromNodeHeaders(nodeHeaders)">
+Converts a Node.js `IncomingHttpHeaders` object to a Web Standards `Headers` object. Use this to bridge Fastify, Koa, or raw `http.IncomingMessage` with `detectLocaleFromHeaders`.
+
+```ts
+import { fromNodeHeaders } from "@better-i18n/server/node";
+
+// Fastify
+const headers = fromNodeHeaders(request.headers);
+const locale = await i18n.detectLocaleFromHeaders(headers);
+
+// Raw Node.js http.IncomingMessage
+import http from "node:http";
+http.createServer(async (req, res) => {
+  const headers = fromNodeHeaders(req.headers);
+  const locale = await i18n.detectLocaleFromHeaders(headers);
+  const t = await i18n.getTranslator(locale);
+  res.end(t("home.welcome"));
+});
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `nodeHeaders` | `IncomingHttpHeaders` | Headers from `req.headers` |
+
+**Returns:** `Headers` — Web Standards `Headers` object
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Types
+
+<Accordion>
+<AccordionItem title="ServerI18nConfig">
+Configuration for `createServerI18n`. Mirrors `I18nCoreConfig` from `@better-i18n/core`.
+
+```ts
+import type { ServerI18nConfig } from "@better-i18n/server";
+
+const config: ServerI18nConfig = {
+  project: "my-org/api",
+  defaultLocale: "en",
+  cdnBaseUrl: "https://cdn.better-i18n.com", // optional
+  fetchTimeout: 10000,                         // optional
+  retryCount: 1,                               // optional
+  debug: false,                                // optional
+};
+```
+
+</AccordionItem>
+
+<AccordionItem title="Translator">
+The translator function type returned by `getTranslator`. Thin alias for `use-intl/core`'s `createTranslator` return type.
+
+```ts
+import type { Translator } from "@better-i18n/server";
+
+// Usage in function signatures
+function formatError(t: Translator, code: string): string {
+  return t(`errors.${code}`);
+}
+
+// With interpolation
+const t = await i18n.getTranslator("tr");
+t("user.greeting", { name: "Osman" }); // → "Merhaba, Osman!"
+```
+
+</AccordionItem>
+
+<AccordionItem title="LanguageOption">
+Language metadata from the CDN manifest. Returned by `getLanguages()`.
+
+```ts
+import type { LanguageOption } from "@better-i18n/core";
+
+interface LanguageOption {
+  code: string;          // "tr", "en", "de"
+  name?: string;         // "Turkish", "English"
+  nativeName?: string;   // "Türkçe", "English"
+  flagUrl?: string | null; // CDN URL to flag image
+}
+```
+
+</AccordionItem>
+</Accordion>

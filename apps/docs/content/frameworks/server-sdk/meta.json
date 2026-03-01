@@ -1,0 +1,5 @@
+{
+  "title": "Server SDK",
+  "defaultOpen": false,
+  "pages": ["index", "hono", "node", "supabase", "trpc", "api-reference"]
+}

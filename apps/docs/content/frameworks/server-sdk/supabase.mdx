@@ -1,0 +1,162 @@
+---
+title: Supabase Edge Functions
+description: Runtime-agnostic i18n in Supabase Edge Functions (Deno)
+---
+
+Supabase Edge Functions Deno üzerinde çalışır — `Request`, `Headers`, `fetch` Web Standards'tır. `@better-i18n/server/node` adapter'ı **gerekmez**; `detectLocaleFromHeaders(req.headers)` doğrudan çalışır.
+
+## File Structure
+
+```
+supabase/
+  functions/
+    _shared/
+      i18n.ts        ← singleton (tüm function'lar arasında paylaşımlı)
+      cors.ts        ← CORS headers (accept-language dahil)
+    send-notification/
+      index.ts
+    api/
+      index.ts
+```
+
+## Basit Edge Function
+
+<Steps>
+
+<Step>
+### Singleton oluştur
+
+`_shared/i18n.ts` — Deno'da `npm:` specifier ile import:
+
+```ts title="supabase/functions/_shared/i18n.ts"
+import { createServerI18n } from "npm:@better-i18n/server@0.2.1";
+
+export const i18n = createServerI18n({
+  project: Deno.env.get("BETTER_I18N_PROJECT") ?? "my-org/api",
+  defaultLocale: Deno.env.get("BETTER_I18N_DEFAULT_LOCALE") ?? "en",
+});
+```
+
+</Step>
+
+<Step>
+### CORS headers tanımla
+
+`_shared/cors.ts` — `accept-language` header'ını izin listesine ekle:
+
+```ts title="supabase/functions/_shared/cors.ts"
+export const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, accept-language",
+};
+```
+
+<Callout type="warn">
+  `accept-language` header'ı `Access-Control-Allow-Headers`'a eklenmezse tarayıcı cross-origin requestlerde bu header'ı gönderemez ve locale detection her zaman `defaultLocale` döner.
+</Callout>
+
+</Step>
+
+<Step>
+### Edge Function'ı yaz
+
+`functions/send-notification/index.ts` — `req.headers` Web Standards `Headers` olduğu için bridge gerekmez:
+
+```ts title="supabase/functions/send-notification/index.ts"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { i18n } from "../_shared/i18n.ts";
+import { corsHeaders } from "../_shared/cors.ts";
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  // req.headers is Web Standards Headers — no bridge needed
+  const locale = await i18n.detectLocaleFromHeaders(req.headers);
+  const t = await i18n.getTranslator(locale);
+
+  const { userId } = await req.json();
+  const user = await fetchUser(userId);
+
+  if (!user) {
+    return new Response(
+      JSON.stringify({ error: t("errors.notFound") }),
+      { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  await sendPushNotification({
+    userId,
+    title: t("notifications.welcome.title"),
+    body: t("notifications.welcome.body", { name: user.name }),
+  });
+
+  return new Response(
+    JSON.stringify({ sent: true, locale }),
+    { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+  );
+});
+```
+
+</Step>
+
+</Steps>
+
+## Hono ile Çok-Route'lu Edge Function
+
+Birden fazla route varsa Hono'yu `Deno.serve(app.fetch)` ile kullan:
+
+```ts title="supabase/functions/api/index.ts"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { Hono } from "npm:hono@4";
+import { betterI18n } from "npm:@better-i18n/server@0.2.1/hono";
+import type { Translator } from "npm:@better-i18n/server@0.2.1";
+import { i18n } from "../_shared/i18n.ts";
+import { corsHeaders } from "../_shared/cors.ts";
+
+const app = new Hono<{ Variables: { locale: string; t: Translator } }>();
+
+// CORS preflight + attach headers to all responses
+app.use("*", async (c, next) => {
+  if (c.req.method === "OPTIONS") return c.text("ok", 200, corsHeaders);
+  await next();
+  Object.entries(corsHeaders).forEach(([k, v]) => c.res.headers.set(k, v));
+});
+
+app.use("*", betterI18n(i18n));
+
+app.get("/users/:id", async (c) => {
+  const user = await db.findUser(c.req.param("id"));
+  if (!user) return c.json({ error: c.get("t")("errors.notFound") }, 404);
+  return c.json({ user, locale: c.get("locale") });
+});
+
+Deno.serve(app.fetch);
+```
+
+## Environment Variables
+
+Supabase secrets ile environment variable'ları ayarla:
+
+```bash
+supabase secrets set BETTER_I18N_PROJECT=my-org/api
+supabase secrets set BETTER_I18N_DEFAULT_LOCALE=en
+```
+
+`Deno.env.get()` ile oku — Supabase Edge Functions ortamında process.env değil Deno.env kullanılır.
+
+## Related
+
+<Cards>
+  <Card title="Getting Started" icon="BookOpen" href="/frameworks/server-sdk">
+    Singleton kurulumu ve temel kullanım.
+  </Card>
+  <Card title="Hono" icon="Zap" href="/frameworks/server-sdk/hono">
+    Hono middleware ile tam TypeScript desteği.
+  </Card>
+  <Card title="API Reference" icon="FileCode" href="/frameworks/server-sdk/api-reference">
+    `createServerI18n`, `ServerI18n` ve tüm export'lar.
+  </Card>
+</Cards>

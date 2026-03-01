@@ -1,0 +1,141 @@
+---
+title: Getting Started
+description: Runtime-agnostic server-side i18n for any JavaScript backend
+---
+
+`@better-i18n/server` is a standalone i18n package for **pure API servers**. It runs on any JavaScript runtime — Node.js, Bun, Deno, and Cloudflare Workers — with no React or SSR framework dependency.
+
+<Callout type="info">
+**Not the same as `@better-i18n/use-intl/server`.**
+`@better-i18n/use-intl/server` provides SSR helpers for React frontends (Next.js, TanStack Start). This package is for API backends that return JSON, send emails, or run background jobs — not for rendering HTML.
+</Callout>
+
+## When to Use This Package
+
+| Scenario | Runtime | Package |
+| --- | --- | --- |
+| Next.js / TanStack Start SSR | Node.js | `@better-i18n/next` or `@better-i18n/use-intl` |
+| Hono API server | Node.js, Bun, Deno, CF Workers | `@better-i18n/server` + `./hono` adapter |
+| Express / Fastify / Koa | Node.js only | `@better-i18n/server` + `./node` adapter |
+| Background worker / email sender | Any runtime | `@better-i18n/server` — call `getTranslator()` directly |
+| Cloudflare Worker / Deno script | CF Workers, Deno, Bun | `@better-i18n/server` — no adapter needed |
+| Supabase Edge Function | Deno (Supabase runtime) | `@better-i18n/server` — [Supabase guide](/frameworks/server-sdk/supabase) |
+| tRPC API (edge) | Any runtime | `@better-i18n/server` — [tRPC guide](/frameworks/server-sdk/trpc) |
+| tRPC API (Node.js) | Node.js | `@better-i18n/server` + `./node` — [tRPC guide](/frameworks/server-sdk/trpc) |
+
+## Installation
+
+<Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
+  <Tab value="npm">
+  ```bash
+  npm install @better-i18n/server
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn add @better-i18n/server
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add @better-i18n/server
+  ```
+  </Tab>
+  <Tab value="bun">
+  ```bash
+  bun add @better-i18n/server
+  ```
+  </Tab>
+</Tabs>
+
+## Quick Start
+
+<Steps>
+
+<Step>
+### Create the i18n singleton
+
+Instantiate `createServerI18n` once at **module scope** — not inside a request handler. The singleton shares a `TtlCache` across all requests, avoiding redundant CDN fetches.
+
+```ts title="src/i18n.ts"
+import { createServerI18n } from "@better-i18n/server"; // [!code highlight]
+
+export const i18n = createServerI18n({ // [!code highlight]
+  project: "my-org/api", // [!code highlight]
+  defaultLocale: "en", // [!code highlight]
+}); // [!code highlight]
+```
+
+<Callout type="warn">
+  **Do not call `createServerI18n` inside a request handler.** Each call creates a new `TtlCache` instance, which defeats CDN caching and causes a fresh fetch on every request.
+</Callout>
+</Step>
+
+<Step>
+### Use the translator
+
+No middleware needed — call `getTranslator` directly with a locale string. This works on any runtime.
+
+```ts title="src/workers/email.ts"
+import { i18n } from "./i18n";
+
+export async function sendWelcomeEmail(userId: string, locale: string) {
+  const t = await i18n.getTranslator(locale); // [!code highlight]
+
+  await mailer.send({
+    to: userId,
+    subject: t("emails.welcome.subject"), // [!code highlight]
+    body: t("emails.welcome.body"), // [!code highlight]
+  });
+}
+```
+
+```ts title="src/routes/users.ts"
+import { i18n } from "../i18n";
+
+// With namespace scoping
+const t = await i18n.getTranslator("tr", "errors"); // [!code highlight]
+t("notFound"); // → "Bulunamadı" // [!code highlight]
+```
+
+<Callout type="tip">
+  `getTranslator` fetches and caches messages via `TtlCache` — repeated calls for the same locale within the TTL window return instantly from memory with no CDN round-trip.
+</Callout>
+</Step>
+
+<Step>
+### Choose an adapter (optional)
+
+If you use a web framework and want automatic `Accept-Language` detection injected into the request context, pick the right adapter:
+
+| Framework | Adapter | Guide |
+| --- | --- | --- |
+| Hono (any runtime) | `@better-i18n/server/hono` | [Hono middleware](/frameworks/server-sdk/hono) |
+| Express | `@better-i18n/server/node` | [Express & Fastify](/frameworks/server-sdk/node) |
+| Fastify / Koa | `@better-i18n/server/node` | [Express & Fastify](/frameworks/server-sdk/node) |
+
+No framework? Skip adapters entirely and call `i18n.detectLocaleFromHeaders(request.headers)` with any Web Standards `Headers` object.
+
+</Step>
+
+</Steps>
+
+## Next Steps
+
+<Cards>
+  <Card title="Hono" icon="Zap" href="/frameworks/server-sdk/hono">
+    Set up the Hono middleware with full TypeScript variable types.
+  </Card>
+  <Card title="Express & Fastify" icon="Server" href="/frameworks/server-sdk/node">
+    Node.js HTTP adapter — use `betterI18nMiddleware` with Express or `fromNodeHeaders` with Fastify.
+  </Card>
+  <Card title="Supabase" icon="Database" href="/frameworks/server-sdk/supabase">
+    Detect locale and translate in Supabase Edge Functions (Deno).
+  </Card>
+  <Card title="tRPC" icon="Layers" href="/frameworks/server-sdk/trpc">
+    Inject locale and t into tRPC context for localized error messages.
+  </Card>
+  <Card title="API Reference" icon="FileCode" href="/frameworks/server-sdk/api-reference">
+    Full reference for `createServerI18n`, `ServerI18n`, and all exports.
+  </Card>
+</Cards>

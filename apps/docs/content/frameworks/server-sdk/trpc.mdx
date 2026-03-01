@@ -1,0 +1,220 @@
+---
+title: tRPC
+description: Localized error messages and i18n context in tRPC procedures
+---
+
+tRPC'de i18n için merkezi yaklaşım `createContext` içinde locale detect edip hem `locale` hem de `t` (Translator) döndürmektir. Her prosedür `ctx.t("key")` ile anında çevrilmiş string alır; `TRPCError.message` alanına da doğrudan `ctx.t(...)` konulabilir.
+
+| Adapter | Runtime | `createContext` içinde |
+| --- | --- | --- |
+| `fetchRequestHandler` | Edge, CF Workers, Supabase, Next.js Route Handler | `req.headers` direkt kullanılır |
+| `createExpressMiddleware` | Node.js / Express | `fromNodeHeaders(req.headers)` ile bridge |
+
+## Fetch Adapter (Edge / CF Workers / Supabase)
+
+Web Standards `Headers` kullanan ortamlar için önerilen pattern:
+
+### Singleton
+
+```ts title="src/trpc/i18n.ts"
+import { createServerI18n } from "@better-i18n/server";
+
+export const i18n = createServerI18n({
+  project: "my-org/api",
+  defaultLocale: "en",
+});
+```
+
+### Context
+
+```ts title="src/trpc/context.ts"
+import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
+import { i18n } from "./i18n.js";
+import type { Translator } from "@better-i18n/server";
+
+export async function createContext({ req }: FetchCreateContextFnOptions) {
+  // req.headers is Web Standards Headers — no bridge needed
+  const locale = await i18n.detectLocaleFromHeaders(req.headers);
+  const t = await i18n.getTranslator(locale);
+
+  return { locale, t };
+}
+
+export type Context = Awaited<ReturnType<typeof createContext>>;
+```
+
+### Init
+
+```ts title="src/trpc/init.ts"
+import { initTRPC } from "@trpc/server";
+import type { Context } from "./context.js";
+
+const t = initTRPC.context<Context>().create();
+
+export const router = t.router;
+export const publicProcedure = t.procedure;
+```
+
+### Router
+
+`ctx.t(...)` doğrudan `TRPCError.message`'a verilebilir:
+
+```ts title="src/trpc/router.ts"
+import { z } from "zod";
+import { TRPCError } from "@trpc/server";
+import { router, publicProcedure } from "./init.js";
+
+export const appRouter = router({
+  getUser: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const user = await db.users.findById(input.id);
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: ctx.t("errors.notFound"), // "Bulunamadı" for Turkish clients
+        });
+      }
+
+      return { user, locale: ctx.locale };
+    }),
+
+  createPost: publicProcedure
+    .input(z.object({ title: z.string().min(1) }))
+    .mutation(async ({ input, ctx }) => {
+      const existing = await db.posts.findByTitle(input.title);
+
+      if (existing) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: ctx.t("errors.postAlreadyExists"),
+        });
+      }
+
+      return db.posts.create(input);
+    }),
+});
+
+export type AppRouter = typeof appRouter;
+```
+
+### Handler (Cloudflare Worker / Supabase Edge / Deno)
+
+```ts title="src/handler.ts"
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { appRouter } from "./trpc/router.js";
+import { createContext } from "./trpc/context.js";
+
+export default {
+  fetch: (req: Request) =>
+    fetchRequestHandler({
+      endpoint: "/trpc",
+      req,
+      router: appRouter,
+      createContext,
+    }),
+};
+```
+
+## Express / Fastify (Node.js Adapter)
+
+<Callout type="info">
+  Express ve Fastify'da `req.headers` Node.js `IncomingHttpHeaders`'dır — Web Standards `Headers`'a bridge etmek için `fromNodeHeaders` kullan.
+</Callout>
+
+```ts title="src/trpc/context.node.ts"
+import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
+import { fromNodeHeaders } from "@better-i18n/server/node";
+import { i18n } from "./i18n.js";
+
+export async function createContext({ req }: CreateExpressContextOptions) {
+  const headers = fromNodeHeaders(req.headers); // IncomingHttpHeaders → Headers
+  const locale = await i18n.detectLocaleFromHeaders(headers);
+  const t = await i18n.getTranslator(locale);
+
+  return { locale, t };
+}
+```
+
+```ts title="src/app.ts"
+import express from "express";
+import { createExpressMiddleware } from "@trpc/server/adapters/express";
+import { appRouter } from "./trpc/router.js";
+import { createContext } from "./trpc/context.node.js";
+
+const app = express();
+
+app.use("/trpc",
+  createExpressMiddleware({ router: appRouter, createContext })
+);
+```
+
+## Lazy Translator — `localeProcedure` (opsiyonel)
+
+Bazı prosedürler i18n gerektirmiyorsa, `getTranslator` çağrısını sadece gerekli prosedürlere sınırla:
+
+<Callout type="tip">
+  `getTranslator` `TtlCache` kullandığı için aynı locale için tekrar çağrılar memory'den döner, CDN round-trip yapmaz. Ama yoğun trafikte bile `localeProcedure` ile ayırmak daha temiz mimari sağlar.
+</Callout>
+
+```ts title="src/trpc/init.ts"
+import { initTRPC } from "@trpc/server";
+import type { Context } from "./context.js";
+import { i18n } from "./i18n.js";
+import type { Translator } from "@better-i18n/server";
+
+const t = initTRPC.context<Context>().create();
+
+export const publicProcedure = t.procedure;
+
+// Translator'ı sadece gerektiğinde çözen middleware
+export const localeProcedure = publicProcedure.use(async (opts) => {
+  const translator = await i18n.getTranslator(opts.ctx.locale);
+  return opts.next({ ctx: { ...opts.ctx, t: translator } });
+});
+```
+
+Context type'ını bu pattern için düzenle:
+
+```ts
+// Context: locale her zaman var, t opsiyonel (localeProcedure ekler)
+export interface BaseContext {
+  locale: string;
+  t?: Translator; // localeProcedure eklediğinde zorunlu hale gelir
+}
+```
+
+Kullanım — sadece `localeProcedure` zincirine giren prosedürler `ctx.t` alır:
+
+```ts
+export const appRouter = router({
+  healthCheck: publicProcedure.query(() => ({ ok: true })), // no i18n cost
+
+  getUser: localeProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      // ctx.t burada garantiyle var
+      const user = await db.users.findById(input.id);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: ctx.t("errors.notFound") });
+      return user;
+    }),
+});
+```
+
+## Related
+
+<Cards>
+  <Card title="Getting Started" icon="BookOpen" href="/frameworks/server-sdk">
+    Singleton kurulumu ve temel kullanım.
+  </Card>
+  <Card title="Hono" icon="Zap" href="/frameworks/server-sdk/hono">
+    Hono middleware ile tam TypeScript desteği.
+  </Card>
+  <Card title="Express & Fastify" icon="Server" href="/frameworks/server-sdk/node">
+    Node.js HTTP adapter — `fromNodeHeaders` ile bridge.
+  </Card>
+  <Card title="API Reference" icon="FileCode" href="/frameworks/server-sdk/api-reference">
+    `createServerI18n`, `ServerI18n` ve tüm export'lar.
+  </Card>
+</Cards>
