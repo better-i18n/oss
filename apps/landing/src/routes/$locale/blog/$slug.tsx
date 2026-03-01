@@ -15,6 +15,7 @@ import RelatedPosts from "@/components/blog/RelatedPosts";
 import TableOfContents from "@/components/blog/TableOfContents";
 import {
   IconArrowLeft,
+  IconChevronBottom,
   IconCircleInfo,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import {
@@ -161,122 +162,125 @@ function BlogPostPage() {
   return (
     <div className="bg-white">
       <Header className="bg-white" />
-      <main className="py-16">
-        <article className="mx-auto max-w-4xl px-6 lg:px-10">
-          {/* Back link */}
+      <main>
+        {/* Article header - centered, generous spacing */}
+        <div className="mx-auto max-w-3xl px-6 lg:px-10 pt-12 pb-10">
           <Link
             to="/$locale/blog"
             params={{ locale }}
-            className="inline-flex items-center gap-2 text-sm font-medium text-mist-700 hover:text-mist-950 transition-colors mb-8"
+            className="inline-flex items-center gap-1.5 text-sm text-mist-500 hover:text-mist-950 transition-colors mb-10 group"
           >
-            <IconArrowLeft className="w-4 h-4" />
+            <IconArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
             {t("backToBlog", { defaultValue: "Back to Blog" })}
           </Link>
 
-          {/* Header */}
-          <header>
-            {/* Category */}
-            {post.category && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span
-                  className={`text-xs font-medium px-2.5 py-1 rounded ${getTagColor(post.category)}`}
-                >
-                  {post.category}
-                </span>
-              </div>
-            )}
+          {post.category && (
+            <span
+              className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full mb-5 ${getTagColor(post.category)}`}
+            >
+              {post.category}
+            </span>
+          )}
 
-            {/* Title */}
-            <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-              {post.title}
-            </h1>
+          <h1 className="font-display text-4xl/[1.15] font-medium tracking-[-0.025em] text-mist-950 sm:text-5xl/[1.1] text-balance">
+            {post.title}
+          </h1>
 
-            {/* Meta */}
-            <div className="mt-6 flex items-center gap-4 pb-8 border-b border-mist-100">
+          {/* Author & meta row */}
+          <div className="mt-8 flex items-center justify-between">
+            <div className="flex items-center gap-3.5">
               {post.authorName && (
                 <div className="flex-shrink-0">
                   {post.authorAvatar ? (
                     <img
                       src={post.authorAvatar}
                       alt={post.authorName}
-                      className="w-10 h-10 rounded-full object-cover"
+                      className="w-11 h-11 rounded-full object-cover ring-2 ring-mist-100"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-mist-200 flex items-center justify-center text-sm font-semibold text-mist-600">
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-mist-200 to-mist-300 flex items-center justify-center text-sm font-semibold text-mist-700">
                       {post.authorName.charAt(0).toUpperCase()}
                     </div>
                   )}
                 </div>
               )}
-              <div>
+              <div className="flex flex-col">
                 {post.authorName && (
-                  <p className="text-sm font-medium text-mist-950">
+                  <span className="text-sm font-medium text-mist-950">
                     {post.authorName}
-                  </p>
+                  </span>
                 )}
-                {post.publishedAt && (
-                  <p className="text-sm text-mist-500">
+                <div className="flex items-center gap-2 text-sm text-mist-500">
+                  {post.publishedAt && (
                     <time dateTime={post.publishedAt}>
                       {formatPostDate(post.publishedAt, locale)}
                     </time>
-                  </p>
-                )}
+                  )}
+                  {post.readTime && (
+                    <>
+                      <span className="text-mist-300">&middot;</span>
+                      <span>{post.readTime}</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-          </header>
+          </div>
+        </div>
 
-          {/* Content with Table of Contents */}
-          {post.bodyHtml && (
-            <div className="mt-10 lg:flex lg:gap-10">
-              {/* TOC sidebar - desktop only */}
-              <aside className="hidden lg:block lg:w-56 lg:flex-shrink-0">
-                <div className="sticky top-8">
-                  <TableOfContents html={post.bodyHtml} />
+        {/* Divider */}
+        <div className="mx-auto max-w-3xl px-6 lg:px-10">
+          <div className="border-t border-mist-100" />
+        </div>
+
+        {/* Content area with TOC on the right */}
+        {post.bodyHtml && (
+          <div className="mx-auto max-w-6xl px-6 lg:px-10 pt-10 pb-16">
+            <div className="lg:flex lg:gap-16">
+              {/* Main content - left side */}
+              <article className="min-w-0 flex-1 max-w-3xl">
+                {/* Mobile TOC */}
+                <div className="lg:hidden mb-10 rounded-xl bg-mist-50/60 border border-mist-100 overflow-hidden">
+                  <details className="group">
+                    <summary className="flex items-center justify-between px-5 py-3.5 text-sm font-medium text-mist-700 cursor-pointer select-none">
+                      {t("tableOfContents", { defaultValue: "Table of Contents" })}
+                      <IconChevronBottom className="w-4 h-4 text-mist-400 transition-transform group-open:rotate-180" />
+                    </summary>
+                    <div className="px-5 pb-4 border-t border-mist-100 pt-3">
+                      <TableOfContents html={post.bodyHtml} />
+                    </div>
+                  </details>
                 </div>
-              </aside>
 
-              {/* TOC inline - mobile only */}
-              <details className="lg:hidden mb-8 rounded-lg border border-mist-100 p-4">
-                <summary className="text-sm font-medium text-mist-700 cursor-pointer">
-                  {t("tableOfContents", { defaultValue: "Table of Contents" })}
-                </summary>
-                <div className="mt-3">
-                  <TableOfContents html={post.bodyHtml} />
-                </div>
-              </details>
-
-              <div className="min-w-0 flex-1">
                 <BlogContent
                   html={post.bodyHtml}
                   className="prose prose-lg max-w-none
                     prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
-                    prose-p:text-mist-700 prose-p:leading-relaxed
+                    prose-headings:scroll-mt-24
+                    prose-p:text-mist-700 prose-p:leading-[1.8]
                     prose-a:text-mist-950 prose-a:underline-offset-4 prose-a:decoration-mist-300 hover:prose-a:decoration-mist-500
                     prose-strong:text-mist-900 prose-strong:font-semibold
                     prose-code:text-mist-900 prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
-                    prose-blockquote:border-l-mist-300 prose-blockquote:text-mist-600 prose-blockquote:not-italic
-                    prose-img:rounded-xl
-                    prose-li:text-mist-700
+                    prose-blockquote:border-l-2 prose-blockquote:border-mist-200 prose-blockquote:pl-6 prose-blockquote:text-mist-600 prose-blockquote:not-italic prose-blockquote:font-normal
+                    prose-img:rounded-xl prose-img:shadow-sm
+                    prose-li:text-mist-700 prose-li:leading-[1.8]
                     prose-hr:border-mist-100"
                 />
-              </div>
-            </div>
-          )}
+              </article>
 
-          {/* Footer */}
-          <footer className="mt-16 pt-8 border-t border-mist-100">
-            <Link
-              to="/$locale/blog"
-              params={{ locale }}
-              className="inline-flex items-center gap-2 text-sm font-medium text-mist-700 hover:text-mist-950 transition-colors"
-            >
-              <IconArrowLeft className="w-4 h-4" />
-              {t("backToBlog", { defaultValue: "Back to Blog" })}
-            </Link>
-          </footer>
-        </article>
+              {/* TOC sidebar - desktop only, right side */}
+              <aside className="hidden lg:block lg:w-56 lg:flex-shrink-0">
+                <div className="sticky top-24">
+                  <TableOfContents html={post.bodyHtml} />
+                </div>
+              </aside>
+            </div>
+          </div>
+        )}
+
+        {/* Related posts */}
         {relatedPosts.length > 0 && (
-          <div className="mx-auto max-w-4xl px-6 lg:px-10">
+          <div className="mx-auto max-w-5xl px-6 lg:px-10 pb-16">
             <RelatedPosts posts={relatedPosts} locale={locale} />
           </div>
         )}

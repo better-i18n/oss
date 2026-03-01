@@ -46,15 +46,17 @@ export default function TableOfContents({ html }: TableOfContentsProps) {
 
   return (
     <nav aria-label="Table of contents" className="text-sm">
-      <h2 className="font-medium text-mist-950 mb-3 text-xs uppercase tracking-wider">
+      <h2 className="font-medium text-mist-900 mb-4 text-xs uppercase tracking-wider">
         {t("tableOfContents", "Contents")}
       </h2>
-      <ul className="space-y-2">
+      <ul className="space-y-1 border-l border-mist-100">
         {headings.map((heading) => (
-          <li key={heading.id} className={heading.level === 3 ? "pl-4" : ""}>
+          <li key={heading.id}>
             <a
               href={`#${heading.id}`}
-              className="text-mist-500 hover:text-mist-900 transition-colors leading-snug block"
+              className={`block py-1.5 text-mist-500 hover:text-mist-950 transition-colors leading-snug border-l-2 border-transparent hover:border-mist-950 -ml-px ${
+                heading.level === 3 ? "pl-6 text-[13px]" : "pl-4"
+              }`}
             >
               {heading.text}
             </a>
