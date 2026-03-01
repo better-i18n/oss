@@ -5,14 +5,12 @@ import {
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 interface FrameworkHeroProps {
-  framework: string;
   title: string;
   subtitle: string;
   badgeText?: string;
 }
 
 export function FrameworkHero({
-  framework: _framework,
   title,
   subtitle,
   badgeText,
@@ -68,7 +66,6 @@ interface CodeExampleProps {
   title: string;
   description: string;
   code: string;
-  language?: string;
 }
 
 export function CodeExample({ title, description, code }: CodeExampleProps) {
