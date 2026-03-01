@@ -10,6 +10,8 @@ import {
   IconGlobe,
   IconZap,
   IconArrowRight,
+  IconApiConnection,
+  IconShieldCheck,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/for-developers")({
@@ -125,6 +127,146 @@ function Component() {
   const t = useTranslations('common');
   return <h1>{t('welcome')}</h1>;
 }`}</pre>
+          </div>
+        </div>
+      </section>
+
+      {/* CDN Performance */}
+      <section className="py-16">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
+            <div>
+              <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
+                {t("i18n.forDevelopers.cdn.title", { defaultValue: "Edge CDN Performance" })}
+              </h2>
+              <p className="text-mist-700 leading-relaxed mb-4">
+                {t("i18n.forDevelopers.cdn.description", { defaultValue: "Translations are served from Cloudflare's global edge network with aggressive caching and smart invalidation so your users always get the fastest possible load times." })}
+              </p>
+            </div>
+            <div className="mt-8 lg:mt-0 space-y-3">
+              {[
+                { label: "Manifest Cache", detail: "5-minute TTL with smart invalidation on publish" },
+                { label: "Translation Cache", detail: "1-hour TTL for optimal repeat-visit performance" },
+                { label: "Global Propagation", detail: "5-10 second cache propagation after publish" },
+                { label: "Cache Purging", detail: "Publish triggers global invalidation instantly" },
+                { label: "Preload Support", detail: "<link rel=preload> for faster initial loading" },
+                { label: "Edge Locations", detail: "North America, Europe, and Asia Pacific" },
+                { label: "Immutable Assets", detail: "1-year cache for static assets like flags" },
+              ].map((item) => (
+                <div key={item.label} className="flex items-start gap-3 p-3 rounded-lg bg-mist-50 border border-mist-100">
+                  <IconZap className="w-4 h-4 text-mist-600 mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-sm font-medium text-mist-950">{item.label}</span>
+                    <span className="text-sm text-mist-600"> — {item.detail}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* API & Webhooks */}
+      <section className="py-16 bg-mist-50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
+            <div>
+              <div className="w-10 h-10 rounded-lg bg-mist-100 flex items-center justify-center mb-4">
+                <IconApiConnection className="w-5 h-5 text-mist-600" />
+              </div>
+              <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
+                {t("i18n.forDevelopers.api.title", { defaultValue: "REST API & Webhooks" })}
+              </h2>
+              <p className="text-mist-700 leading-relaxed mb-4">
+                {t("i18n.forDevelopers.api.description", { defaultValue: "Programmatic access to every platform function. Manage projects, keys, and languages from your own tooling or CI pipeline." })}
+              </p>
+              <div className="bg-mist-950 rounded-xl p-4 overflow-x-auto">
+                <pre className="text-sm text-mist-100 font-mono whitespace-pre">{`// REST API methods
+listProjects()
+getProject(id)
+addLanguage(projectId, locale)
+listKeys(projectId)
+createKeys(projectId, keys[])
+updateKeys(projectId, keys[])
+deleteKeys(projectId, keyIds[])`}</pre>
+              </div>
+            </div>
+            <div className="mt-8 lg:mt-0 space-y-4">
+              <div className="p-4 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.forDevelopers.api.webhooks.title", { defaultValue: "Webhook Events" })}</h3>
+                <p className="text-sm text-mist-600">{t("i18n.forDevelopers.api.webhooks.description", { defaultValue: "Receive push events when syncs complete, translations are published, or keys are modified." })}</p>
+              </div>
+              <div className="p-4 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.forDevelopers.api.batch.title", { defaultValue: "Batch Operations" })}</h3>
+                <p className="text-sm text-mist-600">{t("i18n.forDevelopers.api.batch.description", { defaultValue: "Create, update, or delete multiple keys in a single request. Each key is tracked by a unique UUID across syncs." })}</p>
+              </div>
+              <div className="p-4 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.forDevelopers.api.sync.title", { defaultValue: "Sync Status Tracking" })}</h3>
+                <p className="text-sm text-mist-600">{t("i18n.forDevelopers.api.sync.description", { defaultValue: "Monitor sync jobs through pending, in-progress, completed, and failed states. Soft-deleted keys are preserved with timestamps for auditing." })}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Developer Experience */}
+      <section className="py-16">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
+            {t("i18n.forDevelopers.dx.title", { defaultValue: "Developer Experience" })}
+          </h2>
+          <p className="text-mist-700 mb-8 max-w-2xl">
+            {t("i18n.forDevelopers.dx.description", { defaultValue: "Built for developers who care about type safety, debugging, and performance observability." })}
+          </p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { title: "Namespace Scoping", desc: "Automatic namespace binding via lexical scope analysis" },
+              { title: "Rich Type System", desc: "Full TypeScript types exported from @better-i18n/core" },
+              { title: "i18n.config.ts", desc: "Single workspace configuration file for all settings" },
+              { title: "Debug Logging", desc: "Verbose output for troubleshooting integration issues" },
+              { title: "Perf Monitoring", desc: "Execution time and cache hit rate reporting" },
+              { title: "Custom Fetch", desc: "Bring your own HTTP client for translation loading" },
+              { title: "Error Handlers", desc: "Custom callbacks for missing translation keys" },
+              { title: "Locale Callbacks", desc: "Event hooks for locale switching and changes" },
+            ].map((item) => (
+              <div key={item.title} className="rounded-2xl border border-mist-200 bg-white p-5">
+                <h3 className="text-sm font-medium text-mist-950">{item.title}</h3>
+                <p className="mt-1 text-sm text-mist-600">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Infrastructure */}
+      <section className="py-16 bg-mist-50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="w-10 h-10 rounded-lg bg-mist-100 flex items-center justify-center mb-4">
+            <IconShieldCheck className="w-5 h-5 text-mist-600" />
+          </div>
+          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
+            {t("i18n.forDevelopers.infra.title", { defaultValue: "Infrastructure" })}
+          </h2>
+          <p className="text-mist-700 mb-8 max-w-2xl">
+            {t("i18n.forDevelopers.infra.description", { defaultValue: "Production-grade infrastructure with built-in security, redundancy, and multi-datacenter support." })}
+          </p>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="p-5 rounded-xl bg-white border border-mist-200">
+              <h3 className="text-sm font-medium text-mist-950 mb-1">Cloudflare Workers</h3>
+              <p className="text-sm text-mist-600">Edge computing with built-in DDoS protection and global distribution</p>
+            </div>
+            <div className="p-5 rounded-xl bg-white border border-mist-200">
+              <h3 className="text-sm font-medium text-mist-950 mb-1">Cloudflare R2 Storage</h3>
+              <p className="text-sm text-mist-600">Object storage for translation files with zero egress fees</p>
+            </div>
+            <div className="p-5 rounded-xl bg-white border border-mist-200">
+              <h3 className="text-sm font-medium text-mist-950 mb-1">PlanetScale Database</h3>
+              <p className="text-sm text-mist-600">Serverless MySQL with automatic backups and branching</p>
+            </div>
+            <div className="p-5 rounded-xl bg-white border border-mist-200">
+              <h3 className="text-sm font-medium text-mist-950 mb-1">Multi-Datacenter</h3>
+              <p className="text-sm text-mist-600">Redundant deployment across regions for high availability</p>
+            </div>
           </div>
         </div>
       </section>

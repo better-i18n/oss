@@ -34,6 +34,9 @@ function IntegrationsPage() {
     { name: "Nuxt", icon: "💚", descKey: "frameworks.nuxt.description" },
     { name: "Remix", icon: "💿", descKey: "frameworks.remix.description" },
     { name: "Astro", icon: "🚀", descKey: "frameworks.astro.description" },
+    { name: "TanStack Start", icon: "🔀", descKey: "frameworks.tanstack.description" },
+    { name: "Vite", icon: "⚡", descKey: "frameworks.vite.description" },
+    { name: "Expo", icon: "📱", descKey: "frameworks.expo.description" },
   ];
 
   const tools = [
