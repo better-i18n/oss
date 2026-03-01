@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
@@ -14,12 +14,19 @@ export default defineConfig(async ({ mode }) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let pages: readonly any[] = [];
+  let llmsTxtContent: string | null = null;
   if (mode === "production" && apiKey && project) {
     try {
       const { generatePages } = await import("./src/seo/generate-pages");
       pages = await generatePages({ project, apiKey });
     } catch (error) {
       console.error("[SEO] Page generation failed:", error);
+    }
+    try {
+      const { generateLlmsTxtContent } = await import("./src/seo/llms-txt");
+      llmsTxtContent = await generateLlmsTxtContent({ project, apiKey });
+    } catch (error) {
+      console.error("[SEO] llms.txt generation failed:", error);
     }
   } else if (mode === "production") {
     const missing = [
@@ -77,6 +84,21 @@ export default defineConfig(async ({ mode }) => {
           : undefined,
       }),
       viteReact(),
+      ...(llmsTxtContent
+        ? [
+            {
+              name: "llms-txt",
+              apply: "build",
+              generateBundle() {
+                this.emitFile({
+                  type: "asset",
+                  fileName: "llms.txt",
+                  source: llmsTxtContent!,
+                });
+              },
+            } satisfies Plugin,
+          ]
+        : []),
     ],
   };
 });

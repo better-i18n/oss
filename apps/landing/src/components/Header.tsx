@@ -145,8 +145,59 @@ export default function Header({ className }: { className?: string }) {
                     </div>
                   </div>
 
+                  {/* More Solutions */}
+                  <div className="px-3 py-2">
+                    <p className="text-xs font-medium text-mist-400 uppercase tracking-wider mb-1.5">
+                      More Solutions
+                    </p>
+                    <div className="grid grid-cols-3 gap-x-4 gap-y-1">
+                      <Link
+                        to="/$locale/for-marketers"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        Marketers
+                      </Link>
+                      <Link
+                        to="/$locale/for-enterprises"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        Enterprises
+                      </Link>
+                      <Link
+                        to="/$locale/for-startups"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        Startups
+                      </Link>
+                      <Link
+                        to="/$locale/for-agencies"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        Agencies
+                      </Link>
+                      <Link
+                        to="/$locale/for-ecommerce"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        E-Commerce
+                      </Link>
+                      <Link
+                        to="/$locale/for-saas"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        SaaS
+                      </Link>
+                    </div>
+                  </div>
+
                   {/* Footer CTA */}
-                  <div className="px-3 py-2.5">
+                  <div className="px-3 py-2.5 border-t border-mist-100">
                     <p className="text-sm text-mist-500">
                       {t("menu.interested", { defaultValue: "Interested?" })}{" "}
                       <a
