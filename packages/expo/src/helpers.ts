@@ -7,6 +7,8 @@ import type { LocaleAwareTranslationStorage, TranslationStorage } from "./types"
 
 const LOG_PREFIX = "[better-i18n/expo]";
 
+let _cachedLanguages: LanguageOption[] = [];
+
 export interface InitBetterI18nOptions {
   /** Project identifier in "org/project" format */
   project: string;
@@ -271,5 +273,15 @@ export async function initBetterI18n(
     }
   });
 
+  _cachedLanguages = languages;
+
   return { core, languages };
+}
+
+/**
+ * Returns the languages resolved during `initBetterI18n`.
+ * Returns an empty array if called before init completes.
+ */
+export function getLanguages(): LanguageOption[] {
+  return _cachedLanguages;
 }
