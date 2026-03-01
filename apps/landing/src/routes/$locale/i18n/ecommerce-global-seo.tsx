@@ -61,9 +61,9 @@ function EcommerceGlobalSeoPage() {
   ];
 
   const marketplaces = [
-    { titleKey: "marketplaces.google.title", descKey: "marketplaces.google.description" },
-    { titleKey: "marketplaces.amazon.title", descKey: "marketplaces.amazon.description" },
-    { titleKey: "marketplaces.regional.title", descKey: "marketplaces.regional.description" },
+    { titleKey: "marketplaces.google.title", descKey: "marketplaces.google.description", defaultTitle: "Google Shopping Feeds", defaultDesc: "Localize product titles, descriptions, and attributes in your Google Merchant Center feeds for each target country to qualify for Shopping rich results." },
+    { titleKey: "marketplaces.amazon.title", descKey: "marketplaces.amazon.description", defaultTitle: "Amazon International Listings", defaultDesc: "Optimize A+ content, bullet points, and backend keywords for each Amazon marketplace with locally researched product search terms." },
+    { titleKey: "marketplaces.regional.title", descKey: "marketplaces.regional.description", defaultTitle: "Regional Marketplaces", defaultDesc: "Adapt listings for regional platforms like Mercado Libre, Rakuten, and Allegro with market-specific product attributes and local language optimization." },
   ];
 
   const relatedPages = [
@@ -141,10 +141,10 @@ function EcommerceGlobalSeoPage() {
                   <challenge.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(challenge.titleKey, { defaultValue: challenge.titleKey.split(".").pop() })}
+                  {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(challenge.descKey, { defaultValue: "" })}
+                  {t(challenge.descKey, { defaultValue: challenge.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -168,11 +168,11 @@ function EcommerceGlobalSeoPage() {
                 <div className="flex items-center gap-3 mb-3">
                   <IconChart1 className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
-                    {t(marketplace.titleKey, { defaultValue: marketplace.titleKey.split(".").pop() })}
+                    {t(marketplace.titleKey, { defaultValue: marketplace.defaultTitle })}
                   </h3>
                 </div>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(marketplace.descKey, { defaultValue: "" })}
+                  {t(marketplace.descKey, { defaultValue: marketplace.defaultDesc })}
                 </p>
               </div>
             ))}
