@@ -248,3 +248,87 @@ export async function getBlogPost(
     return null;
   }
 }
+
+// ─── Marketing Pages ────────────────────────────────────────────────
+
+export interface MarketingPage {
+  id: string;
+  slug: string;
+  title: string;
+  body: string | null;
+  bodyHtml: string | null;
+  excerpt: string;
+  pageType: "feature" | "persona";
+  heroSubtitle: string | null;
+  targetKeywords: string | null;
+  authorName: string | null;
+  authorAvatar: string | null;
+}
+
+export interface MarketingPageListItem {
+  slug: string;
+  title: string;
+  excerpt: string;
+  pageType: "feature" | "persona";
+  heroSubtitle: string | null;
+}
+
+const MARKETING_MODEL = "marketing-pages";
+
+/** Fetch marketing pages, optionally filtered by type. */
+export async function getMarketingPages(
+  locale: string,
+  pageType?: "feature" | "persona",
+): Promise<MarketingPageListItem[]> {
+  try {
+    const result = await getContentClient().getEntries(MARKETING_MODEL, {
+      language: locale,
+      status: "published",
+      limit: 50,
+      expand: ["author"],
+    });
+
+    return result.items
+      .filter((item) => !pageType || item.page_type === pageType)
+      .map((item) => ({
+        slug: item.slug,
+        title: item.title,
+        excerpt: extractExcerpt((item.body as string | null) ?? null),
+        pageType: (item.page_type as "feature" | "persona") || "feature",
+        heroSubtitle: (item.hero_subtitle as string | null) ?? null,
+      }));
+  } catch (error) {
+    console.error("Marketing pages API error:", error);
+    return [];
+  }
+}
+
+/** Fetch a single marketing page by slug. */
+export async function getMarketingPage(
+  slug: string,
+  locale: string,
+): Promise<MarketingPage | null> {
+  try {
+    const entry = await getContentClient().getEntry(MARKETING_MODEL, slug, {
+      language: locale,
+      expand: ["author"],
+    });
+    const bodyHtml = entry.body ? String(await marked(entry.body)) : null;
+    const excerpt = extractExcerpt(entry.body);
+    return {
+      id: entry.id,
+      slug: entry.slug,
+      title: entry.title,
+      body: entry.body,
+      bodyHtml,
+      excerpt,
+      pageType: (entry.page_type as "feature" | "persona") || "feature",
+      heroSubtitle: (entry.hero_subtitle as string | null) ?? null,
+      targetKeywords: (entry.target_keywords as string | null) ?? null,
+      authorName: entry.relations?.author?.title ?? null,
+      authorAvatar: entry.relations?.author?.avatar ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
