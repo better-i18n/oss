@@ -74,10 +74,10 @@ function SearchBox() {
   );
 }`;
 
-  const relatedPages = [
-    { name: "React i18n", href: "/$locale/i18n/react", description: t("i18n.reactIntl.related.react", { defaultValue: "Complete React internationalization guide" }) },
-    { name: "Next.js i18n", href: "/$locale/i18n/nextjs", description: t("i18n.reactIntl.related.nextjs", { defaultValue: "i18n for Next.js App Router" }) },
-    { name: "Best i18n Library", href: "/$locale/i18n/best-library", description: t("i18n.reactIntl.related.bestLibrary", { defaultValue: "Compare React i18n libraries" }) },
+  const relatedLinks = [
+    { title: "React i18n", to: "/$locale/i18n/react", description: t("i18n.reactIntl.related.react", { defaultValue: "Complete React internationalization guide" }) },
+    { title: "Next.js i18n", to: "/$locale/i18n/nextjs", description: t("i18n.reactIntl.related.nextjs", { defaultValue: "i18n for Next.js App Router" }) },
+    { title: "Best i18n Library", to: "/$locale/i18n/best-library", description: t("i18n.reactIntl.related.bestLibrary", { defaultValue: "Compare React i18n libraries" }) },
   ];
 
   return (
@@ -131,9 +131,9 @@ function SearchBox() {
         code={formattedMessageExample}
       />
 
-      <RelatedPages
-        title={t("i18n.reactIntl.relatedTitle", { defaultValue: "Related Guides" })}
-        pages={relatedPages}
+      <ComparisonRelatedTopics
+        heading={t("i18n.reactIntl.relatedTitle", { defaultValue: "Related Guides" })}
+        links={relatedLinks}
         locale={locale}
       />
 
