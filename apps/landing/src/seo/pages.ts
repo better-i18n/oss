@@ -102,6 +102,9 @@ export const MARKETING_PAGES = [
   { path: "what-is-internationalization", priority: 0.85, changefreq: "monthly", prerender: true },
   { path: "what-is-localization", priority: 0.85, changefreq: "monthly", prerender: true },
 
+  // Blog
+  { path: "blog", priority: 0.8, changefreq: "daily", prerender: false },
+
   // Company pages
   { path: "about", priority: 0.7, changefreq: "monthly", prerender: true },
   { path: "careers", priority: 0.7, changefreq: "weekly", prerender: true },
