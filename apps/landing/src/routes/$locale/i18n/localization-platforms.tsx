@@ -251,6 +251,39 @@ function LocalizationPlatformsPage() {
 
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
+            <div>
+              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
+                {t("localeRouting.title", { defaultValue: "Locale Routing & Delivery" })}
+              </h2>
+              <p className="text-mist-700 leading-relaxed">
+                {t("localeRouting.description", { defaultValue: "A localization platform handles the mechanics of serving the right content to the right user — from URL structure and browser navigation to device-level detection and offline support." })}
+              </p>
+            </div>
+            <div className="mt-8 lg:mt-0 space-y-4">
+              <div className="p-4 rounded-xl bg-mist-50 border border-mist-100">
+                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("localeRouting.urlPrefix.title", { defaultValue: "URL Prefix Strategy" })}</h3>
+                <p className="text-sm text-mist-700">{t("localeRouting.urlPrefix.description", { defaultValue: "Default locale served without a prefix (/about), other locales at /fr/about, /de/about. Clean URLs with proper hreflang tags." })}</p>
+              </div>
+              <div className="p-4 rounded-xl bg-mist-50 border border-mist-100">
+                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("localeRouting.history.title", { defaultValue: "Browser History Support" })}</h3>
+                <p className="text-sm text-mist-700">{t("localeRouting.history.description", { defaultValue: "Back and forward navigation works correctly across locale changes, preserving the user's browsing context." })}</p>
+              </div>
+              <div className="p-4 rounded-xl bg-mist-50 border border-mist-100">
+                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("localeRouting.deviceDetection.title", { defaultValue: "Device Locale Detection" })}</h3>
+                <p className="text-sm text-mist-700">{t("localeRouting.deviceDetection.description", { defaultValue: "Automatic locale detection on mobile via Expo, and browser-based detection for web apps using Accept-Language headers." })}</p>
+              </div>
+              <div className="p-4 rounded-xl bg-mist-50 border border-mist-100">
+                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("localeRouting.offline.title", { defaultValue: "Offline Caching" })}</h3>
+                <p className="text-sm text-mist-700">{t("localeRouting.offline.description", { defaultValue: "Service worker support for caching translations offline. Users see translated content even without a network connection." })}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
               {t("solution.title", { defaultValue: "Better i18n: A Localization Platform Built Around Your Workflow" })}

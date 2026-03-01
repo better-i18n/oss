@@ -8,6 +8,7 @@ export const Route = createFileRoute("/careers")({
       params: {
         locale: context.locale || i18nConfig.defaultLocale,
       },
+      statusCode: 301,
     });
   },
 });

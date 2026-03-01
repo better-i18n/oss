@@ -60,8 +60,8 @@ function PricingPage() {
 
   return (
     <MarketingLayout showCTA={false}>
-      {/* Pricing Section from homepage */}
-      <Pricing />
+      {/* Pricing Section — use h1 on dedicated pricing page */}
+      <Pricing headingLevel="h1" />
 
       {/* FAQ Section */}
       <section className="py-16 bg-white">

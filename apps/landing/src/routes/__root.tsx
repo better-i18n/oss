@@ -9,15 +9,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BetterI18nProvider, getLocaleFromPath } from "@better-i18n/use-intl";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
-import { fetchLocales, getCachedLocales } from "../lib/locales";
+import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
-import {
-  getLocalizedMeta,
-  formatMetaTags,
-  getAlternateLinks,
-  getCanonicalLink,
-} from "../lib/meta";
-import { getHomePageStructuredData } from "../lib/structured-data";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,13 +53,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     };
   },
 
-  head: ({ loaderData }) => {
-    const locale = loaderData?.locale || "en";
-    const meta = getLocalizedMeta(loaderData?.messages || {}, "home", {
-      locale,
-      pathname: "/",
-    });
-
+  head: () => {
     return {
       meta: [
         {
@@ -80,7 +67,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           name: "google",
           content: "notranslate",
         },
-        ...formatMetaTags(meta, { locale }),
       ],
       links: [
         {
@@ -94,14 +80,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         },
         {
           rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wft@400;500&display=swap",
+          href: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap",
         },
         {
           rel: "stylesheet",
           href: appCss,
         },
-        ...getAlternateLinks("/", getCachedLocales()),
-        getCanonicalLink(locale, "/"),
       ],
       scripts: [
         // Google Ads (gtag.js)
@@ -115,8 +99,6 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'AW-17928422726');`,
         },
-        // Structured data
-        ...getHomePageStructuredData(),
       ],
     };
   },
