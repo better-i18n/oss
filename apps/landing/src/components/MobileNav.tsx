@@ -14,6 +14,7 @@ import {
   IconNewspaper,
   IconApiConnection,
   IconLiveActivity,
+  IconGlobe,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { useT } from "@/lib/i18n";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -273,16 +274,27 @@ export function MobileNav() {
                 {/* More Solutions */}
                 <div className="px-3 pt-2">
                   <p className="text-xs font-medium uppercase tracking-wider text-mist-400 mb-1.5">
-                    More Solutions
+                    {t("menu.moreSolutions", { defaultValue: "More Solutions" })}
                   </p>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                    {/* Business & Industry */}
                     {[
-                      { to: "/$locale/for-marketers" as const, label: "Marketers" },
-                      { to: "/$locale/for-enterprises" as const, label: "Enterprises" },
-                      { to: "/$locale/for-startups" as const, label: "Startups" },
-                      { to: "/$locale/for-agencies" as const, label: "Agencies" },
-                      { to: "/$locale/for-ecommerce" as const, label: "E-Commerce" },
-                      { to: "/$locale/for-saas" as const, label: "SaaS" },
+                      { to: "/$locale/for-enterprises" as const, key: "enterprises", label: "Enterprises" },
+                      { to: "/$locale/for-saas" as const, key: "saas", label: "SaaS" },
+                      { to: "/$locale/for-ecommerce" as const, key: "ecommerce", label: "E-Commerce" },
+                      { to: "/$locale/for-startups" as const, key: "startups", label: "Startups" },
+                      { to: "/$locale/for-healthcare" as const, key: "healthcare", label: "Healthcare" },
+                      { to: "/$locale/for-education" as const, key: "education", label: "Education" },
+                      { to: "/$locale/for-gaming" as const, key: "gaming", label: "Gaming" },
+                      { to: "/$locale/for-open-source" as const, key: "openSource", label: "Open Source" },
+                      // Teams & Roles
+                      { to: "/$locale/for-marketers" as const, key: "marketers", label: "Marketers" },
+                      { to: "/$locale/for-designers" as const, key: "designers", label: "Designers" },
+                      { to: "/$locale/for-content-teams" as const, key: "contentTeams", label: "Content Teams" },
+                      { to: "/$locale/for-engineering-leaders" as const, key: "engineeringLeaders", label: "Engineering Leaders" },
+                      { to: "/$locale/for-mobile-teams" as const, key: "mobileTeams", label: "Mobile Teams" },
+                      { to: "/$locale/for-agencies" as const, key: "agencies", label: "Agencies" },
+                      { to: "/$locale/for-freelancers" as const, key: "freelancers", label: "Freelancers" },
                     ].map((item) => (
                       <Link
                         key={item.to}
@@ -291,7 +303,7 @@ export function MobileNav() {
                         onClick={close}
                         className="py-1.5 text-sm text-mist-700 hover:text-mist-950 transition-colors"
                       >
-                        {item.label}
+                        {t(`menu.solutions.${item.key}`, { defaultValue: item.label })}
                       </Link>
                     ))}
                   </div>
@@ -350,6 +362,16 @@ export function MobileNav() {
               className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
             >
               {t("pricing", { defaultValue: "Pricing" })}
+            </Link>
+
+            {/* Compare - simple link */}
+            <Link
+              to="/$locale/compare"
+              params={{ locale: localeParam }}
+              onClick={close}
+              className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+            >
+              {t("compare", { defaultValue: "Compare" })}
             </Link>
 
             {/* Resources - expandable */}
@@ -456,6 +478,18 @@ export function MobileNav() {
                     {t("status", { defaultValue: "Status" })}
                   </span>
                 </a>
+
+                <Link
+                  to="/$locale/what-is"
+                  params={{ locale: localeParam }}
+                  onClick={close}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <IconGlobe className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("resources.whatIsI18n", { defaultValue: "What is i18n?" })}
+                  </span>
+                </Link>
               </div>
             </AccordionSection>
           </div>
@@ -464,7 +498,7 @@ export function MobileNav() {
           <div className="mt-6 space-y-4 border-t border-mist-200 pt-6">
             <div className="flex items-center justify-between px-3">
               <span className="text-sm font-medium text-mist-500">
-                Language
+                {t("language", { defaultValue: "Language" })}
               </span>
               <LanguageSwitcher />
             </div>
