@@ -61,7 +61,7 @@ function CrowdinComparisonPage() {
       {/* Comparison Table */}
       <section className="pb-16">
         <div className="mx-auto max-w-4xl px-6 lg:px-10">
-          <ComparisonTable competitorName="Crowdin" features={features} />
+          <ComparisonTable competitorName="Crowdin" features={features} featureLabel={t("compare.featureLabel")} />
         </div>
       </section>
 
