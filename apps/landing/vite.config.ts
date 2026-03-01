@@ -6,8 +6,28 @@ import viteTsConfigPaths from "vite-tsconfig-paths";
 import { fileURLToPath, URL } from "url";
 import tailwindcss from "@tailwindcss/vite";
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
+
+  const apiKey = env.BETTER_I18N_CONTENT_API_KEY;
+  const project = env.BETTER_I18N_PROJECT;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let pages: readonly any[] = [];
+  if (mode === "production" && apiKey && project) {
+    try {
+      const { generatePages } = await import("./src/seo/generate-pages");
+      pages = await generatePages({ project, apiKey });
+    } catch (error) {
+      console.error("[SEO] Page generation failed:", error);
+    }
+  } else if (mode === "production") {
+    const missing = [
+      !apiKey && "BETTER_I18N_CONTENT_API_KEY",
+      !project && "BETTER_I18N_PROJECT",
+    ].filter(Boolean).join(", ");
+    console.warn(`[SEO] Skipping page generation: missing env vars: ${missing}`);
+  }
 
   return {
     define: {
@@ -36,7 +56,26 @@ export default defineConfig(({ mode }) => {
       viteTsConfigPaths({
         projects: ["./tsconfig.json"],
       }),
-      tanstackStart(),
+      tanstackStart({
+        pages: pages.map((p) => ({
+          path: p.path,
+          sitemap: {
+            ...p.sitemap,
+            alternateRefs: [...p.sitemap.alternateRefs],
+          },
+          prerender: p.prerender,
+        })),
+        sitemap: {
+          enabled: pages.length > 0,
+          host: "https://better-i18n.com",
+        },
+        prerender: pages.length > 0
+          ? {
+              enabled: true,
+              crawlLinks: false,
+            }
+          : undefined,
+      }),
       viteReact(),
     ],
   };

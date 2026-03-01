@@ -1,6 +1,5 @@
 import { getCachedLocales } from "./locales";
-
-const SITE_URL = "https://better-i18n.com";
+import { SITE_URL } from "@/seo/pages";
 const SITE_NAME = "Better i18n";
 const OG_SERVICE_URL = "https://og.better-i18n.com";
 const DEFAULT_OG_IMAGE = `${OG_SERVICE_URL}/og`;
@@ -224,4 +223,5 @@ export function buildOgImageUrl(
   return qs ? `${OG_SERVICE_URL}/${endpoint}?${qs}` : `${OG_SERVICE_URL}/${endpoint}`;
 }
 
-export { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE, OG_SERVICE_URL, TWITTER_HANDLE };
+export { SITE_URL } from "@/seo/pages";
+export { SITE_NAME, DEFAULT_OG_IMAGE, OG_SERVICE_URL, TWITTER_HANDLE };

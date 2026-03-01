@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
 
@@ -11,6 +12,11 @@ export const Route = createFileRoute("/$locale/about")({
       locale: loaderData?.locale || "en",
       pageKey: "about",
       pathname: "/about",
+      pageType: "educational",
+      structuredDataOptions: {
+        title: "About Better i18n",
+        description: "Learn about the team behind Better i18n — our mission, values, and why we are building developer-first translation management.",
+      },
     });
   },
   component: AboutPage,
@@ -18,6 +24,7 @@ export const Route = createFileRoute("/$locale/about")({
 
 function AboutPage() {
   const t = useTranslations("aboutPage");
+  const { locale } = Route.useParams();
 
   const values = [
     { titleKey: "values.developerFirst.title", descKey: "values.developerFirst.description" },
@@ -76,6 +83,9 @@ function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* Related Pages */}
+      <RelatedPages currentPage="about" locale={locale} variant="mixed" />
     </MarketingLayout>
   );
 }

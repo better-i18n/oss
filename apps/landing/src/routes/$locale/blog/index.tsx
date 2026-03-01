@@ -4,6 +4,7 @@ import { getBlogPosts, type BlogPostListItem } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/blog/BlogCard";
+import { RelatedPages } from "@/components/RelatedPages";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
   IconArrowRight,
@@ -22,6 +23,7 @@ import {
   formatStructuredData,
   getOrganizationSchema,
   getWebSiteSchema,
+  getCollectionPageSchema,
 } from "@/lib/structured-data";
 
 const loadBlogPosts = createServerFn({ method: "GET" })
@@ -67,6 +69,11 @@ export const Route = createFileRoute("/$locale/blog/")({
         getOrganizationSchema(),
         getWebSiteSchema(),
         breadcrumbSchema,
+        getCollectionPageSchema({
+          name: "Better i18n Blog",
+          description: "Latest updates, tutorials, and insights about internationalization and localization.",
+          url: `${SITE_URL}/${locale}/blog`,
+        }),
       ]),
     };
   },
@@ -76,8 +83,6 @@ export const Route = createFileRoute("/$locale/blog/")({
 function BlogPage() {
   const { posts, locale } = Route.useLoaderData();
   const t = useTranslations("blog");
-
-  console.log(posts, "posts burada knk");
 
   return (
     <div className="bg-white">
@@ -145,6 +150,7 @@ function BlogPage() {
           )}
         </div>
       </main>
+      <RelatedPages currentPage="blog" locale={locale} variant="educational" />
       <Footer />
     </div>
   );

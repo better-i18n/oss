@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
@@ -17,6 +18,11 @@ export const Route = createFileRoute("/$locale/integrations")({
       locale: loaderData?.locale || "en",
       pageKey: "integrations",
       pathname: "/integrations",
+      pageType: "educational",
+      structuredDataOptions: {
+        title: "Better i18n Integrations",
+        description: "Integrate Better i18n with React, Next.js, Vue, Angular, Svelte, Nuxt, and more. GitHub, CLI, API, and MCP server support.",
+      },
     });
   },
   component: IntegrationsPage,
@@ -24,6 +30,7 @@ export const Route = createFileRoute("/$locale/integrations")({
 
 function IntegrationsPage() {
   const t = useTranslations("integrationsPage");
+  const { locale } = Route.useParams();
 
   const frameworks = [
     { name: "React", icon: "⚛️", descKey: "frameworks.react.description" },
@@ -151,6 +158,9 @@ export default withBetterI18n({
           </div>
         </div>
       </section>
+
+      {/* Related Pages */}
+      <RelatedPages currentPage="integrations" locale={locale} variant="frameworks" />
     </MarketingLayout>
   );
 }

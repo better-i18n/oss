@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { RelatedPages } from "@/components/RelatedPages";
+import { getPageHead, createPageLoader, getCareersPageStructuredData } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
@@ -12,6 +13,22 @@ export const Route = createFileRoute("/$locale/careers")({
       locale: loaderData?.locale || "en",
       pageKey: "careers",
       pathname: "/careers",
+      customStructuredData: getCareersPageStructuredData([
+        {
+          title: "Full Stack Engineer",
+          description: "Build developer-first translation management tools with TypeScript, React, and Node.js.",
+          employmentType: "FULL_TIME",
+          location: "Remote",
+          remote: true,
+        },
+        {
+          title: "AI/ML Engineer",
+          description: "Work on AI-powered translation and localization systems using large language models.",
+          employmentType: "FULL_TIME",
+          location: "Remote",
+          remote: true,
+        },
+      ]),
     });
   },
   component: CareersPage,
@@ -19,6 +36,7 @@ export const Route = createFileRoute("/$locale/careers")({
 
 function CareersPage() {
   const t = useTranslations("careersPage");
+  const { locale } = Route.useParams();
 
   const openPositions = [
     {
@@ -135,6 +153,9 @@ function CareersPage() {
           </a>
         </div>
       </section>
+
+      {/* Related Pages */}
+      <RelatedPages currentPage="careers" locale={locale} variant="for" />
     </MarketingLayout>
   );
 }
