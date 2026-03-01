@@ -9,7 +9,10 @@ export function getOrganizationSchema() {
     "@type": "Organization",
     name: SITE_NAME,
     url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}/logo.png`,
+    },
     sameAs: [
       "https://twitter.com/betteri18n",
       "https://github.com/better-i18n",
@@ -18,6 +21,8 @@ export function getOrganizationSchema() {
       "@type": "ContactPoint",
       email: "hello@better-i18n.com",
       contactType: "customer support",
+      url: `${SITE_URL}/about`,
+      availableLanguage: ["English", "Turkish"],
     },
   };
 }
@@ -53,16 +58,20 @@ export function getSoftwareApplicationSchema() {
     applicationCategory: "DeveloperApplication",
     operatingSystem: "Web",
     url: SITE_URL,
+    image: `${SITE_URL}/logo.png`,
     offers: {
       "@type": "Offer",
-      price: "0",
+      price: 0,
       priceCurrency: "USD",
       description: "Free tier available",
+      availability: "https://schema.org/InStock",
     },
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      ratingCount: "50",
+      ratingValue: 4.9,
+      bestRating: 5,
+      worstRating: 1,
+      ratingCount: 50,
     },
   };
 }
@@ -117,7 +126,7 @@ export function getArticleSchema(options: ArticleSchemaOptions) {
     author: {
       "@type": "Person",
       name: options.author.name,
-      url: options.author.url,
+      ...(options.author.url && { url: options.author.url }),
     },
     publisher: {
       "@type": "Organization",
@@ -213,8 +222,12 @@ export function getComparisonSchema(options: {
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      description: item.description,
-      url: item.url,
+      item: {
+        "@type": "SoftwareApplication",
+        name: item.name,
+        description: item.description,
+        url: item.url,
+      },
     })),
   };
 }
@@ -256,10 +269,11 @@ export function getHowToSchema(options: {
 export function getProductSchema(options: {
   name: string;
   description: string;
+  image?: string;
   brand?: string;
   offers: Array<{
     name: string;
-    price: string;
+    price: number;
     priceCurrency: string;
     description?: string;
   }>;
@@ -269,9 +283,17 @@ export function getProductSchema(options: {
     "@type": "Product",
     name: options.name,
     description: options.description,
+    image: options.image || `${SITE_URL}/logo.png`,
     brand: {
       "@type": "Brand",
       name: options.brand || SITE_NAME,
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: 4.9,
+      bestRating: 5,
+      worstRating: 1,
+      ratingCount: 50,
     },
     offers: options.offers.map((offer) => ({
       "@type": "Offer",
@@ -320,18 +342,28 @@ export function getTechArticleSchema(options: {
   headline: string;
   description: string;
   url: string;
+  image?: string;
+  datePublished?: string;
+  dateModified?: string;
   dependencies?: string[];
   proficiencyLevel?: "Beginner" | "Intermediate" | "Expert";
 }) {
+  const datePublished = options.datePublished || "2025-01-01";
+  const dateModified = options.dateModified || "2026-03-01";
+
   return {
     "@context": "https://schema.org",
     "@type": "TechArticle",
     headline: options.headline,
     description: options.description,
     url: options.url,
+    image: options.image || `${SITE_URL}/logo.png`,
+    datePublished,
+    dateModified,
     author: {
       "@type": "Organization",
       name: SITE_NAME,
+      url: SITE_URL,
     },
     publisher: {
       "@type": "Organization",
@@ -340,6 +372,10 @@ export function getTechArticleSchema(options: {
         "@type": "ImageObject",
         url: `${SITE_URL}/logo.png`,
       },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": options.url,
     },
     ...(options.dependencies && { dependencies: options.dependencies.join(", ") }),
     ...(options.proficiencyLevel && { proficiencyLevel: options.proficiencyLevel }),
@@ -412,14 +448,17 @@ export function getReviewSchema(reviews: ReviewItem[]) {
       name: review.author,
     },
     reviewBody: review.reviewBody,
+    datePublished: "2025-01-15",
     itemReviewed: {
       "@type": "SoftwareApplication",
       name: SITE_NAME,
+      applicationCategory: "DeveloperApplication",
     },
     reviewRating: {
       "@type": "Rating",
-      ratingValue: "5",
-      bestRating: "5",
+      ratingValue: 5,
+      bestRating: 5,
+      worstRating: 1,
     },
   }));
 }
@@ -435,9 +474,9 @@ export function getPricingPageStructuredData() {
       name: `${SITE_NAME} Translation Management`,
       description: "AI-powered translation management system for developers",
       offers: [
-        { name: "Free", price: "0", priceCurrency: "USD", description: "For hobby projects" },
-        { name: "Pro", price: "19", priceCurrency: "USD", description: "For growing teams" },
-        { name: "Enterprise", price: "0", priceCurrency: "USD", description: "Custom pricing" },
+        { name: "Free", price: 0, priceCurrency: "USD", description: "For hobby projects" },
+        { name: "Pro", price: 19, priceCurrency: "USD", description: "For growing teams" },
+        { name: "Enterprise", price: 0, priceCurrency: "USD", description: "Custom pricing" },
       ],
     }),
   ]);

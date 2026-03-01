@@ -11,11 +11,14 @@ import {
 } from "@/lib/meta";
 import { getChangelogs, type ChangelogEntry } from "@/lib/changelog";
 import { getDefaultStructuredData } from "@/lib/structured-data";
+import { withTimeout } from "@/lib/fetch-utils";
 
 export const Route = createFileRoute("/$locale/changelog")({
   loader: async ({ context, params }) => {
     const locale = params.locale as "en" | "tr";
-    const releases = await getChangelogs(locale);
+    // Wrap with 4s timeout so the page renders even if the content API is slow.
+    // Client-side useQuery will retry on navigation.
+    const releases = await withTimeout(getChangelogs(locale), 4000, []);
 
     return {
       messages: context.messages,

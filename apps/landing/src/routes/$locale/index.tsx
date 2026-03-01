@@ -20,12 +20,16 @@ import {
   buildOgImageUrl,
 } from "@/lib/meta";
 import { getHomePageStructuredData, getReviewSchema, formatStructuredData } from "@/lib/structured-data";
-import { getChangelogs } from "@/lib/changelog";
+import { getChangelogsMeta } from "@/lib/changelog";
+import { withTimeout } from "@/lib/fetch-utils";
 
 export const Route = createFileRoute("/$locale/")({
   loader: async ({ context, params }) => {
     const locale = params.locale as string;
-    const releases = await getChangelogs(locale);
+    // Use metadata-only fetch (single API call) instead of full content (N+1 calls)
+    // to keep homepage load time within crawler timeout limits.
+    // Wrap with 3s timeout so the page renders even if the API is slow.
+    const releases = await withTimeout(getChangelogsMeta(locale), 3000, []);
     return {
       messages: context.messages,
       locale: context.locale,
