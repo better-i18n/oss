@@ -2,7 +2,7 @@ import type {
   LanguageOption,
   ManifestLanguage,
   ManifestResponse,
-} from "./types";
+} from "./types.js";
 
 /**
  * Normalize a manifest language to a simplified language option

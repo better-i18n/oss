@@ -1,4 +1,4 @@
-import type { TranslationStorage } from "../types";
+import type { TranslationStorage } from "../types.js";
 
 /**
  * Minimal Storage interface matching the Web Storage API subset we need.

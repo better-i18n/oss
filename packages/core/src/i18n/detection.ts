@@ -1,5 +1,5 @@
-import type { LocaleDetectionOptions, LocaleDetectionResult } from "./types";
-import { normalizeLocale } from "../utils/locale";
+import type { LocaleDetectionOptions, LocaleDetectionResult } from "./types.js";
+import { normalizeLocale } from "../utils/locale.js";
 
 /** Case-insensitive locale lookup — returns the canonical (CDN) form if matched */
 const findLocale = (code: string | null | undefined, available: string[]) =>
