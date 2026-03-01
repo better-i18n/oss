@@ -1,5 +1,5 @@
 // Primary API
-export { initBetterI18n } from "./helpers";
+export { initBetterI18n, getLanguages } from "./helpers";
 export type { InitBetterI18nOptions, BetterI18nResult } from "./helpers";
 
 // Locale detection
