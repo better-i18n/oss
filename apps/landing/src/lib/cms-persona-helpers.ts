@@ -73,10 +73,10 @@ export function getPersonaLabel(slug: string): string {
   return PERSONA_LABELS[slug] ?? slug.replace("for-", "For ").replace(/-/g, " ");
 }
 
-export function personaHead(loaderData: {
+export function personaHead(loaderData?: {
   page?: MarketingPage;
   locale?: string;
-}) {
+} | null) {
   const page = loaderData?.page;
   const locale = loaderData?.locale || "en";
   const slug = page?.slug || "";
@@ -84,7 +84,7 @@ export function personaHead(loaderData: {
   const canonicalUrl = `${SITE_URL}/${locale}${pathname}`;
   const label = getPersonaLabel(slug);
 
-  const dynamicOgImage = buildOgImageUrl("og/feature", {
+  const dynamicOgImage = buildOgImageUrl("og", {
     title: page?.title || label,
   });
 
