@@ -32,10 +32,10 @@ export const Route = createFileRoute("/$locale/i18n/multilingual-seo")({
 });
 
 const challenges = [
-  { icon: IconApiConnection, titleKey: "challenges.hreflang.title", descKey: "challenges.hreflang.description" },
-  { icon: IconGlobe, titleKey: "challenges.urlStructure.title", descKey: "challenges.urlStructure.description" },
-  { icon: IconMagnifyingGlass, titleKey: "challenges.keywordResearch.title", descKey: "challenges.keywordResearch.description" },
-  { icon: IconRocket, titleKey: "challenges.contentDuplication.title", descKey: "challenges.contentDuplication.description" },
+  { icon: IconApiConnection, titleKey: "challenges.hreflang.title", descKey: "challenges.hreflang.description", defaultTitle: "Hreflang Implementation", defaultDesc: "Correctly implementing hreflang tags to tell search engines which language version to show each user." },
+  { icon: IconGlobe, titleKey: "challenges.urlStructure.title", descKey: "challenges.urlStructure.description", defaultTitle: "URL Structure Decisions", defaultDesc: "Choosing between subdirectories, subdomains, and ccTLDs for your multilingual site architecture." },
+  { icon: IconMagnifyingGlass, titleKey: "challenges.keywordResearch.title", descKey: "challenges.keywordResearch.description", defaultTitle: "Multilingual Keyword Research", defaultDesc: "Conducting keyword research in each language rather than translating English keywords directly." },
+  { icon: IconRocket, titleKey: "challenges.contentDuplication.title", descKey: "challenges.contentDuplication.description", defaultTitle: "Content Duplication Risks", defaultDesc: "Avoiding duplicate content penalties when similar pages exist across multiple language versions." },
 ];
 
 function MultilingualSeoPage() {
@@ -44,25 +44,25 @@ function MultilingualSeoPage() {
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.organicReach",
-    "benefits.list.localSearchVisibility",
-    "benefits.list.reducedBounceRate",
-    "benefits.list.higherConversions",
-    "benefits.list.competitiveEdge",
-    "benefits.list.brandAuthority",
+    { key: "benefits.list.organicReach", defaultValue: "Expand organic reach to non-English speaking markets worldwide" },
+    { key: "benefits.list.localSearchVisibility", defaultValue: "Improve visibility in local search results for each target market" },
+    { key: "benefits.list.reducedBounceRate", defaultValue: "Reduce bounce rates by serving content in the user's preferred language" },
+    { key: "benefits.list.higherConversions", defaultValue: "Increase conversion rates with culturally relevant localized content" },
+    { key: "benefits.list.competitiveEdge", defaultValue: "Gain competitive advantage in markets with less SEO competition" },
+    { key: "benefits.list.brandAuthority", defaultValue: "Build brand authority and trust with native-language content" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Audit & Plan", defaultDesc: "Assess your current site structure, identify target markets, and plan your multilingual URL architecture." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Technical Setup", defaultDesc: "Implement hreflang tags, configure URL structure, and set up international sitemaps for each language." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Content Localization", defaultDesc: "Translate and localize content with SEO-optimized keywords for each target language and region." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Monitor & Scale", defaultDesc: "Track rankings and organic traffic per locale, then expand to additional markets based on performance data." },
   ];
 
   const urlStructures = [
-    { titleKey: "urlStructures.subdirectory.title", descKey: "urlStructures.subdirectory.description", exampleKey: "urlStructures.subdirectory.example" },
-    { titleKey: "urlStructures.subdomain.title", descKey: "urlStructures.subdomain.description", exampleKey: "urlStructures.subdomain.example" },
-    { titleKey: "urlStructures.cctld.title", descKey: "urlStructures.cctld.description", exampleKey: "urlStructures.cctld.example" },
+    { titleKey: "urlStructures.subdirectory.title", descKey: "urlStructures.subdirectory.description", exampleKey: "urlStructures.subdirectory.example", defaultTitle: "Subdirectory", defaultDesc: "Language versions live under path segments on the same domain. Consolidates domain authority and is easiest to maintain.", defaultExample: "example.com/en/, example.com/fr/" },
+    { titleKey: "urlStructures.subdomain.title", descKey: "urlStructures.subdomain.description", exampleKey: "urlStructures.subdomain.example", defaultTitle: "Subdomain", defaultDesc: "Each language gets its own subdomain. Allows separate server configurations but splits domain authority.", defaultExample: "en.example.com, fr.example.com" },
+    { titleKey: "urlStructures.cctld.title", descKey: "urlStructures.cctld.description", exampleKey: "urlStructures.cctld.example", defaultTitle: "Country-Code TLD", defaultDesc: "Each country gets its own top-level domain. Strongest geotargeting signal but highest cost and complexity.", defaultExample: "example.com, example.fr, example.de" },
   ];
 
   const relatedPages = [
@@ -140,10 +140,10 @@ function MultilingualSeoPage() {
                   <challenge.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(challenge.titleKey, { defaultValue: challenge.titleKey.split(".").pop() })}
+                  {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(challenge.descKey, { defaultValue: "" })}
+                  {t(challenge.descKey, { defaultValue: challenge.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -167,14 +167,14 @@ function MultilingualSeoPage() {
                 <div className="flex items-center gap-3 mb-3">
                   <IconGroup1 className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
-                    {t(structure.titleKey, { defaultValue: structure.titleKey.split(".").pop() })}
+                    {t(structure.titleKey, { defaultValue: structure.defaultTitle })}
                   </h3>
                 </div>
                 <p className="text-sm text-mist-700 leading-relaxed mb-3">
-                  {t(structure.descKey, { defaultValue: "" })}
+                  {t(structure.descKey, { defaultValue: structure.defaultDesc })}
                 </p>
                 <code className="text-xs bg-mist-200 text-mist-800 rounded px-2 py-1">
-                  {t(structure.exampleKey, { defaultValue: "" })}
+                  {t(structure.exampleKey, { defaultValue: structure.defaultExample })}
                 </code>
               </div>
             ))}
@@ -195,10 +195,10 @@ function MultilingualSeoPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -224,10 +224,10 @@ function MultilingualSeoPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

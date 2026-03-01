@@ -3,7 +3,7 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader, formatStructuredData } from "@/lib/page-seo";
 import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
 import { SITE_URL } from "@/lib/meta";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/compare/")({
@@ -32,14 +32,14 @@ export const Route = createFileRoute("/$locale/compare/")({
 });
 
 const competitors = [
-  { key: "crowdin", name: "Crowdin", slug: "crowdin" },
-  { key: "lokalise", name: "Lokalise", slug: "lokalise" },
-  { key: "phrase", name: "Phrase", slug: "phrase" },
-  { key: "transifex", name: "Transifex", slug: "transifex" },
+  { key: "crowdin", name: "Crowdin", slug: "crowdin", defaultDesc: "See how Better i18n compares to Crowdin for developer-first localization workflows.", defaultHighlight: "AI-native translations" },
+  { key: "lokalise", name: "Lokalise", slug: "lokalise", defaultDesc: "Compare Better i18n with Lokalise for modern app localization and deployment.", defaultHighlight: "Built-in CDN delivery" },
+  { key: "phrase", name: "Phrase", slug: "phrase", defaultDesc: "See how Better i18n compares to Phrase for enterprise translation management.", defaultHighlight: "Developer-first platform" },
+  { key: "transifex", name: "Transifex", slug: "transifex", defaultDesc: "Compare Better i18n with Transifex for open-source and SaaS localization.", defaultHighlight: "Free tier available" },
 ];
 
 function ComparePage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing.compare.index");
   const { locale } = Route.useParams();
 
   return (
@@ -49,10 +49,10 @@ function ComparePage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("compare.index.hero.title")}
+              {t("hero.title", { defaultValue: "Compare Better i18n" })}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("compare.index.hero.subtitle")}
+              {t("hero.subtitle", { defaultValue: "See how Better i18n stacks up against other localization platforms." })}
             </p>
           </div>
         </div>
@@ -75,14 +75,14 @@ function ComparePage() {
                       Better i18n vs {competitor.name}
                     </h3>
                     <p className="mt-1 text-sm text-mist-600">
-                      {t(`compare.index.competitors.${competitor.key}.description`)}
+                      {t(`competitors.${competitor.key}.description`, { defaultValue: competitor.defaultDesc })}
                     </p>
                   </div>
                   <IconArrowRight className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
                 </div>
                 <div className="mt-4 pt-4 border-t border-mist-100">
                   <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                    {t(`compare.index.competitors.${competitor.key}.highlight`)}
+                    {t(`competitors.${competitor.key}.highlight`, { defaultValue: competitor.defaultHighlight })}
                   </span>
                 </div>
               </Link>
