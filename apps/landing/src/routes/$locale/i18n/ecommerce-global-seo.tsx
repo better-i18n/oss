@@ -45,19 +45,19 @@ function EcommerceGlobalSeoPage() {
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.internationalRevenue",
-    "benefits.list.organicProductDiscovery",
-    "benefits.list.reducedAdSpend",
-    "benefits.list.brandAuthority",
-    "benefits.list.marketplaceSynergy",
-    "benefits.list.conversionLift",
+    { key: "benefits.list.internationalRevenue", defaultValue: "Unlock international revenue streams through organic product visibility in new markets" },
+    { key: "benefits.list.organicProductDiscovery", defaultValue: "Increase organic product discovery with localized titles, descriptions, and keywords" },
+    { key: "benefits.list.reducedAdSpend", defaultValue: "Reduce dependency on paid ads by building sustainable organic traffic in each market" },
+    { key: "benefits.list.brandAuthority", defaultValue: "Establish brand authority in local markets with properly localized storefronts" },
+    { key: "benefits.list.marketplaceSynergy", defaultValue: "Create synergy between your owned storefront and marketplace listings for maximum visibility" },
+    { key: "benefits.list.conversionLift", defaultValue: "Lift conversion rates with locally optimized product pages that match regional buying expectations" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Market & Keyword Research", defaultDesc: "Identify target markets, research local product search terms, and map keyword intent differences across each country and language." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Localize Product Catalog", defaultDesc: "Translate and transcreate product titles, descriptions, and meta tags using locally relevant keywords rather than literal translations." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Technical Implementation", defaultDesc: "Set up hreflang, canonical tags, localized structured data, and currency-specific product schema for every market-language combination." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Launch & Measure", defaultDesc: "Deploy localized storefronts, submit localized sitemaps and shopping feeds, then track rankings and conversions per market." },
   ];
 
   const marketplaces = [
