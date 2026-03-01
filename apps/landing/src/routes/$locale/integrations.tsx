@@ -17,6 +17,11 @@ export const Route = createFileRoute("/$locale/integrations")({
       locale: loaderData?.locale || "en",
       pageKey: "integrations",
       pathname: "/integrations",
+      pageType: "educational",
+      structuredDataOptions: {
+        title: "Better i18n Integrations",
+        description: "Integrate Better i18n with React, Next.js, Vue, Angular, Svelte, Nuxt, and more. GitHub, CLI, API, and MCP server support.",
+      },
     });
   },
   component: IntegrationsPage,
