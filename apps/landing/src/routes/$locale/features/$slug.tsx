@@ -62,11 +62,13 @@ export const Route = createFileRoute("/$locale/features/$slug")({
       url: canonicalUrl,
     });
 
-    const breadcrumbSchema = getBreadcrumbSchema([
-      { name: "Home", url: `${SITE_URL}/${locale}` },
-      { name: "Features", url: `${SITE_URL}/${locale}/features` },
-      { name: page?.title || "Feature", url: canonicalUrl },
-    ]);
+    const breadcrumbScripts = formatStructuredData(
+      getBreadcrumbSchema([
+        { name: "Home", url: `${SITE_URL}/${locale}` },
+        { name: "Features", url: `${SITE_URL}/${locale}/features` },
+        { name: page?.title || "Feature", url: canonicalUrl },
+      ]),
+    );
 
     return {
       meta: [
@@ -94,10 +96,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
         ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
-      scripts: formatStructuredData([
-        ...educationalScripts,
-        breadcrumbSchema,
-      ]),
+      scripts: [...educationalScripts, ...breadcrumbScripts],
     };
   },
   component: FeaturePageComponent,
