@@ -5,7 +5,6 @@ import viteReact from "@vitejs/plugin-react";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import { fileURLToPath, URL } from "url";
 import tailwindcss from "@tailwindcss/vite";
-import { generatePages } from "./src/seo/generate-pages";
 
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -13,9 +12,11 @@ export default defineConfig(async ({ mode }) => {
   const apiKey = env.BETTER_I18N_CONTENT_API_KEY;
   const project = env.BETTER_I18N_PROJECT;
 
-  let pages: Awaited<ReturnType<typeof generatePages>> = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let pages: readonly any[] = [];
   if (mode === "production" && apiKey && project) {
     try {
+      const { generatePages } = await import("./src/seo/generate-pages");
       pages = await generatePages({ project, apiKey });
     } catch (error) {
       console.error("[SEO] Page generation failed:", error);
