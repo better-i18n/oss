@@ -44,7 +44,21 @@ export interface BlogPostMeta {
 // ─── Helpers ────────────────────────────────────────────────────────
 
 /**
+ * Builds a relative path for a given locale and page path.
+ * Used for prerender routes and internal routing.
+ *
+ * @example
+ * buildPagePath("en", "features") => "/en/features"
+ * buildPagePath("tr", "")         => "/tr"
+ */
+export function buildPagePath(locale: string, pagePath: string): string {
+  const segments = [locale, pagePath].filter(Boolean);
+  return "/" + segments.join("/");
+}
+
+/**
  * Builds a full URL for a given locale and page path.
+ * Used for sitemap hreflang alternateRefs.
  *
  * @example
  * buildPageUrl("en", "features") => "https://better-i18n.com/en/features"
@@ -96,7 +110,7 @@ export function generateMarketingPages(
     );
 
     return locales.map((locale): PageEntry => ({
-      path: buildPageUrl(locale, page.path),
+      path: buildPagePath(locale, page.path),
       sitemap: {
         priority: page.priority,
         changefreq: page.changefreq,
@@ -137,7 +151,7 @@ function generateBlogListingPages(
   );
 
   return locales.map((locale): PageEntry => ({
-    path: buildPageUrl(locale, "blog"),
+    path: buildPagePath(locale, "blog"),
     sitemap: {
       priority: 0.8,
       changefreq: "daily",
