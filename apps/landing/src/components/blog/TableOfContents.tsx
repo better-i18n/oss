@@ -39,6 +39,7 @@ function extractHeadings(html: string): TocItem[] {
  * h3 items are indented to show hierarchy.
  */
 export default function TableOfContents({ html }: TableOfContentsProps) {
+  const t = useT("blog");
   const headings = extractHeadings(html);
 
   if (headings.length < 3) return null;
@@ -46,7 +47,7 @@ export default function TableOfContents({ html }: TableOfContentsProps) {
   return (
     <nav aria-label="Table of contents" className="text-sm">
       <h2 className="font-medium text-mist-950 mb-3 text-xs uppercase tracking-wider">
-        Contents
+        {t("tableOfContents", "Contents")}
       </h2>
       <ul className="space-y-2">
         {headings.map((heading) => (

@@ -14,7 +14,6 @@ import {
   IconApiConnection,
   IconArrowRight,
   IconLiveActivity,
-  IconVersusCircle,
   IconGlobe,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { useT } from "@/lib/i18n";

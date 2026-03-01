@@ -238,7 +238,7 @@ function BlogPostPage() {
               {/* TOC inline - mobile only */}
               <details className="lg:hidden mb-8 rounded-lg border border-mist-100 p-4">
                 <summary className="text-sm font-medium text-mist-700 cursor-pointer">
-                  Table of Contents
+                  {t("tableOfContents", { defaultValue: "Table of Contents" })}
                 </summary>
                 <div className="mt-3">
                   <TableOfContents html={post.bodyHtml} />
