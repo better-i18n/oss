@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { RelatedPages } from "@/components/RelatedPages";
 import { useTranslations } from "@better-i18n/use-intl";
 import BlogContent from "@/components/blog/BlogContent";
+import TableOfContents from "@/components/blog/TableOfContents";
 import {
   IconArrowLeft,
   IconCircleInfo,
@@ -133,7 +134,7 @@ function BlogPostPage() {
     <div className="bg-white">
       <Header className="bg-white" />
       <main className="py-16">
-        <article className="mx-auto max-w-3xl px-6 lg:px-10">
+        <article className="mx-auto max-w-4xl px-6 lg:px-10">
           {/* Back link */}
           <Link
             to="/$locale/blog"
@@ -196,21 +197,42 @@ function BlogPostPage() {
             </div>
           </header>
 
-          {/* Content */}
+          {/* Content with Table of Contents */}
           {post.bodyHtml && (
-            <BlogContent
-              html={post.bodyHtml}
-              className="prose prose-lg max-w-none mt-10
-                prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
-                prose-p:text-mist-700 prose-p:leading-relaxed
-                prose-a:text-mist-950 prose-a:underline-offset-4 prose-a:decoration-mist-300 hover:prose-a:decoration-mist-500
-                prose-strong:text-mist-900 prose-strong:font-semibold
-                prose-code:text-mist-900 prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
-                prose-blockquote:border-l-mist-300 prose-blockquote:text-mist-600 prose-blockquote:not-italic
-                prose-img:rounded-xl
-                prose-li:text-mist-700
-                prose-hr:border-mist-100"
-            />
+            <div className="mt-10 lg:flex lg:gap-10">
+              {/* TOC sidebar - desktop only */}
+              <aside className="hidden lg:block lg:w-56 lg:flex-shrink-0">
+                <div className="sticky top-8">
+                  <TableOfContents html={post.bodyHtml} />
+                </div>
+              </aside>
+
+              {/* TOC inline - mobile only */}
+              <details className="lg:hidden mb-8 rounded-lg border border-mist-100 p-4">
+                <summary className="text-sm font-medium text-mist-700 cursor-pointer">
+                  Table of Contents
+                </summary>
+                <div className="mt-3">
+                  <TableOfContents html={post.bodyHtml} />
+                </div>
+              </details>
+
+              <div className="min-w-0 flex-1">
+                <BlogContent
+                  html={post.bodyHtml}
+                  className="prose prose-lg max-w-none
+                    prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
+                    prose-p:text-mist-700 prose-p:leading-relaxed
+                    prose-a:text-mist-950 prose-a:underline-offset-4 prose-a:decoration-mist-300 hover:prose-a:decoration-mist-500
+                    prose-strong:text-mist-900 prose-strong:font-semibold
+                    prose-code:text-mist-900 prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
+                    prose-blockquote:border-l-mist-300 prose-blockquote:text-mist-600 prose-blockquote:not-italic
+                    prose-img:rounded-xl
+                    prose-li:text-mist-700
+                    prose-hr:border-mist-100"
+                />
+              </div>
+            </div>
           )}
 
           {/* Footer */}

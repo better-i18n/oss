@@ -5,6 +5,19 @@ import parse, {
 } from "html-react-parser";
 import { CodeBlock, CodeBlockCode } from "@better-i18n/ui";
 
+/**
+ * Convert a text string into a URL-friendly slug for anchor linking.
+ * Exported for reuse by TableOfContents component.
+ */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .trim();
+}
+
 interface BlogContentProps {
   html: string;
   className?: string;
@@ -22,6 +35,14 @@ export default function BlogContent({ html, className }: BlogContentProps) {
       // Only process element nodes
       if (!(domNode instanceof Element)) {
         return;
+      }
+
+      // Add id attributes to h2/h3 for anchor linking
+      if (domNode.name === "h2" || domNode.name === "h3") {
+        const text = getTextContent(domNode);
+        const id = slugify(text);
+        domNode.attribs = { ...domNode.attribs, id };
+        return; // Return undefined to keep the element but with the modified attribs
       }
 
       // Find <pre> tags that contain <code> tags
