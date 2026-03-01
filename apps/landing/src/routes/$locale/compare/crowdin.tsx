@@ -118,7 +118,7 @@ function CrowdinComparisonPage() {
         title={t("compare.crowdin.cta.title")}
         subtitle={t("compare.crowdin.cta.subtitle")}
         primaryCTA={t("compare.crowdin.cta.button")}
-        primaryHref={`/${locale}`}
+        primaryHref="https://dash.better-i18n.com"
       />
     </MarketingLayout>
   );

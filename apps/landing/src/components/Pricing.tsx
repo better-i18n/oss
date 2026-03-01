@@ -154,7 +154,7 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
                     href={
                       planKey === "enterprise"
                         ? "mailto:sales@better-i18n.com"
-                        : "/login"
+                        : "https://dash.better-i18n.com"
                     }
                     aria-label={t(`plans.${planKey}.ctaAriaLabel`, {
                       defaultValue: `${cta} — Better i18n ${name}`,

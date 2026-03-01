@@ -117,7 +117,7 @@ function TransifexComparisonPage() {
         title={t("compare.transifex.cta.title")}
         subtitle={t("compare.transifex.cta.subtitle")}
         primaryCTA={t("compare.transifex.cta.button")}
-        primaryHref={`/${locale}`}
+        primaryHref="https://dash.better-i18n.com"
       />
     </MarketingLayout>
   );
