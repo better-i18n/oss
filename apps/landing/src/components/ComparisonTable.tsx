@@ -160,7 +160,7 @@ export function ComparisonRelatedTopics({ heading, links, locale }: ComparisonRe
             <Link
               key={link.to}
               to={link.to as never}
-              params={{ locale }}
+              params={{ locale } as never}
               className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
             >
               <div>
