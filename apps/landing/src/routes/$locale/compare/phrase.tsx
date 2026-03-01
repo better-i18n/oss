@@ -60,7 +60,7 @@ function PhraseComparisonPage() {
       {/* Comparison Table */}
       <section className="pb-16">
         <div className="mx-auto max-w-4xl px-6 lg:px-10">
-          <ComparisonTable competitorName="Phrase" features={features} />
+          <ComparisonTable competitorName="Phrase" features={features} featureLabel={t("compare.featureLabel")} />
         </div>
       </section>
 

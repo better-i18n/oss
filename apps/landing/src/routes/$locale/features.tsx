@@ -45,6 +45,9 @@ function FeaturesPage() {
       {/* Additional Features Section */}
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-8">
+            {t("additionalFeatures.title")}
+          </h2>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             <FeatureItem
               title={t("additionalFeatures.glossary.title")}

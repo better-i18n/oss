@@ -11,14 +11,15 @@ export interface ComparisonFeature {
 interface ComparisonTableProps {
   competitorName: string;
   features: ComparisonFeature[];
+  featureLabel?: string;
 }
 
-export function ComparisonTable({ competitorName, features }: ComparisonTableProps) {
+export function ComparisonTable({ competitorName, features, featureLabel }: ComparisonTableProps) {
   return (
     <div className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
       {/* Header */}
       <div className="grid grid-cols-3 bg-mist-50 border-b border-mist-200">
-        <div className="p-4 text-sm font-medium text-mist-600">Feature</div>
+        <div className="p-4 text-sm font-medium text-mist-600">{featureLabel ?? "Feature"}</div>
         <div className="p-4 text-sm font-medium text-mist-950 text-center border-l border-mist-200 bg-mist-100">
           Better i18n
         </div>
