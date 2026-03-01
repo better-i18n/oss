@@ -4,12 +4,12 @@ import {
   FrameworkHero,
   FeatureList,
   CodeExample,
-  RelatedPages,
   FrameworkCTA,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
+import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/$locale/i18n/nuxt")({
   loader: createPageLoader(),
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/$locale/i18n/nuxt")({
 });
 
 function NuxtI18nPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const features = [
@@ -65,10 +65,10 @@ const { t } = useI18n()
   <h1>{{ t('welcome') }}</h1>
 </template>`;
 
-  const relatedPages = [
-    { name: "Vue i18n", href: "/$locale/i18n/vue", description: t("i18n.nuxt.related.vue") },
-    { name: "Next.js i18n", href: "/$locale/i18n/nextjs", description: t("i18n.nuxt.related.nextjs") },
-    { name: t("i18n.nuxt.related.comparisons"), href: "/$locale/compare", description: t("i18n.nuxt.related.comparisonsDesc") },
+  const relatedLinks = [
+    { title: "Vue i18n", to: "/$locale/i18n/vue", description: t("i18n.nuxt.related.vue") },
+    { title: "Next.js i18n", to: "/$locale/i18n/nextjs", description: t("i18n.nuxt.related.nextjs") },
+    { title: t("i18n.nuxt.related.comparisons"), to: "/$locale/compare", description: t("i18n.nuxt.related.comparisonsDesc") },
   ];
 
   return (
@@ -87,7 +87,7 @@ const { t } = useI18n()
         code={codeExample}
       />
 
-      <RelatedPages title={t("i18n.nuxt.relatedTitle")} pages={relatedPages} locale={locale} />
+      <ComparisonRelatedTopics heading={t("i18n.nuxt.relatedTitle")} links={relatedLinks} locale={locale} />
 
       <OtherFrameworks
         title={t("i18n.nuxt.otherFrameworks")}
