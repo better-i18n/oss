@@ -198,6 +198,22 @@ export function getPageHead(options: PageSEOOptions) {
       nuxt: "Nuxt",
       angular: "Angular",
       svelte: "Svelte",
+      // Persona pages
+      "for-marketers": "For Marketers",
+      "for-agencies": "For Agencies",
+      "for-enterprises": "For Enterprises",
+      "for-startups": "For Startups",
+      "for-engineering-leaders": "For Engineering Leaders",
+      "for-content-teams": "For Content Teams",
+      "for-ecommerce": "For E-Commerce",
+      "for-saas": "For SaaS",
+      "for-mobile-teams": "For Mobile Teams",
+      "for-designers": "For Designers",
+      "for-freelancers": "For Freelancers",
+      "for-open-source": "For Open Source",
+      "for-gaming": "For Gaming",
+      "for-education": "For Education",
+      "for-healthcare": "For Healthcare",
     };
 
     let currentPath = "";
