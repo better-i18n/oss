@@ -60,6 +60,9 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
 
     const excerpt = post?.excerpt || "";
 
+    const wordCount = post?.body ? post.body.split(/\s+/).filter(Boolean).length : undefined;
+    const timeRequired = post?.readTime ? `PT${parseInt(post.readTime)}M` : undefined;
+
     const articleSchema = post ? getArticleSchema({
       title: post.title,
       description: excerpt,
@@ -70,6 +73,9 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       author: {
         name: post.authorName || "Better i18n Team",
       },
+      wordCount,
+      timeRequired,
+      articleSection: post.category || undefined,
     }) : null;
 
     const breadcrumbSchema = getBreadcrumbSchema([
