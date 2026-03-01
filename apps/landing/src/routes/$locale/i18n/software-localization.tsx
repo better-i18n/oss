@@ -52,12 +52,12 @@ function SoftwareLocalizationPage() {
   ];
 
   const bestPractices = [
-    { titleKey: "bestPractices.planEarly.title", descKey: "bestPractices.planEarly.description" },
-    { titleKey: "bestPractices.externalizeStrings.title", descKey: "bestPractices.externalizeStrings.description" },
-    { titleKey: "bestPractices.useIcu.title", descKey: "bestPractices.useIcu.description" },
-    { titleKey: "bestPractices.automate.title", descKey: "bestPractices.automate.description" },
-    { titleKey: "bestPractices.testContinuously.title", descKey: "bestPractices.testContinuously.description" },
-    { titleKey: "bestPractices.contextForTranslators.title", descKey: "bestPractices.contextForTranslators.description" },
+    { titleKey: "bestPractices.planEarly.title", descKey: "bestPractices.planEarly.description", defaultTitle: "Plan for Localization Early", defaultDesc: "Design your architecture with localization in mind from day one. Retrofitting i18n into a mature codebase is far more expensive than building it in from the start." },
+    { titleKey: "bestPractices.externalizeStrings.title", descKey: "bestPractices.externalizeStrings.description", defaultTitle: "Externalize All Strings", defaultDesc: "Never hardcode user-facing text. Store all strings in external resource files (JSON, XLIFF) so translators can work without touching code." },
+    { titleKey: "bestPractices.useIcu.title", descKey: "bestPractices.useIcu.description", defaultTitle: "Use ICU Message Format", defaultDesc: "Handle plurals, gender, and complex formatting with ICU MessageFormat instead of string concatenation that breaks across languages." },
+    { titleKey: "bestPractices.automate.title", descKey: "bestPractices.automate.description", defaultTitle: "Automate the Workflow", defaultDesc: "Integrate your TMS with CI/CD pipelines to automatically sync new strings, trigger translations, and deploy updates without manual handoffs." },
+    { titleKey: "bestPractices.testContinuously.title", descKey: "bestPractices.testContinuously.description", defaultTitle: "Test Continuously", defaultDesc: "Run automated localization tests on every build to catch truncation, missing translations, and encoding issues before they reach production." },
+    { titleKey: "bestPractices.contextForTranslators.title", descKey: "bestPractices.contextForTranslators.description", defaultTitle: "Provide Context for Translators", defaultDesc: "Add screenshots, character limits, and usage descriptions to translation keys so translators produce accurate, contextually correct results." },
   ];
 
   const relatedPages = [

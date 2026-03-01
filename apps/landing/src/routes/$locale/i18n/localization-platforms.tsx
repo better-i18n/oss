@@ -51,10 +51,10 @@ function LocalizationPlatformsPage() {
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Connect Your Codebase", defaultDesc: "Link your GitHub, GitLab, or Bitbucket repository so the platform can detect translatable strings automatically." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Configure Workflows", defaultDesc: "Define translation workflows, assign roles, set up routing rules, and configure quality gates for each locale." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Translate & Review", defaultDesc: "Use AI pre-translation or assign to human linguists. Reviewers approve translations in context before publishing." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Deploy & Monitor", defaultDesc: "Push approved translations to production via CDN or pull request and monitor coverage and quality metrics." },
   ];
 
   const relatedPages = [
@@ -136,10 +136,10 @@ function LocalizationPlatformsPage() {
                   <capability.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(capability.titleKey, { defaultValue: capability.titleKey.split(".").pop() })}
+                  {t(capability.titleKey, { defaultValue: capability.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(capability.descKey, { defaultValue: "" })}
+                  {t(capability.descKey, { defaultValue: capability.defaultDesc })}
                 </p>
               </div>
             ))}
