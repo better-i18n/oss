@@ -117,7 +117,7 @@ function PhraseComparisonPage() {
         title={t("compare.phrase.cta.title")}
         subtitle={t("compare.phrase.cta.subtitle")}
         primaryCTA={t("compare.phrase.cta.button")}
-        primaryHref={`/${locale}`}
+        primaryHref="https://dash.better-i18n.com"
       />
     </MarketingLayout>
   );

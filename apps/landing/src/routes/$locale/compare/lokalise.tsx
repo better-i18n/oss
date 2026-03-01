@@ -117,7 +117,7 @@ function LokaliseComparisonPage() {
         title={t("compare.lokalise.cta.title")}
         subtitle={t("compare.lokalise.cta.subtitle")}
         primaryCTA={t("compare.lokalise.cta.button")}
-        primaryHref={`/${locale}`}
+        primaryHref="https://dash.better-i18n.com"
       />
     </MarketingLayout>
   );
