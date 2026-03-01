@@ -229,14 +229,16 @@ function FeaturePagesGrid({
   featurePages: MarketingPageListItem[];
   locale: string;
 }) {
+  const t = useT("featuresPage");
+
   return (
     <section className="py-16 bg-mist-50">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-3">
-          Deep dive into each feature
+          {t("deepDive.title", "Deep dive into each feature")}
         </h2>
         <p className="text-base text-mist-600 mb-8 max-w-2xl">
-          Learn how each capability works in detail with examples, use cases, and technical documentation.
+          {t("deepDive.description", "Learn how each capability works in detail with examples, use cases, and technical documentation.")}
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {featurePages.map((feature) => (

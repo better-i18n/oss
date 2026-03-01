@@ -17,6 +17,7 @@ import {
   getBreadcrumbSchema,
   formatStructuredData,
 } from "@/lib/page-seo";
+import { useT } from "@/lib/i18n";
 
 const loadFeaturePage = createServerFn({ method: "GET" })
   .inputValidator((data: { slug: string; locale: string }) => data)
@@ -105,6 +106,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
 
 function FeaturePageComponent() {
   const { page, locale, relatedFeatures } = Route.useLoaderData();
+  const t = useT("featuresPage");
 
   return (
     <div className="bg-white">
@@ -118,13 +120,13 @@ function FeaturePageComponent() {
             className="inline-flex items-center gap-2 text-sm font-medium text-mist-700 hover:text-mist-950 transition-colors mb-8"
           >
             <IconArrowLeft className="w-4 h-4" />
-            All Features
+            {t("allFeatures", "All Features")}
           </Link>
 
           {/* Hero */}
           <header className="mb-12">
             <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-mist-500 mb-4">
-              Feature
+              {t("featureBadge", "Feature")}
             </span>
             <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1] lg:text-5xl/[1.1]">
               {page.title}
@@ -160,7 +162,7 @@ function FeaturePageComponent() {
         {relatedFeatures.length > 0 && (
           <div className="mx-auto max-w-7xl px-6 lg:px-10 mt-16">
             <h2 className="font-display text-2xl font-medium text-mist-950 mb-8">
-              Explore more features
+              {t("exploreMore", "Explore more features")}
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {relatedFeatures.map((feature) => (
@@ -192,6 +194,7 @@ function FeaturePageComponent() {
 
 function FeatureNotFound() {
   const { locale } = Route.useParams();
+  const t = useT("featuresPage");
 
   return (
     <div className="bg-white">
@@ -199,10 +202,10 @@ function FeatureNotFound() {
       <main className="py-24 sm:py-32">
         <div className="mx-auto max-w-2xl px-6 text-center">
           <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            Feature not found
+            {t("notFound.title", "Feature not found")}
           </h1>
           <p className="mt-4 text-lg text-mist-600">
-            The feature page you're looking for doesn't exist.
+            {t("notFound.description", "The feature page you're looking for doesn't exist.")}
           </p>
           <Link
             to="/$locale/features"
@@ -210,7 +213,7 @@ function FeatureNotFound() {
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
           >
             <IconArrowLeft className="w-4 h-4" />
-            All Features
+            {t("allFeatures", "All Features")}
           </Link>
         </div>
       </main>
