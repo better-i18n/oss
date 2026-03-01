@@ -464,9 +464,7 @@ export default function Header({ className }: { className?: string }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-full bg-mist-950 px-4 py-1.5 text-sm/7 font-medium text-white hover:bg-mist-800"
               >
-                {t("getStartedDescriptive", {
-                  defaultValue: "Try Better i18n Free",
-                })}
+                {t("getStarted", { defaultValue: "Get Started" })}
               </a>
             </div>
           </div>
