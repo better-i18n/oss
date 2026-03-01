@@ -219,10 +219,10 @@ function FormattingUtilitiesPage() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {componentItems.map((itemKey) => (
-              <div key={itemKey} className="flex items-start gap-3 p-6 rounded-xl bg-white border border-mist-200">
+            {componentItems.map((item) => (
+              <div key={item.key} className="flex items-start gap-3 p-6 rounded-xl bg-white border border-mist-200">
                 <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
               </div>
             ))}
           </div>
