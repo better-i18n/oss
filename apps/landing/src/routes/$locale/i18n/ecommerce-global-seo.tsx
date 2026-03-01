@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconGlobe,
   IconCheckmark1,
@@ -33,37 +33,37 @@ export const Route = createFileRoute("/$locale/i18n/ecommerce-global-seo")({
 });
 
 const challenges = [
-  { icon: IconGroup1, titleKey: "challenges.productVariants.title", descKey: "challenges.productVariants.description" },
-  { icon: IconSettingsGear1, titleKey: "challenges.pricingCurrency.title", descKey: "challenges.pricingCurrency.description" },
-  { icon: IconMagnifyingGlass, titleKey: "challenges.canonicalization.title", descKey: "challenges.canonicalization.description" },
-  { icon: IconRocket, titleKey: "challenges.shoppingFeeds.title", descKey: "challenges.shoppingFeeds.description" },
+  { icon: IconGroup1, titleKey: "challenges.productVariants.title", descKey: "challenges.productVariants.description", defaultTitle: "Product Variant Management", defaultDesc: "Each locale may have different product variants, sizes, or availability — requiring unique SKU-level pages with localized structured data for every market." },
+  { icon: IconSettingsGear1, titleKey: "challenges.pricingCurrency.title", descKey: "challenges.pricingCurrency.description", defaultTitle: "Pricing & Currency Localization", defaultDesc: "Product schema must display correct local currencies and pricing, and price changes must propagate across all localized pages without breaking rich results." },
+  { icon: IconMagnifyingGlass, titleKey: "challenges.canonicalization.title", descKey: "challenges.canonicalization.description", defaultTitle: "Cross-Market Canonicalization", defaultDesc: "Canonical tags and hreflang annotations must correctly link language variants of the same product to prevent duplicate content penalties across international storefronts." },
+  { icon: IconRocket, titleKey: "challenges.shoppingFeeds.title", descKey: "challenges.shoppingFeeds.description", defaultTitle: "Shopping Feed Localization", defaultDesc: "Google Shopping, Amazon, and regional marketplace feeds must be localized with translated titles, descriptions, and market-specific attributes for each target country." },
 ];
 
 function EcommerceGlobalSeoPage() {
-  const t = useTranslations("marketing.i18n.ecommerceGlobalSeo");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.ecommerceGlobalSeo");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.internationalRevenue",
-    "benefits.list.organicProductDiscovery",
-    "benefits.list.reducedAdSpend",
-    "benefits.list.brandAuthority",
-    "benefits.list.marketplaceSynergy",
-    "benefits.list.conversionLift",
+    { key: "benefits.list.internationalRevenue", defaultValue: "Unlock international revenue streams through organic product visibility in new markets" },
+    { key: "benefits.list.organicProductDiscovery", defaultValue: "Increase organic product discovery with localized titles, descriptions, and keywords" },
+    { key: "benefits.list.reducedAdSpend", defaultValue: "Reduce dependency on paid ads by building sustainable organic traffic in each market" },
+    { key: "benefits.list.brandAuthority", defaultValue: "Establish brand authority in local markets with properly localized storefronts" },
+    { key: "benefits.list.marketplaceSynergy", defaultValue: "Create synergy between your owned storefront and marketplace listings for maximum visibility" },
+    { key: "benefits.list.conversionLift", defaultValue: "Lift conversion rates with locally optimized product pages that match regional buying expectations" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Market & Keyword Research", defaultDesc: "Identify target markets, research local product search terms, and map keyword intent differences across each country and language." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Localize Product Catalog", defaultDesc: "Translate and transcreate product titles, descriptions, and meta tags using locally relevant keywords rather than literal translations." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Technical Implementation", defaultDesc: "Set up hreflang, canonical tags, localized structured data, and currency-specific product schema for every market-language combination." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Launch & Measure", defaultDesc: "Deploy localized storefronts, submit localized sitemaps and shopping feeds, then track rankings and conversions per market." },
   ];
 
   const marketplaces = [
-    { titleKey: "marketplaces.google.title", descKey: "marketplaces.google.description" },
-    { titleKey: "marketplaces.amazon.title", descKey: "marketplaces.amazon.description" },
-    { titleKey: "marketplaces.regional.title", descKey: "marketplaces.regional.description" },
+    { titleKey: "marketplaces.google.title", descKey: "marketplaces.google.description", defaultTitle: "Google Shopping Feeds", defaultDesc: "Localize product titles, descriptions, and attributes in your Google Merchant Center feeds for each target country to qualify for Shopping rich results." },
+    { titleKey: "marketplaces.amazon.title", descKey: "marketplaces.amazon.description", defaultTitle: "Amazon International Listings", defaultDesc: "Optimize A+ content, bullet points, and backend keywords for each Amazon marketplace with locally researched product search terms." },
+    { titleKey: "marketplaces.regional.title", descKey: "marketplaces.regional.description", defaultTitle: "Regional Marketplaces", defaultDesc: "Adapt listings for regional platforms like Mercado Libre, Rakuten, and Allegro with market-specific product attributes and local language optimization." },
   ];
 
   const relatedPages = [
@@ -141,10 +141,10 @@ function EcommerceGlobalSeoPage() {
                   <challenge.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(challenge.titleKey, { defaultValue: challenge.titleKey.split(".").pop() })}
+                  {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(challenge.descKey, { defaultValue: "" })}
+                  {t(challenge.descKey, { defaultValue: challenge.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -168,11 +168,11 @@ function EcommerceGlobalSeoPage() {
                 <div className="flex items-center gap-3 mb-3">
                   <IconChart1 className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
-                    {t(marketplace.titleKey, { defaultValue: marketplace.titleKey.split(".").pop() })}
+                    {t(marketplace.titleKey, { defaultValue: marketplace.defaultTitle })}
                   </h3>
                 </div>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(marketplace.descKey, { defaultValue: "" })}
+                  {t(marketplace.descKey, { defaultValue: marketplace.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -193,10 +193,10 @@ function EcommerceGlobalSeoPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -222,10 +222,10 @@ function EcommerceGlobalSeoPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

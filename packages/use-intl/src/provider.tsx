@@ -9,6 +9,12 @@ import type { BetterI18nProviderConfig, Messages } from "./types.js";
 
 export interface BetterI18nProviderProps extends BetterI18nProviderConfig {
   children: ReactNode;
+  /** Custom fallback when a message key is missing */
+  getMessageFallback?: (info: {
+    error: Error;
+    key: string;
+    namespace?: string;
+  }) => string;
 }
 
 /**
@@ -62,6 +68,7 @@ export function BetterI18nProvider({
   staticData,
   fetchTimeout,
   retryCount,
+  getMessageFallback: customGetMessageFallback,
 }: BetterI18nProviderProps) {
   // Locale is controlled by props (from URL/router)
   const locale = propLocale;
@@ -182,7 +189,8 @@ export function BetterI18nProvider({
         messages={messages}
         timeZone={timeZone}
         now={now}
-        onError={onError}
+        onError={onError ?? (() => {})}
+        getMessageFallback={customGetMessageFallback}
       >
         {children}
       </IntlProvider>

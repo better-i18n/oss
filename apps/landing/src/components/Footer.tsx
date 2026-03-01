@@ -1,11 +1,12 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { IconSquareArrowTopRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 
 const footerLinks = [
   {
     category: "product",
+    categoryTitle: "Product",
     links: [
       { key: "features", label: "Features", href: "/$locale/features" },
       { key: "pricing", label: "Pricing", href: "/$locale/pricing" },
@@ -14,6 +15,7 @@ const footerLinks = [
   },
   {
     category: "frameworks",
+    categoryTitle: "Frameworks",
     links: [
       { key: "react", label: "React", href: "/$locale/i18n/react" },
       { key: "nextjs", label: "Next.js", href: "/$locale/i18n/nextjs" },
@@ -24,8 +26,24 @@ const footerLinks = [
     ],
   },
   {
-    category: "compare",
+    category: "solutions",
+    categoryTitle: "Solutions",
     links: [
+      { key: "translators", label: "For Translators", href: "/$locale/for-translators" },
+      { key: "developers", label: "For Developers", href: "/$locale/for-developers" },
+      { key: "productTeams", label: "For Product Teams", href: "/$locale/for-product-teams" },
+      { key: "enterprises", label: "For Enterprises", href: "/$locale/for-enterprises" },
+      { key: "startups", label: "For Startups", href: "/$locale/for-startups" },
+      { key: "agencies", label: "For Agencies", href: "/$locale/for-agencies" },
+      { key: "ecommerce", label: "For E-Commerce", href: "/$locale/for-ecommerce" },
+      { key: "saas", label: "For SaaS", href: "/$locale/for-saas" },
+    ],
+  },
+  {
+    category: "compare",
+    categoryTitle: "Compare",
+    links: [
+      { key: "overview", label: "All Comparisons", href: "/$locale/compare" },
       { key: "crowdin", label: "vs Crowdin", href: "/$locale/compare/crowdin" },
       { key: "lokalise", label: "vs Lokalise", href: "/$locale/compare/lokalise" },
       { key: "phrase", label: "vs Phrase", href: "/$locale/compare/phrase" },
@@ -34,6 +52,7 @@ const footerLinks = [
   },
   {
     category: "company",
+    categoryTitle: "Company",
     links: [
       { key: "about", label: "About", href: "/$locale/about" },
       { key: "careers", label: "Careers", href: "/$locale/careers" },
@@ -42,6 +61,7 @@ const footerLinks = [
   },
   {
     category: "resources",
+    categoryTitle: "Resources",
     links: [
       {
         key: "helpCenter",
@@ -54,12 +74,13 @@ const footerLinks = [
         href: "https://docs.better-i18n.com/",
       },
       { key: "whatIs", label: "What is i18n?", href: "/$locale/what-is" },
-      { key: "status", label: "Status", href: "/$locale/status" },
+      { key: "status", label: "Status", href: "https://status.better-i18n.com" },
       { key: "changelog", label: "Changelog", href: "/$locale/changelog" },
     ],
   },
   {
     category: "legal",
+    categoryTitle: "Legal",
     links: [
       { key: "privacy", label: "Privacy", href: "/$locale/privacy" },
       { key: "terms", label: "Terms", href: "/$locale/terms" },
@@ -68,6 +89,7 @@ const footerLinks = [
   },
   {
     category: "connect",
+    categoryTitle: "Connect",
     links: [
       { key: "x", label: "X", href: "https://x.com/betteri18n" },
       { key: "github", label: "GitHub", href: "https://github.com/better-i18n" },
@@ -79,20 +101,20 @@ const footerLinks = [
 export default function Footer() {
   const { locale } = useParams({ strict: false });
   const currentLocale = locale || "en";
-  const t = useTranslations("footer");
+  const t = useT("footer");
 
   return (
-    <footer className="py-16 bg-mist-950/[0.025]">
+    <footer aria-label="Site footer" className="py-16 bg-mist-950/[0.025]">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-7 mb-12">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-8 mb-12">
           {footerLinks.map((group) => (
             <div key={group.category}>
               <h3 className="text-sm font-medium text-mist-950 mb-4">
-                {t(`${group.category}.title`)}
+                {t(`${group.category}.title`, { defaultValue: group.categoryTitle })}
               </h3>
               <ul className="space-y-3 text-sm text-mist-700">
                 {group.links.map((link) => {
-                  const label = t(`${group.category}.${link.key}`);
+                  const label = t(`${group.category}.${link.key}`, { defaultValue: link.label });
                   const isExternal = link.href.startsWith("http");
 
                   return (
@@ -109,7 +131,7 @@ export default function Footer() {
                         </a>
                       ) : (
                         <Link
-                          to={link.href as "/$locale" | "/$locale/features" | "/$locale/pricing" | "/$locale/integrations" | "/$locale/about" | "/$locale/careers" | "/$locale/blog" | "/$locale/status" | "/$locale/changelog" | "/$locale/privacy" | "/$locale/terms" | "/$locale/what-is" | "/$locale/compare/crowdin" | "/$locale/compare/lokalise" | "/$locale/compare/phrase" | "/$locale/compare/transifex" | "/$locale/i18n/react" | "/$locale/i18n/nextjs" | "/$locale/i18n/vue" | "/$locale/i18n/nuxt" | "/$locale/i18n/angular" | "/$locale/i18n/svelte"}
+                          to={link.href as "/$locale" | "/$locale/features" | "/$locale/pricing" | "/$locale/integrations" | "/$locale/about" | "/$locale/careers" | "/$locale/blog" | "/$locale/changelog" | "/$locale/privacy" | "/$locale/terms" | "/$locale/what-is" | "/$locale/for-translators" | "/$locale/for-developers" | "/$locale/for-product-teams" | "/$locale/for-enterprises" | "/$locale/for-startups" | "/$locale/for-agencies" | "/$locale/for-ecommerce" | "/$locale/for-saas" | "/$locale/compare" | "/$locale/compare/crowdin" | "/$locale/compare/lokalise" | "/$locale/compare/phrase" | "/$locale/compare/transifex" | "/$locale/i18n/react" | "/$locale/i18n/nextjs" | "/$locale/i18n/vue" | "/$locale/i18n/nuxt" | "/$locale/i18n/angular" | "/$locale/i18n/svelte"}
                           params={{ locale: currentLocale }}
                           className="hover:text-mist-950"
                         >

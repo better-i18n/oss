@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import {
   ComparisonTable,
@@ -6,16 +6,16 @@ import {
   Differentiator,
   CTASection,
   OtherComparisons,
+  ComparisonRelatedTopics,
   type ComparisonFeature,
 } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCode,
   IconRobot,
   IconZap,
   IconRocket,
-  IconArrowRight,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/compare/transifex")({
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/$locale/compare/transifex")({
 });
 
 function TransifexComparisonPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const features: ComparisonFeature[] = [
@@ -95,47 +95,15 @@ function TransifexComparisonPage() {
         </div>
       </section>
 
-      {/* Related Topics */}
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">{t("whatIs.relatedTopics")}</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Link
-              to="/$locale/i18n/best-tms"
-              params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
-            >
-              <div>
-                <h3 className="text-sm font-medium text-mist-950">{t("whatIs.links.bestTms")}</h3>
-                <p className="text-xs text-mist-500 mt-1">{t("whatIs.links.bestTmsDesc")}</p>
-              </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
-            </Link>
-            <Link
-              to="/$locale/what-is-localization"
-              params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
-            >
-              <div>
-                <h3 className="text-sm font-medium text-mist-950">{t("whatIs.links.l10n")}</h3>
-                <p className="text-xs text-mist-500 mt-1">{t("whatIs.links.l10nDesc")}</p>
-              </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
-            </Link>
-            <Link
-              to="/$locale/for-developers"
-              params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
-            >
-              <div>
-                <h3 className="text-sm font-medium text-mist-950">{t("i18n.relatedLinks.forDevelopers")}</h3>
-                <p className="text-xs text-mist-500 mt-1">{t("i18n.relatedLinks.forDevelopersDesc")}</p>
-              </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
-            </Link>
-          </div>
-        </div>
-      </section>
+      <ComparisonRelatedTopics
+        heading={t("compare.transifex.relatedTopics", { defaultValue: "Keep Reading" })}
+        locale={locale}
+        links={[
+          { to: "/$locale/for-developers", title: t("compare.transifex.related.forDevs", { defaultValue: "For Developers" }), description: t("compare.transifex.related.forDevsDesc", { defaultValue: "How Better i18n fits your dev workflow" }) },
+          { to: "/$locale/what-is", title: t("compare.transifex.related.whatIsI18n", { defaultValue: "What is i18n?" }), description: t("compare.transifex.related.whatIsI18nDesc", { defaultValue: "Internationalization fundamentals explained" }) },
+          { to: "/$locale/i18n/vue", title: t("compare.transifex.related.vue", { defaultValue: "Vue i18n" }), description: t("compare.transifex.related.vueDesc", { defaultValue: "Composition API-based translations" }) },
+        ]}
+      />
 
       {/* Other Comparisons */}
       <OtherComparisons
@@ -149,7 +117,7 @@ function TransifexComparisonPage() {
         title={t("compare.transifex.cta.title")}
         subtitle={t("compare.transifex.cta.subtitle")}
         primaryCTA={t("compare.transifex.cta.button")}
-        primaryHref={`/${locale}`}
+        primaryHref="https://dash.better-i18n.com"
       />
     </MarketingLayout>
   );

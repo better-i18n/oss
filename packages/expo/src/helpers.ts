@@ -1,9 +1,9 @@
 import i18nDefault, { type i18n, type InitOptions } from "i18next";
 import { createI18nCore, normalizeLocale } from "@better-i18n/core";
 import type { I18nCore, I18nCoreConfig, Messages, LanguageOption } from "@better-i18n/core";
-import { getDeviceLocale } from "./locale";
-import { resolveStorage, readCache, writeCache } from "./storage";
-import type { LocaleAwareTranslationStorage, TranslationStorage } from "./types";
+import { getDeviceLocale } from "./locale.js";
+import { resolveStorage, readCache, writeCache } from "./storage.js";
+import type { LocaleAwareTranslationStorage, TranslationStorage } from "./types.js";
 
 const LOG_PREFIX = "[better-i18n/expo]";
 

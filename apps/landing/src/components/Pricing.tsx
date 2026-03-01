@@ -1,5 +1,5 @@
 import { cn } from "@better-i18n/ui/lib/utils";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { useState } from "react";
 import { IconCheckmark1 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
@@ -15,8 +15,29 @@ const PLAN_PRICES = {
   enterprise: { monthly: "Custom", yearly: "Custom" },
 } as const;
 
+const PLAN_DEFAULTS = {
+  free: {
+    name: "Free",
+    description: "Perfect for side projects and trying out Better i18n.",
+    cta: "Get Started",
+    features: ["Up to 1,000 keys", "1 project", "2 languages", "Community support", "CDN delivery"],
+  },
+  pro: {
+    name: "Pro",
+    description: "For teams shipping multilingual products at scale.",
+    cta: "Start Free Trial",
+    features: ["Unlimited keys", "Unlimited projects", "Unlimited languages", "AI translations", "Git sync & CDN", "Priority support"],
+  },
+  enterprise: {
+    name: "Enterprise",
+    description: "Custom solutions for large organizations with advanced needs.",
+    cta: "Contact Sales",
+    features: ["Everything in Pro", "Custom AI models", "SSO & SAML", "Dedicated support", "SLA guarantee", "On-premise option"],
+  },
+} as const;
+
 export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" | "h2" }) {
-  const t = useTranslations("pricing");
+  const t = useT("pricing");
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("yearly");
   const Heading = headingLevel;
 
@@ -26,13 +47,14 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
         <div className="flex flex-col gap-10 sm:gap-16">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <Heading className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("title")}
+              {t("title", { defaultValue: "Simple, transparent pricing" })}
             </Heading>
 
             {/* Billing Toggle */}
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-950/10 p-1">
               <button
                 type="button"
+                aria-pressed={billingPeriod === "monthly"}
                 onClick={() => setBillingPeriod("monthly")}
                 className={cn(
                   "rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
@@ -41,10 +63,11 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
                     : "text-mist-700 hover:text-mist-950"
                 )}
               >
-                {t("monthly")}
+                {t("monthly", { defaultValue: "Monthly" })}
               </button>
               <button
                 type="button"
+                aria-pressed={billingPeriod === "yearly"}
                 onClick={() => setBillingPeriod("yearly")}
                 className={cn(
                   "rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2",
@@ -53,14 +76,14 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
                     : "text-mist-700 hover:text-mist-950"
                 )}
               >
-                {t("yearly")}
+                {t("yearly", { defaultValue: "Yearly" })}
                 <span className={cn(
                   "text-xs rounded-full px-2 py-0.5",
                   billingPeriod === "yearly"
                     ? "bg-green-500 text-white"
                     : "bg-green-100 text-green-700"
                 )}>
-                  {t("save20")}
+                  {t("save20", { defaultValue: "Save 20%" })}
                 </span>
               </button>
             </div>
@@ -68,14 +91,15 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {plans.map((planKey) => {
-              const name = t(`plans.${planKey}.name`);
+              const defaults = PLAN_DEFAULTS[planKey];
+              const name = t(`plans.${planKey}.name`, { defaultValue: defaults.name });
               const price = PLAN_PRICES[planKey][billingPeriod];
-              const description = t(`plans.${planKey}.description`);
-              const cta = t(`plans.${planKey}.cta`);
+              const description = t(`plans.${planKey}.description`, { defaultValue: defaults.description });
+              const cta = t(`plans.${planKey}.cta`, { defaultValue: defaults.cta });
               const isPopular = planKey === "pro";
               const featuresCount = planKey === "free" ? 5 : 6;
               const features = Array.from({ length: featuresCount }).map(
-                (_, i) => t(`plans.${planKey}.features.${i}`),
+                (_, i) => t(`plans.${planKey}.features.${i}`, { defaultValue: defaults.features[i] ?? "" }),
               );
               const showTrial = planKey === "pro";
               const yearlyTotal = billingPeriod === "yearly" && planKey === "pro" ? "$182.40" : null;
@@ -92,19 +116,19 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
                       </h3>
                       {isPopular && (
                         <span className="inline-flex rounded-full bg-mist-950/10 px-2 text-xs/6 font-medium text-mist-950">
-                          {t("mostPopular")}
+                          {t("mostPopular", { defaultValue: "Most Popular" })}
                         </span>
                       )}
                     </div>
                     <p className="mt-1 inline-flex items-baseline gap-1 text-base/7">
                       <span className="text-3xl font-bold text-mist-950">{price}</span>
                       {planKey !== "enterprise" && (
-                        <span className="text-mist-500">{t("perMonth")}</span>
+                        <span className="text-mist-500">{t("perMonth", { defaultValue: "/ month" })}</span>
                       )}
                     </p>
                     {yearlyTotal && (
                       <p className="text-xs text-mist-500">
-                        {t("billedYearly", { total: yearlyTotal })}
+                        {t("billedYearly", { total: yearlyTotal, defaultValue: "Billed yearly ({total})" })}
                       </p>
                     )}
                     <p className="mt-4 text-sm/6 text-mist-700">
@@ -113,7 +137,7 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
                     {showTrial && (
                       <p className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-blue-600">
                         <span className="rounded-full bg-blue-100 px-2 py-0.5">
-                          {t("trialBadge")}
+                          {t("trialBadge", { defaultValue: "14-day free trial" })}
                         </span>
                       </p>
                     )}
@@ -130,7 +154,7 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
                     href={
                       planKey === "enterprise"
                         ? "mailto:sales@better-i18n.com"
-                        : "/login"
+                        : "https://dash.better-i18n.com"
                     }
                     aria-label={t(`plans.${planKey}.ctaAriaLabel`, {
                       defaultValue: `${cta} — Better i18n ${name}`,

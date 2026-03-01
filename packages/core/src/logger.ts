@@ -1,4 +1,4 @@
-import type { Logger, LogLevel, NormalizedConfig } from "./types";
+import type { Logger, LogLevel, NormalizedConfig } from "./types.js";
 
 const LOG_LEVELS: Record<LogLevel, number> = {
   debug: 0,

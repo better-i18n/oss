@@ -104,25 +104,6 @@ export async function getChangelogsMeta(
 }
 
 /**
- * Get a single changelog by slug
- */
-export async function getChangelogBySlug(
-  slug: string,
-  locale: string
-): Promise<ChangelogEntry | null> {
-  try {
-    const entry = await getChangelogClient().getEntry<ChangelogCustomFields>(
-      CHANGELOG_MODEL,
-      slug,
-      { language: locale }
-    );
-    return entry;
-  } catch {
-    return null;
-  }
-}
-
-/**
  * Get the latest changelog version
  */
 export async function getLatestVersion(locale: string): Promise<string | null> {

@@ -1,23 +1,23 @@
 // Main API
-export { createI18nCore, clearManifestCache, clearMessagesCache } from "./cdn";
+export { createI18nCore, clearManifestCache, clearMessagesCache } from "./cdn.js";
 
 // Storage adapters
-export { createAutoStorage, createLocalStorage, createMemoryStorage } from "./storage";
+export { createAutoStorage, createLocalStorage, createMemoryStorage } from "./storage/index.js";
 
 // Configuration utilities
-export { normalizeConfig, parseProject, getProjectBaseUrl } from "./config";
+export { normalizeConfig, parseProject, getProjectBaseUrl } from "./config.js";
 
 // Manifest utilities
-export { extractLanguages } from "./manifest";
+export { extractLanguages } from "./manifest.js";
 
 // Logger
-export { createLogger } from "./logger";
+export { createLogger } from "./logger.js";
 
 // Middleware logic
-export { detectLocale } from "./i18n/detection";
+export { detectLocale } from "./i18n/detection.js";
 
 // Cache utilities
-export { TtlCache, buildCacheKey } from "./cache";
+export { TtlCache, buildCacheKey } from "./cache.js";
 
 // Locale utilities
 export {
@@ -30,7 +30,7 @@ export {
   replaceLocaleInPath,
   createLocalePath,
   type LocaleConfig,
-} from "./utils/locale";
+} from "./utils/locale.js";
 
 // Types
 export type {
@@ -59,11 +59,11 @@ export type {
   Logger,
   LogLevel,
   CacheEntry,
-} from "./types";
+} from "./types.js";
 
 export type {
   I18nMiddlewareConfig,
   LocaleDetectionOptions,
   LocaleDetectionResult,
   LocalePrefix,
-} from "./i18n/types";
+} from "./i18n/types.js";

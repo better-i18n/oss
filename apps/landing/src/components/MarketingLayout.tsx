@@ -3,6 +3,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import CTA from "./CTA";
 import { cn } from "@better-i18n/ui/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface MarketingLayoutProps {
   children: ReactNode;
@@ -24,10 +25,18 @@ export function MarketingLayout({
   bgClassName = "bg-mist-100",
   showCTA = true,
 }: MarketingLayoutProps) {
+  const t = useT("common");
+
   return (
     <div className={cn("min-h-screen", bgClassName)}>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-mist-950 focus:text-sm focus:font-medium"
+      >
+        {t("skipToContent", "Skip to content")}
+      </a>
       <Header className={headerClassName} />
-      <main>{children}</main>
+      <main id="main-content">{children}</main>
       {showCTA && <CTA />}
       <Footer />
     </div>

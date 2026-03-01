@@ -31,13 +31,29 @@ import { Route as LocalePrivacyRouteImport } from './routes/$locale/privacy'
 import { Route as LocalePricingRouteImport } from './routes/$locale/pricing'
 import { Route as LocaleIntegrationsRouteImport } from './routes/$locale/integrations'
 import { Route as LocaleForTranslatorsRouteImport } from './routes/$locale/for-translators'
+import { Route as LocaleForStartupsRouteImport } from './routes/$locale/for-startups'
+import { Route as LocaleForSaasRouteImport } from './routes/$locale/for-saas'
 import { Route as LocaleForProductTeamsRouteImport } from './routes/$locale/for-product-teams'
+import { Route as LocaleForOpenSourceRouteImport } from './routes/$locale/for-open-source'
+import { Route as LocaleForMobileTeamsRouteImport } from './routes/$locale/for-mobile-teams'
+import { Route as LocaleForMarketersRouteImport } from './routes/$locale/for-marketers'
+import { Route as LocaleForHealthcareRouteImport } from './routes/$locale/for-healthcare'
+import { Route as LocaleForGamingRouteImport } from './routes/$locale/for-gaming'
+import { Route as LocaleForFreelancersRouteImport } from './routes/$locale/for-freelancers'
+import { Route as LocaleForEnterprisesRouteImport } from './routes/$locale/for-enterprises'
+import { Route as LocaleForEngineeringLeadersRouteImport } from './routes/$locale/for-engineering-leaders'
+import { Route as LocaleForEducationRouteImport } from './routes/$locale/for-education'
+import { Route as LocaleForEcommerceRouteImport } from './routes/$locale/for-ecommerce'
 import { Route as LocaleForDevelopersRouteImport } from './routes/$locale/for-developers'
+import { Route as LocaleForDesignersRouteImport } from './routes/$locale/for-designers'
+import { Route as LocaleForContentTeamsRouteImport } from './routes/$locale/for-content-teams'
+import { Route as LocaleForAgenciesRouteImport } from './routes/$locale/for-agencies'
 import { Route as LocaleFeaturesRouteImport } from './routes/$locale/features'
 import { Route as LocaleChangelogRouteImport } from './routes/$locale/changelog'
 import { Route as LocaleCareersRouteImport } from './routes/$locale/careers'
 import { Route as LocaleAboutRouteImport } from './routes/$locale/about'
 import { Route as LocaleI18nIndexRouteImport } from './routes/$locale/i18n/index'
+import { Route as LocaleFeaturesIndexRouteImport } from './routes/$locale/features/index'
 import { Route as LocaleCompareIndexRouteImport } from './routes/$locale/compare/index'
 import { Route as LocaleBlogIndexRouteImport } from './routes/$locale/blog/index'
 import { Route as LocaleI18nWebsiteTranslationRouteImport } from './routes/$locale/i18n/website-translation'
@@ -78,6 +94,7 @@ import { Route as LocaleI18nCliCodeScanningRouteImport } from './routes/$locale/
 import { Route as LocaleI18nBestTmsRouteImport } from './routes/$locale/i18n/best-tms'
 import { Route as LocaleI18nBestLibraryRouteImport } from './routes/$locale/i18n/best-library'
 import { Route as LocaleI18nAngularRouteImport } from './routes/$locale/i18n/angular'
+import { Route as LocaleFeaturesSlugRouteImport } from './routes/$locale/features/$slug'
 import { Route as LocaleCompareTransifexRouteImport } from './routes/$locale/compare/transifex'
 import { Route as LocaleComparePhraseRouteImport } from './routes/$locale/compare/phrase'
 import { Route as LocaleCompareLokaliseRouteImport } from './routes/$locale/compare/lokalise'
@@ -196,14 +213,90 @@ const LocaleForTranslatorsRoute = LocaleForTranslatorsRouteImport.update({
   path: '/$locale/for-translators',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleForStartupsRoute = LocaleForStartupsRouteImport.update({
+  id: '/$locale/for-startups',
+  path: '/$locale/for-startups',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForSaasRoute = LocaleForSaasRouteImport.update({
+  id: '/$locale/for-saas',
+  path: '/$locale/for-saas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LocaleForProductTeamsRoute = LocaleForProductTeamsRouteImport.update({
   id: '/$locale/for-product-teams',
   path: '/$locale/for-product-teams',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleForOpenSourceRoute = LocaleForOpenSourceRouteImport.update({
+  id: '/$locale/for-open-source',
+  path: '/$locale/for-open-source',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForMobileTeamsRoute = LocaleForMobileTeamsRouteImport.update({
+  id: '/$locale/for-mobile-teams',
+  path: '/$locale/for-mobile-teams',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForMarketersRoute = LocaleForMarketersRouteImport.update({
+  id: '/$locale/for-marketers',
+  path: '/$locale/for-marketers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForHealthcareRoute = LocaleForHealthcareRouteImport.update({
+  id: '/$locale/for-healthcare',
+  path: '/$locale/for-healthcare',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForGamingRoute = LocaleForGamingRouteImport.update({
+  id: '/$locale/for-gaming',
+  path: '/$locale/for-gaming',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForFreelancersRoute = LocaleForFreelancersRouteImport.update({
+  id: '/$locale/for-freelancers',
+  path: '/$locale/for-freelancers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForEnterprisesRoute = LocaleForEnterprisesRouteImport.update({
+  id: '/$locale/for-enterprises',
+  path: '/$locale/for-enterprises',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForEngineeringLeadersRoute =
+  LocaleForEngineeringLeadersRouteImport.update({
+    id: '/$locale/for-engineering-leaders',
+    path: '/$locale/for-engineering-leaders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LocaleForEducationRoute = LocaleForEducationRouteImport.update({
+  id: '/$locale/for-education',
+  path: '/$locale/for-education',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForEcommerceRoute = LocaleForEcommerceRouteImport.update({
+  id: '/$locale/for-ecommerce',
+  path: '/$locale/for-ecommerce',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LocaleForDevelopersRoute = LocaleForDevelopersRouteImport.update({
   id: '/$locale/for-developers',
   path: '/$locale/for-developers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForDesignersRoute = LocaleForDesignersRouteImport.update({
+  id: '/$locale/for-designers',
+  path: '/$locale/for-designers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForContentTeamsRoute = LocaleForContentTeamsRouteImport.update({
+  id: '/$locale/for-content-teams',
+  path: '/$locale/for-content-teams',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleForAgenciesRoute = LocaleForAgenciesRouteImport.update({
+  id: '/$locale/for-agencies',
+  path: '/$locale/for-agencies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleFeaturesRoute = LocaleFeaturesRouteImport.update({
@@ -230,6 +323,11 @@ const LocaleI18nIndexRoute = LocaleI18nIndexRouteImport.update({
   id: '/$locale/i18n/',
   path: '/$locale/i18n/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleFeaturesIndexRoute = LocaleFeaturesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LocaleFeaturesRoute,
 } as any)
 const LocaleCompareIndexRoute = LocaleCompareIndexRouteImport.update({
   id: '/$locale/compare/',
@@ -459,6 +557,11 @@ const LocaleI18nAngularRoute = LocaleI18nAngularRouteImport.update({
   path: '/$locale/i18n/angular',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleFeaturesSlugRoute = LocaleFeaturesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => LocaleFeaturesRoute,
+} as any)
 const LocaleCompareTransifexRoute = LocaleCompareTransifexRouteImport.update({
   id: '/$locale/compare/transifex',
   path: '/$locale/compare/transifex',
@@ -499,9 +602,24 @@ export interface FileRoutesByFullPath {
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/careers': typeof LocaleCareersRoute
   '/$locale/changelog': typeof LocaleChangelogRoute
-  '/$locale/features': typeof LocaleFeaturesRoute
+  '/$locale/features': typeof LocaleFeaturesRouteWithChildren
+  '/$locale/for-agencies': typeof LocaleForAgenciesRoute
+  '/$locale/for-content-teams': typeof LocaleForContentTeamsRoute
+  '/$locale/for-designers': typeof LocaleForDesignersRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
+  '/$locale/for-ecommerce': typeof LocaleForEcommerceRoute
+  '/$locale/for-education': typeof LocaleForEducationRoute
+  '/$locale/for-engineering-leaders': typeof LocaleForEngineeringLeadersRoute
+  '/$locale/for-enterprises': typeof LocaleForEnterprisesRoute
+  '/$locale/for-freelancers': typeof LocaleForFreelancersRoute
+  '/$locale/for-gaming': typeof LocaleForGamingRoute
+  '/$locale/for-healthcare': typeof LocaleForHealthcareRoute
+  '/$locale/for-marketers': typeof LocaleForMarketersRoute
+  '/$locale/for-mobile-teams': typeof LocaleForMobileTeamsRoute
+  '/$locale/for-open-source': typeof LocaleForOpenSourceRoute
   '/$locale/for-product-teams': typeof LocaleForProductTeamsRoute
+  '/$locale/for-saas': typeof LocaleForSaasRoute
+  '/$locale/for-startups': typeof LocaleForStartupsRoute
   '/$locale/for-translators': typeof LocaleForTranslatorsRoute
   '/$locale/integrations': typeof LocaleIntegrationsRoute
   '/$locale/pricing': typeof LocalePricingRoute
@@ -519,6 +637,7 @@ export interface FileRoutesByFullPath {
   '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
   '/$locale/compare/phrase': typeof LocaleComparePhraseRoute
   '/$locale/compare/transifex': typeof LocaleCompareTransifexRoute
+  '/$locale/features/$slug': typeof LocaleFeaturesSlugRoute
   '/$locale/i18n/angular': typeof LocaleI18nAngularRoute
   '/$locale/i18n/best-library': typeof LocaleI18nBestLibraryRoute
   '/$locale/i18n/best-tms': typeof LocaleI18nBestTmsRoute
@@ -559,6 +678,7 @@ export interface FileRoutesByFullPath {
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
   '/$locale/blog': typeof LocaleBlogIndexRoute
   '/$locale/compare': typeof LocaleCompareIndexRoute
+  '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
 }
 export interface FileRoutesByTo {
@@ -575,9 +695,23 @@ export interface FileRoutesByTo {
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/careers': typeof LocaleCareersRoute
   '/$locale/changelog': typeof LocaleChangelogRoute
-  '/$locale/features': typeof LocaleFeaturesRoute
+  '/$locale/for-agencies': typeof LocaleForAgenciesRoute
+  '/$locale/for-content-teams': typeof LocaleForContentTeamsRoute
+  '/$locale/for-designers': typeof LocaleForDesignersRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
+  '/$locale/for-ecommerce': typeof LocaleForEcommerceRoute
+  '/$locale/for-education': typeof LocaleForEducationRoute
+  '/$locale/for-engineering-leaders': typeof LocaleForEngineeringLeadersRoute
+  '/$locale/for-enterprises': typeof LocaleForEnterprisesRoute
+  '/$locale/for-freelancers': typeof LocaleForFreelancersRoute
+  '/$locale/for-gaming': typeof LocaleForGamingRoute
+  '/$locale/for-healthcare': typeof LocaleForHealthcareRoute
+  '/$locale/for-marketers': typeof LocaleForMarketersRoute
+  '/$locale/for-mobile-teams': typeof LocaleForMobileTeamsRoute
+  '/$locale/for-open-source': typeof LocaleForOpenSourceRoute
   '/$locale/for-product-teams': typeof LocaleForProductTeamsRoute
+  '/$locale/for-saas': typeof LocaleForSaasRoute
+  '/$locale/for-startups': typeof LocaleForStartupsRoute
   '/$locale/for-translators': typeof LocaleForTranslatorsRoute
   '/$locale/integrations': typeof LocaleIntegrationsRoute
   '/$locale/pricing': typeof LocalePricingRoute
@@ -595,6 +729,7 @@ export interface FileRoutesByTo {
   '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
   '/$locale/compare/phrase': typeof LocaleComparePhraseRoute
   '/$locale/compare/transifex': typeof LocaleCompareTransifexRoute
+  '/$locale/features/$slug': typeof LocaleFeaturesSlugRoute
   '/$locale/i18n/angular': typeof LocaleI18nAngularRoute
   '/$locale/i18n/best-library': typeof LocaleI18nBestLibraryRoute
   '/$locale/i18n/best-tms': typeof LocaleI18nBestTmsRoute
@@ -635,6 +770,7 @@ export interface FileRoutesByTo {
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
   '/$locale/blog': typeof LocaleBlogIndexRoute
   '/$locale/compare': typeof LocaleCompareIndexRoute
+  '/$locale/features': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
 }
 export interface FileRoutesById {
@@ -652,9 +788,24 @@ export interface FileRoutesById {
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/careers': typeof LocaleCareersRoute
   '/$locale/changelog': typeof LocaleChangelogRoute
-  '/$locale/features': typeof LocaleFeaturesRoute
+  '/$locale/features': typeof LocaleFeaturesRouteWithChildren
+  '/$locale/for-agencies': typeof LocaleForAgenciesRoute
+  '/$locale/for-content-teams': typeof LocaleForContentTeamsRoute
+  '/$locale/for-designers': typeof LocaleForDesignersRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
+  '/$locale/for-ecommerce': typeof LocaleForEcommerceRoute
+  '/$locale/for-education': typeof LocaleForEducationRoute
+  '/$locale/for-engineering-leaders': typeof LocaleForEngineeringLeadersRoute
+  '/$locale/for-enterprises': typeof LocaleForEnterprisesRoute
+  '/$locale/for-freelancers': typeof LocaleForFreelancersRoute
+  '/$locale/for-gaming': typeof LocaleForGamingRoute
+  '/$locale/for-healthcare': typeof LocaleForHealthcareRoute
+  '/$locale/for-marketers': typeof LocaleForMarketersRoute
+  '/$locale/for-mobile-teams': typeof LocaleForMobileTeamsRoute
+  '/$locale/for-open-source': typeof LocaleForOpenSourceRoute
   '/$locale/for-product-teams': typeof LocaleForProductTeamsRoute
+  '/$locale/for-saas': typeof LocaleForSaasRoute
+  '/$locale/for-startups': typeof LocaleForStartupsRoute
   '/$locale/for-translators': typeof LocaleForTranslatorsRoute
   '/$locale/integrations': typeof LocaleIntegrationsRoute
   '/$locale/pricing': typeof LocalePricingRoute
@@ -672,6 +823,7 @@ export interface FileRoutesById {
   '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
   '/$locale/compare/phrase': typeof LocaleComparePhraseRoute
   '/$locale/compare/transifex': typeof LocaleCompareTransifexRoute
+  '/$locale/features/$slug': typeof LocaleFeaturesSlugRoute
   '/$locale/i18n/angular': typeof LocaleI18nAngularRoute
   '/$locale/i18n/best-library': typeof LocaleI18nBestLibraryRoute
   '/$locale/i18n/best-tms': typeof LocaleI18nBestTmsRoute
@@ -712,6 +864,7 @@ export interface FileRoutesById {
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
   '/$locale/blog/': typeof LocaleBlogIndexRoute
   '/$locale/compare/': typeof LocaleCompareIndexRoute
+  '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n/': typeof LocaleI18nIndexRoute
 }
 export interface FileRouteTypes {
@@ -731,8 +884,23 @@ export interface FileRouteTypes {
     | '/$locale/careers'
     | '/$locale/changelog'
     | '/$locale/features'
+    | '/$locale/for-agencies'
+    | '/$locale/for-content-teams'
+    | '/$locale/for-designers'
     | '/$locale/for-developers'
+    | '/$locale/for-ecommerce'
+    | '/$locale/for-education'
+    | '/$locale/for-engineering-leaders'
+    | '/$locale/for-enterprises'
+    | '/$locale/for-freelancers'
+    | '/$locale/for-gaming'
+    | '/$locale/for-healthcare'
+    | '/$locale/for-marketers'
+    | '/$locale/for-mobile-teams'
+    | '/$locale/for-open-source'
     | '/$locale/for-product-teams'
+    | '/$locale/for-saas'
+    | '/$locale/for-startups'
     | '/$locale/for-translators'
     | '/$locale/integrations'
     | '/$locale/pricing'
@@ -750,6 +918,7 @@ export interface FileRouteTypes {
     | '/$locale/compare/lokalise'
     | '/$locale/compare/phrase'
     | '/$locale/compare/transifex'
+    | '/$locale/features/$slug'
     | '/$locale/i18n/angular'
     | '/$locale/i18n/best-library'
     | '/$locale/i18n/best-tms'
@@ -790,6 +959,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/website-translation'
     | '/$locale/blog'
     | '/$locale/compare'
+    | '/$locale/features/'
     | '/$locale/i18n'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -806,9 +976,23 @@ export interface FileRouteTypes {
     | '/$locale/about'
     | '/$locale/careers'
     | '/$locale/changelog'
-    | '/$locale/features'
+    | '/$locale/for-agencies'
+    | '/$locale/for-content-teams'
+    | '/$locale/for-designers'
     | '/$locale/for-developers'
+    | '/$locale/for-ecommerce'
+    | '/$locale/for-education'
+    | '/$locale/for-engineering-leaders'
+    | '/$locale/for-enterprises'
+    | '/$locale/for-freelancers'
+    | '/$locale/for-gaming'
+    | '/$locale/for-healthcare'
+    | '/$locale/for-marketers'
+    | '/$locale/for-mobile-teams'
+    | '/$locale/for-open-source'
     | '/$locale/for-product-teams'
+    | '/$locale/for-saas'
+    | '/$locale/for-startups'
     | '/$locale/for-translators'
     | '/$locale/integrations'
     | '/$locale/pricing'
@@ -826,6 +1010,7 @@ export interface FileRouteTypes {
     | '/$locale/compare/lokalise'
     | '/$locale/compare/phrase'
     | '/$locale/compare/transifex'
+    | '/$locale/features/$slug'
     | '/$locale/i18n/angular'
     | '/$locale/i18n/best-library'
     | '/$locale/i18n/best-tms'
@@ -866,6 +1051,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/website-translation'
     | '/$locale/blog'
     | '/$locale/compare'
+    | '/$locale/features'
     | '/$locale/i18n'
   id:
     | '__root__'
@@ -883,8 +1069,23 @@ export interface FileRouteTypes {
     | '/$locale/careers'
     | '/$locale/changelog'
     | '/$locale/features'
+    | '/$locale/for-agencies'
+    | '/$locale/for-content-teams'
+    | '/$locale/for-designers'
     | '/$locale/for-developers'
+    | '/$locale/for-ecommerce'
+    | '/$locale/for-education'
+    | '/$locale/for-engineering-leaders'
+    | '/$locale/for-enterprises'
+    | '/$locale/for-freelancers'
+    | '/$locale/for-gaming'
+    | '/$locale/for-healthcare'
+    | '/$locale/for-marketers'
+    | '/$locale/for-mobile-teams'
+    | '/$locale/for-open-source'
     | '/$locale/for-product-teams'
+    | '/$locale/for-saas'
+    | '/$locale/for-startups'
     | '/$locale/for-translators'
     | '/$locale/integrations'
     | '/$locale/pricing'
@@ -902,6 +1103,7 @@ export interface FileRouteTypes {
     | '/$locale/compare/lokalise'
     | '/$locale/compare/phrase'
     | '/$locale/compare/transifex'
+    | '/$locale/features/$slug'
     | '/$locale/i18n/angular'
     | '/$locale/i18n/best-library'
     | '/$locale/i18n/best-tms'
@@ -942,6 +1144,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/website-translation'
     | '/$locale/blog/'
     | '/$locale/compare/'
+    | '/$locale/features/'
     | '/$locale/i18n/'
   fileRoutesById: FileRoutesById
 }
@@ -959,9 +1162,24 @@ export interface RootRouteChildren {
   LocaleAboutRoute: typeof LocaleAboutRoute
   LocaleCareersRoute: typeof LocaleCareersRoute
   LocaleChangelogRoute: typeof LocaleChangelogRoute
-  LocaleFeaturesRoute: typeof LocaleFeaturesRoute
+  LocaleFeaturesRoute: typeof LocaleFeaturesRouteWithChildren
+  LocaleForAgenciesRoute: typeof LocaleForAgenciesRoute
+  LocaleForContentTeamsRoute: typeof LocaleForContentTeamsRoute
+  LocaleForDesignersRoute: typeof LocaleForDesignersRoute
   LocaleForDevelopersRoute: typeof LocaleForDevelopersRoute
+  LocaleForEcommerceRoute: typeof LocaleForEcommerceRoute
+  LocaleForEducationRoute: typeof LocaleForEducationRoute
+  LocaleForEngineeringLeadersRoute: typeof LocaleForEngineeringLeadersRoute
+  LocaleForEnterprisesRoute: typeof LocaleForEnterprisesRoute
+  LocaleForFreelancersRoute: typeof LocaleForFreelancersRoute
+  LocaleForGamingRoute: typeof LocaleForGamingRoute
+  LocaleForHealthcareRoute: typeof LocaleForHealthcareRoute
+  LocaleForMarketersRoute: typeof LocaleForMarketersRoute
+  LocaleForMobileTeamsRoute: typeof LocaleForMobileTeamsRoute
+  LocaleForOpenSourceRoute: typeof LocaleForOpenSourceRoute
   LocaleForProductTeamsRoute: typeof LocaleForProductTeamsRoute
+  LocaleForSaasRoute: typeof LocaleForSaasRoute
+  LocaleForStartupsRoute: typeof LocaleForStartupsRoute
   LocaleForTranslatorsRoute: typeof LocaleForTranslatorsRoute
   LocaleIntegrationsRoute: typeof LocaleIntegrationsRoute
   LocalePricingRoute: typeof LocalePricingRoute
@@ -1178,6 +1396,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleForTranslatorsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/for-startups': {
+      id: '/$locale/for-startups'
+      path: '/$locale/for-startups'
+      fullPath: '/$locale/for-startups'
+      preLoaderRoute: typeof LocaleForStartupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-saas': {
+      id: '/$locale/for-saas'
+      path: '/$locale/for-saas'
+      fullPath: '/$locale/for-saas'
+      preLoaderRoute: typeof LocaleForSaasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/for-product-teams': {
       id: '/$locale/for-product-teams'
       path: '/$locale/for-product-teams'
@@ -1185,11 +1417,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleForProductTeamsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/for-open-source': {
+      id: '/$locale/for-open-source'
+      path: '/$locale/for-open-source'
+      fullPath: '/$locale/for-open-source'
+      preLoaderRoute: typeof LocaleForOpenSourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-mobile-teams': {
+      id: '/$locale/for-mobile-teams'
+      path: '/$locale/for-mobile-teams'
+      fullPath: '/$locale/for-mobile-teams'
+      preLoaderRoute: typeof LocaleForMobileTeamsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-marketers': {
+      id: '/$locale/for-marketers'
+      path: '/$locale/for-marketers'
+      fullPath: '/$locale/for-marketers'
+      preLoaderRoute: typeof LocaleForMarketersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-healthcare': {
+      id: '/$locale/for-healthcare'
+      path: '/$locale/for-healthcare'
+      fullPath: '/$locale/for-healthcare'
+      preLoaderRoute: typeof LocaleForHealthcareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-gaming': {
+      id: '/$locale/for-gaming'
+      path: '/$locale/for-gaming'
+      fullPath: '/$locale/for-gaming'
+      preLoaderRoute: typeof LocaleForGamingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-freelancers': {
+      id: '/$locale/for-freelancers'
+      path: '/$locale/for-freelancers'
+      fullPath: '/$locale/for-freelancers'
+      preLoaderRoute: typeof LocaleForFreelancersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-enterprises': {
+      id: '/$locale/for-enterprises'
+      path: '/$locale/for-enterprises'
+      fullPath: '/$locale/for-enterprises'
+      preLoaderRoute: typeof LocaleForEnterprisesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-engineering-leaders': {
+      id: '/$locale/for-engineering-leaders'
+      path: '/$locale/for-engineering-leaders'
+      fullPath: '/$locale/for-engineering-leaders'
+      preLoaderRoute: typeof LocaleForEngineeringLeadersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-education': {
+      id: '/$locale/for-education'
+      path: '/$locale/for-education'
+      fullPath: '/$locale/for-education'
+      preLoaderRoute: typeof LocaleForEducationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-ecommerce': {
+      id: '/$locale/for-ecommerce'
+      path: '/$locale/for-ecommerce'
+      fullPath: '/$locale/for-ecommerce'
+      preLoaderRoute: typeof LocaleForEcommerceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/for-developers': {
       id: '/$locale/for-developers'
       path: '/$locale/for-developers'
       fullPath: '/$locale/for-developers'
       preLoaderRoute: typeof LocaleForDevelopersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-designers': {
+      id: '/$locale/for-designers'
+      path: '/$locale/for-designers'
+      fullPath: '/$locale/for-designers'
+      preLoaderRoute: typeof LocaleForDesignersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-content-teams': {
+      id: '/$locale/for-content-teams'
+      path: '/$locale/for-content-teams'
+      fullPath: '/$locale/for-content-teams'
+      preLoaderRoute: typeof LocaleForContentTeamsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/for-agencies': {
+      id: '/$locale/for-agencies'
+      path: '/$locale/for-agencies'
+      fullPath: '/$locale/for-agencies'
+      preLoaderRoute: typeof LocaleForAgenciesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/features': {
@@ -1226,6 +1549,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/$locale/i18n'
       preLoaderRoute: typeof LocaleI18nIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/$locale/features/': {
+      id: '/$locale/features/'
+      path: '/'
+      fullPath: '/$locale/features/'
+      preLoaderRoute: typeof LocaleFeaturesIndexRouteImport
+      parentRoute: typeof LocaleFeaturesRoute
     }
     '/$locale/compare/': {
       id: '/$locale/compare/'
@@ -1507,6 +1837,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nAngularRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/features/$slug': {
+      id: '/$locale/features/$slug'
+      path: '/$slug'
+      fullPath: '/$locale/features/$slug'
+      preLoaderRoute: typeof LocaleFeaturesSlugRouteImport
+      parentRoute: typeof LocaleFeaturesRoute
+    }
     '/$locale/compare/transifex': {
       id: '/$locale/compare/transifex'
       path: '/$locale/compare/transifex'
@@ -1545,6 +1882,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface LocaleFeaturesRouteChildren {
+  LocaleFeaturesSlugRoute: typeof LocaleFeaturesSlugRoute
+  LocaleFeaturesIndexRoute: typeof LocaleFeaturesIndexRoute
+}
+
+const LocaleFeaturesRouteChildren: LocaleFeaturesRouteChildren = {
+  LocaleFeaturesSlugRoute: LocaleFeaturesSlugRoute,
+  LocaleFeaturesIndexRoute: LocaleFeaturesIndexRoute,
+}
+
+const LocaleFeaturesRouteWithChildren = LocaleFeaturesRoute._addFileChildren(
+  LocaleFeaturesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -1559,9 +1910,24 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleAboutRoute: LocaleAboutRoute,
   LocaleCareersRoute: LocaleCareersRoute,
   LocaleChangelogRoute: LocaleChangelogRoute,
-  LocaleFeaturesRoute: LocaleFeaturesRoute,
+  LocaleFeaturesRoute: LocaleFeaturesRouteWithChildren,
+  LocaleForAgenciesRoute: LocaleForAgenciesRoute,
+  LocaleForContentTeamsRoute: LocaleForContentTeamsRoute,
+  LocaleForDesignersRoute: LocaleForDesignersRoute,
   LocaleForDevelopersRoute: LocaleForDevelopersRoute,
+  LocaleForEcommerceRoute: LocaleForEcommerceRoute,
+  LocaleForEducationRoute: LocaleForEducationRoute,
+  LocaleForEngineeringLeadersRoute: LocaleForEngineeringLeadersRoute,
+  LocaleForEnterprisesRoute: LocaleForEnterprisesRoute,
+  LocaleForFreelancersRoute: LocaleForFreelancersRoute,
+  LocaleForGamingRoute: LocaleForGamingRoute,
+  LocaleForHealthcareRoute: LocaleForHealthcareRoute,
+  LocaleForMarketersRoute: LocaleForMarketersRoute,
+  LocaleForMobileTeamsRoute: LocaleForMobileTeamsRoute,
+  LocaleForOpenSourceRoute: LocaleForOpenSourceRoute,
   LocaleForProductTeamsRoute: LocaleForProductTeamsRoute,
+  LocaleForSaasRoute: LocaleForSaasRoute,
+  LocaleForStartupsRoute: LocaleForStartupsRoute,
   LocaleForTranslatorsRoute: LocaleForTranslatorsRoute,
   LocaleIntegrationsRoute: LocaleIntegrationsRoute,
   LocalePricingRoute: LocalePricingRoute,

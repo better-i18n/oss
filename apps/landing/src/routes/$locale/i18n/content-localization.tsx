@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconGlobe,
   IconCheckmark1,
@@ -32,32 +32,32 @@ export const Route = createFileRoute("/$locale/i18n/content-localization")({
 });
 
 const challenges = [
-  { icon: IconGroup1, titleKey: "challenges.contentVolume.title", descKey: "challenges.contentVolume.description" },
-  { icon: IconRocket, titleKey: "challenges.culturalNuance.title", descKey: "challenges.culturalNuance.description" },
-  { icon: IconAiTranslate, titleKey: "challenges.consistency.title", descKey: "challenges.consistency.description" },
-  { icon: IconGlobe, titleKey: "challenges.scalability.title", descKey: "challenges.scalability.description" },
+  { icon: IconGroup1, titleKey: "challenges.contentVolume.title", descKey: "challenges.contentVolume.description", defaultTitle: "Content Volume", defaultDesc: "Marketing pages, help docs, product UI, and legal content multiply with every new locale. Without automation, teams drown in spreadsheets and stale translations." },
+  { icon: IconRocket, titleKey: "challenges.culturalNuance.title", descKey: "challenges.culturalNuance.description", defaultTitle: "Cultural Nuance", defaultDesc: "Humor, idioms, color associations, and imagery that resonate in one market can confuse or offend in another. True localization requires cultural expertise, not just language skills." },
+  { icon: IconAiTranslate, titleKey: "challenges.consistency.title", descKey: "challenges.consistency.description", defaultTitle: "Terminology Consistency", defaultDesc: "Brand terms, feature names, and product vocabulary must stay consistent across dozens of languages. A single inconsistency erodes user trust and confuses support teams." },
+  { icon: IconGlobe, titleKey: "challenges.scalability.title", descKey: "challenges.scalability.description", defaultTitle: "Scalability", defaultDesc: "Adding a new locale should not require re-engineering your content pipeline. Scalable localization demands structured workflows, reusable glossaries, and automated syncing." },
 ];
 
 function ContentLocalizationPage() {
-  const t = useTranslations("marketing.i18n.contentLocalization");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.contentLocalization");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.deeperEngagement",
-    "benefits.list.higherConversion",
-    "benefits.list.brandTrust",
-    "benefits.list.seoVisibility",
-    "benefits.list.reducedBounce",
-    "benefits.list.globalRevenue",
+    { key: "benefits.list.deeperEngagement", defaultValue: "Deeper audience engagement with culturally relevant content" },
+    { key: "benefits.list.higherConversion", defaultValue: "Higher conversion rates when users interact in their native language" },
+    { key: "benefits.list.brandTrust", defaultValue: "Stronger brand trust through locally adapted messaging" },
+    { key: "benefits.list.seoVisibility", defaultValue: "Improved SEO visibility in regional search engines" },
+    { key: "benefits.list.reducedBounce", defaultValue: "Reduced bounce rates on localized landing pages" },
+    { key: "benefits.list.globalRevenue", defaultValue: "Increased global revenue from new international markets" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
-    { number: "5", titleKey: "process.step5.title", descKey: "process.step5.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Content Audit", defaultDesc: "Inventory all content assets, prioritize by traffic and business impact, and identify what needs full localization versus simple translation." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Locale Strategy", defaultDesc: "Define target markets, establish style guides and glossaries per locale, and set quality benchmarks for each content type." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Translation & Adaptation", defaultDesc: "Translate and culturally adapt content using AI-powered tools, professional linguists, or a hybrid workflow for optimal speed and quality." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Review & QA", defaultDesc: "Run in-context review with native speakers, check formatting and layout across locales, and validate all links and media references." },
+    { number: "5", titleKey: "process.step5.title", descKey: "process.step5.description", defaultTitle: "Publish & Iterate", defaultDesc: "Deploy localized content, monitor engagement metrics per locale, and feed learnings back into the next localization cycle." },
   ];
 
   const relatedPages = [
@@ -135,10 +135,10 @@ function ContentLocalizationPage() {
                   <challenge.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(challenge.titleKey, { defaultValue: challenge.titleKey.split(".").pop() })}
+                  {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(challenge.descKey, { defaultValue: "" })}
+                  {t(challenge.descKey, { defaultValue: challenge.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -159,10 +159,10 @@ function ContentLocalizationPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -188,10 +188,10 @@ function ContentLocalizationPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -32,31 +32,31 @@ export const Route = createFileRoute("/$locale/i18n/localization-software")({
 });
 
 const keyFeatures = [
-  { icon: IconCodeBrackets, titleKey: "features.tmsCat.title", descKey: "features.tmsCat.description" },
-  { icon: IconZap, titleKey: "features.apiCicd.title", descKey: "features.apiCicd.description" },
-  { icon: IconShieldCheck, titleKey: "features.glossaryMemory.title", descKey: "features.glossaryMemory.description" },
-  { icon: IconGroup1, titleKey: "features.collaboration.title", descKey: "features.collaboration.description" },
+  { icon: IconCodeBrackets, titleKey: "features.tmsCat.title", descKey: "features.tmsCat.description", defaultTitle: "TMS & CAT Integration", defaultDesc: "Combine translation management workflows with computer-assisted translation tools for end-to-end localization." },
+  { icon: IconZap, titleKey: "features.apiCicd.title", descKey: "features.apiCicd.description", defaultTitle: "API & CI/CD Integration", defaultDesc: "Connect your localization platform directly to your development pipeline with REST APIs and CI/CD plugins." },
+  { icon: IconShieldCheck, titleKey: "features.glossaryMemory.title", descKey: "features.glossaryMemory.description", defaultTitle: "Glossary & Translation Memory", defaultDesc: "Maintain consistency across projects with shared glossaries and leverage translation memory to reduce costs." },
+  { icon: IconGroup1, titleKey: "features.collaboration.title", descKey: "features.collaboration.description", defaultTitle: "Team Collaboration", defaultDesc: "Enable translators, reviewers, and developers to work together in real time with role-based access control." },
 ];
 
 function LocalizationSoftwarePage() {
-  const t = useTranslations("marketing.i18n.localizationSoftware");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.localizationSoftware");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.fasterRelease",
-    "benefits.list.consistentQuality",
-    "benefits.list.reducedCosts",
-    "benefits.list.devIntegration",
-    "benefits.list.scalability",
-    "benefits.list.translationMemory",
+    { key: "benefits.list.fasterRelease", defaultValue: "Ship multilingual features faster with automated translation workflows" },
+    { key: "benefits.list.consistentQuality", defaultValue: "Maintain consistent translation quality across all languages" },
+    { key: "benefits.list.reducedCosts", defaultValue: "Reduce localization costs with translation memory and AI assistance" },
+    { key: "benefits.list.devIntegration", defaultValue: "Integrate localization directly into your development pipeline" },
+    { key: "benefits.list.scalability", defaultValue: "Scale from two languages to twenty without proportional cost increases" },
+    { key: "benefits.list.translationMemory", defaultValue: "Leverage translation memory to avoid retranslating unchanged content" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Evaluate & Select", defaultDesc: "Compare TMS and CAT tool options against your tech stack, language pairs, and team size requirements." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Integrate & Configure", defaultDesc: "Connect the platform to your code repository, CI/CD pipeline, and content management system." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Onboard & Train", defaultDesc: "Set up user roles, import existing translations, and train your team on the new workflow." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Launch & Iterate", defaultDesc: "Go live with automated translation workflows and continuously optimize based on quality metrics and throughput data." },
   ];
 
   const relatedPages = [
@@ -134,10 +134,10 @@ function LocalizationSoftwarePage() {
                   <feature.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(feature.titleKey, { defaultValue: feature.titleKey.split(".").pop() })}
+                  {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(feature.descKey, { defaultValue: "" })}
+                  {t(feature.descKey, { defaultValue: feature.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -198,10 +198,10 @@ function LocalizationSoftwarePage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -227,10 +227,10 @@ function LocalizationSoftwarePage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

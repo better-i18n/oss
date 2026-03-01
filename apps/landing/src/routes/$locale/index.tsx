@@ -12,6 +12,7 @@ import Changelog from "../../components/Changelog";
 import Pricing from "../../components/Pricing";
 import CTA from "../../components/CTA";
 import Footer from "../../components/Footer";
+import { RelatedPages } from "@/components/RelatedPages";
 import {
   getLocalizedMeta,
   formatMetaTags,
@@ -19,7 +20,7 @@ import {
   getCanonicalLink,
   buildOgImageUrl,
 } from "@/lib/meta";
-import { getHomePageStructuredData, getReviewSchema, formatStructuredData } from "@/lib/structured-data";
+import { getHomePageStructuredData } from "@/lib/structured-data";
 import { getChangelogsMeta } from "@/lib/changelog";
 import { withTimeout } from "@/lib/fetch-utils";
 
@@ -73,9 +74,6 @@ export const Route = createFileRoute("/$locale/")({
         return quote ? { author, reviewBody: quote } : null;
       })
       .filter((item): item is { author: string; reviewBody: string } => item !== null);
-    const reviewScripts = reviewItems.length > 0
-      ? formatStructuredData(getReviewSchema(reviewItems))
-      : [];
 
     return {
       meta: formatMetaTags(meta, { locale }),
@@ -83,7 +81,7 @@ export const Route = createFileRoute("/$locale/")({
         ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
-      scripts: [...getHomePageStructuredData(), ...reviewScripts],
+      scripts: getHomePageStructuredData(reviewItems.length > 0 ? reviewItems : undefined),
     };
   },
   component: LandingPage,
@@ -91,10 +89,17 @@ export const Route = createFileRoute("/$locale/")({
 
 function LandingPage() {
   const { recentChangelogs } = Route.useLoaderData();
+  const { locale } = Route.useParams();
   return (
     <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-mist-950 focus:text-sm focus:font-medium"
+      >
+        Skip to content
+      </a>
       <Header />
-      <main>
+      <main id="main-content">
         <Hero />
         <Features />
         <FrameworkSupport />
@@ -106,6 +111,7 @@ function LandingPage() {
         <Changelog releases={recentChangelogs} />
         <Pricing />
         <CTA />
+        <RelatedPages currentPage="home" locale={locale} variant="content" />
       </main>
       <Footer />
     </>

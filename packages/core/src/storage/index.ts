@@ -1,9 +1,9 @@
-import type { TranslationStorage } from "../types";
-import { createLocalStorage } from "./localStorage";
-import { createMemoryStorage } from "./memory";
+import type { TranslationStorage } from "../types.js";
+import { createLocalStorage } from "./localStorage.js";
+import { createMemoryStorage } from "./memory.js";
 
-export { createLocalStorage } from "./localStorage";
-export { createMemoryStorage } from "./memory";
+export { createLocalStorage } from "./localStorage.js";
+export { createMemoryStorage } from "./memory.js";
 
 /**
  * Minimal Storage interface for detection purposes.

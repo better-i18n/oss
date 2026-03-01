@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -31,33 +31,33 @@ export const Route = createFileRoute("/$locale/i18n/software-localization")({
 });
 
 const processSteps = [
-  { icon: IconCodeBrackets, titleKey: "process.internationalization.title", descKey: "process.internationalization.description" },
-  { icon: IconGlobe, titleKey: "process.translation.title", descKey: "process.translation.description" },
-  { icon: IconSettingsGear1, titleKey: "process.adaptation.title", descKey: "process.adaptation.description" },
-  { icon: IconGroup1, titleKey: "process.testing.title", descKey: "process.testing.description" },
+  { icon: IconCodeBrackets, titleKey: "process.internationalization.title", descKey: "process.internationalization.description", defaultTitle: "Internationalization (i18n)", defaultDesc: "Prepare your codebase by externalizing strings, supporting Unicode, and abstracting locale-dependent logic like dates and currencies." },
+  { icon: IconGlobe, titleKey: "process.translation.title", descKey: "process.translation.description", defaultTitle: "Translation", defaultDesc: "Translate all user-facing strings using professional translators, AI-powered tools, or a hybrid workflow managed through a TMS." },
+  { icon: IconSettingsGear1, titleKey: "process.adaptation.title", descKey: "process.adaptation.description", defaultTitle: "Cultural Adaptation", defaultDesc: "Adjust layouts for text expansion, support RTL languages, localize images and icons, and adapt content to regional cultural norms." },
+  { icon: IconGroup1, titleKey: "process.testing.title", descKey: "process.testing.description", defaultTitle: "Localization Testing", defaultDesc: "Run linguistic, functional, and visual QA across every supported locale to catch truncation, encoding issues, and cultural mismatches." },
 ];
 
 function SoftwareLocalizationPage() {
-  const t = useTranslations("marketing.i18n.softwareLocalization");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.softwareLocalization");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.marketExpansion",
-    "benefits.list.userRetention",
-    "benefits.list.competitiveAdvantage",
-    "benefits.list.revenue",
-    "benefits.list.compliance",
-    "benefits.list.brandPerception",
+    { key: "benefits.list.marketExpansion", defaultValue: "Expand into new markets without rebuilding your product" },
+    { key: "benefits.list.userRetention", defaultValue: "Increase user retention with native-language experiences" },
+    { key: "benefits.list.competitiveAdvantage", defaultValue: "Gain competitive advantage over English-only alternatives" },
+    { key: "benefits.list.revenue", defaultValue: "Unlock new revenue streams from international users" },
+    { key: "benefits.list.compliance", defaultValue: "Meet regional compliance and accessibility requirements" },
+    { key: "benefits.list.brandPerception", defaultValue: "Strengthen brand perception in local markets" },
   ];
 
   const bestPractices = [
-    { titleKey: "bestPractices.planEarly.title", descKey: "bestPractices.planEarly.description" },
-    { titleKey: "bestPractices.externalizeStrings.title", descKey: "bestPractices.externalizeStrings.description" },
-    { titleKey: "bestPractices.useIcu.title", descKey: "bestPractices.useIcu.description" },
-    { titleKey: "bestPractices.automate.title", descKey: "bestPractices.automate.description" },
-    { titleKey: "bestPractices.testContinuously.title", descKey: "bestPractices.testContinuously.description" },
-    { titleKey: "bestPractices.contextForTranslators.title", descKey: "bestPractices.contextForTranslators.description" },
+    { titleKey: "bestPractices.planEarly.title", descKey: "bestPractices.planEarly.description", defaultTitle: "Plan for Localization Early", defaultDesc: "Design your architecture with localization in mind from day one. Retrofitting i18n into a mature codebase is far more expensive than building it in from the start." },
+    { titleKey: "bestPractices.externalizeStrings.title", descKey: "bestPractices.externalizeStrings.description", defaultTitle: "Externalize All Strings", defaultDesc: "Never hardcode user-facing text. Store all strings in external resource files (JSON, XLIFF) so translators can work without touching code." },
+    { titleKey: "bestPractices.useIcu.title", descKey: "bestPractices.useIcu.description", defaultTitle: "Use ICU Message Format", defaultDesc: "Handle plurals, gender, and complex formatting with ICU MessageFormat instead of string concatenation that breaks across languages." },
+    { titleKey: "bestPractices.automate.title", descKey: "bestPractices.automate.description", defaultTitle: "Automate the Workflow", defaultDesc: "Integrate your TMS with CI/CD pipelines to automatically sync new strings, trigger translations, and deploy updates without manual handoffs." },
+    { titleKey: "bestPractices.testContinuously.title", descKey: "bestPractices.testContinuously.description", defaultTitle: "Test Continuously", defaultDesc: "Run automated localization tests on every build to catch truncation, missing translations, and encoding issues before they reach production." },
+    { titleKey: "bestPractices.contextForTranslators.title", descKey: "bestPractices.contextForTranslators.description", defaultTitle: "Provide Context for Translators", defaultDesc: "Add screenshots, character limits, and usage descriptions to translation keys so translators produce accurate, contextually correct results." },
   ];
 
   const relatedPages = [
@@ -157,10 +157,10 @@ function SoftwareLocalizationPage() {
                   <step.icon className="size-5 text-mist-600" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -182,10 +182,10 @@ function SoftwareLocalizationPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -209,10 +209,10 @@ function SoftwareLocalizationPage() {
             {bestPractices.map((practice) => (
               <div key={practice.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(practice.titleKey, { defaultValue: practice.titleKey.split(".").pop() })}
+                  {t(practice.titleKey, { defaultValue: practice.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(practice.descKey, { defaultValue: "" })}
+                  {t(practice.descKey, { defaultValue: practice.defaultDesc })}
                 </p>
               </div>
             ))}

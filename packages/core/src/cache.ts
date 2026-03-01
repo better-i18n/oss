@@ -1,4 +1,4 @@
-import type { CacheEntry } from "./types";
+import type { CacheEntry } from "./types.js";
 
 /**
  * Simple in-memory TTL cache

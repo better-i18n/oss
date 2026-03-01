@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCodeBrackets,
   IconGithub,
@@ -61,7 +61,7 @@ const features = [
 ];
 
 function ForDevelopersSeoPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   return (
@@ -124,7 +124,7 @@ npx better-i18n scan
 import { useTranslations } from '@better-i18n/use-intl';
 
 function Component() {
-  const t = useTranslations('common');
+  const t = useT('common');
   return <h1>{t('welcome')}</h1>;
 }`}</pre>
           </div>

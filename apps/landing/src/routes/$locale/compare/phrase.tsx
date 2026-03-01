@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import {
   ComparisonTable,
@@ -6,16 +6,16 @@ import {
   Differentiator,
   CTASection,
   OtherComparisons,
+  ComparisonRelatedTopics,
   type ComparisonFeature,
 } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCode,
   IconRobot,
   IconZap,
   IconRocket,
-  IconArrowRight,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/compare/phrase")({
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/$locale/compare/phrase")({
 });
 
 function PhraseComparisonPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const features: ComparisonFeature[] = [
@@ -95,47 +95,15 @@ function PhraseComparisonPage() {
         </div>
       </section>
 
-      {/* Related Topics */}
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">{t("whatIs.relatedTopics")}</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Link
-              to="/$locale/i18n/best-tms"
-              params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
-            >
-              <div>
-                <h3 className="text-sm font-medium text-mist-950">{t("whatIs.links.bestTms")}</h3>
-                <p className="text-xs text-mist-500 mt-1">{t("whatIs.links.bestTmsDesc")}</p>
-              </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
-            </Link>
-            <Link
-              to="/$locale/what-is-localization"
-              params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
-            >
-              <div>
-                <h3 className="text-sm font-medium text-mist-950">{t("whatIs.links.l10n")}</h3>
-                <p className="text-xs text-mist-500 mt-1">{t("whatIs.links.l10nDesc")}</p>
-              </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
-            </Link>
-            <Link
-              to="/$locale/for-developers"
-              params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
-            >
-              <div>
-                <h3 className="text-sm font-medium text-mist-950">{t("i18n.relatedLinks.forDevelopers")}</h3>
-                <p className="text-xs text-mist-500 mt-1">{t("i18n.relatedLinks.forDevelopersDesc")}</p>
-              </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
-            </Link>
-          </div>
-        </div>
-      </section>
+      <ComparisonRelatedTopics
+        heading={t("compare.phrase.relatedTopics", { defaultValue: "Related Resources" })}
+        locale={locale}
+        links={[
+          { to: "/$locale/what-is-localization", title: t("compare.phrase.related.l10n", { defaultValue: "What is Localization?" }), description: t("compare.phrase.related.l10nDesc", { defaultValue: "Understanding l10n for enterprise teams" }) },
+          { to: "/$locale/features", title: t("compare.phrase.related.features", { defaultValue: "Platform Features" }), description: t("compare.phrase.related.featuresDesc", { defaultValue: "See the full Better i18n feature set" }) },
+          { to: "/$locale/for-developers", title: t("compare.phrase.related.forDevs", { defaultValue: "For Developers" }), description: t("compare.phrase.related.forDevsDesc", { defaultValue: "Developer-first localization workflows" }) },
+        ]}
+      />
 
       {/* Other Comparisons */}
       <OtherComparisons
@@ -149,7 +117,7 @@ function PhraseComparisonPage() {
         title={t("compare.phrase.cta.title")}
         subtitle={t("compare.phrase.cta.subtitle")}
         primaryCTA={t("compare.phrase.cta.button")}
-        primaryHref={`/${locale}`}
+        primaryHref="https://dash.better-i18n.com"
       />
     </MarketingLayout>
   );

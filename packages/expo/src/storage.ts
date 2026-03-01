@@ -1,5 +1,5 @@
 import type { Messages } from "@better-i18n/core";
-import type { AsyncStorageLike, CacheMeta, LocaleAwareTranslationStorage, MMKVLike, StorageAdapterOptions, TranslationStorage } from "./types";
+import type { AsyncStorageLike, CacheMeta, LocaleAwareTranslationStorage, MMKVLike, StorageAdapterOptions, TranslationStorage } from "./types.js";
 
 const CACHE_PREFIX = "@better-i18n";
 

@@ -1,4 +1,4 @@
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { Link, useParams } from "@tanstack/react-router";
 import { Demo } from "../demo";
 import {
@@ -7,11 +7,11 @@ import {
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export default function Hero() {
-  const t = useTranslations("hero");
+  const t = useT("hero");
   const { locale } = useParams({ strict: false });
 
   return (
-    <section className="flex flex-col gap-16 px-2 pb-16 lg:gap-20 mx-auto w-full max-w-[1400px]">
+    <section aria-labelledby="hero-title" className="flex flex-col gap-16 px-2 pb-16 lg:gap-20 mx-auto w-full max-w-[1400px]">
       {/* Wallpaper Background - relative for absolute positioning of drawer */}
       <div className="wallpaper rounded-lg relative overflow-hidden w-full flex flex-col min-[900px]:block min-[900px]:min-h-[780px]">
         {/* Content Container */}
@@ -25,34 +25,36 @@ export default function Hero() {
                 params={{ locale: locale || "en" }}
                 className="inline-flex items-center gap-x-3 rounded-full bg-white/10 px-3 py-1.5 text-sm text-white/80 hover:bg-white/15 transition-colors"
               >
-                <span>{t("badge")}</span>
+                <span>{t("badge", { defaultValue: "AI-Powered Translations" })}</span>
                 <span className="h-3 w-px bg-white/20" />
                 <span className="inline-flex items-center gap-1 font-medium text-white">
-                  {t("learnMore")}
+                  {t("learnMore", { defaultValue: "Learn more" })}
                   <IconChevronRight className="w-3.5 h-3.5" />
                 </span>
               </Link>
 
               <h1
+                id="hero-title"
                 className="text-3xl/[1.1] font-semibold tracking-[-0.02em] text-white sm:text-4xl/[1.1] lg:text-[3rem]/[1.1]"
                 style={{ textWrap: "balance" }}
               >
-                {t("title")}
+                {t("title", { defaultValue: "Localization, simplified for modern teams" })}
               </h1>
 
               <p className="max-w-xl text-base/7 text-white/70">
-                {t("subtitle")}
+                {t("subtitle", { defaultValue: "AI-powered translations, git-native sync, and instant CDN delivery. Ship multilingual products without the overhead." })}
               </p>
 
               {/* Email Signup Form */}
               <div className="relative w-full max-w-sm">
                 <input
                   type="email"
-                  placeholder={t("inputPlaceholder")}
+                  aria-label={t("inputPlaceholder", { defaultValue: "Enter your work email" })}
+                  placeholder={t("inputPlaceholder", { defaultValue: "Enter your work email" })}
                   className="w-full text-sm pl-5 pr-36 py-3 bg-white/10 border border-white/20 rounded-full text-white placeholder:text-white/50 focus:outline-none focus:border-white/40"
                 />
                 <button className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-white/90 transition-colors">
-                  {t("cta")}
+                  {t("cta", { defaultValue: "Get Started" })}
                   <IconArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -90,7 +92,7 @@ export default function Hero() {
       </div>
 
       {/* Logo Grid Footer */}
-      <div className="w-full mt-[-24px] mb-8 overflow-hidden">
+      <div aria-label="Trusted by leading companies" className="w-full mt-[-24px] mb-8 overflow-hidden">
         <div className="logo-grid">
           {[0, 1].map((i) => (
             <div key={i} className="logo-track">
@@ -98,7 +100,10 @@ export default function Hero() {
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/carna.png"
-                  alt="Carna"
+                  alt="Carna - Better i18n customer"
+                  width={112}
+                  height={28}
+                  loading="lazy"
                   className="h-7 w-auto opacity-50 grayscale"
                 />
               </span>
@@ -106,14 +111,20 @@ export default function Hero() {
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/nomadwork.png"
-                  alt="Nomad Work"
+                  alt="Nomad Work - Better i18n customer"
+                  width={112}
+                  height={28}
+                  loading="lazy"
                   className="h-7 w-auto opacity-50 grayscale"
                 />
               </span>
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/hellospace.png"
-                  alt="Hellospace"
+                  alt="Hellospace - Better i18n customer"
+                  width={112}
+                  height={28}
+                  loading="lazy"
                   className="h-7 w-auto opacity-50 grayscale"
                 />
               </span>
@@ -121,7 +132,10 @@ export default function Hero() {
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/cloudflare.png"
-                  alt="Cloudflare"
+                  alt="Cloudflare - Better i18n customer"
+                  width={112}
+                  height={28}
+                  loading="lazy"
                   className="h-7 w-auto opacity-50 grayscale"
                 />
               </span>

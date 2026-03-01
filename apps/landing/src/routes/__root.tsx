@@ -3,15 +3,22 @@ import {
   Scripts,
   createRootRouteWithContext,
   Outlet,
+  Link,
   redirect,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BetterI18nProvider, getLocaleFromPath } from "@better-i18n/use-intl";
+import {
+  BetterI18nProvider,
+  getLocaleFromPath,
+  useTranslations,
+} from "@better-i18n/use-intl";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
 import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
+import { MarketingLayout } from "../components/MarketingLayout";
+import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,8 +101,16 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           name: "google",
           content: "notranslate",
         },
+        {
+          name: "theme-color",
+          content: "#0a0a0a",
+        },
       ],
       links: [
+        {
+          rel: "icon",
+          href: "/favicon.ico",
+        },
         {
           rel: "preconnect",
           href: "https://fonts.googleapis.com",
@@ -104,6 +119,23 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           rel: "preconnect",
           href: "https://fonts.gstatic.com",
           crossOrigin: "anonymous",
+        },
+        {
+          rel: "dns-prefetch",
+          href: "https://og.better-i18n.com",
+        },
+        {
+          rel: "dns-prefetch",
+          href: "https://dash.better-i18n.com",
+        },
+        {
+          rel: "dns-prefetch",
+          href: "https://docs.better-i18n.com",
+        },
+        {
+          rel: "preload",
+          href: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap",
+          as: "style",
         },
         {
           rel: "stylesheet",
@@ -131,7 +163,42 @@ gtag('config', 'AW-17928422726');`,
   },
 
   component: RootComponent,
+  notFoundComponent: NotFoundPage,
 });
+
+function NotFoundPage() {
+  const t = useTranslations("common");
+  const { locale } = Route.useRouteContext();
+
+  return (
+    <MarketingLayout showCTA={false} bgClassName="bg-white">
+      <div className="py-24 sm:py-32">
+        <div className="mx-auto max-w-2xl px-6 text-center">
+          <p className="font-display text-6xl font-medium tracking-[-0.02em] text-mist-300 sm:text-8xl">
+            404
+          </p>
+          <h1 className="mt-4 font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
+            {t("notFound.title", { defaultValue: "Page not found" })}
+          </h1>
+          <p className="mt-4 text-lg text-mist-600">
+            {t("notFound.description", {
+              defaultValue:
+                "The page you're looking for doesn't exist or has been moved.",
+            })}
+          </p>
+          <Link
+            to="/$locale"
+            params={{ locale }}
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
+          >
+            <IconArrowLeft className="w-4 h-4" />
+            {t("notFound.backHome", { defaultValue: "Back to Home" })}
+          </Link>
+        </div>
+      </div>
+    </MarketingLayout>
+  );
+}
 
 function RootComponent() {
   const { messages, locale } = Route.useRouteContext();
@@ -154,6 +221,13 @@ function RootComponent() {
             locale={locale}
             messages={messages}
             timeZone="UTC"
+            getMessageFallback={({ key }) => {
+              const lastSegment = key.split(".").pop() || key;
+              return lastSegment
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (c) => c.toUpperCase())
+                .trim();
+            }}
           >
             <Outlet />
           </BetterI18nProvider>

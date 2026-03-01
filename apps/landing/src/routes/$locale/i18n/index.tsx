@@ -3,7 +3,7 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader, formatStructuredData } from "@/lib/page-seo";
 import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
 import { SITE_URL } from "@/lib/meta";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/")({
@@ -34,53 +34,53 @@ export const Route = createFileRoute("/$locale/i18n/")({
 });
 
 const frameworks = [
-  { key: "react", name: "React", slug: "react" },
-  { key: "nextjs", name: "Next.js", slug: "nextjs" },
-  { key: "vue", name: "Vue", slug: "vue" },
-  { key: "nuxt", name: "Nuxt", slug: "nuxt" },
-  { key: "angular", name: "Angular", slug: "angular" },
-  { key: "svelte", name: "Svelte", slug: "svelte" },
+  { key: "react", name: "React", slug: "react", defaultDesc: "Type-safe React internationalization with hooks and context" },
+  { key: "nextjs", name: "Next.js", slug: "nextjs", defaultDesc: "Server-side i18n for Next.js apps with App Router support" },
+  { key: "vue", name: "Vue", slug: "vue", defaultDesc: "Vue.js internationalization with Composition API integration" },
+  { key: "nuxt", name: "Nuxt", slug: "nuxt", defaultDesc: "Nuxt.js localization module with automatic routing" },
+  { key: "angular", name: "Angular", slug: "angular", defaultDesc: "Angular internationalization with built-in i18n support" },
+  { key: "svelte", name: "Svelte", slug: "svelte", defaultDesc: "Lightweight Svelte internationalization integration" },
 ];
 
 const topics = [
-  { key: "bestTms", slug: "best-tms" },
-  { key: "bestLibrary", slug: "best-library" },
-  { key: "forDevelopers", slug: "for-developers" },
-  { key: "translationManagement", slug: "translation-management-system" },
-  { key: "softwareLocalization", slug: "software-localization" },
-  { key: "websiteLocalization", slug: "website-localization" },
-  { key: "softwareLocalizationServices", slug: "software-localization-services" },
-  { key: "localizationManagement", slug: "localization-management" },
-  { key: "l10nVsI18n", slug: "localization-vs-internationalization" },
-  { key: "reactIntl", slug: "react-intl" },
+  { key: "bestTms", slug: "best-tms", defaultName: "Best TMS", defaultDesc: "Compare top translation management systems" },
+  { key: "bestLibrary", slug: "best-library", defaultName: "Best Library", defaultDesc: "Find the best i18n library for your framework" },
+  { key: "forDevelopers", slug: "for-developers", defaultName: "For Developers", defaultDesc: "Developer-focused internationalization guide" },
+  { key: "translationManagement", slug: "translation-management-system", defaultName: "Translation Management", defaultDesc: "Centralize your translation workflow with a TMS" },
+  { key: "softwareLocalization", slug: "software-localization", defaultName: "Software Localization", defaultDesc: "Adapt your software for global markets" },
+  { key: "websiteLocalization", slug: "website-localization", defaultName: "Website Localization", defaultDesc: "Localize your website for international users" },
+  { key: "softwareLocalizationServices", slug: "software-localization-services", defaultName: "Software Localization Services", defaultDesc: "Compare platform and agency localization approaches" },
+  { key: "localizationManagement", slug: "localization-management", defaultName: "Localization Management", defaultDesc: "Manage localization workflows at scale" },
+  { key: "l10nVsI18n", slug: "localization-vs-internationalization", defaultName: "Localization vs Internationalization", defaultDesc: "Understand the difference between l10n and i18n" },
+  { key: "reactIntl", slug: "react-intl", defaultName: "React Intl", defaultDesc: "Internationalization with the react-intl library" },
 ];
 
 const localizationGuides = [
-  { key: "contentLocalization", slug: "content-localization" },
-  { key: "contentLocalizationServices", slug: "content-localization-services" },
-  { key: "culturalAdaptation", slug: "cultural-adaptation" },
-  { key: "websiteTranslation", slug: "website-translation" },
-  { key: "translationSolutions", slug: "translation-solutions" },
-  { key: "localizationSoftware", slug: "localization-software" },
-  { key: "localizationPlatforms", slug: "localization-platforms" },
-  { key: "localizationTools", slug: "localization-tools" },
+  { key: "contentLocalization", slug: "content-localization", defaultName: "Content Localization", defaultDesc: "Adapt your content for different cultures and markets" },
+  { key: "contentLocalizationServices", slug: "content-localization-services", defaultName: "Content Localization Services", defaultDesc: "Professional services for content localization at scale" },
+  { key: "culturalAdaptation", slug: "cultural-adaptation", defaultName: "Cultural Adaptation", defaultDesc: "Go beyond translation with culturally aware content" },
+  { key: "websiteTranslation", slug: "website-translation", defaultName: "Website Translation", defaultDesc: "Translate your website content for global audiences" },
+  { key: "translationSolutions", slug: "translation-solutions", defaultName: "Translation Solutions", defaultDesc: "Explore tools and services for translation workflows" },
+  { key: "localizationSoftware", slug: "localization-software", defaultName: "Localization Software", defaultDesc: "Platforms and tools that power multilingual products" },
+  { key: "localizationPlatforms", slug: "localization-platforms", defaultName: "Localization Platforms", defaultDesc: "Compare cloud-based localization management platforms" },
+  { key: "localizationTools", slug: "localization-tools", defaultName: "Localization Tools", defaultDesc: "Developer-facing tools for managing translations" },
 ];
 
 const seoGuides = [
-  { key: "multilingualSeo", slug: "multilingual-seo" },
-  { key: "internationalSeo", slug: "international-seo" },
-  { key: "internationalSeoConsulting", slug: "international-seo-consulting" },
-  { key: "technicalMultilingualSeo", slug: "technical-multilingual-seo" },
-  { key: "technicalInternationalSeo", slug: "technical-international-seo" },
-  { key: "multilingualWebsiteSeo", slug: "multilingual-website-seo" },
-  { key: "globalMarketSeo", slug: "global-market-seo" },
-  { key: "seoInternationalAudiences", slug: "seo-international-audiences" },
-  { key: "localSeoInternational", slug: "local-seo-international" },
-  { key: "ecommerceGlobalSeo", slug: "ecommerce-global-seo" },
+  { key: "multilingualSeo", slug: "multilingual-seo", defaultName: "Multilingual SEO", defaultDesc: "Optimize your site to rank in every language" },
+  { key: "internationalSeo", slug: "international-seo", defaultName: "International SEO", defaultDesc: "Strategy guide for ranking globally across markets" },
+  { key: "internationalSeoConsulting", slug: "international-seo-consulting", defaultName: "International SEO Consulting", defaultDesc: "Expert guidance for global search strategies" },
+  { key: "technicalMultilingualSeo", slug: "technical-multilingual-seo", defaultName: "Technical Multilingual SEO", defaultDesc: "Hreflang, canonicals, and technical implementation" },
+  { key: "technicalInternationalSeo", slug: "technical-international-seo", defaultName: "Technical International SEO", defaultDesc: "Deep-dive into international SEO infrastructure" },
+  { key: "multilingualWebsiteSeo", slug: "multilingual-website-seo", defaultName: "Multilingual Website SEO", defaultDesc: "Practical guide to multilingual website optimization" },
+  { key: "globalMarketSeo", slug: "global-market-seo", defaultName: "Global Market SEO", defaultDesc: "SEO strategies for entering global markets" },
+  { key: "seoInternationalAudiences", slug: "seo-international-audiences", defaultName: "SEO for International Audiences", defaultDesc: "Target international audiences effectively" },
+  { key: "localSeoInternational", slug: "local-seo-international", defaultName: "Local SEO International", defaultDesc: "Local SEO strategies across multiple countries" },
+  { key: "ecommerceGlobalSeo", slug: "ecommerce-global-seo", defaultName: "E-commerce Global SEO", defaultDesc: "SEO for international online stores" },
 ];
 
 function I18nIndexPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   return (
@@ -90,10 +90,10 @@ function I18nIndexPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("i18n.index.hero.title")}
+              {t("i18n.index.hero.title", { defaultValue: "Internationalization & Localization Hub" })}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("i18n.index.hero.subtitle")}
+              {t("i18n.index.hero.subtitle", { defaultValue: "Comprehensive guides for internationalization, localization, and multilingual SEO. From framework-specific i18n setup to global SEO strategy." })}
             </p>
           </div>
         </div>
@@ -103,7 +103,7 @@ function I18nIndexPage() {
       <section className="pb-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
-            {t("i18n.index.frameworks.title")}
+            {t("i18n.index.frameworks.title", { defaultValue: "Framework Guides" })}
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {frameworks.map((framework) => (
@@ -119,7 +119,7 @@ function I18nIndexPage() {
                       {framework.name} i18n
                     </h3>
                     <p className="mt-1 text-sm text-mist-600">
-                      {t(`i18n.index.frameworks.${framework.key}.description`)}
+                      {t(`i18n.index.frameworks.${framework.key}.description`, { defaultValue: framework.defaultDesc })}
                     </p>
                   </div>
                   <IconArrowRight className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
@@ -134,7 +134,7 @@ function I18nIndexPage() {
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
-            {t("i18n.index.topics.title")}
+            {t("i18n.index.topics.title", { defaultValue: "Popular Topics" })}
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {topics.map((topic) => (
@@ -147,10 +147,10 @@ function I18nIndexPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-base font-medium text-mist-950">
-                      {t(`i18n.index.topics.${topic.key}.name`)}
+                      {t(`i18n.index.topics.${topic.key}.name`, { defaultValue: topic.defaultName })}
                     </h3>
                     <p className="mt-1 text-sm text-mist-600">
-                      {t(`i18n.index.topics.${topic.key}.description`)}
+                      {t(`i18n.index.topics.${topic.key}.description`, { defaultValue: topic.defaultDesc })}
                     </p>
                   </div>
                   <IconArrowRight className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
@@ -178,10 +178,10 @@ function I18nIndexPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-base font-medium text-mist-950">
-                      {t(`i18n.index.localizationGuides.${guide.key}.name`, { defaultValue: guide.key })}
+                      {t(`i18n.index.localizationGuides.${guide.key}.name`, { defaultValue: guide.defaultName })}
                     </h3>
                     <p className="mt-1 text-sm text-mist-600">
-                      {t(`i18n.index.localizationGuides.${guide.key}.description`, { defaultValue: "" })}
+                      {t(`i18n.index.localizationGuides.${guide.key}.description`, { defaultValue: guide.defaultDesc })}
                     </p>
                   </div>
                   <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
@@ -209,10 +209,10 @@ function I18nIndexPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-base font-medium text-mist-950">
-                      {t(`i18n.index.seoGuides.${guide.key}.name`, { defaultValue: guide.key })}
+                      {t(`i18n.index.seoGuides.${guide.key}.name`, { defaultValue: guide.defaultName })}
                     </h3>
                     <p className="mt-1 text-sm text-mist-600">
-                      {t(`i18n.index.seoGuides.${guide.key}.description`, { defaultValue: "" })}
+                      {t(`i18n.index.seoGuides.${guide.key}.description`, { defaultValue: guide.defaultDesc })}
                     </p>
                   </div>
                   <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />

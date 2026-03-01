@@ -4,12 +4,12 @@ import {
   FrameworkHero,
   FeatureList,
   CodeExample,
-  RelatedPages,
   FrameworkCTA,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
+import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/$locale/i18n/svelte")({
   loader: createPageLoader(),
@@ -23,6 +23,7 @@ export const Route = createFileRoute("/$locale/i18n/svelte")({
       structuredDataOptions: {
         framework: "Svelte",
         frameworkDescription: "Lightweight Svelte internationalization with reactive stores and SvelteKit integration.",
+        dependencies: ["svelte", "@better-i18n/svelte"],
       },
     });
   },
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/$locale/i18n/svelte")({
 });
 
 function SvelteI18nPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const features = [
@@ -61,16 +62,15 @@ function SvelteI18nPage() {
   }
 </script>`;
 
-  const relatedPages = [
-    { name: "React i18n", href: "/$locale/i18n/react", description: t("i18n.svelte.related.react") },
-    { name: "Vue i18n", href: "/$locale/i18n/vue", description: t("i18n.svelte.related.vue") },
-    { name: t("i18n.svelte.related.comparisons"), href: "/$locale/compare", description: t("i18n.svelte.related.comparisonsDesc") },
+  const relatedLinks = [
+    { title: "React i18n", to: "/$locale/i18n/react", description: t("i18n.svelte.related.react") },
+    { title: "Vue i18n", to: "/$locale/i18n/vue", description: t("i18n.svelte.related.vue") },
+    { title: t("i18n.svelte.related.comparisons"), to: "/$locale/compare", description: t("i18n.svelte.related.comparisonsDesc") },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <FrameworkHero
-        framework="Svelte"
         title={t("i18n.svelte.hero.title")}
         subtitle={t("i18n.svelte.hero.subtitle")}
         badgeText="Svelte i18n"
@@ -84,10 +84,10 @@ function SvelteI18nPage() {
         code={codeExample}
       />
 
-      <RelatedPages title={t("i18n.svelte.relatedTitle")} pages={relatedPages} locale={locale} />
+      <ComparisonRelatedTopics heading={t("i18n.svelte.relatedTitle")} links={relatedLinks} locale={locale} />
 
       <OtherFrameworks
-        title={t("i18n.react.otherFrameworks")}
+        title={t("i18n.svelte.otherFrameworks")}
         currentFramework="svelte"
         locale={locale}
       />

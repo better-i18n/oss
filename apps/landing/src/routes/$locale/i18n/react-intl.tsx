@@ -4,12 +4,12 @@ import {
   FrameworkHero,
   FeatureList,
   CodeExample,
-  RelatedPages,
   FrameworkCTA,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
+import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/$locale/i18n/react-intl")({
   loader: createPageLoader(),
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/$locale/i18n/react-intl")({
 });
 
 function ReactIntlPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const features = [
@@ -74,16 +74,15 @@ function SearchBox() {
   );
 }`;
 
-  const relatedPages = [
-    { name: "React i18n", href: "/$locale/i18n/react", description: t("i18n.reactIntl.related.react", { defaultValue: "Complete React internationalization guide" }) },
-    { name: "Next.js i18n", href: "/$locale/i18n/nextjs", description: t("i18n.reactIntl.related.nextjs", { defaultValue: "i18n for Next.js App Router" }) },
-    { name: "Best i18n Library", href: "/$locale/i18n/best-library", description: t("i18n.reactIntl.related.bestLibrary", { defaultValue: "Compare React i18n libraries" }) },
+  const relatedLinks = [
+    { title: "React i18n", to: "/$locale/i18n/react", description: t("i18n.reactIntl.related.react", { defaultValue: "Complete React internationalization guide" }) },
+    { title: "Next.js i18n", to: "/$locale/i18n/nextjs", description: t("i18n.reactIntl.related.nextjs", { defaultValue: "i18n for Next.js App Router" }) },
+    { title: "Best i18n Library", to: "/$locale/i18n/best-library", description: t("i18n.reactIntl.related.bestLibrary", { defaultValue: "Compare React i18n libraries" }) },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <FrameworkHero
-        framework="react-intl"
         title={t("i18n.reactIntl.hero.title", { defaultValue: "react-intl Guide: Internationalize React with FormatJS" })}
         subtitle={t("i18n.reactIntl.hero.subtitle", { defaultValue: "react-intl (part of FormatJS) provides React components and hooks for internationalization using the ICU message format. Learn how to use FormattedMessage, the useIntl hook, and integrate with Better i18n for a complete react intl workflow." })}
         badgeText="react-intl"
@@ -132,9 +131,9 @@ function SearchBox() {
         code={formattedMessageExample}
       />
 
-      <RelatedPages
-        title={t("i18n.reactIntl.relatedTitle", { defaultValue: "Related Guides" })}
-        pages={relatedPages}
+      <ComparisonRelatedTopics
+        heading={t("i18n.reactIntl.relatedTitle", { defaultValue: "Related Guides" })}
+        links={relatedLinks}
         locale={locale}
       />
 

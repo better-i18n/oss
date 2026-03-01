@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -33,31 +33,31 @@ export const Route = createFileRoute("/$locale/i18n/content-localization-service
 });
 
 const serviceTypes = [
-  { icon: IconGlobe, titleKey: "services.website.title", descKey: "services.website.description" },
-  { icon: IconSettingsGear1, titleKey: "services.app.title", descKey: "services.app.description" },
-  { icon: IconZap, titleKey: "services.game.title", descKey: "services.game.description" },
-  { icon: IconGroup1, titleKey: "services.marketing.title", descKey: "services.marketing.description" },
+  { icon: IconGlobe, titleKey: "services.website.title", descKey: "services.website.description", defaultTitle: "Website Localization", defaultDesc: "Full website translation including UI strings, metadata, multimedia, and SEO-optimized content for each target market." },
+  { icon: IconSettingsGear1, titleKey: "services.app.title", descKey: "services.app.description", defaultTitle: "App Localization", defaultDesc: "Mobile and desktop application translation covering UI, push notifications, app store listings, and in-app content." },
+  { icon: IconZap, titleKey: "services.game.title", descKey: "services.game.description", defaultTitle: "Game Translation", defaultDesc: "Game localization services including UI strings, subtitles, voice scripts, and marketing assets adapted for each region." },
+  { icon: IconGroup1, titleKey: "services.marketing.title", descKey: "services.marketing.description", defaultTitle: "Marketing Content", defaultDesc: "Multilingual content marketing including blog posts, ad copy, email campaigns, and social media adapted for local audiences." },
 ];
 
 function ContentLocalizationServicesPage() {
-  const t = useTranslations("marketing.i18n.contentLocalizationServices");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.contentLocalizationServices");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const selectionCriteria = [
-    "criteria.list.languageCoverage",
-    "criteria.list.subjectMatterExpertise",
-    "criteria.list.tmsIntegration",
-    "criteria.list.qaProcess",
-    "criteria.list.turnaroundTime",
-    "criteria.list.pricing",
+    { key: "criteria.list.languageCoverage", defaultValue: "Language coverage and native-speaker availability for your target markets" },
+    { key: "criteria.list.subjectMatterExpertise", defaultValue: "Subject matter expertise in your industry and content domain" },
+    { key: "criteria.list.tmsIntegration", defaultValue: "TMS and developer tool integration for seamless workflow automation" },
+    { key: "criteria.list.qaProcess", defaultValue: "Quality assurance process including review cycles and error tracking" },
+    { key: "criteria.list.turnaroundTime", defaultValue: "Turnaround time guarantees and scalability for high-volume projects" },
+    { key: "criteria.list.pricing", defaultValue: "Transparent pricing model that aligns with your content volume and budget" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Linguistic Review", defaultDesc: "Native-speaking linguists review translations for grammar, fluency, and adherence to brand style guides." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Functional Testing", defaultDesc: "Verify that translated content displays correctly in context, including text expansion, truncation, and layout integrity." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Terminology Consistency", defaultDesc: "Cross-check translations against approved glossaries and translation memory to ensure consistent terminology across all content." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Final Sign-Off", defaultDesc: "Stakeholder review and approval before publishing, with tracked change history and audit trail for compliance." },
   ];
 
   const relatedPages = [
@@ -135,10 +135,10 @@ function ContentLocalizationServicesPage() {
                   <service.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(service.titleKey, { defaultValue: service.titleKey.split(".").pop() })}
+                  {t(service.titleKey, { defaultValue: service.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(service.descKey, { defaultValue: "" })}
+                  {t(service.descKey, { defaultValue: service.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -159,10 +159,10 @@ function ContentLocalizationServicesPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {selectionCriteria.map((criterionKey) => (
-                  <li key={criterionKey} className="flex items-start gap-3">
+                {selectionCriteria.map((criterion) => (
+                  <li key={criterion.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(criterionKey, { defaultValue: criterionKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(criterion.key, { defaultValue: criterion.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -188,10 +188,10 @@ function ContentLocalizationServicesPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}
