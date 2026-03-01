@@ -1,5 +1,13 @@
 # @better-i18n/expo
 
+## 0.6.1
+
+### Patch Changes
+
+- f3403e1: fix: add .js extensions to relative imports for Node.js ESM compatibility
+- Updated dependencies [f3403e1]
+  - @better-i18n/core@0.2.2
+
 ## 0.6.0
 
 ### Minor Changes
