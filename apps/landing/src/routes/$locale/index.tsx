@@ -19,7 +19,7 @@ import {
   getCanonicalLink,
   buildOgImageUrl,
 } from "@/lib/meta";
-import { getHomePageStructuredData, getReviewSchema, formatStructuredData } from "@/lib/structured-data";
+import { getHomePageStructuredData } from "@/lib/structured-data";
 import { getChangelogsMeta } from "@/lib/changelog";
 import { withTimeout } from "@/lib/fetch-utils";
 
@@ -73,9 +73,6 @@ export const Route = createFileRoute("/$locale/")({
         return quote ? { author, reviewBody: quote } : null;
       })
       .filter((item): item is { author: string; reviewBody: string } => item !== null);
-    const reviewScripts = reviewItems.length > 0
-      ? formatStructuredData(getReviewSchema(reviewItems))
-      : [];
 
     return {
       meta: formatMetaTags(meta, { locale }),
@@ -83,7 +80,7 @@ export const Route = createFileRoute("/$locale/")({
         ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
-      scripts: [...getHomePageStructuredData(), ...reviewScripts],
+      scripts: getHomePageStructuredData(reviewItems.length > 0 ? reviewItems : undefined),
     };
   },
   component: LandingPage,

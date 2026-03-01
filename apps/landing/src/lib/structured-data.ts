@@ -136,14 +136,18 @@ interface ArticleSchemaOptions {
 
 /**
  * Article Schema - for blog posts
+ *
+ * Google recommends `image` as an array for Article rich results.
+ * Falls back to site logo if no image provided.
  */
 export function getArticleSchema(options: ArticleSchemaOptions) {
+  const imageUrl = options.image || `${SITE_URL}/logo.png`;
   return {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: options.title,
     description: options.description,
-    image: options.image,
+    image: [imageUrl],
     url: options.url,
     datePublished: options.publishedTime,
     dateModified: options.modifiedTime || options.publishedTime,
