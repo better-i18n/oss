@@ -54,11 +54,11 @@ function WebsiteTranslationPage() {
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
-    { number: "5", titleKey: "process.step5.title", descKey: "process.step5.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Content Audit", defaultDesc: "Inventory all translatable strings, pages, and metadata to define your translation scope." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "String Extraction", defaultDesc: "Extract all text into structured translation files using your i18n framework." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Translation", defaultDesc: "Translate content using AI, human translators, or a hybrid of both approaches." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Quality Review", defaultDesc: "Review translations for accuracy, consistency, and cultural appropriateness." },
+    { number: "5", titleKey: "process.step5.title", descKey: "process.step5.description", defaultTitle: "Publish & Monitor", defaultDesc: "Deploy translated content to production and monitor performance across locales." },
   ];
 
   const relatedPages = [
@@ -155,10 +155,10 @@ function WebsiteTranslationPage() {
                   <approach.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(approach.titleKey, { defaultValue: approach.titleKey.split(".").pop() })}
+                  {t(approach.titleKey, { defaultValue: approach.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(approach.descKey, { defaultValue: "" })}
+                  {t(approach.descKey, { defaultValue: approach.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -223,10 +223,10 @@ function WebsiteTranslationPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -252,10 +252,10 @@ function WebsiteTranslationPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

@@ -33,10 +33,10 @@ export const Route = createFileRoute("/$locale/i18n/ecommerce-global-seo")({
 });
 
 const challenges = [
-  { icon: IconGroup1, titleKey: "challenges.productVariants.title", descKey: "challenges.productVariants.description" },
-  { icon: IconSettingsGear1, titleKey: "challenges.pricingCurrency.title", descKey: "challenges.pricingCurrency.description" },
-  { icon: IconMagnifyingGlass, titleKey: "challenges.canonicalization.title", descKey: "challenges.canonicalization.description" },
-  { icon: IconRocket, titleKey: "challenges.shoppingFeeds.title", descKey: "challenges.shoppingFeeds.description" },
+  { icon: IconGroup1, titleKey: "challenges.productVariants.title", descKey: "challenges.productVariants.description", defaultTitle: "Product Variant Management", defaultDesc: "Each locale may have different product variants, sizes, or availability — requiring unique SKU-level pages with localized structured data for every market." },
+  { icon: IconSettingsGear1, titleKey: "challenges.pricingCurrency.title", descKey: "challenges.pricingCurrency.description", defaultTitle: "Pricing & Currency Localization", defaultDesc: "Product schema must display correct local currencies and pricing, and price changes must propagate across all localized pages without breaking rich results." },
+  { icon: IconMagnifyingGlass, titleKey: "challenges.canonicalization.title", descKey: "challenges.canonicalization.description", defaultTitle: "Cross-Market Canonicalization", defaultDesc: "Canonical tags and hreflang annotations must correctly link language variants of the same product to prevent duplicate content penalties across international storefronts." },
+  { icon: IconRocket, titleKey: "challenges.shoppingFeeds.title", descKey: "challenges.shoppingFeeds.description", defaultTitle: "Shopping Feed Localization", defaultDesc: "Google Shopping, Amazon, and regional marketplace feeds must be localized with translated titles, descriptions, and market-specific attributes for each target country." },
 ];
 
 function EcommerceGlobalSeoPage() {
