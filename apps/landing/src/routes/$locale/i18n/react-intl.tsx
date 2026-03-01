@@ -83,7 +83,6 @@ function SearchBox() {
   return (
     <MarketingLayout showCTA={false}>
       <FrameworkHero
-        framework="react-intl"
         title={t("i18n.reactIntl.hero.title", { defaultValue: "react-intl Guide: Internationalize React with FormatJS" })}
         subtitle={t("i18n.reactIntl.hero.subtitle", { defaultValue: "react-intl (part of FormatJS) provides React components and hooks for internationalization using the ICU message format. Learn how to use FormattedMessage, the useIntl hook, and integrate with Better i18n for a complete react intl workflow." })}
         badgeText="react-intl"

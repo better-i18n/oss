@@ -74,7 +74,6 @@ const { t } = useI18n()
   return (
     <MarketingLayout showCTA={false}>
       <FrameworkHero
-        framework="Nuxt"
         title={t("i18n.nuxt.hero.title")}
         subtitle={t("i18n.nuxt.hero.subtitle")}
         badgeText="Nuxt i18n"

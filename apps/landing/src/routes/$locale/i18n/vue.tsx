@@ -68,7 +68,6 @@ const { t } = useI18n();
   return (
     <MarketingLayout showCTA={false}>
       <FrameworkHero
-        framework="Vue"
         title={t("i18n.vue.hero.title")}
         subtitle={t("i18n.vue.hero.subtitle")}
         badgeText="Vue i18n"
