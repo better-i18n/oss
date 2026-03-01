@@ -33,10 +33,10 @@ export const Route = createFileRoute("/$locale/i18n/seo-international-audiences"
 });
 
 const audienceSegments = [
-  { icon: IconMagnifyingGlass, titleKey: "segments.localSearch.title", descKey: "segments.localSearch.description" },
-  { icon: IconGlobe, titleKey: "segments.international.title", descKey: "segments.international.description" },
-  { icon: IconRocket, titleKey: "segments.ecommerce.title", descKey: "segments.ecommerce.description" },
-  { icon: IconChart1, titleKey: "segments.contentMarketing.title", descKey: "segments.contentMarketing.description" },
+  { icon: IconMagnifyingGlass, titleKey: "segments.localSearch.title", descKey: "segments.localSearch.description", defaultTitle: "Local Search Audiences", defaultDesc: "Users searching for nearby businesses and services in their own language, relying on Google Maps and local pack results." },
+  { icon: IconGlobe, titleKey: "segments.international.title", descKey: "segments.international.description", defaultTitle: "International Organic Audiences", defaultDesc: "Users searching across borders for products, services, and information regardless of their physical location." },
+  { icon: IconRocket, titleKey: "segments.ecommerce.title", descKey: "segments.ecommerce.description", defaultTitle: "Global Ecommerce Shoppers", defaultDesc: "Consumers comparing products across international ecommerce stores, influenced by local pricing, shipping, and payment options." },
+  { icon: IconChart1, titleKey: "segments.contentMarketing.title", descKey: "segments.contentMarketing.description", defaultTitle: "Content-Driven Researchers", defaultDesc: "Audiences discovering your brand through educational content, guides, and thought leadership in their native language." },
 ];
 
 function SeoInternationalAudiencesPage() {
@@ -45,19 +45,19 @@ function SeoInternationalAudiencesPage() {
   const { locale } = Route.useParams();
 
   const localSeoTips = [
-    "tips.list.googleBusinessProfile",
-    "tips.list.localCitations",
-    "tips.list.localizedLandingPages",
-    "tips.list.reviewManagement",
-    "tips.list.schemaMarkup",
-    "tips.list.mobileOptimization",
+    { key: "tips.list.googleBusinessProfile", defaultValue: "Claim and optimize Google Business Profiles in each target country with localized descriptions and categories" },
+    { key: "tips.list.localCitations", defaultValue: "Build citations in country-specific directories and local business listing platforms" },
+    { key: "tips.list.localizedLandingPages", defaultValue: "Create dedicated landing pages for each market with locally researched keywords and content" },
+    { key: "tips.list.reviewManagement", defaultValue: "Actively manage and respond to reviews in the local language on region-specific platforms" },
+    { key: "tips.list.schemaMarkup", defaultValue: "Implement localized schema markup with correct currency, language, and regional identifiers" },
+    { key: "tips.list.mobileOptimization", defaultValue: "Optimize for mobile-first indexing in markets where mobile search dominates desktop" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Segment by Market", defaultDesc: "Identify your top international markets and define the audience segments — local searchers, ecommerce buyers, content consumers — in each one." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Set Locale-Specific KPIs", defaultDesc: "Define organic traffic, ranking, and conversion benchmarks per locale so you can measure performance independently across markets." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Localize and Publish", defaultDesc: "Create and deploy fully localized content, metadata, and structured data for each target market with region-specific keyword targeting." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Monitor and Iterate", defaultDesc: "Track rankings, engagement, and conversions per locale using segmented analytics and iterate on content based on local performance data." },
   ];
 
   const relatedPages = [
@@ -135,10 +135,10 @@ function SeoInternationalAudiencesPage() {
                   <segment.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(segment.titleKey, { defaultValue: segment.titleKey.split(".").pop() })}
+                  {t(segment.titleKey, { defaultValue: segment.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(segment.descKey, { defaultValue: "" })}
+                  {t(segment.descKey, { defaultValue: segment.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -201,10 +201,10 @@ function SeoInternationalAudiencesPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {localSeoTips.map((tipKey) => (
-                  <li key={tipKey} className="flex items-start gap-3">
+                {localSeoTips.map((tip) => (
+                  <li key={tip.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(tipKey, { defaultValue: tipKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(tip.key, { defaultValue: tip.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -230,10 +230,10 @@ function SeoInternationalAudiencesPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

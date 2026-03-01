@@ -32,11 +32,11 @@ export const Route = createFileRoute("/$locale/i18n/cli-code-scanning")({
 });
 
 const coreFeatures = [
-  { icon: IconMagnifyingGlass, titleKey: "features.hardcodedDetection.title", descKey: "features.hardcodedDetection.description" },
-  { icon: IconCodeBrackets, titleKey: "features.astParsing.title", descKey: "features.astParsing.description" },
-  { icon: IconScript, titleKey: "features.jsxText.title", descKey: "features.jsxText.description" },
-  { icon: IconSettingsGear1, titleKey: "features.jsxAttributes.title", descKey: "features.jsxAttributes.description" },
-  { icon: IconZap, titleKey: "features.smartFiltering.title", descKey: "features.smartFiltering.description" },
+  { icon: IconMagnifyingGlass, titleKey: "features.hardcodedDetection.title", descKey: "features.hardcodedDetection.description", defaultTitle: "Hardcoded String Detection", defaultDesc: "Automatically find every user-facing string that is not wrapped in a translation function, including strings in JSX children and component props." },
+  { icon: IconCodeBrackets, titleKey: "features.astParsing.title", descKey: "features.astParsing.description", defaultTitle: "AST-Based Parsing", defaultDesc: "Parses your source code into an Abstract Syntax Tree for precise, context-aware detection that eliminates the false positives of regex-based scanners." },
+  { icon: IconScript, titleKey: "features.jsxText.title", descKey: "features.jsxText.description", defaultTitle: "JSX Text Node Scanning", defaultDesc: "Detects untranslated text content inside JSX elements, including expressions and template literals rendered directly in your components." },
+  { icon: IconSettingsGear1, titleKey: "features.jsxAttributes.title", descKey: "features.jsxAttributes.description", defaultTitle: "JSX Attribute Scanning", defaultDesc: "Finds hardcoded strings in JSX attributes like placeholder, aria-label, and title that are often missed during manual i18n audits." },
+  { icon: IconZap, titleKey: "features.smartFiltering.title", descKey: "features.smartFiltering.description", defaultTitle: "Smart Filtering", defaultDesc: "Ignores non-translatable values like CSS class names, import paths, and numeric literals so you only see actionable results." },
 ];
 
 function CliCodeScanningPage() {
@@ -45,18 +45,18 @@ function CliCodeScanningPage() {
   const { locale } = Route.useParams();
 
   const cliCommands = [
-    "cliCommands.list.checkCommand",
-    "cliCommands.list.missingKeys",
-    "cliCommands.list.unusedKeys",
-    "cliCommands.list.dynamicPatterns",
-    "cliCommands.list.comparisonReports",
+    { key: "cliCommands.list.checkCommand", defaultValue: "Run a full translation audit with a single check command" },
+    { key: "cliCommands.list.missingKeys", defaultValue: "Surface missing translation keys that exist in code but not in your remote store" },
+    { key: "cliCommands.list.unusedKeys", defaultValue: "Identify unused keys in your remote store that are no longer referenced in code" },
+    { key: "cliCommands.list.dynamicPatterns", defaultValue: "Detect dynamic key patterns like template literals and flag them for review" },
+    { key: "cliCommands.list.comparisonReports", defaultValue: "Generate comparison reports between local usage and remote translation state" },
   ];
 
   const outputFormats = [
-    { titleKey: "outputs.eslint.title", descKey: "outputs.eslint.description" },
-    { titleKey: "outputs.json.title", descKey: "outputs.json.description" },
-    { titleKey: "outputs.verbose.title", descKey: "outputs.verbose.description" },
-    { titleKey: "outputs.stats.title", descKey: "outputs.stats.description" },
+    { titleKey: "outputs.eslint.title", descKey: "outputs.eslint.description", defaultTitle: "ESLint-Style Output", defaultDesc: "Human-readable reports with file path, line number, and column references for fast navigation in any editor." },
+    { titleKey: "outputs.json.title", descKey: "outputs.json.description", defaultTitle: "JSON Output", defaultDesc: "Machine-readable structured data ideal for CI/CD automation, custom dashboards, and integration with other tooling." },
+    { titleKey: "outputs.verbose.title", descKey: "outputs.verbose.description", defaultTitle: "Verbose Mode", defaultDesc: "Detailed audit logs with scoping summaries, timing information, and namespace resolution traces for debugging." },
+    { titleKey: "outputs.stats.title", descKey: "outputs.stats.description", defaultTitle: "Scan Statistics", defaultDesc: "File counts, key discovery metrics, and performance data so you always know the health of your translation coverage." },
   ];
 
   const devopsSteps = [

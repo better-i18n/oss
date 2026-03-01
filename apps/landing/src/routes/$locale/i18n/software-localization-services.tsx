@@ -37,25 +37,25 @@ function SoftwareLocalizationServicesPage() {
   const { locale } = Route.useParams();
 
   const serviceTypes = [
-    { titleKey: "types.platform.title", descKey: "types.platform.description", icon: IconRobot },
-    { titleKey: "types.agency.title", descKey: "types.agency.description", icon: IconGroup1 },
-    { titleKey: "types.hybrid.title", descKey: "types.hybrid.description", icon: IconGlobe },
+    { titleKey: "types.platform.title", descKey: "types.platform.description", icon: IconRobot, defaultTitle: "Platform-Based Services", defaultDesc: "Self-service localization platforms with AI translation, developer SDKs, and automated workflows. Best for engineering-driven teams that want full control over their localization pipeline." },
+    { titleKey: "types.agency.title", descKey: "types.agency.description", icon: IconGroup1, defaultTitle: "Agency Services", defaultDesc: "Traditional localization agencies with professional human translators and project managers. Ideal for high-stakes content like legal, medical, or marketing copy that requires native-level fluency." },
+    { titleKey: "types.hybrid.title", descKey: "types.hybrid.description", icon: IconGlobe, defaultTitle: "Hybrid Approach", defaultDesc: "Combine platform automation for UI strings and developer content with agency translators for marketing and legal materials. Balances speed with quality for teams managing multiple content types." },
   ];
 
   const platformBenefits = [
-    "platformBenefits.list.speed",
-    "platformBenefits.list.cost",
-    "platformBenefits.list.control",
-    "platformBenefits.list.integration",
-    "platformBenefits.list.scalability",
-    "platformBenefits.list.consistency",
+    { key: "platformBenefits.list.speed", defaultValue: "Translate in minutes instead of weeks with AI-powered suggestions" },
+    { key: "platformBenefits.list.cost", defaultValue: "Lower per-word cost compared to traditional agency pricing" },
+    { key: "platformBenefits.list.control", defaultValue: "Full control over translation quality, glossaries, and approval workflows" },
+    { key: "platformBenefits.list.integration", defaultValue: "Native integration with your CI/CD pipeline and code repository" },
+    { key: "platformBenefits.list.scalability", defaultValue: "Add new languages without increasing coordination overhead" },
+    { key: "platformBenefits.list.consistency", defaultValue: "Translation memory and glossary enforcement ensure consistent terminology" },
   ];
 
   const mobileFeatures = [
-    { titleKey: "mobile.features.stringExtraction.title", descKey: "mobile.features.stringExtraction.description" },
-    { titleKey: "mobile.features.pluralization.title", descKey: "mobile.features.pluralization.description" },
-    { titleKey: "mobile.features.screenshots.title", descKey: "mobile.features.screenshots.description" },
-    { titleKey: "mobile.features.otaUpdates.title", descKey: "mobile.features.otaUpdates.description" },
+    { titleKey: "mobile.features.stringExtraction.title", descKey: "mobile.features.stringExtraction.description", defaultTitle: "String Extraction", defaultDesc: "Automatically extract translatable strings from iOS .strings, Android XML, and cross-platform frameworks like React Native and Flutter." },
+    { titleKey: "mobile.features.pluralization.title", descKey: "mobile.features.pluralization.description", defaultTitle: "Pluralization Rules", defaultDesc: "Handle complex plural forms across languages — from English's simple singular/plural to Arabic's six plural categories — without manual rule coding." },
+    { titleKey: "mobile.features.screenshots.title", descKey: "mobile.features.screenshots.description", defaultTitle: "Screenshot Context", defaultDesc: "Attach screenshots to translation keys so translators see exactly where each string appears in your app's UI for accurate, contextual translations." },
+    { titleKey: "mobile.features.otaUpdates.title", descKey: "mobile.features.otaUpdates.description", defaultTitle: "Over-the-Air Updates", defaultDesc: "Push translation updates to live mobile apps without requiring a new app store release, enabling instant fixes and faster iteration." },
   ];
 
   const relatedPages = [

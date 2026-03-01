@@ -33,10 +33,10 @@ export const Route = createFileRoute("/$locale/i18n/multilingual-website-seo")({
 });
 
 const practicalAreas = [
-  { icon: IconSettingsGear1, titleKey: "practicalAreas.urlStructure.title", descKey: "practicalAreas.urlStructure.description" },
-  { icon: IconSparklesSoft, titleKey: "practicalAreas.transcreation.title", descKey: "practicalAreas.transcreation.description" },
-  { icon: IconMagnifyingGlass, titleKey: "practicalAreas.metaTags.title", descKey: "practicalAreas.metaTags.description" },
-  { icon: IconGroup1, titleKey: "practicalAreas.imageLocalization.title", descKey: "practicalAreas.imageLocalization.description" },
+  { icon: IconSettingsGear1, titleKey: "practicalAreas.urlStructure.title", descKey: "practicalAreas.urlStructure.description", defaultTitle: "URL Structure Optimization", defaultDesc: "Choose and implement a consistent, locale-aware URL structure that consolidates domain authority and helps search engines crawl every language variant efficiently." },
+  { icon: IconSparklesSoft, titleKey: "practicalAreas.transcreation.title", descKey: "practicalAreas.transcreation.description", defaultTitle: "Content Transcreation", defaultDesc: "Adapt headings, calls-to-action, and landing page copy to match local search intent rather than translating word-for-word from your primary language." },
+  { icon: IconMagnifyingGlass, titleKey: "practicalAreas.metaTags.title", descKey: "practicalAreas.metaTags.description", defaultTitle: "Per-Locale Meta Tags", defaultDesc: "Write unique title tags, meta descriptions, and Open Graph tags for each locale using locally researched keywords instead of machine-translated copies." },
+  { icon: IconGroup1, titleKey: "practicalAreas.imageLocalization.title", descKey: "practicalAreas.imageLocalization.description", defaultTitle: "Image Localization", defaultDesc: "Translate alt text, caption text, and on-image copy for every locale so that image search drives traffic in each target market." },
 ];
 
 function MultilingualWebsiteSeoPage() {
@@ -45,27 +45,27 @@ function MultilingualWebsiteSeoPage() {
   const { locale } = Route.useParams();
 
   const actionableChecklist = [
-    "checklist.consistentUrlPattern",
-    "checklist.uniqueMetaPerLocale",
-    "checklist.localizedImageAlt",
-    "checklist.seoFriendlyLanguageSwitch",
-    "checklist.localizedSitemap",
-    "checklist.transcreatedHeadings",
-    "checklist.languageSelectorIndexable",
-    "checklist.noAutoRedirect",
+    { key: "checklist.consistentUrlPattern", defaultValue: "Use a consistent URL pattern across all locales (e.g., /fr/, /de/, /ja/)" },
+    { key: "checklist.uniqueMetaPerLocale", defaultValue: "Write unique meta titles and descriptions for each locale using local keywords" },
+    { key: "checklist.localizedImageAlt", defaultValue: "Translate all image alt text into each target language" },
+    { key: "checklist.seoFriendlyLanguageSwitch", defaultValue: "Implement an SEO-friendly language switcher with crawlable links" },
+    { key: "checklist.localizedSitemap", defaultValue: "Generate a localized XML sitemap with hreflang annotations for every page" },
+    { key: "checklist.transcreatedHeadings", defaultValue: "Transcreate page headings to match local search phrasing instead of translating literally" },
+    { key: "checklist.languageSelectorIndexable", defaultValue: "Ensure the language selector produces indexable URLs that search engines can follow" },
+    { key: "checklist.noAutoRedirect", defaultValue: "Avoid automatic locale redirects based on IP — let users and crawlers access any locale freely" },
   ];
 
   const urlDecisions = [
-    { titleKey: "urlDecisions.useSubdirectory.title", descKey: "urlDecisions.useSubdirectory.description" },
-    { titleKey: "urlDecisions.avoidQueryParams.title", descKey: "urlDecisions.avoidQueryParams.description" },
-    { titleKey: "urlDecisions.trailingSlash.title", descKey: "urlDecisions.trailingSlash.description" },
+    { titleKey: "urlDecisions.useSubdirectory.title", descKey: "urlDecisions.useSubdirectory.description", defaultTitle: "Use Subdirectories Over Subdomains", defaultDesc: "Subdirectories (example.com/fr/) consolidate domain authority under one root, making them the best default for most multilingual websites." },
+    { titleKey: "urlDecisions.avoidQueryParams.title", descKey: "urlDecisions.avoidQueryParams.description", defaultTitle: "Avoid Query Parameters for Locale", defaultDesc: "Query-based locale switching (?lang=fr) makes it harder for search engines to discover and index all language variants reliably." },
+    { titleKey: "urlDecisions.trailingSlash.title", descKey: "urlDecisions.trailingSlash.description", defaultTitle: "Keep Trailing Slash Consistent", defaultDesc: "Pick one trailing-slash convention and enforce it across all locales to prevent duplicate content signals and wasted crawl budget." },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Audit Existing Pages", defaultDesc: "Review your current site structure, identify pages that need localization, and prioritize high-traffic pages for each target market." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Research Local Keywords", defaultDesc: "Conduct keyword research per locale to identify the terms your target audience actually searches for in their language." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Translate and Transcreate", defaultDesc: "Translate page content and transcreate SEO-critical elements like headings, meta tags, and CTAs to match local search intent." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Monitor and Iterate", defaultDesc: "Track rankings, organic traffic, and conversions per locale and continuously update content to maintain and improve positions." },
   ];
 
   const relatedPages = [
@@ -143,10 +143,10 @@ function MultilingualWebsiteSeoPage() {
                   <area.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(area.titleKey, { defaultValue: area.titleKey.split(".").pop() })}
+                  {t(area.titleKey, { defaultValue: area.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(area.descKey, { defaultValue: "" })}
+                  {t(area.descKey, { defaultValue: area.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -170,11 +170,11 @@ function MultilingualWebsiteSeoPage() {
                 <div className="flex items-center gap-3 mb-3">
                   <IconRocket className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
-                    {t(decision.titleKey, { defaultValue: decision.titleKey.split(".").pop() })}
+                    {t(decision.titleKey, { defaultValue: decision.defaultTitle })}
                   </h3>
                 </div>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(decision.descKey, { defaultValue: "" })}
+                  {t(decision.descKey, { defaultValue: decision.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -193,10 +193,10 @@ function MultilingualWebsiteSeoPage() {
                 {t("checklist.subtitle", { defaultValue: "Apply this checklist to each new locale you add to your multilingual website. Each item directly affects your ability to rank in that market." })}
               </p>
               <ul className="space-y-4">
-                {actionableChecklist.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {actionableChecklist.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -236,10 +236,10 @@ function MultilingualWebsiteSeoPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

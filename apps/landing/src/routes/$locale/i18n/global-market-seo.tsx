@@ -32,10 +32,10 @@ export const Route = createFileRoute("/$locale/i18n/global-market-seo")({
 });
 
 const searchEngines = [
-  { icon: IconMagnifyingGlass, titleKey: "engines.google.title", descKey: "engines.google.description" },
-  { icon: IconGlobe, titleKey: "engines.baidu.title", descKey: "engines.baidu.description" },
-  { icon: IconRocket, titleKey: "engines.naver.title", descKey: "engines.naver.description" },
-  { icon: IconChart1, titleKey: "engines.yandex.title", descKey: "engines.yandex.description" },
+  { icon: IconMagnifyingGlass, titleKey: "engines.google.title", descKey: "engines.google.description", defaultTitle: "Google (Global)", defaultDesc: "Dominates most Western and emerging markets. Requires hreflang, localized content, and country-specific domain or subdirectory strategies." },
+  { icon: IconGlobe, titleKey: "engines.baidu.title", descKey: "engines.baidu.description", defaultTitle: "Baidu (China)", defaultDesc: "Favors .cn domains, simplified Chinese content, and hosting within mainland China. Requires ICP license and unique SEO tactics." },
+  { icon: IconRocket, titleKey: "engines.naver.title", descKey: "engines.naver.description", defaultTitle: "Naver (South Korea)", defaultDesc: "Rewards blog-format content on its own platform. Requires a Naver-specific content strategy beyond standard web SEO." },
+  { icon: IconChart1, titleKey: "engines.yandex.title", descKey: "engines.yandex.description", defaultTitle: "Yandex (Russia & CIS)", defaultDesc: "Emphasizes regional hosting, Cyrillic content quality, and behavioral ranking factors unique to Russian-speaking markets." },
 ];
 
 function GlobalMarketSeoPage() {
@@ -44,19 +44,19 @@ function GlobalMarketSeoPage() {
   const { locale } = Route.useParams();
 
   const seoKeywords = [
-    "keywords.list.localSearchIntent",
-    "keywords.list.nativeLanguageQueries",
-    "keywords.list.longTailByMarket",
-    "keywords.list.competitorGapAnalysis",
-    "keywords.list.seasonalVariations",
-    "keywords.list.voiceSearchAdaptation",
+    { key: "keywords.list.localSearchIntent", defaultValue: "Research local search intent independently for each target market" },
+    { key: "keywords.list.nativeLanguageQueries", defaultValue: "Build keyword lists from native-language queries, not translations" },
+    { key: "keywords.list.longTailByMarket", defaultValue: "Identify long-tail keyword opportunities unique to each locale" },
+    { key: "keywords.list.competitorGapAnalysis", defaultValue: "Analyze local competitors to find keyword gaps in every market" },
+    { key: "keywords.list.seasonalVariations", defaultValue: "Account for regional seasonal trends and cultural events" },
+    { key: "keywords.list.voiceSearchAdaptation", defaultValue: "Adapt for voice search patterns that differ by language and region" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Market Research", defaultDesc: "Identify target markets, analyze local search engine landscape, and assess competitive positioning." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Local Keyword Strategy", defaultDesc: "Build native-language keyword lists based on local search volume, intent, and competition data." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Content & Link Building", defaultDesc: "Create locally relevant content and earn backlinks from authoritative regional domains." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Measure & Iterate", defaultDesc: "Track rankings per market, segment organic traffic by country, and refine strategy based on local performance." },
   ];
 
   const relatedPages = [
@@ -134,10 +134,10 @@ function GlobalMarketSeoPage() {
                   <engine.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(engine.titleKey, { defaultValue: engine.titleKey.split(".").pop() })}
+                  {t(engine.titleKey, { defaultValue: engine.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(engine.descKey, { defaultValue: "" })}
+                  {t(engine.descKey, { defaultValue: engine.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -158,10 +158,10 @@ function GlobalMarketSeoPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {seoKeywords.map((keywordKey) => (
-                  <li key={keywordKey} className="flex items-start gap-3">
+                {seoKeywords.map((keyword) => (
+                  <li key={keyword.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(keywordKey, { defaultValue: keywordKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(keyword.key, { defaultValue: keyword.defaultValue })}</span>
                   </li>
                 ))}
               </ul>

@@ -32,11 +32,11 @@ export const Route = createFileRoute("/$locale/i18n/security-compliance")({
 });
 
 const dataProtectionFeatures = [
-  { icon: IconShieldCheck, titleKey: "features.aes256.title", descKey: "features.aes256.description" },
-  { icon: IconShieldCheck, titleKey: "features.tls13.title", descKey: "features.tls13.description" },
-  { icon: IconZap, titleKey: "features.bcrypt.title", descKey: "features.bcrypt.description" },
-  { icon: IconSettingsGear1, titleKey: "features.scopedKeys.title", descKey: "features.scopedKeys.description" },
-  { icon: IconZap, titleKey: "features.keyRevocation.title", descKey: "features.keyRevocation.description" },
+  { icon: IconShieldCheck, titleKey: "features.aes256.title", descKey: "features.aes256.description", defaultTitle: "AES-256 Encryption at Rest", defaultDesc: "All translation data is encrypted with AES-256 before being written to disk, ensuring your content remains protected even if storage is compromised." },
+  { icon: IconShieldCheck, titleKey: "features.tls13.title", descKey: "features.tls13.description", defaultTitle: "TLS 1.3 in Transit", defaultDesc: "Every API request and dashboard session uses TLS 1.3, preventing eavesdropping and man-in-the-middle attacks on your translation data." },
+  { icon: IconZap, titleKey: "features.bcrypt.title", descKey: "features.bcrypt.description", defaultTitle: "Bcrypt-Hashed API Keys", defaultDesc: "API keys are hashed with bcrypt before storage. Even in the event of a database breach, your credentials cannot be reversed." },
+  { icon: IconSettingsGear1, titleKey: "features.scopedKeys.title", descKey: "features.scopedKeys.description", defaultTitle: "Scoped API Keys", defaultDesc: "Generate API keys scoped to specific projects and permission levels, limiting blast radius if a key is ever exposed." },
+  { icon: IconZap, titleKey: "features.keyRevocation.title", descKey: "features.keyRevocation.description", defaultTitle: "Instant Key Revocation", defaultDesc: "Revoke any API key immediately from the dashboard. Revoked keys are rejected on the next request with zero propagation delay." },
 ];
 
 function SecurityCompliancePage() {
@@ -45,31 +45,31 @@ function SecurityCompliancePage() {
   const { locale } = Route.useParams();
 
   const accessControlItems = [
-    "accessControl.list.rbac",
-    "accessControl.list.auditLogging",
-    "accessControl.list.sessionExpiration",
-    "accessControl.list.oauthDelegation",
-    "accessControl.list.leastPrivilege",
-    "accessControl.list.rateLimiting",
+    { key: "accessControl.list.rbac", defaultValue: "Role-based access control with owner, admin, and member roles" },
+    { key: "accessControl.list.auditLogging", defaultValue: "Full audit logging of every sensitive operation with timestamps" },
+    { key: "accessControl.list.sessionExpiration", defaultValue: "Automatic session expiration and token rotation" },
+    { key: "accessControl.list.oauthDelegation", defaultValue: "OAuth delegation via GitHub — no passwords stored" },
+    { key: "accessControl.list.leastPrivilege", defaultValue: "Least-privilege defaults for all new team members" },
+    { key: "accessControl.list.rateLimiting", defaultValue: "Rate limiting on all API endpoints to prevent abuse" },
   ];
 
   const complianceItems = [
-    "compliance.list.iso27001",
-    "compliance.list.soc2",
-    "compliance.list.gdpr",
-    "compliance.list.dpa",
-    "compliance.list.rightToErasure",
-    "compliance.list.dataExport",
-    "compliance.list.minimalData",
+    { key: "compliance.list.iso27001", defaultValue: "ISO 27001 aligned information security management" },
+    { key: "compliance.list.soc2", defaultValue: "SOC 2 Type II audited controls for data handling" },
+    { key: "compliance.list.gdpr", defaultValue: "Full GDPR compliance for EU data subjects" },
+    { key: "compliance.list.dpa", defaultValue: "Data Processing Agreements available for enterprise customers" },
+    { key: "compliance.list.rightToErasure", defaultValue: "Right-to-erasure support with complete data deletion" },
+    { key: "compliance.list.dataExport", defaultValue: "Data export in standard formats for portability" },
+    { key: "compliance.list.minimalData", defaultValue: "Minimal data collection — only what is necessary to operate" },
   ];
 
   const infrastructureItems = [
-    "infrastructure.list.cloudflareWorkers",
-    "infrastructure.list.cloudflareR2",
-    "infrastructure.list.planetscale",
-    "infrastructure.list.multiDatacenter",
-    "infrastructure.list.responsibleDisclosure",
-    "infrastructure.list.acknowledgment",
+    { key: "infrastructure.list.cloudflareWorkers", defaultValue: "Cloudflare Workers for edge computing with built-in DDoS protection" },
+    { key: "infrastructure.list.cloudflareR2", defaultValue: "Cloudflare R2 for encrypted object storage with global replication" },
+    { key: "infrastructure.list.planetscale", defaultValue: "PlanetScale for managed MySQL with automatic backups and branching" },
+    { key: "infrastructure.list.multiDatacenter", defaultValue: "Multi-datacenter redundancy for high availability and disaster recovery" },
+    { key: "infrastructure.list.responsibleDisclosure", defaultValue: "Responsible disclosure program for security researchers" },
+    { key: "infrastructure.list.acknowledgment", defaultValue: "Public acknowledgment and bounty for verified vulnerability reports" },
   ];
 
   const relatedPages = [
@@ -115,10 +115,10 @@ function SecurityCompliancePage() {
                   <feature.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(feature.titleKey, { defaultValue: feature.titleKey.split(".").pop() })}
+                  {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(feature.descKey, { defaultValue: "" })}
+                  {t(feature.descKey, { defaultValue: feature.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -137,10 +137,10 @@ function SecurityCompliancePage() {
                 {t("accessControl.subtitle", { defaultValue: "Fine-grained permission management ensures that every team member has exactly the access they need — no more, no less." })}
               </p>
               <ul className="space-y-4">
-                {accessControlItems.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {accessControlItems.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -190,10 +190,10 @@ function SecurityCompliancePage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {complianceItems.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {complianceItems.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -213,10 +213,10 @@ function SecurityCompliancePage() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {infrastructureItems.map((itemKey) => (
-              <div key={itemKey} className="flex items-start gap-3 p-6 rounded-xl bg-white border border-mist-200">
+            {infrastructureItems.map((item) => (
+              <div key={item.key} className="flex items-start gap-3 p-6 rounded-xl bg-white border border-mist-200">
                 <IconGlobe className="size-5 text-mist-700 mt-0.5 shrink-0" />
-                <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
               </div>
             ))}
           </div>
