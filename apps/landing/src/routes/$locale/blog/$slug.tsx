@@ -9,7 +9,7 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { RelatedPages } from "@/components/RelatedPages";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import BlogContent from "@/components/blog/BlogContent";
 import RelatedPosts from "@/components/blog/RelatedPosts";
 import TableOfContents from "@/components/blog/TableOfContents";
@@ -156,7 +156,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
 
 function BlogPostPage() {
   const { post, locale, relatedPosts } = Route.useLoaderData();
-  const t = useTranslations("blog");
+  const t = useT("blog");
 
   return (
     <div className="bg-white">
@@ -288,7 +288,7 @@ function BlogPostPage() {
 }
 
 function BlogPostNotFound() {
-  const t = useTranslations("blog");
+  const t = useT("blog");
   const { locale } = Route.useParams();
 
   return (

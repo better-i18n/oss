@@ -1,5 +1,5 @@
 import { cn } from "@better-i18n/ui/lib/utils";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { useState } from "react";
 import { IconCheckmark1 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
@@ -37,7 +37,7 @@ const PLAN_DEFAULTS = {
 } as const;
 
 export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" | "h2" }) {
-  const t = useTranslations("pricing");
+  const t = useT("pricing");
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("yearly");
   const Heading = headingLevel;
 

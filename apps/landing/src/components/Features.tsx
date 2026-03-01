@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { cn } from "@better-i18n/ui/lib/utils";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { Link, useParams } from "@tanstack/react-router";
 import {
   IconCircleInfo,
@@ -16,7 +16,7 @@ function sleep(ms: number) {
 
 // 1. AI Translation Feature Card (Brand-Aware Intelligence)
 function AIFeatureCard() {
-  const t = useTranslations("features.ai");
+  const t = useT("features.ai");
   const [step, setStep] = useState<
     "idle" | "processing" | "review" | "completed"
   >("idle");
@@ -153,7 +153,7 @@ function AIFeatureCard() {
 
 // 2. Automated Git/CDN Workflow Feature Card
 function PublishFeatureCard() {
-  const t = useTranslations("features.publish");
+  const t = useT("features.publish");
   const [status, setStatus] = useState<"idle" | "publishing" | "published">(
     "idle",
   );
@@ -300,7 +300,7 @@ function PublishFeatureCard() {
 
 // 3. Crawler Engine Feature Card (UI-based logs & terminology)
 function AIContextCard() {
-  const t = useTranslations("features.crawler");
+  const t = useT("features.crawler");
   const [step, setStep] = useState<"scanning" | "extracting" | "syncing">(
     "scanning",
   );
@@ -433,7 +433,7 @@ function AIContextCard() {
 }
 
 export default function Features() {
-  const t = useTranslations("features");
+  const t = useT("features");
   const { locale } = useParams({ strict: false });
 
   return (

@@ -1,4 +1,4 @@
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 
 const testimonialsData = [
   {
@@ -28,7 +28,7 @@ const testimonialsData = [
 ];
 
 export default function Testimonials() {
-  const t = useTranslations("testimonials");
+  const t = useT("testimonials");
 
   return (
     <section id="testimonials" className="py-16">

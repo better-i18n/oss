@@ -3,7 +3,7 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader, formatStructuredData } from "@/lib/page-seo";
 import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
 import { SITE_URL } from "@/lib/meta";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/")({
@@ -80,7 +80,7 @@ const seoGuides = [
 ];
 
 function I18nIndexPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   return (

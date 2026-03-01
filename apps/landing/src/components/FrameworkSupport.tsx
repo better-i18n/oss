@@ -1,5 +1,5 @@
 import { Link, useParams } from "@tanstack/react-router";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 const frameworks = [
@@ -12,7 +12,7 @@ const frameworks = [
 ];
 
 export default function FrameworkSupport() {
-  const t = useTranslations("frameworkSupport");
+  const t = useT("frameworkSupport");
   const { locale } = useParams({ strict: false });
   const currentLocale = locale || "en";
 

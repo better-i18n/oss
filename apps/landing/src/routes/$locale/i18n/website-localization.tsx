@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconGlobe,
   IconCheckmark1,
@@ -38,8 +38,8 @@ const challenges = [
 ];
 
 function WebsiteLocalizationPage() {
-  const t = useTranslations("marketing.i18n.websiteLocalization");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.websiteLocalization");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [

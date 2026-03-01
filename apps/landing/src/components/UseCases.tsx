@@ -1,4 +1,4 @@
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCodeBrackets,
   IconGlobe,
@@ -22,7 +22,7 @@ const features = [
 ];
 
 export default function UseCases() {
-  const t = useTranslations("developerFeatures");
+  const t = useT("developerFeatures");
 
   return (
     <section id="developer-features" className="py-20">

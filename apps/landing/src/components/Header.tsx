@@ -15,12 +15,12 @@ import {
   IconArrowRight,
   IconLiveActivity,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
 
 export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
-  const t = useTranslations("header");
+  const t = useT("header");
 
   const { data: statusData } = useQuery<{ status: string }>({
     queryKey: ["site-status"],

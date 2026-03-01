@@ -10,7 +10,7 @@ import {
   type ComparisonFeature,
 } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCode,
   IconRobot,
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/$locale/compare/phrase")({
 });
 
 function PhraseComparisonPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const features: ComparisonFeature[] = [
