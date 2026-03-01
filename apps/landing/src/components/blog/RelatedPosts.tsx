@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { BlogPostListItem } from "@/lib/content";
 import { formatPostDate, getTagColor } from "@/lib/content";
+import { useT } from "@/lib/i18n";
 
 interface RelatedPostsProps {
   posts: BlogPostListItem[];
@@ -8,12 +9,14 @@ interface RelatedPostsProps {
 }
 
 export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
+  const t = useT("blog");
+
   if (posts.length === 0) return null;
 
   return (
     <section className="mt-16 pt-8 border-t border-mist-100">
       <h2 className="font-display text-2xl font-medium tracking-[-0.02em] text-mist-950 mb-8">
-        Related Posts
+        {t("relatedPosts", "Related Posts")}
       </h2>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => (

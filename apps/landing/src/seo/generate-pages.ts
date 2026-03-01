@@ -191,6 +191,38 @@ function generateBlogDetailPages(
   }));
 }
 
+// ─── Generator: Feature Detail Pages ─────────────────────────────────
+
+/**
+ * Generates feature detail pages (one per feature per available language).
+ * These are CMS-driven pages at /features/$slug.
+ */
+export function generateFeatureDetailPages(
+  features: readonly FeaturePageMeta[],
+  allLocales: readonly string[],
+): readonly PageEntry[] {
+  return features.flatMap((feature) => {
+    const featureLocales =
+      feature.availableLanguages && feature.availableLanguages.length > 0
+        ? feature.availableLanguages
+        : allLocales;
+
+    const alternateRefs = buildAlternateRefs(featureLocales, (locale) =>
+      buildPageUrl(locale, `features/${feature.slug}`),
+    );
+
+    return featureLocales.map((locale): PageEntry => ({
+      path: buildPagePath(locale, `features/${feature.slug}`),
+      sitemap: {
+        priority: 0.7,
+        changefreq: "weekly",
+        alternateRefs,
+      },
+      prerender: undefined,
+    }));
+  });
+}
+
 // ─── SDK response casting ───────────────────────────────────────────
 
 /**
@@ -210,6 +242,20 @@ function toBlogPostMeta(item: ContentEntryListItem): BlogPostMeta {
   return {
     slug: item.slug,
     publishedAt: item.publishedAt,
+    availableLanguages,
+  };
+}
+
+function toFeaturePageMeta(item: ContentEntryListItem): FeaturePageMeta {
+  const raw = item as unknown as Record<string, unknown>;
+  const availableLanguages = Array.isArray(raw.availableLanguages)
+    ? (raw.availableLanguages as unknown[]).filter(
+        (v): v is string => typeof v === "string",
+      )
+    : undefined;
+
+  return {
+    slug: item.slug,
     availableLanguages,
   };
 }
@@ -251,11 +297,13 @@ export async function generatePages(
     locales = ["en"];
   }
 
-  // 2. Fetch published blog posts
+  // 2. Fetch published blog posts and feature pages
   let blogPosts: readonly BlogPostMeta[] = [];
+  let featurePages: readonly FeaturePageMeta[] = [];
+
+  const client = createClient({ project, apiKey });
 
   try {
-    const client = createClient({ project, apiKey });
     const response = await client.getEntries("blog-posts", {
       status: "published",
       sort: "publishedAt",
@@ -268,14 +316,31 @@ export async function generatePages(
     console.error("[SEO] Failed to fetch blog posts, continuing without blog pages:", error);
   }
 
+  try {
+    const response = await client.getEntries("marketing-pages", {
+      status: "published",
+      limit: 100,
+    });
+
+    featurePages = response.items
+      .filter((item) => {
+        const raw = item as unknown as Record<string, unknown>;
+        return raw.page_type === "feature";
+      })
+      .map(toFeaturePageMeta);
+  } catch (error) {
+    console.error("[SEO] Failed to fetch feature pages, continuing without feature detail pages:", error);
+  }
+
   // 3. Generate all pages
   const marketingPages = generateMarketingPages(locales);
   const blogPages = generateBlogPages(blogPosts, locales);
-  const allPages = [...marketingPages, ...blogPages];
+  const featureDetailPages = generateFeatureDetailPages(featurePages, locales);
+  const allPages = [...marketingPages, ...blogPages, ...featureDetailPages];
 
   // 4. Log summary
   console.log(
-    `[SEO] Generated ${allPages.length} pages: ${marketingPages.length} marketing + ${blogPages.length} blog (${locales.length} locales, ${blogPosts.length} posts)`,
+    `[SEO] Generated ${allPages.length} pages: ${marketingPages.length} marketing + ${blogPages.length} blog + ${featureDetailPages.length} feature detail (${locales.length} locales, ${blogPosts.length} posts, ${featurePages.length} features)`,
   );
 
   return allPages;

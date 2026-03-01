@@ -1,4 +1,5 @@
 import { slugify } from "./BlogContent";
+import { useT } from "@/lib/i18n";
 
 interface TocItem {
   id: string;
