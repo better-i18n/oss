@@ -138,10 +138,10 @@ function FormattingUtilitiesPage() {
                 {t("numberFormatting.subtitle", { defaultValue: "Format currency, percentages, and large numbers with locale-specific separators, symbols, and notation — all through a single useFormatter hook." })}
               </p>
               <ul className="space-y-4">
-                {numberFormattingItems.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {numberFormattingItems.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -154,10 +154,10 @@ function FormattingUtilitiesPage() {
                 {t("dateTime.subtitle", { defaultValue: "Localized date styles, relative time formatting, and a real-time clock hook handle every temporal display your app needs." })}
               </p>
               <ul className="space-y-4">
-                {dateTimeItems.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {dateTimeItems.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -177,10 +177,10 @@ function FormattingUtilitiesPage() {
                 {t("listFormatting.subtitle", { defaultValue: "Render grammatically correct lists in every locale with conjunction, disjunction, and unit formatting via the Intl.ListFormat API." })}
               </p>
               <ul className="space-y-4">
-                {listFormattingItems.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {listFormattingItems.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>

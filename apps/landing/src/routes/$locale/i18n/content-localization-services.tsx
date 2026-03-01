@@ -159,10 +159,10 @@ function ContentLocalizationServicesPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {selectionCriteria.map((criterionKey) => (
-                  <li key={criterionKey} className="flex items-start gap-3">
+                {selectionCriteria.map((criterion) => (
+                  <li key={criterion.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(criterionKey, { defaultValue: criterionKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(criterion.key, { defaultValue: criterion.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -188,10 +188,10 @@ function ContentLocalizationServicesPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}
