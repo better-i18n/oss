@@ -8,6 +8,7 @@ export const Route = createFileRoute("/features")({
       params: {
         locale: context.locale || i18nConfig.defaultLocale,
       },
+      statusCode: 301,
     });
   },
 });

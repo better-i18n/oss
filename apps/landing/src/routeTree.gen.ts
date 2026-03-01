@@ -52,6 +52,8 @@ import { Route as LocaleI18nSvelteRouteImport } from './routes/$locale/i18n/svel
 import { Route as LocaleI18nSoftwareLocalizationServicesRouteImport } from './routes/$locale/i18n/software-localization-services'
 import { Route as LocaleI18nSoftwareLocalizationRouteImport } from './routes/$locale/i18n/software-localization'
 import { Route as LocaleI18nSeoInternationalAudiencesRouteImport } from './routes/$locale/i18n/seo-international-audiences'
+import { Route as LocaleI18nSecurityComplianceRouteImport } from './routes/$locale/i18n/security-compliance'
+import { Route as LocaleI18nReactNativeLocalizationRouteImport } from './routes/$locale/i18n/react-native-localization'
 import { Route as LocaleI18nReactIntlRouteImport } from './routes/$locale/i18n/react-intl'
 import { Route as LocaleI18nReactRouteImport } from './routes/$locale/i18n/react'
 import { Route as LocaleI18nNuxtRouteImport } from './routes/$locale/i18n/nuxt'
@@ -67,11 +69,13 @@ import { Route as LocaleI18nLocalSeoInternationalRouteImport } from './routes/$l
 import { Route as LocaleI18nInternationalSeoConsultingRouteImport } from './routes/$locale/i18n/international-seo-consulting'
 import { Route as LocaleI18nInternationalSeoRouteImport } from './routes/$locale/i18n/international-seo'
 import { Route as LocaleI18nGlobalMarketSeoRouteImport } from './routes/$locale/i18n/global-market-seo'
+import { Route as LocaleI18nFormattingUtilitiesRouteImport } from './routes/$locale/i18n/formatting-utilities'
 import { Route as LocaleI18nForDevelopersRouteImport } from './routes/$locale/i18n/for-developers'
 import { Route as LocaleI18nEcommerceGlobalSeoRouteImport } from './routes/$locale/i18n/ecommerce-global-seo'
 import { Route as LocaleI18nCulturalAdaptationRouteImport } from './routes/$locale/i18n/cultural-adaptation'
 import { Route as LocaleI18nContentLocalizationServicesRouteImport } from './routes/$locale/i18n/content-localization-services'
 import { Route as LocaleI18nContentLocalizationRouteImport } from './routes/$locale/i18n/content-localization'
+import { Route as LocaleI18nCliCodeScanningRouteImport } from './routes/$locale/i18n/cli-code-scanning'
 import { Route as LocaleI18nBestTmsRouteImport } from './routes/$locale/i18n/best-tms'
 import { Route as LocaleI18nBestLibraryRouteImport } from './routes/$locale/i18n/best-library'
 import { Route as LocaleI18nAngularRouteImport } from './routes/$locale/i18n/angular'
@@ -307,6 +311,18 @@ const LocaleI18nSeoInternationalAudiencesRoute =
     path: '/$locale/i18n/seo-international-audiences',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LocaleI18nSecurityComplianceRoute =
+  LocaleI18nSecurityComplianceRouteImport.update({
+    id: '/$locale/i18n/security-compliance',
+    path: '/$locale/i18n/security-compliance',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LocaleI18nReactNativeLocalizationRoute =
+  LocaleI18nReactNativeLocalizationRouteImport.update({
+    id: '/$locale/i18n/react-native-localization',
+    path: '/$locale/i18n/react-native-localization',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LocaleI18nReactIntlRoute = LocaleI18nReactIntlRouteImport.update({
   id: '/$locale/i18n/react-intl',
   path: '/$locale/i18n/react-intl',
@@ -393,6 +409,12 @@ const LocaleI18nGlobalMarketSeoRoute =
     path: '/$locale/i18n/global-market-seo',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LocaleI18nFormattingUtilitiesRoute =
+  LocaleI18nFormattingUtilitiesRouteImport.update({
+    id: '/$locale/i18n/formatting-utilities',
+    path: '/$locale/i18n/formatting-utilities',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LocaleI18nForDevelopersRoute = LocaleI18nForDevelopersRouteImport.update({
   id: '/$locale/i18n/for-developers',
   path: '/$locale/i18n/for-developers',
@@ -420,6 +442,12 @@ const LocaleI18nContentLocalizationRoute =
   LocaleI18nContentLocalizationRouteImport.update({
     id: '/$locale/i18n/content-localization',
     path: '/$locale/i18n/content-localization',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LocaleI18nCliCodeScanningRoute =
+  LocaleI18nCliCodeScanningRouteImport.update({
+    id: '/$locale/i18n/cli-code-scanning',
+    path: '/$locale/i18n/cli-code-scanning',
     getParentRoute: () => rootRouteImport,
   } as any)
 const LocaleI18nBestTmsRoute = LocaleI18nBestTmsRouteImport.update({
@@ -501,11 +529,13 @@ export interface FileRoutesByFullPath {
   '/$locale/i18n/angular': typeof LocaleI18nAngularRoute
   '/$locale/i18n/best-library': typeof LocaleI18nBestLibraryRoute
   '/$locale/i18n/best-tms': typeof LocaleI18nBestTmsRoute
+  '/$locale/i18n/cli-code-scanning': typeof LocaleI18nCliCodeScanningRoute
   '/$locale/i18n/content-localization': typeof LocaleI18nContentLocalizationRoute
   '/$locale/i18n/content-localization-services': typeof LocaleI18nContentLocalizationServicesRoute
   '/$locale/i18n/cultural-adaptation': typeof LocaleI18nCulturalAdaptationRoute
   '/$locale/i18n/ecommerce-global-seo': typeof LocaleI18nEcommerceGlobalSeoRoute
   '/$locale/i18n/for-developers': typeof LocaleI18nForDevelopersRoute
+  '/$locale/i18n/formatting-utilities': typeof LocaleI18nFormattingUtilitiesRoute
   '/$locale/i18n/global-market-seo': typeof LocaleI18nGlobalMarketSeoRoute
   '/$locale/i18n/international-seo': typeof LocaleI18nInternationalSeoRoute
   '/$locale/i18n/international-seo-consulting': typeof LocaleI18nInternationalSeoConsultingRoute
@@ -521,6 +551,8 @@ export interface FileRoutesByFullPath {
   '/$locale/i18n/nuxt': typeof LocaleI18nNuxtRoute
   '/$locale/i18n/react': typeof LocaleI18nReactRoute
   '/$locale/i18n/react-intl': typeof LocaleI18nReactIntlRoute
+  '/$locale/i18n/react-native-localization': typeof LocaleI18nReactNativeLocalizationRoute
+  '/$locale/i18n/security-compliance': typeof LocaleI18nSecurityComplianceRoute
   '/$locale/i18n/seo-international-audiences': typeof LocaleI18nSeoInternationalAudiencesRoute
   '/$locale/i18n/software-localization': typeof LocaleI18nSoftwareLocalizationRoute
   '/$locale/i18n/software-localization-services': typeof LocaleI18nSoftwareLocalizationServicesRoute
@@ -574,11 +606,13 @@ export interface FileRoutesByTo {
   '/$locale/i18n/angular': typeof LocaleI18nAngularRoute
   '/$locale/i18n/best-library': typeof LocaleI18nBestLibraryRoute
   '/$locale/i18n/best-tms': typeof LocaleI18nBestTmsRoute
+  '/$locale/i18n/cli-code-scanning': typeof LocaleI18nCliCodeScanningRoute
   '/$locale/i18n/content-localization': typeof LocaleI18nContentLocalizationRoute
   '/$locale/i18n/content-localization-services': typeof LocaleI18nContentLocalizationServicesRoute
   '/$locale/i18n/cultural-adaptation': typeof LocaleI18nCulturalAdaptationRoute
   '/$locale/i18n/ecommerce-global-seo': typeof LocaleI18nEcommerceGlobalSeoRoute
   '/$locale/i18n/for-developers': typeof LocaleI18nForDevelopersRoute
+  '/$locale/i18n/formatting-utilities': typeof LocaleI18nFormattingUtilitiesRoute
   '/$locale/i18n/global-market-seo': typeof LocaleI18nGlobalMarketSeoRoute
   '/$locale/i18n/international-seo': typeof LocaleI18nInternationalSeoRoute
   '/$locale/i18n/international-seo-consulting': typeof LocaleI18nInternationalSeoConsultingRoute
@@ -594,6 +628,8 @@ export interface FileRoutesByTo {
   '/$locale/i18n/nuxt': typeof LocaleI18nNuxtRoute
   '/$locale/i18n/react': typeof LocaleI18nReactRoute
   '/$locale/i18n/react-intl': typeof LocaleI18nReactIntlRoute
+  '/$locale/i18n/react-native-localization': typeof LocaleI18nReactNativeLocalizationRoute
+  '/$locale/i18n/security-compliance': typeof LocaleI18nSecurityComplianceRoute
   '/$locale/i18n/seo-international-audiences': typeof LocaleI18nSeoInternationalAudiencesRoute
   '/$locale/i18n/software-localization': typeof LocaleI18nSoftwareLocalizationRoute
   '/$locale/i18n/software-localization-services': typeof LocaleI18nSoftwareLocalizationServicesRoute
@@ -648,11 +684,13 @@ export interface FileRoutesById {
   '/$locale/i18n/angular': typeof LocaleI18nAngularRoute
   '/$locale/i18n/best-library': typeof LocaleI18nBestLibraryRoute
   '/$locale/i18n/best-tms': typeof LocaleI18nBestTmsRoute
+  '/$locale/i18n/cli-code-scanning': typeof LocaleI18nCliCodeScanningRoute
   '/$locale/i18n/content-localization': typeof LocaleI18nContentLocalizationRoute
   '/$locale/i18n/content-localization-services': typeof LocaleI18nContentLocalizationServicesRoute
   '/$locale/i18n/cultural-adaptation': typeof LocaleI18nCulturalAdaptationRoute
   '/$locale/i18n/ecommerce-global-seo': typeof LocaleI18nEcommerceGlobalSeoRoute
   '/$locale/i18n/for-developers': typeof LocaleI18nForDevelopersRoute
+  '/$locale/i18n/formatting-utilities': typeof LocaleI18nFormattingUtilitiesRoute
   '/$locale/i18n/global-market-seo': typeof LocaleI18nGlobalMarketSeoRoute
   '/$locale/i18n/international-seo': typeof LocaleI18nInternationalSeoRoute
   '/$locale/i18n/international-seo-consulting': typeof LocaleI18nInternationalSeoConsultingRoute
@@ -668,6 +706,8 @@ export interface FileRoutesById {
   '/$locale/i18n/nuxt': typeof LocaleI18nNuxtRoute
   '/$locale/i18n/react': typeof LocaleI18nReactRoute
   '/$locale/i18n/react-intl': typeof LocaleI18nReactIntlRoute
+  '/$locale/i18n/react-native-localization': typeof LocaleI18nReactNativeLocalizationRoute
+  '/$locale/i18n/security-compliance': typeof LocaleI18nSecurityComplianceRoute
   '/$locale/i18n/seo-international-audiences': typeof LocaleI18nSeoInternationalAudiencesRoute
   '/$locale/i18n/software-localization': typeof LocaleI18nSoftwareLocalizationRoute
   '/$locale/i18n/software-localization-services': typeof LocaleI18nSoftwareLocalizationServicesRoute
@@ -723,11 +763,13 @@ export interface FileRouteTypes {
     | '/$locale/i18n/angular'
     | '/$locale/i18n/best-library'
     | '/$locale/i18n/best-tms'
+    | '/$locale/i18n/cli-code-scanning'
     | '/$locale/i18n/content-localization'
     | '/$locale/i18n/content-localization-services'
     | '/$locale/i18n/cultural-adaptation'
     | '/$locale/i18n/ecommerce-global-seo'
     | '/$locale/i18n/for-developers'
+    | '/$locale/i18n/formatting-utilities'
     | '/$locale/i18n/global-market-seo'
     | '/$locale/i18n/international-seo'
     | '/$locale/i18n/international-seo-consulting'
@@ -743,6 +785,8 @@ export interface FileRouteTypes {
     | '/$locale/i18n/nuxt'
     | '/$locale/i18n/react'
     | '/$locale/i18n/react-intl'
+    | '/$locale/i18n/react-native-localization'
+    | '/$locale/i18n/security-compliance'
     | '/$locale/i18n/seo-international-audiences'
     | '/$locale/i18n/software-localization'
     | '/$locale/i18n/software-localization-services'
@@ -796,11 +840,13 @@ export interface FileRouteTypes {
     | '/$locale/i18n/angular'
     | '/$locale/i18n/best-library'
     | '/$locale/i18n/best-tms'
+    | '/$locale/i18n/cli-code-scanning'
     | '/$locale/i18n/content-localization'
     | '/$locale/i18n/content-localization-services'
     | '/$locale/i18n/cultural-adaptation'
     | '/$locale/i18n/ecommerce-global-seo'
     | '/$locale/i18n/for-developers'
+    | '/$locale/i18n/formatting-utilities'
     | '/$locale/i18n/global-market-seo'
     | '/$locale/i18n/international-seo'
     | '/$locale/i18n/international-seo-consulting'
@@ -816,6 +862,8 @@ export interface FileRouteTypes {
     | '/$locale/i18n/nuxt'
     | '/$locale/i18n/react'
     | '/$locale/i18n/react-intl'
+    | '/$locale/i18n/react-native-localization'
+    | '/$locale/i18n/security-compliance'
     | '/$locale/i18n/seo-international-audiences'
     | '/$locale/i18n/software-localization'
     | '/$locale/i18n/software-localization-services'
@@ -869,11 +917,13 @@ export interface FileRouteTypes {
     | '/$locale/i18n/angular'
     | '/$locale/i18n/best-library'
     | '/$locale/i18n/best-tms'
+    | '/$locale/i18n/cli-code-scanning'
     | '/$locale/i18n/content-localization'
     | '/$locale/i18n/content-localization-services'
     | '/$locale/i18n/cultural-adaptation'
     | '/$locale/i18n/ecommerce-global-seo'
     | '/$locale/i18n/for-developers'
+    | '/$locale/i18n/formatting-utilities'
     | '/$locale/i18n/global-market-seo'
     | '/$locale/i18n/international-seo'
     | '/$locale/i18n/international-seo-consulting'
@@ -889,6 +939,8 @@ export interface FileRouteTypes {
     | '/$locale/i18n/nuxt'
     | '/$locale/i18n/react'
     | '/$locale/i18n/react-intl'
+    | '/$locale/i18n/react-native-localization'
+    | '/$locale/i18n/security-compliance'
     | '/$locale/i18n/seo-international-audiences'
     | '/$locale/i18n/software-localization'
     | '/$locale/i18n/software-localization-services'
@@ -943,11 +995,13 @@ export interface RootRouteChildren {
   LocaleI18nAngularRoute: typeof LocaleI18nAngularRoute
   LocaleI18nBestLibraryRoute: typeof LocaleI18nBestLibraryRoute
   LocaleI18nBestTmsRoute: typeof LocaleI18nBestTmsRoute
+  LocaleI18nCliCodeScanningRoute: typeof LocaleI18nCliCodeScanningRoute
   LocaleI18nContentLocalizationRoute: typeof LocaleI18nContentLocalizationRoute
   LocaleI18nContentLocalizationServicesRoute: typeof LocaleI18nContentLocalizationServicesRoute
   LocaleI18nCulturalAdaptationRoute: typeof LocaleI18nCulturalAdaptationRoute
   LocaleI18nEcommerceGlobalSeoRoute: typeof LocaleI18nEcommerceGlobalSeoRoute
   LocaleI18nForDevelopersRoute: typeof LocaleI18nForDevelopersRoute
+  LocaleI18nFormattingUtilitiesRoute: typeof LocaleI18nFormattingUtilitiesRoute
   LocaleI18nGlobalMarketSeoRoute: typeof LocaleI18nGlobalMarketSeoRoute
   LocaleI18nInternationalSeoRoute: typeof LocaleI18nInternationalSeoRoute
   LocaleI18nInternationalSeoConsultingRoute: typeof LocaleI18nInternationalSeoConsultingRoute
@@ -963,6 +1017,8 @@ export interface RootRouteChildren {
   LocaleI18nNuxtRoute: typeof LocaleI18nNuxtRoute
   LocaleI18nReactRoute: typeof LocaleI18nReactRoute
   LocaleI18nReactIntlRoute: typeof LocaleI18nReactIntlRoute
+  LocaleI18nReactNativeLocalizationRoute: typeof LocaleI18nReactNativeLocalizationRoute
+  LocaleI18nSecurityComplianceRoute: typeof LocaleI18nSecurityComplianceRoute
   LocaleI18nSeoInternationalAudiencesRoute: typeof LocaleI18nSeoInternationalAudiencesRoute
   LocaleI18nSoftwareLocalizationRoute: typeof LocaleI18nSoftwareLocalizationRoute
   LocaleI18nSoftwareLocalizationServicesRoute: typeof LocaleI18nSoftwareLocalizationServicesRoute
@@ -1282,6 +1338,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nSeoInternationalAudiencesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/i18n/security-compliance': {
+      id: '/$locale/i18n/security-compliance'
+      path: '/$locale/i18n/security-compliance'
+      fullPath: '/$locale/i18n/security-compliance'
+      preLoaderRoute: typeof LocaleI18nSecurityComplianceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/react-native-localization': {
+      id: '/$locale/i18n/react-native-localization'
+      path: '/$locale/i18n/react-native-localization'
+      fullPath: '/$locale/i18n/react-native-localization'
+      preLoaderRoute: typeof LocaleI18nReactNativeLocalizationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/i18n/react-intl': {
       id: '/$locale/i18n/react-intl'
       path: '/$locale/i18n/react-intl'
@@ -1387,6 +1457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nGlobalMarketSeoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/i18n/formatting-utilities': {
+      id: '/$locale/i18n/formatting-utilities'
+      path: '/$locale/i18n/formatting-utilities'
+      fullPath: '/$locale/i18n/formatting-utilities'
+      preLoaderRoute: typeof LocaleI18nFormattingUtilitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/i18n/for-developers': {
       id: '/$locale/i18n/for-developers'
       path: '/$locale/i18n/for-developers'
@@ -1420,6 +1497,13 @@ declare module '@tanstack/react-router' {
       path: '/$locale/i18n/content-localization'
       fullPath: '/$locale/i18n/content-localization'
       preLoaderRoute: typeof LocaleI18nContentLocalizationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/cli-code-scanning': {
+      id: '/$locale/i18n/cli-code-scanning'
+      path: '/$locale/i18n/cli-code-scanning'
+      fullPath: '/$locale/i18n/cli-code-scanning'
+      preLoaderRoute: typeof LocaleI18nCliCodeScanningRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/i18n/best-tms': {
@@ -1519,12 +1603,14 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleI18nAngularRoute: LocaleI18nAngularRoute,
   LocaleI18nBestLibraryRoute: LocaleI18nBestLibraryRoute,
   LocaleI18nBestTmsRoute: LocaleI18nBestTmsRoute,
+  LocaleI18nCliCodeScanningRoute: LocaleI18nCliCodeScanningRoute,
   LocaleI18nContentLocalizationRoute: LocaleI18nContentLocalizationRoute,
   LocaleI18nContentLocalizationServicesRoute:
     LocaleI18nContentLocalizationServicesRoute,
   LocaleI18nCulturalAdaptationRoute: LocaleI18nCulturalAdaptationRoute,
   LocaleI18nEcommerceGlobalSeoRoute: LocaleI18nEcommerceGlobalSeoRoute,
   LocaleI18nForDevelopersRoute: LocaleI18nForDevelopersRoute,
+  LocaleI18nFormattingUtilitiesRoute: LocaleI18nFormattingUtilitiesRoute,
   LocaleI18nGlobalMarketSeoRoute: LocaleI18nGlobalMarketSeoRoute,
   LocaleI18nInternationalSeoRoute: LocaleI18nInternationalSeoRoute,
   LocaleI18nInternationalSeoConsultingRoute:
@@ -1542,6 +1628,9 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleI18nNuxtRoute: LocaleI18nNuxtRoute,
   LocaleI18nReactRoute: LocaleI18nReactRoute,
   LocaleI18nReactIntlRoute: LocaleI18nReactIntlRoute,
+  LocaleI18nReactNativeLocalizationRoute:
+    LocaleI18nReactNativeLocalizationRoute,
+  LocaleI18nSecurityComplianceRoute: LocaleI18nSecurityComplianceRoute,
   LocaleI18nSeoInternationalAudiencesRoute:
     LocaleI18nSeoInternationalAudiencesRoute,
   LocaleI18nSoftwareLocalizationRoute: LocaleI18nSoftwareLocalizationRoute,
