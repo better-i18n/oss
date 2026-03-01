@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import { RelatedPages } from "@/components/RelatedPages";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
   getLocalizedMeta,
@@ -239,6 +240,7 @@ function ChangelogPage() {
           </div>
         </div>
       </main>
+      <RelatedPages currentPage="changelog" locale={locale} variant="resources" />
       <Footer />
     </div>
   );

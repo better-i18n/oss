@@ -412,8 +412,12 @@ export function DemoAIDrawerStandalone() {
     },
   ], [t]);
 
-  // Get demo content for current locale (fallback to en)
-  const demoContent = useMemo(() => DEMO_CONTENT[locale] || DEMO_CONTENT.en, [locale]);
+  // Get demo content for current locale (fallback to en).
+  // Normalize zh-hans / zh-hant variants to the base "zh" key.
+  const demoContent = useMemo(() => {
+    const baseLocale = locale.startsWith("zh") ? "zh" : locale;
+    return DEMO_CONTENT[baseLocale] || DEMO_CONTENT.en;
+  }, [locale]);
 
   // Filter mentions based on query
   const filteredMentions = useMemo(() => {

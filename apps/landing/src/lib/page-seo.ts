@@ -16,6 +16,7 @@ import {
   getReviewSchema,
   getBreadcrumbSchema,
   formatStructuredData,
+  getCareersPageStructuredData,
 } from "./structured-data";
 import { SITE_URL } from "./meta";
 
@@ -29,6 +30,7 @@ export {
   getReviewSchema,
   getBreadcrumbSchema,
   formatStructuredData,
+  getCareersPageStructuredData,
 };
 
 type PageType = "default" | "home" | "pricing" | "comparison" | "framework" | "educational";

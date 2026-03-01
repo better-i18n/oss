@@ -1,17 +1,33 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { getPageHead, createPageLoader, formatStructuredData } from "@/lib/page-seo";
+import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
+import { SITE_URL } from "@/lib/meta";
 import { useTranslations } from "@better-i18n/use-intl";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
+    const frameworkListSchema = getComparisonSchema({
+      title: "i18n Framework Guides",
+      description: "Internationalization guides for popular JavaScript frameworks.",
+      items: [
+        { name: "React i18n", description: "Type-safe React internationalization with hooks", url: `${SITE_URL}/en/i18n/react` },
+        { name: "Next.js i18n", description: "Server-side i18n for Next.js apps", url: `${SITE_URL}/en/i18n/nextjs` },
+        { name: "Vue i18n", description: "Vue.js internationalization integration", url: `${SITE_URL}/en/i18n/vue` },
+        { name: "Nuxt i18n", description: "Nuxt.js localization module", url: `${SITE_URL}/en/i18n/nuxt` },
+        { name: "Angular i18n", description: "Angular internationalization support", url: `${SITE_URL}/en/i18n/angular` },
+        { name: "Svelte i18n", description: "Svelte internationalization integration", url: `${SITE_URL}/en/i18n/svelte` },
+      ],
+    });
+
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
       pageKey: "i18n",
       pathname: "/i18n",
+      customStructuredData: formatStructuredData([getOrganizationSchema(), frameworkListSchema]),
     });
   },
   component: I18nIndexPage,

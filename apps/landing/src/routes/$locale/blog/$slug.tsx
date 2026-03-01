@@ -3,6 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getBlogPost, formatPostDate, getTagColor } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { RelatedPages } from "@/components/RelatedPages";
 import { useTranslations } from "@better-i18n/use-intl";
 import BlogContent from "@/components/blog/BlogContent";
 import {
@@ -215,6 +216,7 @@ function BlogPostPage() {
           </footer>
         </article>
       </main>
+      <RelatedPages currentPage="blog" locale={locale} variant="mixed" />
       <Footer />
     </div>
   );

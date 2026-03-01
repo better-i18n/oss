@@ -3,6 +3,7 @@ import {
   Scripts,
   createRootRouteWithContext,
   Outlet,
+  redirect,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -26,6 +27,12 @@ interface RouterContext {
   messages: Record<string, string>;
 }
 
+/**
+ * Paths that are handled by dedicated non-locale routes (API, etc.)
+ * and should NOT be redirected to /$locale/...
+ */
+const BYPASS_LOCALE_CHECK = new Set(["api"]);
+
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async ({ location }) => {
     const locales = await fetchLocales();
@@ -33,6 +40,26 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       locales,
       defaultLocale: i18nConfig.defaultLocale,
     };
+
+    // Redirect non-locale first segments to /{defaultLocale}/{path}.
+    // Without this, TanStack Router's $locale param accepts any string
+    // (e.g., "blog", "compare") and renders the homepage with broken nav links.
+    const segments = location.pathname.split("/").filter(Boolean);
+    const firstSegment = segments[0];
+
+    if (
+      firstSegment &&
+      !locales.includes(firstSegment) &&
+      !BYPASS_LOCALE_CHECK.has(firstSegment)
+    ) {
+      const search = location.searchStr || "";
+      const hash = location.hash || "";
+      throw redirect({
+        href: `/${i18nConfig.defaultLocale}${location.pathname}${search}${hash}`,
+        statusCode: 301,
+      });
+    }
+
     const locale = getLocaleFromPath(location.pathname, localeConfig);
 
     const messages = await getMessages({

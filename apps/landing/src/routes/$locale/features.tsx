@@ -13,6 +13,11 @@ export const Route = createFileRoute("/$locale/features")({
       locale: loaderData?.locale || "en",
       pageKey: "features",
       pathname: "/features",
+      pageType: "educational",
+      structuredDataOptions: {
+        title: "Better i18n Features",
+        description: "Explore features: AI translations, Git integration, OTA updates, CDN delivery, type-safe SDKs, and collaboration tools for developer-first i18n.",
+      },
     });
   },
   component: FeaturesPage,
