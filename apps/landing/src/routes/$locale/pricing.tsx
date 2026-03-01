@@ -3,6 +3,7 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import Pricing from "@/components/Pricing";
 import { getPageHead, getFAQSchema, formatStructuredData } from "@/lib/page-seo";
 import { getPricingPageStructuredData } from "@/lib/structured-data";
+import { RelatedPages } from "@/components/RelatedPages";
 import { useTranslations } from "@better-i18n/use-intl";
 import { IconCheckmark1 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
@@ -48,6 +49,7 @@ export const Route = createFileRoute("/$locale/pricing")({
 
 function PricingPage() {
   const t = useTranslations("pricingPage");
+  const { locale } = Route.useParams();
 
   const trustBadges = [
     { key: "uptime", label: t("trust.uptime") },
@@ -112,6 +114,9 @@ function PricingPage() {
           </div>
         </div>
       </section>
+
+      {/* Related Pages */}
+      <RelatedPages currentPage="pricing" locale={locale} variant="for" />
     </MarketingLayout>
   );
 }

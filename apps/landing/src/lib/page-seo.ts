@@ -14,8 +14,10 @@ import {
   getEducationalPageStructuredData,
   getFAQSchema,
   getReviewSchema,
+  getBreadcrumbSchema,
   formatStructuredData,
 } from "./structured-data";
+import { SITE_URL } from "./meta";
 
 // Re-export for convenience
 export {
@@ -25,6 +27,7 @@ export {
   getEducationalPageStructuredData,
   getFAQSchema,
   getReviewSchema,
+  getBreadcrumbSchema,
   formatStructuredData,
 };
 
@@ -128,6 +131,42 @@ export function getPageHead(options: PageSEOOptions) {
     scripts = getHomePageStructuredData();
   } else {
     scripts = getDefaultStructuredData();
+  }
+
+  // Generate breadcrumb schema for inner pages (skip homepage)
+  const cleanPath = pathname.replace(/^\/+/, "");
+  if (cleanPath) {
+    const segments = cleanPath.split("/").filter(Boolean);
+    const breadcrumbItems = [
+      { name: "Home", url: `${SITE_URL}/${locale}` },
+    ];
+
+    const labelMap: Record<string, string> = {
+      features: "Features",
+      pricing: "Pricing",
+      "what-is": "What is i18n",
+      "for-developers": "For Developers",
+      "for-translators": "For Translators",
+      "for-product-teams": "For Product Teams",
+      compare: "Compare",
+      i18n: "Frameworks",
+      "what-is-internationalization": "What is Internationalization",
+      "what-is-localization": "What is Localization",
+      "best-tms": "Best TMS",
+    };
+
+    let currentPath = "";
+    for (const segment of segments) {
+      currentPath += `/${segment}`;
+      const label = labelMap[segment] ?? segment.charAt(0).toUpperCase() + segment.slice(1);
+      breadcrumbItems.push({
+        name: label,
+        url: `${SITE_URL}/${locale}${currentPath}`,
+      });
+    }
+
+    const breadcrumbScript = formatStructuredData(getBreadcrumbSchema(breadcrumbItems));
+    scripts = [...scripts, ...breadcrumbScript];
   }
 
   return {
