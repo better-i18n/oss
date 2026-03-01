@@ -175,7 +175,7 @@ function generateBlogDetailPages(
   );
 
   return postLocales.map((locale): PageEntry => ({
-    path: buildPageUrl(locale, `blog/${post.slug}`),
+    path: buildPagePath(locale, `blog/${post.slug}`),
     sitemap: {
       priority: 0.7,
       changefreq: "weekly",
