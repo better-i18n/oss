@@ -139,7 +139,12 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         { name: "robots", content: "index, follow" },
       ],
       links: [
-        ...getAlternateLinks(pathname),
+        ...getAlternateLinks(
+          pathname,
+          post?.availableLanguages?.length
+            ? [...post.availableLanguages]
+            : undefined,
+        ),
         getCanonicalLink(locale, pathname),
       ],
       scripts: formatStructuredData(schemas),

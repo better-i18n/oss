@@ -3,15 +3,22 @@ import {
   Scripts,
   createRootRouteWithContext,
   Outlet,
+  Link,
   redirect,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BetterI18nProvider, getLocaleFromPath } from "@better-i18n/use-intl";
+import {
+  BetterI18nProvider,
+  getLocaleFromPath,
+  useTranslations,
+} from "@better-i18n/use-intl";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
 import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
+import { MarketingLayout } from "../components/MarketingLayout";
+import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -156,7 +163,42 @@ gtag('config', 'AW-17928422726');`,
   },
 
   component: RootComponent,
+  notFoundComponent: NotFoundPage,
 });
+
+function NotFoundPage() {
+  const t = useTranslations("common");
+  const { locale } = Route.useRouteContext();
+
+  return (
+    <MarketingLayout showCTA={false} bgClassName="bg-white">
+      <div className="py-24 sm:py-32">
+        <div className="mx-auto max-w-2xl px-6 text-center">
+          <p className="font-display text-6xl font-medium tracking-[-0.02em] text-mist-300 sm:text-8xl">
+            404
+          </p>
+          <h1 className="mt-4 font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
+            {t("notFound.title", { defaultValue: "Page not found" })}
+          </h1>
+          <p className="mt-4 text-lg text-mist-600">
+            {t("notFound.description", {
+              defaultValue:
+                "The page you're looking for doesn't exist or has been moved.",
+            })}
+          </p>
+          <Link
+            to="/$locale"
+            params={{ locale }}
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
+          >
+            <IconArrowLeft className="w-4 h-4" />
+            {t("notFound.backHome", { defaultValue: "Back to Home" })}
+          </Link>
+        </div>
+      </div>
+    </MarketingLayout>
+  );
+}
 
 function RootComponent() {
   const { messages, locale } = Route.useRouteContext();

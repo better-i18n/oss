@@ -326,7 +326,7 @@ export function getProductSchema(options: {
       bestRating: 5,
       worstRating: 1,
       ratingCount: 50,
-      reviewCount: 4,
+      reviewCount: 50,
     },
     offers: options.offers.map((offer) => ({
       "@type": "Offer",

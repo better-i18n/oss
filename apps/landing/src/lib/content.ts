@@ -23,6 +23,7 @@ export interface BlogPost {
   category: string | null;
   authorName: string | null;
   authorAvatar: string | null;
+  availableLanguages: readonly string[] | null;
 }
 
 export interface BlogPostListItem {
@@ -225,6 +226,12 @@ export async function getBlogPost(
     });
     const bodyHtml = entry.body ? String(await marked(entry.body)) : null;
     const excerpt = extractExcerpt(entry.body);
+    const raw = entry as unknown as Record<string, unknown>;
+    const availableLanguages = Array.isArray(raw.availableLanguages)
+      ? (raw.availableLanguages as unknown[]).filter(
+          (v): v is string => typeof v === "string",
+        )
+      : null;
     return {
       id: entry.id,
       slug: entry.slug,
@@ -234,6 +241,7 @@ export async function getBlogPost(
       body: entry.body,
       bodyHtml,
       excerpt,
+      availableLanguages,
       ...mapEntryBase(entry),
     };
   } catch {

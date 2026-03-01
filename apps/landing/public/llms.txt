@@ -13,15 +13,15 @@ Better i18n is a translation management system (TMS) that combines AI-powered tr
 
 ## Key Pages
 
-- [Home](https://better-i18n.com/)
-- [Features](https://better-i18n.com/features)
-- [Pricing](https://better-i18n.com/pricing)
-- [For Developers](https://better-i18n.com/for-developers)
-- [For Product Teams](https://better-i18n.com/for-product-teams)
-- [For Translators](https://better-i18n.com/for-translators)
-- [About](https://better-i18n.com/about)
-- [Blog](https://better-i18n.com/blog)
-- [Changelog](https://better-i18n.com/changelog)
+- [Home](https://better-i18n.com/en/)
+- [Features](https://better-i18n.com/en/features)
+- [Pricing](https://better-i18n.com/en/pricing)
+- [For Developers](https://better-i18n.com/en/for-developers)
+- [For Product Teams](https://better-i18n.com/en/for-product-teams)
+- [For Translators](https://better-i18n.com/en/for-translators)
+- [About](https://better-i18n.com/en/about)
+- [Blog](https://better-i18n.com/en/blog)
+- [Changelog](https://better-i18n.com/en/changelog)
 
 ## Framework Guides
 
