@@ -14,6 +14,7 @@
  */
 
 import { execFileSync } from "node:child_process";
+import { relative } from "node:path";
 import { collectFiles } from "../analyzer/file-collector.js";
 import { analyzeFile } from "../analyzer/index.js";
 import type { Issue, LintConfig } from "../analyzer/types.js";
@@ -195,7 +196,7 @@ async function runCodeAnalysis(
 
         // Convert hardcoded string warnings to diagnostics
         if (issue.severity === "warning") {
-          codeDiagnostics.push(adaptIssueToDiagnostic(issue));
+          codeDiagnostics.push(adaptIssueToDiagnostic(issue, directory));
         }
       }
     } catch {
@@ -340,11 +341,11 @@ async function loadFromCdn(
  *
  * Maps issue.type to rule ID, looks up category and help from central maps.
  */
-function adaptIssueToDiagnostic(issue: Issue): I18nDiagnostic {
+function adaptIssueToDiagnostic(issue: Issue, rootDir: string): I18nDiagnostic {
   const ruleId = mapIssueTypeToRuleId(issue);
 
   return {
-    filePath: issue.file,
+    filePath: relative(rootDir, issue.file),
     line: issue.line,
     column: issue.column,
     rule: ruleId,

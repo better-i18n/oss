@@ -58,7 +58,7 @@ export async function doctorCommand(options: DoctorCommandOptions) {
     if (isJson) {
       reportJson(report);
     } else {
-      reportEslint(report);
+      reportEslint(report, options.verbose);
     }
 
     // Upload report to Better i18n API (if --report flag is set)

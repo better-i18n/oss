@@ -4,8 +4,6 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import { fileURLToPath, URL } from "url";
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(async ({ mode }) => {
@@ -19,16 +17,13 @@ export default defineConfig(async ({ mode }) => {
   let llmsTxtContent: string | null = null;
   if (mode === "production" && apiKey && project) {
     try {
-      const { generatePages } = await import("./src/seo/generate-pages");
-      pages = await generatePages({ project, apiKey });
-    } catch (error) {
-      console.error("[SEO] Page generation failed:", error);
-    }
-    try {
+      const { fetchSeoData, generatePages } = await import("./src/seo/generate-pages");
       const { generateLlmsTxtContent } = await import("./src/seo/llms-txt");
-      llmsTxtContent = await generateLlmsTxtContent({ project, apiKey });
+      const data = await fetchSeoData({ project, apiKey });
+      pages = generatePages(data);
+      llmsTxtContent = generateLlmsTxtContent(data.blogPosts);
     } catch (error) {
-      console.error("[SEO] llms.txt generation failed:", error);
+      console.error("[SEO] Build-time generation failed:", error);
     }
   } else if (mode === "production") {
     const missing = [
@@ -101,32 +96,6 @@ export default defineConfig(async ({ mode }) => {
             } satisfies Plugin,
           ]
         : []),
-      // Workaround: TanStack Start's sitemap generator omits the xhtml namespace
-      // declaration, adds spurious xmlns="" on <xhtml:link> elements, and strips
-      // trailing slashes from <loc>/<href> URLs causing 307 redirects.
-      {
-        name: "fix-sitemap",
-        apply: "build",
-        closeBundle() {
-          const sitemapPath = path.join("dist", "client", "sitemap.xml");
-          if (!existsSync(sitemapPath)) return;
-
-          const xml = readFileSync(sitemapPath, "utf-8");
-          const fixed = xml
-            .replace(
-              '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">',
-              '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
-            )
-            .replace(/ xmlns=""/g, "")
-            // Ensure all <loc> URLs end with trailing slash to avoid 307 redirects
-            .replace(/<loc>(https:\/\/[^<]+?)(?<!\/)(?=<\/loc>)/g, "<loc>$1/")
-            // Ensure all hreflang href URLs end with trailing slash
-            .replace(/href="(https:\/\/[^"]+?)(?<!\/)"/g, 'href="$1/"');
-
-          writeFileSync(sitemapPath, fixed);
-          console.log("[SEO] Fixed sitemap: xhtml namespace + trailing slashes");
-        },
-      } satisfies Plugin,
     ],
   };
 });
