@@ -1,5 +1,11 @@
 # @better-i18n/expo
 
+## 0.6.0
+
+### Minor Changes
+
+- abf4532: Add `getLanguages()` — a synchronous function that returns the languages resolved during `initBetterI18n()`. This eliminates the need for consumers to cache language data in React state.
+
 ## 0.5.1
 
 ### Patch Changes
