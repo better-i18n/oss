@@ -11,13 +11,17 @@
  *   t("key")                                         — no fallback
  */
 import { useTranslations } from "@better-i18n/use-intl";
+import type { ReactNode } from "react";
+
+type RichTagsFunction = (chunks: ReactNode) => ReactNode;
+type RichTranslationValues = Record<string, string | number | Date | RichTagsFunction>;
 
 type TranslateFn = {
   (key: string, options: Record<string, unknown>): string;
   (key: string, fallback: string): string;
   (key: string): string;
   has: (key: string) => boolean;
-  rich: (key: string, values?: Record<string, unknown>) => unknown;
+  rich: (key: string, values?: RichTranslationValues) => ReactNode;
 };
 
 export function useT(namespace: string): TranslateFn {
@@ -43,7 +47,7 @@ export function useT(namespace: string): TranslateFn {
   }) as TranslateFn;
 
   translate.has = (key: string) => t.has(key);
-  translate.rich = (key: string, values?: Record<string, unknown>) =>
+  translate.rich = (key: string, values?: RichTranslationValues) =>
     t.rich(key, values);
 
   return translate;
