@@ -6,6 +6,7 @@ import { useTranslations } from "@better-i18n/use-intl";
 const footerLinks = [
   {
     category: "product",
+    categoryTitle: "Product",
     links: [
       { key: "features", label: "Features", href: "/$locale/features" },
       { key: "pricing", label: "Pricing", href: "/$locale/pricing" },
@@ -14,6 +15,7 @@ const footerLinks = [
   },
   {
     category: "frameworks",
+    categoryTitle: "Frameworks",
     links: [
       { key: "react", label: "React", href: "/$locale/i18n/react" },
       { key: "nextjs", label: "Next.js", href: "/$locale/i18n/nextjs" },
@@ -25,6 +27,7 @@ const footerLinks = [
   },
   {
     category: "compare",
+    categoryTitle: "Compare",
     links: [
       { key: "crowdin", label: "vs Crowdin", href: "/$locale/compare/crowdin" },
       { key: "lokalise", label: "vs Lokalise", href: "/$locale/compare/lokalise" },
@@ -34,6 +37,7 @@ const footerLinks = [
   },
   {
     category: "company",
+    categoryTitle: "Company",
     links: [
       { key: "about", label: "About", href: "/$locale/about" },
       { key: "careers", label: "Careers", href: "/$locale/careers" },
@@ -42,6 +46,7 @@ const footerLinks = [
   },
   {
     category: "resources",
+    categoryTitle: "Resources",
     links: [
       {
         key: "helpCenter",
@@ -60,6 +65,7 @@ const footerLinks = [
   },
   {
     category: "legal",
+    categoryTitle: "Legal",
     links: [
       { key: "privacy", label: "Privacy", href: "/$locale/privacy" },
       { key: "terms", label: "Terms", href: "/$locale/terms" },
@@ -68,6 +74,7 @@ const footerLinks = [
   },
   {
     category: "connect",
+    categoryTitle: "Connect",
     links: [
       { key: "x", label: "X", href: "https://x.com/betteri18n" },
       { key: "github", label: "GitHub", href: "https://github.com/better-i18n" },
@@ -88,11 +95,11 @@ export default function Footer() {
           {footerLinks.map((group) => (
             <div key={group.category}>
               <h3 className="text-sm font-medium text-mist-950 mb-4">
-                {t(`${group.category}.title`)}
+                {t(`${group.category}.title`, { defaultValue: group.categoryTitle })}
               </h3>
               <ul className="space-y-3 text-sm text-mist-700">
                 {group.links.map((link) => {
-                  const label = t(`${group.category}.${link.key}`);
+                  const label = t(`${group.category}.${link.key}`, { defaultValue: link.label });
                   const isExternal = link.href.startsWith("http");
 
                   return (

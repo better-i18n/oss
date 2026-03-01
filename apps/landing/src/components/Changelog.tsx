@@ -38,7 +38,7 @@ export default function Changelog({ releases }: ChangelogProps) {
     <section className="py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 mb-8 sm:text-4xl/[1.1]">
-          {t("title")}
+          {t("title", { defaultValue: "What's New" })}
         </h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {releases.map((entry) => {
@@ -85,7 +85,7 @@ export default function Changelog({ releases }: ChangelogProps) {
             params={{ locale: lang }}
             className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950"
           >
-            {t("seeWhatsNew")}
+            {t("seeWhatsNew", { defaultValue: "See what's new" })}
             <IconArrowRight className="w-4 h-4" />
           </Link>
         </div>
