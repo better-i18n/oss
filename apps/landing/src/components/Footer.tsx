@@ -1,7 +1,7 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { IconSquareArrowTopRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 
 const footerLinks = [
   {
@@ -86,7 +86,7 @@ const footerLinks = [
 export default function Footer() {
   const { locale } = useParams({ strict: false });
   const currentLocale = locale || "en";
-  const t = useTranslations("footer");
+  const t = useT("footer");
 
   return (
     <footer aria-label="Site footer" className="py-16 bg-mist-950/[0.025]">

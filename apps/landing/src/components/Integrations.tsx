@@ -1,4 +1,4 @@
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconGithub,
   IconGlobe,
@@ -24,7 +24,7 @@ const integrations = [
 ];
 
 export default function Integrations() {
-  const t = useTranslations("integrations");
+  const t = useT("integrations");
 
   return (
     <section id="integrations" className="py-20">

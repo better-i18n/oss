@@ -1,6 +1,6 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import type { ChangelogEntry, ChangelogListItem } from "@/lib/changelog";
 
 const categoryColors: Record<string, string> = {
@@ -31,7 +31,7 @@ interface ChangelogProps {
 
 export default function Changelog({ releases }: ChangelogProps) {
   const { locale } = useParams({ strict: false });
-  const t = useTranslations("changelog");
+  const t = useT("changelog");
   const lang = locale || "en";
 
   return (

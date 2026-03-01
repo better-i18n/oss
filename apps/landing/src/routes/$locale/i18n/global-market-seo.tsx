@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconMagnifyingGlass,
   IconCheckmark1,
@@ -39,8 +39,8 @@ const searchEngines = [
 ];
 
 function GlobalMarketSeoPage() {
-  const t = useTranslations("marketing.i18n.globalMarketSeo");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.globalMarketSeo");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const seoKeywords = [

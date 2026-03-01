@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { getMarketingPages, type MarketingPageListItem } from "@/lib/content";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
@@ -37,13 +37,9 @@ export const Route = createFileRoute("/$locale/features")({
 });
 
 function FeaturesPage() {
-  const t = useTranslations("featuresPage");
+  const t = useT("featuresPage");
   const { locale } = Route.useParams();
   const { featurePages } = Route.useLoaderData();
-
-  /** Translate with fallback — use-intl v4 doesn't support defaultValue */
-  const ft = (key: string, fallback: string) =>
-    t.has(key) ? t(key) : fallback;
 
   return (
     <MarketingLayout showCTA={true}>
@@ -52,11 +48,11 @@ function FeaturesPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1] lg:text-6xl/[1.1]">
-              {ft("hero.title", "Everything you need to")}
-              <span className="block text-mist-600">{ft("hero.titleHighlight", "ship globally")}</span>
+              {t("hero.title", "Everything you need to")}
+              <span className="block text-mist-600">{t("hero.titleHighlight", "ship globally")}</span>
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {ft("hero.subtitle", "AI-powered translations, git-native workflows, and instant CDN delivery. A complete localization platform built for modern development teams.")}
+              {t("hero.subtitle", "AI-powered translations, git-native workflows, and instant CDN delivery. A complete localization platform built for modern development teams.")}
             </p>
           </div>
         </div>
@@ -70,31 +66,31 @@ function FeaturesPage() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-12">
               <div>
                 <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-mist-500 mb-4">
-                  {ft("core.ai.badge", "AI Translation Engine")}
+                  {t("core.ai.badge", "AI Translation Engine")}
                 </span>
                 <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1]">
-                  {ft("core.ai.title", "Translations that understand your product")}
+                  {t("core.ai.title", "Translations that understand your product")}
                 </h2>
                 <p className="mt-4 text-base/7 text-mist-700">
-                  {ft("core.ai.description", "Our AI engine goes beyond literal word-for-word translation. It reads your glossary, learns your brand voice, and considers the full context of each string — including where it appears in your UI. The result: translations that sound natural in every language while staying true to your product identity.")}
+                  {t("core.ai.description", "Our AI engine goes beyond literal word-for-word translation. It reads your glossary, learns your brand voice, and considers the full context of each string — including where it appears in your UI. The result: translations that sound natural in every language while staying true to your product identity.")}
                 </p>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FeatureItem
-                  title={ft("core.ai.glossary.title", "Brand Glossary")}
-                  description={ft("core.ai.glossary.description", "Define product-specific terms once and enforce them across every translation.")}
+                  title={t("core.ai.glossary.title", "Brand Glossary")}
+                  description={t("core.ai.glossary.description", "Define product-specific terms once and enforce them across every translation.")}
                 />
                 <FeatureItem
-                  title={ft("core.ai.review.title", "Review Workflow")}
-                  description={ft("core.ai.review.description", "Approve, edit, or flag AI-generated translations before they go live.")}
+                  title={t("core.ai.review.title", "Review Workflow")}
+                  description={t("core.ai.review.description", "Approve, edit, or flag AI-generated translations before they go live.")}
                 />
                 <FeatureItem
-                  title={ft("core.ai.context.title", "Contextual Awareness")}
-                  description={ft("core.ai.context.description", "AI sees where each string appears in your app for accurate translations.")}
+                  title={t("core.ai.context.title", "Contextual Awareness")}
+                  description={t("core.ai.context.description", "AI sees where each string appears in your app for accurate translations.")}
                 />
                 <FeatureItem
-                  title={ft("core.ai.batch.title", "Batch Processing")}
-                  description={ft("core.ai.batch.description", "Translate entire projects across all target languages in one operation.")}
+                  title={t("core.ai.batch.title", "Batch Processing")}
+                  description={t("core.ai.batch.description", "Translate entire projects across all target languages in one operation.")}
                 />
               </div>
             </div>
@@ -103,31 +99,31 @@ function FeaturesPage() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-12">
               <div>
                 <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-mist-500 mb-4">
-                  {ft("core.workflow.badge", "Developer Workflow")}
+                  {t("core.workflow.badge", "Developer Workflow")}
                 </span>
                 <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1]">
-                  {ft("core.workflow.title", "Git-native from day one")}
+                  {t("core.workflow.title", "Git-native from day one")}
                 </h2>
                 <p className="mt-4 text-base/7 text-mist-700">
-                  {ft("core.workflow.description", "Better i18n fits your existing development workflow instead of replacing it. Translations sync through pull requests, deploy through your CI/CD pipeline, and deliver through our global CDN. No context switching between dashboards — manage everything from your code editor or terminal.")}
+                  {t("core.workflow.description", "Better i18n fits your existing development workflow instead of replacing it. Translations sync through pull requests, deploy through your CI/CD pipeline, and deliver through our global CDN. No context switching between dashboards — manage everything from your code editor or terminal.")}
                 </p>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FeatureItem
-                  title={ft("core.workflow.git.title", "Git Sync")}
-                  description={ft("core.workflow.git.description", "Automatic PRs with translated content, synced to your repository.")}
+                  title={t("core.workflow.git.title", "Git Sync")}
+                  description={t("core.workflow.git.description", "Automatic PRs with translated content, synced to your repository.")}
                 />
                 <FeatureItem
-                  title={ft("core.workflow.cdn.title", "CDN Delivery")}
-                  description={ft("core.workflow.cdn.description", "Translations served from 300+ edge locations for sub-50ms load times.")}
+                  title={t("core.workflow.cdn.title", "CDN Delivery")}
+                  description={t("core.workflow.cdn.description", "Translations served from 300+ edge locations for sub-50ms load times.")}
                 />
                 <FeatureItem
-                  title={ft("core.workflow.cli.title", "CLI & SDK")}
-                  description={ft("core.workflow.cli.description", "Type-safe SDKs for React, Vue, Angular, and more with full autocomplete.")}
+                  title={t("core.workflow.cli.title", "CLI & SDK")}
+                  description={t("core.workflow.cli.description", "Type-safe SDKs for React, Vue, Angular, and more with full autocomplete.")}
                 />
                 <FeatureItem
-                  title={ft("core.workflow.ota.title", "OTA Updates")}
-                  description={ft("core.workflow.ota.description", "Push translation updates without redeploying your application.")}
+                  title={t("core.workflow.ota.title", "OTA Updates")}
+                  description={t("core.workflow.ota.description", "Push translation updates without redeploying your application.")}
                 />
               </div>
             </div>
@@ -136,31 +132,31 @@ function FeaturesPage() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-12">
               <div>
                 <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-mist-500 mb-4">
-                  {ft("core.discovery.badge", "Content Discovery")}
+                  {t("core.discovery.badge", "Content Discovery")}
                 </span>
                 <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1]">
-                  {ft("core.discovery.title", "Automatically finds what needs translating")}
+                  {t("core.discovery.title", "Automatically finds what needs translating")}
                 </h2>
                 <p className="mt-4 text-base/7 text-mist-700">
-                  {ft("core.discovery.description", "Our AST-based crawler scans your codebase to find every translatable string, then crawls your website to build a contextual glossary. No more manually tagging strings or maintaining lists of keys — Better i18n discovers and organizes everything for you.")}
+                  {t("core.discovery.description", "Our AST-based crawler scans your codebase to find every translatable string, then crawls your website to build a contextual glossary. No more manually tagging strings or maintaining lists of keys — Better i18n discovers and organizes everything for you.")}
                 </p>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FeatureItem
-                  title={ft("core.discovery.ast.title", "AST Key Detection")}
-                  description={ft("core.discovery.ast.description", "Parses your source code to find every i18n key automatically.")}
+                  title={t("core.discovery.ast.title", "AST Key Detection")}
+                  description={t("core.discovery.ast.description", "Parses your source code to find every i18n key automatically.")}
                 />
                 <FeatureItem
-                  title={ft("core.discovery.crawler.title", "Website Crawler")}
-                  description={ft("core.discovery.crawler.description", "Analyzes your live site to build terminology and context maps.")}
+                  title={t("core.discovery.crawler.title", "Website Crawler")}
+                  description={t("core.discovery.crawler.description", "Analyzes your live site to build terminology and context maps.")}
                 />
                 <FeatureItem
-                  title={ft("core.discovery.unused.title", "Unused Key Detection")}
-                  description={ft("core.discovery.unused.description", "Find and clean up translation keys no longer referenced in code.")}
+                  title={t("core.discovery.unused.title", "Unused Key Detection")}
+                  description={t("core.discovery.unused.description", "Find and clean up translation keys no longer referenced in code.")}
                 />
                 <FeatureItem
-                  title={ft("core.discovery.coverage.title", "Coverage Reports")}
-                  description={ft("core.discovery.coverage.description", "See exactly which strings are translated, missing, or outdated.")}
+                  title={t("core.discovery.coverage.title", "Coverage Reports")}
+                  description={t("core.discovery.coverage.description", "See exactly which strings are translated, missing, or outdated.")}
                 />
               </div>
             </div>
@@ -172,43 +168,43 @@ function FeaturesPage() {
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-8">
-            {ft("additionalFeatures.title", "And so much more")}
+            {t("additionalFeatures.title", "And so much more")}
           </h2>
           <ul role="list" className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             <li>
               <FeatureItem
-                title={ft("additionalFeatures.glossary.title", "Glossary Management")}
-                description={ft("additionalFeatures.glossary.description", "Maintain consistent terminology across all languages with a centralized glossary.")}
+                title={t("additionalFeatures.glossary.title", "Glossary Management")}
+                description={t("additionalFeatures.glossary.description", "Maintain consistent terminology across all languages with a centralized glossary.")}
               />
             </li>
             <li>
               <FeatureItem
-                title={ft("additionalFeatures.memory.title", "Translation Memory")}
-                description={ft("additionalFeatures.memory.description", "Reuse previous translations to save time and maintain consistency.")}
+                title={t("additionalFeatures.memory.title", "Translation Memory")}
+                description={t("additionalFeatures.memory.description", "Reuse previous translations to save time and maintain consistency.")}
               />
             </li>
             <li>
               <FeatureItem
-                title={ft("additionalFeatures.collaboration.title", "Team Collaboration")}
-                description={ft("additionalFeatures.collaboration.description", "Review, comment, and approve translations with your team in real-time.")}
+                title={t("additionalFeatures.collaboration.title", "Team Collaboration")}
+                description={t("additionalFeatures.collaboration.description", "Review, comment, and approve translations with your team in real-time.")}
               />
             </li>
             <li>
               <FeatureItem
-                title={ft("additionalFeatures.versionControl.title", "Version Control")}
-                description={ft("additionalFeatures.versionControl.description", "Full history of every translation change with rollback support.")}
+                title={t("additionalFeatures.versionControl.title", "Version Control")}
+                description={t("additionalFeatures.versionControl.description", "Full history of every translation change with rollback support.")}
               />
             </li>
             <li>
               <FeatureItem
-                title={ft("additionalFeatures.qa.title", "Quality Assurance")}
-                description={ft("additionalFeatures.qa.description", "Automated checks for placeholders, formatting, and translation completeness.")}
+                title={t("additionalFeatures.qa.title", "Quality Assurance")}
+                description={t("additionalFeatures.qa.description", "Automated checks for placeholders, formatting, and translation completeness.")}
               />
             </li>
             <li>
               <FeatureItem
-                title={ft("additionalFeatures.analytics.title", "Analytics & Insights")}
-                description={ft("additionalFeatures.analytics.description", "Track translation progress, coverage, and team performance across projects.")}
+                title={t("additionalFeatures.analytics.title", "Analytics & Insights")}
+                description={t("additionalFeatures.analytics.description", "Track translation progress, coverage, and team performance across projects.")}
               />
             </li>
           </ul>

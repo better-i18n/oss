@@ -2,8 +2,12 @@
  * Translation hook with defaultValue support.
  *
  * use-intl v4's `t()` treats the second argument as ICU interpolation values,
- * NOT as options. This wrapper adds proper `defaultValue` fallback support
- * so `t("key", { defaultValue: "..." })` works as expected.
+ * NOT as options. This wrapper adds proper `defaultValue` fallback support.
+ *
+ * Supports two calling conventions:
+ *   t("key", { defaultValue: "fallback" })   — object style (used by most pages)
+ *   t("key", "fallback")                      — shorthand style
+ *   t("key")                                  — no fallback (uses getMessageFallback)
  */
 import { useTranslations } from "@better-i18n/use-intl";
 
@@ -13,6 +17,7 @@ type TranslateOptions = {
 
 type TranslateFn = {
   (key: string, options: TranslateOptions): string;
+  (key: string, fallback: string): string;
   (key: string): string;
   has: (key: string) => boolean;
 };
@@ -20,9 +25,15 @@ type TranslateFn = {
 export function useT(namespace: string): TranslateFn {
   const t = useTranslations(namespace);
 
-  const translate = ((key: string, options?: TranslateOptions) => {
-    if (options?.defaultValue !== undefined) {
-      return t.has(key) ? t(key) : options.defaultValue;
+  const translate = ((
+    key: string,
+    optionsOrFallback?: TranslateOptions | string,
+  ) => {
+    if (typeof optionsOrFallback === "string") {
+      return t.has(key) ? t(key) : optionsOrFallback;
+    }
+    if (optionsOrFallback?.defaultValue !== undefined) {
+      return t.has(key) ? t(key) : optionsOrFallback.defaultValue;
     }
     return t(key);
   }) as TranslateFn;

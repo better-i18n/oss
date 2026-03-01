@@ -9,7 +9,7 @@ import {
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/$locale/i18n/react-intl")({
   loader: createPageLoader(),
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/$locale/i18n/react-intl")({
 });
 
 function ReactIntlPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const features = [

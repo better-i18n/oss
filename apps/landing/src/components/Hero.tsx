@@ -1,4 +1,4 @@
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { Link, useParams } from "@tanstack/react-router";
 import { Demo } from "../demo";
 import {
@@ -7,7 +7,7 @@ import {
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export default function Hero() {
-  const t = useTranslations("hero");
+  const t = useT("hero");
   const { locale } = useParams({ strict: false });
 
   return (
