@@ -45,6 +45,29 @@ export default function BlogContent({ html, className }: BlogContentProps) {
         return; // Return undefined to keep the element but with the modified attribs
       }
 
+      // Add alt fallback, lazy loading, and async decoding to images
+      if (domNode.name === "img") {
+        const attribs = { ...domNode.attribs };
+
+        // Add alt fallback if missing or empty
+        if (!attribs.alt || attribs.alt.trim() === "") {
+          attribs.alt = attribs.title || "Blog post image";
+        }
+
+        // Add loading="lazy" if not present
+        if (!attribs.loading) {
+          attribs.loading = "lazy";
+        }
+
+        // Add decoding="async" if not present
+        if (!attribs.decoding) {
+          attribs.decoding = "async";
+        }
+
+        domNode.attribs = attribs;
+        return; // Return undefined to keep the element with modified attribs
+      }
+
       // Find <pre> tags that contain <code> tags
       if (domNode.name === "pre") {
         const codeNode = domNode.children.find(
