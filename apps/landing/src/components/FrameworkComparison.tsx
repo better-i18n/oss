@@ -86,46 +86,6 @@ export function CodeExample({ title, description, code }: CodeExampleProps) {
   );
 }
 
-interface RelatedPageProps {
-  title: string;
-  pages: Array<{
-    name: string;
-    href: string;
-    description: string;
-  }>;
-  locale: string;
-}
-
-export function RelatedPages({ title, pages, locale }: RelatedPageProps) {
-  return (
-    <section className="py-16">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
-          {title}
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {pages.map((page) => (
-            <Link
-              key={page.href}
-              to={page.href}
-              params={{ locale }}
-              className="group flex items-center justify-between p-4 bg-mist-50 rounded-xl border border-mist-100 hover:border-mist-300 hover:bg-white transition-all"
-            >
-              <div>
-                <h3 className="text-sm font-medium text-mist-950">
-                  {page.name}
-                </h3>
-                <p className="text-xs text-mist-500 mt-1">{page.description}</p>
-              </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 interface FrameworkCTAProps {
   title: string;
   subtitle: string;
