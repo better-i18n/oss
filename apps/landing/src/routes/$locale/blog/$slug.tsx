@@ -109,7 +109,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     }) : null;
 
     const breadcrumbSchema = getBreadcrumbSchema([
-      { name: "Home", url: `${SITE_URL}/${locale}` },
+      { name: "Home", url: `${SITE_URL}/${locale}/` },
       { name: "Blog", url: `${SITE_URL}/${locale}/blog` },
       { name: post?.title || "Post", url: canonicalUrl },
     ]);
