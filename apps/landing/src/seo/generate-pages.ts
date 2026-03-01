@@ -41,6 +41,11 @@ export interface BlogPostMeta {
   readonly availableLanguages?: readonly string[];
 }
 
+export interface FeaturePageMeta {
+  readonly slug: string;
+  readonly availableLanguages?: readonly string[];
+}
+
 // ─── Helpers ────────────────────────────────────────────────────────
 
 /**

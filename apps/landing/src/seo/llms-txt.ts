@@ -37,10 +37,25 @@ const PAGE_TITLES: Readonly<Record<string, string>> = {
   pricing: "Pricing",
   integrations: "Integrations",
 
-  // Audience pages
+  // Audience pages (personas)
   "for-developers": "For Developers",
   "for-translators": "For Translators",
   "for-product-teams": "For Product Teams",
+  "for-marketers": "For Marketers",
+  "for-agencies": "For Agencies",
+  "for-enterprises": "For Enterprises",
+  "for-startups": "For Startups",
+  "for-engineering-leaders": "For Engineering Leaders",
+  "for-content-teams": "For Content Teams",
+  "for-ecommerce": "For E-Commerce",
+  "for-saas": "For SaaS",
+  "for-mobile-teams": "For Mobile Teams",
+  "for-designers": "For Designers",
+  "for-freelancers": "For Freelancers",
+  "for-open-source": "For Open Source",
+  "for-gaming": "For Gaming",
+  "for-education": "For Education",
+  "for-healthcare": "For Healthcare",
 
   // Company pages
   about: "About",
@@ -135,6 +150,31 @@ const STATIC_SECTIONS: readonly LlmsTxtSection[] = [
       "blog",
       "changelog",
       "careers",
+    ].map(toLink),
+  },
+  {
+    heading: "Solutions by Role",
+    links: [
+      "for-marketers",
+      "for-agencies",
+      "for-engineering-leaders",
+      "for-content-teams",
+      "for-designers",
+      "for-freelancers",
+    ].map(toLink),
+  },
+  {
+    heading: "Solutions by Industry",
+    links: [
+      "for-enterprises",
+      "for-startups",
+      "for-ecommerce",
+      "for-saas",
+      "for-mobile-teams",
+      "for-open-source",
+      "for-gaming",
+      "for-education",
+      "for-healthcare",
     ].map(toLink),
   },
   {

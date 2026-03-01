@@ -96,10 +96,12 @@ export function personaHead(loaderData?: {
     url: canonicalUrl,
   });
 
-  const breadcrumbSchema = getBreadcrumbSchema([
-    { name: "Home", url: `${SITE_URL}/${locale}` },
-    { name: page?.title || label, url: canonicalUrl },
-  ]);
+  const breadcrumbScripts = formatStructuredData(
+    getBreadcrumbSchema([
+      { name: "Home", url: `${SITE_URL}/${locale}` },
+      { name: page?.title || label, url: canonicalUrl },
+    ]),
+  );
 
   return {
     meta: [
@@ -113,12 +115,14 @@ export function personaHead(loaderData?: {
       { property: "og:type", content: "website" },
       { property: "og:url", content: canonicalUrl },
       { property: "og:site_name", content: "Better i18n" },
+      { property: "og:locale", content: locale },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@betteri18n" },
       { name: "twitter:title", content: page?.title || "" },
       { name: "twitter:description", content: excerpt },
       { name: "twitter:image", content: dynamicOgImage },
-      { name: "robots", content: "index, follow" },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+      { name: "author", content: "Better i18n" },
       ...(page?.targetKeywords
         ? [{ name: "keywords", content: page.targetKeywords }]
         : []),
@@ -127,9 +131,6 @@ export function personaHead(loaderData?: {
       ...getAlternateLinks(pathname),
       getCanonicalLink(locale, pathname),
     ],
-    scripts: formatStructuredData([
-      ...educationalScripts,
-      breadcrumbSchema,
-    ]),
+    scripts: [...educationalScripts, ...breadcrumbScripts],
   };
 }

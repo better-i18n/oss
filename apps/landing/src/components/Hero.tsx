@@ -49,6 +49,7 @@ export default function Hero() {
               <div className="relative w-full max-w-sm">
                 <input
                   type="email"
+                  aria-label={t("inputPlaceholder", { defaultValue: "Enter your work email" })}
                   placeholder={t("inputPlaceholder", { defaultValue: "Enter your work email" })}
                   className="w-full text-sm pl-5 pr-36 py-3 bg-white/10 border border-white/20 rounded-full text-white placeholder:text-white/50 focus:outline-none focus:border-white/40"
                 />

@@ -71,7 +71,7 @@ const footerLinks = [
         href: "https://docs.better-i18n.com/",
       },
       { key: "whatIs", label: "What is i18n?", href: "/$locale/what-is" },
-      { key: "status", label: "Status", href: "/$locale/status" },
+      { key: "status", label: "Status", href: "https://status.better-i18n.com" },
       { key: "changelog", label: "Changelog", href: "/$locale/changelog" },
     ],
   },
@@ -103,7 +103,7 @@ export default function Footer() {
   return (
     <footer aria-label="Site footer" className="py-16 bg-mist-950/[0.025]">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-7 mb-12">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-8 mb-12">
           {footerLinks.map((group) => (
             <div key={group.category}>
               <h3 className="text-sm font-medium text-mist-950 mb-4">
