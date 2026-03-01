@@ -4,6 +4,7 @@ import { getBlogPosts, type BlogPostListItem } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/blog/BlogCard";
+import { RelatedPages } from "@/components/RelatedPages";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
   IconArrowRight,
@@ -149,6 +150,7 @@ function BlogPage() {
           )}
         </div>
       </main>
+      <RelatedPages currentPage="blog" locale={locale} variant="educational" />
       <Footer />
     </div>
   );
