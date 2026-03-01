@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -33,31 +33,31 @@ export const Route = createFileRoute("/$locale/i18n/translation-solutions")({
 });
 
 const solutionTypes = [
-  { icon: IconRocket, titleKey: "types.saas.title", descKey: "types.saas.description" },
-  { icon: IconCodeBrackets, titleKey: "types.api.title", descKey: "types.api.description" },
-  { icon: IconApiConnection, titleKey: "types.plugins.title", descKey: "types.plugins.description" },
-  { icon: IconSparklesSoft, titleKey: "types.aiNative.title", descKey: "types.aiNative.description" },
+  { icon: IconRocket, titleKey: "types.saas.title", descKey: "types.saas.description", defaultTitle: "SaaS Translation Platforms", defaultDesc: "Cloud-based platforms with dashboards for managing translations, translation memory, and team collaboration across multiple languages." },
+  { icon: IconCodeBrackets, titleKey: "types.api.title", descKey: "types.api.description", defaultTitle: "Translation APIs", defaultDesc: "Programmatic interfaces that let developers integrate machine or AI translation directly into applications, pipelines, and custom workflows." },
+  { icon: IconApiConnection, titleKey: "types.plugins.title", descKey: "types.plugins.description", defaultTitle: "CMS & Framework Plugins", defaultDesc: "Drop-in integrations for WordPress, Shopify, Next.js, and other platforms that add translation capabilities without custom development." },
+  { icon: IconSparklesSoft, titleKey: "types.aiNative.title", descKey: "types.aiNative.description", defaultTitle: "AI-Native Translation Tools", defaultDesc: "Solutions built around large language models that provide context-aware, glossary-enforced translations with quality approaching professional human translators." },
 ];
 
 function TranslationSolutionsPage() {
-  const t = useTranslations("marketing.i18n.translationSolutions");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.translationSolutions");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const evaluationCriteria = [
-    "criteria.list.languageCoverage",
-    "criteria.list.integrationOptions",
-    "criteria.list.translationMemory",
-    "criteria.list.documentSupport",
-    "criteria.list.aiQuality",
-    "criteria.list.pricingModel",
+    { key: "criteria.list.languageCoverage", defaultValue: "Language coverage — number of supported languages and regional variants" },
+    { key: "criteria.list.integrationOptions", defaultValue: "Integration options — APIs, SDKs, CMS plugins, and CI/CD pipeline support" },
+    { key: "criteria.list.translationMemory", defaultValue: "Translation memory — reuse of previously approved translations to save cost and maintain consistency" },
+    { key: "criteria.list.documentSupport", defaultValue: "Document support — ability to translate PDFs, Word files, and spreadsheets with formatting preserved" },
+    { key: "criteria.list.aiQuality", defaultValue: "AI translation quality — contextual accuracy, glossary enforcement, and domain specialization" },
+    { key: "criteria.list.pricingModel", defaultValue: "Pricing model — per-word, per-seat, or volume-based pricing that aligns with your usage patterns" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Assess Requirements", defaultDesc: "Identify your target languages, content volume, integration needs, and whether you need real-time or batch translation workflows." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Evaluate Platforms", defaultDesc: "Compare shortlisted solutions against your criteria — run test translations, check API documentation, and assess glossary and memory features." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Pilot and Integrate", defaultDesc: "Run a pilot with one language pair and a representative content set, then integrate the solution into your development and publishing workflow." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Scale and Optimize", defaultDesc: "Expand to all target languages, refine glossaries, tune translation memory, and set up ongoing quality review processes." },
   ];
 
   const relatedPages = [
@@ -151,10 +151,10 @@ function TranslationSolutionsPage() {
                   <type.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(type.titleKey, { defaultValue: type.titleKey.split(".").pop() })}
+                  {t(type.titleKey, { defaultValue: type.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(type.descKey, { defaultValue: "" })}
+                  {t(type.descKey, { defaultValue: type.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -175,10 +175,10 @@ function TranslationSolutionsPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {evaluationCriteria.map((criterionKey) => (
-                  <li key={criterionKey} className="flex items-start gap-3">
+                {evaluationCriteria.map((criterion) => (
+                  <li key={criterion.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(criterionKey, { defaultValue: criterionKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(criterion.key, { defaultValue: criterion.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -246,10 +246,10 @@ function TranslationSolutionsPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

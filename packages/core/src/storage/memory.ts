@@ -1,4 +1,4 @@
-import type { TranslationStorage } from "../types";
+import type { TranslationStorage } from "../types.js";
 
 /**
  * Create an in-memory storage adapter backed by a Map.

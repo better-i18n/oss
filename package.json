@@ -68,6 +68,9 @@
       "bunx prettier --check --ignore-unknown"
     ]
   },
+  "overrides": {
+    "@tanstack/react-router": "1.149.3"
+  },
   "dependencies": {
     "@better-i18n/mcp-types": "^0.10.0"
   }

@@ -1,4 +1,4 @@
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconGlobe,
   IconCode,
@@ -8,7 +8,7 @@ import {
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 function TranslatorsCard() {
-  const t = useTranslations("segments.translators");
+  const t = useT("segments.translators");
 
   return (
     <div
@@ -102,7 +102,7 @@ function TranslatorsCard() {
 }
 
 function DevelopersCard() {
-  const t = useTranslations("segments.developers");
+  const t = useT("segments.developers");
 
   return (
     <div
@@ -192,7 +192,7 @@ function DevelopersCard() {
 }
 
 function ProductTeamsCard() {
-  const t = useTranslations("segments.productTeams");
+  const t = useT("segments.productTeams");
 
   return (
     <div
@@ -285,7 +285,7 @@ function ProductTeamsCard() {
 }
 
 export default function UserSegments() {
-  const t = useTranslations("userSegments");
+  const t = useT("userSegments");
 
   return (
     <section className="py-24 bg-white">

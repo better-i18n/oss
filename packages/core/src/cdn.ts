@@ -1,7 +1,7 @@
-import { TtlCache, buildCacheKey } from "./cache";
-import { getProjectBaseUrl, normalizeConfig } from "./config";
-import { createLogger } from "./logger";
-import { extractLanguages } from "./manifest";
+import { TtlCache, buildCacheKey } from "./cache.js";
+import { getProjectBaseUrl, normalizeConfig } from "./config.js";
+import { createLogger } from "./logger.js";
+import { extractLanguages } from "./manifest.js";
 import type {
   I18nCore,
   I18nCoreConfig,
@@ -10,8 +10,8 @@ import type {
   Messages,
   NormalizedConfig,
   TranslationStorage,
-} from "./types";
-import { normalizeLocale } from "./utils/locale";
+} from "./types.js";
+import { normalizeLocale } from "./utils/locale.js";
 
 const STORAGE_PREFIX = "@better-i18n";
 

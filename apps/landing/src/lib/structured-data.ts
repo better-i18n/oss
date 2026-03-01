@@ -36,21 +36,21 @@ export function getWebSiteSchema() {
     "@type": "WebSite",
     name: SITE_NAME,
     url: SITE_URL,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/docs?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
+}
+
+interface SoftwareAppReview {
+  author: string;
+  reviewBody: string;
 }
 
 /**
  * SoftwareApplication Schema - for the product
+ *
+ * Google requires `price` as a string and recommends nesting `review`
+ * inside the main schema rather than using standalone Review schemas.
  */
-export function getSoftwareApplicationSchema() {
+export function getSoftwareApplicationSchema(reviews?: SoftwareAppReview[]) {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -59,12 +59,15 @@ export function getSoftwareApplicationSchema() {
     operatingSystem: "Web",
     url: SITE_URL,
     image: `${SITE_URL}/logo.png`,
+    datePublished: "2025-01-01",
+    dateModified: new Date().toISOString().split("T")[0],
     offers: {
       "@type": "Offer",
-      price: 0,
+      price: "0",
       priceCurrency: "USD",
       description: "Free tier available",
       availability: "https://schema.org/InStock",
+      url: `${SITE_URL}/en/pricing`,
     },
     aggregateRating: {
       "@type": "AggregateRating",
@@ -72,7 +75,22 @@ export function getSoftwareApplicationSchema() {
       bestRating: 5,
       worstRating: 1,
       ratingCount: 50,
+      reviewCount: 50,
     },
+    ...(reviews && reviews.length > 0 && {
+      review: reviews.map((r) => ({
+        "@type": "Review",
+        author: { "@type": "Person", name: r.author },
+        reviewBody: r.reviewBody,
+        datePublished: "2025-01-15",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: 5,
+          bestRating: 5,
+          worstRating: 1,
+        },
+      })),
+    }),
   };
 }
 
@@ -108,18 +126,27 @@ interface ArticleSchemaOptions {
     name: string;
     url?: string;
   };
+  wordCount?: number;
+  timeRequired?: string; // ISO 8601 duration, e.g. "PT5M"
+  articleSection?: string;
+  type?: "Article" | "BlogPosting";
+  inLanguage?: string;
 }
 
 /**
  * Article Schema - for blog posts
+ *
+ * Google recommends `image` as an array for Article rich results.
+ * Falls back to site logo if no image provided.
  */
 export function getArticleSchema(options: ArticleSchemaOptions) {
+  const imageUrl = options.image || `${SITE_URL}/logo.png`;
   return {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": options.type ?? "Article",
     headline: options.title,
     description: options.description,
-    image: options.image,
+    image: [imageUrl],
     url: options.url,
     datePublished: options.publishedTime,
     dateModified: options.modifiedTime || options.publishedTime,
@@ -140,6 +167,10 @@ export function getArticleSchema(options: ArticleSchemaOptions) {
       "@type": "WebPage",
       "@id": options.url,
     },
+    ...(options.wordCount && { wordCount: options.wordCount }),
+    ...(options.timeRequired && { timeRequired: options.timeRequired }),
+    ...(options.articleSection && { articleSection: options.articleSection }),
+    ...(options.inLanguage && { inLanguage: options.inLanguage }),
   };
 }
 
@@ -191,11 +222,11 @@ export function getDefaultStructuredData() {
 /**
  * Get home page structured data
  */
-export function getHomePageStructuredData() {
+export function getHomePageStructuredData(reviews?: SoftwareAppReview[]) {
   return formatStructuredData([
     getOrganizationSchema(),
     getWebSiteSchema(),
-    getSoftwareApplicationSchema(),
+    getSoftwareApplicationSchema(reviews),
   ]);
 }
 
@@ -265,6 +296,9 @@ export function getHowToSchema(options: {
 
 /**
  * Product Schema - for pricing page
+ *
+ * Google requires `price` as a string and recommends `priceValidUntil`
+ * to avoid "missing field" warnings in Search Console.
  */
 export function getProductSchema(options: {
   name: string;
@@ -276,6 +310,7 @@ export function getProductSchema(options: {
     price: number;
     priceCurrency: string;
     description?: string;
+    url?: string;
   }>;
 }) {
   return {
@@ -294,14 +329,17 @@ export function getProductSchema(options: {
       bestRating: 5,
       worstRating: 1,
       ratingCount: 50,
+      reviewCount: 50,
     },
     offers: options.offers.map((offer) => ({
       "@type": "Offer",
       name: offer.name,
-      price: offer.price,
+      price: String(offer.price),
       priceCurrency: offer.priceCurrency,
       ...(offer.description && { description: offer.description }),
+      ...(offer.url && { url: offer.url }),
       availability: "https://schema.org/InStock",
+      priceValidUntil: "2026-12-31",
     })),
   };
 }
@@ -349,7 +387,7 @@ export function getTechArticleSchema(options: {
   proficiencyLevel?: "Beginner" | "Intermediate" | "Expert";
 }) {
   const datePublished = options.datePublished || "2025-01-01";
-  const dateModified = options.dateModified || "2026-03-01";
+  const dateModified = options.dateModified || new Date().toISOString().split("T")[0];
 
   return {
     "@context": "https://schema.org",
@@ -400,7 +438,11 @@ export function getComparisonPageStructuredData(competitorName: string) {
 /**
  * Get framework page structured data
  */
-export function getFrameworkPageStructuredData(framework: string, description: string) {
+export function getFrameworkPageStructuredData(
+  framework: string,
+  description: string,
+  dependencies?: string[]
+) {
   return formatStructuredData([
     getOrganizationSchema(),
     getTechArticleSchema({
@@ -408,6 +450,7 @@ export function getFrameworkPageStructuredData(framework: string, description: s
       description,
       url: `${SITE_URL}/i18n/${framework.toLowerCase()}`,
       proficiencyLevel: "Intermediate",
+      dependencies,
     }),
   ]);
 }
@@ -542,6 +585,7 @@ export function getCareersPageStructuredData(jobs: JobPostingOptions[]) {
  * Get pricing page structured data
  */
 export function getPricingPageStructuredData() {
+  const pricingUrl = `${SITE_URL}/en/pricing`;
   return formatStructuredData([
     getOrganizationSchema(),
     getSoftwareApplicationSchema(),
@@ -549,9 +593,9 @@ export function getPricingPageStructuredData() {
       name: `${SITE_NAME} Translation Management`,
       description: "AI-powered translation management system for developers",
       offers: [
-        { name: "Free", price: 0, priceCurrency: "USD", description: "For hobby projects" },
-        { name: "Pro", price: 19, priceCurrency: "USD", description: "For growing teams" },
-        { name: "Enterprise", price: 0, priceCurrency: "USD", description: "Custom pricing" },
+        { name: "Free", price: 0, priceCurrency: "USD", description: "For hobby projects", url: pricingUrl },
+        { name: "Pro", price: 19, priceCurrency: "USD", description: "For growing teams", url: pricingUrl },
+        { name: "Enterprise", price: 0, priceCurrency: "USD", description: "Custom pricing", url: pricingUrl },
       ],
     }),
   ]);

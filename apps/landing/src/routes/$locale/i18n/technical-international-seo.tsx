@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -32,33 +32,33 @@ export const Route = createFileRoute("/$locale/i18n/technical-international-seo"
 });
 
 const technicalPillars = [
-  { icon: IconMagnifyingGlass, titleKey: "pillars.keywordResearch.title", descKey: "pillars.keywordResearch.description" },
-  { icon: IconRocket, titleKey: "pillars.onPageSeo.title", descKey: "pillars.onPageSeo.description" },
-  { icon: IconChart1, titleKey: "pillars.structuredData.title", descKey: "pillars.structuredData.description" },
-  { icon: IconZap, titleKey: "pillars.coreWebVitals.title", descKey: "pillars.coreWebVitals.description" },
+  { icon: IconMagnifyingGlass, titleKey: "pillars.keywordResearch.title", descKey: "pillars.keywordResearch.description", defaultTitle: "Keyword Research", defaultDesc: "Discover high-intent keywords in every target locale using native-speaker seed lists, local search volume data, and competitive gap analysis." },
+  { icon: IconRocket, titleKey: "pillars.onPageSeo.title", descKey: "pillars.onPageSeo.description", defaultTitle: "On-Page SEO", defaultDesc: "Apply localized titles, meta descriptions, heading structures, and internal linking to each language version for maximum search relevance." },
+  { icon: IconChart1, titleKey: "pillars.structuredData.title", descKey: "pillars.structuredData.description", defaultTitle: "Structured Data", defaultDesc: "Implement schema.org markup in each locale with localized addresses, currency codes, and language-specific content annotations." },
+  { icon: IconZap, titleKey: "pillars.coreWebVitals.title", descKey: "pillars.coreWebVitals.description", defaultTitle: "Core Web Vitals", defaultDesc: "Optimize LCP, FID, and CLS for international visitors by serving translation bundles from edge nodes closest to each market." },
 ];
 
 function TechnicalInternationalSeoPage() {
-  const t = useTranslations("marketing.i18n.technicalInternationalSeo");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.technicalInternationalSeo");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const onPageBestPractices = [
-    "onPage.localizedTitles",
-    "onPage.metaDescriptions",
-    "onPage.headingStructure",
-    "onPage.imageAltText",
-    "onPage.internalLinking",
-    "onPage.urlKeywords",
-    "onPage.contentDepth",
-    "onPage.localKeywords",
+    { key: "onPage.localizedTitles", defaultValue: "Localized page titles with target-market keywords" },
+    { key: "onPage.metaDescriptions", defaultValue: "Unique meta descriptions written in the target language" },
+    { key: "onPage.headingStructure", defaultValue: "Heading hierarchy that mirrors local search intent" },
+    { key: "onPage.imageAltText", defaultValue: "Image alt text translated and culturally adapted" },
+    { key: "onPage.internalLinking", defaultValue: "Internal links pointing to same-locale pages" },
+    { key: "onPage.urlKeywords", defaultValue: "URL slugs containing transliterated or translated keywords" },
+    { key: "onPage.contentDepth", defaultValue: "Content depth matching local competition standards" },
+    { key: "onPage.localKeywords", defaultValue: "Local SEO keywords integrated naturally into body copy" },
   ];
 
   const keywordResearchSteps = [
-    { number: "1", titleKey: "keywordProcess.step1.title", descKey: "keywordProcess.step1.description" },
-    { number: "2", titleKey: "keywordProcess.step2.title", descKey: "keywordProcess.step2.description" },
-    { number: "3", titleKey: "keywordProcess.step3.title", descKey: "keywordProcess.step3.description" },
-    { number: "4", titleKey: "keywordProcess.step4.title", descKey: "keywordProcess.step4.description" },
+    { number: "1", titleKey: "keywordProcess.step1.title", descKey: "keywordProcess.step1.description", defaultTitle: "Seed Keywords", defaultDesc: "Collect seed keywords from native speakers in each target market rather than machine-translating your English keyword list." },
+    { number: "2", titleKey: "keywordProcess.step2.title", descKey: "keywordProcess.step2.description", defaultTitle: "Local Volume Analysis", defaultDesc: "Use country-filtered keyword tools to find actual local search volumes instead of relying on global aggregate data." },
+    { number: "3", titleKey: "keywordProcess.step3.title", descKey: "keywordProcess.step3.description", defaultTitle: "Competitive Gap Mapping", defaultDesc: "Analyze top-ranking local competitors to identify keyword opportunities they cover that your content does not." },
+    { number: "4", titleKey: "keywordProcess.step4.title", descKey: "keywordProcess.step4.description", defaultTitle: "Content Prioritization", defaultDesc: "Rank keyword opportunities by traffic potential and business value, then map them to existing or planned content pages." },
   ];
 
   const relatedPages = [
@@ -136,10 +136,10 @@ function TechnicalInternationalSeoPage() {
                   <pillar.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(pillar.titleKey, { defaultValue: pillar.titleKey.split(".").pop() })}
+                  {t(pillar.titleKey, { defaultValue: pillar.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(pillar.descKey, { defaultValue: "" })}
+                  {t(pillar.descKey, { defaultValue: pillar.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -158,10 +158,10 @@ function TechnicalInternationalSeoPage() {
                 {t("onPage.subtitle", { defaultValue: "These on-page SEO best practices apply to every localized page. They ensure that each language version is fully optimized for its target market and correctly signals its relevance to search engines." })}
               </p>
               <ul className="space-y-4">
-                {onPageBestPractices.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {onPageBestPractices.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -211,10 +211,10 @@ function TechnicalInternationalSeoPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

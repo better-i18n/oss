@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconGlobe,
   IconCheckmark1,
@@ -33,37 +33,37 @@ export const Route = createFileRoute("/$locale/i18n/local-seo-international")({
 });
 
 const challenges = [
-  { icon: IconMagnifyingGlass, titleKey: "challenges.localKeywords.title", descKey: "challenges.localKeywords.description" },
-  { icon: IconApiConnection, titleKey: "challenges.citations.title", descKey: "challenges.citations.description" },
-  { icon: IconGroup1, titleKey: "challenges.reviews.title", descKey: "challenges.reviews.description" },
-  { icon: IconRocket, titleKey: "challenges.geotargeting.title", descKey: "challenges.geotargeting.description" },
+  { icon: IconMagnifyingGlass, titleKey: "challenges.localKeywords.title", descKey: "challenges.localKeywords.description", defaultTitle: "Local Keyword Variations", defaultDesc: "Search terms for the same service differ dramatically between countries. Direct translation of keywords misses locally used phrases and colloquial search patterns." },
+  { icon: IconApiConnection, titleKey: "challenges.citations.title", descKey: "challenges.citations.description", defaultTitle: "Citation Ecosystem Differences", defaultDesc: "Every country has its own dominant business directories and citation sources. Building authority requires market-specific citation strategies, not a one-size-fits-all approach." },
+  { icon: IconGroup1, titleKey: "challenges.reviews.title", descKey: "challenges.reviews.description", defaultTitle: "Cross-Market Review Management", defaultDesc: "Review platforms and consumer review behavior vary by country. Managing reputation across Google, Yelp, Trustpilot, and local alternatives requires dedicated local-language workflows." },
+  { icon: IconRocket, titleKey: "challenges.geotargeting.title", descKey: "challenges.geotargeting.description", defaultTitle: "Geo-Targeting Configuration", defaultDesc: "Correctly configuring geo-targeting signals — Search Console settings, hreflang tags, and server location — prevents search engines from showing the wrong locale version to local users." },
 ];
 
 function LocalSeoInternationalPage() {
-  const t = useTranslations("marketing.i18n.localSeoInternational");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.localSeoInternational");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.localVisibility",
-    "benefits.list.qualifiedTraffic",
-    "benefits.list.brandTrust",
-    "benefits.list.competitiveEdge",
-    "benefits.list.reviewAuthority",
-    "benefits.list.mapsPresence",
+    { key: "benefits.list.localVisibility", defaultValue: "Appear in local search results and map packs in every country you operate in" },
+    { key: "benefits.list.qualifiedTraffic", defaultValue: "Attract high-intent local traffic from users searching for nearby services in their language" },
+    { key: "benefits.list.brandTrust", defaultValue: "Build brand trust through localized profiles, native-language reviews, and local directory presence" },
+    { key: "benefits.list.competitiveEdge", defaultValue: "Gain a competitive edge over rivals who rely on a single-market local SEO approach" },
+    { key: "benefits.list.reviewAuthority", defaultValue: "Establish review authority on the platforms that matter most in each target market" },
+    { key: "benefits.list.mapsPresence", defaultValue: "Secure prominent Google Maps and local pack placement in every country you serve" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Market Assessment", defaultDesc: "Evaluate each target country's local search landscape, identify dominant directories, and map local keyword demand for your services." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Profile & Citation Setup", defaultDesc: "Create and optimize Google Business Profiles per location and build citations in country-specific directories with consistent NAP data." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Local Content Deployment", defaultDesc: "Publish localized landing pages, blog content, and service descriptions targeting market-specific local search queries." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Review & Reputation Management", defaultDesc: "Implement review generation workflows and respond to reviews in the local language across all relevant platforms per market." },
   ];
 
   const strategies = [
-    { titleKey: "strategies.gbp.title", descKey: "strategies.gbp.description" },
-    { titleKey: "strategies.localCitations.title", descKey: "strategies.localCitations.description" },
-    { titleKey: "strategies.localContent.title", descKey: "strategies.localContent.description" },
+    { titleKey: "strategies.gbp.title", descKey: "strategies.gbp.description", defaultTitle: "Google Business Profile Optimization", defaultDesc: "Create separate, fully localized Google Business Profiles for each country or city. Use local-language descriptions, locally relevant categories, and country-specific attributes to maximize local pack visibility." },
+    { titleKey: "strategies.localCitations.title", descKey: "strategies.localCitations.description", defaultTitle: "Country-Specific Citation Building", defaultDesc: "Identify and submit to the top business directories in each target market. Ensure NAP consistency, use local phone number formats, and claim listings on platforms that dominate local search in each country." },
+    { titleKey: "strategies.localContent.title", descKey: "strategies.localContent.description", defaultTitle: "Localized Content Strategy", defaultDesc: "Create location-specific landing pages and blog content that addresses local search queries, references local landmarks or events, and demonstrates genuine market presence to both users and search engines." },
   ];
 
   const relatedPages = [
@@ -141,10 +141,10 @@ function LocalSeoInternationalPage() {
                   <challenge.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(challenge.titleKey, { defaultValue: challenge.titleKey.split(".").pop() })}
+                  {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(challenge.descKey, { defaultValue: "" })}
+                  {t(challenge.descKey, { defaultValue: challenge.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -168,11 +168,11 @@ function LocalSeoInternationalPage() {
                 <div className="flex items-center gap-3 mb-3">
                   <IconAiTranslate className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
-                    {t(strategy.titleKey, { defaultValue: strategy.titleKey.split(".").pop() })}
+                    {t(strategy.titleKey, { defaultValue: strategy.defaultTitle })}
                   </h3>
                 </div>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(strategy.descKey, { defaultValue: "" })}
+                  {t(strategy.descKey, { defaultValue: strategy.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -193,10 +193,10 @@ function LocalSeoInternationalPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -222,10 +222,10 @@ function LocalSeoInternationalPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

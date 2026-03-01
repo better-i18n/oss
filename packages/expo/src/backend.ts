@@ -7,8 +7,8 @@ import type {
   ReadCallback,
   Services,
 } from "i18next";
-import { readCache, resolveStorage, writeCache } from "./storage";
-import type { BetterI18nBackendOptions, TranslationStorage } from "./types";
+import { readCache, resolveStorage, writeCache } from "./storage.js";
+import type { BetterI18nBackendOptions, TranslationStorage } from "./types.js";
 
 const DEFAULT_CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 

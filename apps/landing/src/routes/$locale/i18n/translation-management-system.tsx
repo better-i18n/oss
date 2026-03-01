@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -35,33 +35,33 @@ export const Route = createFileRoute(
 });
 
 const coreFeatures = [
-  { icon: IconRobot, titleKey: "features.ai.title", descKey: "features.ai.description" },
-  { icon: IconGithub, titleKey: "features.git.title", descKey: "features.git.description" },
-  { icon: IconGlobe, titleKey: "features.cdn.title", descKey: "features.cdn.description" },
-  { icon: IconZap, titleKey: "features.automation.title", descKey: "features.automation.description" },
-  { icon: IconCodeBrackets, titleKey: "features.sdk.title", descKey: "features.sdk.description" },
-  { icon: IconGroup1, titleKey: "features.collaboration.title", descKey: "features.collaboration.description" },
+  { icon: IconRobot, titleKey: "features.ai.title", descKey: "features.ai.description", defaultTitle: "AI-Powered Translation", defaultDesc: "Leverage AI translation engines for instant first drafts that human translators can review and refine." },
+  { icon: IconGithub, titleKey: "features.git.title", descKey: "features.git.description", defaultTitle: "Git Integration", defaultDesc: "Sync translation files directly with your Git repository so translations stay in lockstep with code changes." },
+  { icon: IconGlobe, titleKey: "features.cdn.title", descKey: "features.cdn.description", defaultTitle: "CDN Delivery", defaultDesc: "Serve translated content from a global CDN for fast load times in every locale without redeploying your app." },
+  { icon: IconZap, titleKey: "features.automation.title", descKey: "features.automation.description", defaultTitle: "Workflow Automation", defaultDesc: "Automate assignment, review, and publishing workflows to eliminate manual steps in the localization process." },
+  { icon: IconCodeBrackets, titleKey: "features.sdk.title", descKey: "features.sdk.description", defaultTitle: "Developer SDKs", defaultDesc: "Use client and server SDKs to load translations at runtime or build time with framework-native integrations." },
+  { icon: IconGroup1, titleKey: "features.collaboration.title", descKey: "features.collaboration.description", defaultTitle: "Real-Time Collaboration", defaultDesc: "Enable translators, reviewers, and project managers to collaborate simultaneously on translation projects." },
 ];
 
 function TranslationManagementSystemPage() {
-  const t = useTranslations("marketing.i18n.translationManagementSystem");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.translationManagementSystem");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.efficiency",
-    "benefits.list.consistency",
-    "benefits.list.collaboration",
-    "benefits.list.costReduction",
-    "benefits.list.scalability",
-    "benefits.list.quality",
+    { key: "benefits.list.efficiency", defaultValue: "Reduce translation turnaround time by up to 60% with automated workflows" },
+    { key: "benefits.list.consistency", defaultValue: "Maintain brand voice consistency across all languages with shared glossaries" },
+    { key: "benefits.list.collaboration", defaultValue: "Enable seamless collaboration between developers, translators, and reviewers" },
+    { key: "benefits.list.costReduction", defaultValue: "Lower per-word translation costs with translation memory and AI assistance" },
+    { key: "benefits.list.scalability", defaultValue: "Scale to dozens of languages without adding proportional headcount" },
+    { key: "benefits.list.quality", defaultValue: "Improve translation quality with built-in QA checks and review workflows" },
   ];
 
   const useCases = [
-    { titleKey: "useCases.saas.title", descKey: "useCases.saas.description" },
-    { titleKey: "useCases.ecommerce.title", descKey: "useCases.ecommerce.description" },
-    { titleKey: "useCases.enterprise.title", descKey: "useCases.enterprise.description" },
-    { titleKey: "useCases.mobile.title", descKey: "useCases.mobile.description" },
+    { titleKey: "useCases.saas.title", descKey: "useCases.saas.description", defaultTitle: "SaaS Applications", defaultDesc: "Continuously localize product interfaces, emails, and documentation as features ship every sprint." },
+    { titleKey: "useCases.ecommerce.title", descKey: "useCases.ecommerce.description", defaultTitle: "E-commerce Platforms", defaultDesc: "Localize product catalogs, checkout flows, and marketing content for international storefronts." },
+    { titleKey: "useCases.enterprise.title", descKey: "useCases.enterprise.description", defaultTitle: "Enterprise Software", defaultDesc: "Manage large-scale localization across multiple products, business units, and compliance requirements." },
+    { titleKey: "useCases.mobile.title", descKey: "useCases.mobile.description", defaultTitle: "Mobile Applications", defaultDesc: "Deliver over-the-air translation updates to iOS and Android apps without requiring app store releases." },
   ];
 
   const relatedPages = [
@@ -138,10 +138,10 @@ function TranslationManagementSystemPage() {
                   <feature.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(feature.titleKey, { defaultValue: feature.titleKey.split(".").pop() })}
+                  {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(feature.descKey, { defaultValue: "" })}
+                  {t(feature.descKey, { defaultValue: feature.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -163,10 +163,10 @@ function TranslationManagementSystemPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -190,10 +190,10 @@ function TranslationManagementSystemPage() {
             {useCases.map((useCase) => (
               <div key={useCase.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(useCase.titleKey, { defaultValue: useCase.titleKey.split(".").pop() })}
+                  {t(useCase.titleKey, { defaultValue: useCase.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(useCase.descKey, { defaultValue: "" })}
+                  {t(useCase.descKey, { defaultValue: useCase.defaultDesc })}
                 </p>
               </div>
             ))}

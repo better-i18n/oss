@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "@better-i18n/use-intl";
 
 // Consistent color palette
 const colors = {
@@ -87,6 +88,8 @@ function getProgressColor(progress: number): string {
 }
 
 export default function ProductDashboardPreview() {
+  const t = useTranslations("product-teams");
+
   return (
     <section className="px-2 py-16 lg:py-24">
       <div className="w-full mx-auto max-w-[1400px]">
@@ -94,11 +97,10 @@ export default function ProductDashboardPreview() {
           {/* Section Header */}
           <div className="max-w-2xl mb-12">
             <h2 className="text-2xl/[1.2] font-semibold tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.2]">
-              Your Localization Command Center
+              {t("dashboard.title")}
             </h2>
             <p className="mt-4 text-base text-mist-600">
-              Real-time visibility into every language, every feature. Know
-              exactly what's ready to ship.
+              {t("dashboard.subtitle")}
             </p>
           </div>
 

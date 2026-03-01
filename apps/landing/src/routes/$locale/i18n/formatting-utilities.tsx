@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -32,45 +32,45 @@ export const Route = createFileRoute("/$locale/i18n/formatting-utilities")({
 });
 
 const coreHooks = [
-  { icon: IconSettingsGear1, titleKey: "hooks.useFormatter.title", descKey: "hooks.useFormatter.description" },
-  { icon: IconZap, titleKey: "hooks.useNow.title", descKey: "hooks.useNow.description" },
-  { icon: IconGlobe, titleKey: "hooks.useLanguages.title", descKey: "hooks.useLanguages.description" },
-  { icon: IconGlobe, titleKey: "hooks.useLocale.title", descKey: "hooks.useLocale.description" },
-  { icon: IconCodeBrackets, titleKey: "hooks.useTranslations.title", descKey: "hooks.useTranslations.description" },
+  { icon: IconSettingsGear1, titleKey: "hooks.useFormatter.title", descKey: "hooks.useFormatter.description", defaultTitle: "useFormatter", defaultDesc: "Format numbers, currencies, dates, times, and lists using the active locale. Wraps the Intl API with automatic locale resolution and SSR safety." },
+  { icon: IconZap, titleKey: "hooks.useNow.title", descKey: "hooks.useNow.description", defaultTitle: "useNow", defaultDesc: "A real-time clock hook that returns the current timestamp and updates at a configurable interval -- perfect for relative time displays like \"5 minutes ago\"." },
+  { icon: IconGlobe, titleKey: "hooks.useLanguages.title", descKey: "hooks.useLanguages.description", defaultTitle: "useLanguages", defaultDesc: "Returns all configured languages with their display names, enabling you to build language switcher UIs without hardcoding locale metadata." },
+  { icon: IconGlobe, titleKey: "hooks.useLocale.title", descKey: "hooks.useLocale.description", defaultTitle: "useLocale", defaultDesc: "Get and set the active locale, detect writing direction (LTR/RTL), and access the full locale object for custom formatting logic." },
+  { icon: IconCodeBrackets, titleKey: "hooks.useTranslations.title", descKey: "hooks.useTranslations.description", defaultTitle: "useTranslations", defaultDesc: "Access translated strings with full TypeScript autocomplete. Keys are validated at compile time so missing translations surface as build errors, not runtime bugs." },
 ];
 
 function FormattingUtilitiesPage() {
-  const t = useTranslations("marketing.i18n.formattingUtilities");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.formattingUtilities");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const numberFormattingItems = [
-    "numberFormatting.list.currency",
-    "numberFormatting.list.percentage",
-    "numberFormatting.list.compact",
-    "numberFormatting.list.customSeparators",
+    { key: "numberFormatting.list.currency", defaultValue: "Currency formatting with locale-specific symbols, positions, and decimal rules" },
+    { key: "numberFormatting.list.percentage", defaultValue: "Percentage formatting with correct decimal precision per locale" },
+    { key: "numberFormatting.list.compact", defaultValue: "Compact notation for large numbers (e.g., 1.2K, 3.4M) adapted to each language" },
+    { key: "numberFormatting.list.customSeparators", defaultValue: "Locale-aware thousand and decimal separators (e.g., 1,000.00 vs 1.000,00)" },
   ];
 
   const dateTimeItems = [
-    "dateTime.list.dateStyles",
-    "dateTime.list.timeFormatting",
-    "dateTime.list.relativeTime",
-    "dateTime.list.useNowHook",
-    "dateTime.list.timezone",
+    { key: "dateTime.list.dateStyles", defaultValue: "Full, long, medium, and short date styles that adapt to each locale's conventions" },
+    { key: "dateTime.list.timeFormatting", defaultValue: "12-hour and 24-hour time formatting based on the user's locale preferences" },
+    { key: "dateTime.list.relativeTime", defaultValue: "Relative time formatting (e.g., \"3 hours ago\", \"in 2 days\") with automatic unit selection" },
+    { key: "dateTime.list.useNowHook", defaultValue: "Real-time clock hook that updates at a configurable interval for live timestamps" },
+    { key: "dateTime.list.timezone", defaultValue: "Timezone-aware formatting that displays times in the user's local timezone" },
   ];
 
   const listFormattingItems = [
-    "listFormatting.list.conjunction",
-    "listFormatting.list.disjunction",
-    "listFormatting.list.unit",
+    { key: "listFormatting.list.conjunction", defaultValue: "Conjunction lists that join items with \"and\" in the correct locale grammar" },
+    { key: "listFormatting.list.disjunction", defaultValue: "Disjunction lists that join items with \"or\" using locale-appropriate connectors" },
+    { key: "listFormatting.list.unit", defaultValue: "Unit lists for measurements and quantities with locale-specific separators" },
   ];
 
   const componentItems = [
-    "components.list.languageSwitcher",
-    "components.list.zeroFlash",
-    "components.list.localeCookie",
-    "components.list.acceptLanguage",
-    "components.list.fallbackLocale",
+    { key: "components.list.languageSwitcher", defaultValue: "Drop-in language switcher component with customizable styling and locale display names" },
+    { key: "components.list.zeroFlash", defaultValue: "Zero-flash locale loading that prevents flickering when switching languages on the client" },
+    { key: "components.list.localeCookie", defaultValue: "Locale cookie management for persisting the user's language preference across sessions" },
+    { key: "components.list.acceptLanguage", defaultValue: "Accept-Language header detection for automatic server-side locale resolution" },
+    { key: "components.list.fallbackLocale", defaultValue: "Graceful fallback locale chain from regional variant to base language to default" },
   ];
 
   const relatedPages = [
@@ -116,10 +116,10 @@ function FormattingUtilitiesPage() {
                   <hook.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(hook.titleKey, { defaultValue: hook.titleKey.split(".").pop() })}
+                  {t(hook.titleKey, { defaultValue: hook.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(hook.descKey, { defaultValue: "" })}
+                  {t(hook.descKey, { defaultValue: hook.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -138,10 +138,10 @@ function FormattingUtilitiesPage() {
                 {t("numberFormatting.subtitle", { defaultValue: "Format currency, percentages, and large numbers with locale-specific separators, symbols, and notation — all through a single useFormatter hook." })}
               </p>
               <ul className="space-y-4">
-                {numberFormattingItems.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {numberFormattingItems.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -154,10 +154,10 @@ function FormattingUtilitiesPage() {
                 {t("dateTime.subtitle", { defaultValue: "Localized date styles, relative time formatting, and a real-time clock hook handle every temporal display your app needs." })}
               </p>
               <ul className="space-y-4">
-                {dateTimeItems.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {dateTimeItems.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -177,10 +177,10 @@ function FormattingUtilitiesPage() {
                 {t("listFormatting.subtitle", { defaultValue: "Render grammatically correct lists in every locale with conjunction, disjunction, and unit formatting via the Intl.ListFormat API." })}
               </p>
               <ul className="space-y-4">
-                {listFormattingItems.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {listFormattingItems.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -219,10 +219,10 @@ function FormattingUtilitiesPage() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {componentItems.map((itemKey) => (
-              <div key={itemKey} className="flex items-start gap-3 p-6 rounded-xl bg-white border border-mist-200">
+            {componentItems.map((item) => (
+              <div key={item.key} className="flex items-start gap-3 p-6 rounded-xl bg-white border border-mist-200">
                 <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
               </div>
             ))}
           </div>

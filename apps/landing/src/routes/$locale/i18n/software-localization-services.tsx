@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -32,30 +32,30 @@ export const Route = createFileRoute(
 });
 
 function SoftwareLocalizationServicesPage() {
-  const t = useTranslations("marketing.i18n.softwareLocalizationServices");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.softwareLocalizationServices");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const serviceTypes = [
-    { titleKey: "types.platform.title", descKey: "types.platform.description", icon: IconRobot },
-    { titleKey: "types.agency.title", descKey: "types.agency.description", icon: IconGroup1 },
-    { titleKey: "types.hybrid.title", descKey: "types.hybrid.description", icon: IconGlobe },
+    { titleKey: "types.platform.title", descKey: "types.platform.description", icon: IconRobot, defaultTitle: "Platform-Based Services", defaultDesc: "Self-service localization platforms with AI translation, developer SDKs, and automated workflows. Best for engineering-driven teams that want full control over their localization pipeline." },
+    { titleKey: "types.agency.title", descKey: "types.agency.description", icon: IconGroup1, defaultTitle: "Agency Services", defaultDesc: "Traditional localization agencies with professional human translators and project managers. Ideal for high-stakes content like legal, medical, or marketing copy that requires native-level fluency." },
+    { titleKey: "types.hybrid.title", descKey: "types.hybrid.description", icon: IconGlobe, defaultTitle: "Hybrid Approach", defaultDesc: "Combine platform automation for UI strings and developer content with agency translators for marketing and legal materials. Balances speed with quality for teams managing multiple content types." },
   ];
 
   const platformBenefits = [
-    "platformBenefits.list.speed",
-    "platformBenefits.list.cost",
-    "platformBenefits.list.control",
-    "platformBenefits.list.integration",
-    "platformBenefits.list.scalability",
-    "platformBenefits.list.consistency",
+    { key: "platformBenefits.list.speed", defaultValue: "Translate in minutes instead of weeks with AI-powered suggestions" },
+    { key: "platformBenefits.list.cost", defaultValue: "Lower per-word cost compared to traditional agency pricing" },
+    { key: "platformBenefits.list.control", defaultValue: "Full control over translation quality, glossaries, and approval workflows" },
+    { key: "platformBenefits.list.integration", defaultValue: "Native integration with your CI/CD pipeline and code repository" },
+    { key: "platformBenefits.list.scalability", defaultValue: "Add new languages without increasing coordination overhead" },
+    { key: "platformBenefits.list.consistency", defaultValue: "Translation memory and glossary enforcement ensure consistent terminology" },
   ];
 
   const mobileFeatures = [
-    { titleKey: "mobile.features.stringExtraction.title", descKey: "mobile.features.stringExtraction.description" },
-    { titleKey: "mobile.features.pluralization.title", descKey: "mobile.features.pluralization.description" },
-    { titleKey: "mobile.features.screenshots.title", descKey: "mobile.features.screenshots.description" },
-    { titleKey: "mobile.features.otaUpdates.title", descKey: "mobile.features.otaUpdates.description" },
+    { titleKey: "mobile.features.stringExtraction.title", descKey: "mobile.features.stringExtraction.description", defaultTitle: "String Extraction", defaultDesc: "Automatically extract translatable strings from iOS .strings, Android XML, and cross-platform frameworks like React Native and Flutter." },
+    { titleKey: "mobile.features.pluralization.title", descKey: "mobile.features.pluralization.description", defaultTitle: "Pluralization Rules", defaultDesc: "Handle complex plural forms across languages — from English's simple singular/plural to Arabic's six plural categories — without manual rule coding." },
+    { titleKey: "mobile.features.screenshots.title", descKey: "mobile.features.screenshots.description", defaultTitle: "Screenshot Context", defaultDesc: "Attach screenshots to translation keys so translators see exactly where each string appears in your app's UI for accurate, contextual translations." },
+    { titleKey: "mobile.features.otaUpdates.title", descKey: "mobile.features.otaUpdates.description", defaultTitle: "Over-the-Air Updates", defaultDesc: "Push translation updates to live mobile apps without requiring a new app store release, enabling instant fixes and faster iteration." },
   ];
 
   const relatedPages = [
@@ -102,10 +102,10 @@ function SoftwareLocalizationServicesPage() {
                   <type.icon className="size-6" />
                 </div>
                 <h3 className="text-lg font-medium text-mist-950 mb-3">
-                  {t(type.titleKey, { defaultValue: type.titleKey.split(".").pop() })}
+                  {t(type.titleKey, { defaultValue: type.defaultTitle })}
                 </h3>
                 <p className="text-mist-700 leading-relaxed">
-                  {t(type.descKey, { defaultValue: "" })}
+                  {t(type.descKey, { defaultValue: type.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -127,10 +127,10 @@ function SoftwareLocalizationServicesPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {platformBenefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {platformBenefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -154,10 +154,10 @@ function SoftwareLocalizationServicesPage() {
             {mobileFeatures.map((feature) => (
               <div key={feature.titleKey} className="p-6 rounded-xl bg-mist-50 border border-mist-100">
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(feature.titleKey, { defaultValue: feature.titleKey.split(".").pop() })}
+                  {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(feature.descKey, { defaultValue: "" })}
+                  {t(feature.descKey, { defaultValue: feature.defaultDesc })}
                 </p>
               </div>
             ))}

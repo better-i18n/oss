@@ -1,4 +1,5 @@
 import { Link, useParams } from "@tanstack/react-router";
+
 import { cn } from "@better-i18n/ui/lib/utils";
 import {
   IconChevronBottom,
@@ -14,13 +15,16 @@ import {
   IconApiConnection,
   IconArrowRight,
   IconLiveActivity,
+  IconGlobe,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { MobileNav } from "./MobileNav";
 
 export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
-  const t = useTranslations("header");
+  const t = useT("header");
 
   const { data: statusData } = useQuery<{ status: string }>({
     queryKey: ["site-status"],
@@ -32,7 +36,7 @@ export default function Header({ className }: { className?: string }) {
 
   return (
     <header className={cn("sticky top-0 z-10 bg-mist-100", className)}>
-      <nav>
+      <nav aria-label="Main navigation">
         <div className="mx-auto flex h-[5.25rem] max-w-7xl items-center gap-4 px-6 lg:px-10">
           <div className="flex flex-1 items-center">
             <Link
@@ -42,7 +46,9 @@ export default function Header({ className }: { className?: string }) {
             >
               <img
                 src="https://better-i18n.com/cdn-cgi/image/width=48/logo.png"
-                alt="Better I18N"
+                alt="Better i18n - Translation Management Platform"
+                width={24}
+                height={24}
                 className="w-6 h-6"
               />
               <span className="font-display font-semibold text-base">
@@ -56,18 +62,18 @@ export default function Header({ className }: { className?: string }) {
               params={{ locale: locale || "en" }}
               className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
             >
-              {t("features")}
+              {t("features", { defaultValue: "Features" })}
             </Link>
             {/* For Product Mega Menu */}
             <div className="relative group">
-              <button className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+              <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
                 {t("forProduct", { defaultValue: "Product" })}
                 <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[480px] shadow-lg">
+                <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[540px] shadow-lg">
                   {/* Grid container with border */}
-                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm">
+                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm" role="menu">
                     <div className="grid grid-cols-2 gap-2">
                       {/* For Translators */}
                       <Link
@@ -143,8 +149,124 @@ export default function Header({ className }: { className?: string }) {
                     </div>
                   </div>
 
+                  {/* More Solutions */}
+                  <div className="px-3 py-2">
+                    <p className="text-xs font-medium text-mist-400 uppercase tracking-wider mb-1.5">
+                      {t("menu.moreSolutions", { defaultValue: "More Solutions" })}
+                    </p>
+                    <div className="grid grid-cols-3 gap-x-4 gap-y-1">
+                      {/* Business & Industry */}
+                      <Link
+                        to="/$locale/for-enterprises"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.enterprises", { defaultValue: "Enterprises" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-saas"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.saas", { defaultValue: "SaaS" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-ecommerce"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.ecommerce", { defaultValue: "E-Commerce" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-startups"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.startups", { defaultValue: "Startups" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-healthcare"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.healthcare", { defaultValue: "Healthcare" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-education"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.education", { defaultValue: "Education" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-gaming"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.gaming", { defaultValue: "Gaming" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-open-source"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.openSource", { defaultValue: "Open Source" })}
+                      </Link>
+                      {/* Teams & Roles */}
+                      <Link
+                        to="/$locale/for-marketers"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.marketers", { defaultValue: "Marketers" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-designers"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.designers", { defaultValue: "Designers" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-content-teams"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.contentTeams", { defaultValue: "Content Teams" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-engineering-leaders"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.engineeringLeaders", { defaultValue: "Engineering Leaders" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-mobile-teams"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.mobileTeams", { defaultValue: "Mobile Teams" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-agencies"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.agencies", { defaultValue: "Agencies" })}
+                      </Link>
+                      <Link
+                        to="/$locale/for-freelancers"
+                        params={{ locale: locale || "en" }}
+                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
+                      >
+                        {t("menu.solutions.freelancers", { defaultValue: "Freelancers" })}
+                      </Link>
+                    </div>
+                  </div>
+
                   {/* Footer CTA */}
-                  <div className="px-3 py-2.5">
+                  <div className="px-3 py-2.5 border-t border-mist-100">
                     <p className="text-sm text-mist-500">
                       {t("menu.interested", { defaultValue: "Interested?" })}{" "}
                       <a
@@ -164,13 +286,13 @@ export default function Header({ className }: { className?: string }) {
             </div>
             {/* Developers Mega Menu */}
             <div className="relative group">
-              <button className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+              <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
                 {t("developers.title", { defaultValue: "Developers" })}
                 <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[520px] shadow-lg">
-                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm">
+                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm" role="menu">
                     <p className="px-2.5 py-1.5 text-xs font-medium text-mist-500 uppercase tracking-wider">
                       {t("developers.frameworkGuides", { defaultValue: "Framework Guides" })}
                     </p>
@@ -235,7 +357,7 @@ export default function Header({ className }: { className?: string }) {
                       rel="noopener noreferrer"
                       className="text-sm font-medium text-mist-950 hover:underline"
                     >
-                      {t("documentation")}
+                      {t("documentation", { defaultValue: "Documentation" })}
                     </a>
                   </div>
                 </div>
@@ -246,18 +368,25 @@ export default function Header({ className }: { className?: string }) {
               params={{ locale: locale || "en" }}
               className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
             >
-              {t("pricing")}
+              {t("pricing", { defaultValue: "Pricing" })}
+            </Link>
+            <Link
+              to="/$locale/compare"
+              params={{ locale: locale || "en" }}
+              className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
+            >
+              {t("compare", { defaultValue: "Compare" })}
             </Link>
             <div className="relative group">
-              <button className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
-                {t("resources.title")}
+              <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+                {t("resources.title", { defaultValue: "Resources" })}
                 <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 shadow-lg min-w-[480px]">
                   <div className="flex gap-2">
                     {/* Left column - Main links with icons and descriptions */}
-                    <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm space-y-1 min-w-[260px]">
+                    <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm space-y-1 min-w-[260px]" role="menu">
                       {/* About Us */}
                       <Link
                         to="/$locale/about"
@@ -329,7 +458,7 @@ export default function Header({ className }: { className?: string }) {
                     </div>
 
                     {/* Right column - Simple links with small icons */}
-                    <div className="p-3 space-y-1 min-w-[180px]">
+                    <div className="p-3 space-y-1 min-w-[180px]" role="menu">
                       {/* Documentation */}
                       <a
                         href="https://docs.better-i18n.com/"
@@ -339,7 +468,7 @@ export default function Header({ className }: { className?: string }) {
                       >
                         <IconBook className="size-4 text-mist-600" />
                         <span className="text-sm font-medium text-mist-950">
-                          {t("documentation")}
+                          {t("documentation", { defaultValue: "Documentation" })}
                         </span>
                       </a>
 
@@ -351,7 +480,7 @@ export default function Header({ className }: { className?: string }) {
                       >
                         <IconSparklesSoft className="size-4 text-mist-600" />
                         <span className="text-sm font-medium text-mist-950">
-                          {t("changelog")}
+                          {t("changelog", { defaultValue: "Changelog" })}
                         </span>
                       </Link>
 
@@ -363,7 +492,7 @@ export default function Header({ className }: { className?: string }) {
                       >
                         <IconNewspaper className="size-4 text-mist-600" />
                         <span className="text-sm font-medium text-mist-950">
-                          {t("blog")}
+                          {t("blog", { defaultValue: "Blog" })}
                         </span>
                       </Link>
 
@@ -376,7 +505,7 @@ export default function Header({ className }: { className?: string }) {
                       >
                         <IconApiConnection className="size-4 text-mist-600" />
                         <span className="text-sm font-medium text-mist-950">
-                          {t("apiReference")}
+                          {t("apiReference", { defaultValue: "API Reference" })}
                         </span>
                       </a>
 
@@ -394,16 +523,29 @@ export default function Header({ className }: { className?: string }) {
                           )}
                         </div>
                         <span className="text-sm font-medium text-mist-950">
-                          {t("status")}
+                          {t("status", { defaultValue: "Status" })}
                         </span>
                       </a>
+
+                      {/* What is i18n? */}
+                      <Link
+                        to="/$locale/what-is"
+                        params={{ locale: locale || "en" }}
+                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
+                      >
+                        <IconGlobe className="size-4 text-mist-600" />
+                        <span className="text-sm font-medium text-mist-950">
+                          {t("resources.whatIsI18n", { defaultValue: "What is i18n?" })}
+                        </span>
+                      </Link>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-1 items-center justify-end gap-4">
+          <div className="hidden lg:flex flex-1 items-center justify-end gap-4">
+            <LanguageSwitcher />
             <div className="flex shrink-0 items-center gap-5">
               <a
                 href="https://dash.better-i18n.com"
@@ -411,12 +553,11 @@ export default function Header({ className }: { className?: string }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-full bg-mist-950 px-4 py-1.5 text-sm/7 font-medium text-white hover:bg-mist-800"
               >
-                {t("getStartedDescriptive", {
-                  defaultValue: "Try Better i18n Free",
-                })}
+                {t("getStarted", { defaultValue: "Get Started" })}
               </a>
             </div>
           </div>
+          <MobileNav />
         </div>
       </nav>
     </header>

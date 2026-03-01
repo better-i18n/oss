@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconGlobe,
   IconCheckmark1,
@@ -33,32 +33,32 @@ export const Route = createFileRoute("/$locale/i18n/website-translation")({
 });
 
 const approaches = [
-  { icon: IconAiTranslate, titleKey: "approaches.manual.title", descKey: "approaches.manual.description" },
-  { icon: IconZap, titleKey: "approaches.machine.title", descKey: "approaches.machine.description" },
-  { icon: IconShieldCheck, titleKey: "approaches.hybrid.title", descKey: "approaches.hybrid.description" },
-  { icon: IconRocket, titleKey: "approaches.aiNative.title", descKey: "approaches.aiNative.description" },
+  { icon: IconAiTranslate, titleKey: "approaches.manual.title", descKey: "approaches.manual.description", defaultTitle: "Manual Translation", defaultDesc: "Professional human translators handle every string. Highest quality for marketing copy and legal content, but slower turnaround and higher per-word cost." },
+  { icon: IconZap, titleKey: "approaches.machine.title", descKey: "approaches.machine.description", defaultTitle: "Machine Translation", defaultDesc: "Automated engines like Google Translate or DeepL process content instantly. Fast and cheap, but often produces awkward phrasing that needs human review." },
+  { icon: IconShieldCheck, titleKey: "approaches.hybrid.title", descKey: "approaches.hybrid.description", defaultTitle: "Hybrid Translation", defaultDesc: "Machine translation generates a first draft, then professional translators review and polish the output. Balances speed with quality for most content types." },
+  { icon: IconRocket, titleKey: "approaches.aiNative.title", descKey: "approaches.aiNative.description", defaultTitle: "AI-Native Translation", defaultDesc: "Modern AI models trained on your glossary and brand voice produce context-aware translations that require minimal post-editing. The fastest path to high-quality multilingual content." },
 ];
 
 function WebsiteTranslationPage() {
-  const t = useTranslations("marketing.i18n.websiteTranslation");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.websiteTranslation");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.reachSpanishSpeakers",
-    "benefits.list.frenchMarkets",
-    "benefits.list.germanAudiences",
-    "benefits.list.arabicExpansion",
-    "benefits.list.chineseGrowth",
-    "benefits.list.seoRankings",
+    { key: "benefits.list.reachSpanishSpeakers", defaultValue: "Reach 500M+ Spanish speakers with professionally translated content" },
+    { key: "benefits.list.frenchMarkets", defaultValue: "Expand into French-speaking markets across Europe, Canada, and Africa" },
+    { key: "benefits.list.germanAudiences", defaultValue: "Engage German audiences who strongly prefer browsing in their native language" },
+    { key: "benefits.list.arabicExpansion", defaultValue: "Unlock Arabic-speaking markets with RTL-ready translated pages" },
+    { key: "benefits.list.chineseGrowth", defaultValue: "Tap into Chinese-language growth with culturally adapted translations" },
+    { key: "benefits.list.seoRankings", defaultValue: "Improve organic search rankings in every target language and locale" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
-    { number: "5", titleKey: "process.step5.title", descKey: "process.step5.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Content Audit", defaultDesc: "Inventory all translatable strings, pages, and metadata to define your translation scope." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "String Extraction", defaultDesc: "Extract all text into structured translation files using your i18n framework." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Translation", defaultDesc: "Translate content using AI, human translators, or a hybrid of both approaches." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Quality Review", defaultDesc: "Review translations for accuracy, consistency, and cultural appropriateness." },
+    { number: "5", titleKey: "process.step5.title", descKey: "process.step5.description", defaultTitle: "Publish & Monitor", defaultDesc: "Deploy translated content to production and monitor performance across locales." },
   ];
 
   const relatedPages = [
@@ -155,10 +155,10 @@ function WebsiteTranslationPage() {
                   <approach.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(approach.titleKey, { defaultValue: approach.titleKey.split(".").pop() })}
+                  {t(approach.titleKey, { defaultValue: approach.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(approach.descKey, { defaultValue: "" })}
+                  {t(approach.descKey, { defaultValue: approach.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -223,10 +223,10 @@ function WebsiteTranslationPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -252,10 +252,10 @@ function WebsiteTranslationPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

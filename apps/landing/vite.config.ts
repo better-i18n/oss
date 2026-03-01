@@ -1,9 +1,11 @@
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import { fileURLToPath, URL } from "url";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(async ({ mode }) => {
@@ -14,12 +16,19 @@ export default defineConfig(async ({ mode }) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let pages: readonly any[] = [];
+  let llmsTxtContent: string | null = null;
   if (mode === "production" && apiKey && project) {
     try {
       const { generatePages } = await import("./src/seo/generate-pages");
       pages = await generatePages({ project, apiKey });
     } catch (error) {
       console.error("[SEO] Page generation failed:", error);
+    }
+    try {
+      const { generateLlmsTxtContent } = await import("./src/seo/llms-txt");
+      llmsTxtContent = await generateLlmsTxtContent({ project, apiKey });
+    } catch (error) {
+      console.error("[SEO] llms.txt generation failed:", error);
     }
   } else if (mode === "production") {
     const missing = [
@@ -77,6 +86,43 @@ export default defineConfig(async ({ mode }) => {
           : undefined,
       }),
       viteReact(),
+      ...(llmsTxtContent
+        ? [
+            {
+              name: "llms-txt",
+              apply: "build",
+              generateBundle() {
+                this.emitFile({
+                  type: "asset",
+                  fileName: "llms.txt",
+                  source: llmsTxtContent!,
+                });
+              },
+            } satisfies Plugin,
+          ]
+        : []),
+      // Workaround: TanStack Start's sitemap generator omits the xhtml namespace
+      // declaration and adds spurious xmlns="" on <xhtml:link> elements.
+      // See: https://github.com/TanStack/router/issues/XXXX
+      {
+        name: "fix-sitemap-namespaces",
+        apply: "build",
+        closeBundle() {
+          const sitemapPath = path.join("dist", "client", "sitemap.xml");
+          if (!existsSync(sitemapPath)) return;
+
+          const xml = readFileSync(sitemapPath, "utf-8");
+          const fixed = xml
+            .replace(
+              '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">',
+              '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
+            )
+            .replace(/ xmlns=""/g, "");
+
+          writeFileSync(sitemapPath, fixed);
+          console.log("[SEO] Fixed sitemap xhtml namespace declaration");
+        },
+      } satisfies Plugin,
     ],
   };
 });

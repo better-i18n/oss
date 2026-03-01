@@ -16,14 +16,14 @@ interface ComparisonTableProps {
 
 export function ComparisonTable({ competitorName, features, featureLabel }: ComparisonTableProps) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
+    <div role="table" aria-label={`Feature comparison: Better i18n vs ${competitorName}`} className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
       {/* Header */}
-      <div className="grid grid-cols-3 bg-mist-50 border-b border-mist-200">
-        <div className="p-4 text-sm font-medium text-mist-600">{featureLabel ?? "Feature"}</div>
-        <div className="p-4 text-sm font-medium text-mist-950 text-center border-l border-mist-200 bg-mist-100">
+      <div role="row" className="grid grid-cols-3 bg-mist-50 border-b border-mist-200">
+        <div role="columnheader" className="p-4 text-sm font-medium text-mist-600">{featureLabel ?? "Feature"}</div>
+        <div role="columnheader" className="p-4 text-sm font-medium text-mist-950 text-center border-l border-mist-200 bg-mist-100">
           Better i18n
         </div>
-        <div className="p-4 text-sm font-medium text-mist-600 text-center border-l border-mist-200">
+        <div role="columnheader" className="p-4 text-sm font-medium text-mist-600 text-center border-l border-mist-200">
           {competitorName}
         </div>
       </div>
@@ -32,15 +32,16 @@ export function ComparisonTable({ competitorName, features, featureLabel }: Comp
       {features.map((feature, index) => (
         <div
           key={index}
+          role="row"
           className={`grid grid-cols-3 border-b border-mist-100 last:border-b-0 ${
             feature.highlight ? "bg-emerald-50/50" : ""
           }`}
         >
-          <div className="p-4 text-sm text-mist-700">{feature.name}</div>
-          <div className="p-4 text-center border-l border-mist-100 bg-mist-50/50">
+          <div role="cell" className="p-4 text-sm text-mist-700">{feature.name}</div>
+          <div role="cell" className="p-4 text-center border-l border-mist-100 bg-mist-50/50">
             <FeatureValue value={feature.betterI18n} highlight />
           </div>
-          <div className="p-4 text-center border-l border-mist-100">
+          <div role="cell" className="p-4 text-center border-l border-mist-100">
             <FeatureValue value={feature.competitor} />
           </div>
         </div>
@@ -52,9 +53,11 @@ export function ComparisonTable({ competitorName, features, featureLabel }: Comp
 function FeatureValue({ value, highlight }: { value: boolean | string; highlight?: boolean }) {
   if (typeof value === "boolean") {
     return value ? (
-      <IconCheckmark1 className={`w-5 h-5 mx-auto ${highlight ? "text-emerald-600" : "text-mist-400"}`} />
+      <span role="img" aria-label="Yes">
+        <IconCheckmark1 className={`w-5 h-5 mx-auto ${highlight ? "text-emerald-600" : "text-mist-400"}`} aria-hidden="true" />
+      </span>
     ) : (
-      <span className="w-5 h-5 mx-auto text-mist-300 flex items-center justify-center text-lg font-light">—</span>
+      <span className="w-5 h-5 mx-auto text-mist-300 flex items-center justify-center text-lg font-light" aria-label="No">—</span>
     );
   }
   return <span className={`text-sm ${highlight ? "text-mist-950 font-medium" : "text-mist-600"}`}>{value}</span>;
@@ -62,7 +65,6 @@ function FeatureValue({ value, highlight }: { value: boolean | string; highlight
 
 interface ComparisonHeroProps {
   competitorName: string;
-  competitorLogo?: string;
   title: string;
   subtitle: string;
 }
@@ -113,8 +115,6 @@ interface CTASectionProps {
   subtitle: string;
   primaryCTA: string;
   primaryHref: string;
-  secondaryCTA?: string;
-  secondaryHref?: string;
 }
 
 export function CTASection({ title, subtitle, primaryCTA, primaryHref }: CTASectionProps) {
@@ -132,6 +132,44 @@ export function CTASection({ title, subtitle, primaryCTA, primaryHref }: CTASect
           >
             {primaryCTA}
           </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export interface RelatedTopicLink {
+  to: string;
+  title: string;
+  description: string;
+}
+
+interface ComparisonRelatedTopicsProps {
+  heading: string;
+  links: RelatedTopicLink[];
+  locale: string;
+}
+
+export function ComparisonRelatedTopics({ heading, links, locale }: ComparisonRelatedTopicsProps) {
+  return (
+    <section className="py-12 border-t border-mist-200">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <h2 className="text-lg font-medium text-mist-950 mb-6">{heading}</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {links.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to as never}
+              params={{ locale } as never}
+              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+            >
+              <div>
+                <h3 className="text-sm font-medium text-mist-950">{link.title}</h3>
+                <p className="text-xs text-mist-500 mt-1">{link.description}</p>
+              </div>
+              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" aria-hidden="true" />
+            </Link>
+          ))}
         </div>
       </div>
     </section>
@@ -171,7 +209,7 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
               <span className="text-sm font-medium text-mist-950">
                 Better i18n vs {competitor.name}
               </span>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" aria-hidden="true" />
             </Link>
           ))}
         </div>

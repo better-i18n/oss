@@ -4,12 +4,12 @@ import {
   FrameworkHero,
   FeatureList,
   CodeExample,
-  RelatedPages,
   FrameworkCTA,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
+import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/$locale/i18n/vue")({
   loader: createPageLoader(),
@@ -23,6 +23,7 @@ export const Route = createFileRoute("/$locale/i18n/vue")({
       structuredDataOptions: {
         framework: "Vue.js",
         frameworkDescription: "Vue.js internationalization with Composition API, SFC i18n blocks, and Nuxt integration.",
+        dependencies: ["vue", "@better-i18n/vue"],
       },
     });
   },
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/$locale/i18n/vue")({
 });
 
 function VueI18nPage() {
-  const t = useTranslations("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const features = [
@@ -58,16 +59,15 @@ const { t } = useI18n();
   </div>
 </template>`;
 
-  const relatedPages = [
-    { name: "Nuxt i18n", href: "/$locale/i18n/nuxt", description: t("i18n.vue.related.nuxt") },
-    { name: "React i18n", href: "/$locale/i18n/react", description: t("i18n.vue.related.react") },
-    { name: t("i18n.vue.related.comparisons"), href: "/$locale/compare", description: t("i18n.vue.related.comparisonsDesc") },
+  const relatedLinks = [
+    { title: "Nuxt i18n", to: "/$locale/i18n/nuxt", description: t("i18n.vue.related.nuxt") },
+    { title: "React i18n", to: "/$locale/i18n/react", description: t("i18n.vue.related.react") },
+    { title: t("i18n.vue.related.comparisons"), to: "/$locale/compare", description: t("i18n.vue.related.comparisonsDesc") },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <FrameworkHero
-        framework="Vue"
         title={t("i18n.vue.hero.title")}
         subtitle={t("i18n.vue.hero.subtitle")}
         badgeText="Vue i18n"
@@ -81,10 +81,10 @@ const { t } = useI18n();
         code={codeExample}
       />
 
-      <RelatedPages title={t("i18n.vue.relatedTitle")} pages={relatedPages} locale={locale} />
+      <ComparisonRelatedTopics heading={t("i18n.vue.relatedTitle")} links={relatedLinks} locale={locale} />
 
       <OtherFrameworks
-        title={t("i18n.react.otherFrameworks")}
+        title={t("i18n.vue.otherFrameworks")}
         currentFramework="vue"
         locale={locale}
       />

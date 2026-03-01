@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -32,38 +32,38 @@ export const Route = createFileRoute("/$locale/i18n/cli-code-scanning")({
 });
 
 const coreFeatures = [
-  { icon: IconMagnifyingGlass, titleKey: "features.hardcodedDetection.title", descKey: "features.hardcodedDetection.description" },
-  { icon: IconCodeBrackets, titleKey: "features.astParsing.title", descKey: "features.astParsing.description" },
-  { icon: IconScript, titleKey: "features.jsxText.title", descKey: "features.jsxText.description" },
-  { icon: IconSettingsGear1, titleKey: "features.jsxAttributes.title", descKey: "features.jsxAttributes.description" },
-  { icon: IconZap, titleKey: "features.smartFiltering.title", descKey: "features.smartFiltering.description" },
+  { icon: IconMagnifyingGlass, titleKey: "features.hardcodedDetection.title", descKey: "features.hardcodedDetection.description", defaultTitle: "Hardcoded String Detection", defaultDesc: "Automatically find every user-facing string that is not wrapped in a translation function, including strings in JSX children and component props." },
+  { icon: IconCodeBrackets, titleKey: "features.astParsing.title", descKey: "features.astParsing.description", defaultTitle: "AST-Based Parsing", defaultDesc: "Parses your source code into an Abstract Syntax Tree for precise, context-aware detection that eliminates the false positives of regex-based scanners." },
+  { icon: IconScript, titleKey: "features.jsxText.title", descKey: "features.jsxText.description", defaultTitle: "JSX Text Node Scanning", defaultDesc: "Detects untranslated text content inside JSX elements, including expressions and template literals rendered directly in your components." },
+  { icon: IconSettingsGear1, titleKey: "features.jsxAttributes.title", descKey: "features.jsxAttributes.description", defaultTitle: "JSX Attribute Scanning", defaultDesc: "Finds hardcoded strings in JSX attributes like placeholder, aria-label, and title that are often missed during manual i18n audits." },
+  { icon: IconZap, titleKey: "features.smartFiltering.title", descKey: "features.smartFiltering.description", defaultTitle: "Smart Filtering", defaultDesc: "Ignores non-translatable values like CSS class names, import paths, and numeric literals so you only see actionable results." },
 ];
 
 function CliCodeScanningPage() {
-  const t = useTranslations("marketing.i18n.cliCodeScanning");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.cliCodeScanning");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const cliCommands = [
-    "cliCommands.list.checkCommand",
-    "cliCommands.list.missingKeys",
-    "cliCommands.list.unusedKeys",
-    "cliCommands.list.dynamicPatterns",
-    "cliCommands.list.comparisonReports",
+    { key: "cliCommands.list.checkCommand", defaultValue: "Run a full translation audit with a single check command" },
+    { key: "cliCommands.list.missingKeys", defaultValue: "Surface missing translation keys that exist in code but not in your remote store" },
+    { key: "cliCommands.list.unusedKeys", defaultValue: "Identify unused keys in your remote store that are no longer referenced in code" },
+    { key: "cliCommands.list.dynamicPatterns", defaultValue: "Detect dynamic key patterns like template literals and flag them for review" },
+    { key: "cliCommands.list.comparisonReports", defaultValue: "Generate comparison reports between local usage and remote translation state" },
   ];
 
   const outputFormats = [
-    { titleKey: "outputs.eslint.title", descKey: "outputs.eslint.description" },
-    { titleKey: "outputs.json.title", descKey: "outputs.json.description" },
-    { titleKey: "outputs.verbose.title", descKey: "outputs.verbose.description" },
-    { titleKey: "outputs.stats.title", descKey: "outputs.stats.description" },
+    { titleKey: "outputs.eslint.title", descKey: "outputs.eslint.description", defaultTitle: "ESLint-Style Output", defaultDesc: "Human-readable reports with file path, line number, and column references for fast navigation in any editor." },
+    { titleKey: "outputs.json.title", descKey: "outputs.json.description", defaultTitle: "JSON Output", defaultDesc: "Machine-readable structured data ideal for CI/CD automation, custom dashboards, and integration with other tooling." },
+    { titleKey: "outputs.verbose.title", descKey: "outputs.verbose.description", defaultTitle: "Verbose Mode", defaultDesc: "Detailed audit logs with scoping summaries, timing information, and namespace resolution traces for debugging." },
+    { titleKey: "outputs.stats.title", descKey: "outputs.stats.description", defaultTitle: "Scan Statistics", defaultDesc: "File counts, key discovery metrics, and performance data so you always know the health of your translation coverage." },
   ];
 
   const devopsSteps = [
-    { number: "1", titleKey: "devops.ciIntegration.title", descKey: "devops.ciIntegration.description" },
-    { number: "2", titleKey: "devops.preCommitHook.title", descKey: "devops.preCommitHook.description" },
-    { number: "3", titleKey: "devops.directoryScanning.title", descKey: "devops.directoryScanning.description" },
-    { number: "4", titleKey: "devops.scopeAware.title", descKey: "devops.scopeAware.description" },
+    { number: "1", titleKey: "devops.ciIntegration.title", descKey: "devops.ciIntegration.description", defaultTitle: "CI Pipeline Integration", defaultDesc: "Add a scan step to your CI workflow that fails the build when untranslated strings or missing keys are detected." },
+    { number: "2", titleKey: "devops.preCommitHook.title", descKey: "devops.preCommitHook.description", defaultTitle: "Pre-Commit Hooks", defaultDesc: "Run scans on staged files before each commit to catch untranslated strings at the earliest possible point in development." },
+    { number: "3", titleKey: "devops.directoryScanning.title", descKey: "devops.directoryScanning.description", defaultTitle: "Directory-Scoped Scanning", defaultDesc: "Target specific directories or file patterns to scan only the parts of your codebase that contain user-facing content." },
+    { number: "4", titleKey: "devops.scopeAware.title", descKey: "devops.scopeAware.description", defaultTitle: "Scope-Aware Analysis", defaultDesc: "Automatically resolve translation namespaces through lexical scope tracking so each t() call maps to the correct key set." },
   ];
 
   const relatedPages = [
@@ -109,10 +109,10 @@ function CliCodeScanningPage() {
                   <feature.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(feature.titleKey, { defaultValue: feature.titleKey.split(".").pop() })}
+                  {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(feature.descKey, { defaultValue: "" })}
+                  {t(feature.descKey, { defaultValue: feature.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -136,10 +136,10 @@ function CliCodeScanningPage() {
             </div>
             <div className="mt-10 lg:mt-0">
               <ul className="space-y-4">
-                {cliCommands.map((cmdKey) => (
-                  <li key={cmdKey} className="flex items-start gap-3">
+                {cliCommands.map((cmd) => (
+                  <li key={cmd.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(cmdKey, { defaultValue: cmdKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(cmd.key, { defaultValue: cmd.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -167,8 +167,8 @@ function CliCodeScanningPage() {
                 <div key={format.titleKey} className="flex items-start gap-3">
                   <IconCodeBrackets className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
-                    <h4 className="text-sm font-medium text-mist-950 mb-1">{t(format.titleKey, { defaultValue: format.titleKey.split(".").pop() })}</h4>
-                    <p className="text-sm text-mist-600">{t(format.descKey, { defaultValue: "" })}</p>
+                    <h4 className="text-sm font-medium text-mist-950 mb-1">{t(format.titleKey, { defaultValue: format.defaultTitle })}</h4>
+                    <p className="text-sm text-mist-600">{t(format.descKey, { defaultValue: format.defaultDesc })}</p>
                   </div>
                 </div>
               ))}
@@ -194,10 +194,10 @@ function CliCodeScanningPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconGlobe,
   IconCheckmark1,
@@ -32,37 +32,37 @@ export const Route = createFileRoute("/$locale/i18n/international-seo-consulting
 });
 
 const problems = [
-  { icon: IconMagnifyingGlass, titleKey: "problems.keywordMapping.title", descKey: "problems.keywordMapping.description" },
-  { icon: IconRocket, titleKey: "problems.technicalGaps.title", descKey: "problems.technicalGaps.description" },
-  { icon: IconChart1, titleKey: "problems.roiMeasurement.title", descKey: "problems.roiMeasurement.description" },
-  { icon: IconShieldCheck, titleKey: "problems.competitorAnalysis.title", descKey: "problems.competitorAnalysis.description" },
+  { icon: IconMagnifyingGlass, titleKey: "problems.keywordMapping.title", descKey: "problems.keywordMapping.description", defaultTitle: "Cross-Market Keyword Mapping", defaultDesc: "Direct keyword translation misses local search intent. A consultant maps high-value queries per market using native-language research tools and competitor analysis." },
+  { icon: IconRocket, titleKey: "problems.technicalGaps.title", descKey: "problems.technicalGaps.description", defaultTitle: "Technical SEO Gaps", defaultDesc: "Hreflang errors, duplicate content across locales, and misconfigured canonicals silently suppress rankings in target markets without expert diagnosis." },
+  { icon: IconChart1, titleKey: "problems.roiMeasurement.title", descKey: "problems.roiMeasurement.description", defaultTitle: "ROI Measurement Across Markets", defaultDesc: "Attributing organic revenue per locale requires segmented analytics, currency normalization, and market-adjusted conversion benchmarks." },
+  { icon: IconShieldCheck, titleKey: "problems.competitorAnalysis.title", descKey: "problems.competitorAnalysis.description", defaultTitle: "International Competitor Analysis", defaultDesc: "Local competitors in each market use different SEO strategies. A consultant identifies their backlink profiles, content gaps, and technical advantages." },
 ];
 
 function InternationalSeoConsultingPage() {
-  const t = useTranslations("marketing.i18n.internationalSeoConsulting");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.internationalSeoConsulting");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.expertGuidance",
-    "benefits.list.fasterResults",
-    "benefits.list.avoidCostlyMistakes",
-    "benefits.list.roiClarity",
-    "benefits.list.technicalAudit",
-    "benefits.list.competitiveIntelligence",
+    { key: "benefits.list.expertGuidance", defaultValue: "Expert guidance from consultants with proven multi-market SEO experience" },
+    { key: "benefits.list.fasterResults", defaultValue: "Faster time to ranking improvements by avoiding common international SEO pitfalls" },
+    { key: "benefits.list.avoidCostlyMistakes", defaultValue: "Avoid costly mistakes like hreflang misconfiguration that can take months to recover from" },
+    { key: "benefits.list.roiClarity", defaultValue: "Clear ROI measurement frameworks that attribute organic revenue to specific markets" },
+    { key: "benefits.list.technicalAudit", defaultValue: "Comprehensive technical audits covering crawl budget, indexation, and site architecture" },
+    { key: "benefits.list.competitiveIntelligence", defaultValue: "Competitive intelligence revealing backlink gaps and content opportunities in each market" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Technical Audit", defaultDesc: "Diagnose hreflang implementation, crawl budget allocation, indexation gaps, and site architecture issues across all target locales." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Market Research", defaultDesc: "Conduct native-language keyword research, competitor analysis, and search intent mapping for each priority market." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Strategy Execution", defaultDesc: "Implement technical fixes, deploy localized content, and optimize metadata based on market-specific keyword targets." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Performance Tracking", defaultDesc: "Monitor rankings, organic traffic, and conversions per locale with segmented dashboards and monthly reporting." },
   ];
 
   const roadmapPhases = [
-    { titleKey: "roadmap.discovery.title", descKey: "roadmap.discovery.description" },
-    { titleKey: "roadmap.technical.title", descKey: "roadmap.technical.description" },
-    { titleKey: "roadmap.content.title", descKey: "roadmap.content.description" },
+    { titleKey: "roadmap.discovery.title", descKey: "roadmap.discovery.description", defaultTitle: "Discovery & Audit Phase", defaultDesc: "Evaluate current international SEO posture, identify technical debt, map existing content coverage per locale, and benchmark against local competitors in each target market." },
+    { titleKey: "roadmap.technical.title", descKey: "roadmap.technical.description", defaultTitle: "Technical Foundation Phase", defaultDesc: "Fix hreflang implementation, resolve duplicate content, optimize URL structure for international targeting, and configure Search Console per locale for accurate performance data." },
+    { titleKey: "roadmap.content.title", descKey: "roadmap.content.description", defaultTitle: "Content & Growth Phase", defaultDesc: "Deploy localized content targeting high-value keywords in each market, build local backlink profiles, and establish an ongoing optimization cadence with monthly performance reviews." },
   ];
 
   const relatedPages = [
@@ -140,10 +140,10 @@ function InternationalSeoConsultingPage() {
                   <problem.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(problem.titleKey, { defaultValue: problem.titleKey.split(".").pop() })}
+                  {t(problem.titleKey, { defaultValue: problem.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(problem.descKey, { defaultValue: "" })}
+                  {t(problem.descKey, { defaultValue: problem.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -167,11 +167,11 @@ function InternationalSeoConsultingPage() {
                 <div className="flex items-center gap-3 mb-3">
                   <IconRocket className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
-                    {t(phase.titleKey, { defaultValue: phase.titleKey.split(".").pop() })}
+                    {t(phase.titleKey, { defaultValue: phase.defaultTitle })}
                   </h3>
                 </div>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(phase.descKey, { defaultValue: "" })}
+                  {t(phase.descKey, { defaultValue: phase.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -192,10 +192,10 @@ function InternationalSeoConsultingPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -221,10 +221,10 @@ function InternationalSeoConsultingPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

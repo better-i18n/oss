@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconGlobe,
   IconCheckmark1,
@@ -33,31 +33,31 @@ export const Route = createFileRoute("/$locale/i18n/cultural-adaptation")({
 });
 
 const dimensions = [
-  { icon: IconSparklesSoft, titleKey: "dimensions.colorsImagery.title", descKey: "dimensions.colorsImagery.description" },
-  { icon: IconAiTranslate, titleKey: "dimensions.toneFormality.title", descKey: "dimensions.toneFormality.description" },
-  { icon: IconGlobe, titleKey: "dimensions.rtlSupport.title", descKey: "dimensions.rtlSupport.description" },
-  { icon: IconRocket, titleKey: "dimensions.humorIdioms.title", descKey: "dimensions.humorIdioms.description" },
+  { icon: IconSparklesSoft, titleKey: "dimensions.colorsImagery.title", descKey: "dimensions.colorsImagery.description", defaultTitle: "Colors & Imagery", defaultDesc: "Color meanings vary across cultures — white symbolizes purity in the West but mourning in parts of Asia. Imagery must reflect local demographics, dress codes, and visual expectations to build trust." },
+  { icon: IconAiTranslate, titleKey: "dimensions.toneFormality.title", descKey: "dimensions.toneFormality.description", defaultTitle: "Tone & Formality", defaultDesc: "Formality levels differ dramatically between markets. Japanese and Korean audiences expect formal, respectful language, while US and Australian users prefer casual, direct communication." },
+  { icon: IconGlobe, titleKey: "dimensions.rtlSupport.title", descKey: "dimensions.rtlSupport.description", defaultTitle: "RTL Layout Support", defaultDesc: "Arabic, Hebrew, and Persian require right-to-left layouts. Full RTL support means mirroring navigation, reversing flex directions, flipping icons, and adjusting text alignment throughout the UI." },
+  { icon: IconRocket, titleKey: "dimensions.humorIdioms.title", descKey: "dimensions.humorIdioms.description", defaultTitle: "Humor & Idioms", defaultDesc: "Humor rarely translates directly between cultures. Idioms, wordplay, and cultural references must be adapted or replaced with locally resonant alternatives to avoid confusion or offense." },
 ];
 
 function CulturalAdaptationPage() {
-  const t = useTranslations("marketing.i18n.culturalAdaptation");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.culturalAdaptation");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.nativeExperience",
-    "benefits.list.higherTrust",
-    "benefits.list.lowerBounce",
-    "benefits.list.betterConversion",
-    "benefits.list.regulatoryCompliance",
-    "benefits.list.globalBrandEquity",
+    { key: "benefits.list.nativeExperience", defaultValue: "Deliver an experience that feels native to users in every target market" },
+    { key: "benefits.list.higherTrust", defaultValue: "Build higher trust through culturally appropriate visuals, tone, and formatting" },
+    { key: "benefits.list.lowerBounce", defaultValue: "Reduce bounce rates by eliminating cultural friction that drives users away" },
+    { key: "benefits.list.betterConversion", defaultValue: "Improve conversion rates with locally adapted calls to action and payment flows" },
+    { key: "benefits.list.regulatoryCompliance", defaultValue: "Ensure regulatory compliance with region-specific privacy laws and disclosure requirements" },
+    { key: "benefits.list.globalBrandEquity", defaultValue: "Strengthen global brand equity while maintaining local market relevance" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Cultural Research", defaultDesc: "Study your target market's cultural norms, communication styles, color associations, and user experience expectations through local market research and user testing." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Content & Design Audit", defaultDesc: "Review all existing content, imagery, icons, and UI patterns for cultural compatibility. Identify elements that need adaptation versus those that transfer well across cultures." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Adaptation Implementation", defaultDesc: "Adapt visuals, tone, formatting, payment methods, and legal compliance for each market. Implement RTL support, locale-specific date and number formatting, and culturally appropriate imagery." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Local Validation & Testing", defaultDesc: "Test adapted content with native users in each target market. Validate cultural appropriateness, usability, and conversion performance through local focus groups and A/B testing." },
   ];
 
   const relatedPages = [
@@ -135,10 +135,10 @@ function CulturalAdaptationPage() {
                   <dimension.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(dimension.titleKey, { defaultValue: dimension.titleKey.split(".").pop() })}
+                  {t(dimension.titleKey, { defaultValue: dimension.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(dimension.descKey, { defaultValue: "" })}
+                  {t(dimension.descKey, { defaultValue: dimension.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -228,10 +228,10 @@ function CulturalAdaptationPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -257,10 +257,10 @@ function CulturalAdaptationPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

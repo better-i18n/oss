@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -31,31 +31,31 @@ export const Route = createFileRoute(
 });
 
 function L10nVsI18nPage() {
-  const t = useTranslations("marketing.i18n.l10nVsI18n");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.l10nVsI18n");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const i18nActivities = [
-    "comparison.i18n.activities.externalizeStrings",
-    "comparison.i18n.activities.unicodeSupport",
-    "comparison.i18n.activities.dateTimeFormatting",
-    "comparison.i18n.activities.layoutFlexibility",
-    "comparison.i18n.activities.pluralizationRules",
+    { key: "comparison.i18n.activities.externalizeStrings", defaultValue: "Externalize all user-facing strings into resource files" },
+    { key: "comparison.i18n.activities.unicodeSupport", defaultValue: "Enable full Unicode support throughout the codebase" },
+    { key: "comparison.i18n.activities.dateTimeFormatting", defaultValue: "Use locale-aware date, time, and number formatting APIs" },
+    { key: "comparison.i18n.activities.layoutFlexibility", defaultValue: "Build flexible layouts that accommodate text expansion and RTL scripts" },
+    { key: "comparison.i18n.activities.pluralizationRules", defaultValue: "Implement pluralization rules that support all CLDR plural categories" },
   ];
 
   const l10nActivities = [
-    "comparison.l10n.activities.translatingContent",
-    "comparison.l10n.activities.culturalAdaptation",
-    "comparison.l10n.activities.localFormats",
-    "comparison.l10n.activities.legalCompliance",
-    "comparison.l10n.activities.marketingAdaptation",
+    { key: "comparison.l10n.activities.translatingContent", defaultValue: "Translating UI strings, documentation, and marketing content" },
+    { key: "comparison.l10n.activities.culturalAdaptation", defaultValue: "Adapting imagery, colors, and symbols for cultural appropriateness" },
+    { key: "comparison.l10n.activities.localFormats", defaultValue: "Applying local formats for currency, addresses, and phone numbers" },
+    { key: "comparison.l10n.activities.legalCompliance", defaultValue: "Ensuring legal and regulatory compliance for each target market" },
+    { key: "comparison.l10n.activities.marketingAdaptation", defaultValue: "Adapting marketing messaging and tone for regional audiences" },
   ];
 
   const keyDifferences = [
-    { titleKey: "differences.timing.title", descKey: "differences.timing.description" },
-    { titleKey: "differences.scope.title", descKey: "differences.scope.description" },
-    { titleKey: "differences.team.title", descKey: "differences.team.description" },
-    { titleKey: "differences.frequency.title", descKey: "differences.frequency.description" },
+    { titleKey: "differences.timing.title", descKey: "differences.timing.description", defaultTitle: "Timing", defaultDesc: "Internationalization happens during architecture and development. Localization happens after — or alongside — feature completion, for each target locale." },
+    { titleKey: "differences.scope.title", descKey: "differences.scope.description", defaultTitle: "Scope", defaultDesc: "Internationalization is a one-time engineering effort that affects the entire codebase. Localization is an ongoing, per-locale process that scales with your market reach." },
+    { titleKey: "differences.team.title", descKey: "differences.team.description", defaultTitle: "Team", defaultDesc: "Internationalization is owned by developers and architects. Localization involves translators, linguists, and market specialists working alongside the engineering team." },
+    { titleKey: "differences.frequency.title", descKey: "differences.frequency.description", defaultTitle: "Frequency", defaultDesc: "Internationalization is done once and maintained. Localization is repeated every time you add a new language, market, or significant content update." },
   ];
 
   const relatedPages = [
@@ -136,10 +136,10 @@ function L10nVsI18nPage() {
                 {t("comparison.i18n.title", { defaultValue: "Internationalization Activities" })}
               </h3>
               <ul className="space-y-3">
-                {i18nActivities.map((activityKey) => (
-                  <li key={activityKey} className="flex items-start gap-2">
+                {i18nActivities.map((activity) => (
+                  <li key={activity.key} className="flex items-start gap-2">
                     <IconCheckmark1 className="size-4 text-violet-500 mt-0.5 shrink-0" />
-                    <span className="text-sm text-mist-700">{t(activityKey, { defaultValue: activityKey.split(".").pop() })}</span>
+                    <span className="text-sm text-mist-700">{t(activity.key, { defaultValue: activity.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -150,10 +150,10 @@ function L10nVsI18nPage() {
                 {t("comparison.l10n.title", { defaultValue: "Localization Activities" })}
               </h3>
               <ul className="space-y-3">
-                {l10nActivities.map((activityKey) => (
-                  <li key={activityKey} className="flex items-start gap-2">
+                {l10nActivities.map((activity) => (
+                  <li key={activity.key} className="flex items-start gap-2">
                     <IconCheckmark1 className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                    <span className="text-sm text-mist-700">{t(activityKey, { defaultValue: activityKey.split(".").pop() })}</span>
+                    <span className="text-sm text-mist-700">{t(activity.key, { defaultValue: activity.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -174,10 +174,10 @@ function L10nVsI18nPage() {
             {keyDifferences.map((diff) => (
               <div key={diff.titleKey} className="p-6 rounded-xl bg-mist-50 border border-mist-100">
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(diff.titleKey, { defaultValue: diff.titleKey.split(".").pop() })}
+                  {t(diff.titleKey, { defaultValue: diff.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(diff.descKey, { defaultValue: "" })}
+                  {t(diff.descKey, { defaultValue: diff.defaultDesc })}
                 </p>
               </div>
             ))}

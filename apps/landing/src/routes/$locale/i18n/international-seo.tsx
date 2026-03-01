@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconGlobe,
   IconCheckmark1,
@@ -32,33 +32,33 @@ export const Route = createFileRoute("/$locale/i18n/international-seo")({
 });
 
 const pillars = [
-  { icon: IconMagnifyingGlass, titleKey: "pillars.keywordResearch.title", descKey: "pillars.keywordResearch.description" },
-  { icon: IconRocket, titleKey: "pillars.contentLocalization.title", descKey: "pillars.contentLocalization.description" },
-  { icon: IconChart1, titleKey: "pillars.technicalSeo.title", descKey: "pillars.technicalSeo.description" },
-  { icon: IconGroup1, titleKey: "pillars.linkBuilding.title", descKey: "pillars.linkBuilding.description" },
+  { icon: IconMagnifyingGlass, titleKey: "pillars.keywordResearch.title", descKey: "pillars.keywordResearch.description", defaultTitle: "Keyword Research", defaultDesc: "Conduct localized keyword research for each target market to discover how users actually search in their language and region." },
+  { icon: IconRocket, titleKey: "pillars.contentLocalization.title", descKey: "pillars.contentLocalization.description", defaultTitle: "Content Localization", defaultDesc: "Adapt your content beyond translation to match cultural norms, local references, and search behavior in each market." },
+  { icon: IconChart1, titleKey: "pillars.technicalSeo.title", descKey: "pillars.technicalSeo.description", defaultTitle: "Technical SEO", defaultDesc: "Implement hreflang tags, canonical URLs, sitemaps, and proper URL structures to signal language targeting to search engines." },
+  { icon: IconGroup1, titleKey: "pillars.linkBuilding.title", descKey: "pillars.linkBuilding.description", defaultTitle: "Link Building", defaultDesc: "Acquire backlinks from authoritative local sources in each target market to build regional domain authority." },
 ];
 
 function InternationalSeoPage() {
-  const t = useTranslations("marketing.i18n.internationalSeo");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.internationalSeo");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const checklist = [
-    "checklist.marketResearch",
-    "checklist.competitorAnalysis",
-    "checklist.keywordLocalization",
-    "checklist.hreflangTags",
-    "checklist.localizedContent",
-    "checklist.technicalAudit",
-    "checklist.linkBuilding",
-    "checklist.analyticsTracking",
+    { key: "checklist.marketResearch", defaultValue: "Conduct market research for target regions" },
+    { key: "checklist.competitorAnalysis", defaultValue: "Analyze local competitors in each market" },
+    { key: "checklist.keywordLocalization", defaultValue: "Localize keywords for each target language" },
+    { key: "checklist.hreflangTags", defaultValue: "Implement hreflang tags across all pages" },
+    { key: "checklist.localizedContent", defaultValue: "Create culturally adapted localized content" },
+    { key: "checklist.technicalAudit", defaultValue: "Run a technical SEO audit for international pages" },
+    { key: "checklist.linkBuilding", defaultValue: "Build local backlinks in each target region" },
+    { key: "checklist.analyticsTracking", defaultValue: "Set up per-region analytics tracking" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Market Research", defaultDesc: "Identify high-potential markets using search volume data, competitive analysis, and business alignment criteria." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Technical Foundation", defaultDesc: "Set up URL structure, hreflang tags, and international sitemaps before publishing localized content." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Content Localization", defaultDesc: "Localize your highest-impact pages first, ensuring keyword research drives every translation decision." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Monitor & Optimize", defaultDesc: "Track per-market rankings, organic traffic, and conversion rates to iteratively improve your strategy." },
   ];
 
   const relatedPages = [
@@ -136,10 +136,10 @@ function InternationalSeoPage() {
                   <pillar.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(pillar.titleKey, { defaultValue: pillar.titleKey.split(".").pop() })}
+                  {t(pillar.titleKey, { defaultValue: pillar.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(pillar.descKey, { defaultValue: "" })}
+                  {t(pillar.descKey, { defaultValue: pillar.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -158,10 +158,10 @@ function InternationalSeoPage() {
                 {t("checklist.subtitle", { defaultValue: "Use this SEO checklist as a foundation for every new market you enter. Each item represents a distinct task that affects your international search visibility." })}
               </p>
               <ul className="space-y-4">
-                {checklist.map((itemKey) => (
-                  <li key={itemKey} className="flex items-start gap-3">
+                {checklist.map((item) => (
+                  <li key={item.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(itemKey, { defaultValue: itemKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -198,10 +198,10 @@ function InternationalSeoPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

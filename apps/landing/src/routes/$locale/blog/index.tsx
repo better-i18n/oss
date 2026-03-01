@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/blog/BlogCard";
 import { RelatedPages } from "@/components/RelatedPages";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconArrowRight,
   IconPageText,
@@ -55,8 +55,8 @@ export const Route = createFileRoute("/$locale/blog/")({
     });
 
     const breadcrumbSchema = getBreadcrumbSchema([
-      { name: "Home", url: SITE_URL },
-      { name: "Blog", url: `${SITE_URL}/blog` },
+      { name: "Home", url: `${SITE_URL}/${locale}/` },
+      { name: "Blog", url: `${SITE_URL}/${locale}/blog` },
     ]);
 
     return {
@@ -82,7 +82,7 @@ export const Route = createFileRoute("/$locale/blog/")({
 
 function BlogPage() {
   const { posts, locale } = Route.useLoaderData();
-  const t = useTranslations("blog");
+  const t = useT("blog");
 
   return (
     <div className="bg-white">

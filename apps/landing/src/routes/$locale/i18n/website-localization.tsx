@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconGlobe,
   IconCheckmark1,
@@ -31,31 +31,31 @@ export const Route = createFileRoute("/$locale/i18n/website-localization")({
 });
 
 const challenges = [
-  { icon: IconCodeBrackets, titleKey: "challenges.contentManagement.title", descKey: "challenges.contentManagement.description" },
-  { icon: IconGlobe, titleKey: "challenges.culturalAdaptation.title", descKey: "challenges.culturalAdaptation.description" },
-  { icon: IconGroup1, titleKey: "challenges.teamCoordination.title", descKey: "challenges.teamCoordination.description" },
-  { icon: IconZap, titleKey: "challenges.performance.title", descKey: "challenges.performance.description" },
+  { icon: IconCodeBrackets, titleKey: "challenges.contentManagement.title", descKey: "challenges.contentManagement.description", defaultTitle: "Content Management", defaultDesc: "Managing translations across hundreds of pages, components, and dynamic content while keeping everything in sync with source updates." },
+  { icon: IconGlobe, titleKey: "challenges.culturalAdaptation.title", descKey: "challenges.culturalAdaptation.description", defaultTitle: "Cultural Adaptation", defaultDesc: "Adapting imagery, colors, layouts, and messaging to resonate with local audiences beyond simple text translation." },
+  { icon: IconGroup1, titleKey: "challenges.teamCoordination.title", descKey: "challenges.teamCoordination.description", defaultTitle: "Team Coordination", defaultDesc: "Coordinating developers, translators, and reviewers across time zones without bottlenecks or miscommunication." },
+  { icon: IconZap, titleKey: "challenges.performance.title", descKey: "challenges.performance.description", defaultTitle: "Performance Optimization", defaultDesc: "Loading translations efficiently without impacting page speed, bundle size, or time to first meaningful paint." },
 ];
 
 function WebsiteLocalizationPage() {
-  const t = useTranslations("marketing.i18n.websiteLocalization");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.websiteLocalization");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.globalReach",
-    "benefits.list.userExperience",
-    "benefits.list.seo",
-    "benefits.list.revenue",
-    "benefits.list.brandTrust",
-    "benefits.list.compliance",
+    { key: "benefits.list.globalReach", defaultValue: "Expand your reach to users in new markets and languages" },
+    { key: "benefits.list.userExperience", defaultValue: "Deliver a native-quality experience that builds user trust" },
+    { key: "benefits.list.seo", defaultValue: "Improve search rankings with locale-specific content and metadata" },
+    { key: "benefits.list.revenue", defaultValue: "Increase conversion rates and revenue in international markets" },
+    { key: "benefits.list.brandTrust", defaultValue: "Build brand credibility by speaking your customers' language" },
+    { key: "benefits.list.compliance", defaultValue: "Meet regional regulatory requirements for content and data privacy" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Audit & Plan", defaultDesc: "Analyze your website structure, identify translatable content, and define target locales and priorities." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Internationalize", defaultDesc: "Prepare your codebase with i18n frameworks, extract strings, and set up locale routing." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Translate & Adapt", defaultDesc: "Translate content with AI and human reviewers, adapting layouts and media for each locale." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Test & Launch", defaultDesc: "QA translations in context, verify locale-specific formatting, and deploy to production." },
   ];
 
   const relatedPages = [
@@ -133,10 +133,10 @@ function WebsiteLocalizationPage() {
                   <challenge.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(challenge.titleKey, { defaultValue: challenge.titleKey.split(".").pop() })}
+                  {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(challenge.descKey, { defaultValue: "" })}
+                  {t(challenge.descKey, { defaultValue: challenge.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -158,10 +158,10 @@ function WebsiteLocalizationPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -188,10 +188,10 @@ function WebsiteLocalizationPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

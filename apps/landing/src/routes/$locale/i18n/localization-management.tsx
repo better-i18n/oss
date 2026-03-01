@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -31,31 +31,31 @@ export const Route = createFileRoute("/$locale/i18n/localization-management")({
 });
 
 function LocalizationManagementPage() {
-  const t = useTranslations("marketing.i18n.localizationManagement");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.localizationManagement");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const pillars = [
-    { icon: IconSettingsGear1, titleKey: "pillars.workflow.title", descKey: "pillars.workflow.description" },
-    { icon: IconGroup1, titleKey: "pillars.collaboration.title", descKey: "pillars.collaboration.description" },
-    { icon: IconGlobe, titleKey: "pillars.quality.title", descKey: "pillars.quality.description" },
-    { icon: IconZap, titleKey: "pillars.automation.title", descKey: "pillars.automation.description" },
+    { icon: IconSettingsGear1, titleKey: "pillars.workflow.title", descKey: "pillars.workflow.description", defaultTitle: "Workflow Design", defaultDesc: "Define clear translation workflows with stage gates, role assignments, and approval chains that keep content moving from source to published." },
+    { icon: IconGroup1, titleKey: "pillars.collaboration.title", descKey: "pillars.collaboration.description", defaultTitle: "Team Collaboration", defaultDesc: "Connect developers, translators, and product managers in a shared workspace with contextual commenting and real-time progress visibility." },
+    { icon: IconGlobe, titleKey: "pillars.quality.title", descKey: "pillars.quality.description", defaultTitle: "Quality Assurance", defaultDesc: "Enforce glossary consistency, run automated QA checks, and leverage translation memory to maintain quality across every language." },
+    { icon: IconZap, titleKey: "pillars.automation.title", descKey: "pillars.automation.description", defaultTitle: "Automation", defaultDesc: "Automate key extraction, string syncing, and CI/CD integration so localization keeps pace with your development cycle." },
   ];
 
   const challenges = [
-    { titleKey: "challenges.fragmentation.title", descKey: "challenges.fragmentation.description" },
-    { titleKey: "challenges.consistency.title", descKey: "challenges.consistency.description" },
-    { titleKey: "challenges.scaling.title", descKey: "challenges.scaling.description" },
-    { titleKey: "challenges.speed.title", descKey: "challenges.speed.description" },
+    { titleKey: "challenges.fragmentation.title", descKey: "challenges.fragmentation.description", defaultTitle: "Tool Fragmentation", defaultDesc: "Translation assets scattered across spreadsheets, email threads, and disconnected tools lead to duplicated effort and lost context." },
+    { titleKey: "challenges.consistency.title", descKey: "challenges.consistency.description", defaultTitle: "Terminology Consistency", defaultDesc: "Without a centralized glossary and translation memory, different translators use different terms for the same concept across your product." },
+    { titleKey: "challenges.scaling.title", descKey: "challenges.scaling.description", defaultTitle: "Scaling to New Languages", defaultDesc: "Adding each new language multiplies coordination overhead unless your workflow and tooling are designed to scale horizontally." },
+    { titleKey: "challenges.speed.title", descKey: "challenges.speed.description", defaultTitle: "Release Speed", defaultDesc: "Manual handoffs between engineering and translation teams create bottlenecks that delay multilingual releases by days or weeks." },
   ];
 
   const benefits = [
-    "benefits.list.centralizedWorkflow",
-    "benefits.list.fasterDelivery",
-    "benefits.list.consistentQuality",
-    "benefits.list.reducedCost",
-    "benefits.list.betterCollaboration",
-    "benefits.list.measurableProgress",
+    { key: "benefits.list.centralizedWorkflow", defaultValue: "Centralized workflow that eliminates scattered spreadsheets and email chains" },
+    { key: "benefits.list.fasterDelivery", defaultValue: "Faster delivery with automated key extraction and CI/CD integration" },
+    { key: "benefits.list.consistentQuality", defaultValue: "Consistent quality enforced by glossaries and translation memory" },
+    { key: "benefits.list.reducedCost", defaultValue: "Reduced cost through translation reuse and AI-assisted suggestions" },
+    { key: "benefits.list.betterCollaboration", defaultValue: "Better collaboration between developers, translators, and product teams" },
+    { key: "benefits.list.measurableProgress", defaultValue: "Measurable progress with real-time translation coverage dashboards" },
   ];
 
   const relatedPages = [
@@ -149,10 +149,10 @@ function LocalizationManagementPage() {
                   <pillar.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(pillar.titleKey, { defaultValue: pillar.titleKey.split(".").pop() })}
+                  {t(pillar.titleKey, { defaultValue: pillar.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(pillar.descKey, { defaultValue: "" })}
+                  {t(pillar.descKey, { defaultValue: pillar.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -172,10 +172,10 @@ function LocalizationManagementPage() {
             {challenges.map((challenge) => (
               <div key={challenge.titleKey} className="p-6 rounded-xl bg-mist-50 border border-mist-100">
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(challenge.titleKey, { defaultValue: challenge.titleKey.split(".").pop() })}
+                  {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(challenge.descKey, { defaultValue: "" })}
+                  {t(challenge.descKey, { defaultValue: challenge.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -197,10 +197,10 @@ function LocalizationManagementPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>

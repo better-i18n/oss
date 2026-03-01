@@ -83,7 +83,7 @@ export function getCanonicalUrl(locale: string, pathname: string = "/"): string 
 
   return cleanPath
     ? `${SITE_URL}/${locale}/${cleanPath}`
-    : `${SITE_URL}/${locale}`;
+    : `${SITE_URL}/${locale}/`;
 }
 
 /**
@@ -128,7 +128,7 @@ export function getLocalizedMeta(
  */
 export function formatMetaTags(
   meta: LocalizedMetaResult,
-  options: Partial<MetaOptions> = {}
+  options: Partial<MetaOptions> & { locales?: string[] } = {}
 ) {
   const tags = [
     // Basic meta tags
@@ -154,7 +154,8 @@ export function formatMetaTags(
     { name: "twitter:image", content: meta.ogImage },
 
     // Additional SEO
-    { name: "robots", content: "index, follow" },
+    { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+    { name: "author", content: SITE_NAME },
   ];
 
   // Add article-specific meta tags
@@ -167,6 +168,16 @@ export function formatMetaTags(
 
     if (options.author) {
       tags.push({ property: "article:author", content: options.author });
+    }
+  }
+
+  // Add og:locale:alternate tags for other locales
+  if (options.locales) {
+    const currentLocale = options.locale || "en";
+    for (const loc of options.locales) {
+      if (loc !== currentLocale) {
+        tags.push({ property: "og:locale:alternate", content: loc });
+      }
     }
   }
 
@@ -187,14 +198,14 @@ export function getAlternateLinks(pathname: string = "/", locales?: string[]) {
     rel: "alternate",
     href: cleanPath
       ? `${SITE_URL}/${locale}/${cleanPath}`
-      : `${SITE_URL}/${locale}`,
+      : `${SITE_URL}/${locale}/`,
     hrefLang: locale,
   }));
 
   // x-default points to the English version (default locale) with /en/ prefix to avoid redirects
   links.push({
     rel: "alternate",
-    href: cleanPath ? `${SITE_URL}/en/${cleanPath}` : `${SITE_URL}/en`,
+    href: cleanPath ? `${SITE_URL}/en/${cleanPath}` : `${SITE_URL}/en/`,
     hrefLang: "x-default",
   });
 

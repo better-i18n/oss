@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -30,31 +30,31 @@ export const Route = createFileRoute("/$locale/i18n/localization-platforms")({
 });
 
 const capabilities = [
-  { icon: IconRocket, titleKey: "capabilities.projectManagement.title", descKey: "capabilities.projectManagement.description" },
-  { icon: IconRocket, titleKey: "capabilities.workflowAutomation.title", descKey: "capabilities.workflowAutomation.description" },
-  { icon: IconGroup1, titleKey: "capabilities.teamCollaboration.title", descKey: "capabilities.teamCollaboration.description" },
-  { icon: IconChart1, titleKey: "capabilities.analyticsReporting.title", descKey: "capabilities.analyticsReporting.description" },
+  { icon: IconRocket, titleKey: "capabilities.projectManagement.title", descKey: "capabilities.projectManagement.description", defaultTitle: "Project Management", defaultDesc: "Organize translation work by project, locale, and deadline with full visibility into progress and bottlenecks." },
+  { icon: IconRocket, titleKey: "capabilities.workflowAutomation.title", descKey: "capabilities.workflowAutomation.description", defaultTitle: "Workflow Automation", defaultDesc: "Automatically route new strings to translators, trigger reviews on completion, and publish approved translations without manual steps." },
+  { icon: IconGroup1, titleKey: "capabilities.teamCollaboration.title", descKey: "capabilities.teamCollaboration.description", defaultTitle: "Team Collaboration", defaultDesc: "Enable translators, reviewers, and developers to work together in real time with in-context comments and role-based access." },
+  { icon: IconChart1, titleKey: "capabilities.analyticsReporting.title", descKey: "capabilities.analyticsReporting.description", defaultTitle: "Analytics & Reporting", defaultDesc: "Track translation coverage, quality scores, turnaround times, and cost metrics across all projects and locales." },
 ];
 
 function LocalizationPlatformsPage() {
-  const t = useTranslations("marketing.i18n.localizationPlatforms");
-  const tCommon = useTranslations("marketing");
+  const t = useT("marketing.i18n.localizationPlatforms");
+  const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.centralizedWorkflow",
-    "benefits.list.automatedRouting",
-    "benefits.list.consistentTerminology",
-    "benefits.list.realTimeVisibility",
-    "benefits.list.developerIntegration",
-    "benefits.list.offlineCapability",
+    { key: "benefits.list.centralizedWorkflow", defaultValue: "Centralize all translation work in a single dashboard across projects" },
+    { key: "benefits.list.automatedRouting", defaultValue: "Automatically route strings to the right translator or AI engine" },
+    { key: "benefits.list.consistentTerminology", defaultValue: "Enforce consistent terminology with shared glossaries and translation memory" },
+    { key: "benefits.list.realTimeVisibility", defaultValue: "Get real-time visibility into translation progress across all locales" },
+    { key: "benefits.list.developerIntegration", defaultValue: "Integrate directly with your development pipeline via CLI, API, or GitHub sync" },
+    { key: "benefits.list.offlineCapability", defaultValue: "Support offline translation workflows with sync-on-reconnect capability" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Connect Your Codebase", defaultDesc: "Link your GitHub, GitLab, or Bitbucket repository so the platform can detect translatable strings automatically." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Configure Workflows", defaultDesc: "Define translation workflows, assign roles, set up routing rules, and configure quality gates for each locale." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Translate & Review", defaultDesc: "Use AI pre-translation or assign to human linguists. Reviewers approve translations in context before publishing." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Deploy & Monitor", defaultDesc: "Push approved translations to production via CDN or pull request and monitor coverage and quality metrics." },
   ];
 
   const relatedPages = [
@@ -136,10 +136,10 @@ function LocalizationPlatformsPage() {
                   <capability.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(capability.titleKey, { defaultValue: capability.titleKey.split(".").pop() })}
+                  {t(capability.titleKey, { defaultValue: capability.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(capability.descKey, { defaultValue: "" })}
+                  {t(capability.descKey, { defaultValue: capability.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -209,10 +209,10 @@ function LocalizationPlatformsPage() {
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
-                {benefits.map((benefitKey) => (
-                  <li key={benefitKey} className="flex items-start gap-3">
+                {benefits.map((benefit) => (
+                  <li key={benefit.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefitKey, { defaultValue: benefitKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -238,10 +238,10 @@ function LocalizationPlatformsPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}
