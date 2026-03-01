@@ -1,7 +1,3 @@
-# https://www.robotstxt.org/robotstxt.html
-User-agent: *
-Allow: /
-
 # Sitemap
 Sitemap: https://better-i18n.com/sitemap.xml
 
@@ -9,6 +5,7 @@ Sitemap: https://better-i18n.com/sitemap.xml
 # https://llmstxt.org/
 llms.txt: https://better-i18n.com/llms.txt
 
-# Disallow admin/internal paths (if any)
+# Disallow admin/internal paths
+User-agent: *
 Disallow: /api/
 Disallow: /_/
