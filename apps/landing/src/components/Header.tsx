@@ -56,7 +56,7 @@ export default function Header({ className }: { className?: string }) {
               params={{ locale: locale || "en" }}
               className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
             >
-              {t("features")}
+              {t("features", { defaultValue: "Features" })}
             </Link>
             {/* For Product Mega Menu */}
             <div className="relative group">
@@ -235,7 +235,7 @@ export default function Header({ className }: { className?: string }) {
                       rel="noopener noreferrer"
                       className="text-sm font-medium text-mist-950 hover:underline"
                     >
-                      {t("documentation")}
+                      {t("documentation", { defaultValue: "Documentation" })}
                     </a>
                   </div>
                 </div>
@@ -246,11 +246,11 @@ export default function Header({ className }: { className?: string }) {
               params={{ locale: locale || "en" }}
               className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
             >
-              {t("pricing")}
+              {t("pricing", { defaultValue: "Pricing" })}
             </Link>
             <div className="relative group">
               <button className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
-                {t("resources.title")}
+                {t("resources.title", { defaultValue: "Resources" })}
                 <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
@@ -339,7 +339,7 @@ export default function Header({ className }: { className?: string }) {
                       >
                         <IconBook className="size-4 text-mist-600" />
                         <span className="text-sm font-medium text-mist-950">
-                          {t("documentation")}
+                          {t("documentation", { defaultValue: "Documentation" })}
                         </span>
                       </a>
 
@@ -351,7 +351,7 @@ export default function Header({ className }: { className?: string }) {
                       >
                         <IconSparklesSoft className="size-4 text-mist-600" />
                         <span className="text-sm font-medium text-mist-950">
-                          {t("changelog")}
+                          {t("changelog", { defaultValue: "Changelog" })}
                         </span>
                       </Link>
 
@@ -363,7 +363,7 @@ export default function Header({ className }: { className?: string }) {
                       >
                         <IconNewspaper className="size-4 text-mist-600" />
                         <span className="text-sm font-medium text-mist-950">
-                          {t("blog")}
+                          {t("blog", { defaultValue: "Blog" })}
                         </span>
                       </Link>
 
@@ -376,7 +376,7 @@ export default function Header({ className }: { className?: string }) {
                       >
                         <IconApiConnection className="size-4 text-mist-600" />
                         <span className="text-sm font-medium text-mist-950">
-                          {t("apiReference")}
+                          {t("apiReference", { defaultValue: "API Reference" })}
                         </span>
                       </a>
 
