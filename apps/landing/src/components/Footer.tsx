@@ -29,7 +29,9 @@ const footerLinks = [
     category: "solutions",
     categoryTitle: "Solutions",
     links: [
+      { key: "translators", label: "For Translators", href: "/$locale/for-translators" },
       { key: "developers", label: "For Developers", href: "/$locale/for-developers" },
+      { key: "productTeams", label: "For Product Teams", href: "/$locale/for-product-teams" },
       { key: "enterprises", label: "For Enterprises", href: "/$locale/for-enterprises" },
       { key: "startups", label: "For Startups", href: "/$locale/for-startups" },
       { key: "agencies", label: "For Agencies", href: "/$locale/for-agencies" },
@@ -41,6 +43,7 @@ const footerLinks = [
     category: "compare",
     categoryTitle: "Compare",
     links: [
+      { key: "overview", label: "All Comparisons", href: "/$locale/compare" },
       { key: "crowdin", label: "vs Crowdin", href: "/$locale/compare/crowdin" },
       { key: "lokalise", label: "vs Lokalise", href: "/$locale/compare/lokalise" },
       { key: "phrase", label: "vs Phrase", href: "/$locale/compare/phrase" },
@@ -128,7 +131,7 @@ export default function Footer() {
                         </a>
                       ) : (
                         <Link
-                          to={link.href as "/$locale" | "/$locale/features" | "/$locale/pricing" | "/$locale/integrations" | "/$locale/about" | "/$locale/careers" | "/$locale/blog" | "/$locale/changelog" | "/$locale/privacy" | "/$locale/terms" | "/$locale/what-is" | "/$locale/for-developers" | "/$locale/for-enterprises" | "/$locale/for-startups" | "/$locale/for-agencies" | "/$locale/for-ecommerce" | "/$locale/for-saas" | "/$locale/compare/crowdin" | "/$locale/compare/lokalise" | "/$locale/compare/phrase" | "/$locale/compare/transifex" | "/$locale/i18n/react" | "/$locale/i18n/nextjs" | "/$locale/i18n/vue" | "/$locale/i18n/nuxt" | "/$locale/i18n/angular" | "/$locale/i18n/svelte"}
+                          to={link.href as "/$locale" | "/$locale/features" | "/$locale/pricing" | "/$locale/integrations" | "/$locale/about" | "/$locale/careers" | "/$locale/blog" | "/$locale/changelog" | "/$locale/privacy" | "/$locale/terms" | "/$locale/what-is" | "/$locale/for-translators" | "/$locale/for-developers" | "/$locale/for-product-teams" | "/$locale/for-enterprises" | "/$locale/for-startups" | "/$locale/for-agencies" | "/$locale/for-ecommerce" | "/$locale/for-saas" | "/$locale/compare" | "/$locale/compare/crowdin" | "/$locale/compare/lokalise" | "/$locale/compare/phrase" | "/$locale/compare/transifex" | "/$locale/i18n/react" | "/$locale/i18n/nextjs" | "/$locale/i18n/vue" | "/$locale/i18n/nuxt" | "/$locale/i18n/angular" | "/$locale/i18n/svelte"}
                           params={{ locale: currentLocale }}
                           className="hover:text-mist-950"
                         >
