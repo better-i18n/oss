@@ -132,6 +132,9 @@ interface ArticleSchemaOptions {
     name: string;
     url?: string;
   };
+  wordCount?: number;
+  timeRequired?: string; // ISO 8601 duration, e.g. "PT5M"
+  articleSection?: string;
 }
 
 /**
@@ -168,6 +171,9 @@ export function getArticleSchema(options: ArticleSchemaOptions) {
       "@type": "WebPage",
       "@id": options.url,
     },
+    ...(options.wordCount && { wordCount: options.wordCount }),
+    ...(options.timeRequired && { timeRequired: options.timeRequired }),
+    ...(options.articleSection && { articleSection: options.articleSection }),
   };
 }
 
