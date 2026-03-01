@@ -394,7 +394,7 @@ export default function Header({ className }: { className?: string }) {
                           )}
                         </div>
                         <span className="text-sm font-medium text-mist-950">
-                          {t("status")}
+                          {t("status", { defaultValue: "Status" })}
                         </span>
                       </a>
                     </div>

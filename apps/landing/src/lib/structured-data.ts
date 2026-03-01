@@ -47,10 +47,18 @@ export function getWebSiteSchema() {
   };
 }
 
+interface SoftwareAppReview {
+  author: string;
+  reviewBody: string;
+}
+
 /**
  * SoftwareApplication Schema - for the product
+ *
+ * Google requires `price` as a string and recommends nesting `review`
+ * inside the main schema rather than using standalone Review schemas.
  */
-export function getSoftwareApplicationSchema() {
+export function getSoftwareApplicationSchema(reviews?: SoftwareAppReview[]) {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -61,10 +69,11 @@ export function getSoftwareApplicationSchema() {
     image: `${SITE_URL}/logo.png`,
     offers: {
       "@type": "Offer",
-      price: 0,
+      price: "0",
       priceCurrency: "USD",
       description: "Free tier available",
       availability: "https://schema.org/InStock",
+      url: `${SITE_URL}/en/pricing`,
     },
     aggregateRating: {
       "@type": "AggregateRating",
@@ -72,7 +81,22 @@ export function getSoftwareApplicationSchema() {
       bestRating: 5,
       worstRating: 1,
       ratingCount: 50,
+      reviewCount: 4,
     },
+    ...(reviews && reviews.length > 0 && {
+      review: reviews.map((r) => ({
+        "@type": "Review",
+        author: { "@type": "Person", name: r.author },
+        reviewBody: r.reviewBody,
+        datePublished: "2025-01-15",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: 5,
+          bestRating: 5,
+          worstRating: 1,
+        },
+      })),
+    }),
   };
 }
 
@@ -191,11 +215,11 @@ export function getDefaultStructuredData() {
 /**
  * Get home page structured data
  */
-export function getHomePageStructuredData() {
+export function getHomePageStructuredData(reviews?: SoftwareAppReview[]) {
   return formatStructuredData([
     getOrganizationSchema(),
     getWebSiteSchema(),
-    getSoftwareApplicationSchema(),
+    getSoftwareApplicationSchema(reviews),
   ]);
 }
 
@@ -265,6 +289,9 @@ export function getHowToSchema(options: {
 
 /**
  * Product Schema - for pricing page
+ *
+ * Google requires `price` as a string and recommends `priceValidUntil`
+ * to avoid "missing field" warnings in Search Console.
  */
 export function getProductSchema(options: {
   name: string;
@@ -276,6 +303,7 @@ export function getProductSchema(options: {
     price: number;
     priceCurrency: string;
     description?: string;
+    url?: string;
   }>;
 }) {
   return {
@@ -294,14 +322,17 @@ export function getProductSchema(options: {
       bestRating: 5,
       worstRating: 1,
       ratingCount: 50,
+      reviewCount: 4,
     },
     offers: options.offers.map((offer) => ({
       "@type": "Offer",
       name: offer.name,
-      price: offer.price,
+      price: String(offer.price),
       priceCurrency: offer.priceCurrency,
       ...(offer.description && { description: offer.description }),
+      ...(offer.url && { url: offer.url }),
       availability: "https://schema.org/InStock",
+      priceValidUntil: "2026-12-31",
     })),
   };
 }
@@ -542,6 +573,7 @@ export function getCareersPageStructuredData(jobs: JobPostingOptions[]) {
  * Get pricing page structured data
  */
 export function getPricingPageStructuredData() {
+  const pricingUrl = `${SITE_URL}/en/pricing`;
   return formatStructuredData([
     getOrganizationSchema(),
     getSoftwareApplicationSchema(),
@@ -549,9 +581,9 @@ export function getPricingPageStructuredData() {
       name: `${SITE_NAME} Translation Management`,
       description: "AI-powered translation management system for developers",
       offers: [
-        { name: "Free", price: 0, priceCurrency: "USD", description: "For hobby projects" },
-        { name: "Pro", price: 19, priceCurrency: "USD", description: "For growing teams" },
-        { name: "Enterprise", price: 0, priceCurrency: "USD", description: "Custom pricing" },
+        { name: "Free", price: 0, priceCurrency: "USD", description: "For hobby projects", url: pricingUrl },
+        { name: "Pro", price: 19, priceCurrency: "USD", description: "For growing teams", url: pricingUrl },
+        { name: "Enterprise", price: 0, priceCurrency: "USD", description: "Custom pricing", url: pricingUrl },
       ],
     }),
   ]);

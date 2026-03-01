@@ -11,38 +11,14 @@ import {
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 const features = [
-  {
-    key: "typescript",
-    icon: IconCodeBrackets,
-  },
-  {
-    key: "cli",
-    icon: IconScript,
-  },
-  {
-    key: "git",
-    icon: IconGithub,
-  },
-  {
-    key: "cdn",
-    icon: IconGlobe,
-  },
-  {
-    key: "saas",
-    icon: IconZap,
-  },
-  {
-    key: "ecommerce",
-    icon: IconPageText,
-  },
-  {
-    key: "mobile",
-    icon: IconCircleInfo,
-  },
-  {
-    key: "contentPlatforms",
-    icon: IconApiConnection,
-  },
+  { key: "typescript", icon: IconCodeBrackets, title: "Type-Safe SDKs", description: "Full TypeScript support with autocompletion for every translation key." },
+  { key: "cli", icon: IconScript, title: "CLI Tooling", description: "Scan your codebase, check for missing keys, and sync translations from the terminal." },
+  { key: "git", icon: IconGithub, title: "Git Integration", description: "Translation updates delivered via pull requests to your repository." },
+  { key: "cdn", icon: IconGlobe, title: "CDN Delivery", description: "Translations served globally with edge caching for instant load times." },
+  { key: "saas", icon: IconZap, title: "SaaS Apps", description: "Multi-tenant localization with per-workspace language configurations." },
+  { key: "ecommerce", icon: IconPageText, title: "E-Commerce", description: "Localize product listings, checkout flows, and marketing content." },
+  { key: "mobile", icon: IconCircleInfo, title: "Mobile Apps", description: "Over-the-air translation updates without app store resubmissions." },
+  { key: "contentPlatforms", icon: IconApiConnection, title: "Content Platforms", description: "Manage translations alongside your CMS content with full API access." },
 ];
 
 export default function UseCases() {
@@ -53,10 +29,10 @@ export default function UseCases() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="text-center mb-12">
           <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            {t("title")}
+            {t("title", { defaultValue: "Built for Developers" })}
           </h2>
           <p className="mt-4 text-lg text-mist-600 max-w-2xl mx-auto">
-            {t("subtitle")}
+            {t("subtitle", { defaultValue: "Developer-first tools and integrations for every use case." })}
           </p>
         </div>
 
@@ -72,10 +48,10 @@ export default function UseCases() {
                   <Icon className="size-5 text-mist-700" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950">
-                  {t(`${feature.key}.title`)}
+                  {t(`${feature.key}.title`, { defaultValue: feature.title })}
                 </h3>
                 <p className="mt-2 text-sm text-mist-600">
-                  {t(`${feature.key}.description`)}
+                  {t(`${feature.key}.description`, { defaultValue: feature.description })}
                 </p>
               </div>
             );
