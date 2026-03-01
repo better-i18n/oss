@@ -104,10 +104,10 @@ function ReactNativeLocalizationPage() {
                   <feature.icon className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(feature.titleKey, { defaultValue: feature.titleKey.split(".").pop() })}
+                  {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(feature.descKey, { defaultValue: "" })}
+                  {t(feature.descKey, { defaultValue: feature.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -126,10 +126,10 @@ function ReactNativeLocalizationPage() {
                 {t("challenges.intro", { defaultValue: "Mobile apps face unique constraints that web apps do not. Limited bandwidth, offline usage, platform differences between iOS and Android, and app store review cycles all affect how you approach localization." })}
               </p>
               <ul className="space-y-4">
-                {challenges.map((challengeKey) => (
-                  <li key={challengeKey} className="flex items-start gap-3">
+                {challenges.map((challenge) => (
+                  <li key={challenge.key} className="flex items-start gap-3">
                     <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(challengeKey, { defaultValue: challengeKey.split(".").pop() })}</span>
+                    <span className="text-mist-700">{t(challenge.key, { defaultValue: challenge.defaultValue })}</span>
                   </li>
                 ))}
               </ul>
@@ -215,10 +215,10 @@ function ReactNativeLocalizationPage() {
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.titleKey.split(".").pop() })}
+                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: "" })}
+                  {t(step.descKey, { defaultValue: step.defaultDesc })}
                 </p>
               </div>
             ))}

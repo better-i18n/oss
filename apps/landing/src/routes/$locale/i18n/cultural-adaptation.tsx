@@ -45,19 +45,19 @@ function CulturalAdaptationPage() {
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.nativeExperience",
-    "benefits.list.higherTrust",
-    "benefits.list.lowerBounce",
-    "benefits.list.betterConversion",
-    "benefits.list.regulatoryCompliance",
-    "benefits.list.globalBrandEquity",
+    { key: "benefits.list.nativeExperience", defaultValue: "Deliver an experience that feels native to users in every target market" },
+    { key: "benefits.list.higherTrust", defaultValue: "Build higher trust through culturally appropriate visuals, tone, and formatting" },
+    { key: "benefits.list.lowerBounce", defaultValue: "Reduce bounce rates by eliminating cultural friction that drives users away" },
+    { key: "benefits.list.betterConversion", defaultValue: "Improve conversion rates with locally adapted calls to action and payment flows" },
+    { key: "benefits.list.regulatoryCompliance", defaultValue: "Ensure regulatory compliance with region-specific privacy laws and disclosure requirements" },
+    { key: "benefits.list.globalBrandEquity", defaultValue: "Strengthen global brand equity while maintaining local market relevance" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description" },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description" },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description" },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description" },
+    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Cultural Research", defaultDesc: "Study your target market's cultural norms, communication styles, color associations, and user experience expectations through local market research and user testing." },
+    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Content & Design Audit", defaultDesc: "Review all existing content, imagery, icons, and UI patterns for cultural compatibility. Identify elements that need adaptation versus those that transfer well across cultures." },
+    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Adaptation Implementation", defaultDesc: "Adapt visuals, tone, formatting, payment methods, and legal compliance for each market. Implement RTL support, locale-specific date and number formatting, and culturally appropriate imagery." },
+    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Local Validation & Testing", defaultDesc: "Test adapted content with native users in each target market. Validate cultural appropriateness, usability, and conversion performance through local focus groups and A/B testing." },
   ];
 
   const relatedPages = [

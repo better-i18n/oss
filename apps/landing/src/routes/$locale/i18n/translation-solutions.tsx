@@ -33,10 +33,10 @@ export const Route = createFileRoute("/$locale/i18n/translation-solutions")({
 });
 
 const solutionTypes = [
-  { icon: IconRocket, titleKey: "types.saas.title", descKey: "types.saas.description" },
-  { icon: IconCodeBrackets, titleKey: "types.api.title", descKey: "types.api.description" },
-  { icon: IconApiConnection, titleKey: "types.plugins.title", descKey: "types.plugins.description" },
-  { icon: IconSparklesSoft, titleKey: "types.aiNative.title", descKey: "types.aiNative.description" },
+  { icon: IconRocket, titleKey: "types.saas.title", descKey: "types.saas.description", defaultTitle: "SaaS Translation Platforms", defaultDesc: "Cloud-based platforms with dashboards for managing translations, translation memory, and team collaboration across multiple languages." },
+  { icon: IconCodeBrackets, titleKey: "types.api.title", descKey: "types.api.description", defaultTitle: "Translation APIs", defaultDesc: "Programmatic interfaces that let developers integrate machine or AI translation directly into applications, pipelines, and custom workflows." },
+  { icon: IconApiConnection, titleKey: "types.plugins.title", descKey: "types.plugins.description", defaultTitle: "CMS & Framework Plugins", defaultDesc: "Drop-in integrations for WordPress, Shopify, Next.js, and other platforms that add translation capabilities without custom development." },
+  { icon: IconSparklesSoft, titleKey: "types.aiNative.title", descKey: "types.aiNative.description", defaultTitle: "AI-Native Translation Tools", defaultDesc: "Solutions built around large language models that provide context-aware, glossary-enforced translations with quality approaching professional human translators." },
 ];
 
 function TranslationSolutionsPage() {

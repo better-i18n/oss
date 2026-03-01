@@ -45,12 +45,12 @@ function WebsiteTranslationPage() {
   const { locale } = Route.useParams();
 
   const benefits = [
-    "benefits.list.reachSpanishSpeakers",
-    "benefits.list.frenchMarkets",
-    "benefits.list.germanAudiences",
-    "benefits.list.arabicExpansion",
-    "benefits.list.chineseGrowth",
-    "benefits.list.seoRankings",
+    { key: "benefits.list.reachSpanishSpeakers", defaultValue: "Reach 500M+ Spanish speakers with professionally translated content" },
+    { key: "benefits.list.frenchMarkets", defaultValue: "Expand into French-speaking markets across Europe, Canada, and Africa" },
+    { key: "benefits.list.germanAudiences", defaultValue: "Engage German audiences who strongly prefer browsing in their native language" },
+    { key: "benefits.list.arabicExpansion", defaultValue: "Unlock Arabic-speaking markets with RTL-ready translated pages" },
+    { key: "benefits.list.chineseGrowth", defaultValue: "Tap into Chinese-language growth with culturally adapted translations" },
+    { key: "benefits.list.seoRankings", defaultValue: "Improve organic search rankings in every target language and locale" },
   ];
 
   const processSteps = [
