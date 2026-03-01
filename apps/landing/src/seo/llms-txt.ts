@@ -107,6 +107,11 @@ const PAGE_TITLES: Readonly<Record<string, string>> = {
   "i18n/cli-code-scanning": "CLI Code Scanning",
   "i18n/formatting-utilities": "Formatting Utilities",
   "i18n/security-compliance": "Security & Compliance",
+
+  // Legal & status (intentionally excluded from llms.txt sections)
+  privacy: "Privacy Policy",
+  terms: "Terms of Service",
+  status: "System Status",
 };
 
 // ─── Section definitions ────────────────────────────────────────────
