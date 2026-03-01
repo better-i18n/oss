@@ -54,6 +54,7 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-950/10 p-1">
               <button
                 type="button"
+                aria-pressed={billingPeriod === "monthly"}
                 onClick={() => setBillingPeriod("monthly")}
                 className={cn(
                   "rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
@@ -66,6 +67,7 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
               </button>
               <button
                 type="button"
+                aria-pressed={billingPeriod === "yearly"}
                 onClick={() => setBillingPeriod("yearly")}
                 className={cn(
                   "rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2",

@@ -78,6 +78,7 @@ function AIFeatureCard() {
                       className="w-3.5 h-3.5 animate-spin"
                       fill="none"
                       viewBox="0 0 24 24"
+                      aria-hidden="true"
                     >
                       <circle
                         className="opacity-25"

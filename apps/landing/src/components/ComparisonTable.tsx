@@ -167,7 +167,7 @@ export function ComparisonRelatedTopics({ heading, links, locale }: ComparisonRe
                 <h3 className="text-sm font-medium text-mist-950">{link.title}</h3>
                 <p className="text-xs text-mist-500 mt-1">{link.description}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" aria-hidden="true" />
             </Link>
           ))}
         </div>
@@ -209,7 +209,7 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
               <span className="text-sm font-medium text-mist-950">
                 Better i18n vs {competitor.name}
               </span>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" aria-hidden="true" />
             </Link>
           ))}
         </div>

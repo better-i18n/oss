@@ -65,7 +65,7 @@ export function CmsPersonaPage({
         {relatedPersonas.length > 0 && (
           <div className="mx-auto max-w-7xl px-6 lg:px-10 mt-16">
             <h2 className="font-display text-2xl font-medium text-mist-950 mb-8">
-              Built for every team
+              {t("builtForEveryTeam", "Built for every team")}
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {relatedPersonas.map((persona) => (
@@ -101,16 +101,18 @@ export function CmsPersonaNotFound({
   locale: string;
   slug?: string;
 }) {
+  const t = useT("persona");
+
   return (
     <div className="bg-white">
       <Header className="bg-white" />
       <main className="py-24 sm:py-32">
         <div className="mx-auto max-w-2xl px-6 text-center">
           <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            Page not found
+            {t("notFound.title", "Page not found")}
           </h1>
           <p className="mt-4 text-lg text-mist-600">
-            The page you're looking for doesn't exist.
+            {t("notFound.description", "The page you're looking for doesn't exist.")}
           </p>
           <Link
             to="/$locale"
@@ -118,7 +120,7 @@ export function CmsPersonaNotFound({
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
           >
             <IconArrowLeft className="w-4 h-4" />
-            Go Home
+            {t("notFound.goHome", "Go Home")}
           </Link>
         </div>
       </main>

@@ -114,7 +114,7 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
                 <h3 className="text-sm font-medium text-mist-950">{t.has(page.titleKey) ? t(page.titleKey) : page.titleFallback}</h3>
                 <p className="text-xs text-mist-500 mt-1">{t.has(page.descKey) ? t(page.descKey) : page.descFallback}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" aria-hidden="true" />
             </Link>
           ))}
         </div>
