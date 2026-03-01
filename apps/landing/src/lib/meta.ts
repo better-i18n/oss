@@ -5,6 +5,9 @@ const SITE_NAME = "Better i18n";
 const OG_SERVICE_URL = "https://og.better-i18n.com";
 const DEFAULT_OG_IMAGE = `${OG_SERVICE_URL}/og`;
 const TWITTER_HANDLE = "@betteri18n";
+const MAX_TITLE_LENGTH = 70;
+const BRAND_SUFFIX_SEPARATOR_PIPE = ` | ${SITE_NAME}`;
+const BRAND_SUFFIX_SEPARATOR_DASH = ` - ${SITE_NAME}`;
 
 interface MetaMessages {
   [key: string]: string | Record<string, unknown>;
@@ -25,6 +28,31 @@ function getNestedValue(obj: MetaMessages, path: string): string | undefined {
   }
 
   return typeof current === "string" ? current : undefined;
+}
+
+/**
+ * Ensure a title stays within the SERP-safe character limit.
+ * Strategy: if the title exceeds MAX_TITLE_LENGTH and contains a brand suffix
+ * (e.g. "| Better i18n" or "- Better i18n"), remove it first.
+ * If still too long, hard-truncate with ellipsis.
+ */
+function truncateTitle(title: string): string {
+  if (title.length <= MAX_TITLE_LENGTH) return title;
+
+  // Try removing brand suffix first (pipe or dash separator)
+  if (title.endsWith(BRAND_SUFFIX_SEPARATOR_PIPE)) {
+    const stripped = title.slice(0, -BRAND_SUFFIX_SEPARATOR_PIPE.length).trimEnd();
+    if (stripped.length <= MAX_TITLE_LENGTH) return stripped;
+    return `${stripped.slice(0, MAX_TITLE_LENGTH - 1)}\u2026`;
+  }
+
+  if (title.endsWith(BRAND_SUFFIX_SEPARATOR_DASH)) {
+    const stripped = title.slice(0, -BRAND_SUFFIX_SEPARATOR_DASH.length).trimEnd();
+    if (stripped.length <= MAX_TITLE_LENGTH) return stripped;
+    return `${stripped.slice(0, MAX_TITLE_LENGTH - 1)}\u2026`;
+  }
+
+  return `${title.slice(0, MAX_TITLE_LENGTH - 1)}\u2026`;
 }
 
 interface LocalizedMetaResult {
@@ -48,14 +76,11 @@ interface MetaOptions {
 }
 
 /**
- * Get the canonical URL for a page
+ * Get the canonical URL for a page.
+ * All locales (including English) use /$locale/ prefix to avoid 301 redirects.
  */
 export function getCanonicalUrl(locale: string, pathname: string = "/"): string {
   const cleanPath = pathname.replace(/^\/+/, "");
-
-  if (locale === "en") {
-    return cleanPath ? `${SITE_URL}/${cleanPath}` : SITE_URL;
-  }
 
   return cleanPath
     ? `${SITE_URL}/${locale}/${cleanPath}`
@@ -83,8 +108,10 @@ export function getLocalizedMeta(
   const ogDescriptionValue = getNestedValue(messages, `${metaPrefix}.ogDescription`);
   const ogImageValue = getNestedValue(messages, `${metaPrefix}.ogImage`);
 
+  const safeTitle = truncateTitle(title || SITE_NAME);
+
   return {
-    title: title || SITE_NAME,
+    title: safeTitle,
     description: description || "",
     ogTitle: ogTitleValue || title || SITE_NAME,
     ogDescription: ogDescriptionValue || description || "",
@@ -148,7 +175,8 @@ export function formatMetaTags(
 }
 
 /**
- * Get alternate language links for hreflang tags
+ * Get alternate language links for hreflang tags.
+ * All locales use /$locale/ prefix so hreflang URLs return HTTP 200 (not 301 redirects).
  */
 export function getAlternateLinks(pathname: string = "/", locales?: string[]) {
   if (!locales) {
@@ -158,16 +186,16 @@ export function getAlternateLinks(pathname: string = "/", locales?: string[]) {
 
   const links = locales.map((locale) => ({
     rel: "alternate",
-    href: locale === "en"
-      ? (cleanPath ? `${SITE_URL}/${cleanPath}` : SITE_URL)
-      : (cleanPath ? `${SITE_URL}/${locale}/${cleanPath}` : `${SITE_URL}/${locale}`),
+    href: cleanPath
+      ? `${SITE_URL}/${locale}/${cleanPath}`
+      : `${SITE_URL}/${locale}`,
     hrefLang: locale,
   }));
 
-  // Add x-default (usually points to default locale)
+  // x-default points to the English version (default locale) with /en/ prefix to avoid redirects
   links.push({
     rel: "alternate",
-    href: cleanPath ? `${SITE_URL}/${cleanPath}` : SITE_URL,
+    href: cleanPath ? `${SITE_URL}/en/${cleanPath}` : `${SITE_URL}/en`,
     hrefLang: "x-default",
   });
 

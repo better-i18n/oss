@@ -15,18 +15,19 @@ const PLAN_PRICES = {
   enterprise: { monthly: "Custom", yearly: "Custom" },
 } as const;
 
-export default function Pricing() {
+export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" | "h2" }) {
   const t = useTranslations("pricing");
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("yearly");
+  const Heading = headingLevel;
 
   return (
     <section id="pricing" className="py-16 bg-mist-100">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="flex flex-col gap-10 sm:gap-16">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h2 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
+            <Heading className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
               {t("title")}
-            </h2>
+            </Heading>
 
             {/* Billing Toggle */}
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-950/10 p-1">

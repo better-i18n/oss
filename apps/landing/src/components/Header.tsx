@@ -275,7 +275,7 @@ export default function Header({ className }: { className?: string }) {
                           </div>
                           <div className="text-xs text-mist-500 leading-relaxed mt-0.5">
                             {t("resources.about.description", {
-                              defaultValue: "Learn more about our story",
+                              defaultValue: "The team behind Better i18n",
                             })}
                           </div>
                         </div>
@@ -409,13 +409,11 @@ export default function Header({ className }: { className?: string }) {
                 href="https://dash.better-i18n.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={t("getStartedAriaLabel", {
-                  defaultValue:
-                    "Get started with Better i18n — AI localization platform",
-                })}
                 className="inline-flex items-center justify-center rounded-full bg-mist-950 px-4 py-1.5 text-sm/7 font-medium text-white hover:bg-mist-800"
               >
-                {t("getStarted")}
+                {t("getStartedDescriptive", {
+                  defaultValue: "Try Better i18n Free",
+                })}
               </a>
             </div>
           </div>

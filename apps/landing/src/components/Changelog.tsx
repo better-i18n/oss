@@ -1,7 +1,7 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { useTranslations } from "@better-i18n/use-intl";
-import type { ChangelogEntry } from "@/lib/changelog";
+import type { ChangelogEntry, ChangelogListItem } from "@/lib/changelog";
 
 const categoryColors: Record<string, string> = {
   feature: "bg-blue-500/10 text-blue-700",
@@ -26,7 +26,7 @@ const categoryLabels: Record<string, Record<string, string>> = {
 };
 
 interface ChangelogProps {
-  releases: ChangelogEntry[];
+  releases: (ChangelogEntry | ChangelogListItem)[];
 }
 
 export default function Changelog({ releases }: ChangelogProps) {
