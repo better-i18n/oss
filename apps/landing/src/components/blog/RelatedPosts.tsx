@@ -60,7 +60,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
                     </span>
                   )}
                   {post.readTime && (
-                    <span className="text-xs text-mist-400">{post.readTime}</span>
+                    <span className="text-xs text-mist-400">{t("minRead", { defaultValue: "{{count}} min read", count: post.readTime })}</span>
                   )}
                 </div>
                 <h3 className="font-display text-[15px]/[1.4] font-medium text-mist-950 group-hover:text-mist-700 transition-colors line-clamp-2">
