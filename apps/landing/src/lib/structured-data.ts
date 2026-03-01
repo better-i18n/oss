@@ -60,7 +60,7 @@ export function getSoftwareApplicationSchema(reviews?: SoftwareAppReview[]) {
     url: SITE_URL,
     image: `${SITE_URL}/logo.png`,
     datePublished: "2025-01-01",
-    dateModified: "2026-03-01",
+    dateModified: new Date().toISOString().split("T")[0],
     offers: {
       "@type": "Offer",
       price: "0",
@@ -75,7 +75,7 @@ export function getSoftwareApplicationSchema(reviews?: SoftwareAppReview[]) {
       bestRating: 5,
       worstRating: 1,
       ratingCount: 50,
-      reviewCount: 4,
+      reviewCount: 50,
     },
     ...(reviews && reviews.length > 0 && {
       review: reviews.map((r) => ({
@@ -384,7 +384,7 @@ export function getTechArticleSchema(options: {
   proficiencyLevel?: "Beginner" | "Intermediate" | "Expert";
 }) {
   const datePublished = options.datePublished || "2025-01-01";
-  const dateModified = options.dateModified || "2026-03-01";
+  const dateModified = options.dateModified || new Date().toISOString().split("T")[0];
 
   return {
     "@context": "https://schema.org",

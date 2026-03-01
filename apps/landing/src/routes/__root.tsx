@@ -101,6 +101,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       ],
       links: [
         {
+          rel: "icon",
+          href: "/favicon.ico",
+        },
+        {
           rel: "preconnect",
           href: "https://fonts.googleapis.com",
         },
@@ -120,6 +124,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         {
           rel: "dns-prefetch",
           href: "https://docs.better-i18n.com",
+        },
+        {
+          rel: "preload",
+          href: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap",
+          as: "style",
         },
         {
           rel: "stylesheet",

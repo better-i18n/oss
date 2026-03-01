@@ -62,7 +62,7 @@ export default function Header({ className }: { className?: string }) {
             </Link>
             {/* For Product Mega Menu */}
             <div className="relative group">
-              <button aria-haspopup="true" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+              <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
                 {t("forProduct", { defaultValue: "Product" })}
                 <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
               </button>
@@ -166,7 +166,7 @@ export default function Header({ className }: { className?: string }) {
             </div>
             {/* Developers Mega Menu */}
             <div className="relative group">
-              <button aria-haspopup="true" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+              <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
                 {t("developers.title", { defaultValue: "Developers" })}
                 <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
               </button>
@@ -251,7 +251,7 @@ export default function Header({ className }: { className?: string }) {
               {t("pricing", { defaultValue: "Pricing" })}
             </Link>
             <div className="relative group">
-              <button aria-haspopup="true" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+              <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
                 {t("resources.title", { defaultValue: "Resources" })}
                 <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
               </button>
