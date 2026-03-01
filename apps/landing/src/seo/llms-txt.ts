@@ -8,7 +8,7 @@
  * React or any browser-only API.
  */
 
-import { createClient } from "@better-i18n/sdk";
+import type { BlogPostMeta } from "./generate-pages";
 
 import { SITE_URL } from "./pages";
 
@@ -293,86 +293,46 @@ function renderSection(section: LlmsTxtSection): string {
   return lines.join("\n");
 }
 
+// ─── Header ─────────────────────────────────────────────────────────
+
+const header = [
+  "# Better i18n",
+  "",
+  "> AI-powered localization platform for developers and product teams. Ship multilingual apps faster with automated translations, context-aware AI, and seamless framework integrations.",
+  "",
+  "## About",
+  "",
+  "Better i18n is a translation management system (TMS) that combines AI-powered translations with developer-first tooling. It supports React, Next.js, Vue, Nuxt, Angular, Svelte, and Expo (React Native) through official SDK packages. The platform provides context-rich translation environments for translators, automated sync for developers, and hassle-free localization management for product teams.",
+].join("\n");
+
 // ─── Main export ────────────────────────────────────────────────────
 
-export interface GenerateLlmsTxtOptions {
-  readonly project: string;
-  readonly apiKey: string;
-}
-
 /**
- * Generates the full llms.txt content at build time.
- *
- * 1. Renders static marketing page sections from MARKETING_PAGES groupings.
- * 2. Fetches published blog posts from the content API.
- * 3. Appends a dynamic "Blog Posts" section.
- * 4. Appends external links section.
+ * Generates the full llms.txt content from pre-fetched blog posts.
+ * Pure function — no I/O.
  */
-export async function generateLlmsTxtContent(
-  options: GenerateLlmsTxtOptions,
-): Promise<string> {
-  const { project, apiKey } = options;
-
-  // 1. Render static sections
+export function generateLlmsTxtContent(
+  blogPosts: readonly BlogPostMeta[],
+): string {
   const staticSections = STATIC_SECTIONS.map(renderSection);
 
-  // 2. Fetch blog posts
-  let blogSection = "";
-  try {
-    const client = createClient({ project, apiKey });
-    const response = await client.getEntries("blog-posts", {
-      status: "published",
-      sort: "publishedAt",
-      order: "desc",
-      limit: 100,
-    });
+  const blogSection =
+    blogPosts.length > 0
+      ? renderSection({
+          heading: "Blog Posts",
+          links: blogPosts.map((post) => ({
+            title: post.title,
+            path: `blog/${post.slug}`,
+          })),
+        })
+      : "";
 
-    const blogLinks: readonly LlmsTxtLink[] = response.items.map((item) => ({
-      title: item.title,
-      path: `blog/${item.slug}`,
-    }));
-
-    if (blogLinks.length > 0) {
-      blogSection = renderSection({
-        heading: "Blog Posts",
-        links: blogLinks,
-      });
-    }
-  } catch (error) {
-    console.error(
-      "[llms-txt] Failed to fetch blog posts, continuing without blog section:",
-      error,
-    );
-  }
-
-  // 3. Render external links
   const externalSection = renderSection(EXTERNAL_SECTION);
-
-  // 4. Assemble the full document
-  const header = [
-    "# Better i18n",
-    "",
-    "> AI-powered localization platform for developers and product teams. Ship multilingual apps faster with automated translations, context-aware AI, and seamless framework integrations.",
-    "",
-    "## About",
-    "",
-    "Better i18n is a translation management system (TMS) that combines AI-powered translations with developer-first tooling. It supports React, Next.js, Vue, Nuxt, Angular, Svelte, and Expo (React Native) through official SDK packages. The platform provides context-rich translation environments for translators, automated sync for developers, and hassle-free localization management for product teams.",
-  ].join("\n");
-
   const parts = [
     header,
     ...staticSections,
     ...(blogSection ? [blogSection] : []),
     externalSection,
   ];
-
-  const content = parts.join("\n\n") + "\n";
-
-  console.log(
-    `[llms-txt] Generated llms.txt: ${STATIC_SECTIONS.length} static sections` +
-      (blogSection ? ` + blog posts` : "") +
-      ` + external links`,
-  );
-
-  return content;
+  return parts.join("\n\n") + "\n";
 }

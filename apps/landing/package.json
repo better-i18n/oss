@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3001",
-    "build": "vite build && bun run build:worker",
+    "build": "vite build && bun scripts/fix-sitemap.ts && bun run build:worker",
     "build:worker": "esbuild worker-entry.ts --outfile=dist/worker-entry.js --format=esm --platform=neutral",
     "preview": "wrangler dev --port 8990",
     "deploy": "bun run build && wrangler deploy",

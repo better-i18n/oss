@@ -65,27 +65,47 @@ function renderCategoryLine(
   return `  ${dim(padded)} ${colorFn(scoreStr)}${countStr}`;
 }
 
-// ── Diagnostic Listing ──────────────────────────────────────────────
+// ── Diagnostic Helpers (react-doctor pattern) ───────────────────────
 
-function severityIcon(severity: string): string {
-  if (severity === "error") return red("✖");
-  if (severity === "warning") return yellow("⚠");
-  return dim("ℹ");
+const SEVERITY_ORDER: Record<string, number> = {
+  error: 0,
+  warning: 1,
+  info: 2,
+};
+
+function colorizeBySeverity(text: string, severity: string): string {
+  if (severity === "error") return red(text);
+  if (severity === "warning") return yellow(text);
+  return dim(text);
 }
 
-function renderDiagnostic(d: I18nDiagnostic): string {
-  const location = d.line > 0 ? `:${d.line}:${d.column}` : "";
-  const file = dim(`${d.filePath}${location}`);
-  const rule = dim(`[${d.rule}]`);
-  return `  ${severityIcon(d.severity)} ${d.message}  ${rule}\n    ${file}`;
+function sortBySeverity(
+  groups: [string, I18nDiagnostic[]][],
+): [string, I18nDiagnostic[]][] {
+  return groups.toSorted(([, a], [, b]) => {
+    return (SEVERITY_ORDER[a[0].severity] ?? 2) - (SEVERITY_ORDER[b[0].severity] ?? 2);
+  });
+}
+
+function buildFileLineMap(diagnostics: I18nDiagnostic[]): Map<string, number[]> {
+  const fileLines = new Map<string, number[]>();
+  for (const d of diagnostics) {
+    const lines = fileLines.get(d.filePath) ?? [];
+    if (d.line > 0) lines.push(d.line);
+    fileLines.set(d.filePath, lines);
+  }
+  return fileLines;
 }
 
 // ── Main Reporter ───────────────────────────────────────────────────
 
 /**
  * Print ESLint-style report to stdout.
+ *
+ * When verbose is true, file:line listings are shown under each rule group
+ * (react-doctor pattern). Without verbose, only rule summary + count is shown.
  */
-export function reportEslint(report: DoctorReport): void {
+export function reportEslint(report: DoctorReport, verbose = false): void {
   const { score, summary, diagnostics } = report;
 
   // ── Header Box ──────────────────────────────────────────────────
@@ -128,13 +148,13 @@ export function reportEslint(report: DoctorReport): void {
   console.log(dim(`  Completed in ${(report.durationMs / 1000).toFixed(2)}s`));
   console.log();
 
-  // ── Diagnostic Listing (errors and warnings only) ───────────────
+  // ── Diagnostic Listing (grouped by rule, react-doctor style) ────
   const actionable = diagnostics.filter(
     (d) => d.severity === "error" || d.severity === "warning",
   );
 
   if (actionable.length > 0) {
-    // Group by rule for readability
+    // Group by rule
     const byRule = new Map<string, I18nDiagnostic[]>();
     for (const d of actionable) {
       const existing = byRule.get(d.rule) || [];
@@ -142,18 +162,45 @@ export function reportEslint(report: DoctorReport): void {
       byRule.set(d.rule, existing);
     }
 
-    for (const [rule, diags] of byRule) {
-      const maxShow = 10;
-      const shown = diags.slice(0, maxShow);
-      const hidden = diags.length - maxShow;
+    // Sort: errors first, then warnings
+    const sortedGroups = sortBySeverity([...byRule.entries()]);
 
-      console.log(bold(`${rule} (${diags.length}):`));
-      for (const d of shown) {
-        console.log(renderDiagnostic(d));
+    for (const [, diags] of sortedGroups) {
+      const first = diags[0];
+      const icon = colorizeBySeverity(
+        first.severity === "error" ? "✗" : "⚠",
+        first.severity,
+      );
+      const count = diags.length;
+      const countLabel = count > 1
+        ? colorizeBySeverity(` (${count})`, first.severity)
+        : "";
+
+      // Rule message line
+      console.log(`  ${icon} ${first.message}${countLabel}`);
+
+      // Help text (indented)
+      if (first.help) {
+        console.log(dim(`    ${first.help}`));
       }
-      if (hidden > 0) {
-        console.log(dim(`  ... and ${hidden} more`));
+
+      // File:line listing (verbose or always for small sets)
+      if (verbose || count <= 5) {
+        const maxFiles = 10;
+        const fileLines = buildFileLineMap(diags);
+        const entries = [...fileLines.entries()];
+        const shown = entries.slice(0, maxFiles);
+        const hiddenFiles = entries.length - maxFiles;
+
+        for (const [filePath, lines] of shown) {
+          const lineLabel = lines.length > 0 ? `: ${lines.join(", ")}` : "";
+          console.log(dim(`    ${filePath}${lineLabel}`));
+        }
+        if (hiddenFiles > 0) {
+          console.log(dim(`    ... and ${hiddenFiles} more files`));
+        }
       }
+
       console.log();
     }
   }

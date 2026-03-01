@@ -37,8 +37,15 @@ export interface PageEntry {
 
 export interface BlogPostMeta {
   readonly slug: string;
+  readonly title: string;
   readonly publishedAt: string | null;
   readonly availableLanguages?: readonly string[];
+}
+
+export interface SeoData {
+  readonly locales: readonly string[];
+  readonly blogPosts: readonly BlogPostMeta[];
+  readonly featurePages: readonly FeaturePageMeta[];
 }
 
 export interface FeaturePageMeta {
@@ -249,6 +256,7 @@ function toBlogPostMeta(item: ContentEntryListItem): BlogPostMeta {
 
   return {
     slug: item.slug,
+    title: item.title,
     publishedAt: item.publishedAt,
     availableLanguages,
   };
@@ -268,88 +276,69 @@ function toFeaturePageMeta(item: ContentEntryListItem): FeaturePageMeta {
   };
 }
 
-// ─── Main export ────────────────────────────────────────────────────
-
-export interface GeneratePagesOptions {
-  readonly project: string;
-  readonly apiKey: string;
-}
+// ─── Main exports ────────────────────────────────────────────────────
 
 /**
- * Build-time page generator.
- *
- * 1. Fetches available locales from the i18n CDN manifest.
- * 2. Fetches published blog posts from the content SDK.
- * 3. Produces a flat array of PageEntry objects with hreflang alternateRefs.
- *
- * Blog fetch failures are non-fatal — marketing pages are still generated.
+ * Fetches all SEO data in parallel using Promise.allSettled.
+ * Failures are non-fatal — each resource falls back to an empty default.
+ * Logs a single summary line on completion.
  */
-export async function generatePages(
-  options: GeneratePagesOptions,
-): Promise<readonly PageEntry[]> {
+export async function fetchSeoData(options: {
+  readonly project: string;
+  readonly apiKey: string;
+}): Promise<SeoData> {
   const { project, apiKey } = options;
-
-  // 1. Fetch available locales
   const i18n = createI18nCore({ project, defaultLocale: "en" });
-  let locales: readonly string[];
-
-  try {
-    const fetched = await i18n.getLocales();
-    locales = fetched.length > 0 ? fetched : ["en"];
-
-    if (fetched.length === 0) {
-      console.warn("[SEO] No locales returned from manifest, falling back to [\"en\"]");
-    }
-  } catch (error) {
-    console.warn("[SEO] Failed to fetch locales, falling back to [\"en\"]:", error);
-    locales = ["en"];
-  }
-
-  // 2. Fetch published blog posts and feature pages
-  let blogPosts: readonly BlogPostMeta[] = [];
-  let featurePages: readonly FeaturePageMeta[] = [];
-
   const client = createClient({ project, apiKey });
 
-  try {
-    const response = await client.getEntries("blog-posts", {
+  const [localesResult, blogResult, featureResult] = await Promise.allSettled([
+    i18n.getLocales(),
+    client.getEntries("blog-posts", {
       status: "published",
       sort: "publishedAt",
       order: "desc",
       limit: 100,
-    });
+    }),
+    client.getEntries("marketing-pages", { status: "published", limit: 100 }),
+  ]);
 
-    blogPosts = response.items.map(toBlogPostMeta);
-  } catch (error) {
-    console.error("[SEO] Failed to fetch blog posts, continuing without blog pages:", error);
-  }
+  const locales =
+    localesResult.status === "fulfilled" && localesResult.value.length > 0
+      ? localesResult.value
+      : ["en"];
 
-  try {
-    const response = await client.getEntries("marketing-pages", {
-      status: "published",
-      limit: 100,
-    });
+  const blogPosts =
+    blogResult.status === "fulfilled"
+      ? blogResult.value.items.map(toBlogPostMeta)
+      : [];
 
-    featurePages = response.items
-      .filter((item) => {
-        const raw = item as unknown as Record<string, unknown>;
-        return raw.page_type === "feature";
-      })
-      .map(toFeaturePageMeta);
-  } catch (error) {
-    console.error("[SEO] Failed to fetch feature pages, continuing without feature detail pages:", error);
-  }
+  const featurePages =
+    featureResult.status === "fulfilled"
+      ? featureResult.value.items
+          .filter(
+            (item) =>
+              (item as unknown as Record<string, unknown>).page_type === "feature",
+          )
+          .map(toFeaturePageMeta)
+      : [];
 
-  // 3. Generate all pages
+  console.log(
+    `[SEO] Fetched: ${locales.length} locales, ${blogPosts.length} posts, ${featurePages.length} features`,
+  );
+
+  return { locales, blogPosts, featurePages };
+}
+
+/**
+ * Generates all page entries from pre-fetched SEO data.
+ * Pure function — no I/O.
+ */
+export function generatePages(data: SeoData): readonly PageEntry[] {
+  const { locales, blogPosts, featurePages } = data;
   const marketingPages = generateMarketingPages(locales);
   const blogPages = generateBlogPages(blogPosts, locales);
   const featureDetailPages = generateFeatureDetailPages(featurePages, locales);
   const allPages = [...marketingPages, ...blogPages, ...featureDetailPages];
-
-  // 4. Log summary
-  console.log(
-    `[SEO] Generated ${allPages.length} pages: ${marketingPages.length} marketing + ${blogPages.length} blog + ${featureDetailPages.length} feature detail (${locales.length} locales, ${blogPosts.length} posts, ${featurePages.length} features)`,
-  );
-
+  console.log(`[SEO] Generated ${allPages.length} pages`);
   return allPages;
 }
