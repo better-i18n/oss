@@ -77,13 +77,17 @@ interface MetaOptions {
 /**
  * Get the canonical URL for a page.
  * All locales (including English) use /$locale/ prefix to avoid 301 redirects.
+ * All URLs include a trailing slash to match TanStack Router's trailing-slash
+ * behaviour and avoid 307 redirects.
  */
 export function getCanonicalUrl(locale: string, pathname: string = "/"): string {
-  const cleanPath = pathname.replace(/^\/+/, "");
+  const cleanPath = pathname.replace(/^\/+/, "").replace(/\/+$/, "");
 
-  return cleanPath
-    ? `${SITE_URL}/${locale}/${cleanPath}`
+  const url = cleanPath
+    ? `${SITE_URL}/${locale}/${cleanPath}/`
     : `${SITE_URL}/${locale}/`;
+
+  return url;
 }
 
 /**
@@ -187,17 +191,18 @@ export function formatMetaTags(
 /**
  * Get alternate language links for hreflang tags.
  * All locales use /$locale/ prefix so hreflang URLs return HTTP 200 (not 301 redirects).
+ * All URLs include a trailing slash to avoid 307 redirects.
  */
 export function getAlternateLinks(pathname: string = "/", locales?: string[]) {
   if (!locales) {
     locales = getCachedLocales();
   }
-  const cleanPath = pathname.replace(/^\/[a-z]{2}\//, "/").replace(/^\/+/, "");
+  const cleanPath = pathname.replace(/^\/[a-z]{2}\//, "/").replace(/^\/+/, "").replace(/\/+$/, "");
 
   const links = locales.map((locale) => ({
     rel: "alternate",
     href: cleanPath
-      ? `${SITE_URL}/${locale}/${cleanPath}`
+      ? `${SITE_URL}/${locale}/${cleanPath}/`
       : `${SITE_URL}/${locale}/`,
     hrefLang: locale,
   }));
@@ -205,7 +210,7 @@ export function getAlternateLinks(pathname: string = "/", locales?: string[]) {
   // x-default points to the English version (default locale) with /en/ prefix to avoid redirects
   links.push({
     rel: "alternate",
-    href: cleanPath ? `${SITE_URL}/en/${cleanPath}` : `${SITE_URL}/en/`,
+    href: cleanPath ? `${SITE_URL}/en/${cleanPath}/` : `${SITE_URL}/en/`,
     hrefLang: "x-default",
   });
 

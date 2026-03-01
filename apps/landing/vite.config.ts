@@ -102,10 +102,10 @@ export default defineConfig(async ({ mode }) => {
           ]
         : []),
       // Workaround: TanStack Start's sitemap generator omits the xhtml namespace
-      // declaration and adds spurious xmlns="" on <xhtml:link> elements.
-      // See: https://github.com/TanStack/router/issues/XXXX
+      // declaration, adds spurious xmlns="" on <xhtml:link> elements, and strips
+      // trailing slashes from <loc>/<href> URLs causing 307 redirects.
       {
-        name: "fix-sitemap-namespaces",
+        name: "fix-sitemap",
         apply: "build",
         closeBundle() {
           const sitemapPath = path.join("dist", "client", "sitemap.xml");
@@ -117,10 +117,14 @@ export default defineConfig(async ({ mode }) => {
               '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">',
               '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
             )
-            .replace(/ xmlns=""/g, "");
+            .replace(/ xmlns=""/g, "")
+            // Ensure all <loc> URLs end with trailing slash to avoid 307 redirects
+            .replace(/<loc>(https:\/\/[^<]+?)(?<!\/)(?=<\/loc>)/g, "<loc>$1/")
+            // Ensure all hreflang href URLs end with trailing slash
+            .replace(/href="(https:\/\/[^"]+?)(?<!\/)"/g, 'href="$1/"');
 
           writeFileSync(sitemapPath, fixed);
-          console.log("[SEO] Fixed sitemap xhtml namespace declaration");
+          console.log("[SEO] Fixed sitemap: xhtml namespace + trailing slashes");
         },
       } satisfies Plugin,
     ],
