@@ -26,7 +26,8 @@ import type {
   I18nDiagnostic,
 } from "../rules/registry.js";
 import { flattenToRecord } from "../utils/json-keys.js";
-import { fetchLocaleFile, fetchManifest } from "../utils/cdn-client.js";
+import { fetchLocaleFile, fetchManifest, fetchRemoteKeys } from "../utils/cdn-client.js";
+import { getSummary } from "../utils/key-comparison.js";
 import {
   discoverLocaleFiles,
   loadLocaleTranslations,
@@ -42,6 +43,8 @@ export interface DoctorOptions {
   skipCode?: boolean;
   /** Skip translation file health checks */
   skipHealth?: boolean;
+  /** Skip remote CDN comparison */
+  skipSync?: boolean;
   /** Verbose logging */
   verbose?: boolean;
   /** Pass threshold for health score (default: 70) */
@@ -100,16 +103,18 @@ export async function diagnose(
   // 2. Code analysis (AST-based key extraction + hardcoded string detection)
   let filesScanned = 0;
   const codeKeys = new Set<string>();
+  let allIssues: Issue[] = [];
 
   if (!options.skipCode) {
-    const { codeDiagnostics, keys, fileCount } = await runCodeAnalysis(
+    const result = await runCodeAnalysis(
       directory,
       lintConfig,
       options.verbose,
     );
-    diagnostics.push(...codeDiagnostics);
-    for (const key of keys) codeKeys.add(key);
-    filesScanned = fileCount;
+    diagnostics.push(...result.codeDiagnostics);
+    for (const key of result.keys) codeKeys.add(key);
+    filesScanned = result.fileCount;
+    allIssues = result.allIssues;
   }
 
   // 3. Locale file discovery and health rule execution
@@ -126,6 +131,21 @@ export async function diagnose(
     diagnostics.push(...healthResult.diagnostics);
     keysChecked = healthResult.keysChecked;
     localesChecked = healthResult.localesChecked;
+  }
+
+  // 3.5. Sync analysis (remote CDN comparison)
+  if (!options.skipSync && context?.workspaceId && context?.projectSlug) {
+    // Filter to only translation key extractions (info severity),
+    // matching sync command's filtering behavior
+    const keyExtractionIssues = allIssues.filter(
+      (i) => i.severity === "info" && i.key,
+    );
+    const syncDiagnostics = await runSyncAnalysis(
+      context,
+      keyExtractionIssues,
+      options.verbose,
+    );
+    diagnostics.push(...syncDiagnostics);
   }
 
   // 4. Calculate score
@@ -179,16 +199,20 @@ async function runCodeAnalysis(
   codeDiagnostics: I18nDiagnostic[];
   keys: string[];
   fileCount: number;
+  allIssues: Issue[];
 }> {
   const files = await collectFiles({ rootDir: directory });
   const codeDiagnostics: I18nDiagnostic[] = [];
   const keys: string[] = [];
+  const allIssues: Issue[] = [];
 
   for (const file of files) {
     try {
       const { issues } = await analyzeFile(file, lintConfig, verbose);
 
       for (const issue of issues) {
+        allIssues.push(issue);
+
         // Extract translation keys
         if (issue.severity === "info" && issue.key) {
           keys.push(issue.key);
@@ -204,7 +228,7 @@ async function runCodeAnalysis(
     }
   }
 
-  return { codeDiagnostics, keys, fileCount: files.length };
+  return { codeDiagnostics, keys, fileCount: files.length, allIssues };
 }
 
 // ── Health Analysis Pipeline ────────────────────────────────────────
@@ -279,6 +303,103 @@ async function runHealthAnalysis(
   const localesChecked = targetLocales.length + 1; // +1 for source
 
   return { diagnostics, keysChecked, localesChecked };
+}
+
+// ── Sync Analysis Pipeline ──────────────────────────────────────────
+
+/**
+ * Compare local code keys with remote CDN keys.
+ *
+ * Reuses getSummary() from the sync command for consistent comparison logic
+ * (namespace binding, dynamic patterns, fuzzy matching).
+ * Returns diagnostics for missing-in-remote and unused-remote-key.
+ */
+async function runSyncAnalysis(
+  context: NonNullable<Awaited<ReturnType<typeof detectProjectContext>>>,
+  allIssues: Issue[],
+  verbose?: boolean,
+): Promise<I18nDiagnostic[]> {
+  try {
+    const cdnBaseUrl = context.cdnBaseUrl || "https://cdn.better-i18n.com";
+
+    // 1. Fetch manifest
+    const manifest = await fetchManifest(
+      cdnBaseUrl,
+      context.workspaceId,
+      context.projectSlug,
+    );
+
+    // 2. Determine source locale from manifest
+    const sourceLanguage = manifest.languages.find((l) => l.isSource);
+    const sourceLocale = sourceLanguage?.code || context.defaultLocale || "en";
+
+    // 3. Fetch remote keys for source locale
+    const remoteKeys = await fetchRemoteKeys(
+      cdnBaseUrl,
+      context.workspaceId,
+      context.projectSlug,
+      sourceLocale,
+      manifest,
+    );
+
+    // 4. Compare using getSummary (reuses sync command's full comparison engine)
+    const summary = getSummary(allIssues, remoteKeys, verbose);
+
+    // 5. Convert to diagnostics
+    const diagnostics: I18nDiagnostic[] = [];
+
+    // Missing in remote: keys found in code but not in CDN
+    for (const [namespace, entries] of Object.entries(summary.missing)) {
+      for (const entry of entries) {
+        diagnostics.push({
+          filePath: "",
+          line: 0,
+          column: 0,
+          rule: "missing-in-remote",
+          category: "Coverage",
+          severity: "warning",
+          message: `Key "${entry.key}" found in code but not in remote translations`,
+          help: RULE_HELP_MAP["missing-in-remote"] || "",
+          key: entry.key,
+          namespace,
+        });
+      }
+    }
+
+    // Unused remote keys: keys in CDN but not detected in code
+    for (const [namespace, keys] of Object.entries(summary.unused)) {
+      for (const key of keys) {
+        diagnostics.push({
+          filePath: "",
+          line: 0,
+          column: 0,
+          rule: "unused-remote-key",
+          category: "Performance",
+          severity: "info",
+          message: `Key "${key}" exists in remote but not used in code`,
+          help: RULE_HELP_MAP["unused-remote-key"] || "",
+          key,
+          namespace,
+        });
+      }
+    }
+
+    if (verbose) {
+      console.log(
+        `[VERBOSE] Sync analysis: ${Object.values(summary.missing).flat().length} missing in remote, ${Object.values(summary.unused).flat().length} unused remote keys`,
+      );
+    }
+
+    return diagnostics;
+  } catch (error) {
+    // Graceful degradation: CDN unreachable or no manifest
+    if (verbose) {
+      console.log(
+        `[VERBOSE] Sync analysis skipped: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+    return [];
+  }
 }
 
 // ── CDN Loading ─────────────────────────────────────────────────────

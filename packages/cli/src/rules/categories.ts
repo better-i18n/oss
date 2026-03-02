@@ -29,6 +29,10 @@ export const RULE_CATEGORY_MAP: Record<string, I18nDiagnostic["category"]> = {
   "namespace-structure": "Structure",
   "file-format": "Structure",
 
+  // ── Sync Rules (remote CDN comparison) ───────────────────────────
+  "missing-in-remote": "Coverage",
+  "unused-remote-key": "Performance",
+
   // ── Code Rules (AST analysis, from existing analyzer) ─────────────
   "jsx-text": "Code",
   "jsx-attribute": "Code",
@@ -60,6 +64,12 @@ export const RULE_HELP_MAP: Record<string, string> = {
   "file-format":
     "Fix malformed JSON or encoding issues in translation files",
 
+  // ── Sync Rules ────────────────────────────────────────────────────
+  "missing-in-remote":
+    "Key found in code but not in remote translations. Run sync or add the key in the editor",
+  "unused-remote-key":
+    "Key exists in remote but not used in code. Consider removing it to reduce bundle size",
+
   // ── Code Rules ────────────────────────────────────────────────────
   "jsx-text":
     "Wrap hardcoded JSX text with t() function call for translation support",
@@ -89,6 +99,10 @@ export const RULE_DEFAULT_SEVERITY: Record<string, I18nDiagnostic["severity"]> =
   "key-naming": "warning",
   "namespace-structure": "info",
   "file-format": "error",
+
+  // Sync rules
+  "missing-in-remote": "warning",
+  "unused-remote-key": "info",
 
   // Code rules
   "jsx-text": "warning",
