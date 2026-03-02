@@ -16,6 +16,7 @@
     "tanstack-start",
     "vite",
     "expo",
+    "ios",
     "server-sdk"
   ]
 }

@@ -40,15 +40,19 @@ export const createContentEntry: Tool = {
   definition: {
     name: "createContentEntry",
     description: `Create a new content entry with source language translation.
-Top-level title/bodyMarkdown/excerpt are for the source language.
+Top-level title/bodyMarkdown/excerpt and customFields are stored as the project's SOURCE LANGUAGE text.
+Check getProject response's 'sl' field to know which language to write.
+
+IMPORTANT: Source language may not be English. If sl='tr', write Turkish for title/customFields.
+
 Use translations to add target language translations in the same request.
 
-EXAMPLE with multi-language:
+EXAMPLE (project sl='tr'):
 {
-  "title": "Hello World",
-  "bodyMarkdown": "# Hello",
+  "title": "Merhaba Dünya",
+  "customFields": { "subtitle": "Alt başlık" },
   "translations": {
-    "tr": { "title": "Merhaba Dünya", "bodyMarkdown": "# Merhaba" },
+    "en": { "title": "Hello World", "customFields": { "subtitle": "Subtitle" } },
     "de": { "title": "Hallo Welt" }
   }
 }`,
@@ -62,7 +66,7 @@ EXAMPLE with multi-language:
         },
         title: {
           type: "string",
-          description: "Entry title (source language)",
+          description: "Entry title in the project's source language (check getProject 'sl' field)",
         },
         slug: {
           type: "string",
@@ -92,7 +96,7 @@ EXAMPLE with multi-language:
         },
         customFields: {
           type: "object",
-          description: "Custom field values as { fieldName: value }. For relation fields, pass the related entry ID. For media fields, pass the URL. For enum fields, pass one of the allowed values. For user fields (relation with targetModel='users'), pass the member ID from listContentEntries({ modelSlug: 'users' }).",
+          description: "Custom field values in the project's source language. Use translations map for other languages. For relation fields, pass the related entry ID. For media fields, pass the URL. For enum fields, pass one of the allowed values. For user fields (relation with targetModel='users'), pass the member ID from listContentEntries({ modelSlug: 'users' }).",
         },
         translations: {
           type: "object",

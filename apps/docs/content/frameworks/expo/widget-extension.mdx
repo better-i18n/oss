@@ -1,0 +1,247 @@
+---
+title: Widget Extension
+description: Use BetterI18n Swift SDK to bring translations into WidgetKit extensions from your Expo app.
+---
+
+import { Callout, Steps, Cards, Card } from 'fumadocs-ui/components/callout'
+
+<Callout type="warn">
+  Widget extensions require **Xcode**, **Expo Dev Client** (bare workflow or EAS Build), and an **Apple Developer account** with an active App Group entitlement.
+</Callout>
+
+## Architecture
+
+WidgetKit extensions run in a separate process and have no direct access to your Expo JS bundle. BetterI18n bridges the gap using **iOS App Groups** — a shared storage area that both your app and its extensions can read and write.
+
+```
+┌─────────────────────────┐        ┌──────────────────────────┐
+│     Expo JS (React)     │        │    WidgetKit Extension   │
+│                         │        │      (Swift / SwiftUI)   │
+│  changeLanguage("tr")   │        │                          │
+│  saveLocaleToWidget()   │──────▶ │  BetterI18n(config:      │
+│                         │  App   │    I18nConfig(           │
+│  BetterI18n CDN fetch   │  Group │      appGroupIdentifier  │
+│  → saves to AppGroup    │──────▶ │    ))                    │
+└─────────────────────────┘  User  └──────────────────────────┘
+                            Defaults
+```
+
+The Expo side writes the locale preference and cached translations to `UserDefaults(suiteName: appGroup)`. The Swift widget reads from the same location — no network call needed at render time.
+
+---
+
+<Steps>
+<Step>
+
+### App Group Entitlement
+
+Add an App Group to your `app.config.js` (or `app.json`). The group identifier must start with `group.` and match what you'll use in Swift.
+
+```js title="app.config.js"
+export default {
+  expo: {
+    // ...
+    ios: {
+      bundleIdentifier: 'com.mycompany.myapp',
+      entitlements: {
+        'com.apple.security.application-groups': ['group.com.mycompany.myapp'],
+      },
+    },
+  },
+};
+```
+
+</Step>
+<Step>
+
+### Add the Widget Target with @bacons/apple-targets
+
+Install the plugin and create a widget target config:
+
+```bash
+npx expo install @bacons/apple-targets
+```
+
+```js title="targets/widget/expo-target.config.js"
+module.exports = () => ({
+  type: 'widget',
+  name: 'MyWidget',
+  bundleIdentifier: 'com.mycompany.myapp.widget',
+  deploymentTarget: '16.0',
+  entitlements: {
+    'com.apple.security.application-groups': ['group.com.mycompany.myapp'],
+  },
+});
+```
+
+Register it in `app.config.js`:
+
+```js title="app.config.js"
+plugins: [
+  ['@bacons/apple-targets', { targets: ['./targets/widget'] }],
+],
+```
+
+</Step>
+<Step>
+
+### Add the BetterI18n Swift Package
+
+In Xcode, open your workspace and go to **File → Add Package Dependencies**:
+
+- **URL:** `https://github.com/better-i18n/swift`
+- **Dependency Rule:** Up to Next Major Version, from `0.1.0`
+
+Add both products:
+- **BetterI18n** → your widget extension target
+- **BetterI18nUI** → your main app target (for `I18nProvider`)
+
+</Step>
+<Step>
+
+### Bridge the Locale from JS
+
+Install the shared preferences library:
+
+```bash
+npx expo install react-native-shared-group-preferences
+```
+
+Create a helper that writes the selected locale to the App Group:
+
+```ts title="lib/utils/save-locale-to-widget.ts"
+import SharedGroupPreferences from 'react-native-shared-group-preferences';
+import { Platform } from 'react-native';
+
+const APP_GROUP = 'group.com.mycompany.myapp';
+const PROJECT = 'my-org/my-app';
+
+export async function saveLocaleToWidget(locale: string) {
+  if (Platform.OS !== 'ios') return;
+  await SharedGroupPreferences.setItem(
+    `@better-i18n:locale:${PROJECT}`,
+    locale,
+    APP_GROUP,
+  );
+}
+```
+
+Call this function whenever the user changes the language:
+
+```ts title="app/(tabs)/settings.tsx"
+import { useLocale } from '@better-i18n/expo';
+import { saveLocaleToWidget } from '@/lib/utils/save-locale-to-widget';
+
+const { changeLanguage } = useLocale();
+
+async function handleLanguageChange(locale: string) {
+  await changeLanguage(locale);
+  await saveLocaleToWidget(locale);
+}
+```
+
+</Step>
+<Step>
+
+### Read Translations in the Widget
+
+In your widget Swift target, use `BetterI18n` with `appGroupIdentifier`. The storage-only API skips the network and reads cached translations instantly — ideal for widget timelines.
+
+```swift title="Widget.swift"
+import WidgetKit
+import SwiftUI
+import BetterI18n
+
+struct Provider: TimelineProvider {
+    let i18n = BetterI18n(config: I18nConfig(
+        project: "my-org/my-app",
+        defaultLocale: "en",
+        appGroupIdentifier: "group.com.mycompany.myapp"
+    ))
+
+    func getTimeline(
+        in context: Context,
+        completion: @escaping (Timeline<SimpleEntry>) -> Void
+    ) {
+        Task {
+            let locale = await i18n.detectLocaleFromStorageOnly()
+            let translator = await i18n.getTranslatorFromStorageOnly(locale: locale)
+
+            let entry = SimpleEntry(
+                date: .now,
+                title: translator?("widget.title") ?? "My App",
+                subtitle: translator?("widget.subtitle") ?? ""
+            )
+
+            completion(Timeline(entries: [entry], policy: .atEnd))
+        }
+    }
+}
+
+struct SimpleEntry: TimelineEntry {
+    let date: Date
+    let title: String
+    let subtitle: String
+}
+
+struct MyWidgetView: View {
+    let entry: SimpleEntry
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(entry.title).font(.headline)
+            Text(entry.subtitle).font(.caption)
+        }
+    }
+}
+
+@main
+struct MyWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "com.mycompany.myapp.widget", provider: Provider()) { entry in
+            MyWidgetView(entry: entry)
+        }
+        .configurationDisplayName("My App Widget")
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+```
+
+</Step>
+<Step>
+
+### Test Language Switching
+
+Build and run the app via **EAS Build** or a connected device (simulators support widgets). Change the language in your app settings — the widget should reflect the new locale on the next timeline refresh.
+
+To force a refresh during development:
+
+```swift
+WidgetCenter.shared.reloadAllTimelines()
+```
+
+</Step>
+</Steps>
+
+---
+
+## Storage Key Schema
+
+The JS SDK and Swift SDK use the same `UserDefaults` keys. If you write custom bridge code, match these exactly:
+
+```
+@better-i18n:locale:{project}              ← selected locale (string)
+@better-i18n:messages:{project}:{locale}   ← cached translations (JSON string)
+```
+
+<Callout type="info">
+  The `{project}` placeholder is your project identifier from the dashboard (e.g. `my-org/my-app`). Both the JS `saveLocaleToWidget()` call and the Swift `I18nConfig(project:)` parameter must use the same value for the bridge to work correctly.
+</Callout>
+
+---
+
+<Cards>
+  <Card title="iOS Native Docs" href="/frameworks/ios" description="Use BetterI18n in a standalone SwiftUI app without Expo" />
+  <Card title="Expo Setup" href="/frameworks/expo/setup" description="Get started with BetterI18n in your Expo project" />
+  <Card title="Offline Caching" href="/frameworks/expo/offline-caching" description="How the JS SDK caches translations for offline use" />
+</Cards>

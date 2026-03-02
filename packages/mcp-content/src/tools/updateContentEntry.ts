@@ -47,7 +47,9 @@ export const updateContentEntry: Tool = {
 Three modes:
 1. Single language: provide languageCode + top-level fields (title, bodyMarkdown, etc.)
 2. Multi-language: provide translations map — { langCode: { title, bodyMarkdown, ... } }
-3. Metadata-only: omit both languageCode and translations to update only metadata (slug, status, customFields)
+3. Metadata-only: omit both languageCode and translations to update only metadata (slug, status, customFields).
+   For customFields: localized fields are updated using the entry's source language automatically.
+   To update localized fields for a target language, use mode 1 or 2 with explicit languageCode.
 
 Modes 1 & 2 can be combined. All fields are optional — send only what changed.
 
@@ -118,7 +120,7 @@ EXAMPLE metadata-only:
         },
         customFields: {
           type: "object",
-          description: "Updated custom field values",
+          description: "Updated custom field values. Localized fields (loc=true) in metadata-only mode update source language; use languageCode or translations for other languages.",
         },
         translations: {
           type: "object",

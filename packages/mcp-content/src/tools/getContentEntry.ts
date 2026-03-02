@@ -22,8 +22,12 @@ const inputSchema = projectSchema.extend({
 export const getContentEntry: Tool = {
   definition: {
     name: "getContentEntry",
-    description:
-      "Get a content entry with all translations, custom field values, and version history. Use expand to include referenced entry data for relation fields.",
+    description: `Get a content entry with all translations, custom field values, and version history. Use expand to include referenced entry data for relation fields.
+
+Response fields:
+- slang: entry's source language code
+- cfv: custom field values (non-localized + source language for localized)
+- tr.{lang}.cfv: per-language custom field values for localized fields`,
     inputSchema: {
       type: "object",
       properties: {

@@ -1,0 +1,40 @@
+---
+title: Getting Started
+description: Native iOS i18n with the BetterI18n Swift SDK — reactive translations in SwiftUI.
+---
+
+import { Cards, Card } from 'fumadocs-ui/components/card'
+
+BetterI18n's Swift SDK brings the same translation workflow you know from the JS SDK to native iOS apps. It supports **iOS 15+**, **macOS 12+**, and **watchOS 8+**.
+
+The core primitive is `I18nStore` — an `@ObservableObject` that handles fetching, caching, and locale switching reactively. Wrap your root view with `I18nProvider` and every SwiftUI view in the tree gets access via `@EnvironmentObject`.
+
+```swift
+I18nProvider(core: BetterI18n(config: I18nConfig(
+    project: "my-org/my-app",
+    defaultLocale: "en"
+))) {
+    ContentView()
+}
+```
+
+---
+
+## Features
+
+<Cards>
+  <Card title="Offline-first" description="Two-phase load: cached translations appear instantly, CDN refresh happens in the background." />
+  <Card title="Reactive" description="@Published locale, isLoaded, isRefreshing, and error — your UI updates automatically." />
+  <Card title="Locale switching" description="setLocale() persists the preference to storage and re-fetches translations for the new locale." />
+  <Card title="Widget support" description="AppGroup storage bridges translations to WidgetKit extensions without a network call." href="/frameworks/expo/widget-extension" />
+</Cards>
+
+---
+
+## Guides
+
+<Cards>
+  <Card title="Setup" href="/frameworks/ios/setup" description="Install via SPM and configure I18nProvider in your app entry point." />
+  <Card title="API Reference" href="/frameworks/ios/api-reference" description="Complete reference for I18nConfig, I18nStore, BetterI18n, and Translator." />
+  <Card title="Widget Extension" href="/frameworks/expo/widget-extension" description="Bridge translations to a WidgetKit extension via App Groups." />
+</Cards>

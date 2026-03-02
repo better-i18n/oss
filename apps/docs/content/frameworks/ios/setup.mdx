@@ -1,0 +1,139 @@
+---
+title: Setup
+description: Install and configure BetterI18n in a SwiftUI app using Swift Package Manager.
+---
+
+import { Callout, Steps, Cards, Card } from 'fumadocs-ui/components/callout'
+
+<Steps>
+<Step>
+
+### Create a project
+
+Sign in at [dash.better-i18n.com](https://dash.better-i18n.com) and create a new project. Note your **project identifier** (e.g. `my-org/my-app`) — you'll use it in the SDK config.
+
+Add your translation keys and at least one target language before proceeding.
+
+</Step>
+<Step>
+
+### Add the Swift Package
+
+In Xcode, go to **File → Add Package Dependencies** and enter the repository URL:
+
+```
+https://github.com/better-i18n/swift
+```
+
+- **Dependency Rule:** Up to Next Major Version, `from: "0.1.0"`
+
+When prompted to choose products, add:
+- **BetterI18n** — core SDK, required for all targets
+- **BetterI18nUI** — SwiftUI bindings (`I18nProvider`, `I18nStore`), add to your app target
+
+</Step>
+<Step>
+
+### Initialize in your App entry point
+
+Wrap your root view with `I18nProvider`. It creates an `I18nStore` via `@StateObject` and automatically calls `load()` on appear — no manual setup needed.
+
+```swift title="MyApp.swift"
+import SwiftUI
+import BetterI18n
+import BetterI18nUI
+
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            I18nProvider(core: BetterI18n(config: I18nConfig(
+                project: "my-org/my-app",
+                defaultLocale: "en"
+            ))) {
+                ContentView()
+            }
+        }
+    }
+}
+```
+
+</Step>
+<Step>
+
+### Use translations in views
+
+Access the store via `@EnvironmentObject` and call `i18n.t()` to translate keys. Interpolation uses a dictionary of named variables.
+
+```swift title="ContentView.swift"
+import SwiftUI
+import BetterI18nUI
+
+struct ContentView: View {
+    @EnvironmentObject var i18n: I18nStore
+
+    var body: some View {
+        VStack(spacing: 16) {
+            if !i18n.isLoaded {
+                ProgressView()
+            } else {
+                Text(i18n.t("home.welcome"))
+                    .font(.largeTitle)
+
+                Text(i18n.t("home.greeting", ["name": "Osman"]))
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+```
+
+<Callout type="tip">
+  `i18n.isLoaded` is `false` until Phase 1 (storage read) completes. Show a loading indicator during this brief moment — on subsequent launches it resolves almost instantly from cache.
+</Callout>
+
+</Step>
+<Step>
+
+### Add language switching
+
+Call `setLocale()` to change the active language. It saves the preference to storage and fetches translations for the new locale in the background.
+
+```swift title="SettingsView.swift"
+import SwiftUI
+import BetterI18nUI
+
+struct SettingsView: View {
+    @EnvironmentObject var i18n: I18nStore
+
+    var body: some View {
+        List {
+            Section("Language") {
+                Button("English") {
+                    Task { await i18n.setLocale("en") }
+                }
+                Button("Türkçe") {
+                    Task { await i18n.setLocale("tr") }
+                }
+                Button("Deutsch") {
+                    Task { await i18n.setLocale("de") }
+                }
+            }
+        }
+    }
+}
+```
+
+</Step>
+</Steps>
+
+<Callout type="tip">
+  `I18nProvider` creates `I18nStore` via `@StateObject` and fires `load()` automatically via `.task`. You don't need to call `load()` manually — just wrap your root view and you're done.
+</Callout>
+
+---
+
+<Cards>
+  <Card title="API Reference" href="/frameworks/ios/api-reference" description="Complete API docs for I18nConfig, I18nStore, BetterI18n, and Translator." />
+  <Card title="Widget Extension" href="/frameworks/expo/widget-extension" description="Bridge translations from an Expo app to a WidgetKit extension." />
+</Cards>

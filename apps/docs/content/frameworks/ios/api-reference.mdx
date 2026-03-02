@@ -1,0 +1,186 @@
+---
+title: API Reference
+description: Complete API reference for the BetterI18n Swift SDK — I18nConfig, I18nStore, BetterI18n, and Translator.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout'
+
+## I18nConfig
+
+Configuration struct passed to `BetterI18n`. All properties except `project` and `defaultLocale` are optional.
+
+| Property | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `project` | `String` | ✓ | — | Project identifier from the dashboard (e.g. `"my-org/my-app"`) |
+| `defaultLocale` | `String` | ✓ | — | Fallback locale when no preference is stored (e.g. `"en"`) |
+| `appGroupIdentifier` | `String?` | — | `nil` | App Group ID for shared storage with widget extensions |
+| `cdnBaseURL` | `String` | — | BetterI18n CDN | Custom CDN base URL for self-hosted translations |
+
+```swift
+let config = I18nConfig(
+    project: "my-org/my-app",
+    defaultLocale: "en",
+    appGroupIdentifier: "group.com.mycompany.myapp"
+)
+```
+
+---
+
+## I18nProvider
+
+A SwiftUI view that initializes an `I18nStore` and injects it into the environment.
+
+```swift
+struct I18nProvider<Content: View>: View {
+    init(core: BetterI18n, @ViewBuilder content: () -> Content)
+}
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `core` | `BetterI18n` | Configured SDK instance |
+| `content` | `() -> Content` | Root view builder |
+
+`I18nProvider` creates `I18nStore` as a `@StateObject` and calls `store.load()` via `.task` on first appear. It exposes the store as an `@EnvironmentObject` to all descendant views.
+
+---
+
+## I18nStore
+
+`@MainActor @ObservableObject` — the reactive state container for translations.
+
+### Published Properties
+
+| Property | Type | Description |
+|---|---|---|
+| `locale` | `String` | Currently active locale code |
+| `isLoaded` | `Bool` | `true` after Phase 1 (storage read) completes |
+| `isRefreshing` | `Bool` | `true` while a CDN fetch is in progress |
+| `error` | `Error?` | Last fetch error, if any |
+
+### Methods
+
+#### `load()`
+
+Starts the two-phase load sequence:
+
+1. **Phase 1** — reads cached translations from storage, sets `isLoaded = true`
+2. **Phase 2** — fetches fresh translations from CDN in the background, updates silently
+
+```swift
+await store.load()
+```
+
+Called automatically by `I18nProvider`. You only need to call this manually if you create `I18nStore` without `I18nProvider`.
+
+#### `setLocale(_:)`
+
+Changes the active locale, saves the preference to storage, and re-fetches translations.
+
+```swift
+await store.setLocale("tr")
+```
+
+#### `t(_:_:)`
+
+Translates a key with optional interpolation variables.
+
+```swift
+store.t("home.welcome")                        // → "Welcome"
+store.t("home.greeting", ["name": "Osman"])    // → "Hello, Osman!"
+```
+
+Returns the key string unchanged if no translation is found.
+
+---
+
+## BetterI18n
+
+The core SDK class. Use this directly when you need fine-grained control or when building non-SwiftUI targets (widgets, command-line tools, etc.).
+
+### Initializer
+
+```swift
+BetterI18n(config: I18nConfig)
+```
+
+### Methods
+
+| Method | Returns | Description |
+|---|---|---|
+| `load()` | `async` | Two-phase load: storage then CDN |
+| `setLocale(_:)` | `async` | Change locale + persist preference |
+| `detectLocaleFromStorageOnly()` | `async -> String` | Read saved locale preference without network |
+| `getTranslatorFromStorageOnly(locale:)` | `async -> Translator?` | Return a Translator from cache only, no CDN call |
+| `translator(for locale: String)` | `Translator?` | Synchronous access to loaded translator |
+
+#### Storage-only API
+
+The storage-only methods are designed for WidgetKit extensions where network calls during timeline generation are unreliable. They read from `UserDefaults` synchronously and return `nil` if nothing is cached.
+
+```swift
+let locale = await i18n.detectLocaleFromStorageOnly()
+let t = await i18n.getTranslatorFromStorageOnly(locale: locale)
+let title = t?("widget.title") ?? "My App"
+```
+
+---
+
+## Storage
+
+BetterI18n uses a `TranslationStorage` protocol to abstract where translations are persisted.
+
+### TranslationStorage Protocol
+
+```swift
+public protocol TranslationStorage {
+    func getString(forKey key: String) -> String?
+    func setString(_ value: String, forKey key: String)
+}
+```
+
+### Built-in Implementations
+
+| Type | Backend | Use case |
+|---|---|---|
+| `UserDefaultsStorage` | `UserDefaults.standard` | Standard app storage (default) |
+| `AppGroupStorage` | `UserDefaults(suiteName:)` | Shared storage with widget extensions |
+
+`AppGroupStorage` is selected automatically when `I18nConfig.appGroupIdentifier` is set.
+
+<Callout type="warn">
+  To use `AppGroupStorage`, you must add the **App Groups** capability in Xcode under **Signing & Capabilities** for both your app target and the widget extension target. The group identifier must match exactly.
+</Callout>
+
+---
+
+## Translator
+
+`Translator` is a function type that accepts a key and optional variables:
+
+```swift
+public typealias Translator = (_ key: String, _ variables: [String: String]?) -> String?
+```
+
+It's returned by `BetterI18n.getTranslatorFromStorageOnly(locale:)` and used internally by `I18nStore.t()`.
+
+### callAsFunction patterns
+
+```swift
+// Basic translation
+translator("home.title")
+
+// With interpolation
+translator("home.greeting", ["name": "Osman"])
+
+// Nil-coalescing fallback
+translator("home.title") ?? "My App"
+```
+
+Variable interpolation uses `{{variableName}}` syntax in your translation strings:
+
+```json
+{
+  "home.greeting": "Hello, {{name}}!"
+}
+```
