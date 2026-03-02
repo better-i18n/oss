@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader, getEducationalPageStructuredData, formatStructuredData } from "@/lib/page-seo";
 import { getHowToSchema } from "@/lib/structured-data";
@@ -6,12 +6,15 @@ import { useTranslations } from "@better-i18n/use-intl";
 import { RelatedPages } from "@/components/RelatedPages";
 import {
   IconGlobe,
-  IconTranslate,
-  IconCodeBrackets,
   IconRocket,
   IconSparklesSoft,
   IconGithub,
-  IconArrowRight,
+  IconCalendar1,
+  IconCodeBrackets,
+  IconSettingsGear1,
+  IconTranslate,
+  IconImages1,
+  IconFiles,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/what-is")({
@@ -37,8 +40,8 @@ export const Route = createFileRoute("/$locale/what-is")({
       : [];
 
     const educationalScripts = getEducationalPageStructuredData({
-      title: "What is i18n and l10n? Internationalization & Localization Guide",
-      description: "Understand the differences between internationalization (i18n) and localization (l10n), and learn how Better i18n streamlines both processes.",
+      title: "What is i18n? Internationalization & Localization Guide",
+      description: "Learn the difference between internationalization (i18n) and localization (l10n). Covers key concepts, a comparison table, and how to get started.",
       url: `https://better-i18n.com/${locale}/what-is`,
     });
 
@@ -62,31 +65,28 @@ export const Route = createFileRoute("/$locale/what-is")({
   component: WhatIsPage,
 });
 
+const COMPARISON_ROW_KEYS = [
+  "fullName",
+  "scope",
+  "timing",
+  "focus",
+  "who",
+  "example",
+] as const;
+
+const COVERS_ITEMS = [
+  { icon: IconImages1, key: "ui" },
+  { icon: IconCalendar1, key: "dateTime" },
+  { icon: IconCodeBrackets, key: "encoding" },
+  { icon: IconSettingsGear1, key: "numbers" },
+  { icon: IconFiles, key: "content" },
+  { icon: IconTranslate, key: "plurals" },
+] as const;
+
 function WhatIsPage() {
   const t = useTranslations("marketing.whatIsPage");
-  const { locale } = useParams({ strict: false });
+  const { locale } = Route.useParams();
   const currentLocale = locale || "en";
-
-  const concepts = [
-    {
-      icon: IconGlobe,
-      titleKey: "concepts.i18n.title",
-      descKey: "concepts.i18n.description",
-      href: "/$locale/what-is-internationalization" as const,
-    },
-    {
-      icon: IconTranslate,
-      titleKey: "concepts.l10n.title",
-      descKey: "concepts.l10n.description",
-      href: "/$locale/what-is-localization" as const,
-    },
-    {
-      icon: IconCodeBrackets,
-      titleKey: "concepts.difference.title",
-      descKey: "concepts.difference.description",
-      href: null,
-    },
-  ];
 
   const benefits = [
     {
@@ -112,6 +112,10 @@ function WhatIsPage() {
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mist-100 text-mist-700 text-sm font-medium mb-6">
+              <IconGlobe className="size-4" />
+              Educational Guide
+            </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1] lg:text-6xl/[1.1]">
               {t("hero.title")}
               <span className="block text-mist-600">{t("hero.titleHighlight")}</span>
@@ -123,67 +127,139 @@ function WhatIsPage() {
         </div>
       </section>
 
-      {/* What is i18n & l10n */}
+      {/* What Does i18n Mean? */}
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="mb-12 text-center">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("concepts.title")}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("concepts.subtitle")}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            {concepts.map((concept) => {
-              const content = (
-                <>
-                  <div className="size-12 rounded-xl bg-mist-100 flex items-center justify-center text-mist-700 mb-5 group-hover:bg-mist-200 transition-colors">
-                    <concept.icon className="size-6" />
-                  </div>
-                  <h3 className="text-lg font-medium text-mist-950 mb-3">
-                    {t(concept.titleKey)}
-                  </h3>
-                  <p className="text-mist-700 leading-relaxed mb-4">
-                    {t(concept.descKey)}
-                  </p>
-                  {concept.href && (
-                    <span className="inline-flex items-center gap-1 text-sm font-medium text-mist-600 group-hover:text-mist-950">
-                      {t("learnMore")}
-                      <IconArrowRight className="size-4" />
-                    </span>
-                  )}
-                </>
-              );
-
-              if (concept.href) {
-                return (
-                  <Link
-                    key={concept.titleKey}
-                    to={concept.href}
-                    params={{ locale: currentLocale }}
-                    className="group p-8 rounded-2xl bg-mist-50 border border-mist-100 hover:border-mist-300 transition-colors block"
-                  >
-                    {content}
-                  </Link>
-                );
-              }
-
-              return (
-                <div
-                  key={concept.titleKey}
-                  className="p-8 rounded-2xl bg-mist-50 border border-mist-100"
-                >
-                  {content}
-                </div>
-              );
-            })}
+          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
+            <div>
+              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
+                {t("i18nDef.title")}
+              </h2>
+              <p className="text-mist-700 leading-relaxed mb-4">
+                {t("i18nDef.paragraph1")}
+              </p>
+              <p className="text-mist-700 leading-relaxed">
+                {t("i18nDef.paragraph2")}
+              </p>
+            </div>
+            <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
+              <h3 className="text-lg font-medium text-mist-950 mb-4">Why &ldquo;i18n&rdquo;?</h3>
+              <p className="text-mist-700 leading-relaxed mb-4">
+                {t("i18nDef.etymology")}
+              </p>
+              <div className="p-4 rounded-xl bg-white border border-mist-200">
+                <code className="text-sm text-mist-900">i18n = i + (18 letters) + n</code>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* What is Better i18n */}
-      <section className="py-16 bg-mist-100">
+      {/* What Does l10n Mean? */}
+      <section className="py-16 bg-mist-50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
+            <div>
+              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
+                {t("l10nDef.title")}
+              </h2>
+              <p className="text-mist-700 leading-relaxed mb-4">
+                {t("l10nDef.paragraph1")}
+              </p>
+              <p className="text-mist-700 leading-relaxed">
+                {t("l10nDef.paragraph2")}
+              </p>
+            </div>
+            <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-white border border-mist-200">
+              <h3 className="text-lg font-medium text-mist-950 mb-4">Why &ldquo;l10n&rdquo;?</h3>
+              <p className="text-mist-700 leading-relaxed mb-4">
+                {t("l10nDef.etymology")}
+              </p>
+              <div className="p-4 rounded-xl bg-mist-50 border border-mist-100">
+                <code className="text-sm text-mist-900">l10n = l + (10 letters) + n</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison Table */}
+      <section className="py-16 bg-white">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="text-center mb-12">
+            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
+              {t("comparison.title")}
+            </h2>
+            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
+              {t("comparison.subtitle")}
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left">
+              <thead>
+                <tr className="border-b-2 border-mist-200">
+                  <th className="py-4 px-6 text-sm font-medium text-mist-600 w-1/5">
+                    {t("comparison.header.aspect")}
+                  </th>
+                  <th className="py-4 px-6 text-sm font-medium text-mist-950 w-2/5">
+                    {t("comparison.header.i18n")}
+                  </th>
+                  <th className="py-4 px-6 text-sm font-medium text-mist-950 w-2/5">
+                    {t("comparison.header.l10n")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {COMPARISON_ROW_KEYS.map((rowKey) => (
+                  <tr key={rowKey} className="border-b border-mist-100 even:bg-mist-50/50">
+                    <td className="py-4 px-6 text-sm font-medium text-mist-700">
+                      {t(`comparison.rows.${rowKey}.label`)}
+                    </td>
+                    <td className="py-4 px-6 text-sm text-mist-700">
+                      {t(`comparison.rows.${rowKey}.i18n`)}
+                    </td>
+                    <td className="py-4 px-6 text-sm text-mist-700">
+                      {t(`comparison.rows.${rowKey}.l10n`)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* What Does Internationalization Cover? */}
+      <section className="py-16 bg-mist-50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="text-center mb-12">
+            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
+              {t("covers.title")}
+            </h2>
+            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
+              {t("covers.subtitle")}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {COVERS_ITEMS.map((item) => (
+              <div key={item.key} className="p-6 rounded-xl bg-white border border-mist-200">
+                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
+                  <item.icon className="size-5" />
+                </div>
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t(`covers.${item.key}.title`)}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t(`covers.${item.key}.description`)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How Better i18n Simplifies the Process */}
+      <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
             <div>
@@ -205,7 +281,7 @@ function WhatIsPage() {
                 {benefits.map((benefit) => (
                   <div
                     key={benefit.titleKey}
-                    className="p-5 rounded-xl bg-white border border-mist-200 flex items-start gap-4"
+                    className="p-5 rounded-xl bg-mist-50 border border-mist-100 flex items-start gap-4"
                   >
                     <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 shrink-0">
                       <benefit.icon className="size-5" />
@@ -222,26 +298,6 @@ function WhatIsPage() {
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("howItWorks.title")}
-            </h2>
-            <p className="mt-3 text-mist-700">
-              {t("howItWorks.subtitle")}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <StepCard number="1" title={t("howItWorks.step1.title")} description={t("howItWorks.step1.description")} />
-            <StepCard number="2" title={t("howItWorks.step2.title")} description={t("howItWorks.step2.description")} />
-            <StepCard number="3" title={t("howItWorks.step3.title")} description={t("howItWorks.step3.description")} />
-            <StepCard number="4" title={t("howItWorks.step4.title")} description={t("howItWorks.step4.description")} />
           </div>
         </div>
       </section>
@@ -268,18 +324,6 @@ function WhatIsPage() {
       {/* Related Pages */}
       <RelatedPages currentPage="what-is" locale={currentLocale} variant="mixed" />
     </MarketingLayout>
-  );
-}
-
-function StepCard({ number, title, description }: { number: string; title: string; description: string }) {
-  return (
-    <div className="text-center p-6">
-      <div className="size-10 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium mx-auto mb-4">
-        {number}
-      </div>
-      <h3 className="text-base font-medium text-mist-950 mb-2">{title}</h3>
-      <p className="text-sm text-mist-600">{description}</p>
-    </div>
   );
 }
 

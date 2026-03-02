@@ -95,7 +95,7 @@ const PAGE_TITLES: Readonly<Record<string, string>> = {
 
   // Educational pages
   "i18n/complete-guide": "Complete Guide to i18n & Localization",
-  "what-is": "What is...",
+  "what-is": "What is i18n? Internationalization & Localization Guide",
   "what-is-internationalization": "What is Internationalization?",
   "what-is-localization": "What is Localization?",
   "i18n/best-tms": "Best Translation Management System",
