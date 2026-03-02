@@ -55,6 +55,11 @@ export const MARKETING_PAGES = [
   { path: "i18n/nuxt", priority: 0.8, changefreq: "weekly", prerender: true },
   { path: "i18n/angular", priority: 0.8, changefreq: "weekly", prerender: true },
   { path: "i18n/svelte", priority: 0.8, changefreq: "weekly", prerender: true },
+  { path: "i18n/django", priority: 0.8, changefreq: "weekly", prerender: true },
+  { path: "i18n/ruby", priority: 0.8, changefreq: "weekly", prerender: true },
+  { path: "i18n/javascript", priority: 0.8, changefreq: "weekly", prerender: true },
+  { path: "i18n/android", priority: 0.8, changefreq: "weekly", prerender: true },
+  { path: "i18n/ios", priority: 0.8, changefreq: "weekly", prerender: true },
   { path: "i18n/expo", priority: 0.9, changefreq: "weekly", prerender: true },
   { path: "i18n/server", priority: 0.9, changefreq: "weekly", prerender: true },
   { path: "i18n/tanstack-start", priority: 0.9, changefreq: "weekly", prerender: true },
@@ -99,6 +104,8 @@ export const MARKETING_PAGES = [
   { path: "compare/lokalise", priority: 0.85, changefreq: "weekly", prerender: true },
   { path: "compare/phrase", priority: 0.85, changefreq: "weekly", prerender: true },
   { path: "compare/transifex", priority: 0.85, changefreq: "weekly", prerender: true },
+  { path: "compare/smartling", priority: 0.85, changefreq: "weekly", prerender: true },
+  { path: "compare/xtm", priority: 0.85, changefreq: "weekly", prerender: true },
 
   // Educational pages
   { path: "what-is", priority: 0.85, changefreq: "monthly", prerender: true },
