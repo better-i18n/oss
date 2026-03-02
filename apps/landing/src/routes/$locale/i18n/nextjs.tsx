@@ -6,6 +6,7 @@ import {
   CodeExample,
   SetupGuide,
   FrameworkCTA,
+  LibraryIntegration,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
 import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
@@ -127,6 +128,24 @@ export default async function Page({ params }: { params: { locale: string } }) {
   );
 }`;
 
+  const libraries = [
+    {
+      name: "next-intl",
+      description: t("i18n.nextjs.libraries.nextIntl.description"),
+      integrationText: t("i18n.nextjs.libraries.nextIntl.integration"),
+    },
+    {
+      name: "next-i18next",
+      description: t("i18n.nextjs.libraries.nextI18next.description"),
+      integrationText: t("i18n.nextjs.libraries.nextI18next.integration"),
+    },
+    {
+      name: "Lingui",
+      description: t("i18n.nextjs.libraries.lingui.description"),
+      integrationText: t("i18n.nextjs.libraries.lingui.integration"),
+    },
+  ];
+
   const relatedLinks = [
     { title: "React i18n", to: "/$locale/i18n/react", description: t("i18n.nextjs.related.react") },
     { title: "next-intl Alternative", to: "/$locale/compare", description: t("i18n.nextjs.related.nextIntl") },
@@ -155,6 +174,12 @@ export default async function Page({ params }: { params: { locale: string } }) {
         title={t("i18n.nextjs.codeExample.title")}
         description={t("i18n.nextjs.codeExample.description")}
         code={codeExample}
+      />
+
+      <LibraryIntegration
+        title={t("i18n.nextjs.librariesTitle")}
+        subtitle={t("i18n.nextjs.librariesSubtitle")}
+        libraries={libraries}
       />
 
       <ComparisonRelatedTopics heading={t("i18n.nextjs.relatedTitle")} links={relatedLinks} locale={locale} />
