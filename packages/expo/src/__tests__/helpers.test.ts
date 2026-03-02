@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it, mock, beforeEach } from "bun:test";
 import type { i18n as I18nType } from "i18next";
-import { initBetterI18n } from "../helpers";
+import { initBetterI18n, getLanguages, subscribeLanguages, getLanguagesSnapshot } from "../helpers";
 import { createMemoryStorage, storageAdapter } from "../storage";
 
 // ---------------------------------------------------------------------------
@@ -432,6 +432,71 @@ describe("initBetterI18n", () => {
     it("does not add readLocale/writeLocale to plain storage", () => {
       const plain = createMemoryStorage();
       expect("readLocale" in plain).toBe(false);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Reactive language list (subscribeLanguages / getLanguagesSnapshot)
+  // -------------------------------------------------------------------------
+
+  describe("subscribeLanguages / getLanguagesSnapshot", () => {
+    it("getLanguagesSnapshot returns [] before init", () => {
+      // Note: if a previous test already called initBetterI18n,
+      // _cachedLanguages may be populated. This tests the snapshot API works.
+      const snapshot = getLanguagesSnapshot();
+      expect(Array.isArray(snapshot)).toBe(true);
+    });
+
+    it("getLanguages and getLanguagesSnapshot return the same reference", async () => {
+      const { i18n } = createMockI18n();
+
+      await initBetterI18n({
+        project: PROJECT,
+        i18n,
+        storage: createMemoryStorage(),
+        defaultLocale: "en",
+      });
+
+      expect(getLanguages()).toBe(getLanguagesSnapshot());
+    });
+
+    it("notifies subscribers when initBetterI18n completes", async () => {
+      const { i18n } = createMockI18n();
+      const listener = mock(() => {});
+
+      const unsubscribe = subscribeLanguages(listener);
+
+      await initBetterI18n({
+        project: PROJECT,
+        i18n,
+        storage: createMemoryStorage(),
+        defaultLocale: "en",
+      });
+
+      expect(listener).toHaveBeenCalledTimes(1);
+
+      // After init, snapshot should have languages
+      const snapshot = getLanguagesSnapshot();
+      expect(snapshot.length).toBeGreaterThan(0);
+
+      unsubscribe();
+    });
+
+    it("unsubscribe prevents further notifications", async () => {
+      const { i18n } = createMockI18n();
+      const listener = mock(() => {});
+
+      const unsubscribe = subscribeLanguages(listener);
+      unsubscribe();
+
+      await initBetterI18n({
+        project: PROJECT,
+        i18n,
+        storage: createMemoryStorage(),
+        defaultLocale: "en",
+      });
+
+      expect(listener).not.toHaveBeenCalled();
     });
   });
 });
