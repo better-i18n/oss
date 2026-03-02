@@ -274,6 +274,59 @@ function MultilingualSeoPage() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className="py-16 bg-mist-50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-8 text-center">
+              {t("faq.title", { defaultValue: "Frequently Asked Questions About Multilingual SEO" })}
+            </h2>
+            <div className="space-y-6">
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q1.question", { defaultValue: "What is the difference between multilingual SEO and international SEO?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q1.answer", { defaultValue: "Multilingual SEO focuses on optimizing content across different languages — ensuring each language version ranks for relevant queries in that language. International SEO is a broader concept that also includes geographic targeting, currency, and market-specific strategies. Multilingual SEO is a key component of any international SEO strategy." })}
+                </p>
+              </div>
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q2.question", { defaultValue: "Do I need separate domains for each language?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q2.answer", { defaultValue: "No. Most multilingual websites use subdirectories (example.com/fr/) or subdomains (fr.example.com) rather than separate country-code TLDs. Subdirectories consolidate domain authority and are the most common choice. Separate domains (example.fr) provide the strongest geotargeting signal but split authority and increase maintenance cost." })}
+                </p>
+              </div>
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q3.question", { defaultValue: "How do hreflang tags work?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q3.answer", { defaultValue: "Hreflang tags are HTML link elements placed in the <head> of each page that tell search engines which language and regional version of a page to serve to users. Each page lists all its language variants, including itself. The x-default value indicates the fallback page for users whose language is not specifically targeted. Correct implementation prevents duplicate content issues across language versions." })}
+                </p>
+              </div>
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q4.question", { defaultValue: "Should I translate my keywords or research new ones per language?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q4.answer", { defaultValue: "Always research keywords natively in each target language rather than directly translating English keywords. Search behavior differs across languages and cultures — a direct translation may not match how people actually search. Use local keyword research tools and native speakers to identify high-value terms in each market." })}
+                </p>
+              </div>
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q5.question", { defaultValue: "How long does it take to see results from multilingual SEO?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q5.answer", { defaultValue: "Multilingual SEO typically takes 3-6 months to show meaningful ranking improvements in new language markets, similar to standard SEO timelines. Factors that affect speed include domain authority, content quality, competition level in the target market, and technical implementation correctness. Markets with less SEO competition may show results faster." })}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="py-12 border-t border-mist-200">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}</h2>

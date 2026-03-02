@@ -94,6 +94,7 @@ const PAGE_TITLES: Readonly<Record<string, string>> = {
   "compare/xtm": "Better i18n vs XTM",
 
   // Educational pages
+  "i18n/complete-guide": "Complete Guide to i18n & Localization",
   "what-is": "What is...",
   "what-is-internationalization": "What is Internationalization?",
   "what-is-localization": "What is Localization?",
@@ -227,6 +228,7 @@ const STATIC_SECTIONS: readonly LlmsTxtSection[] = [
   {
     heading: "Educational Content",
     links: [
+      "i18n/complete-guide",
       "what-is",
       "what-is-internationalization",
       "what-is-localization",

@@ -220,6 +220,59 @@ function SoftwareLocalizationPage() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className="py-16 bg-mist-50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-8 text-center">
+              {t("faq.title", { defaultValue: "Frequently Asked Questions About Software Localization" })}
+            </h2>
+            <div className="space-y-6">
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q1.question", { defaultValue: "What is the difference between internationalization and localization?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q1.answer", { defaultValue: "Internationalization (i18n) is the process of designing software so it can be adapted to different languages and regions without code changes — externalizing strings, supporting Unicode, and abstracting locale-dependent formatting. Localization (L10n) is the process of actually adapting the software for a specific locale — translating text, adjusting layouts, and customizing content for cultural relevance. i18n is done once by developers; L10n is done per locale by translators and localization engineers." })}
+                </p>
+              </div>
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q2.question", { defaultValue: "When should I start planning for localization?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q2.answer", { defaultValue: "As early as possible — ideally during initial architecture and design. Retrofitting internationalization into an existing codebase is significantly more expensive than building it in from the start. Even if you only support one language at launch, externalizing strings and using proper i18n libraries from day one makes adding languages later straightforward." })}
+                </p>
+              </div>
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q3.question", { defaultValue: "How do I handle text that expands in other languages?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q3.answer", { defaultValue: "Text expansion is one of the most common localization issues. German text is typically 30-40% longer than English, while Chinese and Japanese are often more compact. Design flexible layouts using auto-sizing containers, avoid fixed-width elements for text, and test with pseudo-localization tools that simulate text expansion before real translations are available." })}
+                </p>
+              </div>
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q4.question", { defaultValue: "What file formats are used for software localization?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q4.answer", { defaultValue: "Common formats include JSON (web and mobile apps), XLIFF (industry standard exchange format), .strings and .stringsdict (iOS), XML resources (Android), .resx (Microsoft .NET), PO/POT files (gettext/open source), and ARB files (Flutter). The best choice depends on your tech stack and tooling. Most translation management systems support all major formats." })}
+                </p>
+              </div>
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q5.question", { defaultValue: "Should I use machine translation or human translators?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q5.answer", { defaultValue: "Most teams use a hybrid approach. Machine translation (MT) works well for high-volume, lower-stakes content like support articles and internal documentation. Customer-facing UI strings, marketing copy, and legal content benefit from human translation or machine translation with human post-editing (MTPE). The right balance depends on your content types, quality requirements, and budget." })}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Related Pages */}
       <section className="py-12 border-t border-mist-200">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">

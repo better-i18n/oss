@@ -67,6 +67,7 @@ export const MARKETING_PAGES = [
   { path: "i18n/best-tms", priority: 0.85, changefreq: "weekly", prerender: true },
   { path: "i18n/best-library", priority: 0.85, changefreq: "weekly", prerender: true },
   { path: "i18n/for-developers", priority: 0.85, changefreq: "weekly", prerender: true },
+  { path: "i18n/complete-guide", priority: 0.9, changefreq: "weekly", prerender: true },
 
   // i18n SEO content pages
   { path: "i18n/localization-software", priority: 0.8, changefreq: "weekly", prerender: true },
