@@ -20,8 +20,10 @@ export interface DoctorCommandOptions {
   format?: "eslint" | "json";
   ci?: boolean;
   report?: boolean;
+  apiKey?: string;
   skipCode?: boolean;
   skipHealth?: boolean;
+  skipSync?: boolean;
   verbose?: boolean;
 }
 
@@ -39,6 +41,7 @@ export async function doctorCommand(options: DoctorCommandOptions) {
       dir: rootDir,
       skipCode: options.skipCode,
       skipHealth: options.skipHealth,
+      skipSync: options.skipSync,
       verbose: options.verbose,
     };
 
@@ -67,7 +70,7 @@ export async function doctorCommand(options: DoctorCommandOptions) {
         spinner.start("Uploading report...");
       }
 
-      const result = await reportToApi(report);
+      const result = await reportToApi(report, options.apiKey);
 
       if (result) {
         if (!isJson) {

@@ -81,9 +81,11 @@ program
   .option("-d, --dir <path>", "Directory to scan (default: current directory)")
   .option("-f, --format <type>", "Output format: eslint, json", "eslint")
   .option("--ci", "CI mode: exit with error code if health score below threshold")
-  .option("--report", "Upload results to Better i18n portal (requires GitHub Actions OIDC)")
+  .option("--report", "Upload results to Better i18n portal (requires GitHub Actions OIDC or --api-key)")
+  .option("--api-key <key>", "Better Auth API key for non-GitHub CI (local dev, GitLab, Jenkins)")
   .option("--skip-code", "Skip AST code analysis (hardcoded strings)")
   .option("--skip-health", "Skip translation file health checks")
+  .option("--skip-sync", "Skip remote CDN comparison")
   .option("--verbose", "Show detailed output")
   .action(doctorCommand);
 
