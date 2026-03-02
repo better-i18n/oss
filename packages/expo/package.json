@@ -53,6 +53,7 @@
     "@better-i18n/core": "workspace:*"
   },
   "peerDependencies": {
+    "react": ">=18.0.0",
     "i18next": ">=23.0.0",
     "react-i18next": ">=14.0.0",
     "expo-localization": ">=15.0.0",
@@ -60,6 +61,9 @@
     "@react-native-async-storage/async-storage": ">=1.19.0"
   },
   "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
     "react-i18next": {
       "optional": true
     },
@@ -75,6 +79,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
     "i18next": "^23.0.0",
     "typescript": "~5.9.2"
   }

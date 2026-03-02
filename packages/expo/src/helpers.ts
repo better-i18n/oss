@@ -8,6 +8,28 @@ import type { LocaleAwareTranslationStorage, TranslationStorage } from "./types.
 const LOG_PREFIX = "[better-i18n/expo]";
 
 let _cachedLanguages: LanguageOption[] = [];
+const _listeners = new Set<() => void>();
+
+function _emitLanguagesChange(): void {
+  for (const listener of _listeners) listener();
+}
+
+/**
+ * Subscribe to language list changes (used by `useLanguages` hook).
+ * Returns an unsubscribe function.
+ */
+export function subscribeLanguages(listener: () => void): () => void {
+  _listeners.add(listener);
+  return () => { _listeners.delete(listener); };
+}
+
+/**
+ * Snapshot function for `useSyncExternalStore`.
+ * Returns the current cached languages array reference.
+ */
+export function getLanguagesSnapshot(): LanguageOption[] {
+  return _cachedLanguages;
+}
 
 export interface InitBetterI18nOptions {
   /** Project identifier in "org/project" format */
@@ -292,7 +314,9 @@ export async function initBetterI18n(
     }
   });
 
+  _core = core;
   _cachedLanguages = languages;
+  _emitLanguagesChange();
 
   return { core, languages };
 }
@@ -303,4 +327,21 @@ export async function initBetterI18n(
  */
 export function getLanguages(): LanguageOption[] {
   return _cachedLanguages;
+}
+
+let _core: I18nCore | null = null;
+
+/**
+ * Re-fetches the language list from the CDN manifest, updates the
+ * internal cache, and notifies all `useLanguages` subscribers.
+ *
+ * Useful for pull-to-refresh or periodic background updates.
+ * Returns the updated language list.
+ */
+export async function refreshLanguages(): Promise<LanguageOption[]> {
+  if (!_core) return _cachedLanguages;
+  const langs = await _core.getLanguages();
+  _cachedLanguages = langs;
+  _emitLanguagesChange();
+  return langs;
 }

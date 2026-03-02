@@ -1,6 +1,9 @@
 // Primary API
-export { initBetterI18n, getLanguages } from "./helpers.js";
+export { initBetterI18n, getLanguages, subscribeLanguages, getLanguagesSnapshot, refreshLanguages } from "./helpers.js";
 export type { InitBetterI18nOptions, BetterI18nResult } from "./helpers.js";
+
+// React hooks
+export { useLanguages } from "./hooks.js";
 
 // Locale detection
 export { getDeviceLocale, getDeviceLocales } from "./locale.js";
