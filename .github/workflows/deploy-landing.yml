@@ -34,6 +34,9 @@ jobs:
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
+      - name: Build Workspace Packages
+        run: bun run build
+
       - name: Build & Deploy
         working-directory: apps/landing
         run: bun run deploy
