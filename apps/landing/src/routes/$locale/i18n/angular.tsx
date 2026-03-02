@@ -4,7 +4,9 @@ import {
   FrameworkHero,
   FeatureList,
   CodeExample,
+  SetupGuide,
   FrameworkCTA,
+  LibraryIntegration,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
 import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
@@ -46,6 +48,43 @@ function AngularI18nPage() {
     t("i18n.angular.features.cli"),
   ];
 
+  const setupSteps = [
+    {
+      step: 1,
+      title: "Install",
+      description: "Add the Better i18n Angular package to your project.",
+      code: "npm install @better-i18n/angular",
+      fileName: "terminal",
+    },
+    {
+      step: 2,
+      title: "Import the module",
+      description:
+        "Import BetterI18nModule in your AppModule or standalone component.",
+      code: `import { BetterI18nModule } from '@better-i18n/angular';
+
+@NgModule({
+  imports: [
+    BetterI18nModule.forRoot({
+      project: 'your-org/your-project',
+      defaultLocale: 'en',
+    }),
+  ],
+})
+export class AppModule {}`,
+      fileName: "app.module.ts",
+    },
+    {
+      step: 3,
+      title: "Use the translate pipe",
+      description:
+        "Use the translate pipe or directive in your templates to display translations.",
+      code: `<h1>{{ 'welcome' | translate }}</h1>
+<p>{{ 'greeting' | translate: { name: userName } }}</p>`,
+      fileName: "app.component.html",
+    },
+  ];
+
   const codeExample = `// app.component.ts
 import { Component } from '@angular/core';
 import { TranslateService } from '@better-i18n/angular';
@@ -63,6 +102,24 @@ export class AppComponent {
   }
 }`;
 
+  const libraries = [
+    {
+      name: "@ngx-translate/core",
+      description: t("i18n.angular.libraries.ngxTranslate.description"),
+      integrationText: t("i18n.angular.libraries.ngxTranslate.integration"),
+    },
+    {
+      name: "Angular i18n (built-in)",
+      description: t("i18n.angular.libraries.builtIn.description"),
+      integrationText: t("i18n.angular.libraries.builtIn.integration"),
+    },
+    {
+      name: "Transloco",
+      description: t("i18n.angular.libraries.transloco.description"),
+      integrationText: t("i18n.angular.libraries.transloco.integration"),
+    },
+  ];
+
   const relatedLinks = [
     { title: "React i18n", to: "/$locale/i18n/react", description: t("i18n.angular.related.react") },
     { title: "Vue i18n", to: "/$locale/i18n/vue", description: t("i18n.angular.related.vue") },
@@ -77,12 +134,20 @@ export class AppComponent {
         badgeText="Angular i18n"
       />
 
+      <SetupGuide title="Get started in 3 steps" steps={setupSteps} />
+
       <FeatureList title={t("i18n.angular.featuresTitle")} features={features} />
 
       <CodeExample
         title={t("i18n.angular.codeExample.title")}
         description={t("i18n.angular.codeExample.description")}
         code={codeExample}
+      />
+
+      <LibraryIntegration
+        title={t("i18n.angular.librariesTitle")}
+        subtitle={t("i18n.angular.librariesSubtitle")}
+        libraries={libraries}
       />
 
       <ComparisonRelatedTopics heading={t("i18n.angular.relatedTitle")} links={relatedLinks} locale={locale} />

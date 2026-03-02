@@ -60,6 +60,7 @@ export const MARKETING_PAGES = [
   { path: "i18n/javascript", priority: 0.8, changefreq: "weekly", prerender: true },
   { path: "i18n/android", priority: 0.8, changefreq: "weekly", prerender: true },
   { path: "i18n/ios", priority: 0.8, changefreq: "weekly", prerender: true },
+  { path: "i18n/flutter", priority: 0.8, changefreq: "weekly", prerender: true },
   { path: "i18n/expo", priority: 0.9, changefreq: "weekly", prerender: true },
   { path: "i18n/server", priority: 0.9, changefreq: "weekly", prerender: true },
   { path: "i18n/tanstack-start", priority: 0.9, changefreq: "weekly", prerender: true },
