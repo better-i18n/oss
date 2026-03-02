@@ -230,6 +230,81 @@ describe("initBetterI18n", () => {
   });
 
   // -------------------------------------------------------------------------
+  // Persistent cache sync (widget extension support)
+  // -------------------------------------------------------------------------
+
+  describe("persistent cache sync on changeLanguage", () => {
+    it("writes persistent cache even when resource bundle is already loaded", async () => {
+      const { i18n, bundles } = createMockI18n();
+      const storage = createMemoryStorage();
+      const setItemSpy = mock(storage.setItem.bind(storage));
+      storage.setItem = setItemSpy;
+
+      await initBetterI18n({
+        project: PROJECT,
+        i18n,
+        storage,
+        defaultLocale: "en",
+      });
+
+      // Simulate "tr" already loaded in i18next memory (init with Turkish data)
+      const trData = {
+        auth: { login: "Giriş Yap", logout: "Çıkış Yap" },
+        common: { welcome: "Hoşgeldiniz" },
+      };
+      bundles.set("tr:translation", trData);
+
+      // Attach i18next store.data so the else branch can reconstruct messages
+      (i18n as any).store = {
+        data: {
+          tr: {
+            translation: trData, // merged NS — excluded by the filter
+            auth: trData.auth,
+            common: trData.common,
+          },
+        },
+      };
+
+      setItemSpy.mockClear();
+
+      await i18n.changeLanguage("tr");
+
+      // Verify cache was written to persistent storage
+      const calls = setItemSpy.mock.calls as Array<[string, string]>;
+      const translationWriteCall = calls.find(([key]) =>
+        key.includes(PROJECT) && key.includes("tr") && key.includes("translations")
+      );
+      expect(translationWriteCall).toBeDefined();
+
+      // Verify written data contains the namespaces (excluding "translation")
+      const writtenData = JSON.parse(translationWriteCall![1]);
+      expect(writtenData).toHaveProperty("auth");
+      expect(writtenData).toHaveProperty("common");
+      expect(writtenData).not.toHaveProperty("translation");
+    });
+
+    it("awaits writeCache before returning from loadMessages", async () => {
+      const { i18n } = createMockI18n();
+      const storage = createMemoryStorage();
+
+      await initBetterI18n({
+        project: PROJECT,
+        i18n,
+        storage,
+        defaultLocale: "en",
+      });
+
+      // After init, cache should already be written (await, not fire-and-forget)
+      const cached = await storage.getItem(
+        `@better-i18n:${PROJECT}:en:translations`
+      );
+      expect(cached).not.toBeNull();
+      const parsed = JSON.parse(cached!);
+      expect(parsed).toHaveProperty("auth");
+    });
+  });
+
+  // -------------------------------------------------------------------------
   // languageChanged listener (safety-net)
   // -------------------------------------------------------------------------
 

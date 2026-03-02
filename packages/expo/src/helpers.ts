@@ -153,9 +153,11 @@ export async function initBetterI18n(
   async function loadMessages(locale: string): Promise<Messages> {
     try {
       const data = await core.getMessages(locale);
-      writeCache(storage, project, locale, data).catch(
-        () => {}
-      );
+      try {
+        await writeCache(storage, project, locale, data);
+      } catch {
+        // Cache write is best-effort — don't fail the load
+      }
       return data;
     } catch (err) {
       if (debug) {
@@ -240,11 +242,28 @@ export async function initBetterI18n(
             );
           }
         }
+      } else {
+        // Resources are in memory but persistent cache may be stale/missing.
+        // Reconstruct from i18next store and write — critical for iOS widget extensions.
+        const storeData = (i18nInstance as any).store?.data?.[safeLng];
+        if (storeData) {
+          const messages: Messages = {};
+          for (const [ns, data] of Object.entries(storeData)) {
+            if (ns !== "translation" && typeof data === "object" && data !== null) {
+              messages[ns] = data as Record<string, unknown>;
+            }
+          }
+          if (Object.keys(messages).length > 0) {
+            try { await writeCache(storage, project, safeLng, messages); } catch { /* best-effort */ }
+          }
+        }
       }
     }
     // Persist locale if storage supports it (LocaleAwareTranslationStorage duck-type)
     if (safeLng && "writeLocale" in storage && typeof (storage as unknown as LocaleAwareTranslationStorage).writeLocale === "function") {
-      (storage as unknown as LocaleAwareTranslationStorage).writeLocale(safeLng).catch(() => {});
+      try {
+        await (storage as unknown as LocaleAwareTranslationStorage).writeLocale(safeLng);
+      } catch { /* best-effort */ }
     }
     return originalChangeLanguage(safeLng, callback);
   };
