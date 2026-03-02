@@ -11,6 +11,10 @@ import {
   IconGroup1,
   IconMagnifyingGlass,
   IconRocket,
+  IconFileText,
+  IconCircleQuestionmark,
+  IconClipboard,
+  IconLightBulb,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/complete-guide")({
@@ -66,6 +70,42 @@ const frameworkGuides = [
   { name: "Nuxt", href: "/$locale/i18n/nuxt", descKey: "frameworks.nuxt", defaultDesc: "@nuxtjs/i18n module with auto-routing" },
 ];
 
+const fileFormats = [
+  { titleKey: "formats.json.title", descKey: "formats.json.description", defaultTitle: "JSON", defaultDesc: "Most popular for web apps (React, Vue, Angular). Human-readable, supports nesting for organized key structures. No built-in pluralization standard, so libraries like ICU MessageFormat fill the gap." },
+  { titleKey: "formats.xliff.title", descKey: "formats.xliff.description", defaultTitle: "XLIFF", defaultDesc: "XML-based industry standard for translation exchange between tools. Supported by all professional TMS platforms. Verbose but feature-rich, with built-in support for notes, state tracking, and metadata." },
+  { titleKey: "formats.po.title", descKey: "formats.po.description", defaultTitle: "PO/POT (Gettext)", defaultDesc: "Classic open-source format used in Python, PHP, and Ruby ecosystems. Built-in plural support with dedicated plural forms syntax. Widely supported by translators and translation tools." },
+  { titleKey: "formats.arb.title", descKey: "formats.arb.description", defaultTitle: "ARB", defaultDesc: "Application Resource Bundle is the Flutter and Dart standard format. JSON-based with ICU message syntax support, enabling plurals and selects natively. Used by Flutter's gen-l10n tooling." },
+  { titleKey: "formats.strings.title", descKey: "formats.strings.description", defaultTitle: ".strings / .stringsdict", defaultDesc: "Apple platform native formats for iOS and macOS development. .strings handles simple key-value pairs while .stringsdict uses XML plist structure for pluralization rules." },
+  { titleKey: "formats.resx.title", descKey: "formats.resx.description", defaultTitle: ".resx", defaultDesc: ".NET resource file format used for C# and VB.NET applications. XML-based with strong Visual Studio tooling integration. Supports typed resources for strings, images, and other assets." },
+];
+
+const tmsCriteria = [
+  { icon: IconCodeBrackets, titleKey: "tms.integration.title", descKey: "tms.integration.description", defaultTitle: "Developer Integration", defaultDesc: "Evaluate CLI tools, SDK support, Git-based workflows, and CI/CD hooks. The best TMS platforms integrate directly into your development pipeline so translations stay in sync with code changes automatically." },
+  { icon: IconMagnifyingGlass, titleKey: "tms.memory.title", descKey: "tms.memory.description", defaultTitle: "Translation Memory", defaultDesc: "Translation memory stores previously approved translations and suggests them for similar or identical strings. This reduces translation cost, speeds up turnaround, and maintains consistency across your product." },
+  { icon: IconGroup1, titleKey: "tms.collaboration.title", descKey: "tms.collaboration.description", defaultTitle: "Collaboration Features", defaultDesc: "Look for reviewer workflows, inline comments, shared glossaries, and approval chains. These features enable translators, reviewers, and developers to work together without bottlenecks or miscommunication." },
+  { icon: IconRocket, titleKey: "tms.automation.title", descKey: "tms.automation.description", defaultTitle: "AI and Automation", defaultDesc: "Modern TMS platforms offer machine translation suggestions, automated quality checks, batch operations, and smart routing. AI-assisted workflows reduce manual effort while maintaining translation quality." },
+];
+
+const productionChecklist = [
+  { key: "checklist.externalized", defaultValue: "All user-facing strings externalized to resource files" },
+  { key: "checklist.detection", defaultValue: "Locale detection implemented (browser, URL, user preference)" },
+  { key: "checklist.plurals", defaultValue: "Pluralization handled with ICU MessageFormat for all target languages" },
+  { key: "checklist.formatting", defaultValue: "Date, time, number, and currency formatting uses Intl API or equivalent" },
+  { key: "checklist.rtl", defaultValue: "RTL layout support tested with CSS logical properties" },
+  { key: "checklist.fallback", defaultValue: "Fallback locale configured for missing translations" },
+  { key: "checklist.naming", defaultValue: "Translation keys follow a consistent naming convention" },
+  { key: "checklist.ci", defaultValue: "CI pipeline validates no missing or unused translation keys" },
+];
+
+const faqItems = [
+  { questionKey: "faq.q1.question", answerKey: "faq.q1.answer", defaultQuestion: "What is the difference between i18n and L10n?", defaultAnswer: "Internationalization (i18n) is the engineering process of designing software so it can support multiple languages and regions. Localization (L10n) is the content process of adapting that software for a specific locale, including translating text, adjusting formats, and ensuring cultural appropriateness. i18n happens once in your codebase; L10n happens for every locale you support." },
+  { questionKey: "faq.q2.question", answerKey: "faq.q2.answer", defaultQuestion: "Which i18n library should I use?", defaultAnswer: "The best library depends on your framework. For React, react-intl (FormatJS) and react-i18next are the most widely adopted. Vue developers typically use vue-i18n. Angular has built-in i18n support alongside community options like Transloco. Svelte projects use svelte-i18n. Evaluate each option based on bundle size, ICU support, and how well it integrates with your rendering model." },
+  { questionKey: "faq.q3.question", answerKey: "faq.q3.answer", defaultQuestion: "How many languages should I launch with?", defaultAnswer: "Start with two to three high-impact languages based on your existing user data or target market research. This lets you validate your i18n architecture, translation workflow, and QA process at a manageable scale. Expand to additional languages once you have a reliable pipeline in place, using analytics to prioritize which locales to add next." },
+  { questionKey: "faq.q4.question", answerKey: "faq.q4.answer", defaultQuestion: "Can I use machine translation for my app?", defaultAnswer: "A hybrid approach works well: use machine translation for initial drafts and high-volume, low-criticality content, then have human reviewers refine quality-critical strings like marketing copy, error messages, and legal text. Modern neural machine translation has improved significantly, but human review remains essential for nuance, brand voice, and cultural accuracy." },
+  { questionKey: "faq.q5.question", answerKey: "faq.q5.answer", defaultQuestion: "What is pseudo-localization?", defaultAnswer: "Pseudo-localization is a testing technique that replaces text with accented or extended characters (e.g., turning 'Hello' into '[~Hellllo~]') without changing meaning. It helps developers spot hardcoded strings, text truncation, and layout issues before real translations are available. Most i18n libraries and TMS tools support generating pseudo-localized output automatically." },
+  { questionKey: "faq.q6.question", answerKey: "faq.q6.answer", defaultQuestion: "How do I handle dynamic content localization?", defaultAnswer: "Use ICU MessageFormat placeholders for interpolation (e.g., 'Hello, {name}') instead of concatenating strings. For plurals, use ICU plural syntax that adapts to each language's rules. Avoid building sentences from fragments, since word order varies across languages. For rich text, use tagged placeholders that let translators reorder HTML elements without breaking markup." },
+];
+
 function CompleteGuideI18nPage() {
   const t = useT("marketing.i18n.completeGuide");
   const tCommon = useT("marketing");
@@ -110,8 +150,11 @@ function CompleteGuideI18nPage() {
               <p className="text-mist-700 leading-relaxed mb-4">
                 {t("i18nVsL10n.i18n.paragraph1", { defaultValue: "Internationalization is the process of designing and engineering your software so it can be adapted to different languages and regions without requiring code changes. The abbreviation i18n comes from the 18 letters between the 'i' and the 'n' in internationalization." })}
               </p>
-              <p className="text-mist-700 leading-relaxed">
+              <p className="text-mist-700 leading-relaxed mb-4">
                 {t("i18nVsL10n.i18n.paragraph2", { defaultValue: "i18n covers externalizing strings, supporting Unicode, abstracting date and number formats, building locale-aware routing, and structuring your codebase so that adding a new language is a configuration step — not a development project." })}
+              </p>
+              <p className="text-mist-700 leading-relaxed">
+                {t("i18nVsL10n.i18n.paragraph3", { defaultValue: "Internationalization is a one-time engineering investment that pays dividends over the lifetime of your product. Once your codebase is properly internationalized, adding a new language becomes primarily a content task — not an engineering task. Teams that internationalize early spend significantly less time and budget on each subsequent locale compared to those who retrofit i18n into an existing codebase." })}
               </p>
             </div>
             <div className="mt-10 lg:mt-0">
@@ -121,8 +164,11 @@ function CompleteGuideI18nPage() {
               <p className="text-mist-700 leading-relaxed mb-4">
                 {t("i18nVsL10n.l10n.paragraph1", { defaultValue: "Localization is the process of adapting your internationalized product for a specific locale. This includes translating text, adjusting layouts for RTL scripts, localizing images and media, and ensuring content is culturally appropriate for the target audience." })}
               </p>
-              <p className="text-mist-700 leading-relaxed">
+              <p className="text-mist-700 leading-relaxed mb-4">
                 {t("i18nVsL10n.l10n.paragraph2", { defaultValue: "L10n is an ongoing effort. As your product evolves, new strings need translation, new markets require cultural adaptation, and formatting rules must stay current. Automation through a translation management system keeps this sustainable." })}
+              </p>
+              <p className="text-mist-700 leading-relaxed">
+                {t("i18nVsL10n.l10n.paragraph3", { defaultValue: "Localization quality directly impacts user trust and business outcomes. Users are more likely to engage with and purchase products presented in their native language, and poor translations can actively damage brand perception. Investing in professional localization — whether through human translators, carefully reviewed machine translation, or a hybrid approach — is essential for any product targeting international markets." })}
               </p>
             </div>
           </div>
@@ -151,6 +197,36 @@ function CompleteGuideI18nPage() {
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
                   {t(concept.descKey, { defaultValue: concept.defaultDesc })}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* i18n File Format Comparison */}
+      <section className="py-16 bg-white">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-4">
+              <IconFileText className="size-4" />
+              <span>{t("formats.badge", { defaultValue: "Format Reference" })}</span>
+            </div>
+            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
+              {t("formats.title", { defaultValue: "i18n File Format Comparison" })}
+            </h2>
+            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
+              {t("formats.subtitle", { defaultValue: "Choosing the right file format for your translation resources depends on your framework, toolchain, and team workflow. Here are the most widely used formats." })}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {fileFormats.map((format) => (
+              <div key={format.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t(format.titleKey, { defaultValue: format.defaultTitle })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t(format.descKey, { defaultValue: format.defaultDesc })}
                 </p>
               </div>
             ))}
@@ -187,8 +263,41 @@ function CompleteGuideI18nPage() {
         </div>
       </section>
 
-      {/* Framework Overview */}
+      {/* Choosing a TMS */}
       <section className="py-16 bg-white">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-4">
+              <IconLightBulb className="size-4" />
+              <span>{t("tms.badge", { defaultValue: "TMS Guide" })}</span>
+            </div>
+            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
+              {t("tms.title", { defaultValue: "Choosing a Translation Management System" })}
+            </h2>
+            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
+              {t("tms.subtitle", { defaultValue: "A translation management system (TMS) is the central hub where developers, translators, and reviewers collaborate on localized content. It stores your translation keys, manages workflows, and connects to your codebase. When evaluating a TMS, prioritize these four criteria." })}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {tmsCriteria.map((criterion) => (
+              <div key={criterion.titleKey} className="p-6 rounded-xl bg-mist-50 border border-mist-200">
+                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
+                  <criterion.icon className="size-5" />
+                </div>
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t(criterion.titleKey, { defaultValue: criterion.defaultTitle })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t(criterion.descKey, { defaultValue: criterion.defaultDesc })}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Framework Overview */}
+      <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="text-center mb-12">
             <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
@@ -220,7 +329,7 @@ function CompleteGuideI18nPage() {
       </section>
 
       {/* Common Mistakes */}
-      <section className="py-16 bg-mist-50">
+      <section className="py-16 bg-mist-100">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="text-center mb-12">
             <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
@@ -248,8 +357,36 @@ function CompleteGuideI18nPage() {
         </div>
       </section>
 
-      {/* Testing */}
+      {/* i18n Checklist for Production Readiness */}
       <section className="py-16 bg-white">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-4">
+              <IconClipboard className="size-4" />
+              <span>{t("checklist.badge", { defaultValue: "Production Checklist" })}</span>
+            </div>
+            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
+              {t("checklist.title", { defaultValue: "i18n Checklist for Production Readiness" })}
+            </h2>
+            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
+              {t("checklist.subtitle", { defaultValue: "Verify these eight items before shipping your internationalized application to production. Each one addresses a common gap that causes issues in real-world deployments." })}
+            </p>
+          </div>
+          <div className="max-w-2xl mx-auto">
+            <ul className="space-y-4">
+              {productionChecklist.map((item) => (
+                <li key={item.key} className="flex items-start gap-3">
+                  <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                  <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Testing */}
+      <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
             <div>
@@ -284,6 +421,36 @@ function CompleteGuideI18nPage() {
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-16 bg-white">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-4">
+              <IconCircleQuestionmark className="size-4" />
+              <span>{t("faq.badge", { defaultValue: "FAQ" })}</span>
+            </div>
+            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
+              {t("faq.title", { defaultValue: "Frequently Asked Questions About i18n" })}
+            </h2>
+            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
+              {t("faq.subtitle", { defaultValue: "Answers to the most common questions teams ask when planning and implementing internationalization." })}
+            </p>
+          </div>
+          <div className="max-w-3xl mx-auto space-y-8">
+            {faqItems.map((item) => (
+              <div key={item.questionKey} className="border-b border-mist-200 pb-8 last:border-b-0">
+                <h3 className="text-base font-medium text-mist-950 mb-3">
+                  {t(item.questionKey, { defaultValue: item.defaultQuestion })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t(item.answerKey, { defaultValue: item.defaultAnswer })}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
