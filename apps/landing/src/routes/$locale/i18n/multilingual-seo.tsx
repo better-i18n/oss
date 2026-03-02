@@ -65,6 +65,16 @@ function MultilingualSeoPage() {
     { titleKey: "urlStructures.cctld.title", descKey: "urlStructures.cctld.description", exampleKey: "urlStructures.cctld.example", defaultTitle: "Country-Code TLD", defaultDesc: "Each country gets its own top-level domain. Strongest geotargeting signal but highest cost and complexity.", defaultExample: "example.com, example.fr, example.de" },
   ];
 
+  const hreflangChecklist = [
+    { key: "hreflang.checklist.selfRef", defaultValue: "Every page includes a self-referencing hreflang tag pointing to itself" },
+    { key: "hreflang.checklist.bidirectional", defaultValue: "All hreflang references are bidirectional — page A points to page B and page B points back to page A" },
+    { key: "hreflang.checklist.xDefault", defaultValue: "An x-default hreflang tag is set to indicate the fallback page for unmatched locales" },
+    { key: "hreflang.checklist.validCodes", defaultValue: "Language and region codes follow ISO 639-1 and ISO 3166-1 Alpha-2 standards" },
+    { key: "hreflang.checklist.canonical", defaultValue: "Canonical tags do not conflict with hreflang tags — each localized page canonicalizes to itself" },
+    { key: "hreflang.checklist.sitemap", defaultValue: "International sitemaps include hreflang annotations as an alternative to HTML link elements" },
+    { key: "hreflang.checklist.consistent", defaultValue: "Hreflang tags are consistent across all pages — no orphan references or missing reciprocal links" },
+  ];
+
   const relatedPages = [
     { name: "International SEO Strategy", href: "/$locale/i18n/international-seo", description: t("related.internationalSeo", { defaultValue: "Build a comprehensive international SEO strategy" }) },
     { name: "Technical Multilingual SEO", href: "/$locale/i18n/technical-multilingual-seo", description: t("related.technicalMultilingualSeo", { defaultValue: "Technical implementation of multilingual SEO" }) },
@@ -104,8 +114,11 @@ function MultilingualSeoPage() {
               <p className="text-mist-700 leading-relaxed mb-4">
                 {t("definition.paragraph2", { defaultValue: "A multilingual SEO company or multilingual SEO agency will typically address hreflang tag implementation, localized keyword research, URL architecture decisions, and canonical tag management — all of which signal to Google which version of a page to serve to which audience." })}
               </p>
-              <p className="text-mist-700 leading-relaxed">
+              <p className="text-mist-700 leading-relaxed mb-4">
                 {t("definition.paragraph3", { defaultValue: "Localization SEO goes further than translation. It accounts for regional search behavior, local slang, and cultural nuances that affect how people search. This is why multilingual SEO services must combine technical precision with deep linguistic expertise." })}
+              </p>
+              <p className="text-mist-700 leading-relaxed">
+                {t("definition.paragraph4", { defaultValue: "Multilingual SEO also intersects with the rise of AI-powered search. Google AI Overviews, Perplexity, and other AI answer engines rely on structured language signals — including hreflang tags — to determine which language version of content to cite in generated responses. When hreflang implementation is correct, AI systems can confidently attribute and surface the right locale-specific content. This means proper multilingual SEO is no longer just about traditional search rankings — it directly affects whether your content appears in AI-generated answers for users searching in different languages." })}
               </p>
             </div>
             <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
@@ -182,6 +195,29 @@ function MultilingualSeoPage() {
         </div>
       </section>
 
+      <section className="py-16 bg-mist-50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
+                {t("hreflang.checklist.title", { defaultValue: "Hreflang Tag Implementation Checklist" })}
+              </h2>
+              <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
+                {t("hreflang.checklist.subtitle", { defaultValue: "Use this checklist to verify your hreflang tags are correctly implemented. Missing or misconfigured hreflang annotations are among the most common multilingual SEO errors, and search engines will ignore invalid hreflang directives entirely." })}
+              </p>
+            </div>
+            <ul className="space-y-4">
+              {hreflangChecklist.map((item) => (
+                <li key={item.key} className="flex items-start gap-3 p-4 rounded-xl border border-mist-200 bg-white">
+                  <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                  <span className="text-mist-700 leading-relaxed">{t(item.key, { defaultValue: item.defaultValue })}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
@@ -202,6 +238,49 @@ function MultilingualSeoPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-mist-50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="text-center mb-12">
+            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
+              {t("localizationVsTranslation.title", { defaultValue: "Content Localization vs Translation for SEO" })}
+            </h2>
+            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
+              {t("localizationVsTranslation.subtitle", { defaultValue: "Direct translation and true content localization produce fundamentally different SEO outcomes. Understanding the distinction is essential for any multilingual SEO strategy." })}
+            </p>
+          </div>
+          <div className="lg:grid lg:grid-cols-2 lg:gap-16">
+            <div className="p-8 rounded-2xl bg-mist-50 border border-mist-100">
+              <h3 className="text-lg font-medium text-mist-950 mb-4">
+                {t("localizationVsTranslation.translationFails.title", { defaultValue: "Why Translation Alone Fails" })}
+              </h3>
+              <p className="text-mist-700 leading-relaxed mb-4">
+                {t("localizationVsTranslation.translationFails.paragraph1", { defaultValue: "Keyword mismatch is the primary reason direct translation underperforms. A high-volume English keyword, when translated word-for-word into German or Japanese, often maps to a phrase that native speakers rarely type into a search engine. Search engines rank pages that match actual query patterns — not pages that contain grammatically correct but rarely searched phrases." })}
+              </p>
+              <p className="text-mist-700 leading-relaxed mb-4">
+                {t("localizationVsTranslation.translationFails.paragraph2", { defaultValue: "Cultural context also shifts the meaning and relevance of content. Metaphors, idioms, and references that resonate with an American audience may confuse or alienate readers in South Korea or Brazil. When users bounce from content that feels unnatural, search engines interpret that engagement signal as a ranking demotion indicator." })}
+              </p>
+              <p className="text-mist-700 leading-relaxed">
+                {t("localizationVsTranslation.translationFails.paragraph3", { defaultValue: "Search intent itself varies between languages and regions. The same topic may have informational intent in one market and transactional intent in another. A translated page that ignores these intent differences will rank poorly because it fails to satisfy what users in that locale are actually looking for." })}
+              </p>
+            </div>
+            <div className="mt-8 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
+              <h3 className="text-lg font-medium text-mist-950 mb-4">
+                {t("localizationVsTranslation.localizationAdds.title", { defaultValue: "What Content Localization Adds" })}
+              </h3>
+              <p className="text-mist-700 leading-relaxed mb-4">
+                {t("localizationVsTranslation.localizationAdds.paragraph1", { defaultValue: "Native keyword research is the foundation of content localization. Instead of translating English keywords, localization teams research what terms people in each market actually search. This often reveals entirely different keyword clusters that a translation-only approach would miss completely." })}
+              </p>
+              <p className="text-mist-700 leading-relaxed mb-4">
+                {t("localizationVsTranslation.localizationAdds.paragraph2", { defaultValue: "Cultural adaptation ensures that examples, case studies, and references align with the target audience's experience. A localized page for the French market might reference GDPR compliance scenarios, while the same page for Japan might emphasize data residency regulations — even though the core topic remains the same." })}
+              </p>
+              <p className="text-mist-700 leading-relaxed">
+                {t("localizationVsTranslation.localizationAdds.paragraph3", { defaultValue: "Local link building relevance improves when content is genuinely localized. Regional publishers, bloggers, and industry sites are far more likely to link to content that speaks to their audience's specific concerns. These local backlinks send strong geographic relevance signals to search engines, reinforcing your rankings in that specific market." })}
+              </p>
             </div>
           </div>
         </div>
@@ -320,6 +399,22 @@ function MultilingualSeoPage() {
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
                   {t("faq.q5.answer", { defaultValue: "Multilingual SEO typically takes 3-6 months to show meaningful ranking improvements in new language markets, similar to standard SEO timelines. Factors that affect speed include domain authority, content quality, competition level in the target market, and technical implementation correctness. Markets with less SEO competition may show results faster." })}
+                </p>
+              </div>
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q6.question", { defaultValue: "What are the most common hreflang mistakes?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q6.answer", { defaultValue: "The most frequent hreflang mistakes are missing reciprocal tags, incorrect language or region codes, and conflicts between canonical and hreflang tags. Reciprocal tags mean that if page A declares page B as its French version, page B must also declare page A as its English version — otherwise search engines may ignore both annotations. Using wrong codes, such as 'uk' instead of the correct ISO 639-1 code 'en-GB' for British English, causes search engines to discard the tag entirely. Canonical tag conflicts occur when a localized page points its canonical tag to a different language version instead of itself, which contradicts the hreflang declaration and confuses crawlers." })}
+                </p>
+              </div>
+              <div className="p-6 rounded-xl bg-white border border-mist-200">
+                <h3 className="text-base font-medium text-mist-950 mb-2">
+                  {t("faq.q7.question", { defaultValue: "How do I measure multilingual SEO success?" })}
+                </h3>
+                <p className="text-sm text-mist-700 leading-relaxed">
+                  {t("faq.q7.answer", { defaultValue: "Measure multilingual SEO success by tracking per-locale organic traffic, keyword rankings segmented by language and country, and conversion rates for each market. Google Search Console's international targeting report and the performance report filtered by country provide direct visibility into how each locale performs. Use hreflang validation tools to regularly audit your implementation for errors such as orphan tags or missing return links. Monitor indexation status per language version to ensure search engines are crawling and indexing all locale variants. Comparing organic growth rates across locales helps identify which markets are responding to your multilingual SEO efforts and which need further optimization." })}
                 </p>
               </div>
             </div>
