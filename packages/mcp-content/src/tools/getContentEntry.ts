@@ -22,12 +22,13 @@ const inputSchema = projectSchema.extend({
 export const getContentEntry: Tool = {
   definition: {
     name: "getContentEntry",
-    description: `Get a content entry with all translations, custom field values, and version history. Use expand to include referenced entry data for relation fields.
+    description: `Get a content entry with all translations, custom field values, and version history. Use this to read full content for translation or editing.
 
 Response fields:
 - slang: entry's source language code
 - cfv: custom field values (non-localized + source language for localized)
-- tr.{lang}.cfv: per-language custom field values for localized fields`,
+- tr.{lang}.cfv: per-language custom field values for localized fields
+- rels: expanded relation data (only when expand is provided)`,
     inputSchema: {
       type: "object",
       properties: {
@@ -39,7 +40,7 @@ Response fields:
         expand: {
           type: "array",
           items: { type: "string" },
-          description: "Relation field names to expand (e.g., ['category', 'author'])",
+          description: "Relation field names to expand with referenced entry data (e.g., [\"author\", \"category\"])",
         },
       },
       required: ["project", "entryId"],
