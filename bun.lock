@@ -146,7 +146,7 @@
     },
     "packages/expo": {
       "name": "@better-i18n/expo",
-      "version": "0.6.1",
+      "version": "0.6.2",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
       },
@@ -188,7 +188,7 @@
     },
     "packages/mcp-content": {
       "name": "@better-i18n/mcp-content",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "bin": {
         "better-i18n-mcp-content": "./dist/index.js",
       },
@@ -281,7 +281,7 @@
     },
     "tests/expo-native": {
       "name": "expo-native",
-      "version": "1.0.13",
+      "version": "1.0.14",
       "dependencies": {
         "@better-i18n/expo": "workspace:*",
         "@expo/vector-icons": "^15.0.3",
