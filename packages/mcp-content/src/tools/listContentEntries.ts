@@ -27,9 +27,9 @@ const inputSchema = projectSchema.extend({
   status: z.enum(["draft", "published", "archived"]).optional(),
   language: z.string().optional(),
   missingLanguage: z.string().optional(),
+  expand: z.array(z.string()).optional(),
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(50).optional(),
-  expand: z.array(z.string()).optional(),
 });
 
 export const listContentEntries: Tool = {
@@ -57,7 +57,8 @@ EXAMPLES:
 - Published only: { status: "published" }
 - Search: { search: "getting started" }
 - Missing Turkish: { missingLanguage: "tr" }
-- Expand relations: { modelSlug: "blog-posts", expand: ["category", "author"] }`,
+- Filter by field: { modelSlug: "blog-posts", filter: { "category": "tech" } }
+- Expand relations: { modelSlug: "blog-posts", expand: ["author", "category"] }`,
     inputSchema: {
       type: "object",
       properties: {
@@ -83,6 +84,11 @@ EXAMPLES:
           type: "string",
           description: "Filter to entries MISSING a translation for this language code",
         },
+        expand: {
+          type: "array",
+          items: { type: "string" },
+          description: "Relation field names to expand with referenced entry data (e.g., [\"author\", \"category\"])",
+        },
         page: {
           type: "number",
           description: "Page number (default: 1)",
@@ -90,11 +96,6 @@ EXAMPLES:
         limit: {
           type: "number",
           description: "Results per page (default: 20, max: 50)",
-        },
-        expand: {
-          type: "array",
-          items: { type: "string" },
-          description: "Relation field names to expand (e.g., ['category', 'author'])",
         },
       },
       required: ["project"],
@@ -111,9 +112,9 @@ EXAMPLES:
         status: input.status,
         language: input.language,
         missingLanguage: input.missingLanguage,
+        expand: input.expand,
         page: input.page,
         limit: input.limit,
-        expand: input.expand,
       });
       return success(result);
     }),
