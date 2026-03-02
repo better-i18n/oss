@@ -3,16 +3,16 @@ title: tRPC
 description: Localized error messages and i18n context in tRPC procedures
 ---
 
-tRPC'de i18n için merkezi yaklaşım `createContext` içinde locale detect edip hem `locale` hem de `t` (Translator) döndürmektir. Her prosedür `ctx.t("key")` ile anında çevrilmiş string alır; `TRPCError.message` alanına da doğrudan `ctx.t(...)` konulabilir.
+The central pattern for i18n in tRPC is to detect the locale in `createContext` and return both `locale` and `t` (Translator). Every procedure gets localized strings with `ctx.t("key")`; `TRPCError.message` can be set directly from `ctx.t(...)`.
 
-| Adapter | Runtime | `createContext` içinde |
+| Adapter | Runtime | In `createContext` |
 | --- | --- | --- |
-| `fetchRequestHandler` | Edge, CF Workers, Supabase, Next.js Route Handler | `req.headers` direkt kullanılır |
-| `createExpressMiddleware` | Node.js / Express | `fromNodeHeaders(req.headers)` ile bridge |
+| `fetchRequestHandler` | Edge, CF Workers, Supabase, Next.js Route Handler | `req.headers` used directly |
+| `createExpressMiddleware` | Node.js / Express | `fromNodeHeaders(req.headers)` via bridge |
 
 ## Fetch Adapter (Edge / CF Workers / Supabase)
 
-Web Standards `Headers` kullanan ortamlar için önerilen pattern:
+Recommended pattern for environments using Web Standards Headers:
 
 ### Singleton
 
@@ -57,7 +57,7 @@ export const publicProcedure = t.procedure;
 
 ### Router
 
-`ctx.t(...)` doğrudan `TRPCError.message`'a verilebilir:
+Pass `ctx.t(...)` directly to `TRPCError.message`:
 
 ```ts title="src/trpc/router.ts"
 import { z } from "zod";
@@ -73,7 +73,7 @@ export const appRouter = router({
       if (!user) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: ctx.t("errors.notFound"), // "Bulunamadı" for Turkish clients
+          message: ctx.t("errors.notFound"), // "Not found" localized per client
         });
       }
 
@@ -120,7 +120,7 @@ export default {
 ## Express / Fastify (Node.js Adapter)
 
 <Callout type="info">
-  Express ve Fastify'da `req.headers` Node.js `IncomingHttpHeaders`'dır — Web Standards `Headers`'a bridge etmek için `fromNodeHeaders` kullan.
+  In Express and Fastify, `req.headers` is Node.js `IncomingHttpHeaders` — use `fromNodeHeaders` to bridge it to Web Standards `Headers`.
 </Callout>
 
 ```ts title="src/trpc/context.node.ts"
@@ -150,12 +150,12 @@ app.use("/trpc",
 );
 ```
 
-## Lazy Translator — `localeProcedure` (opsiyonel)
+## Lazy Translator — `localeProcedure` (Optional)
 
-Bazı prosedürler i18n gerektirmiyorsa, `getTranslator` çağrısını sadece gerekli prosedürlere sınırla:
+If some procedures don't require i18n, limit `getTranslator` calls to only those that do:
 
 <Callout type="tip">
-  `getTranslator` `TtlCache` kullandığı için aynı locale için tekrar çağrılar memory'den döner, CDN round-trip yapmaz. Ama yoğun trafikte bile `localeProcedure` ile ayırmak daha temiz mimari sağlar.
+  `getTranslator` uses `TtlCache`, so repeated calls for the same locale return from memory — no CDN round-trip. Even so, `localeProcedure` keeps the architecture cleaner under high traffic.
 </Callout>
 
 ```ts title="src/trpc/init.ts"
@@ -168,33 +168,32 @@ const t = initTRPC.context<Context>().create();
 
 export const publicProcedure = t.procedure;
 
-// Translator'ı sadece gerektiğinde çözen middleware
+// Middleware that resolves the Translator only when needed
 export const localeProcedure = publicProcedure.use(async (opts) => {
   const translator = await i18n.getTranslator(opts.ctx.locale);
   return opts.next({ ctx: { ...opts.ctx, t: translator } });
 });
 ```
 
-Context type'ını bu pattern için düzenle:
+Adjust the Context type for this pattern:
 
 ```ts
-// Context: locale her zaman var, t opsiyonel (localeProcedure ekler)
+// Context: locale is always present, t is optional (added by localeProcedure)
 export interface BaseContext {
   locale: string;
-  t?: Translator; // localeProcedure eklediğinde zorunlu hale gelir
+  t?: Translator; // becomes required in the localeProcedure chain
 }
 ```
 
-Kullanım — sadece `localeProcedure` zincirine giren prosedürler `ctx.t` alır:
-
 ```ts
+// Only procedures in the localeProcedure chain receive ctx.t
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => ({ ok: true })), // no i18n cost
 
   getUser: localeProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      // ctx.t burada garantiyle var
+      // ctx.t is guaranteed here
       const user = await db.users.findById(input.id);
       if (!user) throw new TRPCError({ code: "NOT_FOUND", message: ctx.t("errors.notFound") });
       return user;
@@ -206,15 +205,15 @@ export const appRouter = router({
 
 <Cards>
   <Card title="Getting Started" icon="BookOpen" href="/frameworks/server-sdk">
-    Singleton kurulumu ve temel kullanım.
+    Singleton setup and basic usage.
   </Card>
   <Card title="Hono" icon="Zap" href="/frameworks/server-sdk/hono">
-    Hono middleware ile tam TypeScript desteği.
+    Hono middleware with full TypeScript support.
   </Card>
   <Card title="Express & Fastify" icon="Server" href="/frameworks/server-sdk/node">
-    Node.js HTTP adapter — `fromNodeHeaders` ile bridge.
+    Node.js HTTP adapter — bridge with `fromNodeHeaders`.
   </Card>
   <Card title="API Reference" icon="FileCode" href="/frameworks/server-sdk/api-reference">
-    `createServerI18n`, `ServerI18n` ve tüm export'lar.
+    `createServerI18n`, `ServerI18n` and all exports.
   </Card>
 </Cards>
