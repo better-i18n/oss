@@ -188,12 +188,12 @@
     },
     "packages/mcp-content": {
       "name": "@better-i18n/mcp-content",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "bin": {
         "better-i18n-mcp-content": "./dist/index.js",
       },
       "dependencies": {
-        "@better-i18n/mcp-types": "^0.8.0",
+        "@better-i18n/mcp-types": "^0.14.0",
         "@modelcontextprotocol/sdk": "^1.25.3",
         "@trpc/client": "^11.0.0",
         "zod": "^3.25.1",
@@ -3915,7 +3915,7 @@
 
     "@better-i18n/mcp/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
-    "@better-i18n/mcp-content/@better-i18n/mcp-types": ["@better-i18n/mcp-types@0.8.0", "", { "dependencies": { "zod": "^3.25.76" } }, "sha512-LGNvP575K/H/CcC+tA20OWgjllRHVkg0++ucakjINsT/Dn0PEnD8GS97V5TGWqup4kXWzrhts078Qq54E3ExWQ=="],
+    "@better-i18n/mcp-content/@better-i18n/mcp-types": ["@better-i18n/mcp-types@0.14.0", "", { "dependencies": { "zod": "^3.25.76" } }, "sha512-9LJrPb0L7W1I8PWsNhuVgSvp/jPe9IfZRZ/5FWnIQvFdPPCG66jdjXYSy4sFIRw8YaczCdB4nIc4YmIdUNSucw=="],
 
     "@better-i18n/mcp-content/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
