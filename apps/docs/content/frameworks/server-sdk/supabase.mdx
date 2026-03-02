@@ -3,7 +3,7 @@ title: Supabase Edge Functions
 description: Runtime-agnostic i18n in Supabase Edge Functions (Deno)
 ---
 
-Supabase Edge Functions Deno üzerinde çalışır — `Request`, `Headers`, `fetch` Web Standards'tır. `@better-i18n/server/node` adapter'ı **gerekmez**; `detectLocaleFromHeaders(req.headers)` doğrudan çalışır.
+Supabase Edge Functions run on Deno — `Request`, `Headers`, and `fetch` are Web Standards. No `@better-i18n/server/node` adapter needed; `detectLocaleFromHeaders(req.headers)` works directly.
 
 ## File Structure
 
@@ -11,22 +11,26 @@ Supabase Edge Functions Deno üzerinde çalışır — `Request`, `Headers`, `fe
 supabase/
   functions/
     _shared/
-      i18n.ts        ← singleton (tüm function'lar arasında paylaşımlı)
-      cors.ts        ← CORS headers (accept-language dahil)
+      i18n.ts        ← singleton (shared across all functions)
+      cors.ts        ← CORS headers (includes accept-language)
     send-notification/
       index.ts
     api/
       index.ts
 ```
 
-## Basit Edge Function
+## Edge Function
+
+<Tabs items={["From HTTP headers", "From database"]}>
+
+<Tab value="From HTTP headers">
 
 <Steps>
 
 <Step>
-### Singleton oluştur
+### Create the singleton
 
-`_shared/i18n.ts` — Deno'da `npm:` specifier ile import:
+`_shared/i18n.ts` — import with `npm:` specifier for Deno:
 
 ```ts title="supabase/functions/_shared/i18n.ts"
 import { createServerI18n } from "npm:@better-i18n/server@0.2.1";
@@ -40,9 +44,9 @@ export const i18n = createServerI18n({
 </Step>
 
 <Step>
-### CORS headers tanımla
+### Define CORS headers
 
-`_shared/cors.ts` — `accept-language` header'ını izin listesine ekle:
+`_shared/cors.ts` — add `accept-language` to the allow list:
 
 ```ts title="supabase/functions/_shared/cors.ts"
 export const corsHeaders = {
@@ -53,15 +57,15 @@ export const corsHeaders = {
 ```
 
 <Callout type="warn">
-  `accept-language` header'ı `Access-Control-Allow-Headers`'a eklenmezse tarayıcı cross-origin requestlerde bu header'ı gönderemez ve locale detection her zaman `defaultLocale` döner.
+  If `accept-language` is not listed in `Access-Control-Allow-Headers`, browsers cannot send this header in cross-origin requests — locale detection will always fall back to `defaultLocale`.
 </Callout>
 
 </Step>
 
 <Step>
-### Edge Function'ı yaz
+### Write the Edge Function
 
-`functions/send-notification/index.ts` — `req.headers` Web Standards `Headers` olduğu için bridge gerekmez:
+`functions/send-notification/index.ts` — `req.headers` is Web Standards `Headers`, no bridge needed:
 
 ```ts title="supabase/functions/send-notification/index.ts"
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -104,9 +108,61 @@ Deno.serve(async (req: Request) => {
 
 </Steps>
 
-## Hono ile Çok-Route'lu Edge Function
+</Tab>
 
-Birden fazla route varsa Hono'yu `Deno.serve(app.fetch)` ile kullan:
+<Tab value="From database">
+
+<Callout type="info">
+  For scheduled/cron functions invoked by `pg_cron` or the Supabase Scheduler, there is no browser request — read the user's preferred locale from the database instead.
+</Callout>
+
+```ts title="supabase/functions/send-notification/index.ts"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
+import { i18n } from "../_shared/i18n.ts";
+
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+);
+
+Deno.serve(async (req: Request) => {
+  const { userId } = await req.json();
+
+  // Scheduled/cron invocation — no browser headers, read locale from DB
+  const { data: user } = await supabase
+    .from("users")
+    .select("name, language")
+    .eq("id", userId)
+    .single();
+
+  // DB stores ISO codes (tr, en, de, ar...) — matches manifest directly
+  const locale = user?.language ?? "en";
+  const t = await i18n.getTranslator(locale);
+
+  await sendPushNotification({
+    userId,
+    title: t("notifications.welcome.title"),
+    body: t("notifications.welcome.body", { name: user?.name }),
+  });
+
+  return new Response(JSON.stringify({ sent: true, locale }), {
+    headers: { "Content-Type": "application/json" },
+  });
+});
+```
+
+<Callout type="info">
+  ISO codes stored in your DB (`tr`, `en`, `de`) map directly to better-i18n locales — no conversion needed.
+</Callout>
+
+</Tab>
+
+</Tabs>
+
+## Multiple Routes with Hono
+
+For multiple routes, use Hono with `Deno.serve(app.fetch)`:
 
 ```ts title="supabase/functions/api/index.ts"
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -138,25 +194,25 @@ Deno.serve(app.fetch);
 
 ## Environment Variables
 
-Supabase secrets ile environment variable'ları ayarla:
+Set secrets via the Supabase CLI:
 
 ```bash
 supabase secrets set BETTER_I18N_PROJECT=my-org/api
 supabase secrets set BETTER_I18N_DEFAULT_LOCALE=en
 ```
 
-`Deno.env.get()` ile oku — Supabase Edge Functions ortamında process.env değil Deno.env kullanılır.
+Read with `Deno.env.get()` — Supabase Edge Functions use Deno's env, not `process.env`.
 
 ## Related
 
 <Cards>
   <Card title="Getting Started" icon="BookOpen" href="/frameworks/server-sdk">
-    Singleton kurulumu ve temel kullanım.
+    Singleton setup and basic usage.
   </Card>
   <Card title="Hono" icon="Zap" href="/frameworks/server-sdk/hono">
-    Hono middleware ile tam TypeScript desteği.
+    Hono middleware with full TypeScript support.
   </Card>
   <Card title="API Reference" icon="FileCode" href="/frameworks/server-sdk/api-reference">
-    `createServerI18n`, `ServerI18n` ve tüm export'lar.
+    `createServerI18n`, `ServerI18n` and all exports.
   </Card>
 </Cards>
