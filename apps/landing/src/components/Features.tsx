@@ -45,7 +45,7 @@ function AIFeatureCard() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full rounded-2xl overflow-hidden shadow-sm">
+    <div className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-sm">
       <div className="h-[320px] bg-mist-50 relative overflow-hidden p-5 flex flex-col shrink-0">
         <div className="flex items-center gap-2 text-xs text-mist-500 mb-4 pb-3 border-b border-mist-200">
           <div className="w-2 h-2 rounded-full bg-mist-400" />
@@ -65,7 +65,10 @@ function AIFeatureCard() {
         <div className="flex-1 space-y-4 overflow-y-auto pr-1">
           <div className="flex justify-end">
             <div className="bg-white border border-mist-200 text-mist-900 rounded-lg rounded-tr-none px-3 py-2 text-[11px] max-w-[85%] shadow-sm font-medium">
-              {t("userMessage", { code: "dashboard.sync", defaultValue: "Translate {code} to Turkish" })}
+              {t("userMessage", {
+                code: "dashboard.sync",
+                defaultValue: "Translate {code} to Turkish",
+              })}
             </div>
           </div>
 
@@ -94,7 +97,9 @@ function AIFeatureCard() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       />
                     </svg>
-                    {t("processing", { defaultValue: "Translating with context..." })}
+                    {t("processing", {
+                      defaultValue: "Translating with context...",
+                    })}
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -103,7 +108,9 @@ function AIFeatureCard() {
                         <IconCircleInfo className="size-3" />
                       </div>
                       <span className="text-[10px] text-mist-500 font-medium italic">
-                        {t("glossaryMatch", { defaultValue: "Glossary match applied" })}
+                        {t("glossaryMatch", {
+                          defaultValue: "Glossary match applied",
+                        })}
                       </span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-mist-50/50 border border-mist-100 space-y-1">
@@ -132,7 +139,9 @@ function AIFeatureCard() {
                     ) : (
                       <div className="text-mist-900 font-bold py-1.5 bg-mist-100 rounded text-[10px] text-center flex items-center justify-center gap-1.5 border border-mist-200 animate-in zoom-in-95 duration-300">
                         <IconCheckmark1 className="size-3" />
-                        {t("brandConsistent", { defaultValue: "Brand-consistent \u2713" })}
+                        {t("brandConsistent", {
+                          defaultValue: "Brand-consistent \u2713",
+                        })}
                       </div>
                     )}
                   </div>
@@ -143,9 +152,14 @@ function AIFeatureCard() {
         </div>
       </div>
       <div className="p-6 flex-1 flex flex-col border-t border-mist-100">
-        <h3 className="text-base font-medium text-mist-950">{t("title", { defaultValue: "AI-Powered, Brand-Aware" })}</h3>
+        <h3 className="text-base font-medium text-mist-950">
+          {t("title", { defaultValue: "AI-Powered, Brand-Aware" })}
+        </h3>
         <p className="mt-2 text-sm text-mist-700 leading-relaxed">
-          {t("description", { defaultValue: "Translations that understand your brand voice, glossary, and context. Not just word-for-word." })}
+          {t("description", {
+            defaultValue:
+              "Translations that understand your brand voice, glossary, and context. Not just word-for-word.",
+          })}
         </p>
       </div>
     </div>
@@ -277,12 +291,17 @@ function PublishFeatureCard() {
             </div>
             <div className="space-y-1">
               <p className="text-[9px] text-mist-600 font-medium line-clamp-1">
-                {t("prMessage", { defaultValue: "chore(i18n): sync translations" })}
+                {t("prMessage", {
+                  defaultValue: "chore(i18n): sync translations",
+                })}
               </p>
               <div className="flex items-center gap-1.5">
                 <div className="size-3 rounded-full bg-mist-200 border border-white" />
                 <span className="text-[8px] text-mist-400 font-medium">
-                  {t("botPushed", { branch: "i18n-sync", defaultValue: "bot pushed to {branch}" })}
+                  {t("botPushed", {
+                    branch: "i18n-sync",
+                    defaultValue: "bot pushed to {branch}",
+                  })}
                 </span>
               </div>
             </div>
@@ -290,9 +309,14 @@ function PublishFeatureCard() {
         </div>
       </div>
       <div className="p-6 flex-1 flex flex-col border-t border-mist-100">
-        <h3 className="text-base font-medium text-mist-950">{t("title", { defaultValue: "Git-Native Workflow" })}</h3>
+        <h3 className="text-base font-medium text-mist-950">
+          {t("title", { defaultValue: "Git-Native Workflow" })}
+        </h3>
         <p className="mt-2 text-sm text-mist-700 leading-relaxed">
-          {t("description", { defaultValue: "Automatic sync to your repository via pull requests, plus instant CDN delivery for production." })}
+          {t("description", {
+            defaultValue:
+              "Automatic sync to your repository via pull requests, plus instant CDN delivery for production.",
+          })}
         </p>
       </div>
     </div>
@@ -361,7 +385,10 @@ function AIContextCard() {
                     {t("syncStarted", { defaultValue: "Sync Started" })}
                   </p>
                   <p className="text-[9px] text-mist-500 leading-normal">
-                    {t("syncMessage", { defaultValue: "Crawling your website for translation context..." })}
+                    {t("syncMessage", {
+                      defaultValue:
+                        "Crawling your website for translation context...",
+                    })}
                   </p>
                 </div>
               </div>
@@ -382,7 +409,9 @@ function AIContextCard() {
                     {t("extractingTerms", { defaultValue: "Extracting Terms" })}
                   </p>
                   <p className="text-[9px] text-mist-500 leading-normal">
-                    {t("extractingMessage", { defaultValue: "Building glossary from your content..." })}
+                    {t("extractingMessage", {
+                      defaultValue: "Building glossary from your content...",
+                    })}
                   </p>
                 </div>
               </div>
@@ -400,10 +429,15 @@ function AIContextCard() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-bold text-mist-900 leading-none">
-                    {t("manifestUploaded", { defaultValue: "Manifest Uploaded" })}
+                    {t("manifestUploaded", {
+                      defaultValue: "Manifest Uploaded",
+                    })}
                   </p>
                   <p className="text-[9px] text-mist-500 leading-normal">
-                    {t("manifestMessage", { defaultValue: "Context manifest ready for AI translations" })}
+                    {t("manifestMessage", {
+                      defaultValue:
+                        "Context manifest ready for AI translations",
+                    })}
                   </p>
                 </div>
               </div>
@@ -424,9 +458,14 @@ function AIContextCard() {
         </div>
       </div>
       <div className="p-6 flex-1 flex flex-col border-t border-mist-100">
-        <h3 className="text-base font-medium text-mist-950">{t("title", { defaultValue: "Understands Your Product" })}</h3>
+        <h3 className="text-base font-medium text-mist-950">
+          {t("title", { defaultValue: "Understands Your Product" })}
+        </h3>
         <p className="mt-2 text-sm text-mist-700 leading-relaxed">
-          {t("description", { defaultValue: "Our crawler analyzes your website to build context, glossaries, and terminology — so translations are always accurate." })}
+          {t("description", {
+            defaultValue:
+              "Our crawler analyzes your website to build context, glossaries, and terminology — so translations are always accurate.",
+          })}
         </p>
       </div>
     </div>
@@ -444,9 +483,16 @@ export default function Features() {
           <div className="flex flex-col gap-6">
             <div className="max-w-2xl">
               <h2 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-                {t("title", { defaultValue: "Everything you need to ship globally" })}
+                {t("title", {
+                  defaultValue: "Everything you need to ship globally",
+                })}
               </h2>
-              <p className="mt-4 text-lg/8 text-mist-700">{t("subtitle", { defaultValue: "A complete localization platform built for modern development workflows." })}</p>
+              <p className="mt-4 text-lg/8 text-mist-700">
+                {t("subtitle", {
+                  defaultValue:
+                    "A complete localization platform built for modern development workflows.",
+                })}
+              </p>
             </div>
             <Link
               to="/$locale/features"

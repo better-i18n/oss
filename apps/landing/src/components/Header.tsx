@@ -345,6 +345,30 @@ export default function Header({ className }: { className?: string }) {
                         <span className="text-sm font-medium text-mist-950">Svelte</span>
                         <IconArrowRight className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
                       </Link>
+                      <Link
+                        to="/$locale/i18n/expo"
+                        params={{ locale: locale || "en" }}
+                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
+                      >
+                        <span className="text-sm font-medium text-mist-950">Expo</span>
+                        <IconArrowRight className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                      </Link>
+                      <Link
+                        to="/$locale/i18n/tanstack-start"
+                        params={{ locale: locale || "en" }}
+                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
+                      >
+                        <span className="text-sm font-medium text-mist-950">TanStack Start</span>
+                        <IconArrowRight className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                      </Link>
+                      <Link
+                        to="/$locale/i18n/server"
+                        params={{ locale: locale || "en" }}
+                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
+                      >
+                        <span className="text-sm font-medium text-mist-950">Server / Hono</span>
+                        <IconArrowRight className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                      </Link>
                     </div>
                   </div>
                   <div className="px-3 py-2.5 flex items-center justify-between">

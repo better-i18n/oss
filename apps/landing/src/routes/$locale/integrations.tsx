@@ -140,7 +140,7 @@ function IntegrationsPage() {
             </p>
           </div>
           <div className="max-w-2xl mx-auto">
-            <div className="rounded-xl bg-mist-950 p-6 overflow-x-auto">
+            <div className="rounded-xl bg-mist-950 p-6 overflow-x-auto code-block">
               <pre className="text-sm text-mist-100 font-mono">
                 <code>{`# Install the SDK
 npm install @better-i18n/next

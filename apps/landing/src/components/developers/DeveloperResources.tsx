@@ -17,7 +17,7 @@ const resourceKeys = [
     ),
   },
   {
-    key: "react",
+    key: "tanstack-start",
     href: "https://docs.better-i18n.com/frameworks/tanstack-start",
     icon: (
       <svg
@@ -31,6 +31,24 @@ const resourceKeys = [
           <ellipse rx="11" ry="4.2" transform="rotate(60)" />
           <ellipse rx="11" ry="4.2" transform="rotate(120)" />
         </g>
+      </svg>
+    ),
+  },
+  {
+    key: "expo",
+    href: "https://docs.better-i18n.com/frameworks/expo",
+    icon: (
+      <svg className="size-6" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z" />
+      </svg>
+    ),
+  },
+  {
+    key: "server",
+    href: "https://docs.better-i18n.com/frameworks/server",
+    icon: (
+      <svg className="size-6" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" />
       </svg>
     ),
   },
@@ -66,7 +84,7 @@ export default function DeveloperResources() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {resourceKeys.map((resource) => (
             <a
               key={resource.key}
