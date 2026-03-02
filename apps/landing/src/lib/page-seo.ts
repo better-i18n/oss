@@ -196,6 +196,9 @@ export function getPageHead(options: PageSEOOptions) {
       nuxt: "Nuxt",
       angular: "Angular",
       svelte: "Svelte",
+      expo: "Expo",
+      "tanstack-start": "TanStack Start",
+      server: "Server / Hono",
       // Persona pages
       "for-marketers": "For Marketers",
       "for-agencies": "For Agencies",

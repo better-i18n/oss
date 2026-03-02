@@ -169,4 +169,8 @@
   .zoom-in {
     --enter-scale: 0.95;
   }
+
+  .code-block {
+    border: 1px solid var(--color-mist-200);
+  }
 }

@@ -110,7 +110,7 @@ function ForDevelopersSeoPage() {
             {t("i18n.forDevelopers.codeExample.title")}
           </h2>
           <p className="text-mist-600 mb-6">{t("i18n.forDevelopers.codeExample.description")}</p>
-          <div className="bg-mist-950 rounded-xl p-6 overflow-x-auto">
+          <div className="bg-mist-950 rounded-xl p-6 overflow-x-auto code-block">
             <pre className="text-sm text-mist-100 font-mono whitespace-pre">{`# Install the SDK
 npm install @better-i18n/next
 
@@ -180,7 +180,7 @@ function Component() {
               <p className="text-mist-700 leading-relaxed mb-4">
                 {t("i18n.forDevelopers.api.description", { defaultValue: "Programmatic access to every platform function. Manage projects, keys, and languages from your own tooling or CI pipeline." })}
               </p>
-              <div className="bg-mist-950 rounded-xl p-4 overflow-x-auto">
+              <div className="bg-mist-950 rounded-xl p-4 overflow-x-auto code-block">
                 <pre className="text-sm text-mist-100 font-mono whitespace-pre">{`// REST API methods
 listProjects()
 getProject(id)

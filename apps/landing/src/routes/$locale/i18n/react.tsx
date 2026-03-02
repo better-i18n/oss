@@ -4,6 +4,7 @@ import {
   FrameworkHero,
   FeatureList,
   CodeExample,
+  SetupGuide,
   FrameworkCTA,
   LibraryIntegration,
   OtherFrameworks,
@@ -46,6 +47,67 @@ function ReactI18nPage() {
     t("i18n.react.features.hotReload"),
     t("i18n.react.features.devtools"),
   ];
+
+  const reactSetupSteps = [
+    {
+      step: 1,
+      title: "Install",
+      description: "Add @better-i18n/use-intl and use-intl to your project.",
+      code: "npm install @better-i18n/use-intl use-intl",
+      fileName: "terminal",
+    },
+    {
+      step: 2,
+      title: "Wrap your app with BetterI18nProvider",
+      description:
+        "Place the provider at the root of your component tree. It fetches messages from the CDN and makes them available via hooks.",
+      code: `import { BetterI18nProvider } from '@better-i18n/use-intl';
+
+function App() {
+  return (
+    <BetterI18nProvider project="your-org/your-project" locale="en">
+      <YourApp />
+    </BetterI18nProvider>
+  );
+}`,
+      fileName: "App.tsx",
+    },
+    {
+      step: 3,
+      title: "Use translations",
+      description:
+        "Call useTranslations() in any component to access your translation keys with full TypeScript support.",
+      code: `import { useTranslations } from '@better-i18n/use-intl';
+
+function MyComponent() {
+  const t = useTranslations('common');
+  return <h1>{t('welcome')}</h1>;
+}`,
+      fileName: "MyComponent.tsx",
+    },
+  ];
+
+  const setupCode = `# 1. Install
+npm install @better-i18n/use-intl
+
+# 2. Wrap your app
+import { BetterI18nProvider } from '@better-i18n/use-intl'
+
+function App() {
+  return (
+    <BetterI18nProvider project="org/project" locale="en">
+      <YourApp />
+    </BetterI18nProvider>
+  )
+}
+
+# 3. Use translations
+import { useTranslations } from '@better-i18n/use-intl'
+
+function MyComponent() {
+  const t = useTranslations('common')
+  return <h1>{t('welcome')}</h1>
+}`;
 
   const codeExample = `import { useTranslations } from '@better-i18n/use-intl';
 
@@ -97,7 +159,15 @@ function MyComponent() {
         badgeText="React i18n"
       />
 
+      <SetupGuide title="Get started in 3 steps" steps={reactSetupSteps} />
+
       <FeatureList title={t("i18n.react.featuresTitle")} features={features} />
+
+      <CodeExample
+        title="Installation & Setup"
+        description="Get started with @better-i18n/use-intl in three steps — install, wrap your app with the provider, and start translating."
+        code={setupCode}
+      />
 
       <LibraryIntegration
         title={t("i18n.react.librariesTitle")}

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   IconCheckmark1,
@@ -76,10 +77,12 @@ export function CodeExample({ title, description, code }: CodeExampleProps) {
           {title}
         </h2>
         <p className="text-mist-600 mb-6">{description}</p>
-        <div className="bg-mist-950 rounded-xl p-6 overflow-x-auto">
-          <pre className="text-sm text-mist-100 font-mono whitespace-pre">
-            {code}
-          </pre>
+        <div className="rounded-xl overflow-hidden border border-mist-200">
+          <div className="bg-mist-950 p-6 overflow-x-auto">
+            <pre className="text-sm text-mist-100 font-mono whitespace-pre">
+              {code}
+            </pre>
+          </div>
         </div>
       </div>
     </section>
@@ -171,6 +174,118 @@ export function LibraryIntegration({
               </div>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+interface SetupStep {
+  step: number;
+  title: string;
+  description: string;
+  code?: string;
+  fileName?: string;
+}
+
+export function SetupGuide({
+  title,
+  steps,
+}: {
+  title: string;
+  steps: SetupStep[];
+}) {
+  return (
+    <section className="py-16 bg-white">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <h2 className="font-display text-2xl font-medium tracking-tight text-mist-950 sm:text-3xl mb-12">
+          {title}
+        </h2>
+        <div className="space-y-10">
+          {steps.map((step) => (
+            <div key={step.step} className="flex gap-6">
+              <div className="flex-shrink-0">
+                <span className="flex items-center justify-center size-8 rounded-full bg-mist-950 text-white text-sm font-mono font-medium">
+                  {step.step}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-semibold text-mist-950 mb-1">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-mist-600 mb-4">{step.description}</p>
+                {step.code && (
+                  <div className="rounded-xl overflow-hidden border border-mist-200">
+                    {step.fileName && (
+                      <div className="px-4 py-2 bg-mist-50 border-b border-mist-200 text-xs text-mist-500 font-mono">
+                        {step.fileName}
+                      </div>
+                    )}
+                    <div className="bg-mist-50 p-5 overflow-x-auto">
+                      <pre className="text-sm text-mist-800 font-mono whitespace-pre">
+                        {step.code}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+interface CodeTab {
+  label: string;
+  code: string;
+  fileName?: string;
+}
+
+export function TabbedCode({
+  title,
+  description,
+  tabs,
+}: {
+  title: string;
+  description: string;
+  tabs: CodeTab[];
+}) {
+  const [active, setActive] = useState(0);
+  return (
+    <section className="py-16 bg-white">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <h2 className="font-display text-2xl font-medium tracking-tight text-mist-950 sm:text-3xl mb-4">
+          {title}
+        </h2>
+        <p className="text-mist-600 mb-6">{description}</p>
+        <div className="rounded-xl overflow-hidden border border-mist-200">
+          <div className="flex bg-mist-50 border-b border-mist-200">
+            {tabs.map((tab, i) => (
+              <button
+                key={tab.label}
+                onClick={() => setActive(i)}
+                className={`px-4 py-2.5 text-xs font-mono transition-colors ${
+                  i === active
+                    ? "text-mist-950 border-b-2 border-mist-950 -mb-px"
+                    : "text-mist-500 hover:text-mist-700"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          {tabs[active].fileName && (
+            <div className="px-4 py-1.5 bg-mist-50 border-b border-mist-200 text-xs text-mist-500 font-mono">
+              {tabs[active].fileName}
+            </div>
+          )}
+          <div className="bg-mist-950 p-5 overflow-x-auto">
+            <pre className="text-sm text-mist-100 font-mono whitespace-pre">
+              {tabs[active].code}
+            </pre>
+          </div>
         </div>
       </div>
     </section>
