@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@better-i18n/root",
@@ -145,7 +146,7 @@
     },
     "packages/expo": {
       "name": "@better-i18n/expo",
-      "version": "0.6.2",
+      "version": "0.7.0",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
       },
@@ -283,7 +284,7 @@
     },
     "tests/expo-native": {
       "name": "expo-native",
-      "version": "1.0.14",
+      "version": "1.0.15",
       "dependencies": {
         "@better-i18n/expo": "workspace:*",
         "@expo/vector-icons": "^15.0.3",
