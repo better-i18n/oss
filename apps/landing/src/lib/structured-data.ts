@@ -528,12 +528,20 @@ export function getReviewSchema(reviews: ReviewItem[]) {
   }));
 }
 
+interface JobPostingSalary {
+  readonly minValue: number;
+  readonly maxValue: number;
+  readonly currency: string;
+  readonly unitText: "YEAR" | "MONTH" | "HOUR";
+}
+
 interface JobPostingOptions {
-  title: string;
-  description: string;
-  employmentType: "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERN";
-  location: string;
-  remote?: boolean;
+  readonly title: string;
+  readonly description: string;
+  readonly employmentType: "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERN";
+  readonly location: string;
+  readonly remote?: boolean;
+  readonly baseSalary?: JobPostingSalary;
 }
 
 /**
@@ -564,6 +572,18 @@ export function getJobPostingSchema(jobs: JobPostingOptions[]) {
       applicantLocationRequirements: {
         "@type": "Country",
         name: "Worldwide",
+      },
+    }),
+    ...(job.baseSalary && {
+      baseSalary: {
+        "@type": "MonetaryAmount",
+        currency: job.baseSalary.currency,
+        value: {
+          "@type": "QuantitativeValue",
+          minValue: job.baseSalary.minValue,
+          maxValue: job.baseSalary.maxValue,
+          unitText: job.baseSalary.unitText,
+        },
       },
     }),
     datePosted: "2026-01-01",

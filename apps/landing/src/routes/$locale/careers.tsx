@@ -20,6 +20,12 @@ export const Route = createFileRoute("/$locale/careers")({
           employmentType: "FULL_TIME",
           location: "Remote",
           remote: true,
+          baseSalary: {
+            minValue: 120000,
+            maxValue: 180000,
+            currency: "USD",
+            unitText: "YEAR",
+          },
         },
         {
           title: "AI/ML Engineer",
@@ -27,6 +33,12 @@ export const Route = createFileRoute("/$locale/careers")({
           employmentType: "FULL_TIME",
           location: "Remote",
           remote: true,
+          baseSalary: {
+            minValue: 140000,
+            maxValue: 200000,
+            currency: "USD",
+            unitText: "YEAR",
+          },
         },
       ]),
     });
