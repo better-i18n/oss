@@ -1,5 +1,14 @@
 # @better-i18n/mcp-content
 
+## 0.5.3
+
+### Patch Changes
+
+- fa26401: Fix build error caused by `excerpt` and other fields missing from `@better-i18n/mcp-types` input types
+
+  Use spread pattern with type assertion to forward all validated input fields to tRPC client,
+  making the MCP tool layer forward-compatible with future `mcp-types` schema additions.
+
 ## 0.5.2
 
 ### Patch Changes
