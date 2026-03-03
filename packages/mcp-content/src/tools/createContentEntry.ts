@@ -109,20 +109,12 @@ EXAMPLE (project sl='tr'):
 
   execute: (client, args) =>
     executeTool(args, inputSchema, async (input, { workspaceId, projectSlug }) => {
+      const { project: _, ...data } = input;
       const result = await client.mcpContent.createContentEntry.mutate({
         orgSlug: workspaceId,
         projectSlug,
-        modelSlug: input.modelSlug,
-        title: input.title,
-        slug: input.slug,
-        excerpt: input.excerpt,
-        bodyMarkdown: input.bodyMarkdown,
-        featuredImage: input.featuredImage,
-        tags: input.tags,
-        status: input.status,
-        customFields: input.customFields,
-        translations: input.translations,
-      });
+        ...data,
+      } as Parameters<typeof client.mcpContent.createContentEntry.mutate>[0]);
 
       return success({
         created: true,

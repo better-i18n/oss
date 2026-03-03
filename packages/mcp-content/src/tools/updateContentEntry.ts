@@ -133,23 +133,12 @@ EXAMPLE metadata-only:
 
   execute: (client, args) =>
     executeTool(args, inputSchema, async (input, { workspaceId, projectSlug }) => {
+      const { project: _, ...data } = input;
       const result = await client.mcpContent.updateContentEntry.mutate({
         orgSlug: workspaceId,
         projectSlug,
-        entryId: input.entryId,
-        languageCode: input.languageCode,
-        title: input.title,
-        slug: input.slug,
-        excerpt: input.excerpt,
-        bodyMarkdown: input.bodyMarkdown,
-        metaTitle: input.metaTitle,
-        metaDescription: input.metaDescription,
-        featuredImage: input.featuredImage,
-        tags: input.tags,
-        status: input.status,
-        customFields: input.customFields,
-        translations: input.translations,
-      });
+        ...data,
+      } as Parameters<typeof client.mcpContent.updateContentEntry.mutate>[0]);
 
       return success({
         updated: true,
