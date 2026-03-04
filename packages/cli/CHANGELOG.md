@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.3
+
+### Patch Changes
+
+- 108b3b6: docs(cli): add doctor command documentation to README
+
+  The `better-i18n doctor` command was added in v0.2.0 but never documented in the README. Added full documentation including usage examples, health categories, CI integration, and example output.
+
 ## 0.2.2
 
 ### Patch Changes
