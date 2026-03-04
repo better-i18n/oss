@@ -147,16 +147,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         },
       ],
       scripts: [
-        // Google Ads (gtag.js)
+        // Google Tag Manager
         {
-          src: "https://www.googletagmanager.com/gtag/js?id=AW-17928422726",
-          async: true,
-        },
-        {
-          children: `window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'AW-17928422726');`,
+          children: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-K2JQTFM3');`,
         },
       ],
     };
@@ -215,6 +212,15 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body className="no-dark text-mist-950">
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-K2JQTFM3"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         <QueryClientProvider client={queryClient}>
           <BetterI18nProvider
             project={i18nConfig.project}
