@@ -74,7 +74,7 @@ claude mcp add better-i18n-content \
   -- npx -y @better-i18n/mcp-content
 ```
 
-## Available Tools (17)
+## Available Tools (18)
 
 All tools require a `project` parameter (format: `"org-slug/project-slug"`) to identify the project.
 
@@ -82,8 +82,8 @@ All tools require a `project` parameter (format: `"org-slug/project-slug"`) to i
 
 | Tool | Description |
 | --- | --- |
-| `createContentModel` | Create a content model with field definitions (supports enum options, relations) |
-| `updateContentModel` | Update a content model's display name, description, or settings |
+| `createContentModel` | Create a content model with field definitions. Set `includeBody: false` for structured data models (no rich-text body) |
+| `updateContentModel` | Update a content model's display name, description, or settings. Use `includeBody` to add/remove the body field |
 | `deleteContentModel` | Permanently delete a content model and all its entries |
 | `getContentModel` | Get a model's details including all custom field definitions |
 | `listContentModels` | List all content models with entry counts and field definitions |
@@ -103,12 +103,18 @@ All tools require a `project` parameter (format: `"org-slug/project-slug"`) to i
 | `listContentEntries` | Paginated listing with search, status, and language filters. Use `modelSlug: "users"` to list team members |
 | `duplicateContentEntry` | Duplicate an existing content entry |
 
+### Bulk Operations
+
+| Tool | Description |
+| --- | --- |
+| `bulkCreateEntries` | Create up to 20 entries at once with optional translations. Partial success supported |
+| `bulkPublishEntries` | Publish multiple entries at once |
+
 ### Publishing
 
 | Tool | Description |
 | --- | --- |
 | `publishContentEntry` | Set entry status to published and approve translations |
-| `bulkPublishEntries` | Publish multiple entries at once |
 
 ## Field Types & Options
 
@@ -151,6 +157,40 @@ When setting custom field values on entries, pass the enum `value` (not label):
 ```json
 { "customFields": { "status": "published" } }
 ```
+
+### Body-less Models (Structured Data)
+
+Set `includeBody: false` when creating models that only use custom fields (e.g., team members, settings, FAQs):
+
+```json
+{
+  "slug": "team-members",
+  "displayName": "Team Members",
+  "includeBody": false,
+  "fields": [
+    { "name": "role", "displayName": "Role", "type": "text", "required": true },
+    { "name": "bio", "displayName": "Bio", "type": "textarea" }
+  ]
+}
+```
+
+Use `updateContentModel` with `includeBody: true` to add the body field back later.
+
+### Bulk Entry Creation
+
+Create multiple entries in a single call (max 20):
+
+```json
+{
+  "modelSlug": "blog-posts",
+  "entries": [
+    { "title": "First Post", "slug": "first-post", "status": "draft" },
+    { "title": "Second Post", "slug": "second-post", "customFields": { "category": "tech" } }
+  ]
+}
+```
+
+The response reports successes and failures separately, so partial creation is safe.
 
 ## Example Prompts
 

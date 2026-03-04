@@ -120,6 +120,59 @@ better-i18n sync --verbose
 better-i18n sync --format json
 ```
 
+### `better-i18n doctor`
+
+Run a comprehensive i18n health check on your project. Analyzes code, translation files, and CDN sync status, then produces a 0-100 health score across 5 categories.
+
+```bash
+# Basic usage
+better-i18n doctor
+
+# Scan specific directory
+better-i18n doctor --dir ./src
+
+# CI mode — fail if score is below threshold
+better-i18n doctor --ci --threshold 80
+
+# Upload report (GitHub Actions with OIDC)
+better-i18n doctor --report
+
+# Output formats
+better-i18n doctor --format json     # JSON report for tooling
+better-i18n doctor --format eslint   # Human-readable (default)
+
+# Debug
+better-i18n doctor --verbose
+```
+
+**What it checks:**
+
+| Category | What's Analyzed |
+| --- | --- |
+| **Coverage** | Missing translations across target languages, keys in code but not in remote |
+| **Quality** | Placeholder consistency, empty translations, duplicate keys |
+| **Code** | Hardcoded strings (JSX text, attributes, ternary patterns) |
+| **Structure** | Locale file organization, namespace consistency |
+| **Performance** | Unused remote keys, bundle size impact |
+
+**Example output:**
+
+```
+$ better-i18n doctor
+
+i18n Health Report
+──────────────────
+  Overall:      84/100 ✓ PASS
+  Coverage:     72/100
+  Quality:      95/100
+  Code:         88/100
+  Structure:    100/100
+  Performance:  90/100
+
+12 warnings, 0 errors
+Scanned 57 files, 340 keys, 4 locales in 1.2s
+```
+
 ### Translation Hook Detection
 
 The CLI automatically detects namespaces from both client and server translation hooks.
