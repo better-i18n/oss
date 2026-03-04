@@ -98,7 +98,7 @@ async function reportWithApiKey(
 
     return {
       reportId: data.reportId,
-      url: data.url || `${apiUrl}/doctor/${data.reportId}`,
+      url: data.url || `https://dash.better-i18n.com/${context.workspaceId}/${context.projectSlug}/integrations/doctor?reportId=${data.reportId}`,
     };
   } catch (error) {
     console.warn(
@@ -163,7 +163,7 @@ async function reportWithOidc(
 
     return {
       reportId: data.reportId,
-      url: data.url || `${apiUrl}/doctor/${data.reportId}`,
+      url: data.url || "https://dash.better-i18n.com",
     };
   } catch (error) {
     console.warn(
