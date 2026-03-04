@@ -28,7 +28,7 @@ export const orphanKeysRule: HealthRule = {
     "Detect translation keys not referenced in code (dead translations)",
 
   run(context: HealthRuleContext): I18nDiagnostic[] {
-    const { sourceLocale, translations, codeKeys } = context;
+    const { sourceLocale, translations, codeKeys, localeFilePaths } = context;
 
     // If no code keys were collected, skip — we can't determine orphans
     // without knowing what code actually uses.
@@ -44,7 +44,7 @@ export const orphanKeysRule: HealthRule = {
         const namespace = key.split(".")[0] || "default";
 
         diagnostics.push({
-          filePath: `${sourceLocale}.json`,
+          filePath: localeFilePaths?.[sourceLocale] ?? `${sourceLocale}.json`,
           line: 0,
           column: 0,
           rule: RULE_ID,

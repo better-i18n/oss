@@ -78,7 +78,7 @@ export const placeholderMismatchRule: HealthRule = {
     "Detect placeholder mismatches between source and target translations",
 
   run(context: HealthRuleContext): I18nDiagnostic[] {
-    const { sourceLocale, targetLocales, translations } = context;
+    const { sourceLocale, targetLocales, translations, localeFilePaths } = context;
 
     const sourceKeys = translations[sourceLocale];
     if (!sourceKeys) return [];
@@ -103,7 +103,7 @@ export const placeholderMismatchRule: HealthRule = {
         for (const ph of sourcePh) {
           if (!targetPh.includes(ph)) {
             diagnostics.push({
-              filePath: `${targetLocale}.json`,
+              filePath: localeFilePaths?.[targetLocale] ?? `${targetLocale}.json`,
               line: 0,
               column: 0,
               rule: RULE_ID,
@@ -122,7 +122,7 @@ export const placeholderMismatchRule: HealthRule = {
         for (const ph of targetPh) {
           if (!sourcePh.includes(ph)) {
             diagnostics.push({
-              filePath: `${targetLocale}.json`,
+              filePath: localeFilePaths?.[targetLocale] ?? `${targetLocale}.json`,
               line: 0,
               column: 0,
               rule: RULE_ID,

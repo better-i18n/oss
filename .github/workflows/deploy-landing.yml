@@ -2,14 +2,6 @@ name: Deploy Landing
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "apps/landing/**"
-      - "packages/core/**"
-      - "packages/use-intl/**"
-      - "packages/schemas/**"
-      - "bun.lock"
 
 concurrency:
   group: deploy-landing-${{ github.ref }}

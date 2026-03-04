@@ -97,6 +97,7 @@ export interface LintConfig {
   rules?: Record<string, "error" | "warning" | "off">;
   ignorePatterns?: RegExp[];
   translationFunctions?: string[];
+  ignoreStrings?: string[];
   dataStructureDetection?: DataStructureConfig;
 }
 

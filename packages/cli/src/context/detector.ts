@@ -245,5 +245,23 @@ function parseLintConfig(content: string): LintConfig | undefined {
       .filter(Boolean);
   }
 
+  // Extract translationFunctions array
+  const tfMatch = content.match(/translationFunctions:\s*\[([^\]]+)\]/);
+  if (tfMatch) {
+    config.translationFunctions = tfMatch[1]
+      .split(",")
+      .map((s) => s.trim().replace(/['"]/g, ""))
+      .filter(Boolean);
+  }
+
+  // Extract ignoreStrings array
+  const isMatch = content.match(/ignoreStrings:\s*\[([^\]]+)\]/);
+  if (isMatch) {
+    config.ignoreStrings = isMatch[1]
+      .split(",")
+      .map((s) => s.trim().replace(/['"]/g, ""))
+      .filter(Boolean);
+  }
+
   return Object.keys(config).length > 0 ? config : undefined;
 }

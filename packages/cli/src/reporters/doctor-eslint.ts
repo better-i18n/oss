@@ -65,6 +65,12 @@ function renderCategoryLine(
   return `  ${dim(padded)} ${colorFn(scoreStr)}${countStr}`;
 }
 
+// ── Display Limits ──────────────────────────────────────────────────
+
+const MAX_RULE_GROUPS = 5;
+const MAX_ITEMS_PER_GROUP = 5;
+const MAX_ITEMS_PER_GROUP_VERBOSE = 20;
+
 // ── Diagnostic Helpers (react-doctor pattern) ───────────────────────
 
 const SEVERITY_ORDER: Record<string, number> = {
@@ -73,18 +79,28 @@ const SEVERITY_ORDER: Record<string, number> = {
   info: 2,
 };
 
+/** Rules that produce key-based diagnostics (namespace/key format) */
+const KEY_BASED_RULES = new Set([
+  "missing-in-remote",
+  "unused-remote-key",
+]);
+
 function colorizeBySeverity(text: string, severity: string): string {
   if (severity === "error") return red(text);
   if (severity === "warning") return yellow(text);
   return dim(text);
 }
 
-function sortBySeverity(
+function sortBySeverityAndCount(
   groups: [string, I18nDiagnostic[]][],
 ): [string, I18nDiagnostic[]][] {
   return [...groups].sort(
     ([, a]: [string, I18nDiagnostic[]], [, b]: [string, I18nDiagnostic[]]) => {
-      return (SEVERITY_ORDER[a[0].severity] ?? 2) - (SEVERITY_ORDER[b[0].severity] ?? 2);
+      const sevDiff =
+        (SEVERITY_ORDER[a[0].severity] ?? 2) -
+        (SEVERITY_ORDER[b[0].severity] ?? 2);
+      if (sevDiff !== 0) return sevDiff;
+      return b.length - a.length; // more issues first
     },
   );
 }
@@ -97,6 +113,17 @@ function buildFileLineMap(diagnostics: I18nDiagnostic[]): Map<string, number[]> 
     fileLines.set(d.filePath, lines);
   }
   return fileLines;
+}
+
+function buildKeyEntries(diagnostics: I18nDiagnostic[]): string[] {
+  const entries: string[] = [];
+  for (const d of diagnostics) {
+    if (d.key) {
+      const prefix = d.namespace ? `${d.namespace}/` : "";
+      entries.push(`${prefix}${d.key}`);
+    }
+  }
+  return entries;
 }
 
 // ── Main Reporter ───────────────────────────────────────────────────
@@ -112,12 +139,15 @@ export function reportEslint(report: DoctorReport, verbose = false): void {
 
   // ── Header Box ──────────────────────────────────────────────────
   console.log();
-  console.log(bold("┌─────────────────────────────────────────────┐"));
-  console.log(bold("│") + "  i18n Doctor Report" + " ".repeat(25) + bold("│"));
-  console.log(bold("├─────────────────────────────────────────────┤"));
-  console.log(bold("│") + "  " + renderScoreBar(score.total) + "      " + bold("│"));
-  console.log(bold("│") + "  " + (score.passed ? green("PASSED") : red("FAILED")) + dim(` (threshold: ${score.passThreshold})`) + " ".repeat(10) + bold("│"));
-  console.log(bold("└─────────────────────────────────────────────┘"));
+  console.log(bold("╭──────────────────────────────────────────────╮"));
+  console.log(bold("│") + "                                              " + bold("│"));
+  console.log(bold("│") + "   🌐 " + bold("better-i18n") + dim("  ·  i18n Doctor Report") + "  " + bold("│"));
+  console.log(bold("│") + dim("   hello · hola · 你好 · こんにちは · 안녕") + "    " + bold("│"));
+  console.log(bold("│") + "                                              " + bold("│"));
+  console.log(bold("├──────────────────────────────────────────────┤"));
+  console.log(bold("│") + "  " + renderScoreBar(score.total) + "       " + bold("│"));
+  console.log(bold("│") + "  " + (score.passed ? green("PASSED") : red("FAILED")) + dim(` (threshold: ${score.passThreshold})`) + " ".repeat(11) + bold("│"));
+  console.log(bold("╰──────────────────────────────────────────────╯"));
   console.log();
 
   // ── Category Breakdown ──────────────────────────────────────────
@@ -164,10 +194,14 @@ export function reportEslint(report: DoctorReport, verbose = false): void {
       byRule.set(d.rule, existing);
     }
 
-    // Sort: errors first, then warnings
-    const sortedGroups = sortBySeverity([...byRule.entries()]);
+    // Sort: errors first, then by count descending
+    const sortedGroups = sortBySeverityAndCount([...byRule.entries()]);
+    const visibleGroups = sortedGroups.slice(0, MAX_RULE_GROUPS);
+    const hiddenGroupCount = sortedGroups.length - visibleGroups.length;
 
-    for (const [, diags] of sortedGroups) {
+    const maxItems = verbose ? MAX_ITEMS_PER_GROUP_VERBOSE : MAX_ITEMS_PER_GROUP;
+
+    for (const [rule, diags] of visibleGroups) {
       const first = diags[0];
       const icon = colorizeBySeverity(
         first.severity === "error" ? "✗" : "⚠",
@@ -186,13 +220,24 @@ export function reportEslint(report: DoctorReport, verbose = false): void {
         console.log(dim(`    ${first.help}`));
       }
 
-      // File:line listing (verbose or always for small sets)
-      if (verbose || count <= 5) {
-        const maxFiles = 10;
+      // Key-based rules: show namespace/key entries
+      if (KEY_BASED_RULES.has(rule)) {
+        const keys = buildKeyEntries(diags);
+        const shown = keys.slice(0, maxItems);
+        const hiddenKeys = keys.length - shown.length;
+
+        for (const key of shown) {
+          console.log(dim(`    ${key}`));
+        }
+        if (hiddenKeys > 0) {
+          console.log(dim(`    ... and ${hiddenKeys} more`));
+        }
+      } else {
+        // File-based rules: show file:line entries
         const fileLines = buildFileLineMap(diags);
         const entries = [...fileLines.entries()];
-        const shown = entries.slice(0, maxFiles);
-        const hiddenFiles = entries.length - maxFiles;
+        const shown = entries.slice(0, maxItems);
+        const hiddenFiles = entries.length - shown.length;
 
         for (const [filePath, lines] of shown) {
           const lineLabel = lines.length > 0 ? `: ${lines.join(", ")}` : "";
@@ -205,5 +250,11 @@ export function reportEslint(report: DoctorReport, verbose = false): void {
 
       console.log();
     }
+
+    if (hiddenGroupCount > 0) {
+      console.log(dim(`  ... and ${hiddenGroupCount} more rules`));
+      console.log();
+    }
   }
+
 }

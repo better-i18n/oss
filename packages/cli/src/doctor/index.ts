@@ -248,8 +248,9 @@ async function runHealthAnalysis(
   let sourceLocale = context?.defaultLocale || "en";
   let targetLocales: string[] = [];
 
-  // Strategy 1: CDN (if config exists)
-  if (context?.cdnBaseUrl) {
+  // Strategy 1: CDN (workspaceId + projectSlug is enough —
+  // loadFromCdn falls back to https://cdn.better-i18n.com when cdnBaseUrl is missing)
+  if (context?.workspaceId && context?.projectSlug) {
     const cdnResult = await loadFromCdn(context, verbose);
     if (cdnResult) {
       translations = cdnResult.translations;
@@ -259,8 +260,9 @@ async function runHealthAnalysis(
   }
 
   // Strategy 2: Local files (if CDN not available or didn't work)
+  let discovery: ReturnType<typeof discoverLocaleFiles> = null;
   if (Object.keys(translations).length === 0) {
-    const discovery = discoverLocaleFiles(directory);
+    discovery = discoverLocaleFiles(directory);
     if (discovery) {
       translations = loadLocaleTranslations(discovery);
 
@@ -284,6 +286,22 @@ async function runHealthAnalysis(
     return { diagnostics: [], keysChecked: 0, localesChecked: 0 };
   }
 
+  // Build localeFilePaths from discovery (local strategy only — CDN has no local files)
+  let localeFilePaths: Record<string, string> | undefined;
+  if (discovery) {
+    const paths: Record<string, string> = {};
+    for (const [locale, files] of Object.entries(discovery.localeFiles)) {
+      if (files.length > 0) {
+        // Use first file as representative path (relative to project root)
+        // Flat: "locales/ja.json", Namespaced: "locales/ja/common.json"
+        paths[locale] = relative(directory, files[0]);
+      }
+    }
+    if (Object.keys(paths).length > 0) {
+      localeFilePaths = paths;
+    }
+  }
+
   // Run health rules
   const ruleContext: HealthRuleContext = {
     sourceLocale,
@@ -292,6 +310,7 @@ async function runHealthAnalysis(
     codeKeys,
     rootDir: directory,
     projectContext: context,
+    localeFilePaths,
   };
 
   const diagnostics: I18nDiagnostic[] = [];

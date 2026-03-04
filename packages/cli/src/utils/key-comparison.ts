@@ -218,7 +218,9 @@ export function getSummary(
       partialKeys.push({ key: issue.key, issue });
     } else {
       fullyQualifiedKeys.push(issue);
-      allLocal.add(issue.key);
+      if (!issue.isDynamic) {
+        allLocal.add(issue.key);
+      }
       if (issue.bindingType) {
         classification[issue.bindingType] =
           (classification[issue.bindingType] || 0) + 1;
@@ -279,6 +281,7 @@ export function getSummary(
   const missing: Record<string, MissingKeyEntry[]> = {};
   for (const issue of allIssues) {
     if (!issue.key || !allLocal.has(issue.key)) continue;
+    if (issue.isDynamic) continue; // Dynamic patterns handled by pattern matching
 
     if (!allRemoteLeaves.has(issue.key)) {
       const ns = issue.key.split(".")[0] || "default";
