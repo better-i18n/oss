@@ -51,6 +51,7 @@ const inputSchema = projectSchema.extend({
   kind: z.enum(["collection", "single"]).default("collection"),
   icon: z.string().max(50).optional(),
   enableVersionHistory: z.boolean().default(true),
+  includeBody: z.boolean().default(true),
   fields: z.array(fieldDefinition).default([]),
 });
 
@@ -60,18 +61,17 @@ export const createContentModel: Tool = {
     description: `Create a new content model with optional field definitions.
 
 Field types: text, textarea, richtext, number, boolean, date, datetime, enum, media, relation.
-For relation fields, use fieldConfig.targetModel to specify the related model slug.
-For user fields, use 'relation' with fieldConfig.targetModel = 'users'.
-For enum fields, use options.enumValues to define allowed values.
 
-EXAMPLE:
+EXAMPLES:
 {
   "slug": "blog-posts",
   "displayName": "Blog Posts",
   "kind": "collection",
   "fields": [
-    { "name": "author_name", "displayName": "Author", "type": "text", "required": true },
-    { "name": "category", "displayName": "Category", "type": "relation", "fieldConfig": { "targetModel": "categories" } }
+    { "name": "author", "displayName": "Author", "type": "relation", "fieldConfig": { "targetModel": "users" } },
+    { "name": "category", "displayName": "Category", "type": "relation", "fieldConfig": { "targetModel": "categories" } },
+    { "name": "status", "displayName": "Status", "type": "enum", "options": { "enumValues": [{ "label": "Draft", "value": "draft" }, { "label": "Review", "value": "review" }, { "label": "Published", "value": "published" }], "showInTable": true } },
+    { "name": "read_time", "displayName": "Read Time", "type": "number" }
   ]
 }`,
     inputSchema: {
@@ -102,6 +102,10 @@ EXAMPLE:
         enableVersionHistory: {
           type: "boolean",
           description: "Enable version history tracking (default: true)",
+        },
+        includeBody: {
+          type: "boolean",
+          description: "Set false for models without a body/rich-text field (e.g., structured data models with only custom fields). Default: true",
         },
         fields: {
           type: "array",
@@ -165,6 +169,7 @@ EXAMPLE:
         kind: input.kind,
         icon: input.icon,
         enableVersionHistory: input.enableVersionHistory,
+        includeBody: input.includeBody,
         fields: input.fields,
       });
 
