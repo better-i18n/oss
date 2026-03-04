@@ -16,7 +16,7 @@
         "eslint-plugin-unused-imports": "^4.4.1",
         "globals": "^16.5.0",
         "husky": "^9.1.7",
-        "lint-staged": "^16.3.1",
+        "lint-staged": "^16.3.2",
         "nodemailer": "^7.0.13",
         "prettier": "^3.8.1",
         "typescript": "~5.9.3",
@@ -195,7 +195,7 @@
         "better-i18n-mcp-content": "./dist/index.js",
       },
       "dependencies": {
-        "@better-i18n/mcp-types": "^0.15.0",
+        "@better-i18n/mcp-types": "^0.15.1",
         "@modelcontextprotocol/sdk": "^1.25.3",
         "@trpc/client": "^11.0.0",
         "zod": "^3.25.1",
@@ -3919,7 +3919,7 @@
 
     "@better-i18n/mcp/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
-    "@better-i18n/mcp-content/@better-i18n/mcp-types": ["@better-i18n/mcp-types@0.15.0", "", { "dependencies": { "zod": "^3.25.76" } }, "sha512-ETQxcntYOho+HfmT+zaRscVl04iNAGSmT6E4LWQjHeVjIzk/Zi+3sRIjsNc1tZ5mVQYOQWRR3aO9uL9FOLDZJg=="],
+    "@better-i18n/mcp-content/@better-i18n/mcp-types": ["@better-i18n/mcp-types@0.15.1", "", { "dependencies": { "zod": "^3.25.76" } }, "sha512-QPx8SzFFAlc36p4ChI6ar2u3C4Di+F0tdpdERAu/1UI0JlGJ6oRW4js00Jn5ybeR5TYmGIAuVaelKnk9e1ircQ=="],
 
     "@better-i18n/mcp-content/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
