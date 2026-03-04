@@ -211,12 +211,57 @@ type RelationValue = {
 } & Record<string, string | null>;
 ```
 
+## Content Models & Fields
+
+`getModels()` returns model definitions including custom field metadata — useful for building dynamic forms and tables:
+
+```typescript
+const models = await client.getModels();
+
+for (const model of models) {
+  console.log(model.slug, model.displayName);
+  console.log("Has body field:", model.includeBody);
+
+  for (const field of model.fields) {
+    console.log(`  ${field.name} (${field.type})`);
+
+    // Enum fields include their allowed values
+    if (field.type === "enum" && field.enumValues) {
+      console.log("    Options:", field.enumValues.map((v) => v.label));
+    }
+  }
+}
+```
+
+### ContentModel
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `slug` | `string` | Model identifier |
+| `displayName` | `string` | Human-readable name |
+| `description` | `string \| null` | Model description |
+| `kind` | `string` | `"collection"` or `"single"` |
+| `entryCount` | `number` | Number of entries |
+| `includeBody` | `boolean` | Whether model has a body/rich-text field |
+| `fields` | `ContentModelField[]` | Custom field definitions |
+
+### ContentModelField
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | `string` | Field identifier (snake_case) |
+| `displayName` | `string` | Human-readable name |
+| `type` | `string` | `text`, `textarea`, `richtext`, `number`, `boolean`, `date`, `datetime`, `enum`, `media`, `relation` |
+| `required` | `boolean` | Whether field is required |
+| `localized` | `boolean` | Whether field is localized per language |
+| `enumValues` | `Array<{ label, value }>` | Enum options (only for `type: "enum"`) |
+
 ## Legacy API
 
 The method-based API is still available for backward compatibility:
 
 ```typescript
-// List content models
+// List content models (now includes fields and includeBody)
 const models = await client.getModels();
 
 // List entries (throws on error)
