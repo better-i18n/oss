@@ -198,6 +198,20 @@ export function analyzeSourceText(
       return { type: "unknown-scoped", dynamic: true };
     }
 
+    // Check custom translator functions from config
+    if (funcName && config?.translationFunctions?.includes(funcName)) {
+      if (call.arguments.length === 0) {
+        stats.rootScopedTranslators++;
+        return { type: "root-scoped" };
+      }
+      const arg = call.arguments[0];
+      if (ts.isStringLiteral(arg)) {
+        return { type: "bound-scoped", namespace: arg.text };
+      }
+      stats.dynamicNamespaces++;
+      return { type: "unknown-scoped", dynamic: true };
+    }
+
     return null;
   }
 
@@ -240,6 +254,13 @@ export function analyzeSourceText(
             return nsProp.initializer.text;
           }
         }
+      }
+    }
+
+    // Handle custom translator functions from config
+    if (funcName && config?.translationFunctions?.includes(funcName)) {
+      if (call.arguments.length > 0 && ts.isStringLiteral(call.arguments[0])) {
+        return call.arguments[0].text;
       }
     }
 
@@ -434,6 +455,15 @@ export function analyzeSourceText(
   }
 
   visit(sourceFile);
+
+  // Filter out ignored strings (brand names, etc.)
+  if (config?.ignoreStrings?.length) {
+    const ignoreSet = new Set(config.ignoreStrings.map((s) => s.toLowerCase()));
+    const filtered = issues.filter(
+      (i) => !ignoreSet.has(i.text.toLowerCase()),
+    );
+    return { issues: filtered, stats };
+  }
 
   return { issues, stats };
 }

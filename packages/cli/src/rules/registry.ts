@@ -84,4 +84,6 @@ export interface HealthRuleContext {
   rootDir: string;
   /** Project configuration (from i18n.config.ts) */
   projectContext: ProjectContext | null;
+  /** Locale → representative file path mapping (from discovery or CDN) */
+  localeFilePaths?: Record<string, string>;
 }

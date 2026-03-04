@@ -119,6 +119,61 @@ describe("calculateHealthScore — threshold", () => {
   });
 });
 
+// ── Per-Rule Warning Cap Tests ──────────────────────────────────────
+
+describe("calculateHealthScore — per-rule warning cap", () => {
+  it("caps 667 warnings from a single rule to 80 (not 0)", () => {
+    // Without cap: 100 - 667*0.15 = 0 → capped: min(667*0.15, 20) = 20 → 80
+    const result = calculateHealthScore(
+      diagN(667, "warning", "Coverage", "missing-in-remote"),
+    );
+    expect(result.total).toBe(80);
+  });
+
+  it("caps 1542 missing-in-remote warnings to 80", () => {
+    // Without cap: 100 - 231.3 = -131 → capped: min(1542*0.15, 20) = 20 → 80
+    const result = calculateHealthScore(
+      diagN(1542, "warning", "Coverage", "missing-in-remote"),
+    );
+    expect(result.total).toBe(80);
+  });
+
+  it("caps two different rules independently — 1542 + 152 = score 60", () => {
+    // Rule A: min(1542*0.15, 20) = 20, Rule B: min(152*0.15, 20) = 20 → 100 - 40 = 60
+    const diagnostics = [
+      ...diagN(1542, "warning", "Coverage", "missing-in-remote"),
+      ...diagN(152, "warning", "Code", "hardcoded-string"),
+    ];
+    const result = calculateHealthScore(diagnostics);
+    expect(result.total).toBe(60);
+  });
+
+  it("caps category scores per rule — 1542 warnings → Coverage 20", () => {
+    // Category Coverage: 100 - min(1542*0.5, 80) = 100 - 80 = 20
+    const result = calculateHealthScore(
+      diagN(1542, "warning", "Coverage", "missing-in-remote"),
+    );
+    expect(result.categories.Coverage).toBe(20);
+  });
+
+  it("stays linear when under the cap — 3 rules × 50 warnings = score 78", () => {
+    // Each rule: 50*0.15 = 7.5 (under cap of 20), 3 rules = 22.5 → 100 - 22.5 = 77.5 → 78
+    const diagnostics = [
+      ...diagN(50, "warning", "Code", "rule-a"),
+      ...diagN(50, "warning", "Code", "rule-b"),
+      ...diagN(50, "warning", "Code", "rule-c"),
+    ];
+    const result = calculateHealthScore(diagnostics);
+    expect(result.total).toBe(78);
+  });
+
+  it("does not cap errors", () => {
+    // 200 errors → 100 - 600 = -500 → clamped 0 (no error cap)
+    const result = calculateHealthScore(diagN(200, "error"));
+    expect(result.total).toBe(0);
+  });
+});
+
 // ── Category Score Tests ────────────────────────────────────────────
 
 describe("calculateHealthScore — categories", () => {
