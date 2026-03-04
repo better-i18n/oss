@@ -65,16 +65,18 @@ export async function doctorCommand(options: DoctorCommandOptions) {
     }
 
     // Upload report to Better i18n API (if --report flag is set)
+    let reportResult: { reportId: string; url: string } | null = null;
+
     if (options.report) {
       if (!isJson) {
         spinner.start("Uploading report...");
       }
 
-      const result = await reportToApi(report, options.apiKey);
+      reportResult = await reportToApi(report, options.apiKey);
 
-      if (result) {
+      if (reportResult) {
         if (!isJson) {
-          spinner.succeed(`Report uploaded: ${result.url}`);
+          spinner.succeed(`Report uploaded: ${reportResult.url}`);
         }
       } else if (!isJson) {
         // reportToApi already logs warnings, just stop the spinner
@@ -84,7 +86,10 @@ export async function doctorCommand(options: DoctorCommandOptions) {
 
     // CI mode: exit with error code if score below threshold
     if (options.ci && !report.score.passed) {
-      process.exit(1);
+      // If report was successfully uploaded, skip exit 1 — insights are in the dashboard
+      if (!options.report || !reportResult) {
+        process.exit(1);
+      }
     }
   } catch (error) {
     if (!isJson) {
