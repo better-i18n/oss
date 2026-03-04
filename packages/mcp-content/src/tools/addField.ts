@@ -48,7 +48,13 @@ const inputSchema = projectSchema.extend({
 export const addField: Tool = {
   definition: {
     name: "addField",
-    description: "Add a custom field to a content model. Field name must be snake_case. For relation fields, use fieldConfig.targetModel. For enum fields, use options.enumValues to define allowed values.",
+    description: `Add a custom field to a content model. Field name must be snake_case.
+
+EXAMPLES:
+- Enum field: { "name": "status", "displayName": "Status", "type": "enum", "options": { "enumValues": [{ "label": "Draft", "value": "draft" }, { "label": "Published", "value": "published" }] } }
+- Relation field: { "name": "category", "displayName": "Category", "type": "relation", "fieldConfig": { "targetModel": "categories" } }
+- User select: { "name": "author", "displayName": "Author", "type": "relation", "fieldConfig": { "targetModel": "users" } }
+- Show in table: { "name": "priority", "displayName": "Priority", "type": "enum", "options": { "enumValues": [...], "showInTable": true } }`,
     inputSchema: {
       type: "object",
       properties: {

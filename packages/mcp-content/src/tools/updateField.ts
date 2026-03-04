@@ -47,7 +47,12 @@ const inputSchema = projectSchema.extend({
 export const updateField: Tool = {
   definition: {
     name: "updateField",
-    description: "Update a custom field's properties. Identify the field by model slug and field name.",
+    description: `Update a custom field's properties. Identify the field by model slug and field name.
+
+EXAMPLES:
+- Add enum values: { "fieldName": "status", "options": { "enumValues": [{ "label": "Active", "value": "active" }, { "label": "Archived", "value": "archived" }] } }
+- Change to relation: { "fieldName": "author", "type": "relation", "fieldConfig": { "targetModel": "users" } }
+- Toggle table visibility: { "fieldName": "category", "options": { "showInTable": true } }`,
     inputSchema: {
       type: "object",
       properties: {

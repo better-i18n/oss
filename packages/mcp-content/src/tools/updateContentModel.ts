@@ -20,6 +20,7 @@ const inputSchema = projectSchema.extend({
   kind: z.enum(["collection", "single"]).optional(),
   icon: z.string().max(50).optional(),
   enableVersionHistory: z.boolean().optional(),
+  includeBody: z.boolean().optional(),
 });
 
 export const updateContentModel: Tool = {
@@ -55,6 +56,10 @@ export const updateContentModel: Tool = {
           type: "boolean",
           description: "Updated version history setting",
         },
+        includeBody: {
+          type: "boolean",
+          description: "Set false to remove the body/rich-text field (for structured data models with only custom fields). Set true to add it back.",
+        },
       },
       required: ["project", "modelSlug"],
     },
@@ -71,6 +76,7 @@ export const updateContentModel: Tool = {
         kind: input.kind,
         icon: input.icon,
         enableVersionHistory: input.enableVersionHistory,
+        includeBody: input.includeBody,
       });
 
       return success({

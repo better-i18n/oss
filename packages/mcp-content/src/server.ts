@@ -29,6 +29,7 @@ import { publishContentEntry } from "./tools/publishContentEntry.js";
 import { deleteContentEntry } from "./tools/deleteContentEntry.js";
 import { duplicateContentEntry } from "./tools/duplicateContentEntry.js";
 import { bulkPublishEntries } from "./tools/bulkPublishEntries.js";
+import { bulkCreateEntries } from "./tools/bulkCreateEntries.js";
 
 // Model management tools
 import { createContentModel } from "./tools/createContentModel.js";
@@ -110,6 +111,7 @@ export function createConfiguredServer(
     deleteContentEntry,
     duplicateContentEntry,
     bulkPublishEntries,
+    bulkCreateEntries,
     createContentModel,
     updateContentModel,
     deleteContentModel,
@@ -133,6 +135,7 @@ export function createConfiguredServer(
       annotate(publishContentEntry.definition, write),
       annotate(duplicateContentEntry.definition, write),
       annotate(bulkPublishEntries.definition, write),
+      annotate(bulkCreateEntries.definition, write),
       // Model management
       annotate(createContentModel.definition, write),
       annotate(updateContentModel.definition, write),
