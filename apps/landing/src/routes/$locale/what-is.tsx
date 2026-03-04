@@ -39,9 +39,13 @@ export const Route = createFileRoute("/$locale/what-is")({
           }))
       : [];
 
+    const seoNs = whatIsPageNs?.seo as Record<string, string> | undefined;
+    const structuredTitle = seoNs?.structuredDataTitle || "What is i18n? Internationalization & Localization Guide";
+    const structuredDescription = seoNs?.structuredDataDescription || "Learn the difference between internationalization (i18n) and localization (l10n). Covers key concepts, a comparison table, and how to get started.";
+
     const educationalScripts = getEducationalPageStructuredData({
-      title: "What is i18n? Internationalization & Localization Guide",
-      description: "Learn the difference between internationalization (i18n) and localization (l10n). Covers key concepts, a comparison table, and how to get started.",
+      title: structuredTitle,
+      description: structuredDescription,
       url: `https://better-i18n.com/${locale}/what-is`,
     });
 
@@ -114,7 +118,7 @@ function WhatIsPage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mist-100 text-mist-700 text-sm font-medium mb-6">
               <IconGlobe className="size-4" />
-              Educational Guide
+              {t("hero.badge")}
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1] lg:text-6xl/[1.1]">
               {t("hero.title")}
@@ -143,7 +147,7 @@ function WhatIsPage() {
               </p>
             </div>
             <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
-              <h3 className="text-lg font-medium text-mist-950 mb-4">Why &ldquo;i18n&rdquo;?</h3>
+              <h3 className="text-lg font-medium text-mist-950 mb-4">{t("i18nDef.etymologyTitle")}</h3>
               <p className="text-mist-700 leading-relaxed mb-4">
                 {t("i18nDef.etymology")}
               </p>
@@ -171,7 +175,7 @@ function WhatIsPage() {
               </p>
             </div>
             <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-white border border-mist-200">
-              <h3 className="text-lg font-medium text-mist-950 mb-4">Why &ldquo;l10n&rdquo;?</h3>
+              <h3 className="text-lg font-medium text-mist-950 mb-4">{t("l10nDef.etymologyTitle")}</h3>
               <p className="text-mist-700 leading-relaxed mb-4">
                 {t("l10nDef.etymology")}
               </p>
