@@ -1,5 +1,13 @@
 # @better-i18n/sdk
 
+## 3.1.0
+
+### Minor Changes
+
+- 581ecc9: feat(sdk): add fields array and includeBody to ContentModel type
+
+  ContentModel now exposes field definitions (name, type, required, localized, enumValues) and the includeBody flag, enabling frontends to render model structure and form fields dynamically.
+
 ## 3.0.0
 
 ### Major Changes
