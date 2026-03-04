@@ -11,6 +11,8 @@ export type {
   ContentEntryStatus,
   ContentEntrySortField,
   ContentModel,
+  ContentModelField,
+  ContentModelEnumValue,
   ListEntriesOptions,
   GetEntryOptions,
   PaginatedResponse,

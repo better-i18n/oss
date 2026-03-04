@@ -79,6 +79,28 @@ export interface PaginatedResponse<T> {
   hasMore: boolean;
 }
 
+/** An enum option for enum-type fields. */
+export interface ContentModelEnumValue {
+  label: string;
+  value: string;
+}
+
+/** A field definition within a content model. */
+export interface ContentModelField {
+  /** Field identifier (snake_case). */
+  name: string;
+  /** Human-readable field name. */
+  displayName: string;
+  /** Field type (text, textarea, richtext, number, boolean, date, datetime, enum, media, relation, user_select). */
+  type: string;
+  /** Whether this field is required. */
+  required: boolean;
+  /** Whether this field is localized per language. */
+  localized: boolean;
+  /** Enum options — only present when `type` is `"enum"`. */
+  enumValues?: ContentModelEnumValue[];
+}
+
 /** A content model definition. */
 export interface ContentModel {
   slug: string;
@@ -86,6 +108,10 @@ export interface ContentModel {
   description: string | null;
   kind: string;
   entryCount: number;
+  /** Whether this model has a body/rich-text field. `false` for structured data models with only custom fields. */
+  includeBody: boolean;
+  /** Field definitions for this model (custom fields, enums, relations, etc.). */
+  fields: ContentModelField[];
 }
 
 // ─── Query Result Types ─────────────────────────────────────────────
