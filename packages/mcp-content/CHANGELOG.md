@@ -1,5 +1,15 @@
 # @better-i18n/mcp-content
 
+## 0.6.0
+
+### Minor Changes
+
+- 9452873: feat(mcp-content): add bulkCreateEntries tool, includeBody support, and improved descriptions
+  - Add bulkCreateEntries tool for batch entry creation (max 20, partial success)
+  - Add includeBody param to createContentModel and updateContentModel tools
+  - Improve addField/updateField descriptions with enum, relation, and showInTable examples
+  - Enrich createContentModel description with comprehensive field examples
+
 ## 0.5.3
 
 ### Patch Changes
