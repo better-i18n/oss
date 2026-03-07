@@ -16,6 +16,7 @@
  * For stdio transport (Cursor, Claude Desktop), see index.ts.
  */
 
+import { createRequire } from "node:module";
 import {
   createServer,
   type IncomingMessage,
@@ -27,6 +28,9 @@ import {
   createConfiguredServer,
   createBetterI18nClient,
 } from "./server.js";
+
+const require = createRequire(import.meta.url);
+const pkg = require("../package.json") as { name: string; version: string };
 
 const config = resolveConfig();
 const port = parseInt(process.env.PORT || "8808", 10);
@@ -88,7 +92,10 @@ async function handleMcpRequest(
     debug: config.debug,
   });
 
-  const server = createConfiguredServer(apiClient);
+  const server = createConfiguredServer(apiClient, {
+    packageName: pkg.name,
+    version: pkg.version,
+  });
 
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined, // stateless
