@@ -221,7 +221,7 @@ export function MobileNav() {
                     <div className="text-sm font-medium text-mist-950">
                       {t("segments.translators.title", { defaultValue: "For Translators" })}
                     </div>
-                    <div className="text-xs text-mist-500">
+                    <div className="text-xs text-mist-700">
                       {t("segments.translators.shortDescription", {
                         defaultValue: "Context-rich translation environment",
                       })}
@@ -242,7 +242,7 @@ export function MobileNav() {
                     <div className="text-sm font-medium text-mist-950">
                       {t("segments.developers.title", { defaultValue: "For Developers" })}
                     </div>
-                    <div className="text-xs text-mist-500">
+                    <div className="text-xs text-mist-700">
                       {t("segments.developers.shortDescription", {
                         defaultValue: "Automated sync and developer-first tools",
                       })}
@@ -263,7 +263,7 @@ export function MobileNav() {
                     <div className="text-sm font-medium text-mist-950">
                       {t("segments.productTeams.title", { defaultValue: "For Product Teams" })}
                     </div>
-                    <div className="text-xs text-mist-500">
+                    <div className="text-xs text-mist-700">
                       {t("segments.productTeams.shortDescription", {
                         defaultValue: "Manage localization without the hassle",
                       })}
@@ -273,7 +273,7 @@ export function MobileNav() {
 
                 {/* More Solutions */}
                 <div className="px-3 pt-2">
-                  <p className="text-xs font-medium uppercase tracking-wider text-mist-400 mb-1.5">
+                  <p className="text-xs font-medium uppercase tracking-wider text-mist-600 mb-1.5">
                     {t("menu.moreSolutions", { defaultValue: "More Solutions" })}
                   </p>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
@@ -318,7 +318,7 @@ export function MobileNav() {
               onToggle={() => toggleSection("developers")}
             >
               <div className="space-y-1 pb-1">
-                <p className="px-3 py-1 text-xs font-medium uppercase tracking-wider text-mist-500">
+                <p className="px-3 py-1 text-xs font-medium uppercase tracking-wider text-mist-700">
                   {t("developers.frameworkGuides", { defaultValue: "Framework Guides" })}
                 </p>
                 <div className="grid grid-cols-2 gap-1">
@@ -497,7 +497,7 @@ export function MobileNav() {
           {/* Bottom section: Language switcher + CTA */}
           <div className="mt-6 space-y-4 border-t border-mist-200 pt-6">
             <div className="flex items-center justify-between px-3">
-              <span className="text-sm font-medium text-mist-500">
+              <span className="text-sm font-medium text-mist-700">
                 {t("language", { defaultValue: "Language" })}
               </span>
               <LanguageSwitcher />
@@ -544,7 +544,7 @@ function AccordionSection({
         {label}
         <IconChevronBottom
           className={cn(
-            "size-4 text-mist-400 transition-transform duration-200",
+            "size-4 text-mist-600 transition-transform duration-200",
             isExpanded && "rotate-180",
           )}
         />

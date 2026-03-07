@@ -64,7 +64,7 @@ export default function Changelog({ releases }: ChangelogProps) {
                 params={{ locale: lang }}
                 className="group flex flex-col rounded-xl bg-mist-950/[0.025] p-5 hover:bg-mist-950/[0.05] transition-colors"
               >
-                <div className="flex items-center gap-3 text-mist-500 mb-3">
+                <div className="flex items-center gap-3 text-mist-700 mb-3">
                   <span
                     className={`text-xs font-medium px-2 py-0.5 rounded ${badgeColor}`}
                   >

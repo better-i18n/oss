@@ -123,11 +123,11 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
                     <p className="mt-1 inline-flex items-baseline gap-1 text-base/7">
                       <span className="text-3xl font-bold text-mist-950">{price}</span>
                       {planKey !== "enterprise" && (
-                        <span className="text-mist-500">{t("perMonth", { defaultValue: "/ month" })}</span>
+                        <span className="text-mist-700">{t("perMonth", { defaultValue: "/ month" })}</span>
                       )}
                     </p>
                     {yearlyTotal && (
-                      <p className="text-xs text-mist-500">
+                      <p className="text-xs text-mist-700">
                         {t("billedYearly", { total: yearlyTotal, defaultValue: "Billed yearly ({total})" })}
                       </p>
                     )}
@@ -135,7 +135,7 @@ export default function Pricing({ headingLevel = "h2" }: { headingLevel?: "h1" |
                       {description}
                     </p>
                     {showTrial && (
-                      <p className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-blue-600">
+                      <p className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-blue-700">
                         <span className="rounded-full bg-blue-100 px-2 py-0.5">
                           {t("trialBadge", { defaultValue: "14-day free trial" })}
                         </span>
