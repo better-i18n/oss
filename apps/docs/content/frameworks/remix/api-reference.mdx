@@ -1,0 +1,305 @@
+---
+title: API Reference
+description: Complete API documentation for @better-i18n/remix
+---
+
+Complete API reference for the Remix & Hydrogen SDK.
+
+## Architecture
+
+`@better-i18n/remix` is a thin wrapper around `@better-i18n/core` that adds:
+
+- **Request-based locale detection** via `Accept-Language` header parsing
+- **Singleton pattern** with `TtlCache` for efficient CDN fetching across requests
+- **No client-side runtime** — translations are loaded server-side and passed as loader data
+
+---
+
+## createRemixI18n
+
+The main entry point. Creates a singleton i18n instance for server-side use.
+
+```ts
+import { createRemixI18n } from "@better-i18n/remix";
+
+const i18n = createRemixI18n({
+  project: "my-company/web-app",
+  defaultLocale: "en",
+});
+```
+
+<Accordion>
+<AccordionItem title="Config Options (RemixI18nConfig)">
+
+`RemixI18nConfig` extends `I18nCoreConfig` from `@better-i18n/core`:
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `project` | `string` | Required | Project identifier in `org/project` format |
+| `defaultLocale` | `string` | Required | Fallback locale when detection fails |
+| `logLevel` | `"debug" \| "info" \| "warn" \| "error" \| "silent"` | `"warn"` | Logging verbosity |
+| `cacheTtl` | `number` | `300` | Cache TTL in seconds for CDN responses |
+| `cdnBaseUrl` | `string` | `"https://cdn.better-i18n.com"` | CDN base URL (for self-hosted setups) |
+
+</AccordionItem>
+
+<AccordionItem title="Return Type (RemixI18n)">
+
+The returned object exposes these methods:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `config` | `I18nCoreConfig` | Resolved configuration object |
+| `detectLocale(request)` | `(request: Request) => Promise<string>` | Detect locale from `Accept-Language` header |
+| `getMessages(locale)` | `(locale: string) => Promise<Messages>` | Get all messages for a locale from CDN |
+| `getLocales()` | `() => Promise<string[]>` | Get available locale codes from manifest |
+| `getLanguages()` | `() => Promise<LanguageOption[]>` | Get language options with metadata |
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## RemixI18n Interface
+
+<Accordion>
+<AccordionItem title="detectLocale(request)">
+Detect the user's preferred locale from the `Accept-Language` header.
+
+```ts
+const locale = await i18n.detectLocale(request);
+// "tr" (if Accept-Language contains Turkish)
+```
+
+**How it works:**
+1. Fetches available locales from CDN manifest via `getLocales()`
+2. Parses `Accept-Language` header with `parseAcceptLanguage()`
+3. Matches against available locales with `matchLocale()`
+4. Falls back to `defaultLocale` if no match
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `request` | `Request` | Standard Web API Request object |
+
+**Returns:** `Promise<string>` — The matched locale code
+
+</AccordionItem>
+
+<AccordionItem title="getMessages(locale)">
+Fetch all translation messages for a locale. Returns namespaced messages from the CDN, cached via `TtlCache`.
+
+```ts
+const messages = await i18n.getMessages("tr");
+// {
+//   common: { welcome: "Hos geldiniz", shop_now: "Alisverise Basla" },
+//   products: { from: "Baslayan fiyat" },
+//   footer: { about: "Hakkimizda" }
+// }
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `locale` | `string` | Locale code (e.g., `"en"`, `"tr"`) |
+
+**Returns:** `Promise<Messages>` — Namespaced translation messages
+
+</AccordionItem>
+
+<AccordionItem title="getLocales()">
+Get available locale codes from the CDN manifest.
+
+```ts
+const locales = await i18n.getLocales();
+// ["en", "tr", "es", "fr", "de"]
+```
+
+**Returns:** `Promise<string[]>` — Array of available locale codes
+
+</AccordionItem>
+
+<AccordionItem title="getLanguages()">
+Get language options with full metadata, useful for building language switcher UIs.
+
+```ts
+const languages = await i18n.getLanguages();
+// [
+//   { code: "en", name: "English", nativeName: "English", flagUrl: "..." },
+//   { code: "tr", name: "Turkish", nativeName: "Turkce", flagUrl: "..." },
+// ]
+```
+
+**Returns:** `Promise<LanguageOption[]>` — Array of language metadata objects
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Utility Functions
+
+<Accordion>
+<AccordionItem title="parseAcceptLanguage(header)">
+Parse an RFC 5646 `Accept-Language` header into a priority-sorted list of language tags.
+
+```ts
+import { parseAcceptLanguage } from "@better-i18n/remix";
+
+const languages = parseAcceptLanguage("tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7");
+// ["tr-TR", "tr", "en-US", "en"]
+
+// Handles null/undefined gracefully
+parseAcceptLanguage(null);
+// []
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `header` | `string \| null \| undefined` | Raw `Accept-Language` header value |
+
+**Returns:** `string[]` — Language tags sorted by quality factor (highest first)
+
+**Parsing rules:**
+- Splits on commas, extracts language tag and quality factor
+- Quality factor defaults to `1.0` if not specified
+- Wildcard `*` entries are ignored
+- Invalid quality values are treated as `1.0`
+
+</AccordionItem>
+
+<AccordionItem title="matchLocale(languages, availableLocales)">
+Find the best matching locale from a parsed language list against available locales.
+
+```ts
+import { matchLocale } from "@better-i18n/remix";
+
+matchLocale(["tr-TR", "tr", "en-US"], ["en", "tr", "es"]);
+// "tr" (base language match: "tr-TR" → "tr")
+
+matchLocale(["ja", "ko"], ["en", "tr", "es"]);
+// null (no match)
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `languages` | `string[]` | Priority-sorted language tags (from `parseAcceptLanguage`) |
+| `availableLocales` | `string[]` | Available locale codes in your project |
+
+**Returns:** `string | null` — Best matching locale, or `null` if none found
+
+**Matching strategy (in priority order):**
+
+| Priority | Strategy | Example |
+| --- | --- | --- |
+| 1 | Exact match | `"tr-TR"` matches `"tr-TR"` |
+| 2 | Base language | `"tr-TR"` matches `"tr"` (strips region subtag) |
+| 3 | Region expansion | `"tr"` matches `"tr-TR"` (first available variant) |
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Types
+
+<Accordion>
+<AccordionItem title="Messages">
+Translation messages dictionary. Namespaced at the top level.
+
+```ts
+import type { Messages } from "@better-i18n/remix";
+
+const messages: Messages = {
+  common: {
+    welcome: "Welcome",
+    goodbye: "Goodbye",
+  },
+  errors: {
+    notFound: "Page not found",
+  },
+};
+```
+
+Type: `Record<string, unknown>`
+</AccordionItem>
+
+<AccordionItem title="LanguageOption">
+Language metadata from the CDN manifest.
+
+```ts
+import type { LanguageOption } from "@better-i18n/remix";
+
+// {
+//   code: "tr",
+//   name: "Turkish",
+//   nativeName: "Turkce",
+//   flagUrl: "https://cdn.better-i18n.com/flags/tr.svg"
+// }
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `code` | `string` | Locale code (e.g., `"en"`, `"tr"`) |
+| `name` | `string \| undefined` | English language name |
+| `nativeName` | `string \| undefined` | Native language name |
+| `flagUrl` | `string \| null \| undefined` | URL to flag image |
+
+</AccordionItem>
+
+<AccordionItem title="RemixI18nConfig">
+Configuration type for `createRemixI18n()`. Alias for `I18nCoreConfig`.
+
+```ts
+import type { RemixI18nConfig } from "@better-i18n/remix";
+```
+
+See [Config Options](#createRemixi18n) table above.
+</AccordionItem>
+
+<AccordionItem title="RemixI18n">
+Instance type returned by `createRemixI18n()`.
+
+```ts
+import type { RemixI18n } from "@better-i18n/remix";
+```
+
+See [Return Type](#createRemixi18n) table above.
+</AccordionItem>
+
+<AccordionItem title="Re-exported from @better-i18n/core">
+The following types are re-exported for convenience:
+
+```ts
+import type {
+  I18nCoreConfig,
+  LanguageOption,
+  Messages,
+  Locale,
+  LogLevel,
+  ManifestLanguage,
+  ManifestResponse,
+} from "@better-i18n/remix";
+```
+</AccordionItem>
+</Accordion>
+
+---
+
+## msg() Helper Pattern
+
+While not part of the SDK, we recommend creating a `msg()` helper for type-safe message access:
+
+```ts title="app/lib/messages.ts"
+export function msg(
+  ns: Record<string, unknown> | undefined,
+  key: string,
+  fallback: string,
+): string {
+  const val = ns?.[key];
+  return typeof val === "string" ? val : fallback;
+}
+```
+
+This pattern provides:
+- **Type safety** — No unsafe casting of `unknown` values
+- **Fallback support** — Graceful degradation when translations are missing
+- **Namespace scoping** — Access translations by namespace (e.g., `messages.common`)
