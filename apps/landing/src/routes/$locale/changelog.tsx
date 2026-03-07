@@ -46,14 +46,32 @@ export const Route = createFileRoute("/$locale/changelog")({
   component: ChangelogPage,
 });
 
+type Locale = "en" | "tr";
+type StatusTone = "new" | "updated" | "improved" | "fixed" | "security";
+
+interface ParsedListItem {
+  badge: StatusTone | null;
+  label: string | null;
+  description: string;
+}
+
+interface ParsedSection {
+  title: string;
+  items: ParsedListItem[];
+  paragraphs: string[];
+}
+
 const categoryColors: Record<string, string> = {
-  feature: "bg-blue-50 text-blue-700",
-  improvement: "bg-green-50 text-green-700",
-  fix: "bg-orange-50 text-orange-700",
-  security: "bg-red-50 text-red-700",
+  feature:
+    "border border-sky-200 bg-sky-50 text-sky-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]",
+  improvement:
+    "border border-emerald-200 bg-emerald-50 text-emerald-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]",
+  fix: "border border-amber-200 bg-amber-50 text-amber-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]",
+  security:
+    "border border-rose-200 bg-rose-50 text-rose-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]",
 };
 
-const categoryLabels: Record<string, Record<string, string>> = {
+const categoryLabels: Record<Locale, Record<string, string>> = {
   en: {
     feature: "New Feature",
     improvement: "Improvement",
@@ -68,78 +86,214 @@ const categoryLabels: Record<string, Record<string, string>> = {
   },
 };
 
-// Apply inline formatting (bold) to a text segment
-function applyInline(text: string): string {
-  return text.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>');
+const statusLabels: Record<Locale, Record<StatusTone, string>> = {
+  en: {
+    new: "NEW",
+    updated: "UPDATED",
+    improved: "IMPROVED",
+    fixed: "FIXED",
+    security: "SECURITY",
+  },
+  tr: {
+    new: "YENI",
+    updated: "GUNCEL",
+    improved: "IYILESTI",
+    fixed: "DUZELTILDI",
+    security: "GUVENLIK",
+  },
+};
+
+const statusClasses: Record<StatusTone, string> = {
+  new: "border border-emerald-200 bg-emerald-50 text-emerald-700",
+  updated: "border border-slate-200 bg-slate-100 text-slate-700",
+  improved: "border border-blue-200 bg-blue-50 text-blue-700",
+  fixed: "border border-amber-200 bg-amber-50 text-amber-700",
+  security: "border border-rose-200 bg-rose-50 text-rose-700",
+};
+
+const statusAliases: Record<string, StatusTone> = {
+  new: "new",
+  added: "new",
+  feature: "new",
+  updated: "updated",
+  update: "updated",
+  improvement: "improved",
+  improved: "improved",
+  fix: "fixed",
+  fixed: "fixed",
+  bugfix: "fixed",
+  security: "security",
+};
+
+function renderInline(text: string) {
+  return text
+    .split(/(\*\*.+?\*\*)/g)
+    .filter(Boolean)
+    .map((segment, index) => {
+      if (segment.startsWith("**") && segment.endsWith("**")) {
+        return (
+          <strong key={`${segment}-${index}`} className="font-semibold text-mist-950">
+            {segment.slice(2, -2)}
+          </strong>
+        );
+      }
+
+      return <span key={`${segment}-${index}`}>{segment}</span>;
+    });
 }
 
-// Line-by-line markdown to HTML conversion
-// Content comes from our own CMS (controlled source), so innerHTML is safe here.
-function renderContent(content: string): string {
-  const lines = content.split('\n');
-  const output: string[] = [];
-  const listItems: string[] = [];
+function parseListItem(line: string): ParsedListItem {
+  let text = line.trim().replace(/^-+\s*/, "");
+  let badge: StatusTone | null = null;
+
+  const bracketMatch = text.match(/^\[([a-z-]+)\]\s*/i);
+  if (bracketMatch) {
+    const normalized = statusAliases[bracketMatch[1].toLowerCase()];
+    if (normalized) {
+      badge = normalized;
+      text = text.slice(bracketMatch[0].length).trim();
+    }
+  } else {
+    const prefixMatch = text.match(
+      /^(new|added|feature|updated|update|improvement|improved|fix|fixed|bugfix|security):\s*/i
+    );
+
+    if (prefixMatch) {
+      badge = statusAliases[prefixMatch[1].toLowerCase()];
+      text = text.slice(prefixMatch[0].length).trim();
+    }
+  }
+
+  const emphasizedLabelMatch = text.match(/^\*\*(.+?)\*\*:\s*(.+)$/);
+  if (emphasizedLabelMatch) {
+    return {
+      badge,
+      label: emphasizedLabelMatch[1].trim(),
+      description: emphasizedLabelMatch[2].trim(),
+    };
+  }
+
+  const plainLabelMatch = text.match(/^([^:]{2,80}):\s*(.+)$/);
+  if (plainLabelMatch) {
+    return {
+      badge,
+      label: plainLabelMatch[1].trim(),
+      description: plainLabelMatch[2].trim(),
+    };
+  }
+
+  return {
+    badge,
+    label: null,
+    description: text,
+  };
+}
+
+function parseSections(body: string | null): ParsedSection[] {
+  if (!body) return [];
+
+  const sections: ParsedSection[] = [];
+  const lines = body.split("\n");
+
+  let currentSection: ParsedSection | null = null;
+  let listBuffer: ParsedListItem[] = [];
+
+  function ensureSection() {
+    if (!currentSection) {
+      currentSection = {
+        title: "",
+        items: [],
+        paragraphs: [],
+      };
+    }
+  }
 
   function flushList() {
-    if (listItems.length > 0) {
-      output.push('<ul class="list-disc list-inside space-y-1.5 my-3 text-sm">');
-      output.push(...listItems);
-      output.push('</ul>');
-      listItems.length = 0;
-    }
+    if (!currentSection || listBuffer.length === 0) return;
+    currentSection.items.push(...listBuffer);
+    listBuffer = [];
   }
 
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    // Skip h1 — title is already shown in the card header
-    if (/^# /.test(trimmed)) {
-      flushList();
-      continue;
-    }
-
-    // ## → <h3>
-    if (/^## (.+)$/.test(trimmed)) {
-      flushList();
-      const text = trimmed.slice(3);
-      output.push(`<h3 class="text-lg font-semibold text-gray-900 mt-8 mb-3">${applyInline(text)}</h3>`);
-      continue;
-    }
-
-    // ### → <h4>
-    if (/^### (.+)$/.test(trimmed)) {
-      flushList();
-      const text = trimmed.slice(4);
-      output.push(`<h4 class="text-base font-semibold text-gray-900 mt-6 mb-2">${applyInline(text)}</h4>`);
-      continue;
-    }
-
-    // - item → buffered <li>
-    if (/^- (.+)$/.test(trimmed)) {
-      const text = trimmed.slice(2);
-      listItems.push(`<li class="text-gray-600">${applyInline(text)}</li>`);
-      continue;
-    }
-
-    // Non-empty plain text → <p>
-    if (trimmed) {
-      flushList();
-      output.push(`<p class="text-gray-600 text-sm my-2">${applyInline(trimmed)}</p>`);
-      continue;
-    }
-
-    // Empty line — flush any open list
+  function pushSection() {
+    if (!currentSection) return;
     flushList();
+
+    if (
+      currentSection.title ||
+      currentSection.items.length > 0 ||
+      currentSection.paragraphs.length > 0
+    ) {
+      sections.push(currentSection);
+    }
+
+    currentSection = null;
   }
 
-  flushList();
-  return output.join('\n');
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    if (!line) {
+      flushList();
+      continue;
+    }
+
+    if (/^#\s+/.test(line)) {
+      continue;
+    }
+
+    if (/^##\s+/.test(line)) {
+      pushSection();
+      currentSection = {
+        title: line.replace(/^##\s+/, "").trim(),
+        items: [],
+        paragraphs: [],
+      };
+      continue;
+    }
+
+    if (/^###\s+/.test(line)) {
+      flushList();
+      ensureSection();
+      const section = currentSection;
+      if (section) {
+        section.paragraphs.push(line.replace(/^###\s+/, "").trim());
+      }
+      continue;
+    }
+
+    if (/^-+\s+/.test(line)) {
+      ensureSection();
+      listBuffer.push(parseListItem(line));
+      continue;
+    }
+
+    ensureSection();
+    flushList();
+    const section = currentSection;
+    if (section) {
+      section.paragraphs.push(line);
+    }
+  }
+
+  pushSection();
+  return sections;
+}
+
+function formatReleaseDate(date: string | null | undefined, locale: Locale) {
+  if (!date) return null;
+
+  return new Date(date).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 function ChangelogPage() {
   const t = useTranslations("changelogPage");
   const loaderData = Route.useLoaderData();
   const { locale } = Route.useParams();
+  const typedLocale = (locale === "tr" ? "tr" : "en") as Locale;
 
   // Hybrid approach:
   // - SSR: loader provides initial data (no API call visible to client)
@@ -153,90 +307,152 @@ function ChangelogPage() {
       return json.releases;
     },
     initialData: loaderData.releases,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnMount: false, // Don't refetch on mount if we have initialData
+    staleTime: 5 * 60 * 1000,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
 
   return (
-    <div className="bg-white">
-      <Header className="bg-white" />
-      <main className="py-24 sm:py-32">
-        <div className="mx-auto max-w-3xl px-6 lg:px-8">
-          <div className="flex flex-col gap-16">
-            <div className="text-center">
-              <h1 className="font-display text-4xl font-medium tracking-tight text-balance text-gray-900 sm:text-5xl">
-                {t("title")}
-              </h1>
-              <p className="mt-4 text-lg text-pretty text-gray-600">
-                {t("subtitle")}
-              </p>
-            </div>
+    <div className="bg-mist-100">
+      <Header className="bg-mist-100/90 backdrop-blur-sm" />
+      <main className="relative overflow-hidden py-20 sm:py-28">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.55),_transparent_36%),linear-gradient(180deg,_rgba(247,248,248,0.88),_rgba(238,240,241,0.96)_24%,_rgba(223,228,230,0.88)_100%)]" />
+        <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(109,125,133,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(109,125,133,0.07)_1px,transparent_1px)] [background-size:32px_32px]" />
+        <div className="absolute inset-x-0 top-24 mx-auto h-72 max-w-5xl rounded-full bg-white/20 blur-3xl" />
 
-            <div className="flex flex-col gap-12">
-              {releases?.map((entry: ChangelogEntry) => (
+        <div className="relative mx-auto max-w-5xl px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="inline-flex items-center rounded-full border border-mist-300 bg-white/75 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-mist-600 uppercase shadow-[0_10px_30px_-18px_rgba(24,28,30,0.55)] backdrop-blur-sm">
+              {typedLocale === "tr" ? "Urun Guncellemeleri" : "Product Updates"}
+            </span>
+            <h1 className="mt-6 font-display text-4xl font-medium tracking-tight text-balance text-mist-950 sm:text-5xl">
+              {t("title")}
+            </h1>
+            <p className="mt-4 text-lg text-pretty text-mist-600">
+              {t("subtitle")}
+            </p>
+          </div>
+
+          <div className="mt-14 flex flex-col gap-8">
+            {releases?.map((entry: ChangelogEntry, index: number) => {
+              const sections = parseSections(entry.body);
+              const isLatest = index === 0;
+              const releaseDate = formatReleaseDate(entry.publishedAt, typedLocale);
+
+              return (
                 <article
                   key={entry.slug}
                   id={entry.slug}
-                  className="pt-10 border-t border-gray-200 first:pt-0 first:border-0"
+                  className="relative overflow-hidden rounded-[28px] border border-mist-300/80 bg-[linear-gradient(180deg,rgba(247,248,248,0.88),rgba(238,240,241,0.82))] px-6 py-6 shadow-[0_24px_60px_-42px_rgba(24,28,30,0.35)] backdrop-blur-[2px] sm:px-8 sm:py-8"
                 >
-                  {/* Header */}
-                  <div className="flex flex-wrap items-center gap-3 mb-4">
-                    {entry.category && (
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
+
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-mist-500">
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-mist-200 bg-mist-50 text-xs font-semibold uppercase text-mist-700">
+                      v
+                    </span>
+                    {entry.version ? (
+                      <span className="font-mono text-xs text-mist-500">v{entry.version}</span>
+                    ) : null}
+                    {releaseDate ? <time>{releaseDate}</time> : null}
+                    {isLatest ? (
+                      <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">
+                        {typedLocale === "tr" ? "Son Surum" : "Latest"}
+                      </span>
+                    ) : null}
+                    {entry.category ? (
                       <span
-                        className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${categoryColors[entry.category] || categoryColors.feature}`}
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] ${categoryColors[entry.category] || categoryColors.feature}`}
                       >
-                        {categoryLabels[locale]?.[entry.category] ||
-                          entry.category}
+                        {categoryLabels[typedLocale][entry.category] || entry.category}
                       </span>
-                    )}
-                    {entry.publishedAt && (
-                      <time className="text-sm text-gray-500">
-                        {new Date(entry.publishedAt).toLocaleDateString(
-                          locale === "tr" ? "tr-TR" : "en-US",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          }
-                        )}
-                      </time>
-                    )}
-                    {entry.version && (
-                      <span className="text-xs font-mono text-gray-400">
-                        v{entry.version}
-                      </span>
-                    )}
+                    ) : null}
                   </div>
 
-                  {/* Title */}
-                  <h2 className="font-display text-2xl font-medium text-gray-900 mb-3">
-                    {entry.title}
-                  </h2>
+                  <div className="mt-5 max-w-3xl">
+                    <h2 className="font-display text-3xl font-medium tracking-tight text-mist-950 sm:text-[2rem]">
+                      {entry.title}
+                    </h2>
+                    {entry.summary ? (
+                      <p className="mt-3 text-lg leading-8 text-mist-600">
+                        {entry.summary}
+                      </p>
+                    ) : null}
+                  </div>
 
-                  {/* Summary */}
-                  {entry.summary ? (
-                    <p className="text-base text-gray-600 mb-4">{entry.summary}</p>
+                  {sections.length > 0 ? (
+                    <div className="mt-8 space-y-7">
+                      {sections.map((section, sectionIndex) => (
+                        <section
+                          key={`${entry.slug}-${section.title || "section"}-${sectionIndex}`}
+                          className="border-l-2 border-mist-300/80 pl-5 sm:pl-6"
+                        >
+                          {section.title ? (
+                            <h3 className="text-2xl font-semibold tracking-tight text-mist-950">
+                              {section.title}
+                            </h3>
+                          ) : null}
+
+                          {section.paragraphs.length > 0 ? (
+                            <div className={section.title ? "mt-3 space-y-2.5" : "space-y-2.5"}>
+                              {section.paragraphs.map((paragraph, paragraphIndex) => (
+                                <p
+                                  key={`${entry.slug}-paragraph-${sectionIndex}-${paragraphIndex}`}
+                                  className="text-[15px] leading-7 text-mist-600"
+                                >
+                                  {renderInline(paragraph)}
+                                </p>
+                              ))}
+                            </div>
+                          ) : null}
+
+                          {section.items.length > 0 ? (
+                            <ul className={section.title || section.paragraphs.length > 0 ? "mt-4 space-y-3.5" : "space-y-3.5"}>
+                              {section.items.map((item, itemIndex) => (
+                                <li
+                                  key={`${entry.slug}-item-${sectionIndex}-${itemIndex}`}
+                                  className="flex gap-3 text-mist-700"
+                                >
+                                  <span className="mt-[0.7rem] h-1.5 w-1.5 shrink-0 rounded-full bg-mist-400" />
+                                  <div className="min-w-0 flex-1 leading-8">
+                                    <div className="inline-flex flex-wrap items-center gap-2">
+                                      {item.badge ? (
+                                        <span
+                                          className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] ${statusClasses[item.badge]}`}
+                                        >
+                                          {statusLabels[typedLocale][item.badge]}
+                                        </span>
+                                      ) : null}
+                                      {item.label ? (
+                                        <span className="text-lg font-semibold text-mist-950">
+                                          {renderInline(item.label)}
+                                        </span>
+                                      ) : null}
+                                      <span className="text-base text-mist-600">
+                                        {item.label ? ": " : ""}
+                                        {renderInline(item.description)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : null}
+                        </section>
+                      ))}
+                    </div>
                   ) : null}
-
-                  {/* Full Content — content is from our own CMS (controlled source) */}
-                  {entry.body && (
-                    <div
-                      className="prose prose-sm prose-gray max-w-none"
-                      dangerouslySetInnerHTML={{ __html: renderContent(entry.body) }}
-                    />
-                  )}
                 </article>
-              ))}
+              );
+            })}
 
-              {(!releases || releases.length === 0) && (
-                <div className="text-center py-12 text-gray-500">
-                  {locale === "tr"
-                    ? "Henuz changelog yok."
-                    : "No changelog entries yet."}
-                </div>
-              )}
-            </div>
+            {(!releases || releases.length === 0) && (
+              <div className="rounded-[28px] border border-mist-200 bg-white px-8 py-12 text-center text-mist-500 shadow-[0_24px_80px_-40px_rgba(24,28,30,0.42)]">
+                {typedLocale === "tr"
+                  ? "Henuz changelog girdisi yok."
+                  : "No changelog entries yet."}
+              </div>
+            )}
           </div>
         </div>
       </main>

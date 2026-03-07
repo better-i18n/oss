@@ -9,8 +9,24 @@ import {
 } from "~/components/Storefront";
 import { msg } from "~/lib/messages";
 
-export const meta: MetaFunction = () => {
-  return [{ title: "Better Store | Localized Hydrogen Demo" }];
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const title = msg(data?.messages?.common, "meta_title", "Better Store | Localized Hydrogen Demo");
+  const description = msg(
+    data?.messages?.common,
+    "meta_description",
+    "Localized storefronts that feel native in every market. Powered by Better I18N and Shopify Hydrogen.",
+  );
+  const ogImage = `https://og.better-i18n.com/og/shopify?title=${encodeURIComponent(title)}`;
+
+  return [
+    { title },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:image", content: ogImage },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:image", content: ogImage },
+  ];
 };
 
 export async function loader({ context }: LoaderFunctionArgs) {
