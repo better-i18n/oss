@@ -53,12 +53,14 @@ interface ProductCardProps {
       minVariantPrice: { amount: string; currencyCode: string };
     };
   };
+  messages?: { from?: string; localized_badge?: string };
   className?: string;
 }
 
 export function ProductCard({
   locale,
   product,
+  messages: cardMessages,
   className,
 }: ProductCardProps) {
   const price = product.priceRange.minVariantPrice;
@@ -87,7 +89,7 @@ export function ProductCard({
         )}
 
         <div className="absolute left-4 top-4 rounded-full border border-white/80 bg-white/88 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-600 backdrop-blur">
-          Localized
+          {cardMessages?.localized_badge ?? "Localized"}
         </div>
       </div>
 
@@ -96,15 +98,12 @@ export function ProductCard({
           <h3 className="text-lg font-semibold tracking-[-0.03em] text-slate-950">
             {product.title}
           </h3>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Market-ready merchandising with locale-aware copy and pricing.
-          </p>
         </div>
 
         <div className="mt-5 flex items-end justify-between gap-3 border-t border-black/6 pt-4">
           <div>
             <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500">
-              From
+              {cardMessages?.from ?? "From"}
             </p>
             <p className="mt-2 text-lg font-semibold tracking-[-0.03em] text-slate-950">
               {formatMoney(price.amount, price.currencyCode, locale)}
@@ -141,12 +140,14 @@ interface CollectionCardProps {
     handle: string;
     image: { url: string; altText: string | null } | null;
   };
+  messages?: { badge?: string };
   className?: string;
 }
 
 export function CollectionCard({
   locale,
   collection,
+  messages: cardMessages,
   className,
 }: CollectionCardProps) {
   return (
@@ -175,7 +176,7 @@ export function CollectionCard({
       <div className="relative flex min-h-[18rem] flex-col justify-between">
         <div className="flex items-start justify-between gap-4">
           <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-white/78 backdrop-blur">
-            Collection
+            {cardMessages?.badge ?? "Collection"}
           </span>
           <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/16 bg-white/8 backdrop-blur">
             <svg
@@ -199,10 +200,6 @@ export function CollectionCard({
           <h3 className="max-w-xs text-2xl font-semibold tracking-[-0.04em] text-white sm:text-[2rem]">
             {collection.title}
           </h3>
-          <p className="mt-3 max-w-sm text-sm leading-6 text-white/72">
-            Clean merchandising blocks for curated drops, seasonal edits, and
-            market-specific campaigns.
-          </p>
         </div>
       </div>
     </LocaleLink>

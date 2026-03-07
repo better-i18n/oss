@@ -21,11 +21,25 @@ export default async function handleRequest(
       "better-i18n.com",
       "s3.better-i18n.com",
       "cdn.better-i18n.com",
+      "cdn.shopify.com",
+      "*.shopifycdn.com",
       "data:",
     ],
     connectSrc: [
       "'self'",
       "cdn.better-i18n.com",
+      "https://api.github.com",
+    ],
+    styleSrc: [
+      "'self'",
+      "'unsafe-inline'",
+      "https://cdn.shopify.com",
+      "https://fonts.googleapis.com",
+      "http://localhost:*",
+    ],
+    fontSrc: [
+      "'self'",
+      "https://fonts.gstatic.com",
     ],
   });
 

@@ -19,13 +19,19 @@ export default {
   ): Promise<Response> {
     const cache = await caches.open("hydrogen");
 
+    // Canonical redirect: /en/... → /... (English is the default locale, no prefix)
+    const url = new URL(request.url);
+    if (/^\/en(\/|$)/.test(url.pathname)) {
+      url.pathname = url.pathname.slice(3) || "/";
+      return Response.redirect(url.toString(), 301);
+    }
+
     // 1. Detect locale from URL path (/tr, /es, /fr, /de)
     const { locale, i18n: shopifyI18n } = getLocaleFromRequest(request);
 
     // 2. Load Better i18n translations from CDN
-    const [messages, locales, languages] = await Promise.all([
+    const [messages, languages] = await Promise.all([
       i18n.getMessages(locale),
-      i18n.getLocales(),
       i18n.getLanguages(),
     ]);
 
@@ -49,7 +55,6 @@ export default {
           env,
           locale,
           messages,
-          locales,
           languages,
           cart: {} as never, // Cart not implemented in demo
         };

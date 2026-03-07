@@ -7,6 +7,7 @@ interface LayoutProps {
   locale: string;
   messages: Messages;
   languages: LanguageOption[];
+  githubStars: number;
   children: React.ReactNode;
 }
 
@@ -14,11 +15,13 @@ export function Layout({
   locale,
   messages,
   languages,
+  githubStars,
   children,
 }: LayoutProps) {
   const common = messages.common;
   const footer = messages.footer;
-  const storeName = msg(common, "store_name", "Better Store");
+  const nav = messages.nav;
+  const storeName = msg(common, "store_name");
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -44,7 +47,7 @@ export function Layout({
                   {storeName}
                 </span>
                 <span className="block truncate text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-slate-500">
-                  Hydrogen Storefront
+                  {msg(common, "storefront_subtitle")}
                 </span>
               </span>
             </LocaleLink>
@@ -55,33 +58,42 @@ export function Layout({
                 locale={locale}
                 className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-950"
               >
-                Featured
+                {msg(nav, "featured")}
               </LocaleLink>
               <LocaleLink
                 to="/#collections"
                 locale={locale}
                 className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-950"
               >
-                Collections
+                {msg(nav, "collections")}
               </LocaleLink>
-              <LocaleLink
-                to="/collections/all"
-                locale={locale}
-                className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-950"
+              <a
+                href="https://github.com/better-i18n/oss"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-slate-950"
               >
-                {msg(common, "shop_now", "Shop")}
-              </LocaleLink>
+                {msg(nav, "github_star")}
+                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600 transition-colors group-hover:bg-slate-200 group-hover:text-slate-950">
+                  {githubStars >= 1000
+                    ? `${(githubStars / 1000).toFixed(1)}k`
+                    : String(githubStars)}
+                </span>
+                <svg
+                  className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-60"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                </svg>
+              </a>
             </nav>
 
             <div className="flex items-center gap-2 sm:gap-3">
-              <LocaleSwitcher locale={locale} languages={languages} />
-              <LocaleLink
-                to="/collections/all"
-                locale={locale}
-                className="hidden items-center rounded-full bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 sm:inline-flex"
-              >
-                Browse catalog
-              </LocaleLink>
+              <LocaleSwitcher locale={locale} languages={languages} label={msg(nav, "available_languages")} />
             </div>
           </div>
         </div>
@@ -95,23 +107,19 @@ export function Layout({
             <div className="grid gap-10 px-6 py-8 sm:px-8 sm:py-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
               <div>
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-500">
-                  Built for docs
+                  {msg(footer, "built_for_docs")}
                 </p>
                 <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-3xl">
-                  A premium Hydrogen example for localized commerce flows.
+                  {msg(footer, "tagline")}
                 </h3>
                 <p className="mt-4 max-w-lg text-sm leading-7 text-slate-600 sm:text-base">
-                  {msg(
-                    common,
-                    "hero_subtitle",
-                    "Discover our curated collection of products",
-                  )}
+                  {msg(common, "hero_subtitle")}
                 </p>
               </div>
 
               <div>
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-500">
-                  Explore
+                  {msg(footer, "explore")}
                 </p>
                 <div className="mt-4 flex flex-col gap-3 text-sm text-slate-700">
                   <LocaleLink
@@ -119,28 +127,28 @@ export function Layout({
                     locale={locale}
                     className="transition-colors hover:text-slate-950"
                   >
-                    Home
+                    {msg(footer, "home")}
                   </LocaleLink>
                   <LocaleLink
                     to="/collections/all"
                     locale={locale}
                     className="transition-colors hover:text-slate-950"
                   >
-                    Catalog
+                    {msg(footer, "catalog")}
                   </LocaleLink>
                   <LocaleLink
                     to="/#collections"
                     locale={locale}
                     className="transition-colors hover:text-slate-950"
                   >
-                    Featured collections
+                    {msg(footer, "featured_collections_link")}
                   </LocaleLink>
                 </div>
               </div>
 
               <div>
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-500">
-                  Stack
+                  {msg(footer, "stack")}
                 </p>
                 <div className="mt-4 flex flex-col gap-3 text-sm text-slate-700">
                   <a
@@ -160,8 +168,7 @@ export function Layout({
                     Shopify Hydrogen
                   </a>
                   <span className="text-slate-500">
-                    {msg(footer, "built_with", "Built with")} modern storefront
-                    primitives
+                    {msg(footer, "built_with")}
                   </span>
                 </div>
               </div>
@@ -170,9 +177,9 @@ export function Layout({
             <div className="soft-divider flex flex-col gap-3 px-6 py-4 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
               <p>
                 &copy; {new Date().getFullYear()} {storeName}.{" "}
-                {msg(footer, "all_rights_reserved", "All rights reserved.")}
+                {msg(footer, "all_rights_reserved")}
               </p>
-              <p>Path-based locales, clean merchandising, docs-ready UI.</p>
+              <p>{msg(footer, "meta_tagline")}</p>
             </div>
           </div>
         </div>

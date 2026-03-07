@@ -37,6 +37,9 @@ export default function Homepage() {
   const { locale, messages, collections, products } =
     useLoaderData<typeof loader>();
   const common = messages.common;
+  const home = messages.home;
+  const productMessages = messages.products;
+  const collectionMessages = messages.collection;
 
   return (
     <div className="space-y-20 sm:space-y-24">
@@ -49,53 +52,40 @@ export default function Homepage() {
             </div>
 
             <h1 className="mt-8 max-w-3xl text-5xl font-semibold tracking-[-0.065em] text-slate-950 sm:text-6xl lg:text-7xl">
-              Localized storefronts that feel
-              <span className="font-serif italic text-slate-500"> native </span>
-              in every market.
+              {msg(home, "hero_start")}
+              <span className="font-serif italic text-slate-500"> {msg(home, "hero_native")} </span>
+              {msg(home, "hero_end")}
             </h1>
 
             <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
-              {msg(
-                common,
-                "hero_subtitle",
-                "Discover our curated collection of products",
-              )} This example focuses on the storefront layer: premium
-              merchandising, path-based locale switching, and docs-ready UI
-              patterns your team can lift directly into a Hydrogen build.
+              {msg(common, "hero_subtitle")}
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <LocaleLink
-                to="/collections/all"
+                to="/#featured"
                 locale={locale}
                 className="button-primary"
               >
-                {msg(common, "shop_now", "Shop Now")}
-              </LocaleLink>
-              <LocaleLink
-                to="/#featured"
-                locale={locale}
-                className="button-secondary"
-              >
-                Explore featured drops
+                {msg(home, "explore_featured")}
               </LocaleLink>
             </div>
 
             <div className="mt-10 grid gap-3 sm:grid-cols-3">
               <InfoPanel
-                value="05 markets"
-                title="Path-based locales"
-                description="Switch languages without breaking the storefront flow or product URLs."
+                value={msg(home, "hero_panel_markets_value")}
+                title={msg(home, "hero_panel_markets_title")}
+                description={msg(home, "hero_panel_markets_desc")}
               />
               <InfoPanel
-                value="CDN-backed"
-                title="Flexible message delivery"
-                description="A clean shell for content that updates independently from your theme code."
+                value={msg(home, "hero_panel_cdn_value")}
+                title={msg(home, "hero_panel_cdn_title")}
+                description={msg(home, "hero_panel_cdn_desc")}
               />
               <InfoPanel
-                value="Docs-ready"
-                title="Reference-quality UI"
-                description="Minimal, polished commerce screens that feel like a modern product example."
+                value={msg(home, "hero_panel_docs_value")}
+                title={msg(home, "hero_panel_docs_title")}
+                description={msg(home, "hero_panel_docs_desc")}
               />
             </div>
           </div>
@@ -106,14 +96,14 @@ export default function Homepage() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-white/55">
-                    Storefront preview
+                    {msg(home, "preview_eyebrow")}
                   </p>
                   <h2 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white sm:text-3xl">
-                    A cleaner way to present localized commerce.
+                    {msg(home, "preview_title")}
                   </h2>
                 </div>
                 <div className="rounded-full border border-white/12 bg-white/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white/72">
-                  Live example
+                  {msg(home, "preview_live_badge")}
                 </div>
               </div>
 
@@ -121,29 +111,33 @@ export default function Homepage() {
                 <div className="rounded-[28px] border border-white/10 bg-white/6 p-5 backdrop-blur">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <p className="text-sm text-white/55">Current experience</p>
+                      <p className="text-sm text-white/55">{msg(home, "preview_current_label")}</p>
                       <p className="mt-2 text-xl font-semibold tracking-[-0.04em] text-white">
-                        Market-aware merchandising
+                        {msg(home, "preview_current_title")}
                       </p>
                     </div>
                     <div className="rounded-full border border-emerald-400/22 bg-emerald-400/12 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-emerald-200">
-                      synced
+                      {msg(home, "preview_synced_badge")}
                     </div>
                   </div>
 
                   <div className="mt-5 space-y-3">
                     {[
-                      ["en", "US storefront copy", "98% coverage"],
-                      ["tr", "Turkish promo blocks", "94% coverage"],
-                      ["de", "Localized PDP labels", "91% coverage"],
-                    ].map(([market, label, value]) => (
+                      ["en", "us", msg(home, "preview_market_en_label"), "98%"],
+                      ["tr", "tr", msg(home, "preview_market_tr_label"), "94%"],
+                      ["de", "de", msg(home, "preview_market_de_label"), "91%"],
+                    ].map(([market, flagCode, label, value]) => (
                       <div
                         key={market}
                         className="flex items-center justify-between gap-4 rounded-2xl border border-white/8 bg-black/10 px-4 py-3"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/8 text-xs font-semibold uppercase tracking-[0.22em] text-white/72">
-                            {market}
+                          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/8">
+                            <img
+                              src={`https://s3.better-i18n.com/flags/${flagCode}/w80.png`}
+                              alt={market}
+                              className="h-4 w-6 rounded-[4px] object-cover shadow-[0_2px_8px_-4px_rgba(0,0,0,0.5)]"
+                            />
                           </span>
                           <span className="text-sm text-white/72">{label}</span>
                         </div>
@@ -158,26 +152,24 @@ export default function Homepage() {
                 <div className="grid gap-4 sm:grid-cols-[0.9fr_1.1fr]">
                   <div className="rounded-[28px] border border-white/10 bg-white/6 p-5 backdrop-blur">
                     <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-white/55">
-                      Stack
+                      {msg(home, "preview_stack_heading")}
                     </p>
                     <ul className="mt-4 list-none space-y-3 text-sm text-white/72">
-                      <li>Hydrogen data loaders</li>
-                      <li>Better i18n message layer</li>
-                      <li>Reusable Tailwind primitives</li>
+                      <li>{msg(home, "preview_stack_item_1")}</li>
+                      <li>{msg(home, "preview_stack_item_2")}</li>
+                      <li>{msg(home, "preview_stack_item_3")}</li>
                     </ul>
                   </div>
 
                   <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] p-5">
                     <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-white/55">
-                      Design notes
+                      {msg(home, "preview_design_heading")}
                     </p>
                     <p className="mt-4 text-lg font-semibold tracking-[-0.04em] text-white">
-                      Editorial product framing with tight spacing and premium
-                      contrast.
+                      {msg(home, "preview_design_title")}
                     </p>
                     <p className="mt-3 text-sm leading-7 text-white/72">
-                      The goal is not theme chrome. It is a credible example app
-                      you can drop into docs without apologizing for the design.
+                      {msg(home, "preview_design_desc")}
                     </p>
                   </div>
                 </div>
@@ -190,16 +182,16 @@ export default function Homepage() {
       {products.length > 0 ? (
         <section id="featured" className="page-frame">
           <SectionHeading
-            eyebrow="Featured products"
-            title={msg(common, "featured_products", "Featured Products")}
-            description="High-clarity product cards with less noise, sharper hierarchy, and a more premium merchandising rhythm."
+            eyebrow={msg(home, "featured_eyebrow")}
+            title={msg(common, "featured_products")}
+            description={msg(home, "featured_products_desc")}
             action={
               <LocaleLink
                 to="/collections/all"
                 locale={locale}
                 className="button-secondary"
               >
-                {msg(common, "view_all", "View All")}
+                {msg(common, "view_all")}
               </LocaleLink>
             }
           />
@@ -210,6 +202,10 @@ export default function Homepage() {
                 key={product.id}
                 locale={locale}
                 product={product}
+                messages={{
+                  from: msg(productMessages, "from"),
+                  localized_badge: msg(productMessages, "localized_badge"),
+                }}
               />
             ))}
           </div>
@@ -218,9 +214,9 @@ export default function Homepage() {
 
       <section id="collections" className="page-frame">
         <SectionHeading
-          eyebrow="Curated edits"
-          title={msg(common, "featured_collections", "Featured Collections")}
-          description="Collection blocks double as landing modules for seasonal drops, regional promotions, and curated campaigns."
+          eyebrow={msg(home, "collections_eyebrow")}
+          title={msg(common, "featured_collections")}
+          description={msg(home, "collections_desc")}
         />
 
         <div className="mt-8 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
@@ -229,6 +225,7 @@ export default function Homepage() {
               locale={locale}
               collection={collections[0]}
               className="min-h-[26rem]"
+              messages={{ badge: msg(collectionMessages, "badge") }}
             />
           ) : null}
 
@@ -239,6 +236,7 @@ export default function Homepage() {
                 locale={locale}
                 collection={collection}
                 className="min-h-[12.5rem]"
+                messages={{ badge: msg(collectionMessages, "badge") }}
               />
             ))}
           </div>
@@ -248,19 +246,19 @@ export default function Homepage() {
       <section className="page-frame">
         <div className="grid gap-5 lg:grid-cols-3">
           <InfoPanel
-            value="Merchandising"
-            title="Cleaner content density"
-            description="Cards, buttons, and panels are stripped back so product imagery and copy have room to carry the page."
+            value={msg(home, "feature_merchandising_value")}
+            title={msg(home, "feature_merchandising_title")}
+            description={msg(home, "feature_merchandising_desc")}
           />
           <InfoPanel
-            value="Localization"
-            title="Visible i18n touchpoints"
-            description="Language switching, translated labels, and locale-driven routes are present without turning the UI into a demo toy."
+            value={msg(home, "feature_localization_value")}
+            title={msg(home, "feature_localization_title")}
+            description={msg(home, "feature_localization_desc")}
           />
           <InfoPanel
-            value="Adoption"
-            title="Easy to document"
-            description="This is opinionated enough to feel polished, but simple enough that teams can reuse the patterns without rewrites."
+            value={msg(home, "feature_adoption_value")}
+            title={msg(home, "feature_adoption_title")}
+            description={msg(home, "feature_adoption_desc")}
           />
         </div>
       </section>

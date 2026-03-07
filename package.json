@@ -22,8 +22,11 @@
     "version-packages": "bunx changeset version && bun update",
     "docs:dev": "bun --filter docs dev",
     "docs:build": "bun --filter docs build",
+    "docs:deploy": "bun --filter docs deploy",
     "landing:dev": "bun --filter tanstack-landing dev",
     "landing:build": "bun --filter tanstack-landing build",
+    "landing:deploy": "bun --filter tanstack-landing deploy",
+    "hydrogen-demo:deploy": "bun --filter hydrogen-demo deploy",
     "example:dev": "bun --filter hono-example dev",
     "link-all": "for dir in packages/*; do (cd \"$dir\" && bun link); done",
     "prepare": "husky"

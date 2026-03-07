@@ -12,6 +12,7 @@ const LOCALE_EMOJI: Record<string, string> = {
 interface LocaleSwitcherProps {
   locale: string;
   languages: LanguageOption[];
+  label?: string;
 }
 
 function escapeRegExp(value: string) {
@@ -44,16 +45,14 @@ function FlagIcon({
   );
 }
 
-export function LocaleSwitcher({ locale, languages }: LocaleSwitcherProps) {
+export function LocaleSwitcher({ locale, languages, label }: LocaleSwitcherProps) {
   const location = useLocation();
   const availableLocales = languages.map((language) => language.code);
 
   function getLocaleHref(newLocale: string) {
     const currentPath = location.pathname;
-    const localePattern = availableLocales
-      .filter((code) => code !== "en")
-      .map(escapeRegExp)
-      .join("|");
+    const allLocales = new Set([...availableLocales, locale, "en"]);
+    const localePattern = [...allLocales].map(escapeRegExp).join("|");
     const pathWithoutLocale = localePattern
       ? currentPath.replace(new RegExp(`^/(${localePattern})(?=/|$)`), "") || "/"
       : currentPath || "/";
@@ -86,9 +85,6 @@ export function LocaleSwitcher({ locale, languages }: LocaleSwitcherProps) {
           <span className="block truncate text-sm font-semibold text-slate-800">
             {current.nativeName || current.name || current.code}
           </span>
-          <span className="block truncate text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-slate-500">
-            {current.name || current.code}
-          </span>
         </span>
         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition-transform group-open:rotate-180">
           <svg
@@ -110,7 +106,7 @@ export function LocaleSwitcher({ locale, languages }: LocaleSwitcherProps) {
       <div className="absolute right-0 top-[calc(100%+0.7rem)] z-50 w-[18rem] overflow-hidden rounded-[28px] border border-black/8 bg-white/95 p-2 shadow-[0_34px_90px_-36px_rgba(15,23,42,0.42)] backdrop-blur-xl">
         <div className="px-3 pb-2 pt-1">
           <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500">
-            Available languages
+            {label || "Available languages"}
           </p>
         </div>
 
@@ -143,13 +139,6 @@ export function LocaleSwitcher({ locale, languages }: LocaleSwitcherProps) {
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-semibold">
                     {language.nativeName || language.name || language.code}
-                  </span>
-                  <span
-                    className={`block truncate text-xs ${
-                      isActive ? "text-white/65" : "text-slate-500"
-                    }`}
-                  >
-                    {language.name || language.code}
                   </span>
                 </span>
 
