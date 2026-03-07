@@ -1,0 +1,277 @@
+---
+title: Shopify Hydrogen
+description: Integrate Better i18n with Shopify Hydrogen for multilingual storefronts
+---
+
+[Shopify Hydrogen](https://hydrogen.shopify.dev) is a React-based framework for building custom Shopify storefronts. `@better-i18n/remix` provides first-class support for Hydrogen with Storefront API locale bridging.
+
+## How It Works
+
+Better i18n handles your **UI translations** (button labels, headings, static text), while Shopify's Storefront API handles **product content** (titles, descriptions, prices). The locale detected from the URL drives both systems:
+
+```
+URL: /tr/products/hat
+  └─> Better i18n: loads Turkish UI translations from CDN
+  └─> Storefront API: queries product data in Turkish (language: TR)
+```
+
+## Setup
+
+<Steps>
+
+<Step>
+### Install dependencies
+
+<Tabs items={['npm', 'bun', 'pnpm']}>
+  <Tab value="npm">
+  ```bash
+  npm install @better-i18n/remix
+  ```
+  </Tab>
+  <Tab value="bun">
+  ```bash
+  bun add @better-i18n/remix
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add @better-i18n/remix
+  ```
+  </Tab>
+</Tabs>
+</Step>
+
+<Step>
+### Create the i18n singleton
+
+```ts title="app/i18n.server.ts"
+import { createRemixI18n } from "@better-i18n/remix";
+
+export const i18n = createRemixI18n({
+  project: "my-company/hydrogen-store", // [!code highlight]
+  defaultLocale: "en", // [!code highlight]
+});
+```
+</Step>
+
+<Step>
+### Define locale mapping
+
+Map Better i18n locale codes to Shopify's `LanguageCode` and `CountryCode` enums:
+
+```ts title="app/lib/i18n.ts"
+import type {
+  LanguageCode,
+  CountryCode,
+} from "@shopify/hydrogen/storefront-api-types";
+
+export interface I18nLocale {
+  language: LanguageCode;
+  country: CountryCode;
+  pathPrefix: string;
+}
+
+export const SUPPORTED_LOCALES: Record<string, I18nLocale> = {
+  en: { language: "EN", country: "US", pathPrefix: "" },
+  tr: { language: "TR", country: "TR", pathPrefix: "/tr" },
+  es: { language: "ES", country: "ES", pathPrefix: "/es" },
+  fr: { language: "FR", country: "FR", pathPrefix: "/fr" },
+  de: { language: "DE", country: "DE", pathPrefix: "/de" },
+};
+
+export const DEFAULT_LOCALE = SUPPORTED_LOCALES.en;
+
+/**
+ * Extract locale from URL path prefix.
+ *
+ * /tr/products/hat → "tr"
+ * /products/hat    → "en" (default)
+ */
+export function getLocaleFromRequest(request: Request): {
+  locale: string;
+  i18n: I18nLocale;
+} {
+  const url = new URL(request.url);
+  const firstSegment = url.pathname.split("/")[1]?.toLowerCase();
+
+  if (
+    firstSegment &&
+    firstSegment in SUPPORTED_LOCALES &&
+    firstSegment !== "en"
+  ) {
+    return {
+      locale: firstSegment,
+      i18n: SUPPORTED_LOCALES[firstSegment],
+    };
+  }
+
+  return { locale: "en", i18n: DEFAULT_LOCALE };
+}
+```
+
+<Callout type="info">
+Better i18n uses lowercase locale codes (`"en"`, `"tr"`), while Shopify uses uppercase enums (`"EN"`, `"TR"`). The `SUPPORTED_LOCALES` map bridges this difference.
+</Callout>
+</Step>
+
+<Step>
+### Configure server.ts
+
+Wire everything together in your Hydrogen server entry:
+
+```ts title="server.ts"
+import { createStorefrontClient } from "@shopify/hydrogen";
+import { createRequestHandler } from "@shopify/remix-oxygen";
+import { getLocaleFromRequest } from "~/lib/i18n";
+import { i18n } from "~/i18n.server";
+
+export default {
+  async fetch(
+    request: Request,
+    env: Env,
+    executionContext: ExecutionContext,
+  ): Promise<Response> {
+    const cache = await caches.open("hydrogen");
+
+    // 1. Detect locale from URL path
+    const { locale, i18n: shopifyI18n } = getLocaleFromRequest(request); // [!code highlight]
+
+    // 2. Load Better i18n translations from CDN
+    const [messages, locales] = await Promise.all([ // [!code highlight]
+      i18n.getMessages(locale), // [!code highlight]
+      i18n.getLocales(), // [!code highlight]
+    ]); // [!code highlight]
+
+    // 3. Create Shopify Storefront client with locale
+    const { storefront } = createStorefrontClient({
+      cache,
+      waitUntil: (p: Promise<unknown>) => executionContext.waitUntil(p),
+      publicStorefrontToken: env.PUBLIC_STOREFRONT_API_TOKEN,
+      privateStorefrontToken: env.PRIVATE_STOREFRONT_API_TOKEN,
+      storeDomain: env.PUBLIC_STORE_DOMAIN,
+      storefrontApiVersion: env.PUBLIC_STOREFRONT_API_VERSION || "2024-10",
+      i18n: shopifyI18n, // [!code highlight]
+    });
+
+    const handleRequest = createRequestHandler({
+      build: remixBuild,
+      mode: process.env.NODE_ENV,
+      getLoadContext() {
+        return {
+          storefront,
+          env,
+          locale, // [!code highlight]
+          messages, // [!code highlight]
+          locales, // [!code highlight]
+          cart: {} as never,
+        };
+      },
+    });
+
+    return handleRequest(request);
+  },
+};
+```
+</Step>
+
+<Step>
+### Augment AppLoadContext
+
+Add type declarations so `context.locale`, `context.messages`, and `context.locales` are typed in your loaders:
+
+```ts title="env.d.ts"
+import type { Storefront, HydrogenCart } from "@shopify/hydrogen";
+import type { Messages } from "@better-i18n/remix"; // [!code highlight]
+
+declare module "@shopify/remix-oxygen" {
+  interface AppLoadContext {
+    storefront: Storefront;
+    cart: HydrogenCart;
+    env: Env;
+    locale: string; // [!code highlight]
+    messages: Messages; // [!code highlight]
+    locales: string[]; // [!code highlight]
+  }
+}
+```
+</Step>
+
+<Step>
+### Add CSP entry
+
+Hydrogen uses Content Security Policy by default. Add `cdn.better-i18n.com` to `connectSrc`:
+
+```ts title="entry.server.tsx"
+const { nonce, header, NonceProvider } = createContentSecurityPolicy({
+  shop: {
+    checkoutDomain: context.env.PUBLIC_STORE_DOMAIN,
+    storeDomain: context.env.PUBLIC_STORE_DOMAIN,
+  },
+  connectSrc: [
+    "'self'",
+    "cdn.better-i18n.com", // [!code highlight]
+  ],
+});
+```
+</Step>
+
+</Steps>
+
+## Using Translations in Routes
+
+Access translations from context in any Hydrogen route:
+
+```tsx title="app/routes/($locale)._index.tsx"
+import { useLoaderData } from "react-router";
+import type { LoaderFunctionArgs } from "@shopify/remix-oxygen";
+import { msg } from "~/lib/messages";
+
+export async function loader({ context }: LoaderFunctionArgs) {
+  const { storefront, locale, messages } = context;
+
+  // Storefront API returns content in the locale set via i18n
+  const { products } = await storefront.query(PRODUCTS_QUERY);
+
+  return { locale, messages, products: products.nodes };
+}
+
+export default function Homepage() {
+  const { locale, messages, products } = useLoaderData<typeof loader>();
+  const common = messages.common;
+
+  return (
+    <div>
+      <h1>{msg(common, "welcome", "Welcome to our store")}</h1>
+
+      {products.map((product) => (
+        <div key={product.id}>
+          {/* Product title comes from Storefront API (already localized) */}
+          <h2>{product.title}</h2>
+
+          {/* UI labels come from Better i18n */}
+          <span>{msg(common, "view_details", "View Details")}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Storefront API Language Support
+
+When you pass the `i18n` option to `createStorefrontClient`, Shopify automatically adds the `@inContext` directive to GraphQL queries. Product titles, descriptions, and collection names are returned in the requested language — no extra work needed.
+
+```ts
+// The Storefront client handles localization automatically:
+const { products } = await storefront.query(PRODUCTS_QUERY);
+// When locale is "tr", product.title returns Turkish content
+// (if available in Shopify admin)
+```
+
+<Callout type="warn">
+Product content localization depends on translations being configured in your **Shopify admin** (Settings > Languages). Better i18n handles your custom UI translations; Shopify handles product data.
+</Callout>
+
+## Full Example
+
+For a complete working implementation, see the [hydrogen-demo](https://github.com/nicholasgriffintn/better-i18n-oss/tree/main/apps/hydrogen-demo) in the Better i18n repository.

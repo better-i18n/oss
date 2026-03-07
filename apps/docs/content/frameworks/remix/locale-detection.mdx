@@ -1,0 +1,131 @@
+---
+title: Locale Detection
+description: Detect user locale from URLs, headers, and custom strategies
+---
+
+`@better-i18n/remix` provides built-in utilities for detecting the user's preferred locale. You can combine multiple strategies depending on your needs.
+
+## URL Path Detection
+
+The most common pattern for Remix apps is detecting the locale from the URL path prefix:
+
+```
+/products/hat       → "en" (default, no prefix)
+/tr/products/hat    → "tr"
+/fr/products/hat    → "fr"
+```
+
+```ts title="app/lib/i18n.ts"
+export function getLocaleFromURL(request: Request): string | null {
+  const url = new URL(request.url);
+  const firstSegment = url.pathname.split("/")[1]?.toLowerCase();
+
+  // Check if it matches a known locale
+  const knownLocales = ["en", "tr", "es", "fr", "de"];
+  if (firstSegment && knownLocales.includes(firstSegment) && firstSegment !== "en") {
+    return firstSegment;
+  }
+
+  return null; // Use default
+}
+```
+
+<Callout type="info">
+For a dynamic approach, use `i18n.getLocales()` to fetch available locales from the CDN manifest instead of hardcoding them.
+</Callout>
+
+## Accept-Language Header Detection
+
+The SDK exports `parseAcceptLanguage()` and `matchLocale()` for detecting locale from the browser's `Accept-Language` header. The built-in `detectLocale()` method combines both:
+
+```ts
+import { i18n } from "~/i18n.server";
+
+// Automatic detection from Accept-Language header
+const locale = await i18n.detectLocale(request);
+// Parses "tr-TR,tr;q=0.9,en-US;q=0.8" → "tr"
+```
+
+### How It Works
+
+1. **Parse** the `Accept-Language` header into a priority-sorted list
+2. **Match** against available locales from the CDN manifest
+3. **Fallback** to `defaultLocale` if no match found
+
+### Using Utilities Directly
+
+You can also use the parsing and matching utilities independently:
+
+```ts
+import { parseAcceptLanguage, matchLocale } from "@better-i18n/remix";
+
+// Parse header into priority-sorted language list
+const languages = parseAcceptLanguage("tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7");
+// → ["tr-TR", "tr", "en-US", "en"]
+
+// Match against your available locales
+const locale = matchLocale(languages, ["en", "tr", "es", "fr"]);
+// → "tr"
+```
+
+### Matching Strategy
+
+`matchLocale()` tries three strategies in order:
+
+| Priority | Strategy | Example |
+|----------|----------|---------|
+| 1 | Exact match | `"tr-TR"` matches `"tr-TR"` |
+| 2 | Base language | `"tr-TR"` matches `"tr"` (strips region) |
+| 3 | Region expansion | `"tr"` matches `"tr-TR"` (first variant) |
+
+Returns `null` if no match is found.
+
+## Combined Strategy
+
+For production apps, combine URL detection with Accept-Language fallback:
+
+```ts title="server.ts"
+import { i18n } from "~/i18n.server";
+
+export default {
+  async fetch(request: Request): Promise<Response> {
+    // 1. Try URL path first (explicit user choice)
+    const urlLocale = getLocaleFromURL(request);
+
+    // 2. Fall back to Accept-Language header
+    const locale = urlLocale || await i18n.detectLocale(request);
+
+    const [messages, locales] = await Promise.all([
+      i18n.getMessages(locale),
+      i18n.getLocales(),
+    ]);
+
+    // ... pass to loader context
+  },
+};
+```
+
+<Callout type="info">
+URL path takes priority because it represents an **explicit** user choice (they clicked a link or typed the URL), while `Accept-Language` is an **implicit** browser preference.
+</Callout>
+
+## Custom Detection
+
+You can implement any detection strategy by extracting a locale string and passing it to `getMessages()`:
+
+```ts
+// Cookie-based detection
+function getLocaleFromCookie(request: Request): string | null {
+  const cookie = request.headers.get("cookie");
+  const match = cookie?.match(/locale=(\w+)/);
+  return match?.[1] ?? null;
+}
+
+// Subdomain-based detection
+function getLocaleFromSubdomain(request: Request): string | null {
+  const hostname = new URL(request.url).hostname;
+  const subdomain = hostname.split(".")[0];
+  const knownLocales = ["en", "tr", "es", "fr", "de"];
+  return knownLocales.includes(subdomain) ? subdomain : null;
+}
+```

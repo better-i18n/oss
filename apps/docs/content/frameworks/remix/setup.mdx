@@ -1,0 +1,193 @@
+---
+title: Setup
+description: Step-by-step installation and configuration for @better-i18n/remix
+---
+
+Get `@better-i18n/remix` running in your Remix app in 5 steps.
+
+<Steps>
+
+<Step>
+### Install the package
+
+<Tabs items={['npm', 'bun', 'pnpm', 'yarn']}>
+  <Tab value="npm">
+  ```bash
+  npm install @better-i18n/remix
+  ```
+  </Tab>
+  <Tab value="bun">
+  ```bash
+  bun add @better-i18n/remix
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add @better-i18n/remix
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn add @better-i18n/remix
+  ```
+  </Tab>
+</Tabs>
+</Step>
+
+<Step>
+### Create the i18n singleton
+
+Create `app/i18n.server.ts` at module scope. This ensures a single `TtlCache` instance is shared across all requests, avoiding redundant CDN fetches.
+
+```ts title="app/i18n.server.ts"
+import { createRemixI18n } from "@better-i18n/remix";
+
+export const i18n = createRemixI18n({
+  project: "my-company/web-app", // Your project identifier // [!code highlight]
+  defaultLocale: "en", // [!code highlight]
+});
+```
+
+<Callout type="warn">
+**Important:** Always instantiate at module scope (top-level `export const`). Creating a new instance per request defeats caching and causes unnecessary CDN calls.
+</Callout>
+</Step>
+
+<Step>
+### Load translations in your server entry
+
+In your `server.ts` (or `entry.server.ts`), load messages and locales before handling requests:
+
+```ts title="server.ts"
+import { i18n } from "~/i18n.server"; // [!code highlight]
+
+export default {
+  async fetch(request: Request): Promise<Response> {
+    // Detect locale from URL or Accept-Language header
+    const locale = getLocaleFromURL(request) || "en"; // [!code highlight]
+
+    // Load translations and available locales in parallel
+    const [messages, locales] = await Promise.all([ // [!code highlight]
+      i18n.getMessages(locale), // [!code highlight]
+      i18n.getLocales(), // [!code highlight]
+    ]); // [!code highlight]
+
+    const handleRequest = createRequestHandler({
+      build: remixBuild,
+      getLoadContext() {
+        return { locale, messages, locales }; // [!code highlight]
+      },
+    });
+
+    return handleRequest(request);
+  },
+};
+```
+
+<Callout type="info">
+For Shopify Hydrogen, see the dedicated [Hydrogen guide](/frameworks/remix/hydrogen) for the full `server.ts` setup with `createStorefrontClient`.
+</Callout>
+</Step>
+
+<Step>
+### Pass data from root loader
+
+In `root.tsx`, return `locale`, `messages`, and `locales` from the loader and set `<html lang>`:
+
+```tsx title="app/root.tsx"
+import {
+  Links, Meta, Outlet, Scripts,
+  ScrollRestoration, useLoaderData,
+} from "react-router";
+
+export async function loader({ context }: LoaderFunctionArgs) {
+  return {
+    locale: context.locale, // [!code highlight]
+    messages: context.messages, // [!code highlight]
+    locales: context.locales, // [!code highlight]
+  };
+}
+
+export default function App() {
+  const { locale } = useLoaderData<typeof loader>(); // [!code highlight]
+
+  return (
+    <html lang={locale} dir="ltr"> // [!code highlight]
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <Outlet />
+        <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+```
+</Step>
+
+<Step>
+### Create a message helper
+
+Since CDN messages are typed as `Record<string, unknown>`, create a type-safe helper to extract strings:
+
+```ts title="app/lib/messages.ts"
+/**
+ * Type-safe message accessor.
+ * Safely extracts a string value from a namespace, with fallback.
+ */
+export function msg(
+  ns: Record<string, unknown> | undefined,
+  key: string,
+  fallback: string,
+): string {
+  const val = ns?.[key];
+  return typeof val === "string" ? val : fallback;
+}
+```
+
+Usage in components:
+
+```tsx title="app/routes/_index.tsx"
+import { useLoaderData } from "react-router";
+import { msg } from "~/lib/messages";
+
+export default function Home() {
+  const { messages } = useLoaderData<typeof loader>();
+  const common = messages.common; // namespace
+
+  return (
+    <h1>{msg(common, "welcome", "Welcome")}</h1>
+  );
+}
+```
+</Step>
+
+</Steps>
+
+## Content Security Policy
+
+If your app uses CSP, add `cdn.better-i18n.com` to your `connect-src` directive:
+
+<Callout type="warn">
+The SDK fetches translations from `cdn.better-i18n.com` at runtime. Without this CSP entry, requests will be blocked.
+</Callout>
+
+```ts title="entry.server.tsx"
+const { nonce, header, NonceProvider } = createContentSecurityPolicy({
+  connectSrc: [
+    "'self'",
+    "cdn.better-i18n.com", // [!code highlight]
+  ],
+});
+```
+
+## Next Steps
+
+- Set up [locale detection](/frameworks/remix/locale-detection) from headers or URLs
+- Add [locale-prefixed routing](/frameworks/remix/routing) with `LocaleLink`
+- For Hydrogen stores, follow the [Hydrogen guide](/frameworks/remix/hydrogen)

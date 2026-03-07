@@ -1,0 +1,104 @@
+---
+title: Getting Started
+description: CDN-powered i18n for Remix & Shopify Hydrogen
+---
+
+## Overview
+
+`@better-i18n/remix` brings CDN-powered translations to Remix and Shopify Hydrogen apps. Unlike client-side solutions, translations are loaded on the server before rendering — no loading spinners, no layout shift.
+
+The SDK is built on top of `@better-i18n/core` and adds Remix-specific utilities:
+
+- **Server-side data loading** — Translations are fetched in `server.ts` or loaders, not on the client
+- **No provider needed** — Pass messages as loader data, use them directly in components
+- **TtlCache singleton** — A single module-scoped instance shares cache across all requests
+- **Accept-Language detection** — Built-in locale detection from request headers
+
+<Callout type="info">
+**Prerequisite:** Before starting, create a project at [dash.better-i18n.com](https://dash.better-i18n.com) and publish your translations. Your project identifier will be in the format `org/project` (e.g., `acme/web-app`).
+</Callout>
+
+## Features
+
+<Cards>
+  <Card title="CDN Delivery" icon="Globe">
+    Translations served from the edge via Better i18n CDN. Sub-50ms response times globally.
+  </Card>
+  <Card title="Server-Side Loading" icon="Server">
+    Fetch translations before render. No client-side loading states or hydration mismatches.
+  </Card>
+  <Card title="Locale Detection" icon="Search">
+    Built-in Accept-Language header parsing with quality-factor sorting and smart fallbacks.
+  </Card>
+  <Card title="Hydrogen Support" icon="ShoppingCart">
+    First-class Shopify Hydrogen integration with Storefront API locale bridging.
+  </Card>
+</Cards>
+
+## Quick Start
+
+```ts title="app/i18n.server.ts"
+import { createRemixI18n } from "@better-i18n/remix"; // [!code highlight]
+
+export const i18n = createRemixI18n({ // [!code highlight]
+  project: "my-company/web-app", // [!code highlight]
+  defaultLocale: "en", // [!code highlight]
+}); // [!code highlight]
+```
+
+```tsx title="app/root.tsx"
+import { i18n } from "~/i18n.server"; // [!code highlight]
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const locale = await i18n.detectLocale(request); // [!code highlight]
+  const messages = await i18n.getMessages(locale); // [!code highlight]
+  const locales = await i18n.getLocales(); // [!code highlight]
+  return { locale, messages, locales };
+}
+
+export default function App() {
+  const { locale, messages, locales } = useLoaderData<typeof loader>();
+
+  return (
+    <html lang={locale}>
+      <head><Meta /><Links /></head>
+      <body>
+        <Outlet />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+```
+
+## Guide
+
+<Cards>
+  <Card title="Setup" icon="Settings" href="/frameworks/remix/setup">
+    Step-by-step installation and configuration.
+  </Card>
+  <Card title="Locale Detection" icon="Search" href="/frameworks/remix/locale-detection">
+    Accept-Language detection, URL-based detection, and custom strategies.
+  </Card>
+  <Card title="Routing" icon="Route" href="/frameworks/remix/routing">
+    Locale-prefixed URLs, LocaleLink, and LocaleSwitcher components.
+  </Card>
+  <Card title="Hydrogen" icon="ShoppingCart" href="/frameworks/remix/hydrogen">
+    Shopify Hydrogen integration with Storefront API locale bridging.
+  </Card>
+  <Card title="API Reference" icon="BookOpen" href="/frameworks/remix/api-reference">
+    Complete API documentation for all exports.
+  </Card>
+</Cards>
+
+## Comparison
+
+| Feature | Remix | Next.js | TanStack Start | Vite |
+|---------|-------|---------|----------------|------|
+| Rendering | SSR | SSR + ISR | SSR | CSR only |
+| Data loading | Loaders | Server Components | Server Functions | Client fetch |
+| Provider needed | No | Optional | Yes | Yes |
+| Hydrogen support | Yes | No | No | No |
+| Middleware | Manual | Built-in | Built-in | N/A |
+
+Choose `@better-i18n/remix` for Remix or Shopify Hydrogen apps. For Next.js, see [@better-i18n/next](/frameworks/nextjs). For Vite SPAs, see [Vite](/frameworks/vite).

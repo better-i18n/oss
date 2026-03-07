@@ -1,0 +1,186 @@
+---
+title: Routing
+description: Locale-prefixed URLs, LocaleLink, and LocaleSwitcher for Remix apps
+---
+
+Remix uses file-based routing with optional segments. This guide covers locale-prefixed routing patterns for multi-language apps.
+
+## Route Structure
+
+Use Remix's `($locale)` optional segment to support locale prefixes:
+
+```
+app/routes/
+├── ($locale)._index.tsx         # / or /tr
+├── ($locale).products.$handle.tsx  # /products/hat or /tr/products/hat
+├── ($locale).collections.$handle.tsx
+└── ($locale).about.tsx
+```
+
+The `$locale` parameter is optional — when absent, the default locale is used:
+
+```
+/products/hat         → locale: "en" (default)
+/tr/products/hat      → locale: "tr"
+/fr/products/hat      → locale: "fr"
+```
+
+## LocaleLink Component
+
+Create a locale-aware `Link` wrapper that automatically prepends the locale prefix for non-default locales:
+
+```tsx title="app/components/LocaleLink.tsx"
+import { Link, type LinkProps } from "react-router";
+
+interface LocaleLinkProps extends Omit<LinkProps, "to"> {
+  to: string;
+  locale: string;
+  children?: React.ReactNode;
+}
+
+export function LocaleLink({ to, locale, ...rest }: LocaleLinkProps) {
+  const prefix = locale === "en" ? "" : `/${locale}`;
+  const path = to.startsWith("/") ? `${prefix}${to}` : to;
+
+  return <Link to={path} {...rest} />;
+}
+```
+
+Usage:
+
+```tsx
+<LocaleLink to="/products/hat" locale="tr">
+  View Product
+</LocaleLink>
+// Renders: <a href="/tr/products/hat">View Product</a>
+
+<LocaleLink to="/products/hat" locale="en">
+  View Product
+</LocaleLink>
+// Renders: <a href="/products/hat">View Product</a>
+```
+
+## LocaleSwitcher Component
+
+Build a dropdown that switches locales by rewriting the current URL path:
+
+```tsx title="app/components/LocaleSwitcher.tsx"
+import { useLocation, useNavigate } from "react-router";
+
+interface LocaleSwitcherProps {
+  locale: string;
+  locales: string[];
+}
+
+export function LocaleSwitcher({ locale, locales }: LocaleSwitcherProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  function handleSelect(newLocale: string) {
+    const currentPath = location.pathname;
+
+    // Strip existing locale prefix
+    const knownPrefixes = locales.filter((l) => l !== "en");
+    const regex = new RegExp(`^/(${knownPrefixes.join("|")})`);
+    const pathWithoutLocale = currentPath.replace(regex, "") || "/";
+
+    // Add new locale prefix (skip for default)
+    const newPath =
+      newLocale === "en"
+        ? pathWithoutLocale
+        : `/${newLocale}${pathWithoutLocale}`;
+
+    navigate(newPath + location.search);
+  }
+
+  return (
+    <select
+      value={locale}
+      onChange={(e) => handleSelect(e.target.value)}
+      aria-label="Select language"
+    >
+      {locales.map((loc) => (
+        <option key={loc} value={loc}>
+          {loc.toUpperCase()}
+        </option>
+      ))}
+    </select>
+  );
+}
+```
+
+<Callout type="info">
+The `locales` array comes from `i18n.getLocales()` — pass it through your root loader so the switcher always reflects available languages from the CDN manifest.
+</Callout>
+
+## Using in Routes
+
+Access `locale` and `messages` from loader context in any route:
+
+```tsx title="app/routes/($locale)._index.tsx"
+import { useLoaderData } from "react-router";
+import { LocaleLink } from "~/components/LocaleLink";
+import { msg } from "~/lib/messages";
+
+export async function loader({ context }: LoaderFunctionArgs) {
+  return {
+    locale: context.locale,
+    messages: context.messages,
+  };
+}
+
+export default function Homepage() {
+  const { locale, messages } = useLoaderData<typeof loader>();
+  const common = messages.common;
+
+  return (
+    <div>
+      <h1>{msg(common, "welcome", "Welcome")}</h1>
+      <LocaleLink to="/products" locale={locale}>
+        {msg(common, "shop_now", "Shop Now")}
+      </LocaleLink>
+    </div>
+  );
+}
+```
+
+## SEO Considerations
+
+For proper SEO with locale-prefixed routes, add `hreflang` alternate links in your root:
+
+```tsx title="app/root.tsx"
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  return {
+    locale: context.locale,
+    locales: context.locales,
+    canonicalUrl: url.origin + url.pathname,
+  };
+}
+
+export default function App() {
+  const { locale, locales, canonicalUrl } = useLoaderData<typeof loader>();
+
+  return (
+    <html lang={locale}>
+      <head>
+        <link rel="canonical" href={canonicalUrl} />
+        {locales.map((loc) => (
+          <link
+            key={loc}
+            rel="alternate"
+            hrefLang={loc}
+            href={canonicalUrl.replace(`/${locale}`, loc === "en" ? "" : `/${loc}`)}
+          />
+        ))}
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <Outlet />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+```

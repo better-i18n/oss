@@ -1,0 +1,12 @@
+{
+  "title": "Remix & Hydrogen",
+  "defaultOpen": false,
+  "pages": [
+    "index",
+    "setup",
+    "locale-detection",
+    "routing",
+    "hydrogen",
+    "api-reference"
+  ]
+}
