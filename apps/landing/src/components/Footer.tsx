@@ -146,7 +146,7 @@ export default function Footer() {
           ))}
         </div>
         <div className="pt-8 border-t border-mist-200 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <span className="text-sm text-mist-500">
+          <span className="text-sm text-mist-700">
             {t("copyright", { defaultValue: "© 2026 Better i18n, Inc." })}
           </span>
           <LanguageSwitcher />

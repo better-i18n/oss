@@ -45,7 +45,7 @@ export default function Header({ className }: { className?: string }) {
               className="inline-flex items-center gap-2.5"
             >
               <img
-                src="https://better-i18n.com/cdn-cgi/image/width=48/logo.png"
+                src="https://better-i18n.com/cdn-cgi/image/width=48,height=48,fit=contain/logo.png"
                 alt="Better i18n - Translation Management Platform"
                 width={24}
                 height={24}
@@ -68,7 +68,7 @@ export default function Header({ className }: { className?: string }) {
             <div className="relative group">
               <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
                 {t("forProduct", { defaultValue: "Product" })}
-                <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
+                <IconChevronBottom className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180" />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[540px] shadow-lg">
@@ -90,7 +90,7 @@ export default function Header({ className }: { className?: string }) {
                               defaultValue: "For Translators",
                             })}
                           </div>
-                          <div className="text-xs text-mist-500 leading-relaxed mt-0.5">
+                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
                             {t("segments.translators.shortDescription", {
                               defaultValue:
                                 "Context-rich translation environment",
@@ -114,7 +114,7 @@ export default function Header({ className }: { className?: string }) {
                               defaultValue: "For Developers",
                             })}
                           </div>
-                          <div className="text-xs text-mist-500 leading-relaxed mt-0.5">
+                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
                             {t("segments.developers.shortDescription", {
                               defaultValue:
                                 "Automated sync and developer-first tools",
@@ -138,7 +138,7 @@ export default function Header({ className }: { className?: string }) {
                               defaultValue: "For Product Teams",
                             })}
                           </div>
-                          <div className="text-xs text-mist-500 leading-relaxed mt-0.5">
+                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
                             {t("segments.productTeams.shortDescription", {
                               defaultValue:
                                 "Manage localization without the hassle",
@@ -151,7 +151,7 @@ export default function Header({ className }: { className?: string }) {
 
                   {/* More Solutions */}
                   <div className="px-3 py-2">
-                    <p className="text-xs font-medium text-mist-400 uppercase tracking-wider mb-1.5">
+                    <p className="text-xs font-medium text-mist-600 uppercase tracking-wider mb-1.5">
                       {t("menu.moreSolutions", { defaultValue: "More Solutions" })}
                     </p>
                     <div className="grid grid-cols-3 gap-x-4 gap-y-1">
@@ -267,7 +267,7 @@ export default function Header({ className }: { className?: string }) {
 
                   {/* Footer CTA */}
                   <div className="px-3 py-2.5 border-t border-mist-100">
-                    <p className="text-sm text-mist-500">
+                    <p className="text-sm text-mist-700">
                       {t("menu.interested", { defaultValue: "Interested?" })}{" "}
                       <a
                         href="https://cal.com/better-i18n/30min?overlayCalendar=true"
@@ -288,12 +288,12 @@ export default function Header({ className }: { className?: string }) {
             <div className="relative group">
               <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
                 {t("developers.title", { defaultValue: "Developers" })}
-                <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
+                <IconChevronBottom className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180" />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[520px] shadow-lg">
                   <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm" role="menu">
-                    <p className="px-2.5 py-1.5 text-xs font-medium text-mist-500 uppercase tracking-wider">
+                    <p className="px-2.5 py-1.5 text-xs font-medium text-mist-700 uppercase tracking-wider">
                       {t("developers.frameworkGuides", { defaultValue: "Framework Guides" })}
                     </p>
                     <div className="grid grid-cols-3 gap-1 mt-1">
@@ -372,7 +372,7 @@ export default function Header({ className }: { className?: string }) {
                     </div>
                   </div>
                   <div className="px-3 py-2.5 flex items-center justify-between">
-                    <p className="text-sm text-mist-500">
+                    <p className="text-sm text-mist-700">
                       {t("developers.viewDocs", { defaultValue: "View full documentation" })}
                     </p>
                     <a
@@ -404,7 +404,7 @@ export default function Header({ className }: { className?: string }) {
             <div className="relative group">
               <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
                 {t("resources.title", { defaultValue: "Resources" })}
-                <IconChevronBottom className="w-4 h-4 text-mist-400 group-hover:text-mist-600 transition-transform group-hover:rotate-180" />
+                <IconChevronBottom className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180" />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 shadow-lg min-w-[480px]">
@@ -426,7 +426,7 @@ export default function Header({ className }: { className?: string }) {
                               defaultValue: "About Us",
                             })}
                           </div>
-                          <div className="text-xs text-mist-500 leading-relaxed mt-0.5">
+                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
                             {t("resources.about.description", {
                               defaultValue: "The team behind Better i18n",
                             })}
@@ -449,7 +449,7 @@ export default function Header({ className }: { className?: string }) {
                               defaultValue: "Privacy Policy",
                             })}
                           </div>
-                          <div className="text-xs text-mist-500 leading-relaxed mt-0.5">
+                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
                             {t("resources.privacy.description", {
                               defaultValue: "How we handle your data",
                             })}
@@ -472,7 +472,7 @@ export default function Header({ className }: { className?: string }) {
                               defaultValue: "Terms of Service",
                             })}
                           </div>
-                          <div className="text-xs text-mist-500 leading-relaxed mt-0.5">
+                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
                             {t("resources.terms.description", {
                               defaultValue: "Our terms and conditions",
                             })}
