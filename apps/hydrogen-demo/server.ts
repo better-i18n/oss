@@ -26,16 +26,16 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
 
-    // 1. Detect locale from URL path (/tr, /es, /fr, /de)
-    const { locale, i18n: shopifyI18n } = getLocaleFromRequest(request);
+    // 1. Fetch CDN language list (TtlCache'd — instant after first request)
+    const languages = await i18n.getLanguages();
 
-    // 2. Load Better i18n translations from CDN
-    const [messages, languages] = await Promise.all([
-      i18n.getMessages(locale),
-      i18n.getLanguages(),
-    ]);
+    // 2. Detect locale from URL path, validated against CDN language list
+    const { locale, i18n: shopifyI18n } = getLocaleFromRequest(request, languages);
 
-    // 3. Create Shopify Storefront client with locale
+    // 3. Load Better i18n translations from CDN
+    const messages = await i18n.getMessages(locale);
+
+    // 4. Create Shopify Storefront client with locale
     const { storefront } = createStorefrontClient({
       cache,
       waitUntil: (p: Promise<unknown>) => executionContext.waitUntil(p),

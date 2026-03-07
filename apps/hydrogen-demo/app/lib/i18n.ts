@@ -1,4 +1,5 @@
 import type { LanguageCode, CountryCode } from "@shopify/hydrogen/storefront-api-types";
+import type { LanguageOption } from "@better-i18n/remix";
 
 export interface I18nLocale {
   language: LanguageCode;
@@ -7,39 +8,41 @@ export interface I18nLocale {
 }
 
 /**
- * Maps Better i18n locale codes to Shopify Storefront API enums.
- * Better i18n uses lowercase strings ("en", "tr"), while
- * Shopify uses uppercase enums (EN, TR) with country codes.
+ * Derives Shopify Storefront API locale enums from a Better i18n locale code.
+ * Better i18n uses lowercase ("en", "tr"), Shopify uses uppercase enums (EN, TR).
+ *
+ * Supports both simple ("tr") and compound ("en-gb") locale formats.
+ * "en" without a region defaults to country "US" (most common Shopify use case).
  */
-export const SUPPORTED_LOCALES: Record<string, I18nLocale> = {
-  en: { language: "EN", country: "US", pathPrefix: "" },
-  tr: { language: "TR", country: "TR", pathPrefix: "/tr" },
-  es: { language: "ES", country: "ES", pathPrefix: "/es" },
-  fr: { language: "FR", country: "FR", pathPrefix: "/fr" },
-  de: { language: "DE", country: "DE", pathPrefix: "/de" },
-};
-
-export const DEFAULT_LOCALE = SUPPORTED_LOCALES.en;
+function deriveShopifyLocale(code: string, isDefault: boolean): I18nLocale {
+  const [lang, country] = code.toLowerCase().split("-");
+  return {
+    language: lang.toUpperCase() as LanguageCode,
+    country: (country ?? (lang === "en" ? "us" : lang)).toUpperCase() as CountryCode,
+    pathPrefix: isDefault ? "" : `/${code}`,
+  };
+}
 
 /**
- * Extract locale from URL path prefix.
+ * Extract locale from URL path prefix, validated against CDN language list.
  *
  * /tr/products/hat → "tr"
- * /products/hat    → "en" (default)
+ * /products/hat    → defaultLocale (default)
  */
-export function getLocaleFromRequest(request: Request): {
-  locale: string;
-  i18n: I18nLocale;
-} {
+export function getLocaleFromRequest(
+  request: Request,
+  languages: LanguageOption[],
+  defaultLocale = "en",
+): { locale: string; i18n: I18nLocale } {
   const url = new URL(request.url);
   const firstSegment = url.pathname.split("/")[1]?.toLowerCase();
 
-  if (firstSegment && firstSegment in SUPPORTED_LOCALES && firstSegment !== "en") {
+  if (firstSegment && firstSegment !== defaultLocale && languages.some((l) => l.code === firstSegment)) {
     return {
       locale: firstSegment,
-      i18n: SUPPORTED_LOCALES[firstSegment],
+      i18n: deriveShopifyLocale(firstSegment, false),
     };
   }
 
-  return { locale: "en", i18n: DEFAULT_LOCALE };
+  return { locale: defaultLocale, i18n: deriveShopifyLocale(defaultLocale, true) };
 }
