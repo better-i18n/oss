@@ -66,29 +66,29 @@ Build a dropdown that switches locales by rewriting the current URL path:
 
 ```tsx title="app/components/LocaleSwitcher.tsx"
 import { useLocation, useNavigate } from "react-router";
+import type { LanguageOption } from "@better-i18n/remix";
 
 interface LocaleSwitcherProps {
   locale: string;
-  locales: string[];
+  languages: LanguageOption[];
 }
 
-export function LocaleSwitcher({ locale, locales }: LocaleSwitcherProps) {
+export function LocaleSwitcher({ locale, languages }: LocaleSwitcherProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
   function handleSelect(newLocale: string) {
     const currentPath = location.pathname;
 
-    // Strip existing locale prefix
-    const knownPrefixes = locales.filter((l) => l !== "en");
-    const regex = new RegExp(`^/(${knownPrefixes.join("|")})`);
+    // Strip existing locale prefix (non-default locales have a URL prefix)
+    const nonDefaultCodes = languages.filter((l) => !l.isDefault).map((l) => l.code);
+    const regex = new RegExp(`^/(${nonDefaultCodes.join("|")})`);
     const pathWithoutLocale = currentPath.replace(regex, "") || "/";
 
-    // Add new locale prefix (skip for default)
-    const newPath =
-      newLocale === "en"
-        ? pathWithoutLocale
-        : `/${newLocale}${pathWithoutLocale}`;
+    // Add new locale prefix (skip for default locale)
+    const newPath = newLocale === "en"
+      ? pathWithoutLocale
+      : `/${newLocale}${pathWithoutLocale}`;
 
     navigate(newPath + location.search);
   }
@@ -99,9 +99,9 @@ export function LocaleSwitcher({ locale, locales }: LocaleSwitcherProps) {
       onChange={(e) => handleSelect(e.target.value)}
       aria-label="Select language"
     >
-      {locales.map((loc) => (
-        <option key={loc} value={loc}>
-          {loc.toUpperCase()}
+      {languages.map((language) => (
+        <option key={language.code} value={language.code}>
+          {language.nativeName || language.code.toUpperCase()}
         </option>
       ))}
     </select>
@@ -110,7 +110,7 @@ export function LocaleSwitcher({ locale, locales }: LocaleSwitcherProps) {
 ```
 
 <Callout type="info">
-The `locales` array comes from `i18n.getLocales()` — pass it through your root loader so the switcher always reflects available languages from the CDN manifest.
+The `languages` array comes from `i18n.getLanguages()` — pass it through your root loader so the switcher always reflects available languages from the CDN manifest.
 </Callout>
 
 ## Using in Routes
@@ -153,24 +153,24 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   return {
     locale: context.locale,
-    locales: context.locales,
+    languages: context.languages,
     canonicalUrl: url.origin + url.pathname,
   };
 }
 
 export default function App() {
-  const { locale, locales, canonicalUrl } = useLoaderData<typeof loader>();
+  const { locale, languages, canonicalUrl } = useLoaderData<typeof loader>();
 
   return (
     <html lang={locale}>
       <head>
         <link rel="canonical" href={canonicalUrl} />
-        {locales.map((loc) => (
+        {languages.map((lang) => (
           <link
-            key={loc}
+            key={lang.code}
             rel="alternate"
-            hrefLang={loc}
-            href={canonicalUrl.replace(`/${locale}`, loc === "en" ? "" : `/${loc}`)}
+            hrefLang={lang.code}
+            href={canonicalUrl.replace(`/${locale}`, lang.isDefault ? "" : `/${lang.code}`)}
           />
         ))}
         <Meta />
