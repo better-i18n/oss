@@ -52,18 +52,17 @@ import { i18n } from "~/i18n.server"; // [!code highlight]
 export async function loader({ request }: LoaderFunctionArgs) {
   const locale = await i18n.detectLocale(request); // [!code highlight]
   const messages = await i18n.getMessages(locale); // [!code highlight]
-  const locales = await i18n.getLocales(); // [!code highlight]
-  return { locale, messages, locales };
+  return { locale, messages };
 }
 
 export default function App() {
-  const { locale, messages, locales } = useLoaderData<typeof loader>();
+  const { locale, messages } = useLoaderData<typeof loader>();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} translate="no">
       <head><Meta /><Links /></head>
       <body>
-        <Outlet />
+        <Outlet context={{ messages }} />
         <Scripts />
       </body>
     </html>

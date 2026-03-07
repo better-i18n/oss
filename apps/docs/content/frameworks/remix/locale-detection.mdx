@@ -31,7 +31,7 @@ export function getLocaleFromURL(request: Request): string | null {
 ```
 
 <Callout type="info">
-For a dynamic approach, use `i18n.getLocales()` to fetch available locales from the CDN manifest instead of hardcoding them.
+For a dynamic approach, use `i18n.getLanguages()` to fetch available locales from the CDN manifest instead of hardcoding them. This returns `LanguageOption[]` with `code`, `nativeName`, and `isDefault` fields.
 </Callout>
 
 ## Accept-Language Header Detection
@@ -95,9 +95,9 @@ export default {
     // 2. Fall back to Accept-Language header
     const locale = urlLocale || await i18n.detectLocale(request);
 
-    const [messages, locales] = await Promise.all([
+    const [messages, languages] = await Promise.all([
       i18n.getMessages(locale),
-      i18n.getLocales(),
+      i18n.getLanguages(),
     ]);
 
     // ... pass to loader context
@@ -129,3 +129,9 @@ function getLocaleFromSubdomain(request: Request): string | null {
   return knownLocales.includes(subdomain) ? subdomain : null;
 }
 ```
+
+<Callout type="info">
+The hardcoded `knownLocales` list above is fine for subdomain detection, but for URL-path and switcher logic prefer `i18n.getLanguages()` — it reads from the CDN manifest so new languages are picked up automatically without a redeploy.
+</Callout>
+
+
