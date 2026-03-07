@@ -1,0 +1,4 @@
+# Shopify Storefront API tokens
+# Get these from Shopify Admin > Headless channel > Storefront API
+PUBLIC_STOREFRONT_API_TOKEN=your_public_storefront_api_token
+PRIVATE_STOREFRONT_API_TOKEN=your_private_storefront_api_token

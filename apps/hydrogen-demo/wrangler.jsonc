@@ -1,0 +1,19 @@
+{
+  "name": "hydrogen-demo",
+  "main": "./build/server/index.js",
+  "compatibility_date": "2025-01-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./build/client"
+  },
+  "routes": [
+    {
+      "pattern": "shopify.better-i18n.com/*",
+      "zone_name": "better-i18n.com"
+    }
+  ],
+  "vars": {
+    "PUBLIC_STORE_DOMAIN": "better-i18n.myshopify.com",
+    "PUBLIC_STOREFRONT_API_VERSION": "2026-01"
+  }
+}
