@@ -25,6 +25,7 @@ node_modules/
 .env.local
 .env
 *.env
+.dev.vars
 
 # Editors
 .vscode/*
@@ -49,4 +50,4 @@ node_modules/
 
 .claude
 .agents
-skills-lock.json
+skills-lock.jsonpackages/flutter/build/
