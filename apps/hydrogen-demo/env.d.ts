@@ -21,6 +21,7 @@ declare global {
     PRIVATE_STOREFRONT_API_TOKEN: string;
     PUBLIC_STORE_DOMAIN: string;
     PUBLIC_STOREFRONT_API_VERSION: string;
+    GITHUB_TOKEN?: string;
   }
 }
 

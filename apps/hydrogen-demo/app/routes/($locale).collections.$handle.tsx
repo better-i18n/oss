@@ -2,6 +2,7 @@ import { useLoaderData } from "react-router";
 import type { LoaderFunctionArgs, MetaFunction } from "@shopify/remix-oxygen";
 import { LocaleLink } from "~/components/LocaleLink";
 import { InfoPanel, ProductCard } from "~/components/Storefront";
+import { msg } from "~/lib/messages";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: data?.collection?.title ?? "Collection" }];
@@ -27,7 +28,9 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 }
 
 export default function CollectionPage() {
-  const { collection, locale } = useLoaderData<typeof loader>();
+  const { collection, locale, messages } = useLoaderData<typeof loader>();
+  const collectionMessages = messages.collection;
+  const productMessages = messages.products;
 
   return (
     <div className="page-frame space-y-10 sm:space-y-12">
@@ -53,11 +56,11 @@ export default function CollectionPage() {
                   d="m15 18-6-6 6-6"
                 />
               </svg>
-              Back to storefront
+              {msg(collectionMessages, "back_to_storefront")}
             </LocaleLink>
 
             <p className="mt-6 text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-slate-500">
-              Collection spotlight
+              {msg(collectionMessages, "collection_spotlight")}
             </p>
             <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-[-0.06em] text-slate-950 sm:text-5xl lg:text-6xl">
               {collection.title}
@@ -116,7 +119,15 @@ export default function CollectionPage() {
       {collection.products.nodes.length > 0 ? (
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {collection.products.nodes.map((product: ProductNode) => (
-            <ProductCard key={product.id} locale={locale} product={product} />
+            <ProductCard
+              key={product.id}
+              locale={locale}
+              product={product}
+              messages={{
+                from: msg(productMessages, "from"),
+                localized_badge: msg(productMessages, "localized_badge"),
+              }}
+            />
           ))}
         </section>
       ) : (

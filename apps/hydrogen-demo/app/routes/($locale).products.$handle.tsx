@@ -160,7 +160,7 @@ export default function ProductPage() {
                   d="m15 18-6-6 6-6"
                 />
               </svg>
-              Back to catalog
+              {msg(productMessages, "back_to_catalog")}
             </LocaleLink>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -180,8 +180,8 @@ export default function ProductPage() {
                   }`}
                 />
                 {isAvailable
-                  ? msg(productMessages, "in_stock", "In Stock")
-                  : msg(productMessages, "sold_out", "Sold Out")}
+                  ? msg(productMessages, "in_stock")
+                  : msg(productMessages, "sold_out")}
               </span>
             </div>
 
@@ -229,7 +229,7 @@ export default function ProductPage() {
                     <div key={option.id} className="mt-8">
                       <div className="flex items-center justify-between gap-3">
                         <h2 className="text-sm font-semibold text-slate-900">
-                          {msg(productMessages, "select_option", "Select")}{" "}
+                          {msg(productMessages, "select_option")}{" "}
                           {option.name}
                         </h2>
                         <span className="text-sm text-slate-500">
@@ -287,14 +287,14 @@ export default function ProductPage() {
                 }`}
               >
                 {isAvailable
-                  ? msg(productMessages, "add_to_cart", "Add to Cart")
-                  : msg(productMessages, "sold_out", "Sold Out")}
+                  ? msg(productMessages, "add_to_cart")
+                  : msg(productMessages, "sold_out")}
               </button>
               <button
                 type="button"
                 className="inline-flex min-h-12 items-center justify-center rounded-full border border-black/8 bg-white/70 px-6 py-3 text-sm font-semibold text-slate-900 transition duration-200 hover:border-black/14 hover:bg-white"
               >
-                Save for later
+                {msg(productMessages, "save_for_later")}
               </button>
             </div>
           </div>

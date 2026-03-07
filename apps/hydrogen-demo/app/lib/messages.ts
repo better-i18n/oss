@@ -5,7 +5,7 @@
 export function msg(
   ns: Record<string, unknown> | undefined,
   key: string,
-  fallback: string,
+  fallback = "",
 ): string {
   const val = ns?.[key];
   return typeof val === "string" ? val : fallback;
