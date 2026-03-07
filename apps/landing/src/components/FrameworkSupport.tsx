@@ -47,10 +47,10 @@ export default function FrameworkSupport() {
               <span className="text-base font-medium text-mist-950 group-hover:text-mist-700">
                 {framework.name}
               </span>
-              <span className="mt-1 text-xs text-mist-500">
+              <span className="mt-1 text-xs text-mist-700">
                 {t(`${framework.key}.tagline`, { defaultValue: framework.tagline })}
               </span>
-              <span className="mt-2 text-xs text-mist-400 text-center line-clamp-2">
+              <span className="mt-2 text-xs text-mist-600 text-center line-clamp-2">
                 {t(`${framework.key}.highlight`, { defaultValue: framework.highlight })}
               </span>
             </Link>

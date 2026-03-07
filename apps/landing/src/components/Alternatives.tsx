@@ -60,7 +60,7 @@ export default function Alternatives() {
                 className="group flex items-center justify-between p-5 rounded-xl border border-mist-200 bg-mist-50/50 hover:border-mist-300 hover:bg-white hover:shadow-md transition-all"
               >
                 <div>
-                  <span className="text-xs text-mist-500 uppercase tracking-wider font-medium">
+                  <span className="text-xs text-mist-700 uppercase tracking-wider font-medium">
                     {t("vsLabel", { defaultValue: "VS" })}
                   </span>
                   <span className="block text-base font-medium text-mist-950 mt-0.5">

@@ -315,7 +315,7 @@ const ToolWrapper = ({ children, header }: ToolWrapperProps) => {
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
-          <div className="h-auto w-full px-3 py-1.5 bg-gray-100 text-gray-900 cursor-pointer hover:bg-gray-200 transition-colors">
+          <button className="h-auto w-full px-3 py-1.5 bg-gray-100 text-gray-900 cursor-pointer hover:bg-gray-200 transition-colors text-left">
             <div className="flex items-center justify-between">
               {header}
               <IconChevronBottom
@@ -325,7 +325,7 @@ const ToolWrapper = ({ children, header }: ToolWrapperProps) => {
                 )}
               />
             </div>
-          </div>
+          </button>
         </CollapsibleTrigger>
         <CollapsibleContent>{children}</CollapsibleContent>
       </Collapsible>
@@ -1735,6 +1735,7 @@ export function DemoAIDrawerStandalone() {
               onClick={handleSend}
               disabled={!input.trim() || isTyping}
               size="icon"
+              aria-label="Send message"
               className={cn(
                 "h-8 w-8 rounded-2xl transition-all",
                 input.trim() && !isTyping

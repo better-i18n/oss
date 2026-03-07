@@ -47,13 +47,13 @@ function AIFeatureCard() {
   return (
     <div className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-sm">
       <div className="h-[320px] bg-mist-50 relative overflow-hidden p-5 flex flex-col shrink-0">
-        <div className="flex items-center gap-2 text-xs text-mist-500 mb-4 pb-3 border-b border-mist-200">
+        <div className="flex items-center gap-2 text-xs text-mist-700 mb-4 pb-3 border-b border-mist-200">
           <div className="w-2 h-2 rounded-full bg-mist-400" />
           <span className="font-bold uppercase tracking-tight text-[10px]">
             {t("badge", { defaultValue: "AI Translation Engine" })}
           </span>
           <div className="ml-auto flex items-center gap-1.5">
-            <span className="text-[9px] text-mist-400">
+            <span className="text-[9px] text-mist-600">
               {t("glossaryLabel", { defaultValue: "Glossary" })}
             </span>
             <span className="text-[9px] bg-white text-mist-600 px-1.5 py-0.5 rounded border border-mist-200 font-medium">
@@ -107,14 +107,14 @@ function AIFeatureCard() {
                       <div className="size-4 rounded bg-mist-100 flex items-center justify-center text-mist-600">
                         <IconCircleInfo className="size-3" />
                       </div>
-                      <span className="text-[10px] text-mist-500 font-medium italic">
+                      <span className="text-[10px] text-mist-700 font-medium italic">
                         {t("glossaryMatch", {
                           defaultValue: "Glossary match applied",
                         })}
                       </span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-mist-50/50 border border-mist-100 space-y-1">
-                      <div className="text-[9px] font-mono text-mist-400">
+                      <div className="text-[9px] font-mono text-mist-600">
                         {t("sourceLabel", { defaultValue: "SOURCE" })}
                       </div>
                       <div className="text-[11px] font-semibold text-mist-900 flex items-center gap-1.5">
@@ -223,7 +223,7 @@ function PublishFeatureCard() {
                   : t("statusSuccess", { defaultValue: "Published" })}
             </span>
           </div>
-          <span className="text-[10px] text-mist-400 font-mono">
+          <span className="text-[10px] text-mist-600 font-mono">
             {elapsedTime}s
           </span>
         </div>
@@ -232,10 +232,10 @@ function PublishFeatureCard() {
           {/* Artifacts List */}
           <div className="bg-white rounded-xl border border-mist-200 p-2.5 space-y-2 shadow-sm">
             <div className="flex items-center justify-between px-0.5">
-              <span className="text-[9px] font-bold text-mist-400 uppercase tracking-widest">
+              <span className="text-[9px] font-bold text-mist-600 uppercase tracking-widest">
                 {t("cdnArtifacts", { defaultValue: "CDN Artifacts" })}
               </span>
-              <span className="text-[8px] text-mist-400 font-mono">v1.2.0</span>
+              <span className="text-[8px] text-mist-600 font-mono">v1.2.0</span>
             </div>
             <div className="space-y-1">
               {[
@@ -281,7 +281,7 @@ function PublishFeatureCard() {
                   "text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider",
                   status === "published"
                     ? "bg-emerald-100 text-emerald-700"
-                    : "bg-mist-100 text-mist-50",
+                    : "bg-mist-100 text-mist-700",
                 )}
               >
                 {status === "published"
@@ -297,7 +297,7 @@ function PublishFeatureCard() {
               </p>
               <div className="flex items-center gap-1.5">
                 <div className="size-3 rounded-full bg-mist-200 border border-white" />
-                <span className="text-[8px] text-mist-400 font-medium">
+                <span className="text-[8px] text-mist-600 font-medium">
                   {t("botPushed", {
                     branch: "i18n-sync",
                     defaultValue: "bot pushed to {branch}",
@@ -356,12 +356,12 @@ function AIContextCard() {
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-mist-200">
           <div className="flex items-center gap-2">
             <div className="size-1.5 rounded-full bg-mist-900 animate-pulse" />
-            <span className="text-[10px] font-bold text-mist-500 uppercase tracking-tight">
+            <span className="text-[10px] font-bold text-mist-700 uppercase tracking-tight">
               {t("badge", { defaultValue: "Context Crawler" })}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-[9px] text-mist-400 font-medium">
+            <span className="text-[9px] text-mist-600 font-medium">
               {t("pagesLabel", { defaultValue: "Pages" })}
             </span>
             <span className="text-[9px] font-bold text-mist-900 font-mono">
@@ -372,7 +372,7 @@ function AIContextCard() {
 
         <div className="bg-white rounded-xl border border-mist-200 shadow-lg overflow-hidden flex-1 flex flex-col">
           <div className="p-3 bg-mist-50/50 border-b border-mist-100 flex-1 overflow-hidden">
-            <div className="text-[9px] font-bold text-mist-400 uppercase tracking-widest mb-3">
+            <div className="text-[9px] font-bold text-mist-600 uppercase tracking-widest mb-3">
               {t("activityLog", { defaultValue: "Activity Log" })}
             </div>
             <div className="space-y-2.5">
@@ -384,7 +384,7 @@ function AIContextCard() {
                   <p className="text-[10px] font-bold text-mist-900 leading-none">
                     {t("syncStarted", { defaultValue: "Sync Started" })}
                   </p>
-                  <p className="text-[9px] text-mist-500 leading-normal">
+                  <p className="text-[9px] text-mist-700 leading-normal">
                     {t("syncMessage", {
                       defaultValue:
                         "Crawling your website for translation context...",
@@ -408,7 +408,7 @@ function AIContextCard() {
                   <p className="text-[10px] font-bold text-mist-900 leading-none">
                     {t("extractingTerms", { defaultValue: "Extracting Terms" })}
                   </p>
-                  <p className="text-[9px] text-mist-500 leading-normal">
+                  <p className="text-[9px] text-mist-700 leading-normal">
                     {t("extractingMessage", {
                       defaultValue: "Building glossary from your content...",
                     })}
@@ -433,7 +433,7 @@ function AIContextCard() {
                       defaultValue: "Manifest Uploaded",
                     })}
                   </p>
-                  <p className="text-[9px] text-mist-500 leading-normal">
+                  <p className="text-[9px] text-mist-700 leading-normal">
                     {t("manifestMessage", {
                       defaultValue:
                         "Context manifest ready for AI translations",
@@ -451,7 +451,7 @@ function AIContextCard() {
                 {t("analysisApproved", { defaultValue: "Analysis Approved" })}
               </span>
             </div>
-            <span className="text-[9px] text-mist-400 font-mono">
+            <span className="text-[9px] text-mist-600 font-mono">
               better-i18n.com
             </span>
           </div>
