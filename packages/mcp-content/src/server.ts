@@ -15,6 +15,7 @@ import {
 
 import { createBetterI18nClient } from "./client.js";
 import type { ToolDefinition } from "./types/index.js";
+import { checkForUpdate } from "./version-check.js";
 
 // Read tools
 import { listContentModels } from "./tools/listContentModels.js";
@@ -76,18 +77,41 @@ export function resolveConfig(): Omit<ServerConfig, "apiKey"> & {
  */
 export function createConfiguredServer(
   apiClient: ReturnType<typeof createBetterI18nClient>,
+  options?: { packageName?: string; version?: string },
 ): Server {
+  const packageName = options?.packageName ?? "@better-i18n/mcp-content";
+  const version = options?.version ?? "0.0.0";
+
   const server = new Server(
     {
       name: "better-i18n-content",
-      version: "0.0.1",
+      version,
     },
     {
       capabilities: {
         tools: {},
+        logging: {},
       },
     },
   );
+
+  server.oninitialized = async () => {
+    try {
+      const update = await checkForUpdate(packageName, version);
+      if (update?.needsUpdate) {
+        server.sendLoggingMessage({
+          level: "warning",
+          data: `Update available: ${update.current} → ${update.latest}. Run: npx ${packageName}@latest`,
+          logger: "better-i18n-content",
+        });
+        console.error(
+          `[better-i18n-content] Update available: ${update.current} → ${update.latest}. Run: npx ${packageName}@latest`,
+        );
+      }
+    } catch {
+      // Version check is non-critical — silently ignore
+    }
+  };
 
   // Tool annotations for ChatGPT compatibility (readOnlyHint, openWorldHint, destructiveHint)
   const readOnly = { readOnlyHint: true, openWorldHint: false, destructiveHint: false };

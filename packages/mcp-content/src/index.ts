@@ -10,12 +10,16 @@
  * For HTTP transport (OpenAI, Codex, Agents SDK), see http.ts.
  */
 
+import { createRequire } from "node:module";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   resolveConfig,
   createConfiguredServer,
   createBetterI18nClient,
 } from "./server.js";
+
+const require = createRequire(import.meta.url);
+const pkg = require("../package.json") as { name: string; version: string };
 
 async function main() {
   const config = resolveConfig();
@@ -41,7 +45,10 @@ async function main() {
     debug: config.debug,
   });
 
-  const server = createConfiguredServer(apiClient);
+  const server = createConfiguredServer(apiClient, {
+    packageName: pkg.name,
+    version: pkg.version,
+  });
 
   console.error("[better-i18n-content] MCP Server ready");
 
