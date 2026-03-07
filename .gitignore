@@ -50,4 +50,10 @@ node_modules/
 
 .claude
 .agents
-skills-lock.jsonpackages/flutter/build/
+skills-lock.json
+
+# Build artifacts
+**/build/
+**/.dart_tool/
+**/.flutter-plugins-dependencies
+**/.react-router/
