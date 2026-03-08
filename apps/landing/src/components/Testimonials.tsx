@@ -21,9 +21,15 @@ const testimonialsData = [
   },
   {
     name: "Eray Gündoğmuş",
-    title: "Software Engineer, Masraff",
+    title: "Software Engineer, Aceware",
     image: "/comments/eray.jpeg",
     quote: "Setting up took minutes, not days. The CDN delivery means our translations load instantly across all regions.",
+  },
+  {
+    name: "Arhun Hınçalan",
+    title: "Engineering Manager, Masraff",
+    image: "/comments/arhun.png",
+    quote: "Better i18n transformed our localization pipeline. We manage 20+ languages across our fintech products with zero friction — the AI understands financial terminology perfectly.",
   },
 ];
 
@@ -44,7 +50,7 @@ export default function Testimonials() {
             {testimonialsData.map((testimonial, index) => (
               <figure
                 key={index}
-                className={`flex flex-col justify-between gap-8 rounded-xl bg-mist-950/[0.025] p-6 text-sm/7 text-mist-950${index === 3 ? ' lg:hidden' : ''}`}
+                className={`flex flex-col justify-between gap-8 rounded-xl bg-mist-950/[0.025] p-6 text-sm/7 text-mist-950${index === 4 ? ' hidden lg:flex' : ''}`}
               >
                 <blockquote className="relative flex flex-col gap-4">
                   <p>"{t(`${index + 1}.quote`, { defaultValue: testimonial.quote })}"</p>
