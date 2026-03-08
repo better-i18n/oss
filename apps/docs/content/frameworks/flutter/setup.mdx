@@ -1,0 +1,190 @@
+---
+title: Setup
+description: Install better_i18n and configure BetterI18nProvider in your Flutter app.
+---
+
+This guide walks you through installing `better_i18n` and setting up `BetterI18nProvider` in your Flutter app.
+
+<Callout type="info">
+  **Prerequisite:** Create a project at [dash.better-i18n.com](https://dash.better-i18n.com). Your project identifier will be in the format `org/project` (e.g., `my-company/mobile-app`).
+</Callout>
+
+<Steps>
+
+<Step>
+### Install
+
+Add `better_i18n` to your `pubspec.yaml`:
+
+```yaml title="pubspec.yaml"
+dependencies:
+  better_i18n: ^0.1.0
+```
+
+Then run:
+
+```bash
+flutter pub get
+```
+
+For offline caching (recommended), also add `shared_preferences`:
+
+```yaml title="pubspec.yaml"
+dependencies:
+  better_i18n: ^0.1.0
+  shared_preferences: ^2.3.0  # for SharedPrefsStorage
+```
+
+<Callout type="tip">
+  `shared_preferences` is optional. Without it, translations are cached in memory only — suitable for development. For production, pass a `SharedPrefsStorage()` to enable offline support.
+</Callout>
+</Step>
+
+<Step>
+### Wrap with BetterI18nProvider
+
+Wrap your root widget (typically `MaterialApp` or `CupertinoApp`) with `BetterI18nProvider`:
+
+```dart title="lib/main.dart"
+import 'package:better_i18n/better_i18n.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(
+    BetterI18nProvider(
+      project: 'your-org/your-project', // [!code highlight]
+      defaultLocale: 'en',
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: HomeScreen(),
+    );
+  }
+}
+```
+
+`BetterI18nProvider` fetches translations from CDN when the app starts and rebuilds its subtree when the locale changes.
+</Step>
+
+<Step>
+### Translate
+
+Use `context.t('namespace.key')` anywhere in the widget tree below `BetterI18nProvider`:
+
+```dart title="lib/home_screen.dart"
+import 'package:better_i18n/better_i18n.dart';
+import 'package:flutter/material.dart';
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(context.t('common.appTitle')), // [!code highlight]
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(context.t('common.welcome')), // [!code highlight]
+            // With interpolation arguments
+            Text(
+              context.t('common.greeting', args: {'name': 'Osman'}), // [!code highlight]
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+Key format is `"namespace.key"` — matching your CDN translation structure. If the key is not found, the key itself is returned as fallback.
+</Step>
+
+<Step>
+### Switch Locale
+
+Use `context.setI18nLocale(code)` to switch the active language at runtime:
+
+```dart title="lib/settings_screen.dart"
+import 'package:better_i18n/better_i18n.dart';
+import 'package:flutter/material.dart';
+
+class LanguagePicker extends StatelessWidget {
+  const LanguagePicker({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final languages = context.i18nLanguages; // [!code highlight]
+    final currentLocale = context.i18nLocale; // [!code highlight]
+
+    return ListView.builder(
+      itemCount: languages.length,
+      itemBuilder: (context, index) {
+        final lang = languages[index];
+        return ListTile(
+          title: Text(lang.nativeName ?? lang.name ?? lang.code),
+          trailing: lang.code == currentLocale
+              ? const Icon(Icons.check)
+              : null,
+          onTap: () => context.setI18nLocale(lang.code), // [!code highlight]
+        );
+      },
+    );
+  }
+}
+```
+
+<Callout type="tip">
+  `context.i18nLanguages` returns the language list from the CDN manifest — same languages you configure in the dashboard. No hardcoded lists needed.
+</Callout>
+
+#### With Offline Support
+
+For production apps, enable offline caching and locale persistence:
+
+```dart title="lib/main.dart"
+import 'package:better_i18n/better_i18n.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(
+    BetterI18nProvider(
+      project: 'your-org/your-project',
+      defaultLocale: 'en',
+      storage: SharedPrefsStorage(), // [!code highlight]
+      loadingBuilder: (_) => const MaterialApp( // [!code highlight]
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      ),
+      child: const MyApp(),
+    ),
+  );
+}
+```
+
+See [Offline & Caching](/frameworks/flutter/offline-caching) for the full caching guide.
+</Step>
+
+</Steps>
+
+## Next Steps
+
+<Cards>
+  <Card title="Offline & Caching" icon="WifiOff" href="/frameworks/flutter/offline-caching">
+    Understand the 4-tier fallback chain and SharedPrefsStorage.
+  </Card>
+  <Card title="API Reference" icon="FileCode" href="/frameworks/flutter/api-reference">
+    Full API documentation for all exports.
+  </Card>
+</Cards>

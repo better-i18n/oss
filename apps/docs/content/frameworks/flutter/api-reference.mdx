@@ -1,0 +1,529 @@
+---
+title: API Reference
+description: Complete API documentation for the better_i18n Flutter SDK.
+---
+
+Complete API reference for the `better_i18n` Flutter/Dart SDK.
+
+## BetterI18nProvider
+
+The top-level widget. Manages the `BetterI18nController` lifecycle and provides translations to all descendant widgets via `BetterI18nScope`.
+
+```dart
+BetterI18nProvider(
+  project: 'acme/app',
+  defaultLocale: 'en',
+  storage: SharedPrefsStorage(),
+  loadingBuilder: (_) => const CircularProgressIndicator(),
+  child: const MyApp(),
+)
+```
+
+### Props
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `project` | `String` | Yes | — | Project identifier in `"org/project"` format |
+| `defaultLocale` | `String` | Yes | — | Fallback locale used when no locale is set |
+| `child` | `Widget` | Yes | — | Root widget of your app |
+| `locale` | `String?` | No | `null` | Externally controlled locale (e.g., from a Cubit/BLoC) |
+| `cdnBaseUrl` | `String?` | No | `https://cdn.better-i18n.com` | CDN URL override |
+| `ttl` | `int?` | No | `300000` | Memory cache TTL in milliseconds (5 min) |
+| `timeout` | `int?` | No | `10000` | CDN fetch timeout in milliseconds |
+| `retry` | `int?` | No | `1` | Number of retry attempts on CDN failure |
+| `storage` | `TranslationStorage?` | No | `null` | Persistent storage adapter — use `SharedPrefsStorage()` |
+| `staticData` | `Map<String, Messages>?` | No | `null` | Bundled fallback translations for airplane mode first launch |
+| `loadingBuilder` | `WidgetBuilder?` | No | `null` | Widget shown while translations are loading (initial load only) |
+| `errorBuilder` | `Widget Function(BuildContext, Object)?` | No | `null` | Widget shown when a fatal error occurs |
+
+<Callout type="info">
+  When `locale` is set externally (e.g., from a Cubit), `BetterI18nProvider` detects changes via `didUpdateWidget` and calls `controller.setLocale()` automatically.
+</Callout>
+
+---
+
+## BuildContext Extensions
+
+Available on any `BuildContext` below `BetterI18nProvider` in the widget tree.
+
+<Accordion>
+<AccordionItem title="context.t(key, {args})">
+
+Translate a key with optional interpolation arguments.
+
+```dart
+// Simple key
+Text(context.t('common.welcome'))
+
+// With interpolation
+Text(context.t('common.greeting', args: {'name': 'Osman'}))
+// → "Hello, Osman!" (if translation is "Hello, {{name}}!")
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `key` | `String` | Yes | Key in `"namespace.key"` format |
+| `args` | `Map<String, dynamic>?` | No | Interpolation arguments |
+
+**Returns:** `String` — Translated text, or the key itself if not found.
+
+Key format: `"namespace.key"` (e.g., `"common.hello"`, `"auth.loginButton"`). The part before the first `.` is the namespace; the rest is the key within that namespace.
+
+</AccordionItem>
+
+<AccordionItem title="context.i18nLocale">
+
+Returns the current active locale code.
+
+```dart
+final locale = context.i18nLocale;
+// → "en", "tr", "de", etc.
+```
+
+**Returns:** `String`
+
+</AccordionItem>
+
+<AccordionItem title="context.i18nLanguages">
+
+Returns the list of available languages from the CDN manifest.
+
+```dart
+final languages = context.i18nLanguages;
+// → [LanguageOption(code: 'en', name: 'English', ...), ...]
+```
+
+**Returns:** `List<LanguageOption>`
+
+</AccordionItem>
+
+<AccordionItem title="context.setI18nLocale(code)">
+
+Switch to a new locale. Fetches translations from CDN (or cache) and triggers a widget rebuild.
+
+```dart
+await context.setI18nLocale('tr');
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `code` | `String` | Yes | Locale code (e.g., `"tr"`, `"de"`) |
+
+**Returns:** `Future<void>`
+
+</AccordionItem>
+
+<AccordionItem title="context.i18n">
+
+Direct access to the `BetterI18nController`. Use for advanced scenarios.
+
+```dart
+final controller = context.i18n;
+final isReady = controller.isReady;
+final messages = controller.messages;
+```
+
+**Returns:** `BetterI18nController`
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## BetterI18nController
+
+Manages i18n state — locale, messages, and languages. Extends `ChangeNotifier` so widgets rebuild when state changes.
+
+```dart
+final controller = BetterI18nController(
+  config: const I18nConfig(
+    project: 'acme/app',
+    defaultLocale: 'en',
+  ),
+  initialLocale: 'tr',
+);
+await controller.initialize();
+```
+
+### Constructor
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `config` | `I18nConfig` | Yes | Core configuration |
+| `initialLocale` | `String?` | No | Starting locale — defaults to `config.defaultLocale` |
+
+### Getters
+
+| Getter | Type | Description |
+|--------|------|-------------|
+| `locale` | `String` | Current active locale |
+| `messages` | `Messages?` | Loaded translation messages (`null` until ready) |
+| `languages` | `List<LanguageOption>` | Available languages from CDN manifest |
+| `isLoading` | `bool` | Whether translations are currently loading |
+| `isReady` | `bool` | Whether the controller is initialized and ready |
+| `error` | `Object?` | Last error that occurred during loading, if any |
+
+### Methods
+
+<Accordion>
+<AccordionItem title="initialize()">
+
+Fetches the CDN manifest and initial locale messages in parallel. Called automatically by `BetterI18nProvider` — only call manually when using `BetterI18nController` directly.
+
+```dart
+await controller.initialize();
+```
+
+**Returns:** `Future<void>`
+
+</AccordionItem>
+
+<AccordionItem title="setLocale(newLocale)">
+
+Switch to a new locale and reload messages.
+
+```dart
+await controller.setLocale('tr');
+```
+
+**Returns:** `Future<void>`
+
+</AccordionItem>
+
+<AccordionItem title="translate(key, {args})">
+
+Translate a key with optional interpolation arguments. Returns the key itself if not found.
+
+```dart
+final text = controller.translate('common.welcome', args: {'name': 'Osman'});
+```
+
+**Returns:** `String`
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## I18nCore
+
+The pure Dart core engine — no Flutter dependency. Implements the 4-tier fallback chain. Used internally by `BetterI18nController`.
+
+```dart
+final core = I18nCore(
+  config: NormalizedConfig(
+    project: 'acme/app',
+    defaultLocale: 'en',
+    cdnBaseUrl: 'https://cdn.better-i18n.com',
+    manifestCacheTtlMs: 300000,
+    timeout: 10000,
+    retry: 1,
+  ),
+);
+```
+
+### Methods
+
+<Accordion>
+<AccordionItem title="getManifest({forceRefresh})">
+
+Fetch the CDN manifest with full fallback chain (memory → CDN → storage).
+
+```dart
+final manifest = await core.getManifest();
+final manifest = await core.getManifest(forceRefresh: true);
+```
+
+**Returns:** `Future<ManifestResponse>`
+
+</AccordionItem>
+
+<AccordionItem title="getMessages(locale)">
+
+Fetch translation messages for a locale with full fallback chain.
+
+```dart
+final messages = await core.getMessages('tr');
+```
+
+**Returns:** `Future<Messages>`
+
+</AccordionItem>
+
+<AccordionItem title="getLanguages()">
+
+Get available languages as `LanguageOption` list.
+
+```dart
+final languages = await core.getLanguages();
+```
+
+**Returns:** `Future<List<LanguageOption>>`
+
+</AccordionItem>
+
+<AccordionItem title="getLocales()">
+
+Get available locale codes.
+
+```dart
+final locales = await core.getLocales();
+// → ["en", "tr", "de"]
+```
+
+**Returns:** `Future<List<String>>`
+
+</AccordionItem>
+
+<AccordionItem title="I18nCore.clearAllCaches() [static]">
+
+Clear all static caches — manifest and messages. Useful between tests.
+
+```dart
+I18nCore.clearAllCaches();
+```
+
+Also available as separate methods:
+
+```dart
+I18nCore.clearManifestCache();
+I18nCore.clearMessagesCache();
+```
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## BetterI18nScope
+
+Low-level `InheritedNotifier` that provides `BetterI18nController` to the widget tree. Used internally by `BetterI18nProvider` — use directly only for testing or advanced scenarios.
+
+```dart
+BetterI18nScope(
+  controller: myController,
+  child: MyWidget(),
+)
+```
+
+### Static Methods
+
+<Accordion>
+<AccordionItem title="BetterI18nScope.of(context)">
+
+Look up the nearest `BetterI18nController` in the widget tree.
+
+```dart
+final controller = BetterI18nScope.of(context);
+```
+
+**Returns:** `BetterI18nController`
+
+Throws if no `BetterI18nScope` is found in the ancestor tree.
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Types
+
+<Accordion>
+<AccordionItem title="LanguageOption">
+
+Simplified language info for UI components (e.g., language picker).
+
+```dart
+class LanguageOption {
+  final String code;          // "en", "tr"
+  final String? name;         // "English", "Turkish" (English name)
+  final String? nativeName;   // "English", "Türkçe" (native name)
+  final String? flagUrl;      // URL to flag image (from dashboard)
+  final bool isDefault;       // true for the source/default language
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="Messages">
+
+Translation messages keyed by namespace, then by key.
+
+```dart
+typedef Messages = Map<String, Map<String, dynamic>>;
+
+// Example:
+// {
+//   "common": {"welcome": "Welcome", "appTitle": "My App"},
+//   "auth": {"loginButton": "Sign In"},
+// }
+```
+
+Matches the CDN response format exactly.
+
+</AccordionItem>
+
+<AccordionItem title="TranslationStorage">
+
+Abstract interface for persistent storage adapters.
+
+```dart
+abstract class TranslationStorage {
+  Future<String?> get(String key);
+  Future<void> set(String key, String value);
+  Future<void> remove(String key);
+}
+```
+
+Implement this class to use a custom storage backend (SQLite, Hive, secure storage, etc.).
+
+</AccordionItem>
+
+<AccordionItem title="I18nConfig">
+
+Core configuration class passed to `BetterI18nController`.
+
+```dart
+const I18nConfig({
+  required String project,       // "org/project"
+  required String defaultLocale, // "en"
+  String? cdnBaseUrl,            // CDN URL override
+  int? ttl,                      // memory cache TTL (ms)
+  int? timeout,                  // fetch timeout (ms)
+  int? retry,                    // retry count
+  TranslationStorage? storage,   // persistent storage
+  Map<String, Messages>? staticData, // bundled fallback
+})
+```
+
+</AccordionItem>
+
+<AccordionItem title="ManifestResponse">
+
+CDN manifest data returned by `I18nCore.getManifest()`.
+
+```dart
+class ManifestResponse {
+  final List<ManifestLanguage> languages;
+  final String? projectSlug;
+  final String? sourceLanguage;
+  final String? updatedAt;
+}
+```
+
+</AccordionItem>
+
+<AccordionItem title="ManifestLanguage">
+
+Raw language info from the CDN manifest.
+
+```dart
+class ManifestLanguage {
+  final String code;
+  final String? name;
+  final String? nativeName;
+  final String? flagUrl;
+  final bool isSource; // true for source language
+}
+```
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Storage
+
+<Accordion>
+<AccordionItem title="SharedPrefsStorage">
+
+Persistent storage adapter backed by `shared_preferences`. The recommended choice for production Flutter apps.
+
+```dart
+import 'package:better_i18n/better_i18n.dart';
+
+BetterI18nProvider(
+  project: 'acme/app',
+  defaultLocale: 'en',
+  storage: SharedPrefsStorage(),
+  child: const MyApp(),
+)
+```
+
+Requires the `shared_preferences` package in `pubspec.yaml`.
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## Testing Utilities
+
+<Accordion>
+<AccordionItem title="Widget testing with BetterI18nScope">
+
+Inject a pre-configured controller directly into the widget tree — no CDN calls needed:
+
+```dart
+import 'package:better_i18n/better_i18n.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+testWidgets('renders translated welcome text', (tester) async {
+  // Clear static caches between tests
+  I18nCore.clearAllCaches();
+
+  final controller = BetterI18nController(
+    config: const I18nConfig(
+      project: 'test/app',
+      defaultLocale: 'en',
+      staticData: {
+        'en': {
+          'common': {
+            'welcome': 'Welcome',
+            'greeting': 'Hello, {{name}}!',
+          },
+        },
+      },
+    ),
+  );
+  await controller.initialize();
+
+  await tester.pumpWidget(
+    BetterI18nScope(
+      controller: controller,
+      child: Builder(
+        builder: (ctx) => MaterialApp(
+          home: Scaffold(
+            body: Text(ctx.t('common.welcome')),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  expect(find.text('Welcome'), findsOneWidget);
+});
+```
+
+</AccordionItem>
+
+<AccordionItem title="I18nCore.clearAllCaches()">
+
+Static method to clear all in-memory caches between tests. Essential when multiple tests share the same project identifier.
+
+```dart
+setUp(() {
+  I18nCore.clearAllCaches();
+});
+```
+
+Clears both manifest and messages caches. Also available as:
+- `I18nCore.clearManifestCache()` — manifest only
+- `I18nCore.clearMessagesCache()` — messages only
+
+</AccordionItem>
+</Accordion>

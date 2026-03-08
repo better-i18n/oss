@@ -18,6 +18,7 @@
     "remix",
     "expo",
     "ios",
+    "flutter",
     "server-sdk"
   ]
 }
