@@ -128,6 +128,17 @@ export default function Hero() {
                   className="h-7 w-auto opacity-50 grayscale"
                 />
               </span>
+              {/* Masraff */}
+              <a href="https://masraff.ai" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
+                <img
+                  src="/masraff.png"
+                  alt="Masraff - Better i18n customer"
+                  width={28}
+                  height={28}
+                  loading="lazy"
+                  className="h-7 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity"
+                />
+              </a>
               {/* Cloudflare */}
               <span className="flex h-8 items-center justify-center shrink-0">
                 <img
