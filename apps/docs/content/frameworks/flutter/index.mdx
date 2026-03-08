@@ -1,0 +1,111 @@
+---
+title: Getting Started
+description: Native Flutter i18n with the better_i18n Dart SDK — CDN-driven translations with offline support.
+---
+
+## Overview
+
+`better_i18n` is a pure Dart + Flutter SDK that loads translations from the better-i18n CDN at runtime. It uses the same CDN infrastructure as the Expo and iOS SDKs — meaning your translations are managed in one place and delivered to all platforms.
+
+- **CDN-driven** — Translations update without app store releases
+- **Offline-first** — 4-tier fallback: memory → CDN → persistent storage → static data
+- **Reactive UI** — `BetterI18nProvider` rebuilds widgets automatically on locale change
+- **No codegen** — No build steps, no generated files, no native modules
+
+<Callout type="info">
+  `BetterI18nProvider` handles everything — CDN fetch, caching, locale switching, and loading/error states. Use `context.t('key')` anywhere in the widget tree.
+</Callout>
+
+## Features
+
+<Cards>
+  <Card title="Offline-First" icon="WifiOff">
+    4-tier fallback chain ensures translations are always available — even without network.
+  </Card>
+  <Card title="Reactive UI" icon="Zap">
+    Locale switches rebuild the widget tree instantly via ChangeNotifier.
+  </Card>
+  <Card title="Locale Switching" icon="Globe">
+    `context.setI18nLocale('tr')` — pre-loads translations before switching.
+  </Card>
+  <Card title="Testing Utilities" icon="FlaskConical">
+    `MemoryStorage` and `BetterI18nScope` make widget testing straightforward.
+  </Card>
+  <Card title="No Codegen" icon="Code">
+    Pure Dart — no build_runner, no generated files, no native modules required.
+  </Card>
+</Cards>
+
+## Quick Start
+
+```yaml title="pubspec.yaml"
+dependencies:
+  better_i18n: ^0.1.0
+```
+
+```dart title="lib/main.dart"
+import 'package:better_i18n/better_i18n.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(
+    BetterI18nProvider(
+      project: 'your-org/your-project', // [!code highlight]
+      defaultLocale: 'en',
+      child: const MyApp(),
+    ),
+  );
+}
+```
+
+```dart title="lib/home_screen.dart"
+import 'package:better_i18n/better_i18n.dart';
+import 'package:flutter/material.dart';
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(context.t('common.welcome')), // [!code highlight]
+            Text(context.t('common.greeting', args: {'name': 'Osman'})), // [!code highlight]
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+## Guide
+
+<Cards>
+  <Card title="Setup" icon="Settings" href="/frameworks/flutter/setup">
+    Installation, configuration, and locale switching.
+  </Card>
+  <Card title="Offline & Caching" icon="WifiOff" href="/frameworks/flutter/offline-caching">
+    How the 4-tier fallback chain and persistent storage work.
+  </Card>
+  <Card title="API Reference" icon="FileCode" href="/frameworks/flutter/api-reference">
+    Complete API documentation for all exports.
+  </Card>
+</Cards>
+
+## Comparison
+
+| Feature | Flutter | Expo | iOS |
+|---------|---------|------|-----|
+| Language | Dart | TypeScript | Swift |
+| i18n library | better_i18n | i18next | better-i18n-ios |
+| UI framework | Flutter widgets | React Native | SwiftUI / UIKit |
+| Offline support | Built-in | Built-in | Built-in |
+| Reactive rebuilds | ChangeNotifier | React state | @Observable / ObservableObject |
+| Persistent cache | SharedPrefsStorage | MMKV / AsyncStorage | UserDefaults |
+| No codegen | Yes | Yes | Yes |
+
+Choose Flutter for cross-platform mobile apps written in Dart. For React Native / Expo apps, see [Expo](/frameworks/expo). For native iOS, see [iOS](/frameworks/ios).

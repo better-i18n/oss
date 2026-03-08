@@ -1,0 +1,10 @@
+{
+  "title": "Flutter",
+  "defaultOpen": false,
+  "pages": [
+    "index",
+    "setup",
+    "offline-caching",
+    "api-reference"
+  ]
+}

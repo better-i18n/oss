@@ -1,0 +1,231 @@
+---
+title: Offline & Caching
+description: Four-tier fallback chain, SharedPrefsStorage, and staticData for always-available translations.
+---
+
+Mobile apps need to work without network. `better_i18n` uses a **network-first** strategy with a 4-tier fallback chain so your app always has translations — even on first launch in airplane mode.
+
+## How It Works
+
+When `BetterI18nProvider` initializes (or when you call `context.setI18nLocale()`), the SDK follows this flow:
+
+```
+BetterI18nProvider.initialize()
+│
+├─ 1. Memory cache (TtlCache — static class-level)
+│     └─ Hit? → Return instantly, no network call
+│
+├─ 2. CDN fetch (http package, timeout + retry)
+│     ├─ Success → Cache in memory + write-through to storage
+│     └─ Failure ↓
+│
+├─ 3. Persistent storage (SharedPrefsStorage)
+│     ├─ Cached? → Return + populate memory cache
+│     └─ No cache ↓
+│
+└─ 4. staticData (bundled fallback, optional)
+      └─ Always available — no network or storage needed
+```
+
+Most apps only need tiers 1–3. `staticData` (tier 4) is for edge cases — see [Advanced: Static Data Fallback](#advanced-static-data-fallback) below.
+
+<Callout type="tip">
+  **Key guarantee:** If the user has opened the app at least once with network, translations will always be available — even in airplane mode.
+</Callout>
+
+## Cache Layers
+
+### 1. Memory Cache (TtlCache)
+
+The fastest layer. Translations are cached in a static `TtlCache` at the `I18nCore` class level — shared across all `BetterI18nController` instances for the same project.
+
+- Survives navigation and widget rebuilds
+- Cleared when the app process is killed
+- Default TTL: 5 minutes (300,000 ms) — configurable via `ttl` prop
+
+### 2. CDN Fetch
+
+On memory cache miss, the SDK fetches from `https://cdn.better-i18n.com/{org}/{project}/{locale}/translations.json`. On success, it:
+
+1. Populates the memory cache
+2. Write-through to persistent storage (fire-and-forget, non-blocking)
+
+### 3. Persistent Storage (SharedPrefsStorage)
+
+When the CDN is unreachable, the SDK falls back to `shared_preferences`. This covers:
+
+- Airplane mode
+- Flaky network connections
+- CDN downtime
+
+**Storage keys:**
+```
+@better-i18n:manifest:{org}/{project}          → CDN manifest JSON
+@better-i18n:messages:{org}/{project}:{locale} → Translation messages JSON
+```
+
+### Advanced: Static Data Fallback
+
+<Callout type="info">
+  **Most apps don't need this.** If you use `SharedPrefsStorage`, static data is unnecessary — persistent storage already covers all offline scenarios including first launch (after the first successful fetch).
+
+  `staticData` is only needed when you want to guarantee translations are available before the very first network connection — e.g., for a fully offline demo mode.
+</Callout>
+
+Bundle translations directly in your app binary as a last-resort fallback:
+
+```dart title="lib/main.dart"
+BetterI18nProvider(
+  project: 'acme/app',
+  defaultLocale: 'en',
+  staticData: { // [!code highlight]
+    'en': { // [!code highlight]
+      'common': {'welcome': 'Welcome', 'appTitle': 'My App'}, // [!code highlight]
+    }, // [!code highlight]
+    'tr': { // [!code highlight]
+      'common': {'welcome': 'Hoş geldiniz', 'appTitle': 'Uygulamam'}, // [!code highlight]
+    }, // [!code highlight]
+  }, // [!code highlight]
+  child: const MyApp(),
+)
+```
+
+These translations increase your app binary size and may go stale between app releases — use only when necessary.
+
+## SharedPrefsStorage
+
+Enable offline support by passing a `SharedPrefsStorage()` instance:
+
+```dart title="lib/main.dart"
+import 'package:better_i18n/better_i18n.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(
+    BetterI18nProvider(
+      project: 'acme/app',
+      defaultLocale: 'en',
+      storage: SharedPrefsStorage(), // [!code highlight]
+      child: const MyApp(),
+    ),
+  );
+}
+```
+
+`SharedPrefsStorage` wraps the `shared_preferences` package and implements the `TranslationStorage` interface. Translations and manifest data are persisted to device storage automatically.
+
+### Custom Storage
+
+For a custom storage backend, implement the `TranslationStorage` abstract class:
+
+```dart
+import 'package:better_i18n/better_i18n.dart';
+
+class MyCustomStorage implements TranslationStorage {
+  @override
+  Future<String?> get(String key) async {
+    // Read from your storage
+    return await myDb.read(key);
+  }
+
+  @override
+  Future<void> set(String key, String value) async {
+    // Write to your storage
+    await myDb.write(key, value);
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    // Delete from your storage
+    await myDb.delete(key);
+  }
+}
+```
+
+Then pass it to `BetterI18nProvider`:
+
+```dart
+BetterI18nProvider(
+  project: 'acme/app',
+  defaultLocale: 'en',
+  storage: MyCustomStorage(),
+  child: const MyApp(),
+)
+```
+
+## Loading & Error States
+
+Handle loading and error states with `loadingBuilder` and `errorBuilder`:
+
+```dart title="lib/main.dart"
+BetterI18nProvider(
+  project: 'acme/app',
+  defaultLocale: 'en',
+  storage: SharedPrefsStorage(),
+  loadingBuilder: (_) => const MaterialApp( // [!code highlight]
+    home: Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    ),
+  ),
+  errorBuilder: (ctx, err) => MaterialApp( // [!code highlight]
+    home: Scaffold(
+      body: Center(
+        child: Text('Failed to load translations: $err'),
+      ),
+    ),
+  ),
+  child: const MyApp(),
+)
+```
+
+<Callout type="tip">
+  When `SharedPrefsStorage` is used and translations are cached, the loading state is usually skipped entirely — the SDK returns cached translations synchronously before the widget tree is rendered.
+</Callout>
+
+If neither builder is provided, `BetterI18nProvider` renders `SizedBox.shrink()` (an invisible empty widget) during loading and on error — the app appears blank until translations load.
+
+## Without Persistent Storage
+
+If no `storage` is provided, translations are cached in memory only:
+
+- Translations are fetched from CDN on every app launch
+- No offline support between sessions
+- Suitable for development and testing
+
+For production apps, always pass `SharedPrefsStorage()` or a custom `TranslationStorage` implementation.
+
+## Testing
+
+For unit and widget tests, use `MemoryStorage` to avoid real file I/O:
+
+```dart
+import 'package:better_i18n/better_i18n.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+testWidgets('shows translated text', (tester) async {
+  // Create a controller with mock data
+  final controller = BetterI18nController(
+    config: const I18nConfig(
+      project: 'test/app',
+      defaultLocale: 'en',
+      staticData: {
+        'en': {'common': {'welcome': 'Welcome'}},
+      },
+    ),
+  );
+  await controller.initialize();
+
+  await tester.pumpWidget(
+    BetterI18nScope( // [!code highlight]
+      controller: controller, // [!code highlight]
+      child: Builder(
+        builder: (ctx) => Text(ctx.t('common.welcome')),
+      ),
+    ),
+  );
+
+  expect(find.text('Welcome'), findsOneWidget);
+});
+```
+
+See the [API Reference](/frameworks/flutter/api-reference) for `BetterI18nScope` and `I18nCore.clearAllCaches()`.
