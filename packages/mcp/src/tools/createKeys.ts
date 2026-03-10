@@ -78,10 +78,20 @@ export const createKeys: Tool = {
       args,
       inputSchema,
       async (input, { workspaceId, projectSlug }) => {
+        // Normalize translation record keys to lowercase
+        const k = input.k.map(key => {
+          if (!key.t) return key;
+          const normalized: Record<string, string> = {};
+          for (const [lang, text] of Object.entries(key.t)) {
+            normalized[lang.toLowerCase()] = text;
+          }
+          return { ...key, t: normalized };
+        });
+
         const result = await client.mcp.createKeys.mutate({
           orgSlug: workspaceId,
           projectSlug,
-          k: input.k,
+          k,
         });
 
         return success(result);
