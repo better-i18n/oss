@@ -7,6 +7,7 @@
 
 import { z } from "zod";
 import {
+  customFieldsSchema,
   executeTool,
   projectInputProperty,
   projectSchema,
@@ -20,7 +21,7 @@ const translationValue = z.object({
   bodyMarkdown: z.string().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
-  customFields: z.record(z.string(), z.string().nullable()).optional(),
+  customFields: customFieldsSchema,
 });
 
 const inputSchema = projectSchema.extend({
@@ -32,7 +33,7 @@ const inputSchema = projectSchema.extend({
   featuredImage: z.string().url().optional().nullable(),
   tags: z.array(z.string()).optional(),
   status: z.enum(["draft", "published"]).optional(),
-  customFields: z.record(z.string(), z.string().nullable()).optional(),
+  customFields: customFieldsSchema,
   translations: z.record(z.string(), translationValue).optional(),
 });
 

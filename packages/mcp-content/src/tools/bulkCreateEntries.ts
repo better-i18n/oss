@@ -7,6 +7,7 @@
 
 import { z } from "zod";
 import {
+  customFieldsSchema,
   executeTool,
   projectInputProperty,
   projectSchema,
@@ -17,18 +18,8 @@ import type { Tool } from "../types/index.js";
 const translationValue = z.object({
   title: z.string().optional(),
   bodyMarkdown: z.string().optional(),
-  customFields: z.record(z.string(), z.union([
-    z.string(),
-    z.number().transform(String),
-    z.boolean().transform(String),
-  ]).nullable()).optional(),
+  customFields: customFieldsSchema,
 });
-
-const coercibleFieldValue = z.union([
-  z.string(),
-  z.number().transform(String),
-  z.boolean().transform(String),
-]).nullable();
 
 const inputSchema = projectSchema.extend({
   modelSlug: z.string().min(1),
@@ -37,7 +28,7 @@ const inputSchema = projectSchema.extend({
     slug: z.string().min(1),
     bodyMarkdown: z.string().optional(),
     status: z.enum(["draft", "published"]).default("draft"),
-    customFields: z.record(z.string(), coercibleFieldValue).optional().default({}),
+    customFields: customFieldsSchema,
     translations: z.record(z.string(), translationValue).optional(),
   })).min(1).max(20),
 });
@@ -104,7 +95,7 @@ EXAMPLE:
         projectSlug,
         modelSlug: input.modelSlug,
         entries,
-      });
+      } as Parameters<typeof client.mcpContent.bulkCreateEntries.mutate>[0]);
 
       return success(result);
     }),

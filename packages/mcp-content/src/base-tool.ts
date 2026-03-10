@@ -9,6 +9,17 @@ import { z } from "zod";
 import { parseProject, type ParsedProject } from "./helpers.js";
 import type { ToolResult } from "./types/index.js";
 
+/** Custom field values — accepts any JSON-serializable value per field */
+export const customFieldsSchema = z.preprocess(
+  (val) => {
+    if (typeof val === "string") {
+      try { return JSON.parse(val); } catch { return val; }
+    }
+    return val;
+  },
+  z.record(z.string(), z.unknown())
+).optional();
+
 /**
  * Common project schema - all tools require this
  */
