@@ -1,5 +1,13 @@
 # @better-i18n/mcp-content
 
+## 0.6.2
+
+### Patch Changes
+
+- feat: surface version update warning in tool responses for AI model visibility
+
+  The update notification is now injected into the first tool call response so that AI models (Claude, ChatGPT, etc.) can read it and inform the user. Previously, warnings were only sent via MCP logging messages and stderr, which most clients don't surface to users.
+
 ## 0.6.1
 
 ### Patch Changes

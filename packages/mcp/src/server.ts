@@ -82,13 +82,18 @@ export function createConfiguredServer(
     },
   );
 
+  // Version check state — cached at initialization, shown once in first tool response
+  let updateWarning: string | null = null;
+  let updateWarningShown = false;
+
   server.oninitialized = async () => {
     try {
       const update = await checkForUpdate(packageName, version);
       if (update?.needsUpdate) {
+        updateWarning = `⚠️ Update available: ${packageName} ${update.current} → ${update.latest}. Run: npx ${packageName}@latest`;
         server.sendLoggingMessage({
           level: "warning",
-          data: `Update available: ${update.current} → ${update.latest}. Run: npx ${packageName}@latest`,
+          data: updateWarning,
           logger: "better-i18n",
         });
         console.error(
@@ -178,6 +183,19 @@ export function createConfiguredServer(
           break;
         default:
           throw new Error(`Unknown tool: ${name}`);
+      }
+
+      // Inject version update warning into the first successful tool response
+      if (updateWarning && !updateWarningShown) {
+        updateWarningShown = true;
+        const content = Array.isArray(result.content) ? result.content : [];
+        return {
+          ...result,
+          content: [
+            ...content,
+            { type: "text", text: `\n${updateWarning}` },
+          ],
+        };
       }
 
       return result;
