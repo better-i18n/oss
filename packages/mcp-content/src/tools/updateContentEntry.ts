@@ -134,6 +134,21 @@ EXAMPLE metadata-only:
   execute: (client, args) =>
     executeTool(args, inputSchema, async (input, { workspaceId, projectSlug }) => {
       const { project: _, ...data } = input;
+
+      // Normalize languageCode to lowercase
+      if (data.languageCode) {
+        data.languageCode = data.languageCode.toLowerCase();
+      }
+
+      // Normalize translation record keys to lowercase (z.record keys can't use .transform)
+      if (data.translations) {
+        const normalized: typeof data.translations = {};
+        for (const [lang, value] of Object.entries(data.translations)) {
+          normalized[lang.toLowerCase()] = value;
+        }
+        data.translations = normalized;
+      }
+
       const result = await client.mcpContent.updateContentEntry.mutate({
         orgSlug: workspaceId,
         projectSlug,

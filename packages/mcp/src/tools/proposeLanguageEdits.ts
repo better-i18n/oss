@@ -59,9 +59,9 @@ export const proposeLanguageEdits: Tool = {
 
   execute: (client, args) =>
     executeTool(args, inputSchema, async (input, { workspaceId, projectSlug }) => {
-      // Map edits → updates format expected by the API
+      // Map edits → updates format expected by the API, normalize language codes
       const updates = input.edits.map((edit) => ({
-        languageCode: edit.languageCode,
+        languageCode: edit.languageCode.toLowerCase(),
         status: edit.newStatus,
       }));
 

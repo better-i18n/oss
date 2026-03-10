@@ -110,6 +110,16 @@ EXAMPLE (project sl='tr'):
   execute: (client, args) =>
     executeTool(args, inputSchema, async (input, { workspaceId, projectSlug }) => {
       const { project: _, ...data } = input;
+
+      // Normalize translation record keys to lowercase (z.record keys can't use .transform)
+      if (data.translations) {
+        const normalized: typeof data.translations = {};
+        for (const [lang, value] of Object.entries(data.translations)) {
+          normalized[lang.toLowerCase()] = value;
+        }
+        data.translations = normalized;
+      }
+
       const result = await client.mcpContent.createContentEntry.mutate({
         orgSlug: workspaceId,
         projectSlug,

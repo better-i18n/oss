@@ -56,10 +56,16 @@ Returns syncJobIds - use getSync(syncId) to verify deployment completed successf
   },
   execute: (client, args) =>
     executeTool(args, inputSchema, async (input, { workspaceId, projectSlug }) => {
+      // Normalize language codes to lowercase
+      const translations = input.translations?.map(t => ({
+        ...t,
+        languageCode: t.languageCode.toLowerCase(),
+      }));
+
       const result = await client.mcp.publishTranslations.mutate({
         orgSlug: workspaceId,
         projectSlug,
-        translations: input.translations,
+        translations,
       });
       return success(result);
     }),

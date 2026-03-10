@@ -89,11 +89,21 @@ EXAMPLE:
 
   execute: (client, args) =>
     executeTool(args, inputSchema, async (input, { workspaceId, projectSlug }) => {
+      // Normalize translation record keys to lowercase for each entry
+      const entries = input.entries.map(entry => {
+        if (!entry.translations) return entry;
+        const normalized: typeof entry.translations = {};
+        for (const [lang, value] of Object.entries(entry.translations)) {
+          normalized[lang.toLowerCase()] = value;
+        }
+        return { ...entry, translations: normalized };
+      });
+
       const result = await client.mcpContent.bulkCreateEntries.mutate({
         orgSlug: workspaceId,
         projectSlug,
         modelSlug: input.modelSlug,
-        entries: input.entries,
+        entries,
       });
 
       return success(result);

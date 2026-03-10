@@ -59,10 +59,16 @@ export const proposeLanguages: Tool = {
 
   execute: (client, args) =>
     executeTool(args, inputSchema, async (input, { workspaceId, projectSlug }) => {
+      // Normalize language codes to lowercase
+      const languages = input.languages.map(lang => ({
+        ...lang,
+        languageCode: lang.languageCode.toLowerCase(),
+      }));
+
       const result = await client.mcp.addLanguages.mutate({
         orgSlug: workspaceId,
         projectSlug,
-        languages: input.languages,
+        languages,
       });
 
       return success({

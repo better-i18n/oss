@@ -63,10 +63,16 @@ export const updateKeys: Tool = {
       args,
       inputSchema,
       async (input, { workspaceId, projectSlug }) => {
+        // Normalize language codes to lowercase
+        const t = input.t.map(item => ({
+          ...item,
+          l: item.l.toLowerCase(),
+        }));
+
         const result = await client.mcp.updateKeys.mutate({
           orgSlug: workspaceId,
           projectSlug,
-          t: input.t,
+          t,
         });
 
         return success(result);
