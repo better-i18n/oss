@@ -1,5 +1,13 @@
 # @better-i18n/mcp-content
 
+## 0.6.1
+
+### Patch Changes
+
+- c907b9e: fix: normalize language codes to lowercase to prevent FK constraint violations
+
+  Language codes like `zh-Hant` and `pt-BR` are now automatically lowercased before API calls to match the database format. Affects createKeys, updateKeys, proposeLanguages, proposeLanguageEdits, publishTranslations, createContentEntry, updateContentEntry, and bulkCreateEntries tools.
+
 ## 0.6.0
 
 ### Minor Changes
