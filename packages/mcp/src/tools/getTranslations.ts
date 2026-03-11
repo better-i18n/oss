@@ -55,6 +55,10 @@ export const getTranslations: Tool = {
 USE THIS when you need actual translation text (to translate, review, or update).
 Use listKeys instead for browsing/exploring keys — it's faster and uses fewer tokens.
 
+IMPORTANT: status filter REQUIRES languages parameter.
+{ status: "missing" } alone returns ALL keys (filter silently ignored).
+Always pair: { languages: ["hr"], status: "missing" }
+
 SEARCH + FILTER:
 - search: Text to search for (in source text or specified languages)
 - languages: Languages to search in AND return translations for
@@ -106,7 +110,7 @@ Response includes namespaceDetails: a map of namespace metadata (name, keyCount,
           type: "string",
           enum: ["missing", "draft", "approved", "all"],
           description:
-            "Filter by translation status (default: all). Requires languages to be specified for filtering.",
+            "Filter by translation status. WARNING: ignored without languages parameter. Always use with languages: ['hr']. Default: all.",
         },
         limit: {
           type: "number",
