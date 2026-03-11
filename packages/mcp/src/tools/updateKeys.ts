@@ -32,8 +32,13 @@ const inputSchema = projectSchema.extend({
 export const updateKeys: Tool = {
   definition: {
     name: "updateKeys",
-    description:
-      "Update translations for existing keys. REQUIRED: Get key UUIDs first via getAllTranslations or listKeys (id field). Each entry updates ONE language for ONE key. Set s=true to update the source text.",
+    description: `Update translations for existing keys. UUID required — do NOT use createKeys for existing keys.
+
+WORKFLOW to add missing translations:
+1. listKeys({ missingLanguage: 'hr', fields: ['id'] }) → get UUIDs
+2. updateKeys({ t: [{ id: '<uuid>', l: 'hr', t: '<translation>' }] })
+
+Each entry updates ONE language for ONE key. Set s=true to update the source text.`,
     inputSchema: {
       type: "object",
       properties: {

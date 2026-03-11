@@ -76,6 +76,7 @@ FILTER OPTIONS:
 - search: Key name search (partial match, single string or array for OR)
 - namespaces: Filter by namespace(s)
 - missingLanguage: Find keys with no translation for this language (e.g., "tr")
+- Pre-flight before createKeys: check existing namespaces and key names
 
 EXAMPLES:
 - Browse all keys: { project: "org/project" }

@@ -37,8 +37,16 @@ const inputSchema = projectSchema.extend({
 export const createKeys: Tool = {
   definition: {
     name: "createKeys",
-    description:
-      "Create translation keys with source text and optional translations. Don't include the source language in translations \u2014 use v (source value) instead.",
+    description: `Create NEW translation keys with source text and optional translations.
+
+IMPORTANT — avoid accidental duplicates:
+- Call getProject first to see existing namespaces and key count
+- ns defaults to 'default'. Use the SAME namespace as existing keys
+- Same key name in a different namespace creates a SEPARATE key (not a duplicate)
+- To add translations to EXISTING keys, use listKeys + updateKeys instead
+
+Response fields: 'dup' = same-namespace skips, 'warn' = cross-namespace name matches
+Don't include source language in translations — use v (source value) instead.`,
     inputSchema: {
       type: "object",
       properties: {
@@ -50,7 +58,7 @@ export const createKeys: Tool = {
             type: "object",
             properties: {
               n: { type: "string", description: "Key name (e.g., 'submit_button', 'nav.home')" },
-              ns: { type: "string", description: "Namespace (default: 'default')" },
+              ns: { type: "string", description: "Namespace (default: 'default'). MUST match existing keys' namespace — wrong namespace creates duplicate keys." },
               v: { type: "string", description: "Source language text" },
               t: { type: "object", description: "Target translations as {langCode: text}" },
               nc: {
