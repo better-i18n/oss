@@ -13,6 +13,7 @@ const AGGREGATE_RATING = {
   reviewCount: 42,
 } as const;
 
+
 /** English fallback — used when i18n messages are not available */
 const DEFAULT_SLOGAN = "Ship multilingual apps faster";
 const DEFAULT_KNOWS_ABOUT: readonly string[] = [
@@ -113,7 +114,7 @@ export function getSoftwareApplicationSchema(options?: {
     url: SITE_URL,
     image: `${SITE_URL}/logo.png`,
     datePublished: "2026-01-01",
-    dateModified: BUILD_DATE,
+    dateModified: new Date().toISOString().split("T")[0],
     offers: {
       "@type": "Offer",
       price: "0",
@@ -437,7 +438,7 @@ export function getTechArticleSchema(options: {
   mentions?: ReadonlyArray<{ readonly "@type": string; readonly name: string; readonly url: string }>;
 }) {
   const datePublished = options.datePublished || "2026-01-01";
-  const dateModified = options.dateModified || BUILD_DATE;
+  const dateModified = options.dateModified || new Date().toISOString().split("T")[0];
 
   return {
     "@context": "https://schema.org",
