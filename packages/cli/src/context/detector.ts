@@ -263,5 +263,43 @@ function parseLintConfig(content: string): LintConfig | undefined {
       .filter(Boolean);
   }
 
+  // Parse ignorePatterns: [/pattern1/, /pattern2/] or ignorePatterns: ["pattern1", "pattern2"]
+  const ignorePatternsMatch = content.match(/ignorePatterns:\s*\[([^\]]+)\]/);
+  if (ignorePatternsMatch) {
+    const patternsRaw = ignorePatternsMatch[1];
+    const patterns: RegExp[] = [];
+    // Match regex literals like /pattern/flags
+    const regexLiterals = patternsRaw.matchAll(/\/([^/]+)\/([gimsuy]*)/g);
+    for (const match of regexLiterals) {
+      try {
+        patterns.push(new RegExp(match[1], match[2]));
+      } catch {}
+    }
+    // Match string literals like "pattern" or 'pattern'
+    const stringLiterals = patternsRaw.matchAll(/["']([^"']+)["']/g);
+    for (const match of stringLiterals) {
+      try {
+        patterns.push(new RegExp(match[1]));
+      } catch {}
+    }
+    if (patterns.length > 0) {
+      config.ignorePatterns = patterns;
+    }
+  }
+
+  // Parse rules: { "rule-name": "off" | "warning" | "error" }
+  const rulesMatch = content.match(/rules:\s*\{([^}]+)\}/);
+  if (rulesMatch) {
+    const rulesRaw = rulesMatch[1];
+    const rules: Record<string, string> = {};
+    const ruleEntries = rulesRaw.matchAll(/["']?([\w-]+)["']?\s*:\s*["'](off|warning|error)["']/g);
+    for (const match of ruleEntries) {
+      rules[match[1]] = match[2];
+    }
+    if (Object.keys(rules).length > 0) {
+      config.rules = rules as Record<string, "error" | "warning" | "off">;
+    }
+  }
+
   return Object.keys(config).length > 0 ? config : undefined;
 }

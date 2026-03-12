@@ -315,7 +315,16 @@ async function runHealthAnalysis(
 
   const diagnostics: I18nDiagnostic[] = [];
   for (const rule of healthRules) {
-    diagnostics.push(...rule.run(ruleContext));
+    const ruleConfig = context?.lint?.rules?.[rule.id];
+    if (ruleConfig === "off") continue;
+
+    const ruleDiagnostics = rule.run(ruleContext);
+
+    if (ruleConfig === "warning") {
+      diagnostics.push(...ruleDiagnostics.map(d => ({ ...d, severity: "warning" as const })));
+    } else {
+      diagnostics.push(...ruleDiagnostics);
+    }
   }
 
   const keysChecked = Object.keys(translations[sourceLocale] || {}).length;
