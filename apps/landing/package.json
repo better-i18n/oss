@@ -16,6 +16,7 @@
     "@better-i18n/schemas": "workspace:*",
     "@better-i18n/sdk": "^3.1.0",
     "@better-i18n/ui": "^0.1.1",
+    "@radix-ui/react-hover-card": "^1.1.15",
     "@better-i18n/use-intl": "workspace:*",
     "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.90",
     "@remotion/player": "^4.0.409",

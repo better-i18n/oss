@@ -13,7 +13,6 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { z } from "zod";
 
 // ── mcp-types API schemas ────────────────────────────────────────────────────
 import {
@@ -57,22 +56,6 @@ import { getSyncs } from "../tools/getSyncs.js";
 import { getSync } from "../tools/getSync.js";
 import { getProject } from "../tools/getProject.js";
 import { getPendingChanges } from "../tools/getPendingChanges.js";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** Parse a Zod object schema and return its shape keys */
-function zodKeys(schema: z.ZodTypeAny): string[] {
-  if (schema instanceof z.ZodObject) {
-    return Object.keys(schema.shape as Record<string, unknown>);
-  }
-  // Unwrap ZodEffects (transform, refine, etc.)
-  if (schema instanceof z.ZodEffects) {
-    return zodKeys(schema._def.schema);
-  }
-  return [];
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. Tool Zod schema vs mcp-types schema alignment
