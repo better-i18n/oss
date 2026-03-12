@@ -1,6 +1,6 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import {
-  IconTerminal,
+  IconFilterTimeline
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export default function DeveloperCLIDemo() {
@@ -13,7 +13,7 @@ export default function DeveloperCLIDemo() {
           {/* Text */}
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-mist-200 px-3 py-1.5 text-sm text-mist-700 w-fit mb-6">
-              <IconTerminal className="size-4" />
+              <IconFilterTimeline className="size-4" />
               {t("cliDemo.badge")}
             </span>
             <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">

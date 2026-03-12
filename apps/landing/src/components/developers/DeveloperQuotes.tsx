@@ -1,7 +1,7 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import {
   IconCheckCircle2,
-  IconQuotation,
+  IconOpenQuote1,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 const QUOTE_KEYS = ["yamlHell", "contextSwitching", "missingKeys"] as const;
@@ -35,7 +35,7 @@ export default function DeveloperQuotes() {
             >
               {/* Quote */}
               <div className="mb-6">
-                <IconQuotation className="size-8 text-mist-300 mb-3" />
+                <IconOpenQuote1 className="size-8 text-mist-300 mb-3" />
                 <p className="text-base font-medium text-mist-950 leading-relaxed">
                   "{t(`quotes.items.${key}.quote`)}"
                 </p>
