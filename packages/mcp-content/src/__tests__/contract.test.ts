@@ -38,6 +38,7 @@ import { duplicateContentEntry } from "../tools/duplicateContentEntry.js";
 import { publishContentEntry } from "../tools/publishContentEntry.js";
 import { bulkPublishEntries } from "../tools/bulkPublishEntries.js";
 import { bulkCreateEntries } from "../tools/bulkCreateEntries.js";
+import { bulkUpdateEntries } from "../tools/bulkUpdateEntries.js";
 import { listContentModels } from "../tools/listContentModels.js";
 import { getContentModel } from "../tools/getContentModel.js";
 import { listContentEntries } from "../tools/listContentEntries.js";
@@ -60,6 +61,7 @@ import {
   deleteContentModelInput,
   publishContentEntryInput,
   bulkPublishEntriesInput,
+  bulkUpdateEntriesInput,
   duplicateContentEntryInput,
   getContentModelInput,
   listContentEntriesInput,
