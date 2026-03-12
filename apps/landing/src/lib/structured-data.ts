@@ -5,8 +5,7 @@ const DEFAULT_REVIEW_DATE = "2025-01-15";
 /** All supported locales — single source of truth for schema.org availableLanguage */
 export const DEFAULT_AVAILABLE_LANGUAGES: readonly string[] = [
   "en", "tr", "de", "fr", "es", "pt", "it", "nl", "pl", "cs",
-  "ja", "ko", "zh", "ar", "hi", "ru", "uk", "sv", "da", "fi",
-  "nb", "el", "th",
+  "ja", "ko", "zh-hans", "ar", "hi", "ru", "uk", "th",
 ] as const;
 
 /** English fallbacks — used when i18n messages are not available */
