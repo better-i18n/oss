@@ -456,16 +456,29 @@ export function analyzeSourceText(
 
   visit(sourceFile);
 
-  // Filter out ignored strings (brand names, etc.)
-  if (config?.ignoreStrings?.length) {
-    const ignoreSet = new Set(config.ignoreStrings.map((s) => s.toLowerCase()));
-    const filtered = issues.filter(
-      (i) => !ignoreSet.has(i.text.toLowerCase()),
-    );
-    return { issues: filtered, stats };
+  // Line-level suppression via // i18n-ignore comments
+  const suppressedLines = new Set<number>();
+  const lines = sourceText.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    if (/\/\/\s*(?:@)?i18n-ignore/.test(lines[i])) {
+      suppressedLines.add(i + 2); // suppress next line (1-indexed)
+    }
   }
 
-  return { issues, stats };
+  let filtered = issues.filter(i => !suppressedLines.has(i.line));
+
+  if (config?.ignoreStrings?.length) {
+    const ignoreSet = new Set(config.ignoreStrings.map((s) => s.toLowerCase()));
+    filtered = filtered.filter((i) => !ignoreSet.has(i.text.toLowerCase()));
+  }
+
+  if (config?.ignorePatterns?.length) {
+    filtered = filtered.filter(
+      (i) => !config.ignorePatterns!.some((p) => p.test(i.text))
+    );
+  }
+
+  return { issues: filtered, stats };
 }
 
 /**
