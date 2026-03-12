@@ -31,6 +31,7 @@ const queryClient = new QueryClient({
 
 interface RouterContext {
   locale: string;
+  locales: string[]; // Populated by beforeLoad via fetchLocales()
   messages: Record<string, string>;
 }
 
@@ -76,6 +77,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
     return {
       locale,
+      locales,
       messages,
     };
   },
@@ -83,6 +85,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   loader: ({ context }) => {
     return {
       locale: context.locale,
+      locales: context.locales,
       messages: context.messages,
     };
   },
@@ -120,10 +123,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           href: "https://fonts.gstatic.com",
           crossOrigin: "anonymous",
         },
-        {
-          rel: "dns-prefetch",
-          href: "https://og.better-i18n.com",
-        },
+        // TODO: restore dns-prefetch for og.better-i18n.com when OG service is live
         {
           rel: "dns-prefetch",
           href: "https://dash.better-i18n.com",

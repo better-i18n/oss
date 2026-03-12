@@ -52,6 +52,12 @@ node_modules/
 .agents
 skills-lock.json
 
+# Local docs & specs (not tracked)
+docs/superpowers/
+apps/landing/docs/
+apps/landing/SEO-AUDIT-TODOS.md
+apps/landing/SEO-REVIEW-FINDINGS.md
+
 # Build artifacts
 **/build/
 **/.dart_tool/

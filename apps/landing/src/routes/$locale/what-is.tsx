@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { getPageHead, createPageLoader, getEducationalPageStructuredData, formatStructuredData } from "@/lib/page-seo";
+import { getPageHead, getEducationalPageStructuredData, formatStructuredData } from "@/lib/page-seo";
 import { getHowToSchema } from "@/lib/structured-data";
 import { useTranslations } from "@better-i18n/use-intl";
 import { RelatedPages } from "@/components/RelatedPages";
@@ -18,7 +18,7 @@ import {
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/what-is")({
-  loader: createPageLoader(),
+  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
   head: ({ loaderData }) => {
     const messages = loaderData?.messages || {};
     const locale = loaderData?.locale || "en";
@@ -47,6 +47,7 @@ export const Route = createFileRoute("/$locale/what-is")({
       title: structuredTitle,
       description: structuredDescription,
       url: `https://better-i18n.com/${locale}/what-is`,
+      locale,
     });
 
     const howToScript = howToSteps.length > 0
@@ -55,12 +56,14 @@ export const Route = createFileRoute("/$locale/what-is")({
           description: "Step-by-step guide to setting up internationalization using Better i18n.",
           steps: howToSteps,
           totalTime: "PT15M",
+          inLanguage: locale,
         }))
       : [];
 
     return getPageHead({
       messages,
       locale,
+      locales: loaderData?.locales,
       pageKey: "whatIs",
       pathname: "/what-is",
       customStructuredData: [...educationalScripts, ...howToScript],

@@ -1,8 +1,13 @@
 import { getCachedLocales } from "./locales";
 import { SITE_URL } from "@/seo/pages";
 const SITE_NAME = "Better i18n";
-const OG_SERVICE_URL = "https://og.better-i18n.com";
-const DEFAULT_OG_IMAGE = `${OG_SERVICE_URL}/og`;
+/**
+ * OG image service is currently down (404).
+ * Falling back to static logo until the service is restored.
+ * TODO: restore dynamic OG images when og.better-i18n.com is live
+ * OG_SERVICE_URL was: "https://og.better-i18n.com"
+ */
+const DEFAULT_OG_IMAGE = `https://better-i18n.com/logo.png`;
 const TWITTER_HANDLE = "@betteri18n";
 const MAX_TITLE_LENGTH = 70;
 const BRAND_SUFFIX_SEPARATOR_PIPE = ` | ${SITE_NAME}`;
@@ -132,8 +137,12 @@ export function getLocalizedMeta(
  */
 export function formatMetaTags(
   meta: LocalizedMetaResult,
-  options: Partial<MetaOptions> & { locales?: string[] } = {}
+  options: Partial<MetaOptions> & { locales?: string[]; noindex?: boolean } = {}
 ) {
+  const robotsContent = options.noindex
+    ? "noindex, follow"
+    : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
+
   const tags = [
     // Basic meta tags
     { title: meta.title },
@@ -143,6 +152,7 @@ export function formatMetaTags(
     { property: "og:title", content: meta.ogTitle },
     { property: "og:description", content: meta.ogDescription },
     { property: "og:image", content: meta.ogImage },
+    { property: "og:image:alt", content: meta.ogTitle },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
     { property: "og:type", content: meta.ogType },
@@ -156,9 +166,10 @@ export function formatMetaTags(
     { name: "twitter:title", content: meta.ogTitle },
     { name: "twitter:description", content: meta.ogDescription },
     { name: "twitter:image", content: meta.ogImage },
+    { name: "twitter:image:alt", content: meta.ogTitle },
 
     // Additional SEO
-    { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+    { name: "robots", content: robotsContent },
     { name: "author", content: SITE_NAME },
   ];
 
@@ -227,17 +238,18 @@ export function getCanonicalLink(locale: string, pathname: string = "/") {
   };
 }
 
+/**
+ * Builds a dynamic OG image URL via the OG image service.
+ * Currently returns static fallback since og.better-i18n.com is down (404).
+ * TODO: restore dynamic OG images when the service is live
+ */
 export function buildOgImageUrl(
-  endpoint: "og" | "og/blog" | "og/docs",
-  params: Record<string, string | undefined>
+  _endpoint: "og" | "og/blog" | "og/docs",
+  _params: Record<string, string | undefined>
 ): string {
-  const searchParams = new URLSearchParams();
-  for (const [key, value] of Object.entries(params)) {
-    if (value) searchParams.set(key, value);
-  }
-  const qs = searchParams.toString();
-  return qs ? `${OG_SERVICE_URL}/${endpoint}?${qs}` : `${OG_SERVICE_URL}/${endpoint}`;
+  // OG image service is down — return static fallback
+  return DEFAULT_OG_IMAGE;
 }
 
 export { SITE_URL } from "@/seo/pages";
-export { SITE_NAME, DEFAULT_OG_IMAGE, OG_SERVICE_URL, TWITTER_HANDLE };
+export { SITE_NAME, DEFAULT_OG_IMAGE, TWITTER_HANDLE };

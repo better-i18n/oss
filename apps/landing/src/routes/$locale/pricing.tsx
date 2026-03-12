@@ -11,6 +11,7 @@ export const Route = createFileRoute("/$locale/pricing")({
   loader: ({ context }) => ({
     messages: context.messages,
     locale: context.locale,
+    locales: context.locales,
   }),
   head: ({ loaderData }) => {
     const messages = loaderData?.messages || {};
@@ -30,14 +31,15 @@ export const Route = createFileRoute("/$locale/pricing")({
           }))
       : [];
 
-    const pricingScripts = getPricingPageStructuredData();
+    const pricingScripts = getPricingPageStructuredData({ locale });
     const faqScript = faqItems.length > 0
-      ? formatStructuredData(getFAQSchema(faqItems))
+      ? formatStructuredData(getFAQSchema(faqItems, locale))
       : [];
 
     return getPageHead({
       messages,
       locale,
+      locales: loaderData?.locales,
       pageKey: "pricing",
       pathname: "/pricing",
       pageType: "pricing",

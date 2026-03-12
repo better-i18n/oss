@@ -94,6 +94,7 @@ import { Route as LocaleI18nForDevelopersRouteImport } from './routes/$locale/i1
 import { Route as LocaleI18nFlutterRouteImport } from './routes/$locale/i18n/flutter'
 import { Route as LocaleI18nExpoRouteImport } from './routes/$locale/i18n/expo'
 import { Route as LocaleI18nEcommerceGlobalSeoRouteImport } from './routes/$locale/i18n/ecommerce-global-seo'
+import { Route as LocaleI18nDoctorRouteImport } from './routes/$locale/i18n/doctor'
 import { Route as LocaleI18nDjangoRouteImport } from './routes/$locale/i18n/django'
 import { Route as LocaleI18nCulturalAdaptationRouteImport } from './routes/$locale/i18n/cultural-adaptation'
 import { Route as LocaleI18nContentLocalizationServicesRouteImport } from './routes/$locale/i18n/content-localization-services'
@@ -112,6 +113,8 @@ import { Route as LocaleComparePhraseRouteImport } from './routes/$locale/compar
 import { Route as LocaleCompareLokaliseRouteImport } from './routes/$locale/compare/lokalise'
 import { Route as LocaleCompareCrowdinRouteImport } from './routes/$locale/compare/crowdin'
 import { Route as LocaleBlogSlugRouteImport } from './routes/$locale/blog/$slug'
+import { Route as LocaleBlogPageIndexRouteImport } from './routes/$locale/blog/page/index'
+import { Route as LocaleBlogPagePageRouteImport } from './routes/$locale/blog/page/$page'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -565,6 +568,11 @@ const LocaleI18nEcommerceGlobalSeoRoute =
     path: '/$locale/i18n/ecommerce-global-seo',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LocaleI18nDoctorRoute = LocaleI18nDoctorRouteImport.update({
+  id: '/$locale/i18n/doctor',
+  path: '/$locale/i18n/doctor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LocaleI18nDjangoRoute = LocaleI18nDjangoRouteImport.update({
   id: '/$locale/i18n/django',
   path: '/$locale/i18n/django',
@@ -659,6 +667,16 @@ const LocaleBlogSlugRoute = LocaleBlogSlugRouteImport.update({
   path: '/$locale/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleBlogPageIndexRoute = LocaleBlogPageIndexRouteImport.update({
+  id: '/$locale/blog/page/',
+  path: '/$locale/blog/page/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleBlogPagePageRoute = LocaleBlogPagePageRouteImport.update({
+  id: '/$locale/blog/page/$page',
+  path: '/$locale/blog/page/$page',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -722,6 +740,7 @@ export interface FileRoutesByFullPath {
   '/$locale/i18n/content-localization-services': typeof LocaleI18nContentLocalizationServicesRoute
   '/$locale/i18n/cultural-adaptation': typeof LocaleI18nCulturalAdaptationRoute
   '/$locale/i18n/django': typeof LocaleI18nDjangoRoute
+  '/$locale/i18n/doctor': typeof LocaleI18nDoctorRoute
   '/$locale/i18n/ecommerce-global-seo': typeof LocaleI18nEcommerceGlobalSeoRoute
   '/$locale/i18n/expo': typeof LocaleI18nExpoRoute
   '/$locale/i18n/flutter': typeof LocaleI18nFlutterRoute
@@ -764,6 +783,8 @@ export interface FileRoutesByFullPath {
   '/$locale/compare': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
+  '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
+  '/$locale/blog/page': typeof LocaleBlogPageIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -826,6 +847,7 @@ export interface FileRoutesByTo {
   '/$locale/i18n/content-localization-services': typeof LocaleI18nContentLocalizationServicesRoute
   '/$locale/i18n/cultural-adaptation': typeof LocaleI18nCulturalAdaptationRoute
   '/$locale/i18n/django': typeof LocaleI18nDjangoRoute
+  '/$locale/i18n/doctor': typeof LocaleI18nDoctorRoute
   '/$locale/i18n/ecommerce-global-seo': typeof LocaleI18nEcommerceGlobalSeoRoute
   '/$locale/i18n/expo': typeof LocaleI18nExpoRoute
   '/$locale/i18n/flutter': typeof LocaleI18nFlutterRoute
@@ -868,6 +890,8 @@ export interface FileRoutesByTo {
   '/$locale/compare': typeof LocaleCompareIndexRoute
   '/$locale/features': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
+  '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
+  '/$locale/blog/page': typeof LocaleBlogPageIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -932,6 +956,7 @@ export interface FileRoutesById {
   '/$locale/i18n/content-localization-services': typeof LocaleI18nContentLocalizationServicesRoute
   '/$locale/i18n/cultural-adaptation': typeof LocaleI18nCulturalAdaptationRoute
   '/$locale/i18n/django': typeof LocaleI18nDjangoRoute
+  '/$locale/i18n/doctor': typeof LocaleI18nDoctorRoute
   '/$locale/i18n/ecommerce-global-seo': typeof LocaleI18nEcommerceGlobalSeoRoute
   '/$locale/i18n/expo': typeof LocaleI18nExpoRoute
   '/$locale/i18n/flutter': typeof LocaleI18nFlutterRoute
@@ -974,6 +999,8 @@ export interface FileRoutesById {
   '/$locale/compare/': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n/': typeof LocaleI18nIndexRoute
+  '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
+  '/$locale/blog/page/': typeof LocaleBlogPageIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1039,6 +1066,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/content-localization-services'
     | '/$locale/i18n/cultural-adaptation'
     | '/$locale/i18n/django'
+    | '/$locale/i18n/doctor'
     | '/$locale/i18n/ecommerce-global-seo'
     | '/$locale/i18n/expo'
     | '/$locale/i18n/flutter'
@@ -1081,6 +1109,8 @@ export interface FileRouteTypes {
     | '/$locale/compare'
     | '/$locale/features/'
     | '/$locale/i18n'
+    | '/$locale/blog/page/$page'
+    | '/$locale/blog/page'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1143,6 +1173,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/content-localization-services'
     | '/$locale/i18n/cultural-adaptation'
     | '/$locale/i18n/django'
+    | '/$locale/i18n/doctor'
     | '/$locale/i18n/ecommerce-global-seo'
     | '/$locale/i18n/expo'
     | '/$locale/i18n/flutter'
@@ -1185,6 +1216,8 @@ export interface FileRouteTypes {
     | '/$locale/compare'
     | '/$locale/features'
     | '/$locale/i18n'
+    | '/$locale/blog/page/$page'
+    | '/$locale/blog/page'
   id:
     | '__root__'
     | '/'
@@ -1248,6 +1281,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/content-localization-services'
     | '/$locale/i18n/cultural-adaptation'
     | '/$locale/i18n/django'
+    | '/$locale/i18n/doctor'
     | '/$locale/i18n/ecommerce-global-seo'
     | '/$locale/i18n/expo'
     | '/$locale/i18n/flutter'
@@ -1290,6 +1324,8 @@ export interface FileRouteTypes {
     | '/$locale/compare/'
     | '/$locale/features/'
     | '/$locale/i18n/'
+    | '/$locale/blog/page/$page'
+    | '/$locale/blog/page/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1353,6 +1389,7 @@ export interface RootRouteChildren {
   LocaleI18nContentLocalizationServicesRoute: typeof LocaleI18nContentLocalizationServicesRoute
   LocaleI18nCulturalAdaptationRoute: typeof LocaleI18nCulturalAdaptationRoute
   LocaleI18nDjangoRoute: typeof LocaleI18nDjangoRoute
+  LocaleI18nDoctorRoute: typeof LocaleI18nDoctorRoute
   LocaleI18nEcommerceGlobalSeoRoute: typeof LocaleI18nEcommerceGlobalSeoRoute
   LocaleI18nExpoRoute: typeof LocaleI18nExpoRoute
   LocaleI18nFlutterRoute: typeof LocaleI18nFlutterRoute
@@ -1394,6 +1431,8 @@ export interface RootRouteChildren {
   LocaleBlogIndexRoute: typeof LocaleBlogIndexRoute
   LocaleCompareIndexRoute: typeof LocaleCompareIndexRoute
   LocaleI18nIndexRoute: typeof LocaleI18nIndexRoute
+  LocaleBlogPagePageRoute: typeof LocaleBlogPagePageRoute
+  LocaleBlogPageIndexRoute: typeof LocaleBlogPageIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1993,6 +2032,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nEcommerceGlobalSeoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/i18n/doctor': {
+      id: '/$locale/i18n/doctor'
+      path: '/$locale/i18n/doctor'
+      fullPath: '/$locale/i18n/doctor'
+      preLoaderRoute: typeof LocaleI18nDoctorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/i18n/django': {
       id: '/$locale/i18n/django'
       path: '/$locale/i18n/django'
@@ -2119,6 +2165,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleBlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/blog/page/': {
+      id: '/$locale/blog/page/'
+      path: '/$locale/blog/page'
+      fullPath: '/$locale/blog/page'
+      preLoaderRoute: typeof LocaleBlogPageIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/blog/page/$page': {
+      id: '/$locale/blog/page/$page'
+      path: '/$locale/blog/page/$page'
+      fullPath: '/$locale/blog/page/$page'
+      preLoaderRoute: typeof LocaleBlogPagePageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -2198,6 +2258,7 @@ const rootRouteChildren: RootRouteChildren = {
     LocaleI18nContentLocalizationServicesRoute,
   LocaleI18nCulturalAdaptationRoute: LocaleI18nCulturalAdaptationRoute,
   LocaleI18nDjangoRoute: LocaleI18nDjangoRoute,
+  LocaleI18nDoctorRoute: LocaleI18nDoctorRoute,
   LocaleI18nEcommerceGlobalSeoRoute: LocaleI18nEcommerceGlobalSeoRoute,
   LocaleI18nExpoRoute: LocaleI18nExpoRoute,
   LocaleI18nFlutterRoute: LocaleI18nFlutterRoute,
@@ -2247,6 +2308,8 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleBlogIndexRoute: LocaleBlogIndexRoute,
   LocaleCompareIndexRoute: LocaleCompareIndexRoute,
   LocaleI18nIndexRoute: LocaleI18nIndexRoute,
+  LocaleBlogPagePageRoute: LocaleBlogPagePageRoute,
+  LocaleBlogPageIndexRoute: LocaleBlogPageIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

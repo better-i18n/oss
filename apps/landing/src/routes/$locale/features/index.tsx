@@ -21,6 +21,7 @@ export const Route = createFileRoute("/$locale/features/")({
     return {
       messages: context.messages,
       locale: context.locale,
+      locales: context.locales,
       featurePages,
     };
   },
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/$locale/features/")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
+      locales: loaderData?.locales,
       pageKey: "features",
       pathname: "/features",
       pageType: "default",

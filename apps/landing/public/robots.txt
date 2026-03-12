@@ -1,7 +1,43 @@
 # Sitemap
 Sitemap: https://better-i18n.com/sitemap.xml
 
-# Disallow admin/internal paths
+# AI content discovery
+# llms.txt: https://better-i18n.com/llms.txt
+# llms-full.txt: https://better-i18n.com/llms-full.txt
+
+# Default crawl rules
 User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_/
+
+# AI search crawlers — explicitly allowed
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+Disallow: /_/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+Disallow: /_/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+Disallow: /_/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+Disallow: /_/
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /api/
+Disallow: /_/
+
+User-agent: cohere-ai
+Allow: /
 Disallow: /api/
 Disallow: /_/
