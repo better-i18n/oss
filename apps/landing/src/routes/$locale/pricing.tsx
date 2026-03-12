@@ -31,9 +31,9 @@ export const Route = createFileRoute("/$locale/pricing")({
           }))
       : [];
 
-    const pricingScripts = getPricingPageStructuredData();
+    const pricingScripts = getPricingPageStructuredData(locale);
     const faqScript = faqItems.length > 0
-      ? formatStructuredData(getFAQSchema(faqItems))
+      ? formatStructuredData(getFAQSchema(faqItems, locale))
       : [];
 
     return getPageHead({

@@ -47,6 +47,7 @@ export const Route = createFileRoute("/$locale/what-is")({
       title: structuredTitle,
       description: structuredDescription,
       url: `https://better-i18n.com/${locale}/what-is`,
+      locale,
     });
 
     const howToScript = howToSteps.length > 0
@@ -55,6 +56,7 @@ export const Route = createFileRoute("/$locale/what-is")({
           description: "Step-by-step guide to setting up internationalization using Better i18n.",
           steps: howToSteps,
           totalTime: "PT15M",
+          inLanguage: locale,
         }))
       : [];
 

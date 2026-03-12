@@ -37,6 +37,7 @@ export const Route = createFileRoute("/$locale/for-developers")({
       title: "Better i18n for Developers",
       description: "Developer-first internationalization with type-safe SDKs, Git integration, global CDN delivery, and automated translation workflows.",
       url: `https://better-i18n.com/${locale}/for-developers`,
+      locale,
     });
 
     const howToScript = howToSteps.length > 0
@@ -45,6 +46,7 @@ export const Route = createFileRoute("/$locale/for-developers")({
           description: "Developer workflow for connecting your repo, discovering keys, translating, and publishing.",
           steps: howToSteps,
           totalTime: "PT10M",
+          inLanguage: locale,
         }))
       : [];
 

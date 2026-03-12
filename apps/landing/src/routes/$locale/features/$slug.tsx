@@ -70,7 +70,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
     const breadcrumbScripts = formatStructuredData(
       getBreadcrumbSchema([
         { name: "Home", url: `${SITE_URL}/${locale}/` },
-        { name: "Features", url: `${SITE_URL}/${locale}/features` },
+        { name: "Features", url: `${SITE_URL}/${locale}/features/` },
         { name: page?.title || "Feature", url: canonicalUrl },
       ]),
     );
