@@ -13,11 +13,48 @@
  */
 
 import type { BlogPostMeta } from "./generate-pages";
-import type { SectionKey } from "./llms-txt-locales";
-
-import { getLocaleStrings as getHardcodedLocaleStrings } from "./llms-txt-locales";
-import type { LlmsLocaleStrings } from "./llms-txt-locales";
 import { SITE_URL } from "./pages";
+
+// ─── Types ───────────────────────────────────────────────────────────
+
+export type SectionKey =
+  | "keyPages"
+  | "solutionsByRole"
+  | "solutionsByIndustry"
+  | "frameworkGuides"
+  | "comparisons"
+  | "educationalContent"
+  | "localizationGuides"
+  | "multilingualSeoGuides"
+  | "developerTools"
+  | "blogPosts"
+  | "externalLinks";
+
+export interface LlmsLocaleStrings {
+  readonly tagline: string;
+  readonly about: string;
+  readonly headings: Readonly<Record<SectionKey, string>>;
+}
+
+// ─── English defaults (last-resort fallback) ─────────────────────────
+
+const ENGLISH_DEFAULTS: LlmsLocaleStrings = {
+  tagline: "AI-powered localization platform for developers and product teams. Ship multilingual apps faster with automated translations, context-aware AI, and seamless framework integrations.",
+  about: "Better i18n is a translation management system (TMS) that combines AI-powered translations with developer-first tooling. It supports React, Next.js, Vue, Nuxt, Angular, Svelte, and Expo (React Native) through official SDK packages. The platform provides context-rich translation environments for translators, automated sync for developers, and hassle-free localization management for product teams.",
+  headings: {
+    keyPages: "Key Pages",
+    solutionsByRole: "Solutions by Role",
+    solutionsByIndustry: "Solutions by Industry",
+    frameworkGuides: "Framework Guides",
+    comparisons: "Comparisons",
+    educationalContent: "Educational Content",
+    localizationGuides: "Localization Guides",
+    multilingualSeoGuides: "Multilingual SEO Guides",
+    developerTools: "Developer Tools",
+    blogPosts: "Blog Posts",
+    externalLinks: "External Links",
+  },
+};
 
 // ─── i18n message keys (llms namespace) ─────────────────────────────
 
@@ -25,32 +62,30 @@ const LLMS_KEY_TAGLINE = "llms.tagline";
 const LLMS_KEY_ABOUT = "llms.about";
 const HEADING_KEY_PREFIX = "llms.headings.";
 
+const ALL_SECTION_KEYS: readonly SectionKey[] = [
+  "keyPages", "solutionsByRole", "solutionsByIndustry", "frameworkGuides",
+  "comparisons", "educationalContent", "localizationGuides",
+  "multilingualSeoGuides", "developerTools", "blogPosts", "externalLinks",
+];
+
 /**
  * Resolves LlmsLocaleStrings from CDN-fetched i18n messages.
- * Falls back to the hardcoded locale file when messages are unavailable.
+ * Falls back to English defaults when messages are unavailable.
  */
 function resolveLocaleStrings(
-  locale: string,
+  _locale: string,
   messages?: Readonly<Record<string, string>>,
 ): LlmsLocaleStrings {
-  if (!messages) return getHardcodedLocaleStrings(locale);
+  if (!messages) return ENGLISH_DEFAULTS;
 
   const tagline = messages[LLMS_KEY_TAGLINE];
   const about = messages[LLMS_KEY_ABOUT];
 
-  // If essential keys are missing, fall back to hardcoded
-  if (!tagline || !about) return getHardcodedLocaleStrings(locale);
+  if (!tagline || !about) return ENGLISH_DEFAULTS;
 
-  const headingKeys: SectionKey[] = [
-    "keyPages", "solutionsByRole", "solutionsByIndustry", "frameworkGuides",
-    "comparisons", "educationalContent", "localizationGuides",
-    "multilingualSeoGuides", "developerTools", "blogPosts", "externalLinks",
-  ];
-
-  const hardcoded = getHardcodedLocaleStrings(locale);
   const headings = {} as Record<SectionKey, string>;
-  for (const key of headingKeys) {
-    headings[key] = messages[`${HEADING_KEY_PREFIX}${key}`] ?? hardcoded.headings[key];
+  for (const key of ALL_SECTION_KEYS) {
+    headings[key] = messages[`${HEADING_KEY_PREFIX}${key}`] ?? ENGLISH_DEFAULTS.headings[key];
   }
 
   return { tagline, about, headings };
@@ -217,7 +252,7 @@ const PAGE_TITLES: Readonly<Record<string, string>> = {
 /**
  * Static section groupings for marketing pages.
  * Each section uses a headingKey that maps to localized heading strings
- * via llms-txt-locales.ts.
+ * via the Better i18n CDN (llms namespace).
  */
 const STATIC_SECTIONS: readonly LlmsTxtSection[] = [
   {
@@ -478,7 +513,7 @@ export function generateLlmsFullTxtContent(
  * - Root `/llms.txt` and `/llms-full.txt` are always English.
  * - Each locale gets `{locale}/llms.txt` and `{locale}/llms-full.txt`.
  * - When `i18nMessages` is provided, translations come from the Better i18n CDN.
- *   Falls back to hardcoded strings in llms-txt-locales.ts when unavailable.
+ *   Falls back to English defaults when CDN messages are unavailable.
  *
  * Pure function — no I/O.
  */
