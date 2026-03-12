@@ -10,10 +10,9 @@ import {
   SITE_URL,
   getAlternateLinks,
   getCanonicalLink,
-  getCanonicalUrl,
   buildOgImageUrl,
-  toOgLocale,
 } from "@/lib/meta";
+import { getCachedLocales } from "@/lib/locales";
 import {
   getEducationalPageStructuredData,
   getBreadcrumbSchema,
@@ -35,7 +34,7 @@ const loadRelatedFeatures = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/$locale/features/$slug")({
-  loader: async ({ params, context }) => {
+  loader: async ({ params }) => {
     const page = await loadFeaturePage({
       data: { slug: params.slug, locale: params.locale },
     });
@@ -45,14 +44,13 @@ export const Route = createFileRoute("/$locale/features/$slug")({
     const relatedFeatures = await loadRelatedFeatures({
       data: { slug: params.slug, locale: params.locale },
     });
-    return { page, locale: params.locale, locales: context.locales, relatedFeatures };
+    return { page, locale: params.locale, relatedFeatures };
   },
   head: ({ loaderData }) => {
     const page = loaderData?.page;
     const locale = loaderData?.locale || "en";
-    const locales = loaderData?.locales;
     const pathname = `/features/${page?.slug || ""}`;
-    const canonicalUrl = getCanonicalUrl(locale, pathname);
+    const canonicalUrl = `${SITE_URL}/${locale}${pathname}/`;
 
     const dynamicOgImage = buildOgImageUrl("og", {
       title: page?.title || "Feature",
@@ -64,7 +62,6 @@ export const Route = createFileRoute("/$locale/features/$slug")({
       title: page?.title || "Feature",
       description: excerpt,
       url: canonicalUrl,
-      locale,
     });
 
     const breadcrumbScripts = formatStructuredData(
@@ -82,31 +79,42 @@ export const Route = createFileRoute("/$locale/features/$slug")({
         { property: "og:title", content: page?.title || "" },
         { property: "og:description", content: excerpt },
         { property: "og:image", content: dynamicOgImage },
+        {
+          property: "og:image:alt",
+          content: page?.title || "Feature",
+        },
         { property: "og:image:width", content: "1200" },
         { property: "og:image:height", content: "630" },
-        { property: "og:image:alt", content: page?.title || "Better i18n Feature" },
         { property: "og:type", content: "website" },
         { property: "og:url", content: canonicalUrl },
         { property: "og:site_name", content: "Better i18n" },
-        { property: "og:locale", content: toOgLocale(locale) },
+        { property: "og:locale", content: locale },
+        ...getCachedLocales()
+          .filter((loc) => loc !== locale)
+          .map((loc) => ({
+            property: "og:locale:alternate",
+            content: loc,
+          })),
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:site", content: "@betteri18n" },
         { name: "twitter:title", content: page?.title || "" },
         { name: "twitter:description", content: excerpt },
         { name: "twitter:image", content: dynamicOgImage },
-        { name: "twitter:image:alt", content: page?.title || "Better i18n Feature" },
-        { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
+        {
+          name: "twitter:image:alt",
+          content: page?.title || "Feature",
+        },
+        {
+          name: "robots",
+          content:
+            "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+        },
         ...(page?.targetKeywords
           ? [{ name: "keywords", content: page.targetKeywords }]
           : []),
-        ...(locales
-          ? locales
-              .filter((loc) => loc !== locale)
-              .map((loc) => ({ property: "og:locale:alternate", content: toOgLocale(loc) }))
-          : []),
       ],
       links: [
-        ...getAlternateLinks(pathname, locales),
+        ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
       scripts: [...educationalScripts, ...breadcrumbScripts],
@@ -155,7 +163,6 @@ function FeaturePageComponent() {
             <div className="min-w-0">
               <BlogContent
                 html={page.bodyHtml}
-                locale={locale}
                 className="prose prose-lg max-w-none
                   prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
                   prose-p:text-mist-700 prose-p:leading-relaxed

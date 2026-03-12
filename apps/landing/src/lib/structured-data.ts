@@ -1,6 +1,8 @@
 import { SITE_URL, SITE_NAME } from "./meta";
 
-/** Default available languages (ISO 639-1 codes) */
+const DEFAULT_REVIEW_DATE = "2025-01-15";
+
+/** All supported locales — single source of truth for schema.org availableLanguage */
 const DEFAULT_AVAILABLE_LANGUAGES: readonly string[] = [
   "en", "tr", "de", "fr", "es", "pt", "it", "nl", "pl", "cs",
   "ja", "ko", "zh", "ar", "hi", "ru", "uk", "sv", "da", "fi",
@@ -9,7 +11,6 @@ const DEFAULT_AVAILABLE_LANGUAGES: readonly string[] = [
 
 // ─── Localized Organization fields ──────────────────────────────────
 
-/** Localized slogans keyed by ISO 639-1 */
 const SLOGAN: Readonly<Record<string, string>> = {
   en: "Ship multilingual apps faster",
   tr: "Çok dilli uygulamaları daha hızlı yayınlayın",
@@ -36,7 +37,6 @@ const SLOGAN: Readonly<Record<string, string>> = {
   th: "เปิดตัวแอปหลายภาษาได้เร็วขึ้น",
 };
 
-/** Localized knowsAbout terms keyed by ISO 639-1 */
 const KNOWS_ABOUT: Readonly<Record<string, readonly string[]>> = {
   en: ["internationalization", "localization", "translation management", "i18n", "l10n", "multilingual SEO", "software localization"],
   tr: ["uluslararasılaştırma", "yerelleştirme", "çeviri yönetimi", "i18n", "l10n", "çok dilli SEO", "yazılım yerelleştirme"],
@@ -64,16 +64,29 @@ const KNOWS_ABOUT: Readonly<Record<string, readonly string[]>> = {
 };
 
 /**
- * Returns today's date as YYYY-MM-DD.
- * Used as fallback for dateModified so structured data stays fresh
- * without requiring manual updates.
+ * Common entity mentions for schema.org `mentions` property.
+ * Helps AI models understand entity relationships.
  */
-function getTodayDate(): string {
-  return new Date().toISOString().split("T")[0]!;
+export function getFrameworkMention(frameworkName: string, frameworkUrl: string) {
+  return {
+    "@type": "SoftwareApplication" as const,
+    name: frameworkName,
+    url: frameworkUrl,
+  };
 }
 
-/** Default review date — used when no datePublished is provided for a review */
-const DEFAULT_REVIEW_DATE = "2025-01-15";
+const COMMON_MENTIONS = {
+  react: getFrameworkMention("React", "https://react.dev"),
+  nextjs: getFrameworkMention("Next.js", "https://nextjs.org"),
+  vue: getFrameworkMention("Vue.js", "https://vuejs.org"),
+  nuxt: getFrameworkMention("Nuxt", "https://nuxt.com"),
+  angular: getFrameworkMention("Angular", "https://angular.dev"),
+  svelte: getFrameworkMention("Svelte", "https://svelte.dev"),
+  expo: getFrameworkMention("Expo", "https://expo.dev"),
+  flutter: getFrameworkMention("Flutter", "https://flutter.dev"),
+} as const;
+
+export { COMMON_MENTIONS };
 
 /**
  * Organization Schema - represents the company/brand
@@ -89,6 +102,7 @@ export function getOrganizationSchema(options?: {
     "@type": "Organization",
     name: SITE_NAME,
     url: SITE_URL,
+    ...(options?.locale && { inLanguage: locale }),
     logo: {
       "@type": "ImageObject",
       url: `${SITE_URL}/logo.png`,
@@ -108,7 +122,6 @@ export function getOrganizationSchema(options?: {
       url: `${SITE_URL}/about`,
       availableLanguage: [...languages],
     },
-    ...(locale !== "en" && { inLanguage: locale }),
   };
 }
 
@@ -128,7 +141,6 @@ export function getWebSiteSchema(locale?: string) {
 interface SoftwareAppReview {
   author: string;
   reviewBody: string;
-  datePublished?: string;
 }
 
 /**
@@ -137,40 +149,24 @@ interface SoftwareAppReview {
  * Google requires `price` as a string and recommends nesting `review`
  * inside the main schema rather than using standalone Review schemas.
  */
-export function getSoftwareApplicationSchema(
-  reviews?: SoftwareAppReview[],
-  locale?: string
-) {
+export function getSoftwareApplicationSchema(reviews?: SoftwareAppReview[]) {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: SITE_NAME,
     applicationCategory: "DeveloperApplication",
-    applicationSubCategory: "Translation Management System",
     operatingSystem: "Web",
     url: SITE_URL,
     image: `${SITE_URL}/logo.png`,
-    datePublished: "2024-06-01",
-    dateModified: getTodayDate(),
-    ...(locale && { inLanguage: locale }),
-    featureList: [
-      "AI-powered translations",
-      "React / Next.js / Vue / Nuxt / Angular / Svelte / Expo SDKs",
-      "GitHub sync & CI/CD integration",
-      "Context-aware translation editor",
-      "Global CDN delivery",
-      "CLI code scanning",
-      "Plural rules & ICU message format",
-      "Over-the-air translation updates",
-    ].join(", "),
-    softwareRequirements: "Modern web browser",
+    datePublished: "2025-01-01",
+    dateModified: new Date().toISOString().split("T")[0],
     offers: {
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
       description: "Free tier available",
       availability: "https://schema.org/InStock",
-      url: `${SITE_URL}/${locale || "en"}/pricing/`,
+      url: `${SITE_URL}/en/pricing`,
     },
     aggregateRating: {
       "@type": "AggregateRating",
@@ -185,7 +181,7 @@ export function getSoftwareApplicationSchema(
         "@type": "Review",
         author: { "@type": "Person", name: r.author },
         reviewBody: r.reviewBody,
-        datePublished: r.datePublished ?? DEFAULT_REVIEW_DATE,
+        datePublished: "2025-01-15",
         reviewRating: {
           "@type": "Rating",
           ratingValue: 5,
@@ -209,12 +205,11 @@ export function getBreadcrumbSchema(items: BreadcrumbItem[]) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: items.map((breadcrumb, index) => ({
+    itemListElement: items.map((item, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      name: breadcrumb.name,
-      item: breadcrumb.url,
-      url: breadcrumb.url,
+      name: item.name,
+      item: item.url,
     })),
   };
 }
@@ -319,7 +314,7 @@ export function formatStructuredData(schema: object | object[]) {
  */
 export function getDefaultStructuredData(locale?: string) {
   return formatStructuredData([
-    getOrganizationSchema({ locale }),
+    getOrganizationSchema(locale ? { locale } : undefined),
     getWebSiteSchema(locale),
   ]);
 }
@@ -327,14 +322,11 @@ export function getDefaultStructuredData(locale?: string) {
 /**
  * Get home page structured data
  */
-export function getHomePageStructuredData(
-  reviews?: SoftwareAppReview[],
-  locale?: string
-) {
+export function getHomePageStructuredData(reviews?: SoftwareAppReview[], locale?: string) {
   return formatStructuredData([
-    getOrganizationSchema({ locale }),
+    getOrganizationSchema(locale ? { locale } : undefined),
     getWebSiteSchema(locale),
-    getSoftwareApplicationSchema(reviews, locale),
+    getSoftwareApplicationSchema(reviews),
   ]);
 }
 
@@ -351,14 +343,12 @@ export function getComparisonSchema(options: {
   title: string;
   description: string;
   items: ComparisonItem[];
-  inLanguage?: string;
 }) {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: options.title,
     description: options.description,
-    ...(options.inLanguage && { inLanguage: options.inLanguage }),
     itemListElement: options.items.map((item, index) => ({
       "@type": "ListItem",
       position: index + 1,
@@ -417,7 +407,6 @@ export function getProductSchema(options: {
   description: string;
   image?: string;
   brand?: string;
-  inLanguage?: string;
   offers: Array<{
     name: string;
     price: number;
@@ -436,7 +425,6 @@ export function getProductSchema(options: {
       "@type": "Brand",
       name: options.brand || SITE_NAME,
     },
-    ...(options.inLanguage && { inLanguage: options.inLanguage }),
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: 4.9,
@@ -453,7 +441,7 @@ export function getProductSchema(options: {
       ...(offer.description && { description: offer.description }),
       ...(offer.url && { url: offer.url }),
       availability: "https://schema.org/InStock",
-      priceValidUntil: "2027-12-31",
+      priceValidUntil: "2026-12-31",
     })),
   };
 }
@@ -466,7 +454,6 @@ export function getWebPageSchema(options: {
   description: string;
   url: string;
   speakable?: string[]; // CSS selectors for speakable content
-  inLanguage?: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -474,7 +461,6 @@ export function getWebPageSchema(options: {
     name: options.name,
     description: options.description,
     url: options.url,
-    ...(options.inLanguage && { inLanguage: options.inLanguage }),
     isPartOf: {
       "@type": "WebSite",
       name: SITE_NAME,
@@ -501,10 +487,10 @@ export function getTechArticleSchema(options: {
   dateModified?: string;
   dependencies?: string[];
   proficiencyLevel?: "Beginner" | "Intermediate" | "Expert";
-  inLanguage?: string;
+  mentions?: ReadonlyArray<{ readonly "@type": string; readonly name: string; readonly url: string }>;
 }) {
   const datePublished = options.datePublished || "2025-01-01";
-  const dateModified = options.dateModified || getTodayDate();
+  const dateModified = options.dateModified || new Date().toISOString().split("T")[0];
 
   return {
     "@context": "https://schema.org",
@@ -515,7 +501,6 @@ export function getTechArticleSchema(options: {
     image: options.image || `${SITE_URL}/logo.png`,
     datePublished,
     dateModified,
-    ...(options.inLanguage && { inLanguage: options.inLanguage }),
     author: {
       "@type": "Organization",
       name: SITE_NAME,
@@ -535,24 +520,21 @@ export function getTechArticleSchema(options: {
     },
     ...(options.dependencies && { dependencies: options.dependencies.join(", ") }),
     ...(options.proficiencyLevel && { proficiencyLevel: options.proficiencyLevel }),
+    ...(options.mentions && { mentions: options.mentions }),
   };
 }
 
 /**
  * Get comparison page structured data
  */
-export function getComparisonPageStructuredData(
-  competitorName: string,
-  locale?: string
-) {
+export function getComparisonPageStructuredData(competitorName: string) {
   return formatStructuredData([
-    getOrganizationSchema({ locale }),
+    getOrganizationSchema(),
     getWebPageSchema({
       name: `${SITE_NAME} vs ${competitorName} Comparison`,
       description: `Compare ${SITE_NAME} with ${competitorName} - features, pricing, and developer experience.`,
       url: `${SITE_URL}/compare/${competitorName.toLowerCase()}`,
       speakable: ["h1", "h2", ".comparison-summary"],
-      inLanguage: locale,
     }),
   ]);
 }
@@ -563,18 +545,16 @@ export function getComparisonPageStructuredData(
 export function getFrameworkPageStructuredData(
   framework: string,
   description: string,
-  dependencies?: string[],
-  locale?: string
+  dependencies?: string[]
 ) {
   return formatStructuredData([
-    getOrganizationSchema({ locale }),
+    getOrganizationSchema(),
     getTechArticleSchema({
       headline: `${framework} Internationalization (i18n) Guide`,
       description,
       url: `${SITE_URL}/i18n/${framework.toLowerCase()}`,
       proficiencyLevel: "Intermediate",
       dependencies,
-      inLanguage: locale,
     }),
   ]);
 }
@@ -589,13 +569,12 @@ export function getEducationalPageStructuredData(options: {
   locale?: string;
 }) {
   return formatStructuredData([
-    getOrganizationSchema({ locale: options.locale }),
+    getOrganizationSchema(),
     getWebPageSchema({
       name: options.title,
       description: options.description,
       url: options.url,
       speakable: ["h1", "h2", ".intro"],
-      inLanguage: options.locale,
     }),
   ]);
 }
@@ -615,19 +594,18 @@ export function getCollectionPageSchema(options: {
     name: options.name,
     description: options.description,
     url: options.url,
-    ...(options.inLanguage && { inLanguage: options.inLanguage }),
     isPartOf: {
       "@type": "WebSite",
       name: SITE_NAME,
       url: SITE_URL,
     },
+    ...(options.inLanguage && { inLanguage: options.inLanguage }),
   };
 }
 
 interface ReviewItem {
   author: string;
   reviewBody: string;
-  datePublished?: string;
 }
 
 /**
@@ -635,7 +613,8 @@ interface ReviewItem {
  */
 export function getReviewSchema(
   reviews: ReviewItem[],
-  defaultDatePublished: string = DEFAULT_REVIEW_DATE
+  defaultDatePublished: string = DEFAULT_REVIEW_DATE,
+  locale?: string,
 ) {
   return reviews.map((review) => ({
     "@context": "https://schema.org",
@@ -645,7 +624,7 @@ export function getReviewSchema(
       name: review.author,
     },
     reviewBody: review.reviewBody,
-    datePublished: review.datePublished ?? defaultDatePublished,
+    datePublished: defaultDatePublished,
     itemReviewed: {
       "@type": "SoftwareApplication",
       name: SITE_NAME,
@@ -657,6 +636,7 @@ export function getReviewSchema(
       bestRating: 5,
       worstRating: 1,
     },
+    ...(locale && { inLanguage: locale }),
   }));
 }
 
@@ -679,7 +659,7 @@ interface JobPostingOptions {
 /**
  * JobPosting Schema - for careers page
  */
-export function getJobPostingSchema(jobs: JobPostingOptions[]) {
+export function getJobPostingSchema(jobs: JobPostingOptions[], locale?: string) {
   return jobs.map((job) => ({
     "@context": "https://schema.org",
     "@type": "JobPosting",
@@ -720,6 +700,7 @@ export function getJobPostingSchema(jobs: JobPostingOptions[]) {
     }),
     datePosted: "2026-01-01",
     validThrough: "2026-12-31",
+    ...(locale && { inLanguage: locale }),
   }));
 }
 
@@ -728,26 +709,25 @@ export function getJobPostingSchema(jobs: JobPostingOptions[]) {
  */
 export function getCareersPageStructuredData(
   jobs: JobPostingOptions[],
-  locale?: string
+  locale?: string,
 ) {
   return formatStructuredData([
-    getOrganizationSchema({ locale }),
-    ...getJobPostingSchema(jobs),
+    getOrganizationSchema(),
+    ...getJobPostingSchema(jobs, locale),
   ]);
 }
 
 /**
  * Get pricing page structured data
  */
-export function getPricingPageStructuredData(locale: string = "en") {
-  const pricingUrl = `${SITE_URL}/${locale}/pricing/`;
+export function getPricingPageStructuredData(locale?: string) {
+  const pricingUrl = `${SITE_URL}/en/pricing`;
   return formatStructuredData([
-    getOrganizationSchema({ locale }),
-    getSoftwareApplicationSchema(undefined, locale),
+    getOrganizationSchema(locale ? { locale } : undefined),
+    getSoftwareApplicationSchema(),
     getProductSchema({
       name: `${SITE_NAME} Translation Management`,
       description: "AI-powered translation management system for developers",
-      inLanguage: locale,
       offers: [
         { name: "Free", price: 0, priceCurrency: "USD", description: "For hobby projects", url: pricingUrl },
         { name: "Pro", price: 19, priceCurrency: "USD", description: "For growing teams", url: pricingUrl },

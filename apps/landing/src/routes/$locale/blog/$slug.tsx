@@ -25,9 +25,9 @@ import {
   SITE_URL,
   getAlternateLinks,
   getCanonicalLink,
-  getCanonicalUrl,
+  getLocalizedMeta,
+  formatMetaTags,
   buildOgImageUrl,
-  toOgLocale,
 } from "@/lib/meta";
 import {
   getArticleSchema,
@@ -51,7 +51,7 @@ const loadRelatedPosts = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/$locale/blog/$slug")({
-  loader: async ({ params, context }) => {
+  loader: async ({ params }) => {
     const post = await loadBlogPost({
       data: { slug: params.slug, locale: params.locale },
     });
@@ -65,13 +65,12 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         locale: params.locale,
       },
     });
-    return { post, locale: params.locale, locales: context.locales, relatedPosts };
+    return { post, locale: params.locale, relatedPosts };
   },
   head: ({ loaderData }) => {
     const post = loaderData?.post;
     const locale = loaderData?.locale || "en";
     const pathname = `/blog/${post?.slug || ""}`;
-    const canonicalUrl = getCanonicalUrl(locale, pathname);
 
     // Generate dynamic OG image URL via external OG service
     const dynamicOgImage = buildOgImageUrl("og/blog", {
@@ -89,7 +88,56 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     });
 
     const excerpt = post?.excerpt || "";
+    const postTitle = post?.title || "Post";
+    const authorName = post?.authorName || "Better i18n Team";
 
+    // Build base meta using getLocalizedMeta with article type
+    const meta = getLocalizedMeta(
+      {},
+      "",
+      {
+        locale,
+        pathname,
+        ogImage: dynamicOgImage,
+        ogType: "article",
+      },
+    );
+
+    // Override with blog-specific values (immutable spread)
+    const blogMeta = {
+      ...meta,
+      title: `${postTitle} - Better i18n Blog`,
+      description: excerpt,
+      ogTitle: postTitle,
+      ogDescription: excerpt,
+    };
+
+    // Use formatMetaTags for consistent meta tag generation
+    const availableLanguages = post?.availableLanguages ?? [];
+    const baseTags = formatMetaTags(blogMeta, {
+      locale,
+      locales: availableLanguages.length > 0 ? [...availableLanguages] : undefined,
+      publishedTime: post?.publishedAt || "",
+      modifiedTime: post?.publishedAt || "",
+      author: authorName,
+    });
+
+    // Article-specific tags that formatMetaTags does not cover
+    const articleSpecificTags = [
+      ...(post?.category ? [{ property: "article:section", content: post.category }] : []),
+      ...(post?.category ? [{ property: "article:tag", content: post.category }] : []),
+      ...(post?.category ? [{ name: "keywords", content: post.category }] : []),
+    ];
+
+    // Override the default author with blog-specific author name
+    const metaTags = baseTags.map((tag) =>
+      "name" in tag && tag.name === "author"
+        ? { ...tag, content: authorName }
+        : tag,
+    );
+
+    // Structured data: organization + breadcrumb + article schema
+    const canonicalUrl = blogMeta.canonicalUrl;
     const wordCount = post?.body ? post.body.split(/\s+/).filter(Boolean).length : undefined;
     const timeRequired = post?.readTime ? `PT${parseInt(post.readTime)}M` : undefined;
 
@@ -101,7 +149,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       publishedTime: post.publishedAt || "",
       modifiedTime: post.publishedAt || "",
       author: {
-        name: post.authorName || "Better i18n Team",
+        name: authorName,
       },
       wordCount,
       timeRequired,
@@ -113,53 +161,21 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     const breadcrumbSchema = getBreadcrumbSchema([
       { name: "Home", url: `${SITE_URL}/${locale}/` },
       { name: "Blog", url: `${SITE_URL}/${locale}/blog/` },
-      { name: post?.title || "Post", url: canonicalUrl },
+      { name: postTitle, url: canonicalUrl },
     ]);
 
-    const schemas: object[] = [getOrganizationSchema({ locale }), breadcrumbSchema];
+    const schemas: object[] = [getOrganizationSchema(), breadcrumbSchema];
     if (articleSchema) {
       schemas.push(articleSchema);
     }
 
     return {
-      meta: [
-        { title: `${post?.title || "Post"} - Better i18n Blog` },
-        { name: "description", content: excerpt },
-        { property: "og:title", content: post?.title || "" },
-        { property: "og:description", content: excerpt },
-        { property: "og:image", content: dynamicOgImage },
-        { property: "og:image:width", content: "1200" },
-        { property: "og:image:height", content: "630" },
-        { property: "og:image:alt", content: post?.title || "Better i18n Blog" },
-        { property: "og:type", content: "article" },
-        { property: "og:url", content: canonicalUrl },
-        { property: "og:site_name", content: "Better i18n" },
-        { property: "og:locale", content: toOgLocale(locale) },
-        { property: "article:published_time", content: post?.publishedAt || "" },
-        { property: "article:modified_time", content: post?.publishedAt || "" },
-        { property: "article:author", content: post?.authorName || "" },
-        { property: "article:section", content: post?.category || "" },
-        { property: "article:tag", content: post?.category || "" },
-        { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:site", content: "@betteri18n" },
-        { name: "twitter:title", content: post?.title || "" },
-        { name: "twitter:description", content: excerpt },
-        { name: "twitter:image", content: dynamicOgImage },
-        { name: "twitter:image:alt", content: post?.title || "Better i18n Blog" },
-        { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
-        { name: "author", content: post?.authorName || "Better i18n Team" },
-        ...(post?.category ? [{ name: "keywords", content: post.category }] : []),
-        ...(post?.availableLanguages
-          ? post.availableLanguages
-              .filter((lang) => lang !== locale)
-              .map((lang) => ({ property: "og:locale:alternate", content: toOgLocale(lang) }))
-          : []),
-      ],
+      meta: [...metaTags, ...articleSpecificTags],
       links: [
         ...getAlternateLinks(
           pathname,
-          post?.availableLanguages?.length
-            ? [...post.availableLanguages]
+          availableLanguages.length > 0
+            ? [...availableLanguages]
             : undefined,
         ),
         getCanonicalLink(locale, pathname),
@@ -292,7 +308,6 @@ function BlogPostPage() {
 
                 <BlogContent
                   html={post.bodyHtml}
-                  locale={locale}
                   className="prose prose-lg max-w-none
                     prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
                     prose-headings:scroll-mt-24

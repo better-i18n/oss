@@ -6,10 +6,9 @@ import {
   SITE_URL,
   getAlternateLinks,
   getCanonicalLink,
-  getCanonicalUrl,
   buildOgImageUrl,
-  toOgLocale,
 } from "@/lib/meta";
+import { getCachedLocales } from "@/lib/locales";
 import {
   getEducationalPageStructuredData,
   getBreadcrumbSchema,
@@ -36,11 +35,10 @@ export const loadRelatedPersonas = createServerFn({ method: "GET" })
 export async function personaLoader(
   slug: string,
   locale: string,
-  locales?: string[],
+  _locales?: string[],
 ): Promise<{
   page: MarketingPage;
   locale: string;
-  locales?: string[];
   relatedPersonas: MarketingPageListItem[];
 }> {
   const page = await loadPersonaPage({ data: { slug, locale } });
@@ -50,7 +48,7 @@ export async function personaLoader(
   const relatedPersonas = await loadRelatedPersonas({
     data: { slug, locale },
   });
-  return { page, locale, locales, relatedPersonas };
+  return { page, locale, relatedPersonas };
 }
 
 // ─── Head ────────────────────────────────────────────────────────────
@@ -80,14 +78,12 @@ export function getPersonaLabel(slug: string): string {
 export function personaHead(loaderData?: {
   page?: MarketingPage;
   locale?: string;
-  locales?: string[];
 } | null) {
   const page = loaderData?.page;
   const locale = loaderData?.locale || "en";
-  const locales = loaderData?.locales;
   const slug = page?.slug || "";
   const pathname = `/${slug}`;
-  const canonicalUrl = getCanonicalUrl(locale, pathname);
+  const canonicalUrl = `${SITE_URL}/${locale}${pathname}/`;
   const label = getPersonaLabel(slug);
 
   const dynamicOgImage = buildOgImageUrl("og", {
@@ -100,7 +96,6 @@ export function personaHead(loaderData?: {
     title: page?.title || label,
     description: excerpt,
     url: canonicalUrl,
-    locale,
   });
 
   const breadcrumbScripts = formatStructuredData(
@@ -123,7 +118,7 @@ export function personaHead(loaderData?: {
       { property: "og:type", content: "website" },
       { property: "og:url", content: canonicalUrl },
       { property: "og:site_name", content: "Better i18n" },
-      { property: "og:locale", content: toOgLocale(locale) },
+      { property: "og:locale", content: locale },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@betteri18n" },
       { name: "twitter:title", content: page?.title || "" },
@@ -135,14 +130,12 @@ export function personaHead(loaderData?: {
       ...(page?.targetKeywords
         ? [{ name: "keywords", content: page.targetKeywords }]
         : []),
-      ...(locales
-        ? locales
-            .filter((loc) => loc !== locale)
-            .map((loc) => ({ property: "og:locale:alternate", content: toOgLocale(loc) }))
-        : []),
+      ...getCachedLocales()
+        .filter((loc) => loc !== locale)
+        .map((loc) => ({ property: "og:locale:alternate", content: loc })),
     ],
     links: [
-      ...getAlternateLinks(pathname, locales),
+      ...getAlternateLinks(pathname),
       getCanonicalLink(locale, pathname),
     ],
     scripts: [...educationalScripts, ...breadcrumbScripts],

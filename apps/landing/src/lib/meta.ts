@@ -5,6 +5,7 @@ const OG_SERVICE_URL = "https://og.better-i18n.com";
 const DEFAULT_OG_IMAGE = `${OG_SERVICE_URL}/og`;
 const TWITTER_HANDLE = "@betteri18n";
 const MAX_TITLE_LENGTH = 70;
+const MAX_OG_URL_LENGTH = 2000;
 const BRAND_SUFFIX_SEPARATOR_PIPE = ` | ${SITE_NAME}`;
 const BRAND_SUFFIX_SEPARATOR_DASH = ` - ${SITE_NAME}`;
 
@@ -52,47 +53,6 @@ function truncateTitle(title: string): string {
   }
 
   return `${title.slice(0, MAX_TITLE_LENGTH - 1)}\u2026`;
-}
-
-/**
- * Convert ISO 639-1 locale code to Open Graph locale format.
- * OG spec requires language_TERRITORY (e.g., en_US, tr_TR, de_DE).
- */
-function toOgLocale(locale: string): string {
-  const OG_LOCALE_MAP: Record<string, string> = {
-    en: "en_US",
-    de: "de_DE",
-    fr: "fr_FR",
-    es: "es_ES",
-    tr: "tr_TR",
-    ja: "ja_JP",
-    ko: "ko_KR",
-    "zh-hans": "zh_CN",
-    pt: "pt_BR",
-    "pt-br": "pt_BR",
-    ru: "ru_RU",
-    it: "it_IT",
-    nl: "nl_NL",
-    pl: "pl_PL",
-    ar: "ar_SA",
-    hi: "hi_IN",
-    th: "th_TH",
-    vi: "vi_VN",
-    id: "id_ID",
-    ms: "ms_MY",
-    uk: "uk_UA",
-    cs: "cs_CZ",
-    ro: "ro_RO",
-    fa: "fa_IR",
-    he: "he_IL",
-    sv: "sv_SE",
-    da: "da_DK",
-    fi: "fi_FI",
-    nb: "nb_NO",
-    el: "el_GR",
-    zh: "zh_CN",
-  };
-  return OG_LOCALE_MAP[locale] || `${locale}_${locale.toUpperCase()}`;
 }
 
 interface LocalizedMetaResult {
@@ -173,8 +133,12 @@ export function getLocalizedMeta(
  */
 export function formatMetaTags(
   meta: LocalizedMetaResult,
-  options: Partial<MetaOptions> & { locales?: string[] } = {}
+  options: Partial<MetaOptions> & { locales?: string[]; noindex?: boolean } = {}
 ) {
+  const robotsContent = options.noindex
+    ? "noindex, follow"
+    : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
+
   const tags = [
     // Basic meta tags
     { title: meta.title },
@@ -184,13 +148,13 @@ export function formatMetaTags(
     { property: "og:title", content: meta.ogTitle },
     { property: "og:description", content: meta.ogDescription },
     { property: "og:image", content: meta.ogImage },
+    { property: "og:image:alt", content: meta.ogTitle },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
-    { property: "og:image:alt", content: meta.ogTitle },
     { property: "og:type", content: meta.ogType },
     { property: "og:url", content: meta.canonicalUrl },
     { property: "og:site_name", content: SITE_NAME },
-    { property: "og:locale", content: toOgLocale(options.locale || "en") },
+    { property: "og:locale", content: options.locale || "en" },
 
     // Twitter Card
     { name: "twitter:card", content: "summary_large_image" },
@@ -201,7 +165,7 @@ export function formatMetaTags(
     { name: "twitter:image:alt", content: meta.ogTitle },
 
     // Additional SEO
-    { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
+    { name: "robots", content: robotsContent },
     { name: "author", content: SITE_NAME },
   ];
 
@@ -223,7 +187,7 @@ export function formatMetaTags(
     const currentLocale = options.locale || "en";
     for (const loc of options.locales) {
       if (loc !== currentLocale) {
-        tags.push({ property: "og:locale:alternate", content: toOgLocale(loc) });
+        tags.push({ property: "og:locale:alternate", content: loc });
       }
     }
   }
@@ -270,12 +234,6 @@ export function getCanonicalLink(locale: string, pathname: string = "/") {
   };
 }
 
-/**
- * Max safe URL length for OG image URLs.
- * Most browsers/crawlers support up to 2048 chars. We leave some headroom.
- */
-const MAX_OG_URL_LENGTH = 2000;
-
 export function buildOgImageUrl(
   endpoint: "og" | "og/blog" | "og/docs",
   params: Record<string, string | undefined>
@@ -286,23 +244,8 @@ export function buildOgImageUrl(
   }
   const qs = searchParams.toString();
   const url = qs ? `${OG_SERVICE_URL}/${endpoint}?${qs}` : `${OG_SERVICE_URL}/${endpoint}`;
-
-  // If URL exceeds safe length, truncate long param values and rebuild
-  if (url.length > MAX_OG_URL_LENGTH) {
-    const truncatedParams = new URLSearchParams();
-    for (const [key, value] of Object.entries(params)) {
-      if (value) {
-        truncatedParams.set(key, value.length > 100 ? `${value.slice(0, 97)}...` : value);
-      }
-    }
-    const truncatedQs = truncatedParams.toString();
-    return truncatedQs
-      ? `${OG_SERVICE_URL}/${endpoint}?${truncatedQs}`
-      : `${OG_SERVICE_URL}/${endpoint}`;
-  }
-
-  return url;
+  return url.length <= MAX_OG_URL_LENGTH ? url : `${OG_SERVICE_URL}/${endpoint}`;
 }
 
 export { SITE_URL } from "@/seo/pages";
-export { SITE_NAME, DEFAULT_OG_IMAGE, OG_SERVICE_URL, TWITTER_HANDLE, toOgLocale };
+export { SITE_NAME, DEFAULT_OG_IMAGE, OG_SERVICE_URL, TWITTER_HANDLE };
