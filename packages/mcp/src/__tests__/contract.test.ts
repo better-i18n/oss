@@ -768,7 +768,7 @@ describe("reverse contract: LLM-plausible args → tool acceptance", () => {
       const queryMock = vi.fn().mockResolvedValue(STUBS.getAllTranslations);
       const client = createMockClient({ mcp: { getAllTranslations: { query: queryMock } } });
 
-      for (const status of ["missing", "draft", "published", "all"] as const) {
+      for (const status of ["missing", "draft", "approved", "all"] as const) {
         queryMock.mockClear();
         const result = await getTranslations.execute(client, {
           project: "org/proj",
