@@ -19,6 +19,7 @@ import { deleteContentEntry } from "../tools/deleteContentEntry.js";
 import { duplicateContentEntry } from "../tools/duplicateContentEntry.js";
 import { bulkPublishEntries } from "../tools/bulkPublishEntries.js";
 import { bulkCreateEntries } from "../tools/bulkCreateEntries.js";
+import { bulkUpdateEntries } from "../tools/bulkUpdateEntries.js";
 import { createContentModel } from "../tools/createContentModel.js";
 import { updateContentModel } from "../tools/updateContentModel.js";
 import { deleteContentModel } from "../tools/deleteContentModel.js";
@@ -45,6 +46,7 @@ const ALL_TOOLS: Tool[] = [
   duplicateContentEntry,
   bulkPublishEntries,
   bulkCreateEntries,
+  bulkUpdateEntries,
   // Model management
   createContentModel,
   updateContentModel,
@@ -70,6 +72,7 @@ const EXPECTED_TOOL_NAMES = [
   "duplicateContentEntry",
   "bulkPublishEntries",
   "bulkCreateEntries",
+  "bulkUpdateEntries",
   "createContentModel",
   "updateContentModel",
   "addField",
@@ -94,6 +97,7 @@ const WRITE_TOOL_NAMES = [
   "duplicateContentEntry",
   "bulkPublishEntries",
   "bulkCreateEntries",
+  "bulkUpdateEntries",
   "createContentModel",
   "updateContentModel",
   "addField",
@@ -112,14 +116,14 @@ const DESTRUCTIVE_TOOL_NAMES = [
 // ---------------------------------------------------------------------------
 
 describe("MCP content tool registry — completeness", () => {
-  it("exports exactly 18 tools", () => {
-    expect(ALL_TOOLS).toHaveLength(18);
+  it("exports exactly 19 tools", () => {
+    expect(ALL_TOOLS).toHaveLength(19);
   });
 
   it("all tools have unique names", () => {
     const names = ALL_TOOLS.map((t) => t.definition.name);
     const unique = new Set(names);
-    expect(unique.size).toBe(18);
+    expect(unique.size).toBe(19);
   });
 
   it("all tools have a definition with name, description, and inputSchema", () => {
@@ -159,6 +163,7 @@ describe("MCP content tool registry — name correctness", () => {
     expect(duplicateContentEntry.definition.name).toBe("duplicateContentEntry");
     expect(bulkPublishEntries.definition.name).toBe("bulkPublishEntries");
     expect(bulkCreateEntries.definition.name).toBe("bulkCreateEntries");
+    expect(bulkUpdateEntries.definition.name).toBe("bulkUpdateEntries");
     expect(createContentModel.definition.name).toBe("createContentModel");
     expect(updateContentModel.definition.name).toBe("updateContentModel");
     expect(deleteContentModel.definition.name).toBe("deleteContentModel");
@@ -196,15 +201,15 @@ describe("MCP content tool registry — annotation categories", () => {
     }
   });
 
-  it("read-only, write, and destructive categories together cover all 18 tools", () => {
+  it("read-only, write, and destructive categories together cover all 19 tools", () => {
     const allCategorised = [
       ...READ_ONLY_TOOL_NAMES,
       ...WRITE_TOOL_NAMES,
       ...DESTRUCTIVE_TOOL_NAMES,
     ];
-    expect(allCategorised).toHaveLength(18);
+    expect(allCategorised).toHaveLength(19);
     const unique = new Set(allCategorised);
-    expect(unique.size).toBe(18);
+    expect(unique.size).toBe(19);
   });
 });
 
