@@ -38,11 +38,11 @@ export default function Hero() {
                 className="text-3xl/[1.1] font-semibold tracking-[-0.02em] text-white sm:text-4xl/[1.1] lg:text-[3rem]/[1.1]"
                 style={{ textWrap: "balance" }}
               >
-                {t("title", { defaultValue: "Localization, simplified for modern teams" })}
+                {t("title", { defaultValue: "Translate with AI. Ship with confidence." })}
               </h1>
 
               <p className="max-w-xl text-base/7 text-white/70">
-                {t("subtitle", { defaultValue: "AI-powered translations, git-native sync, and instant CDN delivery. Ship multilingual products without the overhead." })}
+                {t("subtitle", { defaultValue: "Context-aware AI translations, Git-native sync, and instant CDN delivery. Go global without the overhead." })}
               </p>
 
               {/* Email Signup Form */}

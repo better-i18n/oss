@@ -17,6 +17,8 @@ import {
   IconZap,
   IconRocket,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { UserComplaints } from "@/components/UserComplaints";
+import { WhySwitchSection } from "@/components/WhySwitchSection";
 
 export const Route = createFileRoute("/$locale/compare/transifex")({
   loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
@@ -65,6 +67,15 @@ function TransifexComparisonPage() {
         </div>
       </section>
 
+      <UserComplaints
+        competitor="Transifex"
+        complaints={[
+          { source: "G2", quote: "Outdated UI feels clunky", category: "Usability" },
+          { source: "Capterra", quote: "Limited automation options", category: "Automation" },
+          { source: "G2", quote: "Slow customer support", category: "Support" },
+        ]}
+      />
+
       {/* Why Better i18n */}
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
@@ -95,6 +106,15 @@ function TransifexComparisonPage() {
           </div>
         </div>
       </section>
+
+      <WhySwitchSection
+        competitor="Transifex"
+        reasons={[
+          { painPoint: "Outdated UI makes daily translation work frustrating", solution: "Modern, responsive interface built with the latest web standards" },
+          { painPoint: "Limited automation means repetitive manual work", solution: "AI-powered automation handles key discovery, translation, and deployment" },
+          { painPoint: "Slow support response times delay critical fixes", solution: "Developer community and documentation-first approach for fast self-service" },
+        ]}
+      />
 
       <ComparisonRelatedTopics
         heading={t("compare.transifex.relatedTopics", { defaultValue: "Keep Reading" })}

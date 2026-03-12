@@ -1,5 +1,6 @@
 import { getCachedLocales } from "./locales";
 import { SITE_URL } from "@/seo/pages";
+import { getActiveVariant } from "@/seo/title-variants";
 const SITE_NAME = "Better i18n";
 /**
  * OG image service is currently down (404).
@@ -12,6 +13,22 @@ const TWITTER_HANDLE = "@betteri18n";
 const MAX_TITLE_LENGTH = 70;
 const BRAND_SUFFIX_SEPARATOR_PIPE = ` | ${SITE_NAME}`;
 const BRAND_SUFFIX_SEPARATOR_DASH = ` - ${SITE_NAME}`;
+
+const OG_LOCALE_MAP: Record<string, string> = {
+  en: "en_US", tr: "tr_TR", de: "de_DE", fr: "fr_FR",
+  es: "es_ES", pt: "pt_BR", ja: "ja_JP", ko: "ko_KR",
+  zh: "zh_CN", it: "it_IT", nl: "nl_NL", pl: "pl_PL",
+  ru: "ru_RU", ar: "ar_SA", hi: "hi_IN", th: "th_TH",
+  vi: "vi_VN", id: "id_ID", ms: "ms_MY", uk: "uk_UA",
+  cs: "cs_CZ", ro: "ro_RO", sv: "sv_SE",
+};
+
+/**
+ * Convert a BCP-47 locale code to an Open Graph locale format (e.g. "en" → "en_US").
+ */
+function toOgLocale(locale: string): string {
+  return OG_LOCALE_MAP[locale] ?? `${locale}_${locale.toUpperCase()}`;
+}
 
 interface MetaMessages {
   [key: string]: string | Record<string, unknown>;
@@ -116,7 +133,8 @@ export function getLocalizedMeta(
   const ogDescriptionValue = getNestedValue(messages, `${metaPrefix}.ogDescription`);
   const ogImageValue = getNestedValue(messages, `${metaPrefix}.ogImage`);
 
-  const safeTitle = truncateTitle(title || SITE_NAME);
+  const variantTitle = locale === "en" ? getActiveVariant(pageKey) : undefined;
+  const safeTitle = truncateTitle(variantTitle || title || SITE_NAME);
 
   return {
     title: safeTitle,
@@ -158,7 +176,7 @@ export function formatMetaTags(
     { property: "og:type", content: meta.ogType },
     { property: "og:url", content: meta.canonicalUrl },
     { property: "og:site_name", content: SITE_NAME },
-    { property: "og:locale", content: options.locale || "en" },
+    { property: "og:locale", content: toOgLocale(options.locale || "en") },
 
     // Twitter Card
     { name: "twitter:card", content: "summary_large_image" },
@@ -191,7 +209,7 @@ export function formatMetaTags(
     const currentLocale = options.locale || "en";
     for (const loc of options.locales) {
       if (loc !== currentLocale) {
-        tags.push({ property: "og:locale:alternate", content: loc });
+        tags.push({ property: "og:locale:alternate", content: toOgLocale(loc) });
       }
     }
   }

@@ -14,6 +14,8 @@ import type { ContentEntryListItem, ListEntriesOptions } from "@better-i18n/sdk"
 
 import { SITE_URL, MARKETING_PAGES } from "./pages";
 import type { ChangeFreq } from "./pages";
+import { getLocaleTier, TIER_PRIORITY_MULTIPLIER } from "./locale-tiers";
+import type { LocaleTier } from "./locale-tiers";
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -27,6 +29,7 @@ export interface SitemapConfig {
   readonly changefreq: ChangeFreq;
   readonly lastmod?: string;
   readonly alternateRefs: readonly AlternateRef[];
+  readonly noindex?: boolean;
 }
 
 export interface PageEntry {
@@ -139,6 +142,12 @@ export function buildAlternateRefs(
 /**
  * Generates a PageEntry for every marketing page x every locale,
  * each with a full set of hreflang alternateRefs.
+ *
+ * Tier and coverage rules:
+ * - **Tier 3** locales are excluded from the sitemap entirely.
+ * - **Tier 2** locales get reduced sitemap priority and are not prerendered.
+ * - Locales below THIN_CONTENT_THRESHOLD or in tier 3 are marked noindex.
+ * - Only **tier 1** locales are prerendered.
  */
 export function generateMarketingPages(
   locales: readonly string[],
@@ -147,7 +156,8 @@ export function generateMarketingPages(
   const lastmod = buildDate || new Date().toISOString().split("T")[0];
 
   return MARKETING_PAGES.flatMap((page) => {
-    const alternateRefs = buildAlternateRefs(locales, (locale) =>
+    // hreflang alternates only reference locales present in the sitemap
+    const alternateRefs = buildAlternateRefs(sitemapLocales, (locale) =>
       buildPageUrl(locale, page.path),
     );
 
@@ -474,6 +484,11 @@ export async function fetchSeoData(options: {
   console.log(
     `[SEO] Fetched: ${locales.length} locales, ${blogPosts.length} posts, ${featurePages.length} features, ${i18nMessages.size} message bundles`,
   );
+  for (const result of messageResults) {
+    if (result.status === "fulfilled") {
+      i18nMessages.set(result.value.locale, result.value.messages);
+    }
+  }
 
   return { locales, blogPosts, featurePages, i18nMessages };
 }
@@ -488,6 +503,8 @@ export function generatePages(data: SeoData, buildDate?: string): readonly PageE
   const blogPages = generateBlogPages(blogPosts, locales);
   const featureDetailPages = generateFeatureDetailPages(featurePages, locales);
   const allPages = [...marketingPages, ...blogPages, ...featureDetailPages];
-  console.log(`[SEO] Generated ${allPages.length} pages`);
+
+  const noindexCount = allPages.filter((p) => p.sitemap.noindex).length;
+  console.log(`[SEO] Generated ${allPages.length} pages (${noindexCount} noindex)`);
   return allPages;
 }
