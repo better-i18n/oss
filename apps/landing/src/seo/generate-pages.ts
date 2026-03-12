@@ -43,10 +43,18 @@ export interface BlogPostMeta {
   readonly availableLanguages?: readonly string[];
 }
 
+/**
+ * Flattened i18n messages: `{ "llms.tagline": "...", "schema.slogan": "..." }`
+ * Produced by flattening the CDN's namespaced format at build time.
+ */
+export type FlatMessages = Readonly<Record<string, string>>;
+
 export interface SeoData {
   readonly locales: readonly string[];
   readonly blogPosts: readonly BlogPostMeta[];
   readonly featurePages: readonly FeaturePageMeta[];
+  /** Per-locale i18n messages fetched from CDN (locale → flat key-value map) */
+  readonly i18nMessages: ReadonlyMap<string, FlatMessages>;
 }
 
 export interface FeaturePageMeta {
@@ -346,11 +354,35 @@ export async function fetchSeoData(options: {
           .map(toFeaturePageMeta)
       : [];
 
+  // Fetch i18n messages for all locales (used by llms-txt and structured-data).
+  // CDN returns namespaced format: { "llms": { "tagline": "..." } }
+  // We flatten to: { "llms.tagline": "..." } for easy key lookup.
+  const i18nMessages = new Map<string, FlatMessages>();
+  const messageResults = await Promise.allSettled(
+    locales.map(async (locale) => {
+      const namespacedMessages = await i18n.getMessages(locale);
+      const flat: Record<string, string> = {};
+      for (const [ns, keys] of Object.entries(namespacedMessages)) {
+        for (const [key, value] of Object.entries(keys)) {
+          if (typeof value === "string") {
+            flat[`${ns}.${key}`] = value;
+          }
+        }
+      }
+      return { locale, messages: flat } as const;
+    }),
+  );
+  for (const result of messageResults) {
+    if (result.status === "fulfilled") {
+      i18nMessages.set(result.value.locale, result.value.messages);
+    }
+  }
+
   console.log(
-    `[SEO] Fetched: ${locales.length} locales, ${blogPosts.length} posts, ${featurePages.length} features`,
+    `[SEO] Fetched: ${locales.length} locales, ${blogPosts.length} posts, ${featurePages.length} features, ${i18nMessages.size} message bundles`,
   );
 
-  return { locales, blogPosts, featurePages };
+  return { locales, blogPosts, featurePages, i18nMessages };
 }
 
 /**

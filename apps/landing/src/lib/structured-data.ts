@@ -3,65 +3,18 @@ import { SITE_URL, SITE_NAME } from "./meta";
 const DEFAULT_REVIEW_DATE = "2025-01-15";
 
 /** All supported locales — single source of truth for schema.org availableLanguage */
-const DEFAULT_AVAILABLE_LANGUAGES: readonly string[] = [
+export const DEFAULT_AVAILABLE_LANGUAGES: readonly string[] = [
   "en", "tr", "de", "fr", "es", "pt", "it", "nl", "pl", "cs",
   "ja", "ko", "zh", "ar", "hi", "ru", "uk", "sv", "da", "fi",
   "nb", "el", "th",
 ] as const;
 
-// ─── Localized Organization fields ──────────────────────────────────
-
-const SLOGAN: Readonly<Record<string, string>> = {
-  en: "Ship multilingual apps faster",
-  tr: "Çok dilli uygulamaları daha hızlı yayınlayın",
-  de: "Mehrsprachige Apps schneller ausliefern",
-  fr: "Livrez vos applications multilingues plus vite",
-  es: "Lanza aplicaciones multilingües más rápido",
-  pt: "Lance aplicativos multilíngues mais rápido",
-  it: "Rilascia app multilingue più velocemente",
-  nl: "Lever meertalige apps sneller op",
-  pl: "Wydawaj wielojęzyczne aplikacje szybciej",
-  cs: "Dodávejte vícejazyčné aplikace rychleji",
-  ja: "多言語アプリをより速くリリース",
-  ko: "다국어 앱을 더 빠르게 출시하세요",
-  zh: "更快地发布多语言应用",
-  ar: "أطلق التطبيقات متعددة اللغات بشكل أسرع",
-  hi: "बहुभाषी ऐप्स तेज़ी से लॉन्च करें",
-  ru: "Выпускайте мультиязычные приложения быстрее",
-  uk: "Випускайте багатомовні додатки швидше",
-  sv: "Leverera flerspråkiga appar snabbare",
-  da: "Lever flersprogede apps hurtigere",
-  fi: "Julkaise monikielisiä sovelluksia nopeammin",
-  nb: "Lever flerspråklige apper raskere",
-  el: "Κυκλοφορήστε πολύγλωσσες εφαρμογές πιο γρήγορα",
-  th: "เปิดตัวแอปหลายภาษาได้เร็วขึ้น",
-};
-
-const KNOWS_ABOUT: Readonly<Record<string, readonly string[]>> = {
-  en: ["internationalization", "localization", "translation management", "i18n", "l10n", "multilingual SEO", "software localization"],
-  tr: ["uluslararasılaştırma", "yerelleştirme", "çeviri yönetimi", "i18n", "l10n", "çok dilli SEO", "yazılım yerelleştirme"],
-  de: ["Internationalisierung", "Lokalisierung", "Übersetzungsmanagement", "i18n", "l10n", "mehrsprachiges SEO", "Software-Lokalisierung"],
-  fr: ["internationalisation", "localisation", "gestion de traduction", "i18n", "l10n", "SEO multilingue", "localisation logicielle"],
-  es: ["internacionalización", "localización", "gestión de traducciones", "i18n", "l10n", "SEO multilingüe", "localización de software"],
-  pt: ["internacionalização", "localização", "gestão de traduções", "i18n", "l10n", "SEO multilíngue", "localização de software"],
-  it: ["internazionalizzazione", "localizzazione", "gestione delle traduzioni", "i18n", "l10n", "SEO multilingue", "localizzazione software"],
-  nl: ["internationalisatie", "lokalisatie", "vertaalbeheer", "i18n", "l10n", "meertalige SEO", "softwarelokalisatie"],
-  pl: ["internacjonalizacja", "lokalizacja", "zarządzanie tłumaczeniami", "i18n", "l10n", "wielojęzyczne SEO", "lokalizacja oprogramowania"],
-  cs: ["internacionalizace", "lokalizace", "správa překladů", "i18n", "l10n", "vícejazyčné SEO", "lokalizace softwaru"],
-  ja: ["国際化", "ローカライゼーション", "翻訳管理", "i18n", "l10n", "多言語SEO", "ソフトウェアローカライゼーション"],
-  ko: ["국제화", "현지화", "번역 관리", "i18n", "l10n", "다국어 SEO", "소프트웨어 현지화"],
-  zh: ["国际化", "本地化", "翻译管理", "i18n", "l10n", "多语言SEO", "软件本地化"],
-  ar: ["التدويل", "التوطين", "إدارة الترجمة", "i18n", "l10n", "تحسين محركات البحث متعدد اللغات", "توطين البرمجيات"],
-  hi: ["अंतर्राष्ट्रीयकरण", "स्थानीयकरण", "अनुवाद प्रबंधन", "i18n", "l10n", "बहुभाषी SEO", "सॉफ़्टवेयर स्थानीयकरण"],
-  ru: ["интернационализация", "локализация", "управление переводами", "i18n", "l10n", "мультиязычное SEO", "локализация ПО"],
-  uk: ["інтернаціоналізація", "локалізація", "управління перекладами", "i18n", "l10n", "багатомовне SEO", "локалізація ПЗ"],
-  sv: ["internationalisering", "lokalisering", "översättningshantering", "i18n", "l10n", "flerspråkig SEO", "mjukvarulokalisering"],
-  da: ["internationalisering", "lokalisering", "oversættelsesstyring", "i18n", "l10n", "flersproget SEO", "softwarelokalisering"],
-  fi: ["kansainvälistäminen", "lokalisointi", "käännösten hallinta", "i18n", "l10n", "monikielinen SEO", "ohjelmistolokalisointi"],
-  nb: ["internasjonalisering", "lokalisering", "oversettelseshåndtering", "i18n", "l10n", "flerspråklig SEO", "programvarelokalisering"],
-  el: ["διεθνοποίηση", "τοπικοποίηση", "διαχείριση μεταφράσεων", "i18n", "l10n", "πολύγλωσσο SEO", "τοπικοποίηση λογισμικού"],
-  th: ["การทำให้เป็นสากล", "การแปลเป็นภาษาท้องถิ่น", "การจัดการแปลภาษา", "i18n", "l10n", "SEO หลายภาษา", "การแปลซอฟต์แวร์"],
-};
+/** English fallbacks — used when i18n messages are not available */
+const DEFAULT_SLOGAN = "Ship multilingual apps faster";
+const DEFAULT_KNOWS_ABOUT: readonly string[] = [
+  "internationalization", "localization", "translation management",
+  "i18n", "l10n", "multilingual SEO", "software localization",
+];
 
 /**
  * Common entity mentions for schema.org `mentions` property.
@@ -89,11 +42,16 @@ const COMMON_MENTIONS = {
 export { COMMON_MENTIONS };
 
 /**
- * Organization Schema - represents the company/brand
+ * Organization Schema - represents the company/brand.
+ *
+ * `slogan` and `knowsAbout` should come from i18n messages (schema namespace)
+ * via the caller's loaderData. Falls back to English defaults when not provided.
  */
 export function getOrganizationSchema(options?: {
   locale?: string;
   availableLanguages?: readonly string[];
+  slogan?: string;
+  knowsAbout?: readonly string[];
 }) {
   const locale = options?.locale ?? "en";
   const languages = options?.availableLanguages ?? DEFAULT_AVAILABLE_LANGUAGES;
@@ -108,8 +66,8 @@ export function getOrganizationSchema(options?: {
       url: `${SITE_URL}/logo.png`,
     },
     foundingDate: "2024",
-    slogan: SLOGAN[locale] ?? SLOGAN.en,
-    knowsAbout: KNOWS_ABOUT[locale] ?? KNOWS_ABOUT.en,
+    slogan: options?.slogan ?? DEFAULT_SLOGAN,
+    knowsAbout: options?.knowsAbout ? [...options.knowsAbout] : [...DEFAULT_KNOWS_ABOUT],
     sameAs: [
       "https://twitter.com/betteri18n",
       "https://github.com/better-i18n",

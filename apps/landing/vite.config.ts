@@ -21,7 +21,7 @@ export default defineConfig(async ({ mode }) => {
       const { generateAllLlmsTxtFiles } = await import("./src/seo/llms-txt");
       const data = await fetchSeoData({ project, apiKey });
       pages = generatePages(data);
-      llmsFiles = generateAllLlmsTxtFiles(data.blogPosts, data.locales);
+      llmsFiles = generateAllLlmsTxtFiles(data.blogPosts, data.locales, data.i18nMessages);
       console.log(`[SEO] Generated ${llmsFiles.size} llms.txt files`);
     } catch (error) {
       console.error("[SEO] Build-time generation failed:", error);
