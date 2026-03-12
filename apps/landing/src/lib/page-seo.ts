@@ -69,9 +69,9 @@ interface PageSEOOptions {
   /** Custom structured data (overrides pageType) */
   customStructuredData?: ReturnType<typeof formatStructuredData>;
   /** FAQ items to auto-inject as FAQ schema + page content */
-  noindex?: boolean;
-  /** FAQ items to auto-inject as FAQ schema + page content */
   faqItems?: Array<{ question: string; answer: string }>;
+  /** Mark page as noindex (e.g., thin content with low translation coverage) */
+  noindex?: boolean;
 }
 
 /**
@@ -93,33 +93,33 @@ function getStructuredDataForPageType(
     case "framework":
       return options?.framework && options?.frameworkDescription
         ? getFrameworkPageStructuredData(
-          options.framework,
-          options.frameworkDescription,
-          options.dependencies,
-          options.proficiencyLevel
-        )
+            options.framework,
+            options.frameworkDescription,
+            options.dependencies,
+            options.proficiencyLevel
+          )
         : getDefaultStructuredData();
     case "educational":
       return options?.title && options?.description && options?.url
         ? getEducationalPageStructuredData({
-          title: options.title,
-          description: options.description,
-          url: options.url,
-        })
+            title: options.title,
+            description: options.description,
+            url: options.url,
+          })
         : getDefaultStructuredData();
     case "default":
     default:
       return options?.title && options?.description
         ? formatStructuredData([
-          getOrganizationSchema(),
-          getWebSiteSchema(),
-          getWebPageSchema({
-            name: options.title,
-            description: options.description,
-            url: options.url || "",
-            speakable: DEFAULT_SPEAKABLE_SELECTORS,
-          }),
-        ])
+            getOrganizationSchema(),
+            getWebSiteSchema(),
+            getWebPageSchema({
+              name: options.title,
+              description: options.description,
+              url: options.url || "",
+              speakable: DEFAULT_SPEAKABLE_SELECTORS,
+            }),
+          ])
         : getDefaultStructuredData();
   }
 }
