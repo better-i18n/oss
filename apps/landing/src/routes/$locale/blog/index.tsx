@@ -57,7 +57,7 @@ export const Route = createFileRoute("/$locale/blog/")({
 
     const breadcrumbSchema = getBreadcrumbSchema([
       { name: "Home", url: `${SITE_URL}/${locale}/` },
-      { name: "Blog", url: `${SITE_URL}/${locale}/blog` },
+      { name: "Blog", url: `${SITE_URL}/${locale}/blog/` },
     ]);
 
     return {
@@ -73,7 +73,7 @@ export const Route = createFileRoute("/$locale/blog/")({
         getCollectionPageSchema({
           name: "Better i18n Blog",
           description: "Latest updates, tutorials, and insights about internationalization and localization.",
-          url: `${SITE_URL}/${locale}/blog`,
+          url: `${SITE_URL}/${locale}/blog/`,
           inLanguage: locale,
         }),
       ]),
