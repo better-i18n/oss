@@ -109,6 +109,7 @@ export const MARKETING_PAGES = [
   { path: "compare/transifex", priority: 0.85, changefreq: "weekly", prerender: true },
   { path: "compare/smartling", priority: 0.85, changefreq: "weekly", prerender: true },
   { path: "compare/xtm", priority: 0.85, changefreq: "weekly", prerender: true },
+  { path: "compare/crowdin-vs-lokalise", priority: 0.85, changefreq: "weekly", prerender: true },
 
   // Educational pages
   { path: "what-is", priority: 0.85, changefreq: "monthly", prerender: true },

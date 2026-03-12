@@ -7,6 +7,7 @@ import TranslatorFeatures from "@/components/translators/TranslatorFeatures";
 import TranslatorDeepLSection from "@/components/translators/TranslatorDeepLSection";
 import TranslatorWorkflow from "@/components/translators/TranslatorWorkflow";
 import TranslatorCTA from "@/components/translators/TranslatorCTA";
+import TranslatorPainPromiseProof from "@/components/translators/TranslatorPainPromiseProof";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead } from "@/lib/page-seo";
 
@@ -46,6 +47,7 @@ function ForTranslatorsPage() {
       <main>
         <TranslatorHero />
         <TranslatorPainPoints />
+        <TranslatorPainPromiseProof />
         <TranslatorFeatures />
         <TranslatorDeepLSection />
         <TranslatorWorkflow />

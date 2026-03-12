@@ -17,6 +17,8 @@ import {
   IconGithub,
   IconRocket,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { UserComplaints } from "@/components/UserComplaints";
+import { WhySwitchSection } from "@/components/WhySwitchSection";
 
 export const Route = createFileRoute("/$locale/compare/lokalise")({
   loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
@@ -65,6 +67,15 @@ function LokaliseComparisonPage() {
         </div>
       </section>
 
+      <UserComplaints
+        competitor="Lokalise"
+        complaints={[
+          { source: "G2", quote: "Steep learning curve for non-technical users", category: "Usability" },
+          { source: "Capterra", quote: "API rate limits cause issues", category: "API" },
+          { source: "G2", quote: "Expensive for small teams", category: "Pricing" },
+        ]}
+      />
+
       {/* Why Better i18n */}
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
@@ -95,6 +106,15 @@ function LokaliseComparisonPage() {
           </div>
         </div>
       </section>
+
+      <WhySwitchSection
+        competitor="Lokalise"
+        reasons={[
+          { painPoint: "Steep learning curve alienates non-technical team members", solution: "Intuitive dashboard anyone can use — no training required" },
+          { painPoint: "API rate limits block CI/CD pipelines during deployments", solution: "CDN-first delivery with no rate limits on translation fetches" },
+          { painPoint: "Costs escalate quickly as team and key count grows", solution: "Predictable pricing that scales with your project, not your headcount" },
+        ]}
+      />
 
       <ComparisonRelatedTopics
         heading={t("compare.lokalise.relatedTopics", { defaultValue: "Explore Further" })}

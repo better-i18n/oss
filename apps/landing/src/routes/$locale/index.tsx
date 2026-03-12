@@ -6,7 +6,10 @@ import FrameworkSupport from "../../components/FrameworkSupport";
 import Integrations from "../../components/Integrations";
 import UseCases from "../../components/UseCases";
 import UserSegments from "../../components/UserSegments";
+import MetricsBadges from "../../components/MetricsBadges";
+import IndustryStats from "../../components/IndustryStats";
 import Alternatives from "../../components/Alternatives";
+import ComparisonFAQ from "../../components/ComparisonFAQ";
 import Testimonials from "../../components/Testimonials";
 import Changelog from "../../components/Changelog";
 import Pricing from "../../components/Pricing";
@@ -20,7 +23,7 @@ import {
   getCanonicalLink,
   buildOgImageUrl,
 } from "@/lib/meta";
-import { getHomePageStructuredData } from "@/lib/structured-data";
+import { getHomePageStructuredData, getFAQSchema, formatStructuredData } from "@/lib/structured-data";
 import { getChangelogsMeta } from "@/lib/changelog";
 import { withTimeout } from "@/lib/fetch-utils";
 
@@ -105,12 +108,15 @@ function LandingPage() {
       <Header />
       <main id="main-content">
         <Hero />
+        <MetricsBadges />
         <Features />
         <FrameworkSupport />
         <Integrations />
         <UseCases />
         <UserSegments />
+        <IndustryStats />
         <Alternatives />
+        <ComparisonFAQ />
         <Testimonials />
         <Changelog releases={recentChangelogs} />
         <Pricing />

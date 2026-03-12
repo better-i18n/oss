@@ -3,10 +3,13 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DeveloperHero from "@/components/developers/DeveloperHero";
 import DeveloperPainPoints from "@/components/developers/DeveloperPainPoints";
+import DeveloperQuotes from "@/components/developers/DeveloperQuotes";
+import DeveloperCLIDemo from "@/components/developers/DeveloperCLIDemo";
 import DeveloperWorkflow from "@/components/developers/DeveloperWorkflow";
 import DeveloperRoleIntegration from "@/components/developers/DeveloperRoleIntegration";
 import DeveloperResources from "@/components/developers/DeveloperResources";
 import DeveloperIDESupport from "@/components/developers/DeveloperIDESupport";
+import DeveloperPainPromiseProof from "@/components/developers/DeveloperPainPromiseProof";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, getEducationalPageStructuredData, formatStructuredData } from "@/lib/page-seo";
 import { getHowToSchema } from "@/lib/structured-data";
@@ -79,6 +82,9 @@ function ForDevelopersPage() {
       <main>
         <DeveloperHero />
         <DeveloperPainPoints />
+        <DeveloperQuotes />
+        <DeveloperCLIDemo />
+        <DeveloperPainPromiseProof />
         <DeveloperWorkflow />
         <DeveloperRoleIntegration />
         <DeveloperIDESupport />

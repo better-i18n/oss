@@ -1,5 +1,6 @@
 import { SITE_URL, SITE_NAME } from "./meta";
 
+const BUILD_DATE = process.env.BUILD_DATE ?? "2026-03-12";
 const FOUNDING_DATE = "2026";
 const DEFAULT_REVIEW_DATE = "2026-01-15";
 
@@ -11,6 +12,7 @@ const AGGREGATE_RATING = {
   ratingCount: 42,
   reviewCount: 42,
 } as const;
+
 
 /** English fallback — used when i18n messages are not available */
 const DEFAULT_SLOGAN = "Ship multilingual apps faster";
@@ -491,7 +493,8 @@ export function getComparisonPageStructuredData(competitorName: string) {
 export function getFrameworkPageStructuredData(
   framework: string,
   description: string,
-  dependencies?: string[]
+  dependencies?: string[],
+  proficiencyLevel?: "Beginner" | "Intermediate" | "Expert"
 ) {
   return formatStructuredData([
     getOrganizationSchema(),
@@ -499,7 +502,7 @@ export function getFrameworkPageStructuredData(
       headline: `${framework} Internationalization (i18n) Guide`,
       description,
       url: `${SITE_URL}/i18n/${framework.toLowerCase()}`,
-      proficiencyLevel: "Intermediate",
+      proficiencyLevel: proficiencyLevel ?? "Intermediate",
       dependencies,
     }),
   ]);

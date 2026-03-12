@@ -17,6 +17,8 @@ import {
   IconGithub,
   IconRocket,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { UserComplaints } from "@/components/UserComplaints";
+import { WhySwitchSection } from "@/components/WhySwitchSection";
 
 export const Route = createFileRoute("/$locale/compare/smartling")({
   loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
@@ -112,6 +114,15 @@ function SmartlingComparisonPage() {
         </div>
       </section>
 
+      <UserComplaints
+        competitor="Smartling"
+        complaints={[
+          { source: "G2", quote: "Enterprise pricing prohibitive", category: "Pricing" },
+          { source: "Capterra", quote: "Setup requires dedicated engineer", category: "Setup" },
+          { source: "G2", quote: "Lock-in concerns", category: "Vendor Lock-in" },
+        ]}
+      />
+
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-12">
@@ -149,6 +160,15 @@ function SmartlingComparisonPage() {
           </div>
         </div>
       </section>
+
+      <WhySwitchSection
+        competitor="Smartling"
+        reasons={[
+          { painPoint: "Enterprise pricing puts localization out of reach for most teams", solution: "Start free, scale affordably — no enterprise sales process required" },
+          { painPoint: "Setup requires a dedicated engineer and weeks of integration work", solution: "Simple SDK integration — get translations running in under an hour" },
+          { painPoint: "Vendor lock-in makes switching costly and risky", solution: "Git-native architecture means your translations live in your repo, not our servers" },
+        ]}
+      />
 
       <ComparisonRelatedTopics
         heading={t("compare.smartling.relatedTopics", {
