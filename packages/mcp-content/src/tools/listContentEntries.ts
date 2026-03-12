@@ -23,11 +23,14 @@ import type { Tool } from "../types/index.js";
 
 const inputSchema = projectSchema.extend({
   modelSlug: z.string().optional(),
-  search: z.string().optional(),
+  search: z.union([z.string(), z.array(z.string())]).optional(),
+  searchLanguages: z.array(z.string()).optional(),
+  searchInBody: z.boolean().optional().default(false),
   status: z.enum(["draft", "published", "archived"]).optional(),
   language: z.string().optional(),
   missingLanguage: z.string().optional(),
   expand: z.array(z.string()).optional(),
+  compact: z.boolean().optional().default(false),
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(50).optional(),
 });
@@ -42,10 +45,15 @@ BUILT-IN MODELS:
 
 FILTER OPTIONS:
 - modelSlug: Filter by content model (e.g., "blog-posts")
-- search: Search in title or excerpt
+- search: Search in title, slug, and text custom fields. Accepts a string or an array of strings (OR logic — any match returns the entry).
+- searchLanguages: Limit search scope to specific language codes (e.g., ["tr", "de"]). Default: all languages.
+- searchInBody: Also search body markdown content. Only effective when modelSlug is provided and the model has a body field. Default: false.
 - status: Filter by status ("draft", "published", "archived")
 - language: Filter entries that have this language translation
 - missingLanguage: Filter entries MISSING a translation for this language
+
+RESPONSE MODES:
+- compact: When true, returns minimal fields (id, sl, st, t, langs only) — drops dates, model ref, and custom fields. ~65% token reduction. Use when you only need to browse entry titles/statuses.
 
 PAGINATION:
 - page: Page number (default: 1)
@@ -55,9 +63,12 @@ EXAMPLES:
 - All blog posts: { modelSlug: "blog-posts" }
 - Team members: { modelSlug: "users" }
 - Published only: { status: "published" }
-- Search: { search: "getting started" }
+- Search single term: { search: "getting started" }
+- Search multiple terms (OR): { search: ["hello world", "getting started"] }
+- Search only in Turkish: { search: "merhaba", searchLanguages: ["tr"] }
+- Search including body: { modelSlug: "blog-posts", search: "introduction", searchInBody: true }
 - Missing Turkish: { missingLanguage: "tr" }
-- Filter by field: { modelSlug: "blog-posts", filter: { "category": "tech" } }
+- Token-efficient listing: { modelSlug: "blog-posts", compact: true }
 - Expand relations: { modelSlug: "blog-posts", expand: ["author", "category"] }`,
     inputSchema: {
       type: "object",
@@ -69,7 +80,16 @@ EXAMPLES:
         },
         search: {
           type: "string",
-          description: "Search in title or excerpt",
+          description: "Search in title, slug, and text custom fields. Accepts a string or an array of strings (OR logic — any match returns the entry).",
+        },
+        searchLanguages: {
+          type: "array",
+          items: { type: "string" },
+          description: "Limit search scope to these language codes (e.g., [\"tr\", \"de\"]). Default: all languages.",
+        },
+        searchInBody: {
+          type: "boolean",
+          description: "Also search body markdown content. Only effective when modelSlug is provided and the model has a body field. Default: false.",
         },
         status: {
           type: "string",
@@ -87,7 +107,11 @@ EXAMPLES:
         expand: {
           type: "array",
           items: { type: "string" },
-          description: "Relation field names to expand with referenced entry data (e.g., [\"author\", \"category\"])",
+          description: "Relation field names to expand with referenced entry data (e.g., [\"author\", \"category\"]). Ignored when compact=true.",
+        },
+        compact: {
+          type: "boolean",
+          description: "When true, returns minimal fields (id, sl, st, t, langs only) — drops dates, model ref, and custom fields. ~65% token reduction.",
         },
         page: {
           type: "number",
@@ -109,10 +133,13 @@ EXAMPLES:
         projectSlug,
         modelSlug: input.modelSlug,
         search: input.search,
+        searchLanguages: input.searchLanguages,
+        searchInBody: input.searchInBody,
         status: input.status,
         language: input.language,
         missingLanguage: input.missingLanguage,
         expand: input.expand,
+        compact: input.compact,
         page: input.page,
         limit: input.limit,
       });

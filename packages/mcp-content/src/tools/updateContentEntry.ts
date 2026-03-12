@@ -36,6 +36,7 @@ const inputSchema = projectSchema.extend({
   featuredImage: z.string().url().optional().nullable(),
   tags: z.array(z.string()).optional(),
   status: z.enum(["draft", "published", "archived"]).optional(),
+  translationStatus: z.enum(["draft", "published"]).optional(),
   customFields: customFieldsSchema,
   translations: z.record(z.string(), translationValue).optional(),
 });
@@ -53,6 +54,11 @@ Three modes:
    To update localized fields for a target language, use mode 1 or 2 with explicit languageCode.
 
 Modes 1 & 2 can be combined. All fields are optional — send only what changed.
+Language codes (languageCode and translation keys) are normalized to lowercase automatically (e.g., "EN" → "en").
+
+TRANSLATION STATUS:
+- By default, translations saved via this tool are set to "published" (save = publish for content workflow).
+- Use translationStatus: "draft" to save a translation without publishing it immediately.
 
 EXAMPLE multi-language:
 {
@@ -61,6 +67,14 @@ EXAMPLE multi-language:
     "tr": { "title": "Merhaba Dünya", "bodyMarkdown": "# Merhaba" },
     "de": { "title": "Hallo Welt" }
   }
+}
+
+EXAMPLE save as draft (do not publish yet):
+{
+  "entryId": "...",
+  "languageCode": "tr",
+  "title": "Taslak Başlık",
+  "translationStatus": "draft"
 }
 
 EXAMPLE metadata-only:
@@ -118,6 +132,11 @@ EXAMPLE metadata-only:
           type: "string",
           enum: ["draft", "published", "archived"],
           description: "Updated entry status",
+        },
+        translationStatus: {
+          type: "string",
+          enum: ["draft", "published"],
+          description: "Translation status override. Default: \"published\" (save = publish). Set to \"draft\" to save without publishing.",
         },
         customFields: {
           type: "object",
