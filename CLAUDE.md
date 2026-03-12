@@ -56,17 +56,33 @@ When modifying MCP tools, always consider:
 
 **Reference incident:** An AI agent created 1005 phantom keys by using `createKeys` with wrong namespace instead of `updateKeys`. This led to cross-namespace warnings and improved tool descriptions.
 
-## Testing
+## Testing (CRITICAL)
+
+- **ALWAYS run tests after modifying `packages/mcp` or `packages/mcp-content`:**
+  ```bash
+  bun test packages/mcp
+  bun test packages/mcp-content
+  ```
+- **Test runner:** Vitest (configured via root `vitest.config.ts`), except `packages/cli` which uses bun:test
+- **Two test tiers:**
+  - **Unit tests** (mocked client) — always run, no external deps
+  - **Integration tests** (real API) — run when `BETTER_I18N_API_KEY` is set, hits local API at `BETTER_I18N_API_URL`
+- **After ANY MCP tool change:** run tests, fix failures before considering done
+- **After adding a new MCP tool:** create matching test file in `tools/__tests__/`
+- **Test pattern:** Each tool test covers input validation, data normalization, API call correctness, and error handling
 
 ```bash
 # Run all tests
 bun test
 
 # Run MCP package tests
-cd packages/mcp && bun test
+bun test packages/mcp
+
+# Run MCP content tests
+bun test packages/mcp-content
 
 # Run specific package tests
-cd packages/core && bun test
+bun test packages/core
 ```
 
 ## Changesets
