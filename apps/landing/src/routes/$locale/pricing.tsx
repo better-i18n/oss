@@ -3,6 +3,7 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import Pricing from "@/components/Pricing";
 import { getPageHead, getFAQSchema, formatStructuredData } from "@/lib/page-seo";
 import { getPricingPageStructuredData } from "@/lib/structured-data";
+import { PricingComparison } from "@/components/PricingComparison";
 import { RelatedPages } from "@/components/RelatedPages";
 import { useTranslations } from "@better-i18n/use-intl";
 import { IconCheckmark1 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
@@ -66,6 +67,9 @@ function PricingPage() {
     <MarketingLayout showCTA={false}>
       {/* Pricing Section — use h1 on dedicated pricing page */}
       <Pricing headingLevel="h1" />
+
+      {/* Pricing Comparison Table */}
+      <PricingComparison />
 
       {/* FAQ Section */}
       <section className="py-16 bg-white">

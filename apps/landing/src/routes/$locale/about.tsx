@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
+import PlatformMetrics from "@/components/PlatformMetrics";
 import { getPageHead } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
 
@@ -52,6 +53,9 @@ function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* Platform Metrics */}
+      <PlatformMetrics />
 
       {/* Story Section */}
       <section className="py-16 bg-white">

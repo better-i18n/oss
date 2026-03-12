@@ -42,6 +42,9 @@ export default defineConfig(async ({ mode }) => {
       "import.meta.env.BETTER_I18N_PROJECT": JSON.stringify(
         env.BETTER_I18N_PROJECT,
       ),
+      "process.env.BUILD_DATE": JSON.stringify(
+        new Date().toISOString().split("T")[0],
+      ),
     },
     resolve: {
       conditions: [

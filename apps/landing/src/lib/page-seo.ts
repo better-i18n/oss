@@ -5,6 +5,7 @@ import {
   getCanonicalLink,
   getCanonicalUrl,
 } from "./meta";
+import { getLocaleTier } from "@/seo/locale-tiers";
 import {
   getDefaultStructuredData,
   getHomePageStructuredData,
@@ -60,6 +61,7 @@ interface PageSEOOptions {
     framework?: string;
     frameworkDescription?: string;
     dependencies?: string[];
+    proficiencyLevel?: "Beginner" | "Intermediate" | "Expert";
     title?: string;
     description?: string;
     url?: string;
@@ -68,6 +70,8 @@ interface PageSEOOptions {
   customStructuredData?: ReturnType<typeof formatStructuredData>;
   /** FAQ items to auto-inject as FAQ schema + page content */
   faqItems?: Array<{ question: string; answer: string }>;
+  /** Mark page as noindex (e.g., thin content with low translation coverage) */
+  noindex?: boolean;
 }
 
 /**
@@ -91,7 +95,8 @@ function getStructuredDataForPageType(
         ? getFrameworkPageStructuredData(
             options.framework,
             options.frameworkDescription,
-            options.dependencies
+            options.dependencies,
+            options.proficiencyLevel
           )
         : getDefaultStructuredData();
     case "educational":
@@ -191,7 +196,11 @@ export function getPageHead(options: PageSEOOptions) {
   }
 
   return {
-    meta: formatMetaTags(meta, { locale, locales }),
+    meta: formatMetaTags(meta, {
+      locale,
+      locales,
+      noindex: options.noindex || getLocaleTier(locale) === "tier3",
+    }),
     links: [
       ...getAlternateLinks(pathname, locales),
       getCanonicalLink(locale, pathname),

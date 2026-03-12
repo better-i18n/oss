@@ -1,13 +1,24 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
-import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import {
+  IconArrowRight,
+  IconSparklesSoft,
+  IconMagnifyingGlass,
+  IconZap,
+} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 const alternatives = [
   { key: "crowdin", name: "Crowdin", href: "/$locale/compare/crowdin" },
   { key: "lokalise", name: "Lokalise", href: "/$locale/compare/lokalise" },
   { key: "phrase", name: "Phrase", href: "/$locale/compare/phrase" },
   { key: "transifex", name: "Transifex", href: "/$locale/compare/transifex" },
-];
+] as const;
+
+const differentiators = [
+  { key: "differentiator1", icon: IconSparklesSoft },
+  { key: "differentiator2", icon: IconMagnifyingGlass },
+  { key: "differentiator3", icon: IconZap },
+] as const;
 
 export default function Alternatives() {
   const t = useT("alternatives");
@@ -23,26 +34,23 @@ export default function Alternatives() {
               {t("title", { defaultValue: "Why Teams Switch to Better i18n" })}
             </h2>
             <p className="mt-4 text-lg text-mist-700">{t("subtitle", { defaultValue: "A modern alternative to legacy localization platforms." })}</p>
-            <ul className="mt-6 space-y-3">
-              <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 size-5 rounded-full bg-mist-900 text-white text-xs flex items-center justify-center font-medium">
-                  1
-                </span>
-                <span className="text-mist-700">{t("benefit1", { defaultValue: "AI translations that understand your brand and context" })}</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 size-5 rounded-full bg-mist-900 text-white text-xs flex items-center justify-center font-medium">
-                  2
-                </span>
-                <span className="text-mist-700">{t("benefit2", { defaultValue: "Git-native workflow — no manual file imports" })}</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 size-5 rounded-full bg-mist-900 text-white text-xs flex items-center justify-center font-medium">
-                  3
-                </span>
-                <span className="text-mist-700">{t("benefit3", { defaultValue: "Instant CDN delivery, no build step required" })}</span>
-              </li>
-            </ul>
+            <div className="mt-8 space-y-5">
+              {differentiators.map(({ key, icon: Icon }) => (
+                <div key={key} className="flex items-start gap-4">
+                  <span className="flex-shrink-0 size-10 rounded-lg bg-mist-100 text-mist-900 flex items-center justify-center">
+                    <Icon className="size-5" />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-semibold text-mist-950">
+                      {t(`${key}.title`)}
+                    </h3>
+                    <p className="mt-0.5 text-sm text-mist-600">
+                      {t(`${key}.description`)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

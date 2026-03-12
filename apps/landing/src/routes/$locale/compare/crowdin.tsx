@@ -9,6 +9,8 @@ import {
   ComparisonRelatedTopics,
   type ComparisonFeature,
 } from "@/components/ComparisonTable";
+import { UserComplaints } from "@/components/UserComplaints";
+import { WhySwitchSection } from "@/components/WhySwitchSection";
 import { getPageHead } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
@@ -66,6 +68,15 @@ function CrowdinComparisonPage() {
         </div>
       </section>
 
+      <UserComplaints
+        competitor="Crowdin"
+        complaints={[
+          { source: "G2", quote: "Migration between versions is painful", category: "Migration" },
+          { source: "G2", quote: "Complex pricing tiers", category: "Pricing" },
+          { source: "Capterra", quote: "Limited real-time collaboration", category: "Collaboration" },
+        ]}
+      />
+
       {/* Why Better i18n */}
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
@@ -96,6 +107,16 @@ function CrowdinComparisonPage() {
           </div>
         </div>
       </section>
+
+      <WhySwitchSection
+        competitor="Crowdin"
+        reasons={[
+          { painPoint: "Version migration breaks workflows and causes downtime", solution: "Git-native sync means zero migration — your repo is the source of truth" },
+          { painPoint: "Complex pricing tiers make budgeting unpredictable", solution: "Simple, transparent pricing with a generous free tier for open source" },
+          { painPoint: "Limited real-time collaboration slows translation teams", solution: "MCP-powered AI agents collaborate with your team in real-time" },
+          { painPoint: "Manual key management across multiple projects", solution: "AST-based key discovery automatically finds and syncs translation keys" },
+        ]}
+      />
 
       <ComparisonRelatedTopics
         heading={t("compare.crowdin.relatedTopics", { defaultValue: "Learn More" })}

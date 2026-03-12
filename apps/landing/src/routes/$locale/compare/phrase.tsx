@@ -9,6 +9,8 @@ import {
   ComparisonRelatedTopics,
   type ComparisonFeature,
 } from "@/components/ComparisonTable";
+import { UserComplaints } from "@/components/UserComplaints";
+import { WhySwitchSection } from "@/components/WhySwitchSection";
 import { getPageHead } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
@@ -65,6 +67,15 @@ function PhraseComparisonPage() {
         </div>
       </section>
 
+      <UserComplaints
+        competitor="Phrase"
+        complaints={[
+          { source: "G2", quote: "Overly complex UI for simple tasks", category: "Usability" },
+          { source: "Capterra", quote: "Integration setup takes days", category: "Setup" },
+          { source: "G2", quote: "Pricing not transparent", category: "Pricing" },
+        ]}
+      />
+
       {/* Why Better i18n */}
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
@@ -95,6 +106,16 @@ function PhraseComparisonPage() {
           </div>
         </div>
       </section>
+
+      <WhySwitchSection
+        competitor="Phrase"
+        reasons={[
+          { painPoint: "Overly complex UI adds friction to simple translation tasks", solution: "Clean, developer-first interface focused on what matters" },
+          { painPoint: "Integration setup takes days of engineering time", solution: "Drop-in SDKs for React, Next.js, Vue, and more — set up in minutes" },
+          { painPoint: "Opaque pricing requires sales calls to get a quote", solution: "Transparent pricing visible on our website — no surprises" },
+          { painPoint: "Enterprise-focused features add bloat for smaller teams", solution: "Lean platform that scales from side projects to production apps" },
+        ]}
+      />
 
       <ComparisonRelatedTopics
         heading={t("compare.phrase.relatedTopics", { defaultValue: "Related Resources" })}
