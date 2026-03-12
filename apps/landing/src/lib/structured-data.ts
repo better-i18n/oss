@@ -7,6 +7,62 @@ const DEFAULT_AVAILABLE_LANGUAGES: readonly string[] = [
   "nb", "el", "th",
 ] as const;
 
+// ─── Localized Organization fields ──────────────────────────────────
+
+/** Localized slogans keyed by ISO 639-1 */
+const SLOGAN: Readonly<Record<string, string>> = {
+  en: "Ship multilingual apps faster",
+  tr: "Çok dilli uygulamaları daha hızlı yayınlayın",
+  de: "Mehrsprachige Apps schneller ausliefern",
+  fr: "Livrez vos applications multilingues plus vite",
+  es: "Lanza aplicaciones multilingües más rápido",
+  pt: "Lance aplicativos multilíngues mais rápido",
+  it: "Rilascia app multilingue più velocemente",
+  nl: "Lever meertalige apps sneller op",
+  pl: "Wydawaj wielojęzyczne aplikacje szybciej",
+  cs: "Dodávejte vícejazyčné aplikace rychleji",
+  ja: "多言語アプリをより速くリリース",
+  ko: "다국어 앱을 더 빠르게 출시하세요",
+  zh: "更快地发布多语言应用",
+  ar: "أطلق التطبيقات متعددة اللغات بشكل أسرع",
+  hi: "बहुभाषी ऐप्स तेज़ी से लॉन्च करें",
+  ru: "Выпускайте мультиязычные приложения быстрее",
+  uk: "Випускайте багатомовні додатки швидше",
+  sv: "Leverera flerspråkiga appar snabbare",
+  da: "Lever flersprogede apps hurtigere",
+  fi: "Julkaise monikielisiä sovelluksia nopeammin",
+  nb: "Lever flerspråklige apper raskere",
+  el: "Κυκλοφορήστε πολύγλωσσες εφαρμογές πιο γρήγορα",
+  th: "เปิดตัวแอปหลายภาษาได้เร็วขึ้น",
+};
+
+/** Localized knowsAbout terms keyed by ISO 639-1 */
+const KNOWS_ABOUT: Readonly<Record<string, readonly string[]>> = {
+  en: ["internationalization", "localization", "translation management", "i18n", "l10n", "multilingual SEO", "software localization"],
+  tr: ["uluslararasılaştırma", "yerelleştirme", "çeviri yönetimi", "i18n", "l10n", "çok dilli SEO", "yazılım yerelleştirme"],
+  de: ["Internationalisierung", "Lokalisierung", "Übersetzungsmanagement", "i18n", "l10n", "mehrsprachiges SEO", "Software-Lokalisierung"],
+  fr: ["internationalisation", "localisation", "gestion de traduction", "i18n", "l10n", "SEO multilingue", "localisation logicielle"],
+  es: ["internacionalización", "localización", "gestión de traducciones", "i18n", "l10n", "SEO multilingüe", "localización de software"],
+  pt: ["internacionalização", "localização", "gestão de traduções", "i18n", "l10n", "SEO multilíngue", "localização de software"],
+  it: ["internazionalizzazione", "localizzazione", "gestione delle traduzioni", "i18n", "l10n", "SEO multilingue", "localizzazione software"],
+  nl: ["internationalisatie", "lokalisatie", "vertaalbeheer", "i18n", "l10n", "meertalige SEO", "softwarelokalisatie"],
+  pl: ["internacjonalizacja", "lokalizacja", "zarządzanie tłumaczeniami", "i18n", "l10n", "wielojęzyczne SEO", "lokalizacja oprogramowania"],
+  cs: ["internacionalizace", "lokalizace", "správa překladů", "i18n", "l10n", "vícejazyčné SEO", "lokalizace softwaru"],
+  ja: ["国際化", "ローカライゼーション", "翻訳管理", "i18n", "l10n", "多言語SEO", "ソフトウェアローカライゼーション"],
+  ko: ["국제화", "현지화", "번역 관리", "i18n", "l10n", "다국어 SEO", "소프트웨어 현지화"],
+  zh: ["国际化", "本地化", "翻译管理", "i18n", "l10n", "多语言SEO", "软件本地化"],
+  ar: ["التدويل", "التوطين", "إدارة الترجمة", "i18n", "l10n", "تحسين محركات البحث متعدد اللغات", "توطين البرمجيات"],
+  hi: ["अंतर्राष्ट्रीयकरण", "स्थानीयकरण", "अनुवाद प्रबंधन", "i18n", "l10n", "बहुभाषी SEO", "सॉफ़्टवेयर स्थानीयकरण"],
+  ru: ["интернационализация", "локализация", "управление переводами", "i18n", "l10n", "мультиязычное SEO", "локализация ПО"],
+  uk: ["інтернаціоналізація", "локалізація", "управління перекладами", "i18n", "l10n", "багатомовне SEO", "локалізація ПЗ"],
+  sv: ["internationalisering", "lokalisering", "översättningshantering", "i18n", "l10n", "flerspråkig SEO", "mjukvarulokalisering"],
+  da: ["internationalisering", "lokalisering", "oversættelsesstyring", "i18n", "l10n", "flersproget SEO", "softwarelokalisering"],
+  fi: ["kansainvälistäminen", "lokalisointi", "käännösten hallinta", "i18n", "l10n", "monikielinen SEO", "ohjelmistolokalisointi"],
+  nb: ["internasjonalisering", "lokalisering", "oversettelseshåndtering", "i18n", "l10n", "flerspråklig SEO", "programvarelokalisering"],
+  el: ["διεθνοποίηση", "τοπικοποίηση", "διαχείριση μεταφράσεων", "i18n", "l10n", "πολύγλωσσο SEO", "τοπικοποίηση λογισμικού"],
+  th: ["การทำให้เป็นสากล", "การแปลเป็นภาษาท้องถิ่น", "การจัดการแปลภาษา", "i18n", "l10n", "SEO หลายภาษา", "การแปลซอฟต์แวร์"],
+};
+
 /**
  * Returns today's date as YYYY-MM-DD.
  * Used as fallback for dateModified so structured data stays fresh
@@ -26,6 +82,7 @@ export function getOrganizationSchema(options?: {
   locale?: string;
   availableLanguages?: readonly string[];
 }) {
+  const locale = options?.locale ?? "en";
   const languages = options?.availableLanguages ?? DEFAULT_AVAILABLE_LANGUAGES;
   return {
     "@context": "https://schema.org",
@@ -36,9 +93,13 @@ export function getOrganizationSchema(options?: {
       "@type": "ImageObject",
       url: `${SITE_URL}/logo.png`,
     },
+    foundingDate: "2024",
+    slogan: SLOGAN[locale] ?? SLOGAN.en,
+    knowsAbout: KNOWS_ABOUT[locale] ?? KNOWS_ABOUT.en,
     sameAs: [
       "https://twitter.com/betteri18n",
       "https://github.com/better-i18n",
+      "https://www.linkedin.com/company/better-i18n",
     ],
     contactPoint: {
       "@type": "ContactPoint",
@@ -47,7 +108,7 @@ export function getOrganizationSchema(options?: {
       url: `${SITE_URL}/about`,
       availableLanguage: [...languages],
     },
-    ...(options?.locale && { inLanguage: options.locale }),
+    ...(locale !== "en" && { inLanguage: locale }),
   };
 }
 
@@ -85,12 +146,24 @@ export function getSoftwareApplicationSchema(
     "@type": "SoftwareApplication",
     name: SITE_NAME,
     applicationCategory: "DeveloperApplication",
+    applicationSubCategory: "Translation Management System",
     operatingSystem: "Web",
     url: SITE_URL,
     image: `${SITE_URL}/logo.png`,
-    datePublished: "2025-01-01",
+    datePublished: "2024-06-01",
     dateModified: getTodayDate(),
     ...(locale && { inLanguage: locale }),
+    featureList: [
+      "AI-powered translations",
+      "React / Next.js / Vue / Nuxt / Angular / Svelte / Expo SDKs",
+      "GitHub sync & CI/CD integration",
+      "Context-aware translation editor",
+      "Global CDN delivery",
+      "CLI code scanning",
+      "Plural rules & ICU message format",
+      "Over-the-air translation updates",
+    ].join(", "),
+    softwareRequirements: "Modern web browser",
     offers: {
       "@type": "Offer",
       price: "0",
