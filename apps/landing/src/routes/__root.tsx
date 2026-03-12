@@ -123,10 +123,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           href: "https://fonts.gstatic.com",
           crossOrigin: "anonymous",
         },
-        {
-          rel: "dns-prefetch",
-          href: "https://og.better-i18n.com",
-        },
+        // TODO: restore dns-prefetch for og.better-i18n.com when OG service is live
         {
           rel: "dns-prefetch",
           href: "https://dash.better-i18n.com",

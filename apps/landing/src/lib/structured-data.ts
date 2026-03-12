@@ -1,14 +1,18 @@
 import { SITE_URL, SITE_NAME } from "./meta";
 
-const DEFAULT_REVIEW_DATE = "2025-01-15";
+const FOUNDING_DATE = "2026";
+const DEFAULT_REVIEW_DATE = "2026-01-15";
 
-/** All supported locales — single source of truth for schema.org availableLanguage */
-export const DEFAULT_AVAILABLE_LANGUAGES: readonly string[] = [
-  "en", "tr", "de", "fr", "es", "pt", "it", "nl", "pl", "cs",
-  "ja", "ko", "zh-hans", "ar", "hi", "ru", "uk", "th",
-] as const;
+const AGGREGATE_RATING = {
+  "@type": "AggregateRating" as const,
+  ratingValue: 4.68,
+  bestRating: 5,
+  worstRating: 1,
+  ratingCount: 42,
+  reviewCount: 42,
+} as const;
 
-/** English fallbacks — used when i18n messages are not available */
+/** English fallback — used when i18n messages are not available */
 const DEFAULT_SLOGAN = "Ship multilingual apps faster";
 const DEFAULT_KNOWS_ABOUT: readonly string[] = [
   "internationalization", "localization", "translation management",
@@ -16,8 +20,8 @@ const DEFAULT_KNOWS_ABOUT: readonly string[] = [
 ];
 
 /**
- * Common entity mentions for schema.org `mentions` property.
- * Helps AI models understand entity relationships.
+ * Creates a schema.org SoftwareApplication mention for a framework.
+ * Used in TechArticle `mentions` to help AI models understand entity relationships.
  */
 export function getFrameworkMention(frameworkName: string, frameworkUrl: string) {
   return {
@@ -26,19 +30,6 @@ export function getFrameworkMention(frameworkName: string, frameworkUrl: string)
     url: frameworkUrl,
   };
 }
-
-const COMMON_MENTIONS = {
-  react: getFrameworkMention("React", "https://react.dev"),
-  nextjs: getFrameworkMention("Next.js", "https://nextjs.org"),
-  vue: getFrameworkMention("Vue.js", "https://vuejs.org"),
-  nuxt: getFrameworkMention("Nuxt", "https://nuxt.com"),
-  angular: getFrameworkMention("Angular", "https://angular.dev"),
-  svelte: getFrameworkMention("Svelte", "https://svelte.dev"),
-  expo: getFrameworkMention("Expo", "https://expo.dev"),
-  flutter: getFrameworkMention("Flutter", "https://flutter.dev"),
-} as const;
-
-export { COMMON_MENTIONS };
 
 /**
  * Organization Schema - represents the company/brand.
@@ -51,9 +42,10 @@ export function getOrganizationSchema(options?: {
   availableLanguages?: readonly string[];
   slogan?: string;
   knowsAbout?: readonly string[];
+  contactType?: string;
 }) {
   const locale = options?.locale ?? "en";
-  const languages = options?.availableLanguages ?? DEFAULT_AVAILABLE_LANGUAGES;
+  const languages = options?.availableLanguages ?? ["en"];
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -64,7 +56,7 @@ export function getOrganizationSchema(options?: {
       "@type": "ImageObject",
       url: `${SITE_URL}/logo.png`,
     },
-    foundingDate: "2024",
+    foundingDate: FOUNDING_DATE,
     slogan: options?.slogan ?? DEFAULT_SLOGAN,
     knowsAbout: options?.knowsAbout ? [...options.knowsAbout] : [...DEFAULT_KNOWS_ABOUT],
     sameAs: [
@@ -75,7 +67,7 @@ export function getOrganizationSchema(options?: {
     contactPoint: {
       "@type": "ContactPoint",
       email: "hello@better-i18n.com",
-      contactType: "customer support",
+      contactType: options?.contactType ?? "customer support",
       url: `${SITE_URL}/about`,
       availableLanguage: [...languages],
     },
@@ -106,7 +98,11 @@ interface SoftwareAppReview {
  * Google requires `price` as a string and recommends nesting `review`
  * inside the main schema rather than using standalone Review schemas.
  */
-export function getSoftwareApplicationSchema(reviews?: SoftwareAppReview[]) {
+export function getSoftwareApplicationSchema(options?: {
+  reviews?: SoftwareAppReview[];
+  offerDescription?: string;
+}) {
+  const reviews = options?.reviews;
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -115,30 +111,23 @@ export function getSoftwareApplicationSchema(reviews?: SoftwareAppReview[]) {
     operatingSystem: "Web",
     url: SITE_URL,
     image: `${SITE_URL}/logo.png`,
-    datePublished: "2025-01-01",
+    datePublished: "2026-01-01",
     dateModified: new Date().toISOString().split("T")[0],
     offers: {
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
-      description: "Free tier available",
+      description: options?.offerDescription ?? "Free tier available",
       availability: "https://schema.org/InStock",
       url: `${SITE_URL}/en/pricing`,
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: 4.9,
-      bestRating: 5,
-      worstRating: 1,
-      ratingCount: 50,
-      reviewCount: 50,
-    },
+    aggregateRating: { ...AGGREGATE_RATING },
     ...(reviews && reviews.length > 0 && {
       review: reviews.map((r) => ({
         "@type": "Review",
         author: { "@type": "Person", name: r.author },
         reviewBody: r.reviewBody,
-        datePublished: "2025-01-15",
+        datePublished: DEFAULT_REVIEW_DATE,
         reviewRating: {
           "@type": "Rating",
           ratingValue: 5,
@@ -279,11 +268,18 @@ export function getDefaultStructuredData(locale?: string) {
 /**
  * Get home page structured data
  */
-export function getHomePageStructuredData(reviews?: SoftwareAppReview[], locale?: string) {
+export function getHomePageStructuredData(options?: {
+  reviews?: SoftwareAppReview[];
+  locale?: string;
+  offerDescription?: string;
+}) {
   return formatStructuredData([
-    getOrganizationSchema(locale ? { locale } : undefined),
-    getWebSiteSchema(locale),
-    getSoftwareApplicationSchema(reviews),
+    getOrganizationSchema(options?.locale ? { locale: options.locale } : undefined),
+    getWebSiteSchema(options?.locale),
+    getSoftwareApplicationSchema({
+      reviews: options?.reviews,
+      offerDescription: options?.offerDescription,
+    }),
   ]);
 }
 
@@ -382,14 +378,7 @@ export function getProductSchema(options: {
       "@type": "Brand",
       name: options.brand || SITE_NAME,
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: 4.9,
-      bestRating: 5,
-      worstRating: 1,
-      ratingCount: 50,
-      reviewCount: 50,
-    },
+    aggregateRating: { ...AGGREGATE_RATING },
     offers: options.offers.map((offer) => ({
       "@type": "Offer",
       name: offer.name,
@@ -446,7 +435,7 @@ export function getTechArticleSchema(options: {
   proficiencyLevel?: "Beginner" | "Intermediate" | "Expert";
   mentions?: ReadonlyArray<{ readonly "@type": string; readonly name: string; readonly url: string }>;
 }) {
-  const datePublished = options.datePublished || "2025-01-01";
+  const datePublished = options.datePublished || "2026-01-01";
   const dateModified = options.dateModified || new Date().toISOString().split("T")[0];
 
   return {
@@ -655,8 +644,8 @@ export function getJobPostingSchema(jobs: JobPostingOptions[], locale?: string) 
         },
       },
     }),
-    datePosted: "2026-01-01",
-    validThrough: "2026-12-31",
+    datePosted: "2026-03-01",
+    validThrough: "2027-03-01",
     ...(locale && { inLanguage: locale }),
   }));
 }
@@ -677,18 +666,24 @@ export function getCareersPageStructuredData(
 /**
  * Get pricing page structured data
  */
-export function getPricingPageStructuredData(locale?: string) {
+export function getPricingPageStructuredData(options?: {
+  locale?: string;
+  messages?: Readonly<Record<string, string>>;
+}) {
+  const messages = options?.messages;
   const pricingUrl = `${SITE_URL}/en/pricing`;
   return formatStructuredData([
-    getOrganizationSchema(locale ? { locale } : undefined),
-    getSoftwareApplicationSchema(),
+    getOrganizationSchema(options?.locale ? { locale: options.locale } : undefined),
+    getSoftwareApplicationSchema({
+      offerDescription: messages?.["schema.offers.free.description"] ?? "Free tier available",
+    }),
     getProductSchema({
-      name: `${SITE_NAME} Translation Management`,
-      description: "AI-powered translation management system for developers",
+      name: messages?.["schema.product.name"] ?? `${SITE_NAME} Translation Management`,
+      description: messages?.["schema.product.description"] ?? "AI-powered translation management system for developers",
       offers: [
-        { name: "Free", price: 0, priceCurrency: "USD", description: "For hobby projects", url: pricingUrl },
-        { name: "Pro", price: 19, priceCurrency: "USD", description: "For growing teams", url: pricingUrl },
-        { name: "Enterprise", price: 0, priceCurrency: "USD", description: "Custom pricing", url: pricingUrl },
+        { name: "Free", price: 0, priceCurrency: "USD", description: messages?.["schema.offers.free.planDescription"] ?? "For hobby projects", url: pricingUrl },
+        { name: "Pro", price: 19, priceCurrency: "USD", description: messages?.["schema.offers.pro.planDescription"] ?? "For growing teams", url: pricingUrl },
+        { name: "Enterprise", price: 0, priceCurrency: "USD", description: messages?.["schema.offers.enterprise.planDescription"] ?? "Custom pricing", url: pricingUrl },
       ],
     }),
   ]);

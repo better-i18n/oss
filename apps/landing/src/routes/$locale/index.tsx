@@ -82,7 +82,10 @@ export const Route = createFileRoute("/$locale/")({
         ...getAlternateLinks(pathname, loaderData?.locales),
         getCanonicalLink(locale, pathname),
       ],
-      scripts: getHomePageStructuredData(reviewItems.length > 0 ? reviewItems : undefined, locale),
+      scripts: getHomePageStructuredData({
+        reviews: reviewItems.length > 0 ? reviewItems : undefined,
+        locale,
+      }),
     };
   },
   component: LandingPage,
