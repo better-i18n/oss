@@ -507,23 +507,31 @@ export async function fetchSeoData(options: {
     }
   }
 
-  console.log(
-    `[SEO] Fetched: ${locales.length} locales, ${blogPosts.length} posts, ${featurePages.length} features, ${i18nMessages.size} message bundles`,
-  );
-  for (const result of messageResults) {
-    if (result.status === "fulfilled") {
-      i18nMessages.set(result.value.locale, result.value.messages);
+  // Calculate per-locale translation coverage relative to English key count.
+  // English is the source locale and always has coverage = 1.0.
+  const enKeys = i18nMessages.get("en");
+  const enKeyCount = enKeys ? Object.keys(enKeys).length : 0;
+  const localeCoverage = new Map<string, number>();
+  for (const locale of locales) {
+    if (locale === "en" || enKeyCount === 0) {
+      localeCoverage.set(locale, 1.0);
+    } else {
+      const localeKeys = i18nMessages.get(locale);
+      const localeKeyCount = localeKeys ? Object.keys(localeKeys).length : 0;
+      localeCoverage.set(locale, localeKeyCount / enKeyCount);
     }
   }
 
-  // Compute per-locale translation coverage relative to English key count.
-  const enKeyCount = i18nMessages.get("en")
-    ? Object.keys(i18nMessages.get("en")!).length
-    : 0;
-  const localeCoverage = new Map<string, number>();
-  for (const [locale, messages] of i18nMessages) {
-    const keyCount = Object.keys(messages).length;
-    localeCoverage.set(locale, enKeyCount > 0 ? keyCount / enKeyCount : 1.0);
+  const thinLocales = locales.filter(
+    (l) => (localeCoverage.get(l) ?? 0) < THIN_CONTENT_THRESHOLD,
+  );
+  console.log(
+    `[SEO] Fetched: ${locales.length} locales, ${blogPosts.length} posts, ${featurePages.length} features, ${i18nMessages.size} message bundles`,
+  );
+  if (thinLocales.length > 0) {
+    console.log(
+      `[SEO] Thin content (< ${THIN_CONTENT_THRESHOLD * 100}% coverage): ${thinLocales.join(", ")}`,
+    );
   }
 
   return { locales, blogPosts, featurePages, i18nMessages, localeCoverage };
