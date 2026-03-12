@@ -100,6 +100,7 @@ export function personaHead(loaderData?: {
     title: page?.title || label,
     description: excerpt,
     url: canonicalUrl,
+    locale,
   });
 
   const breadcrumbScripts = formatStructuredData(
@@ -131,6 +132,11 @@ export function personaHead(loaderData?: {
       { name: "author", content: "Better i18n" },
       ...(page?.targetKeywords
         ? [{ name: "keywords", content: page.targetKeywords }]
+        : []),
+      ...(locales
+        ? locales
+            .filter((loc) => loc !== locale)
+            .map((loc) => ({ property: "og:locale:alternate", content: toOgLocale(loc) }))
         : []),
     ],
     links: [
