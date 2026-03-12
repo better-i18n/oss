@@ -1,5 +1,11 @@
 # @better-i18n/mcp
 
+## 0.15.4
+
+### Patch Changes
+
+- 2c4c1a7: Rename translation status enum value "approved" → "published" to align with platform terminology
+
 ## 0.15.3
 
 ### Patch Changes
