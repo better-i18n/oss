@@ -37,6 +37,21 @@ const IGNORE_ATTRIBUTES = new Set([
 ]);
 
 /**
+ * Patterns for non-user-facing attribute values (false positives)
+ */
+const IGNORE_VALUE_PATTERNS = [
+  /^\d+(\.\d+)?(px|rem|em|%|vh|vw|ms|s)?$/, // Numbers with optional decimal/units (41.0082, 100px)
+  /^\d{1,2}:\d{2}(:\d{2})?$/, // Time strings (06:25, 12:50:00)
+  /^#[0-9a-fA-F]{3,8}$/, // Hex colors
+  /^rgba?\(/, // RGB colors
+  /^hsla?\(/, // HSL colors
+  /^[A-Z_][A-Z0-9_]*$/, // SCREAMING_CASE constants
+  /^[a-z][a-z0-9]*$/, // Single lowercase word (identifiers)
+  /^[a-z-]+$/, // CSS-like (lowercase with hyphens)
+  /^[a-z_]+$/, // snake_case identifiers
+];
+
+/**
  * Check JSX attribute for hardcoded strings
  */
 export function checkJsxAttribute(
@@ -74,6 +89,11 @@ export function checkJsxAttribute(
 
   // Skip URLs
   if (text.startsWith("http") || text.startsWith("/")) return null;
+
+  // Skip non-user-facing values (numbers, times, colors, identifiers)
+  for (const pattern of IGNORE_VALUE_PATTERNS) {
+    if (pattern.test(text)) return null;
+  }
 
   const pos = ctx.sourceFile.getLineAndCharacterOfPosition(node.getStart());
 

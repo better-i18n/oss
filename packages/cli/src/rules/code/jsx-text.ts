@@ -14,7 +14,7 @@ import type { Issue, RuleContext } from "../../analyzer/types.js";
 const IGNORE_PATTERNS = [
   /^[\s\n\r\t]+$/, // Whitespace only
   /^[→←↑↓★•·\-–—/\\|,;:.!?()[\]{}]+$/, // Symbols only
-  /^\d+[+%KkMm]?$/, // Numbers with optional suffix
+  /^\d+(\.\d+)?[+%KkMm]?$/, // Numbers with optional decimal and suffix
   /^[A-Z_]+$/, // SCREAMING_CASE
   /^https?:\/\//, // URLs
   /^\//, // Paths
