@@ -349,11 +349,20 @@ Base fields (always included):
 | `slug` | `string` | URL-safe identifier |
 | `status` | `ContentEntryStatus` | Entry status |
 | `publishedAt` | `string \| null` | ISO 8601 publish date |
-| `sourceLanguage` | `string` | Source language code |
-| `availableLanguages` | `string[]` | Languages with translations |
+| `sourceLanguage` | `string` | Project's source language code |
+| `availableLanguages` | `string[]` | Language codes with translations |
 | `title` | `string` | Localized title |
 | `body` | `string \| null` | Localized body as Markdown |
 | `relations` | `Record<string, RelationValue \| null>` | Expanded relations (only when `expand` is used) |
+
+Additional fields (present on single-entry responses):
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `availableLanguageDetails` | `ContentEntryLanguage[] \| undefined` | Rich language descriptors with display name and country code — useful for language pickers |
+| `translationStatus` | `Record<string, "draft" \| "published"> \| undefined` | Per-language translation publish status |
+| `bodyHtml` | `string \| undefined` | Body rendered as an HTML string |
+| `bodyMarkdown` | `string \| undefined` | Body as a plain Markdown string (alias for `body`) |
 
 Custom fields from `CF` are spread flat onto this object.
 
@@ -388,6 +397,26 @@ Custom fields from `CF` are spread flat onto this object.
 | `description` | `string \| null` | Model description |
 | `kind` | `"collection" \| "single"` | Model kind |
 | `entryCount` | `number` | Number of entries |
+| `includeBody` | `boolean` | Whether the model has a rich-text body field |
+| `fields` | `ContentModelField[]` | Custom field definitions |
+
+</AccordionItem>
+</Accordion>
+
+<Accordion>
+<AccordionItem title="ContentModelField">
+
+Field definition returned inside `ContentModel.fields`.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | `string` | Field identifier (snake_case) |
+| `displayName` | `string` | Human-readable field label |
+| `type` | `string` | Field type (`text`, `textarea`, `richtext`, `number`, `boolean`, `date`, `datetime`, `enum`, `media`, `relation`, `user_select`) |
+| `required` | `boolean` | Whether the field is required |
+| `localized` | `boolean` | Whether the field is translated per language |
+| `enumValues` | `ContentModelEnumValue[] \| undefined` | Enum options — only present when `type` is `"enum"` |
+| `fieldConfig.targetModel` | `string \| undefined` | Target model slug — only present when `type` is `"relation"` |
 
 </AccordionItem>
 </Accordion>
