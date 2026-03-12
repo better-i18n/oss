@@ -1,5 +1,11 @@
 # @better-i18n/mcp-content
 
+## 0.8.0
+
+### Minor Changes
+
+- 2c4c1a7: Add new tool parameters: searchLanguages, searchInBody, compact for listContentEntries; compact for getContentEntry; translationStatus for updateContentEntry. Update publishContentEntry terminology to "published".
+
 ## 0.7.0
 
 ### Minor Changes
