@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.5
+
+### Patch Changes
+
+- ab9f013: Fix false positives in doctor code analysis: jsx-attribute rule now filters out coordinates, time strings, hex colors, CSS values, and identifiers. jsx-text rule now correctly ignores decimal numbers (e.g. "41.0082").
+
 ## 0.2.4
 
 ### Patch Changes

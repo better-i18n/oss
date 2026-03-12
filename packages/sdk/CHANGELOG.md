@@ -1,5 +1,11 @@
 # @better-i18n/sdk
 
+## 3.2.0
+
+### Minor Changes
+
+- 2c4c1a7: Add new ContentEntry response fields: translationStatus, bodyHtml, bodyMarkdown, availableLanguageDetails, sourceLanguage. Add fieldConfig.targetModel to ContentModelField.
+
 ## 3.1.0
 
 ### Minor Changes
