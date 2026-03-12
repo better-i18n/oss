@@ -38,6 +38,11 @@ export interface BlogPostListItem {
   authorAvatar: string | null;
 }
 
+// ─── Constants ────────────────────────────────────────────────────────
+
+/** Posts per page for blog listing pagination. Shared with sitemap generation. */
+export const POSTS_PER_PAGE = 24;
+
 // ─── Client (singleton) ─────────────────────────────────────────────
 
 let _client: ContentClient | null = null;
@@ -197,7 +202,7 @@ export async function getRelatedPosts(
   limit: number = 3,
 ): Promise<BlogPostListItem[]> {
   try {
-    const { posts } = await getBlogPosts(locale, { limit: limit + 1 });
+    const { posts } = await getBlogPosts(locale, { limit: 30 });
     // Filter out current post
     const filtered = posts.filter((p) => p.slug !== currentSlug);
 
