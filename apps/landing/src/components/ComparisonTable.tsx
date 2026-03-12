@@ -63,6 +63,273 @@ function FeatureValue({ value, highlight }: { value: boolean | string; highlight
   return <span className={`text-sm ${highlight ? "text-mist-950 font-medium" : "text-mist-600"}`}>{value}</span>;
 }
 
+// ─── Multi-competitor comparison ─────────────────────────────────────
+
+export interface MultiComparisonFeature {
+  readonly name: string;
+  readonly values: ReadonlyMap<string, boolean | string>;
+  readonly highlight?: boolean;
+}
+
+interface MultiComparisonTableProps {
+  readonly competitors: readonly string[];
+  readonly features: readonly MultiComparisonFeature[];
+  readonly featureLabel?: string;
+}
+
+export function MultiComparisonTable({ competitors, features, featureLabel }: MultiComparisonTableProps) {
+  const colCount = competitors.length + 1; // feature label + competitors
+  return (
+    <div className="overflow-x-auto -mx-6 px-6">
+      <div
+        role="table"
+        aria-label={`Feature comparison: ${competitors.join(" vs ")}`}
+        className="overflow-hidden rounded-2xl border border-mist-200 bg-white min-w-[640px]"
+      >
+        {/* Header */}
+        <div
+          role="row"
+          className="grid bg-mist-50 border-b border-mist-200"
+          style={{ gridTemplateColumns: `minmax(180px, 2fr) repeat(${competitors.length}, minmax(100px, 1fr))` }}
+        >
+          <div role="columnheader" className="p-4 text-sm font-medium text-mist-600">
+            {featureLabel ?? "Feature"}
+          </div>
+          {competitors.map((name, i) => (
+            <div
+              key={name}
+              role="columnheader"
+              className={`p-4 text-sm font-medium text-center border-l border-mist-200 ${
+                i === 0 ? "text-mist-950 bg-mist-100" : "text-mist-600"
+              }`}
+            >
+              {name}
+            </div>
+          ))}
+        </div>
+
+        {/* Rows */}
+        {features.map((feature, index) => (
+          <div
+            key={index}
+            role="row"
+            className={`grid border-b border-mist-100 last:border-b-0 ${
+              feature.highlight ? "bg-emerald-50/50" : ""
+            }`}
+            style={{ gridTemplateColumns: `minmax(180px, 2fr) repeat(${competitors.length}, minmax(100px, 1fr))` }}
+          >
+            <div role="cell" className="p-4 text-sm text-mist-700">{feature.name}</div>
+            {competitors.map((name, i) => (
+              <div
+                key={name}
+                role="cell"
+                className={`p-4 text-center border-l border-mist-100 ${i === 0 ? "bg-mist-50/50" : ""}`}
+              >
+                <FeatureValue value={feature.values.get(name) ?? false} highlight={i === 0} />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Three-way comparison hero ──────────────────────────────────────
+
+interface ThreeWayHeroProps {
+  readonly competitors: readonly string[];
+  readonly title: string;
+  readonly subtitle: string;
+}
+
+export function ThreeWayHero({ competitors, title, subtitle }: ThreeWayHeroProps) {
+  return (
+    <section className="py-16 sm:py-24">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <div className="max-w-3xl">
+          <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
+            {competitors.map((name, i) => (
+              <span key={name}>
+                {i > 0 && <span className="mx-1">vs</span>}
+                <span className="font-medium">{name}</span>
+              </span>
+            ))}
+          </div>
+
+          <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
+            {title}
+          </h1>
+          <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">{subtitle}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Pricing comparison table ───────────────────────────────────────
+
+export interface PricingRow {
+  readonly label: string;
+  readonly values: readonly string[];
+  readonly highlight?: boolean;
+}
+
+interface PricingComparisonProps {
+  readonly title: string;
+  readonly subtitle: string;
+  readonly columns: readonly string[];
+  readonly rows: readonly PricingRow[];
+}
+
+export function PricingComparisonTable({ title, subtitle, columns, rows }: PricingComparisonProps) {
+  return (
+    <section className="py-16 sm:py-24">
+      <div className="mx-auto max-w-5xl px-6 lg:px-10">
+        <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
+          {title}
+        </h2>
+        <p className="text-mist-600 mb-10">{subtitle}</p>
+
+        <div className="overflow-x-auto -mx-6 px-6">
+          <div className="overflow-hidden rounded-2xl border border-mist-200 bg-white min-w-[540px]">
+            {/* Header */}
+            <div
+              className="grid bg-mist-50 border-b border-mist-200"
+              style={{ gridTemplateColumns: `minmax(160px, 1.5fr) repeat(${columns.length}, minmax(100px, 1fr))` }}
+            >
+              <div className="p-4" />
+              {columns.map((col, i) => (
+                <div
+                  key={col}
+                  className={`p-4 text-sm font-medium text-center border-l border-mist-200 ${
+                    i === 0 ? "text-mist-950 bg-mist-100" : "text-mist-600"
+                  }`}
+                >
+                  {col}
+                </div>
+              ))}
+            </div>
+
+            {/* Rows */}
+            {rows.map((row, index) => (
+              <div
+                key={index}
+                className={`grid border-b border-mist-100 last:border-b-0 ${
+                  row.highlight ? "bg-emerald-50/50" : ""
+                }`}
+                style={{ gridTemplateColumns: `minmax(160px, 1.5fr) repeat(${columns.length}, minmax(100px, 1fr))` }}
+              >
+                <div className="p-4 text-sm text-mist-700 font-medium">{row.label}</div>
+                {row.values.map((val, i) => (
+                  <div
+                    key={i}
+                    className={`p-4 text-sm text-center border-l border-mist-100 ${
+                      i === 0 ? "bg-mist-50/50 text-mist-950 font-medium" : "text-mist-600"
+                    }`}
+                  >
+                    {val}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── DX Comparison section ──────────────────────────────────────────
+
+export interface DxComparisonItem {
+  readonly category: string;
+  readonly items: readonly {
+    readonly label: string;
+    readonly values: ReadonlyMap<string, boolean | string>;
+  }[];
+}
+
+interface DxComparisonProps {
+  readonly title: string;
+  readonly competitors: readonly string[];
+  readonly categories: readonly DxComparisonItem[];
+}
+
+export function DxComparison({ title, competitors, categories }: DxComparisonProps) {
+  return (
+    <section className="py-16 sm:py-24 bg-mist-50">
+      <div className="mx-auto max-w-5xl px-6 lg:px-10">
+        <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-10">
+          {title}
+        </h2>
+        <div className="space-y-8">
+          {categories.map((cat) => (
+            <div key={cat.category}>
+              <h3 className="text-lg font-medium text-mist-950 mb-4">{cat.category}</h3>
+              <div className="overflow-x-auto -mx-6 px-6">
+                <div className="overflow-hidden rounded-xl border border-mist-200 bg-white min-w-[540px]">
+                  {cat.items.map((item, i) => (
+                    <div
+                      key={i}
+                      className="grid border-b border-mist-100 last:border-b-0"
+                      style={{ gridTemplateColumns: `minmax(160px, 1.5fr) repeat(${competitors.length}, minmax(100px, 1fr))` }}
+                    >
+                      <div className="p-3 text-sm text-mist-700">{item.label}</div>
+                      {competitors.map((name, ci) => (
+                        <div
+                          key={name}
+                          className={`p-3 text-center border-l border-mist-100 ${ci === 0 ? "bg-mist-50/50" : ""}`}
+                        >
+                          <FeatureValue value={item.values.get(name) ?? false} highlight={ci === 0} />
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Migration section ──────────────────────────────────────────────
+
+interface MigrationSectionProps {
+  readonly title: string;
+  readonly subtitle: string;
+  readonly steps: readonly { readonly title: string; readonly description: string }[];
+}
+
+export function MigrationSection({ title, subtitle, steps }: MigrationSectionProps) {
+  return (
+    <section className="py-16 sm:py-24">
+      <div className="mx-auto max-w-4xl px-6 lg:px-10">
+        <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
+          {title}
+        </h2>
+        <p className="text-mist-600 mb-10">{subtitle}</p>
+        <div className="space-y-6">
+          {steps.map((step, i) => (
+            <div key={i} className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium">
+                {i + 1}
+              </div>
+              <div>
+                <h3 className="text-base font-medium text-mist-950">{step.title}</h3>
+                <p className="mt-1 text-sm text-mist-600 leading-relaxed">{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 interface ComparisonHeroProps {
   competitorName: string;
   title: string;
@@ -181,6 +448,8 @@ const allComparisons = [
   { name: "Lokalise", slug: "lokalise" },
   { name: "Phrase", slug: "phrase" },
   { name: "Transifex", slug: "transifex" },
+  { name: "Smartling", slug: "smartling" },
+  { name: "XTM", slug: "xtm" },
 ];
 
 interface OtherComparisonsProps {
@@ -202,7 +471,7 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
           {others.map((competitor) => (
             <Link
               key={competitor.slug}
-              to={`/$locale/compare/${competitor.slug}` as "/$locale/compare/crowdin" | "/$locale/compare/lokalise" | "/$locale/compare/phrase" | "/$locale/compare/transifex"}
+              to={`/$locale/compare/${competitor.slug}` as "/$locale/compare/crowdin" | "/$locale/compare/lokalise" | "/$locale/compare/phrase" | "/$locale/compare/transifex" | "/$locale/compare/smartling" | "/$locale/compare/xtm"}
               params={{ locale }}
               className="group flex items-center justify-between rounded-xl border border-mist-200 bg-white p-4 hover:border-mist-300 hover:shadow-md transition-all"
             >

@@ -9,6 +9,8 @@ import {
   ComparisonRelatedTopics,
   type ComparisonFeature,
 } from "@/components/ComparisonTable";
+import { UserComplaints } from "@/components/UserComplaints";
+import { WhySwitchSection } from "@/components/WhySwitchSection";
 import { getPageHead } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
@@ -113,6 +115,15 @@ function XTMComparisonPage() {
         </div>
       </section>
 
+      <UserComplaints
+        competitor="XTM"
+        complaints={[
+          { source: "G2", quote: "Batch processing is slow", category: "Performance" },
+          { source: "Capterra", quote: "Translation memory sharing limited", category: "TM" },
+          { source: "G2", quote: "Mobile experience poor", category: "Mobile" },
+        ]}
+      />
+
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-12">
@@ -144,6 +155,16 @@ function XTMComparisonPage() {
           </div>
         </div>
       </section>
+
+      <WhySwitchSection
+        competitor="XTM"
+        reasons={[
+          { painPoint: "Batch processing bottlenecks slow down large translation jobs", solution: "CDN-first delivery with instant key updates — no batch processing needed" },
+          { painPoint: "Limited translation memory sharing across projects", solution: "Namespace-based organization with cross-project key reuse built in" },
+          { painPoint: "Poor mobile experience limits on-the-go translation review", solution: "Responsive dashboard works seamlessly on any device" },
+          { painPoint: "CAT tool dependency adds complexity for developer workflows", solution: "Developer-first approach — manage translations from your IDE or CI/CD pipeline" },
+        ]}
+      />
 
       <ComparisonRelatedTopics
         heading={t("compare.xtm.relatedTopics", {

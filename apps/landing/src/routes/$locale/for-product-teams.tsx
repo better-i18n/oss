@@ -7,6 +7,7 @@ import ProductWorkflow from "@/components/product-teams/ProductWorkflow";
 import ProductFeatures from "@/components/product-teams/ProductFeatures";
 import ProductCollaboration from "@/components/product-teams/ProductCollaboration";
 import ProductCTA from "@/components/product-teams/ProductCTA";
+import ProductPainPromiseProof from "@/components/product-teams/ProductPainPromiseProof";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead } from "@/lib/page-seo";
 
@@ -46,6 +47,7 @@ function ForProductTeamsPage() {
       <main>
         <ProductHero />
         <ProductPainPoints />
+        <ProductPainPromiseProof />
         <ProductWorkflow />
         <ProductFeatures />
         <ProductCollaboration />
