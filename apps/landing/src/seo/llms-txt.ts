@@ -15,8 +15,46 @@
 import type { BlogPostMeta } from "./generate-pages";
 import type { SectionKey } from "./llms-txt-locales";
 
-import { getLocaleStrings } from "./llms-txt-locales";
+import { getLocaleStrings as getHardcodedLocaleStrings } from "./llms-txt-locales";
+import type { LlmsLocaleStrings } from "./llms-txt-locales";
 import { SITE_URL } from "./pages";
+
+// ─── i18n message keys (llms namespace) ─────────────────────────────
+
+const LLMS_KEY_TAGLINE = "llms.tagline";
+const LLMS_KEY_ABOUT = "llms.about";
+const HEADING_KEY_PREFIX = "llms.headings.";
+
+/**
+ * Resolves LlmsLocaleStrings from CDN-fetched i18n messages.
+ * Falls back to the hardcoded locale file when messages are unavailable.
+ */
+function resolveLocaleStrings(
+  locale: string,
+  messages?: Readonly<Record<string, string>>,
+): LlmsLocaleStrings {
+  if (!messages) return getHardcodedLocaleStrings(locale);
+
+  const tagline = messages[LLMS_KEY_TAGLINE];
+  const about = messages[LLMS_KEY_ABOUT];
+
+  // If essential keys are missing, fall back to hardcoded
+  if (!tagline || !about) return getHardcodedLocaleStrings(locale);
+
+  const headingKeys: SectionKey[] = [
+    "keyPages", "solutionsByRole", "solutionsByIndustry", "frameworkGuides",
+    "comparisons", "educationalContent", "localizationGuides",
+    "multilingualSeoGuides", "developerTools", "blogPosts", "externalLinks",
+  ];
+
+  const hardcoded = getHardcodedLocaleStrings(locale);
+  const headings = {} as Record<SectionKey, string>;
+  for (const key of headingKeys) {
+    headings[key] = messages[`${HEADING_KEY_PREFIX}${key}`] ?? hardcoded.headings[key];
+  }
+
+  return { tagline, about, headings };
+}
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -290,13 +328,12 @@ function buildUrl(pagePath: string, locale: string): string {
   return url.endsWith("/") ? url : `${url}/`;
 }
 
-function resolveHeading(headingKey: SectionKey, locale: string): string {
-  const strings = getLocaleStrings(locale);
+function resolveHeading(headingKey: SectionKey, strings: LlmsLocaleStrings): string {
   return strings.headings[headingKey];
 }
 
-function renderSection(section: LlmsTxtSection, locale: string): string {
-  const heading = resolveHeading(section.headingKey, locale);
+function renderSection(section: LlmsTxtSection, locale: string, strings: LlmsLocaleStrings): string {
+  const heading = resolveHeading(section.headingKey, strings);
   const lines = [`## ${heading}`, ""];
   for (const link of section.links) {
     lines.push(`- [${link.title}](${buildUrl(link.path, locale)})`);
@@ -304,8 +341,8 @@ function renderSection(section: LlmsTxtSection, locale: string): string {
   return lines.join("\n");
 }
 
-function renderDetailedSection(section: LlmsTxtSection, locale: string): string {
-  const heading = resolveHeading(section.headingKey, locale);
+function renderDetailedSection(section: LlmsTxtSection, locale: string, strings: LlmsLocaleStrings): string {
+  const heading = resolveHeading(section.headingKey, strings);
   const lines = [`## ${heading}`, ""];
   for (const link of section.links) {
     const desc = link.description || PAGE_DESCRIPTIONS[link.path];
@@ -320,8 +357,7 @@ function renderDetailedSection(section: LlmsTxtSection, locale: string): string 
 
 // ─── Header builders ────────────────────────────────────────────────
 
-function buildHeader(locale: string): string {
-  const strings = getLocaleStrings(locale);
+function buildHeader(strings: LlmsLocaleStrings): string {
   return [
     "# Better i18n",
     "",
@@ -333,8 +369,7 @@ function buildHeader(locale: string): string {
   ].join("\n");
 }
 
-function buildDetailedHeader(locale: string): string {
-  const strings = getLocaleStrings(locale);
+function buildDetailedHeader(strings: LlmsLocaleStrings): string {
   return [
     "# Better i18n — Full Reference",
     "",
@@ -361,13 +396,16 @@ function buildDetailedHeader(locale: string): string {
 
 /**
  * Generates the llms.txt content for a given locale.
+ * Uses CDN-fetched i18n messages when available, falling back to hardcoded strings.
  * Pure function — no I/O.
  */
 export function generateLlmsTxtContent(
   blogPosts: readonly BlogPostMeta[],
   locale: string = "en",
+  messages?: Readonly<Record<string, string>>,
 ): string {
-  const staticSections = STATIC_SECTIONS.map((s) => renderSection(s, locale));
+  const strings = resolveLocaleStrings(locale, messages);
+  const staticSections = STATIC_SECTIONS.map((s) => renderSection(s, locale, strings));
 
   const blogSection =
     blogPosts.length > 0
@@ -380,12 +418,13 @@ export function generateLlmsTxtContent(
             })),
           },
           locale,
+          strings,
         )
       : "";
 
-  const externalSection = renderSection(EXTERNAL_SECTION, locale);
+  const externalSection = renderSection(EXTERNAL_SECTION, locale, strings);
   const parts = [
-    buildHeader(locale),
+    buildHeader(strings),
     ...staticSections,
     ...(blogSection ? [blogSection] : []),
     externalSection,
@@ -396,12 +435,15 @@ export function generateLlmsTxtContent(
 /**
  * Generates llms-full.txt with page descriptions and blog excerpts
  * for a given locale.
+ * Uses CDN-fetched i18n messages when available, falling back to hardcoded strings.
  */
 export function generateLlmsFullTxtContent(
   blogPosts: readonly BlogPostMeta[],
   locale: string = "en",
+  messages?: Readonly<Record<string, string>>,
 ): string {
-  const staticSections = STATIC_SECTIONS.map((s) => renderDetailedSection(s, locale));
+  const strings = resolveLocaleStrings(locale, messages);
+  const staticSections = STATIC_SECTIONS.map((s) => renderDetailedSection(s, locale, strings));
 
   const blogSection =
     blogPosts.length > 0
@@ -415,12 +457,13 @@ export function generateLlmsFullTxtContent(
             })),
           },
           locale,
+          strings,
         )
       : "";
 
-  const externalSection = renderDetailedSection(EXTERNAL_SECTION, locale);
+  const externalSection = renderDetailedSection(EXTERNAL_SECTION, locale, strings);
   const parts = [
-    buildDetailedHeader(locale),
+    buildDetailedHeader(strings),
     ...staticSections,
     ...(blogSection ? [blogSection] : []),
     externalSection,
@@ -434,28 +477,33 @@ export function generateLlmsFullTxtContent(
  *
  * - Root `/llms.txt` and `/llms-full.txt` are always English.
  * - Each locale gets `{locale}/llms.txt` and `{locale}/llms-full.txt`.
+ * - When `i18nMessages` is provided, translations come from the Better i18n CDN.
+ *   Falls back to hardcoded strings in llms-txt-locales.ts when unavailable.
  *
  * Pure function — no I/O.
  */
 export function generateAllLlmsTxtFiles(
   blogPosts: readonly BlogPostMeta[],
   locales: readonly string[],
+  i18nMessages?: ReadonlyMap<string, Readonly<Record<string, string>>>,
 ): ReadonlyMap<string, string> {
   const files = new Map<string, string>();
 
   // Root files are always English
-  files.set("llms.txt", generateLlmsTxtContent(blogPosts, "en"));
-  files.set("llms-full.txt", generateLlmsFullTxtContent(blogPosts, "en"));
+  const enMessages = i18nMessages?.get("en");
+  files.set("llms.txt", generateLlmsTxtContent(blogPosts, "en", enMessages));
+  files.set("llms-full.txt", generateLlmsFullTxtContent(blogPosts, "en", enMessages));
 
   // Per-locale files
   for (const locale of locales) {
+    const localeMessages = i18nMessages?.get(locale);
     files.set(
       `${locale}/llms.txt`,
-      generateLlmsTxtContent(blogPosts, locale),
+      generateLlmsTxtContent(blogPosts, locale, localeMessages),
     );
     files.set(
       `${locale}/llms-full.txt`,
-      generateLlmsFullTxtContent(blogPosts, locale),
+      generateLlmsFullTxtContent(blogPosts, locale, localeMessages),
     );
   }
 
