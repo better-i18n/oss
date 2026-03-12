@@ -249,9 +249,14 @@ export function generateFeatureDetailPages(
 function toBlogPostMeta(item: ContentEntryListItem): BlogPostMeta {
   const raw = item as unknown as Record<string, unknown>;
   const availableLanguages = Array.isArray(raw.availableLanguages)
-    ? (raw.availableLanguages as unknown[]).filter(
-        (v): v is string => typeof v === "string",
-      )
+    ? (raw.availableLanguages as unknown[]).flatMap((v): string[] => {
+        if (typeof v === "string") return [v];
+        if (v !== null && typeof v === "object") {
+          const code = (v as Record<string, unknown>).code;
+          if (typeof code === "string") return [code];
+        }
+        return [];
+      })
     : undefined;
 
   return {
@@ -265,9 +270,14 @@ function toBlogPostMeta(item: ContentEntryListItem): BlogPostMeta {
 function toFeaturePageMeta(item: ContentEntryListItem): FeaturePageMeta {
   const raw = item as unknown as Record<string, unknown>;
   const availableLanguages = Array.isArray(raw.availableLanguages)
-    ? (raw.availableLanguages as unknown[]).filter(
-        (v): v is string => typeof v === "string",
-      )
+    ? (raw.availableLanguages as unknown[]).flatMap((v): string[] => {
+        if (typeof v === "string") return [v];
+        if (v !== null && typeof v === "object") {
+          const code = (v as Record<string, unknown>).code;
+          if (typeof code === "string") return [code];
+        }
+        return [];
+      })
     : undefined;
 
   return {

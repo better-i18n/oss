@@ -77,6 +77,7 @@ export default defineConfig(async ({ mode }) => {
           ? {
               enabled: true,
               crawlLinks: false,
+              concurrency: 20,
             }
           : undefined,
       }),

@@ -9,6 +9,7 @@
     "scan",
     "check",
     "sync",
+    "doctor",
     "---Setup---",
     "configuration"
   ]
