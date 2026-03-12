@@ -208,14 +208,46 @@ const { data: post, error } = await client
   "publishedAt": "2026-01-15T10:00:00Z",
   "sourceLanguage": "en",
   "availableLanguages": ["en", "tr", "de"],
+  "availableLanguageDetails": [
+    { "code": "en", "name": "English", "countryCode": "US" },
+    { "code": "tr", "name": "Turkish", "countryCode": "TR" },
+    { "code": "de", "name": "German", "countryCode": "DE" }
+  ],
+  "translationStatus": {
+    "en": "published",
+    "tr": "published",
+    "de": "draft"
+  },
   "title": "Hello World",
   "body": "## Welcome\n\nWelcome to our blog...",
+  "bodyMarkdown": "## Welcome\n\nWelcome to our blog...",
+  "bodyHtml": "<h2>Welcome</h2><p>Welcome to our blog...</p>",
   "category": "Engineering",
   "readingTime": "5 min"
 }
 ```
 
-The `body` field is always a **Markdown string**. Use a Markdown renderer like `react-markdown` or `marked` to display it.
+The `body` field is always a **Markdown string**. Use `bodyHtml` when you need pre-rendered HTML — for example, when embedding content in a non-Markdown environment. `bodyMarkdown` is an explicit alias for `body` available alongside `bodyHtml` for clarity.
+
+**Checking translation readiness:**
+
+```typescript
+const { data: post } = await client
+  .from("blog-posts")
+  .single("hello-world");
+
+// Check which languages are fully published
+const publishedLanguages = Object.entries(post.translationStatus ?? {})
+  .filter(([, status]) => status === "published")
+  .map(([code]) => code);
+
+// Render a language picker with display names
+post.availableLanguageDetails?.map((lang) => (
+  <option key={lang.code} value={lang.code}>
+    {lang.name}
+  </option>
+));
+```
 
 ## Custom Fields
 
@@ -250,6 +282,8 @@ List items also return custom fields flat:
 ## Relations
 
 Content entries can reference entries from other models using relation fields. Use `.expand(...fields)` to resolve these references inline — without a second fetch.
+
+When you do not call `.expand()`, relation fields appear as `null` or are omitted from the response. `.expand()` tells the API to resolve the referenced entry and embed it into the `relations` key.
 
 ```typescript
 const { data: posts } = await client
@@ -314,13 +348,25 @@ post.relations?.author?.title; // "Alice Johnson"
 
 ## Language
 
-Use `.language(code)` to request localized content in a specific language.
+Use `.language(code)` to request localized content in a specific language. This filters all localized fields — `title`, `body`, and any localized custom fields — to the requested language.
 
 ```typescript
 const { data: post } = await client
   .from("blog-posts")
   .language("fr")
   .single("hello-world");
+```
+
+You can combine `.language()` with any other query builder method:
+
+```typescript
+// List published entries in Turkish
+const { data: posts } = await client
+  .from("blog-posts")
+  .language("tr")
+  .eq("status", "published")
+  .order("publishedAt", { ascending: false })
+  .limit(10);
 ```
 
 **Language fallback behavior:**
@@ -337,7 +383,35 @@ const { data: post } = await client
 // post.title → English title (fallback)
 ```
 
-Check `availableLanguages` on a full entry to see which translations exist before requesting a specific language.
+**Checking available languages before fetching:**
+
+Single-entry responses include `availableLanguages` (code list) and `availableLanguageDetails` (rich objects with display names). Use these to build language pickers or to verify a translation exists before redirecting:
+
+```typescript
+// First fetch the entry in the source language
+const { data: post } = await client
+  .from("blog-posts")
+  .single("hello-world");
+
+// Check if a specific language is available
+const hasFrench = post.availableLanguages.includes("fr");
+
+// Build a language selector from rich descriptors
+const languageOptions = post.availableLanguageDetails?.map((lang) => ({
+  value: lang.code,
+  label: lang.name,
+  flag: lang.countryCode,
+}));
+
+// Only fetch localized version if translation is published
+const isPublished = post.translationStatus?.["fr"] === "published";
+if (isPublished) {
+  const { data: frPost } = await client
+    .from("blog-posts")
+    .language("fr")
+    .single("hello-world");
+}
+```
 
 ## Error Handling
 

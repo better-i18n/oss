@@ -28,6 +28,16 @@ export type RelationValue = {
 
 // ─── Content Types ───────────────────────────────────────────────────
 
+/** A language descriptor returned in the `availableLanguageDetails` array on single-entry responses. */
+export interface ContentEntryLanguage {
+  /** BCP 47 language code (e.g. `"en"`, `"fr"`, `"tr"`). */
+  code: string;
+  /** Human-readable language name (e.g. `"English"`, `"French"`). */
+  name: string;
+  /** ISO 3166-1 alpha-2 country code for the locale flag (e.g. `"US"`, `"FR"`). */
+  countryCode?: string;
+}
+
 /**
  * A full content entry with all localized fields.
  * Custom fields are spread directly on the entry object (flat access).
@@ -48,8 +58,45 @@ export type ContentEntry<CF extends Record<string, string | null> = Record<strin
   slug: string;
   status: "draft" | "published" | "archived";
   publishedAt: string | null;
+  /** Source language code of the project (e.g. `"en"`). */
   sourceLanguage: string;
+  /** Language codes that have translations for this entry (e.g. `["en", "fr", "tr"]`). */
   availableLanguages: string[];
+  /**
+   * Rich language descriptors for each available translation.
+   * Present on single-entry responses (`single()`) — includes display name and country code.
+   * Use this instead of `availableLanguages` when you need to render language pickers or flags.
+   *
+   * @example
+   * ```typescript
+   * const { data: post } = await client.from("blog-posts").single("hello-world");
+   * post.availableLanguageDetails?.map(lang => `${lang.name} (${lang.countryCode})`);
+   * ```
+   */
+  availableLanguageDetails?: ContentEntryLanguage[];
+  /**
+   * Per-language translation publish status.
+   * Keys are language codes; values are `"draft"` or `"published"`.
+   *
+   * @example
+   * ```typescript
+   * const { data: post } = await client.from("blog-posts").single("hello-world");
+   * post.translationStatus?.["fr"]; // "published" | "draft" | undefined
+   * ```
+   */
+  translationStatus?: Record<string, "draft" | "published">;
+  /**
+   * Body content rendered as an HTML string.
+   * Only present when the model has `includeBody: true` and the entry has body content.
+   * Returned alongside `body` (Markdown) — use whichever suits your renderer.
+   */
+  bodyHtml?: string;
+  /**
+   * Body content as a plain Markdown string.
+   * Identical to the base `body` field — provided as an explicit alias for clarity
+   * when `bodyHtml` is also present.
+   */
+  bodyMarkdown?: string;
   /** Expanded relation fields (only present when expand is used) */
   relations?: Record<string, RelationValue | null>;
   // Localized content
@@ -99,6 +146,11 @@ export interface ContentModelField {
   localized: boolean;
   /** Enum options — only present when `type` is `"enum"`. */
   enumValues?: ContentModelEnumValue[];
+  /** Relation configuration — only present when `type` is `"relation"`. */
+  fieldConfig?: {
+    /** Slug of the target content model this field points to. */
+    targetModel?: string;
+  };
 }
 
 /** A content model definition. */
