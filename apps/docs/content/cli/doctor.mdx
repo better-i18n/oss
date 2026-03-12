@@ -1,0 +1,315 @@
+---
+title: doctor
+description: Analyze your project's i18n health — missing translations, hardcoded strings, orphan keys, and CDN sync in one command.
+icon: Stethoscope
+---
+
+Run a full i18n health check on your project in one command. `doctor` combines five analysis layers — code scanning, coverage, quality, performance, and CDN sync — and produces a single health score with actionable diagnostics.
+
+## When to use `doctor`
+
+- **Before opening a PR**: Catch missing translations, hardcoded strings, and placeholder mismatches before review.
+- **In CI pipelines**: Block merges when the health score drops below the pass threshold.
+- **Orphan key audits**: Identify translation keys that are no longer used in code.
+- **Deployment checks**: Verify that local keys are in sync with the remote CDN before shipping.
+- **First health baseline**: Run once on an existing project to understand its i18n debt.
+
+---
+
+## Usage
+
+```bash
+better-i18n doctor                        # Full analysis of current directory
+better-i18n doctor --dir ./src            # Scan a specific directory
+better-i18n doctor --format json          # JSON output for machine consumption
+better-i18n doctor --ci                   # Exit code 1 if score below threshold
+better-i18n doctor --report               # Upload report to Better i18n dashboard
+better-i18n doctor --report --api-key $KEY  # Upload with explicit API key
+better-i18n doctor --skip-sync            # Skip CDN comparison
+better-i18n doctor --skip-code            # Skip hardcoded string detection
+better-i18n doctor --skip-health          # Skip translation file analysis
+better-i18n doctor --verbose              # Detailed per-file diagnostic output
+```
+
+## Options
+
+| Option | Description |
+|--------|-------------|
+| `-d, --dir <path>` | Directory to scan (default: current directory) |
+| `-f, --format <type>` | Output format: `eslint` (human-readable, default) or `json` (machine) |
+| `--ci` | Exit with code 1 if health score is below the pass threshold (70) |
+| `--report` | Upload the report to Better i18n dashboard for tracking over time |
+| `--api-key <key>` | API key for report upload. Falls back to GitHub Actions OIDC if omitted. |
+| `--skip-code` | Skip AST-based hardcoded string detection |
+| `--skip-health` | Skip translation file health checks (coverage, quality, orphan keys) |
+| `--skip-sync` | Skip remote CDN comparison |
+| `--verbose` | Show detailed per-file diagnostics and verbose scan stats |
+
+---
+
+## What it checks
+
+`doctor` runs five categories of analysis in a single pass.
+
+### Code — hardcoded string detection
+
+Scans your source files with an AST parser to detect user-facing strings that are not wrapped in a translation function.
+
+| Rule | What it catches | Example |
+|------|-----------------|---------|
+| `jsx-text` | Hardcoded text nodes in JSX | `<h1>Welcome back</h1>` |
+| `jsx-attribute` | Hardcoded attribute values | `<img alt="Company logo" />` |
+| `ternary-locale` | Inline locale-based string logic | `locale === 'en' ? 'Hi' : 'Hola'` |
+| `toast-message` | Hardcoded toast/notification text | `toast.error("Something went wrong")` |
+| `string-variable` | String variables assigned to UI text | `const label = "Submit"` |
+
+### Coverage — missing translations
+
+Compares keys present in your source locale against each target locale. Any key that exists in the source but is missing from a target locale is reported.
+
+### Quality — placeholder mismatch
+
+Verifies that interpolation placeholders are consistent across locales. Supports all common formats:
+
+| Format | Example |
+|--------|---------|
+| Named `{}` | `{name}`, `{count}` |
+| Double-brace `{{}}` | `{{username}}` |
+| printf `%s` | `%s`, `%d` |
+| Template `${}` | `${value}` |
+| Positional `{0}` | `{0}`, `{1}` |
+
+A source key with `Hello, {name}!` and a translation with `Hola!` (placeholder removed) is a quality error.
+
+### Performance — orphan keys
+
+Detects keys that exist in your translation files (or remote CDN) but are never referenced in code. Orphan keys increase payload size and create maintenance debt.
+
+### Sync — CDN comparison
+
+Compares keys extracted from your code against the published keys in the Better i18n CDN. Requires `workspaceId` and `projectSlug` in `i18n.config.ts`.
+
+| Issue | Meaning |
+|-------|---------|
+| `missing-in-remote` | Key used in code but not yet published to CDN |
+| `unused-remote-key` | Key published to CDN but not found in code |
+
+---
+
+## Health Score
+
+`doctor` computes a score from 0 to 100 based on the diagnostics found.
+
+**Overall score formula:**
+
+```
+score = 100 - (errors × 3.0) - Σ min(rule_warnings × 0.15, 20)
+```
+
+Each rule's warning contribution is **capped at 20 points**. This prevents a single rule with thousands of warnings (e.g. `missing-in-remote` after a large migration) from zeroing your entire score.
+
+**Grade thresholds:**
+
+| Grade | Score range | CI result |
+|-------|------------|-----------|
+| A+ | ≥ 90 | Pass |
+| A | ≥ 80 | Pass |
+| B | ≥ 70 | Pass |
+| C | ≥ 50 | Fail |
+| F | < 50 | Fail |
+
+The default pass threshold is **70**. Scores below this cause `--ci` to exit with code 1.
+
+---
+
+## Output Example
+
+```text
+╭──────────────────────────────────────────────╮
+│                                              │
+│   🌐 better-i18n  ·  i18n Doctor Report  │
+│   hello · hola · 你好 · こんにちは · 안녕    │
+│                                              │
+├──────────────────────────────────────────────┤
+│  ████████████████░░░░ 82 / 100 A       │
+│  PASSED (threshold: 70)           │
+╰──────────────────────────────────────────────╯
+
+Category Scores:
+  Coverage       95 (3 issues)
+  Quality        88 (2 issues)
+  Code           72 (8 issues)
+  Structure     100 (clean)
+  Performance    91 (1 issues)
+
+  8 warnings, 6 info
+  214 files scanned, 1847 keys checked, 5 locales
+  Completed in 1.24s
+
+  ⚠ Hardcoded JSX text detected (8)
+    Wrap with t() to enable translation
+    src/components/Navbar.tsx: 12, 34
+    src/pages/settings.tsx: 88
+    src/components/Footer.tsx: 6, 19
+    ... and 5 more files
+
+  ⚠ Key "auth.signup.cta" found in code but not in remote translations (3)
+    Run `better-i18n sync` to upload missing keys
+    default/auth.signup.cta
+    default/auth.login.subtitle
+    default/onboarding.step3.title
+```
+
+---
+
+## JSON Output
+
+Use `--format json` to get machine-readable output for custom tooling or dashboards.
+
+```bash
+better-i18n doctor --format json
+better-i18n doctor --format json | jq '.score.total'
+better-i18n doctor --format json | jq '[.diagnostics[] | select(.severity == "error")]'
+```
+
+The JSON report follows this structure:
+
+```json
+{
+  "runAt": "2025-03-12T10:00:00.000Z",
+  "durationMs": 1240,
+  "git": {
+    "commit": "a1b2c3d",
+    "ref": "main",
+    "repository": "org/repo"
+  },
+  "score": {
+    "total": 82,
+    "passed": true,
+    "passThreshold": 70,
+    "categories": {
+      "Coverage": 95,
+      "Quality": 88,
+      "Code": 72,
+      "Structure": 100,
+      "Performance": 91
+    }
+  },
+  "summary": {
+    "total": 14,
+    "errors": 0,
+    "warnings": 8,
+    "infos": 6,
+    "byCategory": { "Code": 8, "Coverage": 3, "Quality": 2, "Performance": 1 },
+    "filesScanned": 214,
+    "keysChecked": 1847,
+    "localesChecked": 5
+  },
+  "diagnostics": [
+    {
+      "filePath": "src/components/Navbar.tsx",
+      "line": 12,
+      "column": 8,
+      "rule": "jsx-text",
+      "category": "Code",
+      "severity": "warning",
+      "message": "Hardcoded JSX text: \"Sign in\"",
+      "help": "Wrap with t() to enable translation"
+    }
+  ]
+}
+```
+
+---
+
+## CI Integration
+
+### GitHub Actions — automatic auth
+
+When running in GitHub Actions with OIDC enabled, `--report` authenticates automatically without requiring an explicit API key:
+
+```yaml
+name: i18n Health Check
+on: [push, pull_request]
+
+permissions:
+  id-token: write  # Required for OIDC
+
+jobs:
+  i18n-doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: npx @better-i18n/cli doctor --ci --report
+```
+
+### Manual API key
+
+```yaml
+- run: npx @better-i18n/cli doctor --ci --report --api-key ${{ secrets.BETTER_I18N_API_KEY }}
+```
+
+### Exit code behavior
+
+When `--ci` is set:
+- **Score ≥ threshold**: exits with code 0 (pass)
+- **Score < threshold**: exits with code 1 (fail)
+- **`--report` succeeds**: exits with code 0 even if score fails — the report is uploaded to the dashboard for tracking
+
+This last rule lets you start tracking health without immediately blocking CI. Once your baseline is established, remove `--report` (or add both) to enforce the threshold.
+
+---
+
+## Configuring Rules
+
+Disable or downgrade rules in `i18n.config.ts` under the `lint.rules` key:
+
+```ts title="i18n.config.ts"
+export default defineConfig({
+  // ...
+  lint: {
+    rules: {
+      // Turn off rules that don't apply to your project
+      "orphan-keys": "off",
+      "string-variable": "off",
+
+      // Downgrade from error to warning
+      "missing-translations": "warning",
+      "placeholder-mismatch": "warning",
+    },
+  },
+});
+```
+
+| Value | Behavior |
+|-------|----------|
+| `"error"` | Counts toward error penalty (−3.0 per occurrence) |
+| `"warning"` | Counts toward warning penalty (capped at −20 per rule) |
+| `"off"` | Rule is skipped entirely |
+
+---
+
+## Skipping Analysis Steps
+
+Use skip flags to run only the analysis layers you care about:
+
+```bash
+# Only check translation file health (no code scan, no CDN)
+better-i18n doctor --skip-code --skip-sync
+
+# Only check CDN sync status (fast — no AST parsing)
+better-i18n doctor --skip-code --skip-health
+
+# Only scan for hardcoded strings
+better-i18n doctor --skip-health --skip-sync
+```
+
+---
+
+## Related Commands
+
+- **[`scan`](/cli/scan)** — Focused hardcoded string detection with `--staged` support for pre-commit hooks
+- **[`check`](/cli/check)** — Interactive checker for missing or unused keys
+- **[`sync`](/cli/sync)** — Full local ↔ remote key comparison with upload support

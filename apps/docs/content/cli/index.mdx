@@ -4,50 +4,130 @@ description: Detect and sync translation keys in your React/Next.js apps
 icon: BookOpen
 ---
 
-Better i18n CLI helps you manage the entire lifecycle of your translation keys, from detecting hardcoded strings to auditing remote sync status.
+Better i18n CLI helps you manage the entire lifecycle of your translation keys — from detecting hardcoded strings to auditing remote sync status. Run a single command to get a full health report, or use focused commands for specific tasks.
 
-## Core Capabilities
+## Commands
 
-- **`scan`**: Find hardcoded strings that need translation.
-- **`check`**: Interactive checker for missing and unused translation keys (focused, user-friendly).
-- **`sync`**: Compare your local `t()` calls with Better i18n cloud (Remote) and detect missing or unused keys (full audit).
+### `doctor` — Full i18n health report
 
-## Why use the CLI?
+The most powerful command. Runs five analysis layers in a single pass and gives your project a health score from 0–100.
 
-Managing i18n manually is error-prone. The CLI provides a "Senior Tooling" experience to ensure your translations are always consistent and fully covered.
-
-```tsx
-// ❌ Detected by 'scan'
-<h1>Welcome to our app</h1>
-
-// ✅ Analyzed by 'sync'
-<h1>{t('welcome')}</h1> // Linked to 'home.welcome' namespace
+```bash
+better-i18n doctor
 ```
+
+```text
+╭──────────────────────────────────────────────╮
+│                                              │
+│   🌐 better-i18n  ·  i18n Doctor Report  │
+│   hello · hola · 你好 · こんにちは · 안녕    │
+│                                              │
+├──────────────────────────────────────────────┤
+│  ████████████████░░░░ 82 / 100 A       │
+│  PASSED (threshold: 70)           │
+╰──────────────────────────────────────────────╯
+
+Category Scores:
+  Coverage       95 (3 issues)
+  Quality        88 (2 issues)
+  Code           72 (8 issues)
+  Structure     100 (clean)
+  Performance    91 (1 issues)
+```
+
+What `doctor` checks:
+
+| Category | What it finds |
+|----------|---------------|
+| **Code** | Hardcoded strings not wrapped in `t()` |
+| **Coverage** | Keys missing from target locales |
+| **Quality** | Placeholder mismatches across locales |
+| **Performance** | Orphan keys that exist in translations but are unused in code |
+| **Sync** | Keys missing from or extra in the remote CDN |
+
+Use `--ci` to fail the build when the score drops below the pass threshold. Use `--report` to upload results to the Better i18n dashboard for tracking over time.
+
+[View full `doctor` documentation →](/cli/doctor)
+
+---
+
+### `scan` — Hardcoded string detection
+
+Find user-facing strings that are not yet wrapped in `t()`. Supports `--staged` for pre-commit hooks.
+
+```bash
+better-i18n scan
+```
+
+```text
+components/sign-up.tsx (3)
+  24:13  missing  "Create an account"  i18n/jsx-text
+  32:22  missing  "Name"               i18n/jsx-text
+
+✖ 87 problems (87 missing translations)
+```
+
+[View full `scan` documentation →](/cli/scan)
+
+---
+
+### `check` — Interactive key checker
+
+Focused, interactive checker for missing or unused translation keys. Guides you through what to check with prompts.
+
+```bash
+better-i18n check
+
+? What would you like to check?
+  ❯ Missing translation keys
+    Unused translation keys
+    Both (Full Comparison)
+```
+
+[View full `check` documentation →](/cli/check)
+
+---
+
+### `sync` — Full local ↔ remote comparison
+
+Compare all `t()` calls in your code against the Better i18n remote and see both missing and unused keys at once. Best for CI or full audits.
+
+```bash
+better-i18n sync
+```
+
+[View full `sync` documentation →](/cli/sync)
+
+---
+
+## When to use which command
+
+| I want to… | Command |
+|------------|---------|
+| Get a full project health score | `doctor` |
+| Block CI on i18n regressions | `doctor --ci` |
+| Catch hardcoded strings before commit | `scan --staged --ci` |
+| Quickly check if new keys are uploaded | `check:missing` |
+| Clean up unused translations | `check:unused` |
+| See full missing + unused comparison | `sync` |
 
 ## Installation
 
 ```bash
 # With npx (no install needed)
-npx @better-i18n/cli scan
+npx @better-i18n/cli doctor
 
 # Or install globally
 npm install -g @better-i18n/cli
 ```
 
-## Workflow
-
-1.  **Scan**: Run `better-i18n scan` to find untranslated text.
-2.  **Translate**: Wrap text with `t()` calls using `@better-i18n/next`.
-3.  **Check**: Run `better-i18n check` for interactive, focused checks (missing OR unused).
-4.  **Sync**: Run `better-i18n sync` for full audit (both missing AND unused).
-
 ## Features
 
-- ✅ **Lexical Scope Tracking** - Smart namespace detection for both `useTranslations` and `getTranslations`.
-- ✅ **Server Component Support** - Full support for Next.js App Router async server functions.
-- ✅ **Compact Tree Output** - Human-readable grouping of missing/unused keys.
-- ✅ **Senior Audit Log** - Deep transparency with `--verbose`.
-- ✅ **CI/CD Ready** - Enforce 100% key coverage in your pipeline.
-- ✅ **Smart Filtering** - Automatically ignores CSS, URLs, and constants.
+- ✅ **Health Score** — Single 0–100 score with per-category breakdown and CI pass/fail threshold.
+- ✅ **Lexical Scope Tracking** — Smart namespace detection for both `useTranslations` and `getTranslations`.
+- ✅ **Server Component Support** — Full support for Next.js App Router async server functions.
+- ✅ **CI/CD Ready** — Enforce key coverage and health score in your pipeline.
+- ✅ **Smart Filtering** — Automatically ignores CSS, URLs, and developer constants.
+- ✅ **Verbose Audit Log** — Deep transparency with `--verbose` on any command.
 
 **Cmd+Click** on any file path in the terminal to jump directly to the code in VS Code!
