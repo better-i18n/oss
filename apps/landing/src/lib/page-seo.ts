@@ -68,10 +68,16 @@ interface PageSEOOptions {
   };
   /** Custom structured data (overrides pageType) */
   customStructuredData?: ReturnType<typeof formatStructuredData>;
+<<<<<<< HEAD
   /** FAQ items to auto-inject as FAQ schema + page content */
   faqItems?: Array<{ question: string; answer: string }>;
   /** Mark page as noindex (e.g., thin content with low translation coverage) */
   noindex?: boolean;
+||||||| 0400632
+=======
+  /** FAQ items to auto-inject as FAQ schema + page content */
+  faqItems?: Array<{ question: string; answer: string }>;
+>>>>>>> @{-1}
 }
 
 /**

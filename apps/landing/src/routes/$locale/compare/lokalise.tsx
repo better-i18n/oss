@@ -9,8 +9,6 @@ import {
   ComparisonRelatedTopics,
   type ComparisonFeature,
 } from "@/components/ComparisonTable";
-import { UserComplaints } from "@/components/UserComplaints";
-import { WhySwitchSection } from "@/components/WhySwitchSection";
 import { getPageHead } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
@@ -19,6 +17,8 @@ import {
   IconGithub,
   IconRocket,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { UserComplaints } from "@/components/UserComplaints";
+import { WhySwitchSection } from "@/components/WhySwitchSection";
 
 export const Route = createFileRoute("/$locale/compare/lokalise")({
   loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),

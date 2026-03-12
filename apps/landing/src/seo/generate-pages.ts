@@ -58,8 +58,6 @@ export interface SeoData {
   readonly featurePages: readonly FeaturePageMeta[];
   /** Per-locale i18n messages fetched from CDN (locale → flat key-value map) */
   readonly i18nMessages: ReadonlyMap<string, FlatMessages>;
-  /** Per-locale translation coverage ratio (0–1) relative to English key count */
-  readonly localeCoverage: ReadonlyMap<string, number>;
 }
 
 export interface FeaturePageMeta {
@@ -76,12 +74,6 @@ export interface FeaturePageMeta {
  * Duplicated here because this module runs at build-time outside Vite's module graph.
  */
 const POSTS_PER_PAGE = 24;
-
-/**
- * Locales with translation coverage below this threshold (30%) are considered
- * thin content and will be marked as noindex to prevent Google penalties.
- */
-export const THIN_CONTENT_THRESHOLD = 0.3;
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
@@ -160,12 +152,8 @@ export function buildAlternateRefs(
 export function generateMarketingPages(
   locales: readonly string[],
   buildDate?: string,
-  localeCoverage?: ReadonlyMap<string, number>,
 ): readonly PageEntry[] {
   const lastmod = buildDate || new Date().toISOString().split("T")[0];
-
-  // Tier 3 locales are excluded from sitemap generation
-  const sitemapLocales = locales.filter((l) => getLocaleTier(l) !== "tier3");
 
   return MARKETING_PAGES.flatMap((page) => {
     // hreflang alternates only reference locales present in the sitemap
@@ -173,30 +161,16 @@ export function generateMarketingPages(
       buildPageUrl(locale, page.path),
     );
 
-    return sitemapLocales.map((locale): PageEntry => {
-      const tier: LocaleTier = getLocaleTier(locale);
-      const coverage = localeCoverage?.get(locale) ?? 1.0;
-      const isThinContent = coverage < THIN_CONTENT_THRESHOLD;
-      const shouldNoindex = isThinContent || tier === "tier3";
-
-      const priorityMultiplier = TIER_PRIORITY_MULTIPLIER[tier];
-      const adjustedPriority = Math.round(page.priority * priorityMultiplier * 100) / 100;
-
-      // Only tier 1 locales get prerendered
-      const shouldPrerender = page.prerender && tier === "tier1";
-
-      return {
-        path: buildPagePath(locale, page.path),
-        sitemap: {
-          priority: adjustedPriority,
-          changefreq: page.changefreq,
-          lastmod,
-          alternateRefs,
-          ...(shouldNoindex ? { noindex: true } : {}),
-        },
-        prerender: shouldPrerender ? { enabled: true } : undefined,
-      };
-    });
+    return locales.map((locale): PageEntry => ({
+      path: buildPagePath(locale, page.path),
+      sitemap: {
+        priority: page.priority,
+        changefreq: page.changefreq,
+        lastmod,
+        alternateRefs,
+      },
+      prerender: page.prerender ? { enabled: true } : undefined,
+    }));
   });
 }
 
@@ -507,34 +481,16 @@ export async function fetchSeoData(options: {
     }
   }
 
-  // Calculate per-locale translation coverage relative to English key count.
-  // English is the source locale and always has coverage = 1.0.
-  const enKeys = i18nMessages.get("en");
-  const enKeyCount = enKeys ? Object.keys(enKeys).length : 0;
-  const localeCoverage = new Map<string, number>();
-  for (const locale of locales) {
-    if (locale === "en" || enKeyCount === 0) {
-      localeCoverage.set(locale, 1.0);
-    } else {
-      const localeKeys = i18nMessages.get(locale);
-      const localeKeyCount = localeKeys ? Object.keys(localeKeys).length : 0;
-      localeCoverage.set(locale, localeKeyCount / enKeyCount);
-    }
-  }
-
-  const thinLocales = locales.filter(
-    (l) => (localeCoverage.get(l) ?? 0) < THIN_CONTENT_THRESHOLD,
-  );
   console.log(
     `[SEO] Fetched: ${locales.length} locales, ${blogPosts.length} posts, ${featurePages.length} features, ${i18nMessages.size} message bundles`,
   );
-  if (thinLocales.length > 0) {
-    console.log(
-      `[SEO] Thin content (< ${THIN_CONTENT_THRESHOLD * 100}% coverage): ${thinLocales.join(", ")}`,
-    );
+  for (const result of messageResults) {
+    if (result.status === "fulfilled") {
+      i18nMessages.set(result.value.locale, result.value.messages);
+    }
   }
 
-  return { locales, blogPosts, featurePages, i18nMessages, localeCoverage };
+  return { locales, blogPosts, featurePages, i18nMessages };
 }
 
 /**
@@ -542,8 +498,8 @@ export async function fetchSeoData(options: {
  * Pure function — no I/O.
  */
 export function generatePages(data: SeoData, buildDate?: string): readonly PageEntry[] {
-  const { locales, blogPosts, featurePages, localeCoverage } = data;
-  const marketingPages = generateMarketingPages(locales, buildDate, localeCoverage);
+  const { locales, blogPosts, featurePages } = data;
+  const marketingPages = generateMarketingPages(locales, buildDate);
   const blogPages = generateBlogPages(blogPosts, locales);
   const featureDetailPages = generateFeatureDetailPages(featurePages, locales);
   const allPages = [...marketingPages, ...blogPages, ...featureDetailPages];

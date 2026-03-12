@@ -85,23 +85,10 @@ export const Route = createFileRoute("/$locale/")({
         ...getAlternateLinks(pathname, loaderData?.locales),
         getCanonicalLink(locale, pathname),
       ],
-      scripts: [
-        ...getHomePageStructuredData({
-          reviews: reviewItems.length > 0 ? reviewItems : undefined,
-          locale,
-        }),
-        ...formatStructuredData(
-          getFAQSchema(
-            [
-              { question: "How is Better i18n different from Crowdin?", answer: "Better i18n is built for modern developer workflows with AI-powered translations, Git-native sync, and instant CDN delivery. Unlike Crowdin, there are no manual file imports or complex setup — just push code and translations sync automatically." },
-              { question: "Why switch from Lokalise to Better i18n?", answer: "Better i18n offers transparent pricing with a generous free tier for open source, AI chat for fixing translation errors in natural language, and automated i18n health checks that catch issues before your users do." },
-              { question: "How does Better i18n compare on pricing?", answer: "Better i18n is free for open source projects. Paid plans start lower than Crowdin, Lokalise, or Phrase, with no per-seat pricing and unlimited collaborators on all plans." },
-              { question: "What makes Better i18n unique for developers?", answer: "Better i18n integrates directly into your IDE via MCP, offers a CLI for CI/CD pipelines, provides Git-native workflows, and delivers translations via a global CDN with sub-50ms latency — no build step required." },
-            ],
-            locale,
-          )
-        ),
-      ],
+      scripts: getHomePageStructuredData({
+        reviews: reviewItems.length > 0 ? reviewItems : undefined,
+        locale,
+      }),
     };
   },
   component: LandingPage,
