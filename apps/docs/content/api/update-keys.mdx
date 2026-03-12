@@ -21,7 +21,7 @@ Update translations. Each entry updates ONE language for ONE key. Set `isSource=
 | `text` | string | Yes | Translation text |
 | `namespace` | string | No | Namespace (default: 'default') |
 | `isSource` | boolean | No | Set to `true` to update source text |
-| `status` | string | No | Translation status (e.g., 'approved') |
+| `status` | string | No | Translation status (e.g., 'published') |
 | `namespaceContext` | object | No | Context for the namespace |
 
 ## Examples
@@ -57,7 +57,7 @@ Update translations. Each entry updates ONE language for ONE key. Set `isSource=
 }
 ```
 
-### Approve a translation
+### Publish a translation
 
 ```json
 {
@@ -67,7 +67,7 @@ Update translations. Each entry updates ONE language for ONE key. Set `isSource=
       "key": "auth.login.title",
       "language": "tr",
       "text": "Hesabınıza giriş yapın",
-      "status": "approved"
+      "status": "published"
     }
   ]
 }

@@ -121,7 +121,7 @@ Update source text and/or target translations. Each entry updates ONE language f
   - `language`: Language code (e.g., `"en"`, `"tr"`, `"de"`)
   - `text`: New text value
   - `isSource`: Set `true` to update source text (optional)
-  - `status`: `"approved"`, `"pending"`, `"reviewed"` (optional, default: `"approved"`)
+  - `status`: `"published"`, `"pending"`, `"reviewed"` (optional, default: `"published"`)
 
 ```json
 {
@@ -356,6 +356,10 @@ Update a content model's metadata, including display settings.
 - `tableSettings` (optional): Table display settings for base field column visibility
   - `baseFields`: Map of base field name → show in table (e.g., `{ "title": true, "slug": false, "body": false }`)
 
+<Callout type="warning">
+  `tableSettings.baseFields` is not available in the OSS version. This parameter is ignored when running the open-source MCP server.
+</Callout>
+
 </AccordionItem>
 
 <AccordionItem title="deleteContentModel">
@@ -457,7 +461,12 @@ List content entries with filtering and pagination.
 - `modelSlug` (optional): Filter by content model
 - `search` (optional): Text search across title and body
 - `language` (optional): Language code for translated content
-- `status` (optional): `"draft"`, `"published"`, or `"all"`
+- `status` (optional): `"draft"`, `"published"`, or `"archived"`
+- `missingLanguage` (optional): Return entries that don't have a translation for this language code
+- `searchLanguages` (optional): Array of language codes to search across when using `search`
+- `searchInBody` (optional): Whether to include body content in text search (default: `false`)
+- `expand` (optional): Additional fields to include in the response (e.g., `["customFields", "translations"]`)
+- `compact` (optional): Return minimal fields only (default: `false`)
 
 **Returns:** Paginated list of entries with `id`, `slug`, `title`, `status`, `publishedAt`.
 
@@ -483,13 +492,14 @@ Create a new content entry in a model.
 - `title`: Entry title
 - `slug` (optional): URL slug (auto-generated from title if omitted)
 - `bodyMarkdown` (optional): Entry body as Markdown (automatically converted to HTML and editor JSON)
-- `language` (optional): Language code for the content (defaults to project source language)
+- `translations` (optional): Map of language code → title for multi-language support (e.g., `{ "en": "Hello", "tr": "Merhaba" }`)
 
 ```json
 {
   "modelSlug": "blog-post",
   "title": "Getting Started with i18n",
-  "bodyMarkdown": "# Welcome\n\nThis guide covers..."
+  "bodyMarkdown": "# Welcome\n\nThis guide covers...",
+  "translations": { "en": "Getting Started with i18n", "tr": "i18n'e Başlarken" }
 }
 ```
 
@@ -539,11 +549,13 @@ Publish a content entry to CDN. Sets status to `"published"` and triggers async 
 </AccordionItem>
 
 <AccordionItem title="deleteContentEntry">
-Soft-delete a content entry.
+Hard-delete a content entry (irreversible).
 
 **Parameters:**
 
 - `entryId`: The entry UUID
+
+**Warning:** This permanently deletes the entry and all its translations. This action cannot be undone.
 
 </AccordionItem>
 
@@ -552,8 +564,8 @@ Publish multiple content entries at once.
 
 **Parameters:**
 
-- `modelSlug`: Content model slug
-- `entryIds`: Array of entry UUIDs to publish
+- `entryIds`: Array of entry UUIDs to publish (required)
+- `modelSlug` (optional): Content model slug (for context/validation only — not required)
 
 **Returns:** Array of published entries with updated `publishedAt` timestamps.
 

@@ -10,7 +10,7 @@
  * SEARCH + FILTER:
  * - search: Text to search for (in source text or specified languages)
  * - languages: Which languages to search in AND return translations for
- * - status: Filter by translation status ("missing", "draft", "approved", "all")
+ * - status: Filter by translation status ("missing", "draft", "published", "all")
  * - namespaces: Filter by namespace(s)
  * - keys: Fetch specific keys by exact name
  * - limit: Max keys to return (1–200, default 100)
@@ -43,7 +43,7 @@ const inputSchema = projectSchema.extend({
   languages: z.array(z.string()).optional(),
   namespaces: z.array(z.string()).optional(),
   keys: z.array(z.string()).optional(),
-  status: z.enum(["missing", "draft", "approved", "all"]).optional(),
+  status: z.enum(["missing", "draft", "published", "all"]).optional(),
   limit: z.number().min(1).max(200).optional(),
 });
 
@@ -62,7 +62,7 @@ Always pair: { languages: ["hr"], status: "missing" }
 SEARCH + FILTER:
 - search: Text to search for (in source text or specified languages)
 - languages: Languages to search in AND return translations for
-- status: Filter by translation status ("missing", "draft", "approved", "all")
+- status: Filter by translation status ("missing", "draft", "published", "all")
 - namespaces: Filter by namespace(s)
 - keys: Fetch specific keys by exact name
 - limit: Max keys (1–200, default 100)
@@ -108,7 +108,7 @@ Response includes namespaceDetails: a map of namespace metadata (name, keyCount,
         },
         status: {
           type: "string",
-          enum: ["missing", "draft", "approved", "all"],
+          enum: ["missing", "draft", "published", "all"],
           description:
             "Filter by translation status. WARNING: ignored without languages parameter. Always use with languages: ['hr']. Default: all.",
         },

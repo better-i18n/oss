@@ -1,7 +1,7 @@
 // Mock translation data for the landing page demo
 // Mimics the structure from apps/app
 
-export type TranslationStatus = "draft" | "approved" | "pending" | "untranslated";
+export type TranslationStatus = "draft" | "published" | "pending" | "untranslated";
 
 export interface MockTranslation {
   id: string;
@@ -34,9 +34,9 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "auth.signup.title",
         namespace: "auth",
         sourceText: "Create your account",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
-          tr: { text: "Hesabınızı oluşturun", status: "approved" },
+          tr: { text: "Hesabınızı oluşturun", status: "published" },
         },
       },
       {
@@ -44,9 +44,9 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "auth.signup.subtitle",
         namespace: "auth",
         sourceText: "Start your free trial today",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
-          tr: { text: "Ücretsiz denemenizi bugün başlatın", status: "approved" },
+          tr: { text: "Ücretsiz denemenizi bugün başlatın", status: "published" },
         },
       },
       {
@@ -54,9 +54,9 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "auth.signup.email_label",
         namespace: "auth",
         sourceText: "Email address",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
-          tr: { text: "E-posta adresi", status: "approved" },
+          tr: { text: "E-posta adresi", status: "published" },
         },
       },
       {
@@ -64,9 +64,9 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "auth.signup.password_label",
         namespace: "auth",
         sourceText: "Password",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
-          tr: { text: "Şifre", status: "approved" },
+          tr: { text: "Şifre", status: "published" },
         },
       },
       {
@@ -74,7 +74,7 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "auth.signup.submit",
         namespace: "auth",
         sourceText: "Sign up",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
           tr: { text: "", status: "untranslated" },
         },
@@ -92,9 +92,9 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "dashboard.welcome",
         namespace: "dashboard",
         sourceText: "Welcome back, {{name}}",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
-          tr: { text: "Tekrar hoş geldiniz, {{name}}", status: "approved" },
+          tr: { text: "Tekrar hoş geldiniz, {{name}}", status: "published" },
         },
       },
       {
@@ -102,9 +102,9 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "dashboard.projects.title",
         namespace: "dashboard",
         sourceText: "Your Projects",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
-          tr: { text: "Projeleriniz", status: "approved" },
+          tr: { text: "Projeleriniz", status: "published" },
         },
       },
       {
@@ -112,9 +112,9 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "dashboard.projects.empty",
         namespace: "dashboard",
         sourceText: "No projects yet. Create your first one!",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
-          tr: { text: "Henüz proje yok. İlk projenizi oluşturun!", status: "approved" },
+          tr: { text: "Henüz proje yok. İlk projenizi oluşturun!", status: "published" },
         },
       },
     ],
@@ -130,9 +130,9 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "common.save",
         namespace: "common",
         sourceText: "Save",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
-          tr: { text: "Kaydet", status: "approved" },
+          tr: { text: "Kaydet", status: "published" },
         },
       },
       {
@@ -140,9 +140,9 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "common.cancel",
         namespace: "common",
         sourceText: "Cancel",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
-          tr: { text: "İptal", status: "approved" },
+          tr: { text: "İptal", status: "published" },
         },
       },
       {
@@ -150,7 +150,7 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "common.delete",
         namespace: "common",
         sourceText: "Delete",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
           tr: { text: "", status: "untranslated" },
         },
@@ -170,9 +170,9 @@ export const MOCK_NAMESPACES: MockNamespace[] = [
         key: "common.error",
         namespace: "common",
         sourceText: "Something went wrong",
-        sourceStatus: "approved",
+        sourceStatus: "published",
         translations: {
-          tr: { text: "Bir şeyler ters gitti", status: "approved" },
+          tr: { text: "Bir şeyler ters gitti", status: "published" },
         },
       },
     ],

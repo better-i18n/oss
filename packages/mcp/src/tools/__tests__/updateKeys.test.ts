@@ -64,7 +64,7 @@ describe("updateKeys", () => {
 
       await updateKeys.execute(client, {
         project: "org/proj",
-        t: [{ id: VALID_UUID, l: "de", t: "Guten Tag", s: true, st: "approved" }],
+        t: [{ id: VALID_UUID, l: "de", t: "Guten Tag", s: true, st: "published" }],
       });
 
       const call = mutateMock.mock.calls[0][0];
@@ -73,7 +73,7 @@ describe("updateKeys", () => {
         l: "de",
         t: "Guten Tag",
         s: true,
-        st: "approved",
+        st: "published",
       });
     });
   });

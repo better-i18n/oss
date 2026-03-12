@@ -1035,7 +1035,7 @@ describe("response type conformance", () => {
           id: "uuid-1",
           k: "auth.login.title",
           src: "Login",
-          tr: { tr: { id: "tr-uuid-1", t: "Giriş", st: "approved" } },
+          tr: { tr: { id: "tr-uuid-1", t: "Giriş", st: "published" } },
         },
       ],
     };
@@ -1115,7 +1115,7 @@ describe("response type conformance", () => {
       by_lng: {
         tr: {
           cnt: 5,
-          prv: [{ kid: "uuid-1", k: "auth.login", ns: "auth", t: "Giriş", st: "approved" }],
+          prv: [{ kid: "uuid-1", k: "auth.login", ns: "auth", t: "Giriş", st: "published" }],
         },
       },
       del_k: [],

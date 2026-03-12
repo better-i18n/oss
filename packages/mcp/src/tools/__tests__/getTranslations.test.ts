@@ -13,7 +13,7 @@ const mockTranslationsData = {
       name: "auth.login.title",
       namespace: "auth",
       sourceText: "Login",
-      translations: { tr: { text: "Giriş", status: "approved" } },
+      translations: { tr: { text: "Giriş", status: "published" } },
     },
   ],
   namespaceDetails: {},

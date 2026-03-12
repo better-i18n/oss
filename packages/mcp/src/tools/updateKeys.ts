@@ -24,7 +24,7 @@ const inputSchema = projectSchema.extend({
       l: z.string().describe("Language code (e.g., 'tr', 'de')"),
       t: z.string().describe("Translation text"),
       s: z.boolean().optional().describe("true if updating source language text"),
-      st: z.string().optional().describe("Translation status (e.g., 'approved')"),
+      st: z.string().optional().describe("Translation status (e.g., 'published')"),
     }),
   ).min(1),
 });
@@ -53,7 +53,7 @@ Each entry updates ONE language for ONE key. Set s=true to update the source tex
               l: { type: "string", description: "Language code (e.g., 'tr', 'de')" },
               t: { type: "string", description: "Translation text" },
               s: { type: "boolean", description: "true if updating source language text" },
-              st: { type: "string", description: "Translation status (e.g., 'approved')" },
+              st: { type: "string", description: "Translation status (e.g., 'published')" },
             },
             required: ["id", "l", "t"],
           },
