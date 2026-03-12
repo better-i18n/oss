@@ -186,6 +186,7 @@ export function formatMetaTags(
     { property: "og:image", content: meta.ogImage },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
+    { property: "og:image:alt", content: meta.ogTitle },
     { property: "og:type", content: meta.ogType },
     { property: "og:url", content: meta.canonicalUrl },
     { property: "og:site_name", content: SITE_NAME },
@@ -197,6 +198,7 @@ export function formatMetaTags(
     { name: "twitter:title", content: meta.ogTitle },
     { name: "twitter:description", content: meta.ogDescription },
     { name: "twitter:image", content: meta.ogImage },
+    { name: "twitter:image:alt", content: meta.ogTitle },
 
     // Additional SEO
     { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
@@ -268,6 +270,12 @@ export function getCanonicalLink(locale: string, pathname: string = "/") {
   };
 }
 
+/**
+ * Max safe URL length for OG image URLs.
+ * Most browsers/crawlers support up to 2048 chars. We leave some headroom.
+ */
+const MAX_OG_URL_LENGTH = 2000;
+
 export function buildOgImageUrl(
   endpoint: "og" | "og/blog" | "og/docs",
   params: Record<string, string | undefined>
@@ -277,7 +285,23 @@ export function buildOgImageUrl(
     if (value) searchParams.set(key, value);
   }
   const qs = searchParams.toString();
-  return qs ? `${OG_SERVICE_URL}/${endpoint}?${qs}` : `${OG_SERVICE_URL}/${endpoint}`;
+  const url = qs ? `${OG_SERVICE_URL}/${endpoint}?${qs}` : `${OG_SERVICE_URL}/${endpoint}`;
+
+  // If URL exceeds safe length, truncate long param values and rebuild
+  if (url.length > MAX_OG_URL_LENGTH) {
+    const truncatedParams = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (value) {
+        truncatedParams.set(key, value.length > 100 ? `${value.slice(0, 97)}...` : value);
+      }
+    }
+    const truncatedQs = truncatedParams.toString();
+    return truncatedQs
+      ? `${OG_SERVICE_URL}/${endpoint}?${truncatedQs}`
+      : `${OG_SERVICE_URL}/${endpoint}`;
+  }
+
+  return url;
 }
 
 export { SITE_URL } from "@/seo/pages";
