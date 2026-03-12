@@ -559,6 +559,24 @@ Hard-delete a content entry (irreversible).
 
 </AccordionItem>
 
+<AccordionItem title="bulkCreateEntries">
+Create multiple content entries in a single model at once (max 20). Partial success is possible — response reports created count and any failures.
+
+**Parameters:**
+
+- `modelSlug`: Content model slug (required)
+- `entries`: Array of entry objects (1–20), each with:
+  - `title`: Entry title (required)
+  - `slug`: URL slug (required)
+  - `bodyMarkdown` (optional): Body content as Markdown
+  - `status` (optional): `"draft"` or `"published"` (default: `"draft"`)
+  - `customFields` (optional): Custom field values
+  - `translations` (optional): Map of language code → `{ title, bodyMarkdown, customFields }`
+
+**Returns:** `{ created: number, failed: number, entries: [...], errors: [...] }`
+
+</AccordionItem>
+
 <AccordionItem title="bulkPublishEntries">
 Publish multiple content entries at once.
 
