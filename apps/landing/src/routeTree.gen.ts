@@ -111,6 +111,7 @@ import { Route as LocaleCompareTransifexRouteImport } from './routes/$locale/com
 import { Route as LocaleCompareSmartlingRouteImport } from './routes/$locale/compare/smartling'
 import { Route as LocaleComparePhraseRouteImport } from './routes/$locale/compare/phrase'
 import { Route as LocaleCompareLokaliseRouteImport } from './routes/$locale/compare/lokalise'
+import { Route as LocaleCompareCrowdinVsLokaliseRouteImport } from './routes/$locale/compare/crowdin-vs-lokalise'
 import { Route as LocaleCompareCrowdinRouteImport } from './routes/$locale/compare/crowdin'
 import { Route as LocaleBlogSlugRouteImport } from './routes/$locale/blog/$slug'
 import { Route as LocaleBlogPageIndexRouteImport } from './routes/$locale/blog/page/index'
@@ -657,6 +658,12 @@ const LocaleCompareLokaliseRoute = LocaleCompareLokaliseRouteImport.update({
   path: '/$locale/compare/lokalise',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleCompareCrowdinVsLokaliseRoute =
+  LocaleCompareCrowdinVsLokaliseRouteImport.update({
+    id: '/$locale/compare/crowdin-vs-lokalise',
+    path: '/$locale/compare/crowdin-vs-lokalise',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LocaleCompareCrowdinRoute = LocaleCompareCrowdinRouteImport.update({
   id: '/$locale/compare/crowdin',
   path: '/$locale/compare/crowdin',
@@ -724,6 +731,7 @@ export interface FileRoutesByFullPath {
   '/$locale': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
   '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
+  '/$locale/compare/crowdin-vs-lokalise': typeof LocaleCompareCrowdinVsLokaliseRoute
   '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
   '/$locale/compare/phrase': typeof LocaleComparePhraseRoute
   '/$locale/compare/smartling': typeof LocaleCompareSmartlingRoute
@@ -831,6 +839,7 @@ export interface FileRoutesByTo {
   '/$locale': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
   '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
+  '/$locale/compare/crowdin-vs-lokalise': typeof LocaleCompareCrowdinVsLokaliseRoute
   '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
   '/$locale/compare/phrase': typeof LocaleComparePhraseRoute
   '/$locale/compare/smartling': typeof LocaleCompareSmartlingRoute
@@ -940,6 +949,7 @@ export interface FileRoutesById {
   '/$locale/': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
   '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
+  '/$locale/compare/crowdin-vs-lokalise': typeof LocaleCompareCrowdinVsLokaliseRoute
   '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
   '/$locale/compare/phrase': typeof LocaleComparePhraseRoute
   '/$locale/compare/smartling': typeof LocaleCompareSmartlingRoute
@@ -1050,6 +1060,7 @@ export interface FileRouteTypes {
     | '/$locale'
     | '/$locale/blog/$slug'
     | '/$locale/compare/crowdin'
+    | '/$locale/compare/crowdin-vs-lokalise'
     | '/$locale/compare/lokalise'
     | '/$locale/compare/phrase'
     | '/$locale/compare/smartling'
@@ -1157,6 +1168,7 @@ export interface FileRouteTypes {
     | '/$locale'
     | '/$locale/blog/$slug'
     | '/$locale/compare/crowdin'
+    | '/$locale/compare/crowdin-vs-lokalise'
     | '/$locale/compare/lokalise'
     | '/$locale/compare/phrase'
     | '/$locale/compare/smartling'
@@ -1265,6 +1277,7 @@ export interface FileRouteTypes {
     | '/$locale/'
     | '/$locale/blog/$slug'
     | '/$locale/compare/crowdin'
+    | '/$locale/compare/crowdin-vs-lokalise'
     | '/$locale/compare/lokalise'
     | '/$locale/compare/phrase'
     | '/$locale/compare/smartling'
@@ -1374,6 +1387,7 @@ export interface RootRouteChildren {
   LocaleIndexRoute: typeof LocaleIndexRoute
   LocaleBlogSlugRoute: typeof LocaleBlogSlugRoute
   LocaleCompareCrowdinRoute: typeof LocaleCompareCrowdinRoute
+  LocaleCompareCrowdinVsLokaliseRoute: typeof LocaleCompareCrowdinVsLokaliseRoute
   LocaleCompareLokaliseRoute: typeof LocaleCompareLokaliseRoute
   LocaleComparePhraseRoute: typeof LocaleComparePhraseRoute
   LocaleCompareSmartlingRoute: typeof LocaleCompareSmartlingRoute
@@ -2151,6 +2165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleCompareLokaliseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/compare/crowdin-vs-lokalise': {
+      id: '/$locale/compare/crowdin-vs-lokalise'
+      path: '/$locale/compare/crowdin-vs-lokalise'
+      fullPath: '/$locale/compare/crowdin-vs-lokalise'
+      preLoaderRoute: typeof LocaleCompareCrowdinVsLokaliseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/compare/crowdin': {
       id: '/$locale/compare/crowdin'
       path: '/$locale/compare/crowdin'
@@ -2242,6 +2263,7 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleIndexRoute: LocaleIndexRoute,
   LocaleBlogSlugRoute: LocaleBlogSlugRoute,
   LocaleCompareCrowdinRoute: LocaleCompareCrowdinRoute,
+  LocaleCompareCrowdinVsLokaliseRoute: LocaleCompareCrowdinVsLokaliseRoute,
   LocaleCompareLokaliseRoute: LocaleCompareLokaliseRoute,
   LocaleComparePhraseRoute: LocaleComparePhraseRoute,
   LocaleCompareSmartlingRoute: LocaleCompareSmartlingRoute,
