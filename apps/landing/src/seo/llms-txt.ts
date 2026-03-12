@@ -1,15 +1,21 @@
 /**
  * Build-time llms.txt generator.
  *
- * Produces a markdown-formatted llms.txt file from the same data sources used
+ * Produces markdown-formatted llms.txt files from the same data sources used
  * by the sitemap generator (MARKETING_PAGES + content API blog posts).
+ *
+ * Supports per-locale generation: each locale gets its own llms.txt with
+ * locale-specific URLs, translated headers, and localized section headings.
+ * The root /llms.txt defaults to English.
  *
  * This module runs inside vite.config.ts at BUILD TIME — it must not import
  * React or any browser-only API.
  */
 
 import type { BlogPostMeta } from "./generate-pages";
+import type { SectionKey } from "./llms-txt-locales";
 
+import { getLocaleStrings } from "./llms-txt-locales";
 import { SITE_URL } from "./pages";
 
 // ─── Types ──────────────────────────────────────────────────────────
@@ -21,16 +27,12 @@ interface LlmsTxtLink {
 }
 
 interface LlmsTxtSection {
-  readonly heading: string;
+  readonly headingKey: SectionKey;
   readonly links: readonly LlmsTxtLink[];
 }
 
-// ─── Page titles ────────────────────────────────────────────────────
+// ─── Page data ──────────────────────────────────────────────────────
 
-/**
- * Human-readable titles for marketing page paths.
- * Serves as the single source of truth for page names in llms.txt.
- */
 /**
  * Page descriptions used in llms-full.txt for richer AI context.
  */
@@ -56,6 +58,10 @@ const PAGE_DESCRIPTIONS: Readonly<Record<string, string>> = {
   "i18n/doctor": "Automated translation health checks — missing keys, unused translations, inconsistencies.",
 };
 
+/**
+ * Human-readable titles for marketing page paths.
+ * Serves as the single source of truth for page names in llms.txt.
+ */
 const PAGE_TITLES: Readonly<Record<string, string>> = {
   // Core pages
   "": "Home",
@@ -172,144 +178,91 @@ const PAGE_TITLES: Readonly<Record<string, string>> = {
 
 /**
  * Static section groupings for marketing pages.
- * Each section references page paths that must exist in PAGE_TITLES.
+ * Each section uses a headingKey that maps to localized heading strings
+ * via llms-txt-locales.ts.
  */
 const STATIC_SECTIONS: readonly LlmsTxtSection[] = [
   {
-    heading: "Key Pages",
+    headingKey: "keyPages",
     links: [
-      "",
-      "features",
-      "pricing",
-      "integrations",
-      "for-developers",
-      "for-product-teams",
-      "for-translators",
-      "about",
-      "blog",
-      "changelog",
-      "careers",
+      "", "features", "pricing", "integrations",
+      "for-developers", "for-product-teams", "for-translators",
+      "about", "blog", "changelog", "careers",
     ].map(toLink),
   },
   {
-    heading: "Solutions by Role",
+    headingKey: "solutionsByRole",
     links: [
-      "for-marketers",
-      "for-agencies",
-      "for-engineering-leaders",
-      "for-content-teams",
-      "for-designers",
-      "for-freelancers",
+      "for-marketers", "for-agencies", "for-engineering-leaders",
+      "for-content-teams", "for-designers", "for-freelancers",
     ].map(toLink),
   },
   {
-    heading: "Solutions by Industry",
+    headingKey: "solutionsByIndustry",
     links: [
-      "for-enterprises",
-      "for-startups",
-      "for-ecommerce",
-      "for-saas",
-      "for-mobile-teams",
-      "for-open-source",
-      "for-gaming",
-      "for-education",
-      "for-healthcare",
+      "for-enterprises", "for-startups", "for-ecommerce", "for-saas",
+      "for-mobile-teams", "for-open-source", "for-gaming",
+      "for-education", "for-healthcare",
     ].map(toLink),
   },
   {
-    heading: "Framework Guides",
+    headingKey: "frameworkGuides",
     links: [
-      "i18n",
-      "i18n/react",
-      "i18n/nextjs",
-      "i18n/vue",
-      "i18n/nuxt",
-      "i18n/angular",
-      "i18n/svelte",
-      "i18n/expo",
-      "i18n/server",
-      "i18n/tanstack-start",
-      "i18n/react-intl",
-      "i18n/react-native-localization",
-      "i18n/django",
-      "i18n/ruby",
-      "i18n/javascript",
-      "i18n/android",
-      "i18n/ios",
-      "i18n/flutter",
-      "i18n/for-developers",
+      "i18n", "i18n/react", "i18n/nextjs", "i18n/vue", "i18n/nuxt",
+      "i18n/angular", "i18n/svelte", "i18n/expo", "i18n/server",
+      "i18n/tanstack-start", "i18n/react-intl", "i18n/react-native-localization",
+      "i18n/django", "i18n/ruby", "i18n/javascript", "i18n/android",
+      "i18n/ios", "i18n/flutter", "i18n/for-developers",
     ].map(toLink),
   },
   {
-    heading: "Comparisons",
+    headingKey: "comparisons",
     links: [
-      "compare",
-      "compare/crowdin",
-      "compare/lokalise",
-      "compare/phrase",
-      "compare/transifex",
-      "compare/smartling",
-      "compare/xtm",
+      "compare", "compare/crowdin", "compare/lokalise", "compare/phrase",
+      "compare/transifex", "compare/smartling", "compare/xtm",
     ].map(toLink),
   },
   {
-    heading: "Educational Content",
+    headingKey: "educationalContent",
     links: [
-      "i18n/complete-guide",
-      "what-is",
-      "what-is-internationalization",
-      "what-is-localization",
-      "i18n/best-library",
-      "i18n/best-tms",
+      "i18n/complete-guide", "what-is", "what-is-internationalization",
+      "what-is-localization", "i18n/best-library", "i18n/best-tms",
       "i18n/localization-vs-internationalization",
     ].map(toLink),
   },
   {
-    heading: "Localization Guides",
+    headingKey: "localizationGuides",
     links: [
-      "i18n/content-localization",
-      "i18n/content-localization-services",
-      "i18n/cultural-adaptation",
-      "i18n/website-translation",
-      "i18n/translation-solutions",
-      "i18n/localization-software",
-      "i18n/localization-platforms",
-      "i18n/localization-tools",
-      "i18n/translation-management-system",
-      "i18n/website-localization",
-      "i18n/software-localization",
-      "i18n/software-localization-services",
+      "i18n/content-localization", "i18n/content-localization-services",
+      "i18n/cultural-adaptation", "i18n/website-translation",
+      "i18n/translation-solutions", "i18n/localization-software",
+      "i18n/localization-platforms", "i18n/localization-tools",
+      "i18n/translation-management-system", "i18n/website-localization",
+      "i18n/software-localization", "i18n/software-localization-services",
       "i18n/localization-management",
     ].map(toLink),
   },
   {
-    heading: "Multilingual SEO Guides",
+    headingKey: "multilingualSeoGuides",
     links: [
-      "i18n/multilingual-seo",
-      "i18n/international-seo",
-      "i18n/international-seo-consulting",
-      "i18n/technical-multilingual-seo",
-      "i18n/technical-international-seo",
-      "i18n/multilingual-website-seo",
-      "i18n/global-market-seo",
-      "i18n/seo-international-audiences",
-      "i18n/local-seo-international",
-      "i18n/ecommerce-global-seo",
+      "i18n/multilingual-seo", "i18n/international-seo",
+      "i18n/international-seo-consulting", "i18n/technical-multilingual-seo",
+      "i18n/technical-international-seo", "i18n/multilingual-website-seo",
+      "i18n/global-market-seo", "i18n/seo-international-audiences",
+      "i18n/local-seo-international", "i18n/ecommerce-global-seo",
     ].map(toLink),
   },
   {
-    heading: "Developer Tools",
+    headingKey: "developerTools",
     links: [
-      "i18n/doctor",
-      "i18n/cli-code-scanning",
-      "i18n/formatting-utilities",
-      "i18n/security-compliance",
+      "i18n/doctor", "i18n/cli-code-scanning",
+      "i18n/formatting-utilities", "i18n/security-compliance",
     ].map(toLink),
   },
 ];
 
 const EXTERNAL_SECTION: LlmsTxtSection = {
-  heading: "External Links",
+  headingKey: "externalLinks",
   links: [
     { title: "Full Documentation", path: "https://docs.better-i18n.com/" },
     { title: "API Reference", path: "https://docs.better-i18n.com/api" },
@@ -331,92 +284,108 @@ function toLink(pagePath: string): LlmsTxtLink {
   return { title, path: pagePath };
 }
 
-function buildUrl(pagePath: string): string {
-  return pagePath.startsWith("http")
-    ? pagePath
-    : [SITE_URL, "en", pagePath].filter(Boolean).join("/");
+function buildUrl(pagePath: string, locale: string): string {
+  if (pagePath.startsWith("http")) return pagePath;
+  const url = [SITE_URL, locale, pagePath].filter(Boolean).join("/");
+  return url.endsWith("/") ? url : `${url}/`;
 }
 
-function renderSection(section: LlmsTxtSection): string {
-  const lines = [`## ${section.heading}`, ""];
+function resolveHeading(headingKey: SectionKey, locale: string): string {
+  const strings = getLocaleStrings(locale);
+  return strings.headings[headingKey];
+}
+
+function renderSection(section: LlmsTxtSection, locale: string): string {
+  const heading = resolveHeading(section.headingKey, locale);
+  const lines = [`## ${heading}`, ""];
   for (const link of section.links) {
-    lines.push(`- [${link.title}](${buildUrl(link.path)})`);
+    lines.push(`- [${link.title}](${buildUrl(link.path, locale)})`);
   }
   return lines.join("\n");
 }
 
-function renderDetailedSection(section: LlmsTxtSection): string {
-  const lines = [`## ${section.heading}`, ""];
+function renderDetailedSection(section: LlmsTxtSection, locale: string): string {
+  const heading = resolveHeading(section.headingKey, locale);
+  const lines = [`## ${heading}`, ""];
   for (const link of section.links) {
     const desc = link.description || PAGE_DESCRIPTIONS[link.path];
     if (desc) {
-      lines.push(`- [${link.title}](${buildUrl(link.path)}): ${desc}`);
+      lines.push(`- [${link.title}](${buildUrl(link.path, locale)}): ${desc}`);
     } else {
-      lines.push(`- [${link.title}](${buildUrl(link.path)})`);
+      lines.push(`- [${link.title}](${buildUrl(link.path, locale)})`);
     }
   }
   return lines.join("\n");
 }
 
-// ─── Header ─────────────────────────────────────────────────────────
+// ─── Header builders ────────────────────────────────────────────────
 
-const header = [
-  "# Better i18n",
-  "",
-  "> AI-powered localization platform for developers and product teams. Ship multilingual apps faster with automated translations, context-aware AI, and seamless framework integrations.",
-  "",
-  "## About",
-  "",
-  "Better i18n is a translation management system (TMS) that combines AI-powered translations with developer-first tooling. It supports React, Next.js, Vue, Nuxt, Angular, Svelte, and Expo (React Native) through official SDK packages. The platform provides context-rich translation environments for translators, automated sync for developers, and hassle-free localization management for product teams.",
-].join("\n");
+function buildHeader(locale: string): string {
+  const strings = getLocaleStrings(locale);
+  return [
+    "# Better i18n",
+    "",
+    `> ${strings.tagline}`,
+    "",
+    "## About",
+    "",
+    strings.about,
+  ].join("\n");
+}
 
-const detailedHeader = [
-  "# Better i18n — Full Reference",
-  "",
-  "> AI-powered localization platform for developers and product teams.",
-  "> Ship multilingual apps faster with automated translations, context-aware AI, and seamless framework integrations.",
-  "",
-  "## About",
-  "",
-  "Better i18n is a translation management system (TMS) that combines AI-powered translations with developer-first tooling.",
-  "",
-  "**Key facts:**",
-  "- **Type:** Translation Management System (TMS) & Localization Platform",
-  "- **Founded:** 2024",
-  "- **Supported frameworks:** React, Next.js, Vue, Nuxt, Angular, Svelte, Expo, Flutter, Django, Ruby on Rails",
-  "- **Languages supported:** 23+ locales including English, German, French, Spanish, Japanese, Korean, Chinese, Arabic, Turkish, and more",
-  "- **Pricing:** Free tier, Pro ($19/month), Enterprise (custom)",
-  "- **Key features:** AI-powered translations, GitHub sync, CLI code scanning, global CDN delivery, ICU message format, plural rules, over-the-air updates",
-  "- **Website:** https://better-i18n.com",
-  "- **Documentation:** https://docs.better-i18n.com",
-  "- **GitHub:** https://github.com/better-i18n",
-].join("\n");
+function buildDetailedHeader(locale: string): string {
+  const strings = getLocaleStrings(locale);
+  return [
+    "# Better i18n — Full Reference",
+    "",
+    `> ${strings.tagline}`,
+    "",
+    "## About",
+    "",
+    strings.about,
+    "",
+    "**Key facts:**",
+    "- **Type:** Translation Management System (TMS) & Localization Platform",
+    "- **Founded:** 2024",
+    "- **Supported frameworks:** React, Next.js, Vue, Nuxt, Angular, Svelte, Expo, Flutter, Django, Ruby on Rails",
+    "- **Languages supported:** 23+ locales including English, German, French, Spanish, Japanese, Korean, Chinese, Arabic, Turkish, and more",
+    "- **Pricing:** Free tier, Pro ($19/month), Enterprise (custom)",
+    "- **Key features:** AI-powered translations, GitHub sync, CLI code scanning, global CDN delivery, ICU message format, plural rules, over-the-air updates",
+    "- **Website:** https://better-i18n.com",
+    "- **Documentation:** https://docs.better-i18n.com",
+    "- **GitHub:** https://github.com/better-i18n",
+  ].join("\n");
+}
 
-// ─── Main export ────────────────────────────────────────────────────
+// ─── Main exports ───────────────────────────────────────────────────
 
 /**
- * Generates the full llms.txt content from pre-fetched blog posts.
+ * Generates the llms.txt content for a given locale.
  * Pure function — no I/O.
  */
 export function generateLlmsTxtContent(
   blogPosts: readonly BlogPostMeta[],
+  locale: string = "en",
 ): string {
-  const staticSections = STATIC_SECTIONS.map(renderSection);
+  const staticSections = STATIC_SECTIONS.map((s) => renderSection(s, locale));
 
   const blogSection =
     blogPosts.length > 0
-      ? renderSection({
-          heading: "Blog Posts",
-          links: blogPosts.map((post) => ({
-            title: post.title,
-            path: `blog/${post.slug}`,
-          })),
-        })
+      ? renderSection(
+          {
+            headingKey: "blogPosts",
+            links: blogPosts.map((post) => ({
+              title: post.title,
+              path: `blog/${post.slug}`,
+            })),
+          },
+          locale,
+        )
       : "";
 
-  const externalSection = renderSection(EXTERNAL_SECTION);
+  const externalSection = renderSection(EXTERNAL_SECTION, locale);
   const parts = [
-    header,
+    buildHeader(locale),
     ...staticSections,
     ...(blogSection ? [blogSection] : []),
     externalSection,
@@ -425,32 +394,70 @@ export function generateLlmsTxtContent(
 }
 
 /**
- * Generates llms-full.txt with page descriptions and blog excerpts.
- * Richer version of llms.txt for AI models that want more context.
+ * Generates llms-full.txt with page descriptions and blog excerpts
+ * for a given locale.
  */
 export function generateLlmsFullTxtContent(
   blogPosts: readonly BlogPostMeta[],
+  locale: string = "en",
 ): string {
-  const staticSections = STATIC_SECTIONS.map(renderDetailedSection);
+  const staticSections = STATIC_SECTIONS.map((s) => renderDetailedSection(s, locale));
 
   const blogSection =
     blogPosts.length > 0
-      ? renderDetailedSection({
-          heading: "Blog Posts",
-          links: blogPosts.map((post) => ({
-            title: post.title,
-            path: `blog/${post.slug}`,
-            description: post.excerpt || undefined,
-          })),
-        })
+      ? renderDetailedSection(
+          {
+            headingKey: "blogPosts",
+            links: blogPosts.map((post) => ({
+              title: post.title,
+              path: `blog/${post.slug}`,
+              description: post.excerpt || undefined,
+            })),
+          },
+          locale,
+        )
       : "";
 
-  const externalSection = renderDetailedSection(EXTERNAL_SECTION);
+  const externalSection = renderDetailedSection(EXTERNAL_SECTION, locale);
   const parts = [
-    detailedHeader,
+    buildDetailedHeader(locale),
     ...staticSections,
     ...(blogSection ? [blogSection] : []),
     externalSection,
   ];
   return parts.join("\n\n") + "\n";
+}
+
+/**
+ * Generates llms.txt + llms-full.txt files for all provided locales.
+ * Returns a map of file paths to content strings.
+ *
+ * - Root `/llms.txt` and `/llms-full.txt` are always English.
+ * - Each locale gets `{locale}/llms.txt` and `{locale}/llms-full.txt`.
+ *
+ * Pure function — no I/O.
+ */
+export function generateAllLlmsTxtFiles(
+  blogPosts: readonly BlogPostMeta[],
+  locales: readonly string[],
+): ReadonlyMap<string, string> {
+  const files = new Map<string, string>();
+
+  // Root files are always English
+  files.set("llms.txt", generateLlmsTxtContent(blogPosts, "en"));
+  files.set("llms-full.txt", generateLlmsFullTxtContent(blogPosts, "en"));
+
+  // Per-locale files
+  for (const locale of locales) {
+    files.set(
+      `${locale}/llms.txt`,
+      generateLlmsTxtContent(blogPosts, locale),
+    );
+    files.set(
+      `${locale}/llms-full.txt`,
+      generateLlmsFullTxtContent(blogPosts, locale),
+    );
+  }
+
+  return files;
 }
