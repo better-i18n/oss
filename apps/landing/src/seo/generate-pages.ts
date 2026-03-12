@@ -188,12 +188,15 @@ function generateBlogListingPages(
 
 function generateBlogDetailPages(
   post: BlogPostMeta,
-  allLocales: readonly string[],
+  _allLocales: readonly string[],
 ): readonly PageEntry[] {
+  // Only generate pages for languages the post is actually published in.
+  // Falling back to allLocales would create sitemap entries for non-existent
+  // translations, causing soft 404s and thin content warnings in Google Search Console.
   const postLocales =
     post.availableLanguages && post.availableLanguages.length > 0
       ? post.availableLanguages
-      : allLocales;
+      : ["en"];
 
   const alternateRefs = buildAlternateRefs(postLocales, (locale) =>
     buildPageUrl(locale, `blog/${post.slug}`),

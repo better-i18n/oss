@@ -7,10 +7,16 @@ const DEFAULT_AVAILABLE_LANGUAGES: readonly string[] = [
   "nb", "el", "th",
 ] as const;
 
-/** Stable fallback date for dateModified (avoids non-deterministic builds) */
-const FALLBACK_DATE_MODIFIED = "2026-03-01";
+/**
+ * Returns today's date as YYYY-MM-DD.
+ * Used as fallback for dateModified so structured data stays fresh
+ * without requiring manual updates.
+ */
+function getTodayDate(): string {
+  return new Date().toISOString().split("T")[0]!;
+}
 
-/** Default review date for backward compatibility */
+/** Default review date — used when no datePublished is provided for a review */
 const DEFAULT_REVIEW_DATE = "2025-01-15";
 
 /**
@@ -83,7 +89,7 @@ export function getSoftwareApplicationSchema(
     url: SITE_URL,
     image: `${SITE_URL}/logo.png`,
     datePublished: "2025-01-01",
-    dateModified: FALLBACK_DATE_MODIFIED,
+    dateModified: getTodayDate(),
     ...(locale && { inLanguage: locale }),
     offers: {
       "@type": "Offer",
@@ -130,11 +136,12 @@ export function getBreadcrumbSchema(items: BreadcrumbItem[]) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
+    itemListElement: items.map((breadcrumb, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      name: item.name,
-      item: item.url,
+      name: breadcrumb.name,
+      item: breadcrumb.url,
+      url: breadcrumb.url,
     })),
   };
 }
@@ -424,7 +431,7 @@ export function getTechArticleSchema(options: {
   inLanguage?: string;
 }) {
   const datePublished = options.datePublished || "2025-01-01";
-  const dateModified = options.dateModified || FALLBACK_DATE_MODIFIED;
+  const dateModified = options.dateModified || getTodayDate();
 
   return {
     "@context": "https://schema.org",
