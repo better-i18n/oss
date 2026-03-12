@@ -8,11 +8,11 @@ import DeveloperRoleIntegration from "@/components/developers/DeveloperRoleInteg
 import DeveloperResources from "@/components/developers/DeveloperResources";
 import DeveloperIDESupport from "@/components/developers/DeveloperIDESupport";
 import { RelatedPages } from "@/components/RelatedPages";
-import { getPageHead, createPageLoader, getEducationalPageStructuredData, formatStructuredData } from "@/lib/page-seo";
+import { getPageHead, getEducationalPageStructuredData, formatStructuredData } from "@/lib/page-seo";
 import { getHowToSchema } from "@/lib/structured-data";
 
 export const Route = createFileRoute("/$locale/for-developers")({
-  loader: createPageLoader(),
+  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
   head: ({ loaderData }) => {
     const messages = loaderData?.messages || {};
     const locale = loaderData?.locale || "en";
@@ -37,6 +37,7 @@ export const Route = createFileRoute("/$locale/for-developers")({
       title: "Better i18n for Developers",
       description: "Developer-first internationalization with type-safe SDKs, Git integration, global CDN delivery, and automated translation workflows.",
       url: `https://better-i18n.com/${locale}/for-developers`,
+      locale,
     });
 
     const howToScript = howToSteps.length > 0
@@ -45,12 +46,14 @@ export const Route = createFileRoute("/$locale/for-developers")({
           description: "Developer workflow for connecting your repo, discovering keys, translating, and publishing.",
           steps: howToSteps,
           totalTime: "PT10M",
+          inLanguage: locale,
         }))
       : [];
 
     const headData = getPageHead({
       messages,
       locale,
+      locales: loaderData?.locales,
       pageKey: "forDevelopers",
       pathname: "/for-developers",
       customStructuredData: [...educationalScripts, ...howToScript],

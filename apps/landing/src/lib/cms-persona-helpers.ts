@@ -8,6 +8,7 @@ import {
   getCanonicalLink,
   buildOgImageUrl,
 } from "@/lib/meta";
+import { getCachedLocales } from "@/lib/locales";
 import {
   getEducationalPageStructuredData,
   getBreadcrumbSchema,
@@ -34,6 +35,7 @@ export const loadRelatedPersonas = createServerFn({ method: "GET" })
 export async function personaLoader(
   slug: string,
   locale: string,
+  _locales?: string[],
 ): Promise<{
   page: MarketingPage;
   locale: string;
@@ -51,7 +53,11 @@ export async function personaLoader(
 
 // ─── Head ────────────────────────────────────────────────────────────
 
-const PERSONA_LABELS: Record<string, string> = {
+/**
+ * English fallback labels for persona pages.
+ * Source of truth is Better i18n platform (page-titles namespace).
+ */
+const ENGLISH_PERSONA_LABELS: Readonly<Record<string, string>> = {
   "for-marketers": "For Marketers",
   "for-agencies": "For Agencies",
   "for-enterprises": "For Enterprises",
@@ -70,7 +76,7 @@ const PERSONA_LABELS: Record<string, string> = {
 };
 
 export function getPersonaLabel(slug: string): string {
-  return PERSONA_LABELS[slug] ?? slug.replace("for-", "For ").replace(/-/g, " ");
+  return ENGLISH_PERSONA_LABELS[slug] ?? slug.replace("for-", "For ").replace(/-/g, " ");
 }
 
 export function personaHead(loaderData?: {
@@ -81,7 +87,7 @@ export function personaHead(loaderData?: {
   const locale = loaderData?.locale || "en";
   const slug = page?.slug || "";
   const pathname = `/${slug}`;
-  const canonicalUrl = `${SITE_URL}/${locale}${pathname}`;
+  const canonicalUrl = `${SITE_URL}/${locale}${pathname}/`;
   const label = getPersonaLabel(slug);
 
   const dynamicOgImage = buildOgImageUrl("og", {
@@ -112,6 +118,7 @@ export function personaHead(loaderData?: {
       { property: "og:image", content: dynamicOgImage },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: page?.title || label },
       { property: "og:type", content: "website" },
       { property: "og:url", content: canonicalUrl },
       { property: "og:site_name", content: "Better i18n" },
@@ -121,11 +128,15 @@ export function personaHead(loaderData?: {
       { name: "twitter:title", content: page?.title || "" },
       { name: "twitter:description", content: excerpt },
       { name: "twitter:image", content: dynamicOgImage },
-      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+      { name: "twitter:image:alt", content: page?.title || label },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { name: "author", content: "Better i18n" },
       ...(page?.targetKeywords
         ? [{ name: "keywords", content: page.targetKeywords }]
         : []),
+      ...getCachedLocales()
+        .filter((loc) => loc !== locale)
+        .map((loc) => ({ property: "og:locale:alternate", content: loc })),
     ],
     links: [
       ...getAlternateLinks(pathname),

@@ -3,7 +3,7 @@ import { personaLoader, personaHead } from "@/lib/cms-persona-helpers";
 import { CmsPersonaPage, CmsPersonaNotFound } from "@/components/CmsPersonaPage";
 
 export const Route = createFileRoute("/$locale/for-open-source")({
-  loader: ({ params }) => personaLoader("for-open-source", params.locale),
+  loader: ({ params, context }) => personaLoader("for-open-source", params.locale, context.locales),
   head: ({ loaderData }) => personaHead(loaderData),
   component: () => {
     const data = Route.useLoaderData();

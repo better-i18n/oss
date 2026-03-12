@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { getPageHead } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
   IconGlobe,
@@ -12,11 +12,12 @@ import {
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/what-is-internationalization")({
-  loader: createPageLoader(),
+  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
+      locales: loaderData?.locales,
       pageKey: "whatIsInternationalization",
       pathname: "/what-is-internationalization",
       pageType: "educational",

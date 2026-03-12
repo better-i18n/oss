@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { getPageHead, createPageLoader, formatStructuredData } from "@/lib/page-seo";
+import { getPageHead, formatStructuredData } from "@/lib/page-seo";
 import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
 import { SITE_URL } from "@/lib/meta";
 import { useT } from "@/lib/i18n";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/compare/")({
-  loader: createPageLoader(),
+  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
   head: ({ loaderData }) => {
     const comparisonListSchema = getComparisonSchema({
       title: "Better i18n Alternatives Comparison",
@@ -23,9 +23,10 @@ export const Route = createFileRoute("/$locale/compare/")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
+      locales: loaderData?.locales,
       pageKey: "compare",
       pathname: "/compare",
-      customStructuredData: formatStructuredData([getOrganizationSchema(), comparisonListSchema]),
+      customStructuredData: formatStructuredData([getOrganizationSchema({ locale: loaderData?.locale }), comparisonListSchema]),
     });
   },
   component: ComparePage,

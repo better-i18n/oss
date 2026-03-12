@@ -12,6 +12,7 @@ import {
   getCanonicalLink,
   buildOgImageUrl,
 } from "@/lib/meta";
+import { getCachedLocales } from "@/lib/locales";
 import {
   getEducationalPageStructuredData,
   getBreadcrumbSchema,
@@ -49,7 +50,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
     const page = loaderData?.page;
     const locale = loaderData?.locale || "en";
     const pathname = `/features/${page?.slug || ""}`;
-    const canonicalUrl = `${SITE_URL}/${locale}${pathname}`;
+    const canonicalUrl = `${SITE_URL}/${locale}${pathname}/`;
 
     const dynamicOgImage = buildOgImageUrl("og", {
       title: page?.title || "Feature",
@@ -66,7 +67,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
     const breadcrumbScripts = formatStructuredData(
       getBreadcrumbSchema([
         { name: "Home", url: `${SITE_URL}/${locale}/` },
-        { name: "Features", url: `${SITE_URL}/${locale}/features` },
+        { name: "Features", url: `${SITE_URL}/${locale}/features/` },
         { name: page?.title || "Feature", url: canonicalUrl },
       ]),
     );
@@ -78,17 +79,36 @@ export const Route = createFileRoute("/$locale/features/$slug")({
         { property: "og:title", content: page?.title || "" },
         { property: "og:description", content: excerpt },
         { property: "og:image", content: dynamicOgImage },
+        {
+          property: "og:image:alt",
+          content: page?.title || "Feature",
+        },
         { property: "og:image:width", content: "1200" },
         { property: "og:image:height", content: "630" },
         { property: "og:type", content: "website" },
         { property: "og:url", content: canonicalUrl },
         { property: "og:site_name", content: "Better i18n" },
+        { property: "og:locale", content: locale },
+        ...getCachedLocales()
+          .filter((loc) => loc !== locale)
+          .map((loc) => ({
+            property: "og:locale:alternate",
+            content: loc,
+          })),
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:site", content: "@betteri18n" },
         { name: "twitter:title", content: page?.title || "" },
         { name: "twitter:description", content: excerpt },
         { name: "twitter:image", content: dynamicOgImage },
-        { name: "robots", content: "index, follow" },
+        {
+          name: "twitter:image:alt",
+          content: page?.title || "Feature",
+        },
+        {
+          name: "robots",
+          content:
+            "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+        },
         ...(page?.targetKeywords
           ? [{ name: "keywords", content: page.targetKeywords }]
           : []),

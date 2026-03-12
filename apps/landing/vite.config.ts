@@ -14,14 +14,15 @@ export default defineConfig(async ({ mode }) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let pages: readonly any[] = [];
-  let llmsTxtContent: string | null = null;
+  let llmsFiles: ReadonlyMap<string, string> | null = null;
   if (mode === "production" && apiKey && project) {
     try {
       const { fetchSeoData, generatePages } = await import("./src/seo/generate-pages");
-      const { generateLlmsTxtContent } = await import("./src/seo/llms-txt");
+      const { generateAllLlmsTxtFiles } = await import("./src/seo/llms-txt");
       const data = await fetchSeoData({ project, apiKey });
       pages = generatePages(data);
-      llmsTxtContent = generateLlmsTxtContent(data.blogPosts);
+      llmsFiles = generateAllLlmsTxtFiles(data.blogPosts, data.locales, data.i18nMessages);
+      console.log(`[SEO] Generated ${llmsFiles.size} llms.txt files`);
     } catch (error) {
       console.error("[SEO] Build-time generation failed:", error);
     }
@@ -82,17 +83,15 @@ export default defineConfig(async ({ mode }) => {
           : undefined,
       }),
       viteReact(),
-      ...(llmsTxtContent
+      ...(llmsFiles
         ? [
             {
               name: "llms-txt",
               apply: "build",
               generateBundle() {
-                this.emitFile({
-                  type: "asset",
-                  fileName: "llms.txt",
-                  source: llmsTxtContent!,
-                });
+                for (const [fileName, source] of llmsFiles!) {
+                  this.emitFile({ type: "asset", fileName, source });
+                }
               },
             } satisfies Plugin,
           ]

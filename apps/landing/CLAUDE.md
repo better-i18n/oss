@@ -61,7 +61,7 @@ Build-time SEO generation (runs in `vite.config.ts`):
 - `generate-pages.ts` — Fetches locales + blog posts + features from API, generates sitemap entries with hreflang
 - `llms-txt.ts` — Generates `/llms.txt` for AI model consumption
 
-**When adding a new page:** Update `MARKETING_PAGES` in `pages.ts` AND `PAGE_TITLES` in `llms-txt.ts`.
+**When adding a new page:** Update `MARKETING_PAGES` in `pages.ts`, add keys to `page-titles` (and optionally `page-descriptions`) namespace in Better i18n, and add path to the relevant `STATIC_SECTIONS` entry in `llms-txt.ts`.
 
 ### SEO Utilities: `src/lib/`
 

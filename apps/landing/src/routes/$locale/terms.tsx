@@ -15,21 +15,23 @@ export const Route = createFileRoute("/$locale/terms")({
   loader: ({ context }) => ({
     messages: context.messages,
     locale: context.locale,
+    locales: context.locales,
   }),
   head: ({ loaderData }) => {
     const locale = loaderData?.locale || "en";
+    const locales = loaderData?.locales;
     const pathname = "/terms";
     const meta = getLocalizedMeta(loaderData?.messages || {}, "terms", {
       locale,
       pathname,
     });
     return {
-      meta: formatMetaTags(meta, { locale }),
+      meta: formatMetaTags(meta, { locale, locales }),
       links: [
-        ...getAlternateLinks(pathname),
+        ...getAlternateLinks(pathname, locales),
         getCanonicalLink(locale, pathname),
       ],
-      scripts: getDefaultStructuredData(),
+      scripts: getDefaultStructuredData(locale),
     };
   },
   component: TermsPage,
