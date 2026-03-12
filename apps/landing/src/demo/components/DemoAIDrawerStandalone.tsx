@@ -199,8 +199,8 @@ const DEMO_CONTENT: Record<string, DemoContent> = {
 };
 
 // Status icons logic matching real app
-const StatusIcon = ({ status }: { status: "approved" | "published" }) => {
-  // Always use green for completed/approved state
+const StatusIcon = ({ status }: { status: "published" }) => {
+  // Always use green for completed/published state
   console.log("StatusIcon status:", status);
   const color = "text-[#22C55E]";
   return (
@@ -1313,7 +1313,7 @@ export function DemoAIDrawerStandalone() {
                           >
                             {msg.toolCall.state === "completed" ? (
                               <div className="flex items-center gap-1.5 text-[#22C55E]">
-                                <StatusIcon status="approved" />
+                                <StatusIcon status="published" />
                               </div>
                             ) : (
                               <IconCircleDashed
@@ -1495,7 +1495,7 @@ export function DemoAIDrawerStandalone() {
                                             "completed" ? (
                                               <div className="flex justify-end">
                                                 <span className="inline-flex items-center gap-1 text-emerald-600 text-[10px] font-medium">
-                                                  {t("approved")}
+                                                  {t("published")}
                                                 </span>
                                               </div>
                                             ) : null}

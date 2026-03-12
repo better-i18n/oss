@@ -116,7 +116,7 @@ Production queue consumer:
 - `initial_import` - first-time source key import
 - `source_sync` - updates for source language only
 - `cdn_upload` - upload JSON artifacts to CDN (R2/S3)
-- `publish` - publish approved/reviewed translations to GitHub (PR) and CDN
+- `publish` - publish published/reviewed translations to GitHub (PR) and CDN
 
 **Important:** Sync worker does NOT auto-translate. All AI translations happen through the AI Drawer (human-in-the-loop). Legacy translation code exists in `gemini.ts` but is not triggered.
 
@@ -237,15 +237,15 @@ Core files:
 
 Key behaviors:
 
-- Inline editing with autosave (draft -> pending -> approved)
+- Inline editing with autosave (draft -> pending -> published)
 - Namespace grouping and expand/collapse
 - Status icons for translation state
 - Auto-sync every ~3.5 seconds via Zustand store
 
 Publish filters:
 
-- CDN publish: `draft`, `pending`, `reviewed`, `approved`
-- GitHub publish: `reviewed`, `approved`
+- CDN publish: `draft`, `pending`, `reviewed`, `published`
+- GitHub publish: `reviewed`, `published`
 
 Recent delivered (CDN-first baseline):
 
@@ -355,7 +355,7 @@ Flow summary:
 1. User edits a translation (draft)
 2. Local store updates immediately
 3. Auto-sync pushes to API every few seconds
-4. Publish action moves status to approved
+4. Publish action moves status to published
 
 References:
 

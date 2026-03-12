@@ -7,7 +7,7 @@ import type { MockTranslation, TranslationStatus } from "../mock-data";
 function TranslationStatusIcon({ status, size = 16, className = "" }: { status: TranslationStatus; size?: number; className?: string }) {
   const getStatusColor = () => {
     switch (status) {
-      case "approved":
+      case "published":
         return "bg-green-500";
       case "pending":
         return "bg-yellow-500";

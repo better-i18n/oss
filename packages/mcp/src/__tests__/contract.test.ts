@@ -188,7 +188,7 @@ describe("forward contract: tool output → API schema", () => {
 
       await updateKeys.execute(client, {
         project: "org/proj",
-        t: [{ id: "550e8400-e29b-41d4-a716-446655440000", l: "en", t: "Updated", s: true, st: "approved" }],
+        t: [{ id: "550e8400-e29b-41d4-a716-446655440000", l: "en", t: "Updated", s: true, st: "published" }],
       });
 
       const apiArgs = mutateMock.mock.calls[0][0];
@@ -627,7 +627,7 @@ describe("reverse contract: LLM-plausible args → tool acceptance", () => {
         project: "org/proj",
         t: [
           { id: "550e8400-e29b-41d4-a716-446655440000", l: "en", t: "Updated", s: true },
-          { id: "550e8400-e29b-41d4-a716-446655440001", l: "tr", t: "Güncellendi", st: "approved" },
+          { id: "550e8400-e29b-41d4-a716-446655440001", l: "tr", t: "Güncellendi", st: "published" },
         ],
       });
       expect(result.isError).toBeUndefined();
@@ -768,7 +768,7 @@ describe("reverse contract: LLM-plausible args → tool acceptance", () => {
       const queryMock = vi.fn().mockResolvedValue(STUBS.getAllTranslations);
       const client = createMockClient({ mcp: { getAllTranslations: { query: queryMock } } });
 
-      for (const status of ["missing", "draft", "approved", "all"] as const) {
+      for (const status of ["missing", "draft", "published", "all"] as const) {
         queryMock.mockClear();
         const result = await getTranslations.execute(client, {
           project: "org/proj",
