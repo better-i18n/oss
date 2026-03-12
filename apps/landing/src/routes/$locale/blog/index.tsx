@@ -39,6 +39,7 @@ export const Route = createFileRoute("/$locale/blog/")({
       posts,
       messages: context.messages,
       locale: context.locale,
+      locales: context.locales,
     };
   },
   head: ({ loaderData }) => {
@@ -60,19 +61,20 @@ export const Route = createFileRoute("/$locale/blog/")({
     ]);
 
     return {
-      meta: formatMetaTags(meta, { locale }),
+      meta: formatMetaTags(meta, { locale, locales: loaderData?.locales }),
       links: [
-        ...getAlternateLinks(pathname),
+        ...getAlternateLinks(pathname, loaderData?.locales),
         getCanonicalLink(locale, pathname),
       ],
       scripts: formatStructuredData([
-        getOrganizationSchema(),
-        getWebSiteSchema(),
+        getOrganizationSchema({ locale }),
+        getWebSiteSchema(locale),
         breadcrumbSchema,
         getCollectionPageSchema({
           name: "Better i18n Blog",
           description: "Latest updates, tutorials, and insights about internationalization and localization.",
           url: `${SITE_URL}/${locale}/blog`,
+          inLanguage: locale,
         }),
       ]),
     };

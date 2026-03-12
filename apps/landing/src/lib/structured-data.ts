@@ -1,9 +1,26 @@
 import { SITE_URL, SITE_NAME } from "./meta";
 
+/** Default available languages (ISO 639-1 codes) */
+const DEFAULT_AVAILABLE_LANGUAGES: readonly string[] = [
+  "en", "tr", "de", "fr", "es", "pt", "it", "nl", "pl", "cs",
+  "ja", "ko", "zh", "ar", "hi", "ru", "uk", "sv", "da", "fi",
+  "nb", "el", "th",
+] as const;
+
+/** Stable fallback date for dateModified (avoids non-deterministic builds) */
+const FALLBACK_DATE_MODIFIED = "2026-03-01";
+
+/** Default review date for backward compatibility */
+const DEFAULT_REVIEW_DATE = "2025-01-15";
+
 /**
  * Organization Schema - represents the company/brand
  */
-export function getOrganizationSchema() {
+export function getOrganizationSchema(options?: {
+  locale?: string;
+  availableLanguages?: readonly string[];
+}) {
+  const languages = options?.availableLanguages ?? DEFAULT_AVAILABLE_LANGUAGES;
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -22,26 +39,29 @@ export function getOrganizationSchema() {
       email: "hello@better-i18n.com",
       contactType: "customer support",
       url: `${SITE_URL}/about`,
-      availableLanguage: ["English", "Turkish"],
+      availableLanguage: [...languages],
     },
+    ...(options?.locale && { inLanguage: options.locale }),
   };
 }
 
 /**
  * WebSite Schema - for sitelinks search box
  */
-export function getWebSiteSchema() {
+export function getWebSiteSchema(locale?: string) {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: SITE_NAME,
     url: SITE_URL,
+    ...(locale && { inLanguage: locale }),
   };
 }
 
 interface SoftwareAppReview {
   author: string;
   reviewBody: string;
+  datePublished?: string;
 }
 
 /**
@@ -50,7 +70,10 @@ interface SoftwareAppReview {
  * Google requires `price` as a string and recommends nesting `review`
  * inside the main schema rather than using standalone Review schemas.
  */
-export function getSoftwareApplicationSchema(reviews?: SoftwareAppReview[]) {
+export function getSoftwareApplicationSchema(
+  reviews?: SoftwareAppReview[],
+  locale?: string
+) {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -60,14 +83,15 @@ export function getSoftwareApplicationSchema(reviews?: SoftwareAppReview[]) {
     url: SITE_URL,
     image: `${SITE_URL}/logo.png`,
     datePublished: "2025-01-01",
-    dateModified: new Date().toISOString().split("T")[0],
+    dateModified: FALLBACK_DATE_MODIFIED,
+    ...(locale && { inLanguage: locale }),
     offers: {
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
       description: "Free tier available",
       availability: "https://schema.org/InStock",
-      url: `${SITE_URL}/en/pricing`,
+      url: `${SITE_URL}/${locale || "en"}/pricing/`,
     },
     aggregateRating: {
       "@type": "AggregateRating",
@@ -82,7 +106,7 @@ export function getSoftwareApplicationSchema(reviews?: SoftwareAppReview[]) {
         "@type": "Review",
         author: { "@type": "Person", name: r.author },
         reviewBody: r.reviewBody,
-        datePublished: "2025-01-15",
+        datePublished: r.datePublished ?? DEFAULT_REVIEW_DATE,
         reviewRating: {
           "@type": "Rating",
           ratingValue: 5,
@@ -182,10 +206,11 @@ interface FAQItem {
 /**
  * FAQPage Schema
  */
-export function getFAQSchema(items: FAQItem[]) {
+export function getFAQSchema(items: FAQItem[], locale?: string) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    ...(locale && { inLanguage: locale }),
     mainEntity: items.map((item) => ({
       "@type": "Question",
       name: item.question,
@@ -212,21 +237,24 @@ export function formatStructuredData(schema: object | object[]) {
 /**
  * Get default page structured data (Organization + WebSite)
  */
-export function getDefaultStructuredData() {
+export function getDefaultStructuredData(locale?: string) {
   return formatStructuredData([
-    getOrganizationSchema(),
-    getWebSiteSchema(),
+    getOrganizationSchema({ locale }),
+    getWebSiteSchema(locale),
   ]);
 }
 
 /**
  * Get home page structured data
  */
-export function getHomePageStructuredData(reviews?: SoftwareAppReview[]) {
+export function getHomePageStructuredData(
+  reviews?: SoftwareAppReview[],
+  locale?: string
+) {
   return formatStructuredData([
-    getOrganizationSchema(),
-    getWebSiteSchema(),
-    getSoftwareApplicationSchema(reviews),
+    getOrganizationSchema({ locale }),
+    getWebSiteSchema(locale),
+    getSoftwareApplicationSchema(reviews, locale),
   ]);
 }
 
@@ -243,12 +271,14 @@ export function getComparisonSchema(options: {
   title: string;
   description: string;
   items: ComparisonItem[];
+  inLanguage?: string;
 }) {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: options.title,
     description: options.description,
+    ...(options.inLanguage && { inLanguage: options.inLanguage }),
     itemListElement: options.items.map((item, index) => ({
       "@type": "ListItem",
       position: index + 1,
@@ -277,6 +307,7 @@ export function getHowToSchema(options: {
   description: string;
   steps: HowToStep[];
   totalTime?: string; // ISO 8601 duration format
+  inLanguage?: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -284,6 +315,7 @@ export function getHowToSchema(options: {
     name: options.name,
     description: options.description,
     ...(options.totalTime && { totalTime: options.totalTime }),
+    ...(options.inLanguage && { inLanguage: options.inLanguage }),
     step: options.steps.map((step, index) => ({
       "@type": "HowToStep",
       position: index + 1,
@@ -305,6 +337,7 @@ export function getProductSchema(options: {
   description: string;
   image?: string;
   brand?: string;
+  inLanguage?: string;
   offers: Array<{
     name: string;
     price: number;
@@ -323,6 +356,7 @@ export function getProductSchema(options: {
       "@type": "Brand",
       name: options.brand || SITE_NAME,
     },
+    ...(options.inLanguage && { inLanguage: options.inLanguage }),
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: 4.9,
@@ -339,7 +373,7 @@ export function getProductSchema(options: {
       ...(offer.description && { description: offer.description }),
       ...(offer.url && { url: offer.url }),
       availability: "https://schema.org/InStock",
-      priceValidUntil: "2026-12-31",
+      priceValidUntil: "2027-12-31",
     })),
   };
 }
@@ -352,6 +386,7 @@ export function getWebPageSchema(options: {
   description: string;
   url: string;
   speakable?: string[]; // CSS selectors for speakable content
+  inLanguage?: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -359,6 +394,7 @@ export function getWebPageSchema(options: {
     name: options.name,
     description: options.description,
     url: options.url,
+    ...(options.inLanguage && { inLanguage: options.inLanguage }),
     isPartOf: {
       "@type": "WebSite",
       name: SITE_NAME,
@@ -385,9 +421,10 @@ export function getTechArticleSchema(options: {
   dateModified?: string;
   dependencies?: string[];
   proficiencyLevel?: "Beginner" | "Intermediate" | "Expert";
+  inLanguage?: string;
 }) {
   const datePublished = options.datePublished || "2025-01-01";
-  const dateModified = options.dateModified || new Date().toISOString().split("T")[0];
+  const dateModified = options.dateModified || FALLBACK_DATE_MODIFIED;
 
   return {
     "@context": "https://schema.org",
@@ -398,6 +435,7 @@ export function getTechArticleSchema(options: {
     image: options.image || `${SITE_URL}/logo.png`,
     datePublished,
     dateModified,
+    ...(options.inLanguage && { inLanguage: options.inLanguage }),
     author: {
       "@type": "Organization",
       name: SITE_NAME,
@@ -423,14 +461,18 @@ export function getTechArticleSchema(options: {
 /**
  * Get comparison page structured data
  */
-export function getComparisonPageStructuredData(competitorName: string) {
+export function getComparisonPageStructuredData(
+  competitorName: string,
+  locale?: string
+) {
   return formatStructuredData([
-    getOrganizationSchema(),
+    getOrganizationSchema({ locale }),
     getWebPageSchema({
       name: `${SITE_NAME} vs ${competitorName} Comparison`,
       description: `Compare ${SITE_NAME} with ${competitorName} - features, pricing, and developer experience.`,
       url: `${SITE_URL}/compare/${competitorName.toLowerCase()}`,
       speakable: ["h1", "h2", ".comparison-summary"],
+      inLanguage: locale,
     }),
   ]);
 }
@@ -441,16 +483,18 @@ export function getComparisonPageStructuredData(competitorName: string) {
 export function getFrameworkPageStructuredData(
   framework: string,
   description: string,
-  dependencies?: string[]
+  dependencies?: string[],
+  locale?: string
 ) {
   return formatStructuredData([
-    getOrganizationSchema(),
+    getOrganizationSchema({ locale }),
     getTechArticleSchema({
       headline: `${framework} Internationalization (i18n) Guide`,
       description,
       url: `${SITE_URL}/i18n/${framework.toLowerCase()}`,
       proficiencyLevel: "Intermediate",
       dependencies,
+      inLanguage: locale,
     }),
   ]);
 }
@@ -462,14 +506,16 @@ export function getEducationalPageStructuredData(options: {
   title: string;
   description: string;
   url: string;
+  locale?: string;
 }) {
   return formatStructuredData([
-    getOrganizationSchema(),
+    getOrganizationSchema({ locale: options.locale }),
     getWebPageSchema({
       name: options.title,
       description: options.description,
       url: options.url,
       speakable: ["h1", "h2", ".intro"],
+      inLanguage: options.locale,
     }),
   ]);
 }
@@ -481,6 +527,7 @@ export function getCollectionPageSchema(options: {
   name: string;
   description: string;
   url: string;
+  inLanguage?: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -488,6 +535,7 @@ export function getCollectionPageSchema(options: {
     name: options.name,
     description: options.description,
     url: options.url,
+    ...(options.inLanguage && { inLanguage: options.inLanguage }),
     isPartOf: {
       "@type": "WebSite",
       name: SITE_NAME,
@@ -499,12 +547,16 @@ export function getCollectionPageSchema(options: {
 interface ReviewItem {
   author: string;
   reviewBody: string;
+  datePublished?: string;
 }
 
 /**
  * Review Schema - for testimonial sections
  */
-export function getReviewSchema(reviews: ReviewItem[]) {
+export function getReviewSchema(
+  reviews: ReviewItem[],
+  defaultDatePublished: string = DEFAULT_REVIEW_DATE
+) {
   return reviews.map((review) => ({
     "@context": "https://schema.org",
     "@type": "Review",
@@ -513,7 +565,7 @@ export function getReviewSchema(reviews: ReviewItem[]) {
       name: review.author,
     },
     reviewBody: review.reviewBody,
-    datePublished: "2025-01-15",
+    datePublished: review.datePublished ?? defaultDatePublished,
     itemReviewed: {
       "@type": "SoftwareApplication",
       name: SITE_NAME,
@@ -594,9 +646,12 @@ export function getJobPostingSchema(jobs: JobPostingOptions[]) {
 /**
  * Get careers page structured data
  */
-export function getCareersPageStructuredData(jobs: JobPostingOptions[]) {
+export function getCareersPageStructuredData(
+  jobs: JobPostingOptions[],
+  locale?: string
+) {
   return formatStructuredData([
-    getOrganizationSchema(),
+    getOrganizationSchema({ locale }),
     ...getJobPostingSchema(jobs),
   ]);
 }
@@ -604,14 +659,15 @@ export function getCareersPageStructuredData(jobs: JobPostingOptions[]) {
 /**
  * Get pricing page structured data
  */
-export function getPricingPageStructuredData() {
-  const pricingUrl = `${SITE_URL}/en/pricing`;
+export function getPricingPageStructuredData(locale: string = "en") {
+  const pricingUrl = `${SITE_URL}/${locale}/pricing/`;
   return formatStructuredData([
-    getOrganizationSchema(),
-    getSoftwareApplicationSchema(),
+    getOrganizationSchema({ locale }),
+    getSoftwareApplicationSchema(undefined, locale),
     getProductSchema({
       name: `${SITE_NAME} Translation Management`,
       description: "AI-powered translation management system for developers",
+      inLanguage: locale,
       offers: [
         { name: "Free", price: 0, priceCurrency: "USD", description: "For hobby projects", url: pricingUrl },
         { name: "Pro", price: 19, priceCurrency: "USD", description: "For growing teams", url: pricingUrl },

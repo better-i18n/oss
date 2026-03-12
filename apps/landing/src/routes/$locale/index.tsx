@@ -34,6 +34,7 @@ export const Route = createFileRoute("/$locale/")({
     return {
       messages: context.messages,
       locale: context.locale,
+      locales: context.locales,
       recentChangelogs: releases.slice(0, 4),
     };
   },
@@ -76,12 +77,12 @@ export const Route = createFileRoute("/$locale/")({
       .filter((item): item is { author: string; reviewBody: string } => item !== null);
 
     return {
-      meta: formatMetaTags(meta, { locale }),
+      meta: formatMetaTags(meta, { locale, locales: loaderData?.locales }),
       links: [
-        ...getAlternateLinks(pathname),
+        ...getAlternateLinks(pathname, loaderData?.locales),
         getCanonicalLink(locale, pathname),
       ],
-      scripts: getHomePageStructuredData(reviewItems.length > 0 ? reviewItems : undefined),
+      scripts: getHomePageStructuredData(reviewItems.length > 0 ? reviewItems : undefined, locale),
     };
   },
   component: LandingPage,

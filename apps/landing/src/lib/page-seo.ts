@@ -35,7 +35,7 @@ type PageType = "default" | "home" | "pricing" | "comparison" | "framework" | "e
 
 interface PageSEOOptions {
   /** i18n messages object */
-  messages: Record<string, string>;
+  messages: Record<string, unknown>;
   /** Current locale */
   locale: string;
   /** Page key for meta namespace (e.g., "features", "pricing") */
@@ -63,39 +63,138 @@ interface PageSEOOptions {
 }
 
 /**
+ * English breadcrumb labels used as fallback when i18n messages are unavailable.
+ */
+const ENGLISH_LABEL_MAP: Readonly<Record<string, string>> = {
+  features: "Features",
+  pricing: "Pricing",
+  integrations: "Integrations",
+  "what-is": "What is i18n",
+  "for-developers": "For Developers",
+  "for-translators": "For Translators",
+  "for-product-teams": "For Product Teams",
+  compare: "Compare",
+  i18n: "Frameworks",
+  "what-is-internationalization": "What is Internationalization",
+  "what-is-localization": "What is Localization",
+  "best-tms": "Best TMS",
+  "best-library": "Best i18n Library",
+  blog: "Blog",
+  about: "About",
+  careers: "Careers",
+  changelog: "Changelog",
+  status: "Status",
+  crowdin: "vs Crowdin",
+  lokalise: "vs Lokalise",
+  phrase: "vs Phrase",
+  transifex: "vs Transifex",
+  privacy: "Privacy Policy",
+  terms: "Terms of Service",
+  "cli-code-scanning": "CLI Code Scanning",
+  "localization-software": "Localization Software",
+  "translation-management-system": "Translation Management System",
+  "content-localization-services": "Content Localization Services",
+  "localization-platforms": "Localization Platforms",
+  "website-localization": "Website Localization",
+  "react-intl": "React Intl",
+  "international-seo": "International SEO",
+  "multilingual-seo": "Multilingual SEO",
+  "software-localization": "Software Localization",
+  "content-localization": "Content Localization",
+  "localization-tools": "Localization Tools",
+  "website-translation": "Website Translation",
+  "localization-management": "Localization Management",
+  "react-native-localization": "React Native Localization",
+  "localization-vs-internationalization": "Localization vs Internationalization",
+  "formatting-utilities": "Formatting Utilities",
+  "security-compliance": "Security & Compliance",
+  "cultural-adaptation": "Cultural Adaptation",
+  react: "React",
+  nextjs: "Next.js",
+  vue: "Vue",
+  nuxt: "Nuxt",
+  angular: "Angular",
+  svelte: "Svelte",
+  expo: "Expo",
+  "tanstack-start": "TanStack Start",
+  server: "Server / Hono",
+  // Persona pages
+  "for-marketers": "For Marketers",
+  "for-agencies": "For Agencies",
+  "for-enterprises": "For Enterprises",
+  "for-startups": "For Startups",
+  "for-engineering-leaders": "For Engineering Leaders",
+  "for-content-teams": "For Content Teams",
+  "for-ecommerce": "For E-Commerce",
+  "for-saas": "For SaaS",
+  "for-mobile-teams": "For Mobile Teams",
+  "for-designers": "For Designers",
+  "for-freelancers": "For Freelancers",
+  "for-open-source": "For Open Source",
+  "for-gaming": "For Gaming",
+  "for-education": "For Education",
+  "for-healthcare": "For Healthcare",
+};
+
+/**
+ * Get a localized breadcrumb label for a URL segment.
+ * Checks i18n messages first (breadcrumbs.{segment}), then falls back to English.
+ */
+function getBreadcrumbLabel(
+  segment: string,
+  messages: Record<string, unknown>
+): string {
+  const breadcrumbs = messages?.breadcrumbs as Record<string, string> | undefined;
+  if (breadcrumbs?.[segment]) return breadcrumbs[segment];
+
+  return ENGLISH_LABEL_MAP[segment] ?? segment.charAt(0).toUpperCase() + segment.slice(1);
+}
+
+/**
+ * Get the localized "Home" breadcrumb label.
+ */
+function getHomeBreadcrumbLabel(messages: Record<string, unknown>): string {
+  const breadcrumbs = messages?.breadcrumbs as Record<string, string> | undefined;
+  return breadcrumbs?.home ?? "Home";
+}
+
+/**
  * Get structured data based on page type
  */
 function getStructuredDataForPageType(
   pageType: PageType,
-  options?: PageSEOOptions["structuredDataOptions"]
+  options?: PageSEOOptions["structuredDataOptions"],
+  locale?: string
 ) {
   switch (pageType) {
     case "home":
-      return getHomePageStructuredData();
+      return getHomePageStructuredData(undefined, locale);
     case "pricing":
-      return getPricingPageStructuredData();
+      return getPricingPageStructuredData(locale);
     case "comparison":
       return options?.competitorName
-        ? getComparisonPageStructuredData(options.competitorName)
-        : getDefaultStructuredData();
+        ? getComparisonPageStructuredData(options.competitorName, locale)
+        : getDefaultStructuredData(locale);
     case "framework":
       return options?.framework && options?.frameworkDescription
         ? getFrameworkPageStructuredData(
             options.framework,
             options.frameworkDescription,
-            options.dependencies
+            options.dependencies,
+            locale
           )
-        : getDefaultStructuredData();
+        : getDefaultStructuredData(locale);
     case "educational":
       return options?.title && options?.description && options?.url
         ? getEducationalPageStructuredData({
             title: options.title,
             description: options.description,
             url: options.url,
+            locale,
           })
-        : getDefaultStructuredData();
+        : getDefaultStructuredData(locale);
     default:
-      return getDefaultStructuredData();
+      return getDefaultStructuredData(locale);
   }
 }
 
@@ -116,7 +215,7 @@ export function getPageHead(options: PageSEOOptions) {
     customStructuredData,
   } = options;
 
-  const meta = getLocalizedMeta(messages, pageKey, {
+  const meta = getLocalizedMeta(messages as Record<string, string>, pageKey, {
     locale,
     pathname,
   });
@@ -131,11 +230,11 @@ export function getPageHead(options: PageSEOOptions) {
   if (customStructuredData) {
     scripts = customStructuredData;
   } else if (pageType) {
-    scripts = getStructuredDataForPageType(pageType, enrichedStructuredDataOptions);
+    scripts = getStructuredDataForPageType(pageType, enrichedStructuredDataOptions, locale);
   } else if (isHomepage) {
-    scripts = getHomePageStructuredData();
+    scripts = getHomePageStructuredData(undefined, locale);
   } else {
-    scripts = getDefaultStructuredData();
+    scripts = getDefaultStructuredData(locale);
   }
 
   // Generate breadcrumb schema for inner pages (skip homepage)
@@ -143,84 +242,13 @@ export function getPageHead(options: PageSEOOptions) {
   if (cleanPath) {
     const segments = cleanPath.split("/").filter(Boolean);
     const breadcrumbItems = [
-      { name: "Home", url: `${SITE_URL}/${locale}/` },
+      { name: getHomeBreadcrumbLabel(messages), url: `${SITE_URL}/${locale}/` },
     ];
-
-    const labelMap: Record<string, string> = {
-      features: "Features",
-      pricing: "Pricing",
-      integrations: "Integrations",
-      "what-is": "What is i18n",
-      "for-developers": "For Developers",
-      "for-translators": "For Translators",
-      "for-product-teams": "For Product Teams",
-      compare: "Compare",
-      i18n: "Frameworks",
-      "what-is-internationalization": "What is Internationalization",
-      "what-is-localization": "What is Localization",
-      "best-tms": "Best TMS",
-      "best-library": "Best i18n Library",
-      blog: "Blog",
-      about: "About",
-      careers: "Careers",
-      changelog: "Changelog",
-      status: "Status",
-      crowdin: "vs Crowdin",
-      lokalise: "vs Lokalise",
-      phrase: "vs Phrase",
-      transifex: "vs Transifex",
-      privacy: "Privacy Policy",
-      terms: "Terms of Service",
-      "cli-code-scanning": "CLI Code Scanning",
-      "localization-software": "Localization Software",
-      "translation-management-system": "Translation Management System",
-      "content-localization-services": "Content Localization Services",
-      "localization-platforms": "Localization Platforms",
-      "website-localization": "Website Localization",
-      "react-intl": "React Intl",
-      "international-seo": "International SEO",
-      "multilingual-seo": "Multilingual SEO",
-      "software-localization": "Software Localization",
-      "content-localization": "Content Localization",
-      "localization-tools": "Localization Tools",
-      "website-translation": "Website Translation",
-      "localization-management": "Localization Management",
-      "react-native-localization": "React Native Localization",
-      "localization-vs-internationalization": "Localization vs Internationalization",
-      "formatting-utilities": "Formatting Utilities",
-      "security-compliance": "Security & Compliance",
-      "cultural-adaptation": "Cultural Adaptation",
-      react: "React",
-      nextjs: "Next.js",
-      vue: "Vue",
-      nuxt: "Nuxt",
-      angular: "Angular",
-      svelte: "Svelte",
-      expo: "Expo",
-      "tanstack-start": "TanStack Start",
-      server: "Server / Hono",
-      // Persona pages
-      "for-marketers": "For Marketers",
-      "for-agencies": "For Agencies",
-      "for-enterprises": "For Enterprises",
-      "for-startups": "For Startups",
-      "for-engineering-leaders": "For Engineering Leaders",
-      "for-content-teams": "For Content Teams",
-      "for-ecommerce": "For E-Commerce",
-      "for-saas": "For SaaS",
-      "for-mobile-teams": "For Mobile Teams",
-      "for-designers": "For Designers",
-      "for-freelancers": "For Freelancers",
-      "for-open-source": "For Open Source",
-      "for-gaming": "For Gaming",
-      "for-education": "For Education",
-      "for-healthcare": "For Healthcare",
-    };
 
     let currentPath = "";
     for (const segment of segments) {
       currentPath += `/${segment}`;
-      const label = labelMap[segment] ?? segment.charAt(0).toUpperCase() + segment.slice(1);
+      const label = getBreadcrumbLabel(segment, messages);
       breadcrumbItems.push({
         name: label,
         url: `${SITE_URL}/${locale}${currentPath}/`,

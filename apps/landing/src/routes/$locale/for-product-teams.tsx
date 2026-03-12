@@ -8,14 +8,15 @@ import ProductFeatures from "@/components/product-teams/ProductFeatures";
 import ProductCollaboration from "@/components/product-teams/ProductCollaboration";
 import ProductCTA from "@/components/product-teams/ProductCTA";
 import { RelatedPages } from "@/components/RelatedPages";
-import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { getPageHead } from "@/lib/page-seo";
 
 export const Route = createFileRoute("/$locale/for-product-teams")({
-  loader: createPageLoader(),
+  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
   head: ({ loaderData }) => {
     const headData = getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
+      locales: loaderData?.locales,
       pageKey: "forProductTeams",
       pathname: "/for-product-teams",
       pageType: "educational",

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { getPageHead } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
@@ -15,11 +15,12 @@ import {
 export const Route = createFileRoute(
   "/$locale/i18n/react-native-localization",
 )({
-  loader: createPageLoader(),
+  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
+      locales: loaderData?.locales,
       pageKey: "reactNativeLocalization",
       pathname: "/i18n/react-native-localization",
       pageType: "educational",

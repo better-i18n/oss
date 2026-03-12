@@ -10,7 +10,7 @@ if (!existsSync(sitemapPath)) {
 
 const xml = readFileSync(sitemapPath, "utf-8");
 const fixed = xml
-  .replace(
+  .replaceAll(
     '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">',
     '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
   )
