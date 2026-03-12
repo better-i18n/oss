@@ -31,6 +31,7 @@ const queryClient = new QueryClient({
 
 interface RouterContext {
   locale: string;
+  locales: string[]; // Populated by beforeLoad via fetchLocales()
   messages: Record<string, string>;
 }
 
@@ -76,6 +77,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
     return {
       locale,
+      locales,
       messages,
     };
   },
@@ -83,6 +85,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   loader: ({ context }) => {
     return {
       locale: context.locale,
+      locales: context.locales,
       messages: context.messages,
     };
   },

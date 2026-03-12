@@ -8,11 +8,11 @@ import DeveloperRoleIntegration from "@/components/developers/DeveloperRoleInteg
 import DeveloperResources from "@/components/developers/DeveloperResources";
 import DeveloperIDESupport from "@/components/developers/DeveloperIDESupport";
 import { RelatedPages } from "@/components/RelatedPages";
-import { getPageHead, createPageLoader, getEducationalPageStructuredData, formatStructuredData } from "@/lib/page-seo";
+import { getPageHead, getEducationalPageStructuredData, formatStructuredData } from "@/lib/page-seo";
 import { getHowToSchema } from "@/lib/structured-data";
 
 export const Route = createFileRoute("/$locale/for-developers")({
-  loader: createPageLoader(),
+  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
   head: ({ loaderData }) => {
     const messages = loaderData?.messages || {};
     const locale = loaderData?.locale || "en";
@@ -51,6 +51,7 @@ export const Route = createFileRoute("/$locale/for-developers")({
     const headData = getPageHead({
       messages,
       locale,
+      locales: loaderData?.locales,
       pageKey: "forDevelopers",
       pathname: "/for-developers",
       customStructuredData: [...educationalScripts, ...howToScript],

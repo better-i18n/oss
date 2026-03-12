@@ -80,6 +80,7 @@ export const MARKETING_PAGES = [
   { path: "i18n/ecommerce-global-seo", priority: 0.8, changefreq: "weekly", prerender: true },
   { path: "i18n/translation-solutions", priority: 0.8, changefreq: "weekly", prerender: true },
   { path: "i18n/international-seo", priority: 0.8, changefreq: "weekly", prerender: true },
+  { path: "i18n/doctor", priority: 0.9, changefreq: "weekly", prerender: true },
   { path: "i18n/cli-code-scanning", priority: 0.8, changefreq: "weekly", prerender: true },
   { path: "i18n/multilingual-website-seo", priority: 0.8, changefreq: "weekly", prerender: true },
   { path: "i18n/formatting-utilities", priority: 0.8, changefreq: "weekly", prerender: true },
@@ -113,9 +114,6 @@ export const MARKETING_PAGES = [
   { path: "what-is", priority: 0.85, changefreq: "monthly", prerender: true },
   { path: "what-is-internationalization", priority: 0.85, changefreq: "monthly", prerender: true },
   { path: "what-is-localization", priority: 0.85, changefreq: "monthly", prerender: true },
-
-  // Blog
-  { path: "blog", priority: 0.8, changefreq: "daily", prerender: false },
 
   // Company pages
   { path: "about", priority: 0.7, changefreq: "monthly", prerender: true },

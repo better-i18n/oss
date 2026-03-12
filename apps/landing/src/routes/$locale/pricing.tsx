@@ -11,6 +11,7 @@ export const Route = createFileRoute("/$locale/pricing")({
   loader: ({ context }) => ({
     messages: context.messages,
     locale: context.locale,
+    locales: context.locales,
   }),
   head: ({ loaderData }) => {
     const messages = loaderData?.messages || {};
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/$locale/pricing")({
     return getPageHead({
       messages,
       locale,
+      locales: loaderData?.locales,
       pageKey: "pricing",
       pathname: "/pricing",
       pageType: "pricing",

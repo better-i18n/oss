@@ -8,14 +8,15 @@ import {
   FrameworkCTA,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
-import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { getPageHead } from "@/lib/page-seo";
 
 export const Route = createFileRoute("/$locale/i18n/server")({
-  loader: createPageLoader(),
+  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
+      locales: loaderData?.locales,
       pageKey: "serverI18n",
       pathname: "/i18n/server",
       pageType: "framework",

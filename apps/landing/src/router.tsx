@@ -9,6 +9,7 @@ export const getRouter = () => {
     routeTree,
     context: {
       locale: undefined!, // Set by root route beforeLoad
+      locales: undefined!, // Set by root route beforeLoad
       messages: undefined!, // Set by root route beforeLoad
     },
     scrollRestoration: true,

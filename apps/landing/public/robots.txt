@@ -1,7 +1,8 @@
 # Sitemap
 Sitemap: https://better-i18n.com/sitemap.xml
 
-# Disallow admin/internal paths
+# Crawl rules
 User-agent: *
+Allow: /
 Disallow: /api/
 Disallow: /_/

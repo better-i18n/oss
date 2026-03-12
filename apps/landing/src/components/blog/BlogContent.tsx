@@ -2,6 +2,7 @@ import parse, {
   DOMNode,
   Element,
   HTMLReactParserOptions,
+  domToReact,
 } from "html-react-parser";
 import { CodeBlock, CodeBlockCode } from "@better-i18n/ui";
 
@@ -18,9 +19,51 @@ export function slugify(text: string): string {
     .trim();
 }
 
+// ─── Internal link rewriting helpers ─────────────────────────────────
+
+const SITE_DOMAIN = "better-i18n.com";
+const LOCALE_PREFIX_REGEX = /^\/[a-z]{2}(-[a-z]+)?\//;
+
+function isInternalLink(href: string): boolean {
+  if (href.startsWith("/")) return true;
+  try {
+    const url = new URL(href);
+    return url.hostname === SITE_DOMAIN || url.hostname === `www.${SITE_DOMAIN}`;
+  } catch {
+    return false;
+  }
+}
+
+function rewritePath(path: string, locale: string): string {
+  // If path already has a locale prefix, replace it
+  if (LOCALE_PREFIX_REGEX.test(path)) {
+    return path.replace(LOCALE_PREFIX_REGEX, `/${locale}/`);
+  }
+  // If no locale prefix, add one
+  return `/${locale}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+function rewriteInternalLink(href: string, locale: string): string {
+  // Handle absolute URLs
+  if (href.startsWith("http")) {
+    try {
+      const url = new URL(href);
+      const rewritten = rewritePath(url.pathname, locale);
+      return `${url.origin}${rewritten}${url.search}${url.hash}`;
+    } catch {
+      return href;
+    }
+  }
+  // Handle relative paths
+  return rewritePath(href, locale);
+}
+
+// ─── Component ───────────────────────────────────────────────────────
+
 interface BlogContentProps {
-  html: string;
-  className?: string;
+  readonly html: string;
+  readonly className?: string;
+  readonly locale?: string;
 }
 
 /**
@@ -28,9 +71,12 @@ interface BlogContentProps {
  *
  * Intercepts <pre><code class="language-xxx"> and renders them
  * using our CodeBlock component with syntax highlighting.
+ *
+ * When `locale` is provided, rewrites internal links to include the
+ * correct locale prefix so readers stay in their language context.
  */
-export default function BlogContent({ html, className }: BlogContentProps) {
-  const options: HTMLReactParserOptions = {
+export default function BlogContent({ html, className, locale }: BlogContentProps) {
+  const parserOptions: HTMLReactParserOptions = {
     replace: (domNode) => {
       // Only process element nodes
       if (!(domNode instanceof Element)) {
@@ -43,6 +89,19 @@ export default function BlogContent({ html, className }: BlogContentProps) {
         const id = slugify(text);
         domNode.attribs = { ...domNode.attribs, id };
         return; // Return undefined to keep the element but with the modified attribs
+      }
+
+      // Rewrite internal links to include current locale prefix
+      if (domNode.name === "a" && locale) {
+        const href = domNode.attribs?.href;
+        if (href && isInternalLink(href)) {
+          const rewrittenHref = rewriteInternalLink(href, locale);
+          return (
+            <a {...domNode.attribs} href={rewrittenHref}>
+              {domToReact(domNode.children as DOMNode[], parserOptions)}
+            </a>
+          );
+        }
       }
 
       // Add alt fallback, lazy loading, and async decoding to images
@@ -101,7 +160,7 @@ export default function BlogContent({ html, className }: BlogContentProps) {
     },
   };
 
-  return <div className={className}>{parse(html, options)}</div>;
+  return <div className={className}>{parse(html, parserOptions)}</div>;
 }
 
 /**

@@ -10,7 +10,9 @@ import {
   SITE_URL,
   getAlternateLinks,
   getCanonicalLink,
+  getCanonicalUrl,
   buildOgImageUrl,
+  toOgLocale,
 } from "@/lib/meta";
 import {
   getEducationalPageStructuredData,
@@ -33,7 +35,7 @@ const loadRelatedFeatures = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/$locale/features/$slug")({
-  loader: async ({ params }) => {
+  loader: async ({ params, context }) => {
     const page = await loadFeaturePage({
       data: { slug: params.slug, locale: params.locale },
     });
@@ -43,13 +45,14 @@ export const Route = createFileRoute("/$locale/features/$slug")({
     const relatedFeatures = await loadRelatedFeatures({
       data: { slug: params.slug, locale: params.locale },
     });
-    return { page, locale: params.locale, relatedFeatures };
+    return { page, locale: params.locale, locales: context.locales, relatedFeatures };
   },
   head: ({ loaderData }) => {
     const page = loaderData?.page;
     const locale = loaderData?.locale || "en";
+    const locales = loaderData?.locales;
     const pathname = `/features/${page?.slug || ""}`;
-    const canonicalUrl = `${SITE_URL}/${locale}${pathname}`;
+    const canonicalUrl = getCanonicalUrl(locale, pathname);
 
     const dynamicOgImage = buildOgImageUrl("og", {
       title: page?.title || "Feature",
@@ -83,18 +86,19 @@ export const Route = createFileRoute("/$locale/features/$slug")({
         { property: "og:type", content: "website" },
         { property: "og:url", content: canonicalUrl },
         { property: "og:site_name", content: "Better i18n" },
+        { property: "og:locale", content: toOgLocale(locale) },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:site", content: "@betteri18n" },
         { name: "twitter:title", content: page?.title || "" },
         { name: "twitter:description", content: excerpt },
         { name: "twitter:image", content: dynamicOgImage },
-        { name: "robots", content: "index, follow" },
+        { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
         ...(page?.targetKeywords
           ? [{ name: "keywords", content: page.targetKeywords }]
           : []),
       ],
       links: [
-        ...getAlternateLinks(pathname),
+        ...getAlternateLinks(pathname, locales),
         getCanonicalLink(locale, pathname),
       ],
       scripts: [...educationalScripts, ...breadcrumbScripts],

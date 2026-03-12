@@ -131,6 +131,7 @@ const PAGE_TITLES: Readonly<Record<string, string>> = {
   "i18n/ecommerce-global-seo": "E-Commerce Global SEO",
 
   // Developer tools
+  "i18n/doctor": "i18n Doctor — Translation Health Report",
   "i18n/cli-code-scanning": "CLI Code Scanning",
   "i18n/formatting-utilities": "Formatting Utilities",
   "i18n/security-compliance": "Security & Compliance",
@@ -273,6 +274,7 @@ const STATIC_SECTIONS: readonly LlmsTxtSection[] = [
   {
     heading: "Developer Tools",
     links: [
+      "i18n/doctor",
       "i18n/cli-code-scanning",
       "i18n/formatting-utilities",
       "i18n/security-compliance",

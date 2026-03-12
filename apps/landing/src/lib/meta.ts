@@ -54,6 +54,47 @@ function truncateTitle(title: string): string {
   return `${title.slice(0, MAX_TITLE_LENGTH - 1)}\u2026`;
 }
 
+/**
+ * Convert ISO 639-1 locale code to Open Graph locale format.
+ * OG spec requires language_TERRITORY (e.g., en_US, tr_TR, de_DE).
+ */
+function toOgLocale(locale: string): string {
+  const OG_LOCALE_MAP: Record<string, string> = {
+    en: "en_US",
+    de: "de_DE",
+    fr: "fr_FR",
+    es: "es_ES",
+    tr: "tr_TR",
+    ja: "ja_JP",
+    ko: "ko_KR",
+    "zh-hans": "zh_CN",
+    pt: "pt_BR",
+    "pt-br": "pt_BR",
+    ru: "ru_RU",
+    it: "it_IT",
+    nl: "nl_NL",
+    pl: "pl_PL",
+    ar: "ar_SA",
+    hi: "hi_IN",
+    th: "th_TH",
+    vi: "vi_VN",
+    id: "id_ID",
+    ms: "ms_MY",
+    uk: "uk_UA",
+    cs: "cs_CZ",
+    ro: "ro_RO",
+    fa: "fa_IR",
+    he: "he_IL",
+    sv: "sv_SE",
+    da: "da_DK",
+    fi: "fi_FI",
+    nb: "nb_NO",
+    el: "el_GR",
+    zh: "zh_CN",
+  };
+  return OG_LOCALE_MAP[locale] || `${locale}_${locale.toUpperCase()}`;
+}
+
 interface LocalizedMetaResult {
   title: string;
   description: string;
@@ -148,7 +189,7 @@ export function formatMetaTags(
     { property: "og:type", content: meta.ogType },
     { property: "og:url", content: meta.canonicalUrl },
     { property: "og:site_name", content: SITE_NAME },
-    { property: "og:locale", content: options.locale || "en" },
+    { property: "og:locale", content: toOgLocale(options.locale || "en") },
 
     // Twitter Card
     { name: "twitter:card", content: "summary_large_image" },
@@ -158,7 +199,7 @@ export function formatMetaTags(
     { name: "twitter:image", content: meta.ogImage },
 
     // Additional SEO
-    { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+    { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
     { name: "author", content: SITE_NAME },
   ];
 
@@ -180,7 +221,7 @@ export function formatMetaTags(
     const currentLocale = options.locale || "en";
     for (const loc of options.locales) {
       if (loc !== currentLocale) {
-        tags.push({ property: "og:locale:alternate", content: loc });
+        tags.push({ property: "og:locale:alternate", content: toOgLocale(loc) });
       }
     }
   }
@@ -240,4 +281,4 @@ export function buildOgImageUrl(
 }
 
 export { SITE_URL } from "@/seo/pages";
-export { SITE_NAME, DEFAULT_OG_IMAGE, OG_SERVICE_URL, TWITTER_HANDLE };
+export { SITE_NAME, DEFAULT_OG_IMAGE, OG_SERVICE_URL, TWITTER_HANDLE, toOgLocale };

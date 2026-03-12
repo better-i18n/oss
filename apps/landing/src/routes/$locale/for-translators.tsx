@@ -8,14 +8,15 @@ import TranslatorDeepLSection from "@/components/translators/TranslatorDeepLSect
 import TranslatorWorkflow from "@/components/translators/TranslatorWorkflow";
 import TranslatorCTA from "@/components/translators/TranslatorCTA";
 import { RelatedPages } from "@/components/RelatedPages";
-import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { getPageHead } from "@/lib/page-seo";
 
 export const Route = createFileRoute("/$locale/for-translators")({
-  loader: createPageLoader(),
+  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
   head: ({ loaderData }) => {
     const headData = getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
+      locales: loaderData?.locales,
       pageKey: "forTranslators",
       pathname: "/for-translators",
       pageType: "educational",

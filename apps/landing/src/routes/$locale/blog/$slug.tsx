@@ -25,7 +25,9 @@ import {
   SITE_URL,
   getAlternateLinks,
   getCanonicalLink,
+  getCanonicalUrl,
   buildOgImageUrl,
+  toOgLocale,
 } from "@/lib/meta";
 import {
   getArticleSchema,
@@ -49,7 +51,7 @@ const loadRelatedPosts = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/$locale/blog/$slug")({
-  loader: async ({ params }) => {
+  loader: async ({ params, context }) => {
     const post = await loadBlogPost({
       data: { slug: params.slug, locale: params.locale },
     });
@@ -63,13 +65,13 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         locale: params.locale,
       },
     });
-    return { post, locale: params.locale, relatedPosts };
+    return { post, locale: params.locale, locales: context.locales, relatedPosts };
   },
   head: ({ loaderData }) => {
     const post = loaderData?.post;
     const locale = loaderData?.locale || "en";
     const pathname = `/blog/${post?.slug || ""}`;
-    const canonicalUrl = `${SITE_URL}/${locale}${pathname}`;
+    const canonicalUrl = getCanonicalUrl(locale, pathname);
 
     // Generate dynamic OG image URL via external OG service
     const dynamicOgImage = buildOgImageUrl("og/blog", {
@@ -114,7 +116,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       { name: post?.title || "Post", url: canonicalUrl },
     ]);
 
-    const schemas: object[] = [getOrganizationSchema(), breadcrumbSchema];
+    const schemas: object[] = [getOrganizationSchema({ locale }), breadcrumbSchema];
     if (articleSchema) {
       schemas.push(articleSchema);
     }
@@ -131,7 +133,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         { property: "og:type", content: "article" },
         { property: "og:url", content: canonicalUrl },
         { property: "og:site_name", content: "Better i18n" },
-        { property: "og:locale", content: locale },
+        { property: "og:locale", content: toOgLocale(locale) },
         { property: "article:published_time", content: post?.publishedAt || "" },
         { property: "article:modified_time", content: post?.publishedAt || "" },
         { property: "article:author", content: post?.authorName || "" },
@@ -142,13 +144,13 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         { name: "twitter:title", content: post?.title || "" },
         { name: "twitter:description", content: excerpt },
         { name: "twitter:image", content: dynamicOgImage },
-        { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+        { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
         { name: "author", content: post?.authorName || "Better i18n Team" },
         ...(post?.category ? [{ name: "keywords", content: post.category }] : []),
         ...(post?.availableLanguages
           ? post.availableLanguages
               .filter((lang) => lang !== locale)
-              .map((lang) => ({ property: "og:locale:alternate", content: lang }))
+              .map((lang) => ({ property: "og:locale:alternate", content: toOgLocale(lang) }))
           : []),
       ],
       links: [

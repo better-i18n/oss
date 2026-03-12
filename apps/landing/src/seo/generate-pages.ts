@@ -51,6 +51,7 @@ export interface SeoData {
 export interface FeaturePageMeta {
   readonly slug: string;
   readonly availableLanguages?: readonly string[];
+  readonly publishedAt?: string;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────
@@ -123,7 +124,10 @@ export function buildAlternateRefs(
  */
 export function generateMarketingPages(
   locales: readonly string[],
+  buildDate?: string,
 ): readonly PageEntry[] {
+  const lastmod = buildDate || new Date().toISOString().split("T")[0];
+
   return MARKETING_PAGES.flatMap((page) => {
     const alternateRefs = buildAlternateRefs(locales, (locale) =>
       buildPageUrl(locale, page.path),
@@ -134,6 +138,7 @@ export function generateMarketingPages(
       sitemap: {
         priority: page.priority,
         changefreq: page.changefreq,
+        lastmod,
         alternateRefs,
       },
       prerender: page.prerender ? { enabled: true } : undefined,
@@ -231,6 +236,7 @@ export function generateFeatureDetailPages(
       sitemap: {
         priority: 0.7,
         changefreq: "weekly",
+        lastmod: feature.publishedAt ?? undefined,
         alternateRefs,
       },
       prerender: undefined,
@@ -283,6 +289,7 @@ function toFeaturePageMeta(item: ContentEntryListItem): FeaturePageMeta {
   return {
     slug: item.slug,
     availableLanguages,
+    publishedAt: item.publishedAt ?? undefined,
   };
 }
 
@@ -343,9 +350,9 @@ export async function fetchSeoData(options: {
  * Generates all page entries from pre-fetched SEO data.
  * Pure function — no I/O.
  */
-export function generatePages(data: SeoData): readonly PageEntry[] {
+export function generatePages(data: SeoData, buildDate?: string): readonly PageEntry[] {
   const { locales, blogPosts, featurePages } = data;
-  const marketingPages = generateMarketingPages(locales);
+  const marketingPages = generateMarketingPages(locales, buildDate);
   const blogPages = generateBlogPages(blogPosts, locales);
   const featureDetailPages = generateFeatureDetailPages(featurePages, locales);
   const allPages = [...marketingPages, ...blogPages, ...featureDetailPages];

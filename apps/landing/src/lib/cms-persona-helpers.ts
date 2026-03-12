@@ -6,7 +6,9 @@ import {
   SITE_URL,
   getAlternateLinks,
   getCanonicalLink,
+  getCanonicalUrl,
   buildOgImageUrl,
+  toOgLocale,
 } from "@/lib/meta";
 import {
   getEducationalPageStructuredData,
@@ -34,9 +36,11 @@ export const loadRelatedPersonas = createServerFn({ method: "GET" })
 export async function personaLoader(
   slug: string,
   locale: string,
+  locales?: string[],
 ): Promise<{
   page: MarketingPage;
   locale: string;
+  locales?: string[];
   relatedPersonas: MarketingPageListItem[];
 }> {
   const page = await loadPersonaPage({ data: { slug, locale } });
@@ -46,7 +50,7 @@ export async function personaLoader(
   const relatedPersonas = await loadRelatedPersonas({
     data: { slug, locale },
   });
-  return { page, locale, relatedPersonas };
+  return { page, locale, locales, relatedPersonas };
 }
 
 // ─── Head ────────────────────────────────────────────────────────────
@@ -76,12 +80,14 @@ export function getPersonaLabel(slug: string): string {
 export function personaHead(loaderData?: {
   page?: MarketingPage;
   locale?: string;
+  locales?: string[];
 } | null) {
   const page = loaderData?.page;
   const locale = loaderData?.locale || "en";
+  const locales = loaderData?.locales;
   const slug = page?.slug || "";
   const pathname = `/${slug}`;
-  const canonicalUrl = `${SITE_URL}/${locale}${pathname}`;
+  const canonicalUrl = getCanonicalUrl(locale, pathname);
   const label = getPersonaLabel(slug);
 
   const dynamicOgImage = buildOgImageUrl("og", {
@@ -115,20 +121,20 @@ export function personaHead(loaderData?: {
       { property: "og:type", content: "website" },
       { property: "og:url", content: canonicalUrl },
       { property: "og:site_name", content: "Better i18n" },
-      { property: "og:locale", content: locale },
+      { property: "og:locale", content: toOgLocale(locale) },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@betteri18n" },
       { name: "twitter:title", content: page?.title || "" },
       { name: "twitter:description", content: excerpt },
       { name: "twitter:image", content: dynamicOgImage },
-      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { name: "author", content: "Better i18n" },
       ...(page?.targetKeywords
         ? [{ name: "keywords", content: page.targetKeywords }]
         : []),
     ],
     links: [
-      ...getAlternateLinks(pathname),
+      ...getAlternateLinks(pathname, locales),
       getCanonicalLink(locale, pathname),
     ],
     scripts: [...educationalScripts, ...breadcrumbScripts],
