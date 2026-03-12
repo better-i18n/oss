@@ -274,9 +274,10 @@ export function getPageHead(options: PageSEOOptions) {
  * Use this in route definitions.
  */
 export function createPageLoader() {
-  return ({ context }: { context: { messages: Record<string, string>; locale: string } }) => ({
+  return ({ context }: { context: { messages: Record<string, string>; locale: string; locales: string[] } }) => ({
     messages: context.messages,
     locale: context.locale,
+    locales: context.locales,
   });
 }
 

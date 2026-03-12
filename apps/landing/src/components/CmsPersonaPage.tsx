@@ -75,6 +75,7 @@ export function CmsPersonaPage({
             <div className="min-w-0">
               <BlogContent
                 html={page.bodyHtml}
+                locale={locale}
                 className="prose prose-lg max-w-none
                   prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
                   prose-p:text-mist-700 prose-p:leading-relaxed

@@ -64,6 +64,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
       title: page?.title || "Feature",
       description: excerpt,
       url: canonicalUrl,
+      locale,
     });
 
     const breadcrumbScripts = formatStructuredData(
@@ -95,6 +96,11 @@ export const Route = createFileRoute("/$locale/features/$slug")({
         { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
         ...(page?.targetKeywords
           ? [{ name: "keywords", content: page.targetKeywords }]
+          : []),
+        ...(locales
+          ? locales
+              .filter((loc) => loc !== locale)
+              .map((loc) => ({ property: "og:locale:alternate", content: toOgLocale(loc) }))
           : []),
       ],
       links: [
@@ -147,6 +153,7 @@ function FeaturePageComponent() {
             <div className="min-w-0">
               <BlogContent
                 html={page.bodyHtml}
+                locale={locale}
                 className="prose prose-lg max-w-none
                   prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
                   prose-p:text-mist-700 prose-p:leading-relaxed
