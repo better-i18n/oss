@@ -10,7 +10,7 @@
 
 import { createI18nCore } from "@better-i18n/core";
 import { createClient } from "@better-i18n/sdk";
-import type { ContentEntryListItem } from "@better-i18n/sdk";
+import type { ContentEntryListItem, ListEntriesOptions } from "@better-i18n/sdk";
 
 import { SITE_URL, MARKETING_PAGES } from "./pages";
 import type { ChangeFreq } from "./pages";
@@ -62,6 +62,15 @@ export interface FeaturePageMeta {
   readonly availableLanguages?: readonly string[];
   readonly publishedAt?: string;
 }
+
+// ─── Constants ───────────────────────────────────────────────────────
+
+/**
+ * Posts per page for blog listing pagination.
+ * Must match POSTS_PER_PAGE in src/lib/content.ts.
+ * Duplicated here because this module runs at build-time outside Vite's module graph.
+ */
+const POSTS_PER_PAGE = 24;
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
@@ -169,7 +178,7 @@ export function generateBlogPages(
   posts: readonly BlogPostMeta[],
   allLocales: readonly string[],
 ): readonly PageEntry[] {
-  const listingPages = generateBlogListingPages(allLocales);
+  const listingPages = generateBlogListingPages(posts, allLocales);
   const detailPages = posts.flatMap((post) =>
     generateBlogDetailPages(post, allLocales),
   );
@@ -177,22 +186,78 @@ export function generateBlogPages(
   return [...listingPages, ...detailPages];
 }
 
+/**
+ * Generates blog listing pages with pagination support.
+ *
+ * For each locale:
+ * - Page 1: /{locale}/blog/ (priority 0.8)
+ * - Page 2+: /{locale}/blog/page/{N}/ (priority 0.6)
+ *
+ * hreflang rule: Page N only includes locales that actually have N pages.
+ * Example: /en/blog/page/7/ won't have /tr/blog/page/7/ in hreflang
+ * if Turkish only has 2 pages worth of content.
+ */
 function generateBlogListingPages(
-  locales: readonly string[],
+  posts: readonly BlogPostMeta[],
+  allLocales: readonly string[],
 ): readonly PageEntry[] {
-  const alternateRefs = buildAlternateRefs(locales, (locale) =>
-    buildPageUrl(locale, "blog"),
-  );
+  const pages: PageEntry[] = [];
 
-  return locales.map((locale): PageEntry => ({
-    path: buildPagePath(locale, "blog"),
-    sitemap: {
-      priority: 0.8,
-      changefreq: "daily",
-      alternateRefs,
-    },
-    prerender: { enabled: true },
-  }));
+  // Count posts per locale
+  const localePostCounts = new Map<string, number>();
+  for (const locale of allLocales) {
+    const count = posts.filter(
+      (p) =>
+        p.availableLanguages?.includes(locale) ||
+        (!p.availableLanguages?.length && locale === "en"),
+    ).length;
+    localePostCounts.set(locale, count);
+  }
+
+  for (const locale of allLocales) {
+    const count = localePostCounts.get(locale) ?? 0;
+    if (count === 0) continue;
+
+    const totalPages = Math.ceil(count / POSTS_PER_PAGE);
+
+    // Page 1: /{locale}/blog/
+    const validLocalesForPage1 = allLocales.filter(
+      (l) => (localePostCounts.get(l) ?? 0) > 0,
+    );
+
+    pages.push({
+      path: buildPagePath(locale, "blog"),
+      sitemap: {
+        priority: 0.8,
+        changefreq: "daily",
+        alternateRefs: buildAlternateRefs(validLocalesForPage1, (l) =>
+          buildPageUrl(l, "blog"),
+        ),
+      },
+      // SSR — no prerender
+    });
+
+    // Page 2+: /{locale}/blog/page/{N}/
+    for (let pageNum = 2; pageNum <= totalPages; pageNum++) {
+      const validLocales = allLocales.filter(
+        (l) =>
+          Math.ceil((localePostCounts.get(l) ?? 0) / POSTS_PER_PAGE) >= pageNum,
+      );
+
+      pages.push({
+        path: buildPagePath(locale, `blog/page/${pageNum}`),
+        sitemap: {
+          priority: 0.6,
+          changefreq: "daily",
+          alternateRefs: buildAlternateRefs(validLocales, (l) =>
+            buildPageUrl(l, `blog/page/${pageNum}`),
+          ),
+        },
+      });
+    }
+  }
+
+  return pages;
 }
 
 function generateBlogDetailPages(
@@ -268,13 +333,13 @@ function toBlogPostMeta(item: ContentEntryListItem): BlogPostMeta {
   const raw = item as unknown as Record<string, unknown>;
   const availableLanguages = Array.isArray(raw.availableLanguages)
     ? (raw.availableLanguages as unknown[]).flatMap((v): string[] => {
-        if (typeof v === "string") return [v];
-        if (v !== null && typeof v === "object") {
-          const code = (v as Record<string, unknown>).code;
-          if (typeof code === "string") return [code];
-        }
-        return [];
-      })
+      if (typeof v === "string") return [v];
+      if (v !== null && typeof v === "object") {
+        const code = (v as Record<string, unknown>).code;
+        if (typeof code === "string") return [code];
+      }
+      return [];
+    })
     : undefined;
 
   const excerpt = typeof raw.excerpt === "string" ? raw.excerpt : undefined;
@@ -292,13 +357,13 @@ function toFeaturePageMeta(item: ContentEntryListItem): FeaturePageMeta {
   const raw = item as unknown as Record<string, unknown>;
   const availableLanguages = Array.isArray(raw.availableLanguages)
     ? (raw.availableLanguages as unknown[]).flatMap((v): string[] => {
-        if (typeof v === "string") return [v];
-        if (v !== null && typeof v === "object") {
-          const code = (v as Record<string, unknown>).code;
-          if (typeof code === "string") return [code];
-        }
-        return [];
-      })
+      if (typeof v === "string") return [v];
+      if (v !== null && typeof v === "object") {
+        const code = (v as Record<string, unknown>).code;
+        if (typeof code === "string") return [code];
+      }
+      return [];
+    })
     : undefined;
 
   return {
@@ -306,6 +371,35 @@ function toFeaturePageMeta(item: ContentEntryListItem): FeaturePageMeta {
     availableLanguages,
     publishedAt: item.publishedAt ?? undefined,
   };
+}
+
+// ─── Paginated Fetch ─────────────────────────────────────────────────
+
+/**
+ * Fetches ALL entries from a content model by paginating through API results.
+ * The Content API has a max limit of 100 items per request.
+ * For 202 blog posts, this makes 3 API calls (100 + 100 + 2).
+ */
+async function fetchAllEntries(
+  client: ReturnType<typeof createClient>,
+  model: string,
+  options: Pick<ListEntriesOptions, "status" | "sort" | "order">,
+): Promise<readonly ContentEntryListItem[]> {
+  const allItems: ContentEntryListItem[] = [];
+  let page = 1;
+
+  while (true) {
+    const result = await client.getEntries(model, {
+      ...options,
+      limit: 100,
+      page,
+    });
+    allItems.push(...result.items);
+    if (!result.hasMore) break;
+    page++;
+  }
+
+  return allItems;
 }
 
 // ─── Main exports ────────────────────────────────────────────────────
@@ -325,11 +419,10 @@ export async function fetchSeoData(options: {
 
   const [localesResult, blogResult, featureResult] = await Promise.allSettled([
     i18n.getLocales(),
-    client.getEntries("blog-posts", {
+    fetchAllEntries(client, "blog-posts", {
       status: "published",
       sort: "publishedAt",
       order: "desc",
-      limit: 100,
     }),
     client.getEntries("marketing-pages", { status: "published", limit: 100 }),
   ]);
@@ -341,17 +434,17 @@ export async function fetchSeoData(options: {
 
   const blogPosts =
     blogResult.status === "fulfilled"
-      ? blogResult.value.items.map(toBlogPostMeta)
+      ? blogResult.value.map(toBlogPostMeta)
       : [];
 
   const featurePages =
     featureResult.status === "fulfilled"
       ? featureResult.value.items
-          .filter(
-            (item) =>
-              (item as unknown as Record<string, unknown>).page_type === "feature",
-          )
-          .map(toFeaturePageMeta)
+        .filter(
+          (item) =>
+            (item as unknown as Record<string, unknown>).page_type === "feature",
+        )
+        .map(toFeaturePageMeta)
       : [];
 
   // Fetch i18n messages for all locales (used by llms-txt and structured-data).
