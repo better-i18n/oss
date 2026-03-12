@@ -153,6 +153,7 @@ const ENGLISH_PAGE_TITLES: Readonly<Record<string, string>> = {
   "compare/lokalise": "Better i18n vs Lokalise", "compare/phrase": "Better i18n vs Phrase",
   "compare/transifex": "Better i18n vs Transifex", "compare/smartling": "Better i18n vs Smartling",
   "compare/xtm": "Better i18n vs XTM",
+  "compare/crowdin-vs-lokalise": "Crowdin vs Lokalise vs Better i18n",
   "i18n/complete-guide": "Complete Guide to i18n & Localization",
   "what-is": "What is i18n? Internationalization & Localization Guide",
   "what-is-internationalization": "What is Internationalization?",
@@ -208,6 +209,10 @@ const ENGLISH_PAGE_DESCRIPTIONS: Readonly<Record<string, string>> = {
   "compare/crowdin": "Feature, pricing, and developer experience comparison between Better i18n and Crowdin.",
   "compare/lokalise": "Feature, pricing, and developer experience comparison between Better i18n and Lokalise.",
   "compare/phrase": "Feature, pricing, and developer experience comparison between Better i18n and Phrase.",
+  "compare/transifex": "Feature, pricing, and developer experience comparison between Better i18n and Transifex.",
+  "compare/smartling": "Feature, pricing, and developer experience comparison between Better i18n and Smartling. Covers AI translation, workflow automation, and enterprise capabilities.",
+  "compare/xtm": "Feature, pricing, and developer experience comparison between Better i18n and XTM. Covers translation memory, connector ecosystem, and localization workflows.",
+  "compare/crowdin-vs-lokalise": "Three-way comparison of Crowdin vs Lokalise vs Better i18n. Pricing for 10-person teams, feature matrix, CLI/API/SDK coverage, and migration guide.",
   blog: "Latest articles on internationalization, localization, multilingual SEO, and translation management.",
   about: "Company story, mission, and team behind Better i18n.",
   "i18n/react": "Step-by-step React i18n setup with @better-i18n/use-intl, hooks, and context API.",
@@ -290,6 +295,7 @@ const STATIC_SECTIONS: readonly LlmsTxtSectionDef[] = [
     paths: [
       "compare", "compare/crowdin", "compare/lokalise", "compare/phrase",
       "compare/transifex", "compare/smartling", "compare/xtm",
+      "compare/crowdin-vs-lokalise",
     ],
   },
   {
