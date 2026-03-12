@@ -119,6 +119,7 @@ export function personaHead(loaderData?: {
       { property: "og:image", content: dynamicOgImage },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: page?.title || label },
       { property: "og:type", content: "website" },
       { property: "og:url", content: canonicalUrl },
       { property: "og:site_name", content: "Better i18n" },
@@ -128,6 +129,7 @@ export function personaHead(loaderData?: {
       { name: "twitter:title", content: page?.title || "" },
       { name: "twitter:description", content: excerpt },
       { name: "twitter:image", content: dynamicOgImage },
+      { name: "twitter:image:alt", content: page?.title || label },
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { name: "author", content: "Better i18n" },
       ...(page?.targetKeywords
