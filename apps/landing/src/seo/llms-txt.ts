@@ -17,6 +17,7 @@ import { SITE_URL } from "./pages";
 interface LlmsTxtLink {
   readonly title: string;
   readonly path: string;
+  readonly description?: string;
 }
 
 interface LlmsTxtSection {
@@ -30,6 +31,31 @@ interface LlmsTxtSection {
  * Human-readable titles for marketing page paths.
  * Serves as the single source of truth for page names in llms.txt.
  */
+/**
+ * Page descriptions used in llms-full.txt for richer AI context.
+ */
+const PAGE_DESCRIPTIONS: Readonly<Record<string, string>> = {
+  "": "AI-powered localization platform overview — SDKs for React, Next.js, Vue, Angular, Svelte, Expo, Flutter. Free tier available.",
+  features: "Translation editor, GitHub sync, CLI scanning, CDN delivery, AI translations, plural rules, ICU format support.",
+  pricing: "Free, Pro ($19/mo), and Enterprise plans. Compare features, limits, and team capabilities.",
+  integrations: "Official SDK packages for 10+ frameworks with type-safe APIs and over-the-air updates.",
+  "for-developers": "Type-safe SDKs, Git integration, global CDN delivery, and automated translation workflows for developers.",
+  "for-translators": "Context-rich translation editor with AI suggestions, glossary, and translation memory.",
+  "for-product-teams": "Localization management dashboard with progress tracking, review workflows, and analytics.",
+  "i18n/complete-guide": "Comprehensive guide covering i18n fundamentals, implementation patterns, and best practices.",
+  "what-is": "Learn the difference between internationalization (i18n) and localization (l10n) with comparison table.",
+  compare: "Side-by-side comparisons of Better i18n vs Crowdin, Lokalise, Phrase, Transifex, Smartling, and XTM.",
+  "compare/crowdin": "Feature, pricing, and developer experience comparison between Better i18n and Crowdin.",
+  "compare/lokalise": "Feature, pricing, and developer experience comparison between Better i18n and Lokalise.",
+  "compare/phrase": "Feature, pricing, and developer experience comparison between Better i18n and Phrase.",
+  blog: "Latest articles on internationalization, localization, multilingual SEO, and translation management.",
+  about: "Company story, mission, and team behind Better i18n.",
+  "i18n/react": "Step-by-step React i18n setup with @better-i18n/use-intl, hooks, and context API.",
+  "i18n/nextjs": "Next.js App Router i18n with Server Components, middleware locale detection, and SSR.",
+  "i18n/vue": "Vue 3 Composition API i18n integration with reactive translations and lazy loading.",
+  "i18n/doctor": "Automated translation health checks — missing keys, unused translations, inconsistencies.",
+};
+
 const PAGE_TITLES: Readonly<Record<string, string>> = {
   // Core pages
   "": "Home",
@@ -319,6 +345,19 @@ function renderSection(section: LlmsTxtSection): string {
   return lines.join("\n");
 }
 
+function renderDetailedSection(section: LlmsTxtSection): string {
+  const lines = [`## ${section.heading}`, ""];
+  for (const link of section.links) {
+    const desc = link.description || PAGE_DESCRIPTIONS[link.path];
+    if (desc) {
+      lines.push(`- [${link.title}](${buildUrl(link.path)}): ${desc}`);
+    } else {
+      lines.push(`- [${link.title}](${buildUrl(link.path)})`);
+    }
+  }
+  return lines.join("\n");
+}
+
 // ─── Header ─────────────────────────────────────────────────────────
 
 const header = [
@@ -329,6 +368,28 @@ const header = [
   "## About",
   "",
   "Better i18n is a translation management system (TMS) that combines AI-powered translations with developer-first tooling. It supports React, Next.js, Vue, Nuxt, Angular, Svelte, and Expo (React Native) through official SDK packages. The platform provides context-rich translation environments for translators, automated sync for developers, and hassle-free localization management for product teams.",
+].join("\n");
+
+const detailedHeader = [
+  "# Better i18n — Full Reference",
+  "",
+  "> AI-powered localization platform for developers and product teams.",
+  "> Ship multilingual apps faster with automated translations, context-aware AI, and seamless framework integrations.",
+  "",
+  "## About",
+  "",
+  "Better i18n is a translation management system (TMS) that combines AI-powered translations with developer-first tooling.",
+  "",
+  "**Key facts:**",
+  "- **Type:** Translation Management System (TMS) & Localization Platform",
+  "- **Founded:** 2024",
+  "- **Supported frameworks:** React, Next.js, Vue, Nuxt, Angular, Svelte, Expo, Flutter, Django, Ruby on Rails",
+  "- **Languages supported:** 23+ locales including English, German, French, Spanish, Japanese, Korean, Chinese, Arabic, Turkish, and more",
+  "- **Pricing:** Free tier, Pro ($19/month), Enterprise (custom)",
+  "- **Key features:** AI-powered translations, GitHub sync, CLI code scanning, global CDN delivery, ICU message format, plural rules, over-the-air updates",
+  "- **Website:** https://better-i18n.com",
+  "- **Documentation:** https://docs.better-i18n.com",
+  "- **GitHub:** https://github.com/better-i18n",
 ].join("\n");
 
 // ─── Main export ────────────────────────────────────────────────────
@@ -356,6 +417,37 @@ export function generateLlmsTxtContent(
   const externalSection = renderSection(EXTERNAL_SECTION);
   const parts = [
     header,
+    ...staticSections,
+    ...(blogSection ? [blogSection] : []),
+    externalSection,
+  ];
+  return parts.join("\n\n") + "\n";
+}
+
+/**
+ * Generates llms-full.txt with page descriptions and blog excerpts.
+ * Richer version of llms.txt for AI models that want more context.
+ */
+export function generateLlmsFullTxtContent(
+  blogPosts: readonly BlogPostMeta[],
+): string {
+  const staticSections = STATIC_SECTIONS.map(renderDetailedSection);
+
+  const blogSection =
+    blogPosts.length > 0
+      ? renderDetailedSection({
+          heading: "Blog Posts",
+          links: blogPosts.map((post) => ({
+            title: post.title,
+            path: `blog/${post.slug}`,
+            description: post.excerpt || undefined,
+          })),
+        })
+      : "";
+
+  const externalSection = renderDetailedSection(EXTERNAL_SECTION);
+  const parts = [
+    detailedHeader,
     ...staticSections,
     ...(blogSection ? [blogSection] : []),
     externalSection,

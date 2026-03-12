@@ -15,13 +15,15 @@ export default defineConfig(async ({ mode }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let pages: readonly any[] = [];
   let llmsTxtContent: string | null = null;
+  let llmsFullTxtContent: string | null = null;
   if (mode === "production" && apiKey && project) {
     try {
       const { fetchSeoData, generatePages } = await import("./src/seo/generate-pages");
-      const { generateLlmsTxtContent } = await import("./src/seo/llms-txt");
+      const { generateLlmsTxtContent, generateLlmsFullTxtContent } = await import("./src/seo/llms-txt");
       const data = await fetchSeoData({ project, apiKey });
       pages = generatePages(data);
       llmsTxtContent = generateLlmsTxtContent(data.blogPosts);
+      llmsFullTxtContent = generateLlmsFullTxtContent(data.blogPosts);
     } catch (error) {
       console.error("[SEO] Build-time generation failed:", error);
     }
@@ -93,6 +95,13 @@ export default defineConfig(async ({ mode }) => {
                   fileName: "llms.txt",
                   source: llmsTxtContent!,
                 });
+                if (llmsFullTxtContent) {
+                  this.emitFile({
+                    type: "asset",
+                    fileName: "llms-full.txt",
+                    source: llmsFullTxtContent!,
+                  });
+                }
               },
             } satisfies Plugin,
           ]

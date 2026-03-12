@@ -39,6 +39,7 @@ export interface BlogPostMeta {
   readonly slug: string;
   readonly title: string;
   readonly publishedAt: string | null;
+  readonly excerpt?: string;
   readonly availableLanguages?: readonly string[];
 }
 
@@ -268,10 +269,13 @@ function toBlogPostMeta(item: ContentEntryListItem): BlogPostMeta {
       })
     : undefined;
 
+  const excerpt = typeof raw.excerpt === "string" ? raw.excerpt : undefined;
+
   return {
     slug: item.slug,
     title: item.title,
     publishedAt: item.publishedAt,
+    excerpt,
     availableLanguages,
   };
 }
