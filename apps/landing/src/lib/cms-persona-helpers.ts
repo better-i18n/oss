@@ -53,7 +53,11 @@ export async function personaLoader(
 
 // ─── Head ────────────────────────────────────────────────────────────
 
-const PERSONA_LABELS: Record<string, string> = {
+/**
+ * English fallback labels for persona pages.
+ * Source of truth is Better i18n platform (page-titles namespace).
+ */
+const ENGLISH_PERSONA_LABELS: Readonly<Record<string, string>> = {
   "for-marketers": "For Marketers",
   "for-agencies": "For Agencies",
   "for-enterprises": "For Enterprises",
@@ -72,7 +76,7 @@ const PERSONA_LABELS: Record<string, string> = {
 };
 
 export function getPersonaLabel(slug: string): string {
-  return PERSONA_LABELS[slug] ?? slug.replace("for-", "For ").replace(/-/g, " ");
+  return ENGLISH_PERSONA_LABELS[slug] ?? slug.replace("for-", "For ").replace(/-/g, " ");
 }
 
 export function personaHead(loaderData?: {

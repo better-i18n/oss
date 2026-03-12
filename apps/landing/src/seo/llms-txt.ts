@@ -331,13 +331,24 @@ const STATIC_SECTIONS: readonly LlmsTxtSectionDef[] = [
   },
 ];
 
-const EXTERNAL_LINKS: readonly LlmsTxtLink[] = [
-  { title: "Full Documentation", path: "https://docs.better-i18n.com/" },
-  { title: "API Reference", path: "https://docs.better-i18n.com/api" },
-  { title: "GitHub", path: "https://github.com/better-i18n" },
-  { title: "Sign Up / Log In", path: "https://dash.better-i18n.com" },
-  { title: "System Status", path: "https://status.better-i18n.com" },
+/**
+ * External link definitions — titles are resolved from CDN messages (llms namespace)
+ * at render time. The `titleKey` maps to llms.external.* keys.
+ */
+const EXTERNAL_LINK_DEFS: readonly { readonly titleKey: string; readonly fallback: string; readonly path: string }[] = [
+  { titleKey: "llms.external.fullDocumentation", fallback: "Full Documentation", path: "https://docs.better-i18n.com/" },
+  { titleKey: "llms.external.apiReference", fallback: "API Reference", path: "https://docs.better-i18n.com/api" },
+  { titleKey: "llms.external.github", fallback: "GitHub", path: "https://github.com/better-i18n" },
+  { titleKey: "llms.external.signUp", fallback: "Sign Up / Log In", path: "https://dash.better-i18n.com" },
+  { titleKey: "llms.external.systemStatus", fallback: "System Status", path: "https://status.better-i18n.com" },
 ];
+
+function resolveExternalLinks(messages?: Readonly<Record<string, string>>): readonly LlmsTxtLink[] {
+  return EXTERNAL_LINK_DEFS.map((def) => ({
+    title: messages?.[def.titleKey] ?? def.fallback,
+    path: def.path,
+  }));
+}
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
@@ -461,7 +472,7 @@ export function generateLlmsTxtContent(
       ? renderLinkSection("blogPosts", blogLinks, locale, strings)
       : "";
 
-  const externalSection = renderLinkSection("externalLinks", EXTERNAL_LINKS, locale, strings);
+  const externalSection = renderLinkSection("externalLinks", resolveExternalLinks(messages), locale, strings);
   const parts = [
     buildHeader(strings),
     ...staticSections,
@@ -494,7 +505,7 @@ export function generateLlmsFullTxtContent(
       ? renderLinkSection("blogPosts", blogLinks, locale, strings)
       : "";
 
-  const externalSection = renderLinkSection("externalLinks", EXTERNAL_LINKS, locale, strings);
+  const externalSection = renderLinkSection("externalLinks", resolveExternalLinks(messages), locale, strings);
   const parts = [
     buildDetailedHeader(strings),
     ...staticSections,
