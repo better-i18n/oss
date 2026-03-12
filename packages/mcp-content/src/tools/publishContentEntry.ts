@@ -2,7 +2,7 @@
  * publishContentEntry MCP Tool
  *
  * Publishes a content entry by setting its status to "published"
- * and approving the source translation. Returns the full entry detail.
+ * and marking the source translation as "published". Returns the full entry detail.
  */
 
 import { z } from "zod";
@@ -22,7 +22,7 @@ export const publishContentEntry: Tool = {
   definition: {
     name: "publishContentEntry",
     description:
-      "Publish a content entry. Sets status to 'published' and approves the source translation. The entry becomes visible to SDK consumers.",
+      "Publish a content entry. Sets entry status to 'published' and marks the source translation as 'published'. The entry becomes visible to SDK consumers.",
     inputSchema: {
       type: "object",
       properties: {

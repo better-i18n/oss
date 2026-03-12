@@ -47,6 +47,11 @@ Check getProject response's 'sl' field to know which language to write.
 IMPORTANT: Source language may not be English. If sl='tr', write Turkish for title/customFields.
 
 Use translations to add target language translations in the same request.
+Translation language codes are normalized to lowercase automatically (e.g., "EN" → "en").
+
+STATUS:
+- status controls the entry's publish state (default: "draft")
+- All translations saved via this tool are set to "published" status by default (save = publish for content workflow)
 
 EXAMPLE (project sl='tr'):
 {
