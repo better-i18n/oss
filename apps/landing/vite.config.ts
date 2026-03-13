@@ -82,6 +82,9 @@ export default defineConfig(async ({ mode }) => {
               enabled: true,
               crawlLinks: false,
               concurrency: 20,
+              filter: (page: { path: string }) =>
+                pages.some((p) => p.path === page.path && p.prerender?.enabled === true),
+              failOnError: false,
             }
           : undefined,
       }),
