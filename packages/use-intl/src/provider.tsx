@@ -177,9 +177,24 @@ export function BetterI18nProvider({
     [locale, languages, isLoadingLanguages, isLoadingMessages, project]
   );
 
-  // Don't render until we have messages
   if (!messages) {
-    return null;
+    // Render children with empty messages instead of blanking the screen.
+    // This converts a full DOM structural mismatch (null vs full tree)
+    // into a text content mismatch — React recovers silently and re-renders
+    // once the loader delivers real messages.
+    return (
+      <BetterI18nContext.Provider value={contextValue}>
+        <IntlProvider
+          locale={locale}
+          messages={{}}
+          timeZone={timeZone}
+          onError={() => {}}
+          getMessageFallback={customGetMessageFallback}
+        >
+          {children}
+        </IntlProvider>
+      </BetterI18nContext.Provider>
+    );
   }
 
   return (
