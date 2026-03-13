@@ -32,7 +32,6 @@ const queryClient = new QueryClient({
 interface RouterContext {
   locale: string;
   locales: string[]; // Populated by beforeLoad via fetchLocales()
-  messages: Record<string, string>;
 }
 
 /**
@@ -70,24 +69,15 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
     const locale = getLocaleFromPath(location.pathname, localeConfig);
 
-    const messages = await getMessages({
-      project: i18nConfig.project,
-      locale,
-    });
-
-    return {
-      locale,
-      locales,
-      messages,
-    };
+    return { locale, locales };
   },
 
-  loader: ({ context }) => {
-    return {
+  loader: async ({ context }) => {
+    const messages = await getMessages({
+      project: i18nConfig.project,
       locale: context.locale,
-      locales: context.locales,
-      messages: context.messages,
-    };
+    });
+    return { locale: context.locale, locales: context.locales, messages };
   },
 
   head: () => {
@@ -198,11 +188,15 @@ function NotFoundPage() {
 }
 
 function RootComponent() {
-  const { messages, locale } = Route.useRouteContext();
+  const { locale, locales } = Route.useRouteContext();
+  const { messages } = Route.useLoaderData();
 
   useEffect(() => {
     if (import.meta.env.DEV) {
       import("react-grab");
+      import("react-scan").then(({ scan }) => {
+        scan({ enabled: true });
+      });
     }
   }, []);
 
@@ -210,6 +204,15 @@ function RootComponent() {
     <html lang={locale} translate="no" className="notranslate">
       <head>
         <HeadContent />
+        {/* SSR locales → prevents client fetchLocales() from making a CDN round-trip.
+            type="application/json" means the browser never executes this — no XSS risk. */}
+        <script
+          type="application/json"
+          id="__i18n_locales__"
+          suppressHydrationWarning
+        >
+          {JSON.stringify(locales)}
+        </script>
       </head>
       <body className="no-dark text-mist-950">
         {/* Google Tag Manager (noscript) */}
