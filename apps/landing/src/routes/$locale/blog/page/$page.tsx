@@ -26,6 +26,8 @@ import {
   getWebSiteSchema,
   getCollectionPageSchema,
 } from "@/lib/structured-data";
+import { getMessages } from "@better-i18n/use-intl/server";
+import { i18nConfig } from "@/i18n.config";
 
 /** Pages at or beyond this threshold get noindex,follow to preserve crawl budget. */
 const NOINDEX_THRESHOLD = 8;
@@ -71,9 +73,10 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
       throw notFound();
     }
 
+    const messages = await getMessages({ project: i18nConfig.project, locale: context.locale });
     return {
       ...result,
-      messages: context.messages,
+      messages,
       locale: context.locale,
       locales: context.locales,
     };

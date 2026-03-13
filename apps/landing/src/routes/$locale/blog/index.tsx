@@ -26,6 +26,8 @@ import {
   getWebSiteSchema,
   getCollectionPageSchema,
 } from "@/lib/structured-data";
+import { getMessages } from "@better-i18n/use-intl/server";
+import { i18nConfig } from "@/i18n.config";
 
 const loadBlogPosts = createServerFn({ method: "GET" })
   .inputValidator((data: { locale: string }) => data)
@@ -43,10 +45,13 @@ const loadBlogPosts = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/$locale/blog/")({
   loader: async ({ params, context }) => {
-    const result = await loadBlogPosts({ data: { locale: params.locale } });
+    const [messages, result] = await Promise.all([
+      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      loadBlogPosts({ data: { locale: params.locale } }),
+    ]);
     return {
       ...result,
-      messages: context.messages,
+      messages,
       locale: context.locale,
       locales: context.locales,
     };

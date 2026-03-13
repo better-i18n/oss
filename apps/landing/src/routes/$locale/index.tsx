@@ -3,7 +3,6 @@ import Header from "../../components/Header";
 import Hero from "../../components/Hero";
 import Features from "../../components/Features";
 import FrameworkSupport from "../../components/FrameworkSupport";
-import Integrations from "../../components/Integrations";
 import UseCases from "../../components/UseCases";
 import UserSegments from "../../components/UserSegments";
 import MetricsBadges from "../../components/MetricsBadges";
@@ -13,7 +12,6 @@ import ComparisonFAQ from "../../components/ComparisonFAQ";
 import Testimonials from "../../components/Testimonials";
 import Changelog from "../../components/Changelog";
 import Pricing from "../../components/Pricing";
-import CTA from "../../components/CTA";
 import Footer from "../../components/Footer";
 import { RelatedPages } from "@/components/RelatedPages";
 import {
@@ -26,6 +24,8 @@ import {
 import { getHomePageStructuredData, getFAQSchema, formatStructuredData } from "@/lib/structured-data";
 import { getChangelogsMeta } from "@/lib/changelog";
 import { withTimeout } from "@/lib/fetch-utils";
+import { getMessages } from "@better-i18n/use-intl/server";
+import { i18nConfig } from "@/i18n.config";
 
 export const Route = createFileRoute("/$locale/")({
   loader: async ({ context, params }) => {
@@ -33,9 +33,12 @@ export const Route = createFileRoute("/$locale/")({
     // Use metadata-only fetch (single API call) instead of full content (N+1 calls)
     // to keep homepage load time within crawler timeout limits.
     // Wrap with 3s timeout so the page renders even if the API is slow.
-    const releases = await withTimeout(getChangelogsMeta(locale), 3000, []);
+    const [messages, releases] = await Promise.all([
+      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      withTimeout(getChangelogsMeta(locale), 3000, []),
+    ]);
     return {
-      messages: context.messages,
+      messages,
       locale: context.locale,
       locales: context.locales,
       recentChangelogs: releases.slice(0, 4),
@@ -124,7 +127,6 @@ function LandingPage() {
         <MetricsBadges />
         <Features />
         <FrameworkSupport />
-        <Integrations />
         <UseCases />
         <UserSegments />
         <IndustryStats />
@@ -133,7 +135,6 @@ function LandingPage() {
         <Testimonials />
         <Changelog releases={recentChangelogs} />
         <Pricing />
-        <CTA />
         <RelatedPages currentPage="home" locale={locale} variant="content" />
       </main>
       <Footer />

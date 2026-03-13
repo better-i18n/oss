@@ -10,13 +10,10 @@ import {
   getCanonicalLink,
 } from "@/lib/meta";
 import { getDefaultStructuredData } from "@/lib/structured-data";
+import { createPageLoader } from "@/lib/page-seo";
 
 export const Route = createFileRoute("/$locale/terms")({
-  loader: ({ context }) => ({
-    messages: context.messages,
-    locale: context.locale,
-    locales: context.locales,
-  }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
     const locale = loaderData?.locale || "en";
     const locales = loaderData?.locales;

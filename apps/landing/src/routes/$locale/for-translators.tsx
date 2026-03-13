@@ -9,10 +9,10 @@ import TranslatorWorkflow from "@/components/translators/TranslatorWorkflow";
 import TranslatorCTA from "@/components/translators/TranslatorCTA";
 import TranslatorPainPromiseProof from "@/components/translators/TranslatorPainPromiseProof";
 import { RelatedPages } from "@/components/RelatedPages";
-import { getPageHead } from "@/lib/page-seo";
+import { getPageHead, createPageLoader } from "@/lib/page-seo";
 
 export const Route = createFileRoute("/$locale/for-translators")({
-  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
     const headData = getPageHead({
       messages: loaderData?.messages || {},

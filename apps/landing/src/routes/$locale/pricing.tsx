@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import Pricing from "@/components/Pricing";
-import { getPageHead, getFAQSchema, formatStructuredData } from "@/lib/page-seo";
+import { getPageHead, getFAQSchema, formatStructuredData, createPageLoader } from "@/lib/page-seo";
 import { getPricingPageStructuredData } from "@/lib/structured-data";
 import { PricingComparison } from "@/components/PricingComparison";
 import { RelatedPages } from "@/components/RelatedPages";
@@ -9,11 +9,7 @@ import { useTranslations } from "@better-i18n/use-intl";
 import { IconCheckmark1 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/pricing")({
-  loader: ({ context }) => ({
-    messages: context.messages,
-    locale: context.locale,
-    locales: context.locales,
-  }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
     const messages = loaderData?.messages || {};
     const locale = loaderData?.locale || "en";

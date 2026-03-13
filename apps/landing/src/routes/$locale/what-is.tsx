@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { getPageHead, getEducationalPageStructuredData, formatStructuredData } from "@/lib/page-seo";
+import { getPageHead, getEducationalPageStructuredData, formatStructuredData, createPageLoader } from "@/lib/page-seo";
 import { getHowToSchema } from "@/lib/structured-data";
 import { useTranslations } from "@better-i18n/use-intl";
 import { RelatedPages } from "@/components/RelatedPages";
@@ -18,7 +18,7 @@ import {
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/what-is")({
-  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
     const messages = loaderData?.messages || {};
     const locale = loaderData?.locale || "en";

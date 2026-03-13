@@ -7,10 +7,10 @@ import {
   FrameworkCTA,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
-import { getPageHead } from "@/lib/page-seo";
+import { getPageHead, createPageLoader } from "@/lib/page-seo";
 
 export const Route = createFileRoute("/$locale/i18n/expo")({
-  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},

@@ -9,10 +9,10 @@ import ProductCollaboration from "@/components/product-teams/ProductCollaboratio
 import ProductCTA from "@/components/product-teams/ProductCTA";
 import ProductPainPromiseProof from "@/components/product-teams/ProductPainPromiseProof";
 import { RelatedPages } from "@/components/RelatedPages";
-import { getPageHead } from "@/lib/page-seo";
+import { getPageHead, createPageLoader } from "@/lib/page-seo";
 
 export const Route = createFileRoute("/$locale/for-product-teams")({
-  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
     const headData = getPageHead({
       messages: loaderData?.messages || {},
