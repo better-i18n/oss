@@ -179,21 +179,25 @@ export function matchLocale(
 /**
  * Detect best locale from Accept-Language header (server) or navigator.languages (client).
  *
- * - Server: reads `request.headers.get('accept-language')`
+ * - Server (Web Request): reads `request.headers.get('accept-language')`
+ * - Server (Express/Hono/etc.): pass `acceptLanguage` header string directly
  * - Client: reads `navigator.languages` / `navigator.language`
  *
  * Falls back to `defaultLocale` if no match is found.
  */
 export function detectLocale(options: {
   request?: Request | null;
+  /** Directly pass an Accept-Language header string (e.g. from Express/Hono req.headers) */
+  acceptLanguage?: string | null;
   availableLocales: string[];
   defaultLocale: string;
 }): string {
   const languages: string[] = [];
 
   if (options.request) {
-    const header = options.request.headers.get("accept-language");
-    languages.push(...parseAcceptLanguage(header));
+    languages.push(...parseAcceptLanguage(options.request.headers.get("accept-language")));
+  } else if (options.acceptLanguage !== undefined) {
+    languages.push(...parseAcceptLanguage(options.acceptLanguage));
   } else if (typeof navigator !== "undefined") {
     const navLangs = Array.isArray(navigator.languages)
       ? [...navigator.languages]
