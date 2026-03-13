@@ -124,17 +124,17 @@ function LandingPage() {
       <Header />
       <main id="main-content">
         <Hero />
-        <MetricsBadges />
         <Features />
         <FrameworkSupport />
         <UseCases />
         <UserSegments />
-        <IndustryStats />
         <Alternatives />
-        <ComparisonFAQ />
         <Testimonials />
+        <IndustryStats />
         <Changelog releases={recentChangelogs} />
         <Pricing />
+        <ComparisonFAQ />
+        <MetricsBadges />
         <RelatedPages currentPage="home" locale={locale} variant="content" />
       </main>
       <Footer />

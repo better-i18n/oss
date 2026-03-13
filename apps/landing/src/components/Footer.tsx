@@ -104,7 +104,7 @@ export default function Footer() {
   const t = useT("footer");
 
   return (
-    <footer aria-label="Site footer" className="py-16 bg-mist-950/[0.025]">
+    <footer aria-label="Site footer" className="py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-8 mb-12">
           {footerLinks.map((group) => (
