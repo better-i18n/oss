@@ -258,7 +258,7 @@ describe("MCP content tool registry — annotation value semantics", () => {
     expect(annotated.annotations).toEqual(readOnly);
     // Original should be unchanged
     expect(
-      (listContentModels.definition as Record<string, unknown>).annotations,
+      (listContentModels.definition as unknown as Record<string, unknown>).annotations,
     ).toBeUndefined();
   });
 });
