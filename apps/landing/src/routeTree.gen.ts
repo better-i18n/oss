@@ -27,6 +27,7 @@ import { Route as LocaleWhatIsInternationalizationRouteImport } from './routes/$
 import { Route as LocaleWhatIsRouteImport } from './routes/$locale/what-is'
 import { Route as LocaleTermsRouteImport } from './routes/$locale/terms'
 import { Route as LocaleStatusRouteImport } from './routes/$locale/status'
+import { Route as LocaleSignupRouteImport } from './routes/$locale/signup'
 import { Route as LocalePrivacyRouteImport } from './routes/$locale/privacy'
 import { Route as LocalePricingRouteImport } from './routes/$locale/pricing'
 import { Route as LocaleIntegrationsRouteImport } from './routes/$locale/integrations'
@@ -59,6 +60,7 @@ import { Route as LocaleBlogIndexRouteImport } from './routes/$locale/blog/index
 import { Route as LocaleI18nWebsiteTranslationRouteImport } from './routes/$locale/i18n/website-translation'
 import { Route as LocaleI18nWebsiteLocalizationRouteImport } from './routes/$locale/i18n/website-localization'
 import { Route as LocaleI18nVueRouteImport } from './routes/$locale/i18n/vue'
+import { Route as LocaleI18nViteRouteImport } from './routes/$locale/i18n/vite'
 import { Route as LocaleI18nTranslationSolutionsRouteImport } from './routes/$locale/i18n/translation-solutions'
 import { Route as LocaleI18nTranslationManagementSystemRouteImport } from './routes/$locale/i18n/translation-management-system'
 import { Route as LocaleI18nTechnicalMultilingualSeoRouteImport } from './routes/$locale/i18n/technical-multilingual-seo'
@@ -71,6 +73,7 @@ import { Route as LocaleI18nServerRouteImport } from './routes/$locale/i18n/serv
 import { Route as LocaleI18nSeoInternationalAudiencesRouteImport } from './routes/$locale/i18n/seo-international-audiences'
 import { Route as LocaleI18nSecurityComplianceRouteImport } from './routes/$locale/i18n/security-compliance'
 import { Route as LocaleI18nRubyRouteImport } from './routes/$locale/i18n/ruby'
+import { Route as LocaleI18nRemixHydrogenRouteImport } from './routes/$locale/i18n/remix-hydrogen'
 import { Route as LocaleI18nReactNativeLocalizationRouteImport } from './routes/$locale/i18n/react-native-localization'
 import { Route as LocaleI18nReactIntlRouteImport } from './routes/$locale/i18n/react-intl'
 import { Route as LocaleI18nReactRouteImport } from './routes/$locale/i18n/react'
@@ -207,6 +210,11 @@ const LocaleTermsRoute = LocaleTermsRouteImport.update({
 const LocaleStatusRoute = LocaleStatusRouteImport.update({
   id: '/$locale/status',
   path: '/$locale/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleSignupRoute = LocaleSignupRouteImport.update({
+  id: '/$locale/signup',
+  path: '/$locale/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocalePrivacyRoute = LocalePrivacyRouteImport.update({
@@ -372,6 +380,11 @@ const LocaleI18nVueRoute = LocaleI18nVueRouteImport.update({
   path: '/$locale/i18n/vue',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleI18nViteRoute = LocaleI18nViteRouteImport.update({
+  id: '/$locale/i18n/vite',
+  path: '/$locale/i18n/vite',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LocaleI18nTranslationSolutionsRoute =
   LocaleI18nTranslationSolutionsRouteImport.update({
     id: '/$locale/i18n/translation-solutions',
@@ -438,6 +451,11 @@ const LocaleI18nSecurityComplianceRoute =
 const LocaleI18nRubyRoute = LocaleI18nRubyRouteImport.update({
   id: '/$locale/i18n/ruby',
   path: '/$locale/i18n/ruby',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleI18nRemixHydrogenRoute = LocaleI18nRemixHydrogenRouteImport.update({
+  id: '/$locale/i18n/remix-hydrogen',
+  path: '/$locale/i18n/remix-hydrogen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleI18nReactNativeLocalizationRoute =
@@ -721,6 +739,7 @@ export interface FileRoutesByFullPath {
   '/$locale/integrations': typeof LocaleIntegrationsRoute
   '/$locale/pricing': typeof LocalePricingRoute
   '/$locale/privacy': typeof LocalePrivacyRoute
+  '/$locale/signup': typeof LocaleSignupRoute
   '/$locale/status': typeof LocaleStatusRoute
   '/$locale/terms': typeof LocaleTermsRoute
   '/$locale/what-is': typeof LocaleWhatIsRoute
@@ -772,6 +791,7 @@ export interface FileRoutesByFullPath {
   '/$locale/i18n/react': typeof LocaleI18nReactRoute
   '/$locale/i18n/react-intl': typeof LocaleI18nReactIntlRoute
   '/$locale/i18n/react-native-localization': typeof LocaleI18nReactNativeLocalizationRoute
+  '/$locale/i18n/remix-hydrogen': typeof LocaleI18nRemixHydrogenRoute
   '/$locale/i18n/ruby': typeof LocaleI18nRubyRoute
   '/$locale/i18n/security-compliance': typeof LocaleI18nSecurityComplianceRoute
   '/$locale/i18n/seo-international-audiences': typeof LocaleI18nSeoInternationalAudiencesRoute
@@ -784,6 +804,7 @@ export interface FileRoutesByFullPath {
   '/$locale/i18n/technical-multilingual-seo': typeof LocaleI18nTechnicalMultilingualSeoRoute
   '/$locale/i18n/translation-management-system': typeof LocaleI18nTranslationManagementSystemRoute
   '/$locale/i18n/translation-solutions': typeof LocaleI18nTranslationSolutionsRoute
+  '/$locale/i18n/vite': typeof LocaleI18nViteRoute
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
@@ -829,6 +850,7 @@ export interface FileRoutesByTo {
   '/$locale/integrations': typeof LocaleIntegrationsRoute
   '/$locale/pricing': typeof LocalePricingRoute
   '/$locale/privacy': typeof LocalePrivacyRoute
+  '/$locale/signup': typeof LocaleSignupRoute
   '/$locale/status': typeof LocaleStatusRoute
   '/$locale/terms': typeof LocaleTermsRoute
   '/$locale/what-is': typeof LocaleWhatIsRoute
@@ -880,6 +902,7 @@ export interface FileRoutesByTo {
   '/$locale/i18n/react': typeof LocaleI18nReactRoute
   '/$locale/i18n/react-intl': typeof LocaleI18nReactIntlRoute
   '/$locale/i18n/react-native-localization': typeof LocaleI18nReactNativeLocalizationRoute
+  '/$locale/i18n/remix-hydrogen': typeof LocaleI18nRemixHydrogenRoute
   '/$locale/i18n/ruby': typeof LocaleI18nRubyRoute
   '/$locale/i18n/security-compliance': typeof LocaleI18nSecurityComplianceRoute
   '/$locale/i18n/seo-international-audiences': typeof LocaleI18nSeoInternationalAudiencesRoute
@@ -892,6 +915,7 @@ export interface FileRoutesByTo {
   '/$locale/i18n/technical-multilingual-seo': typeof LocaleI18nTechnicalMultilingualSeoRoute
   '/$locale/i18n/translation-management-system': typeof LocaleI18nTranslationManagementSystemRoute
   '/$locale/i18n/translation-solutions': typeof LocaleI18nTranslationSolutionsRoute
+  '/$locale/i18n/vite': typeof LocaleI18nViteRoute
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
@@ -939,6 +963,7 @@ export interface FileRoutesById {
   '/$locale/integrations': typeof LocaleIntegrationsRoute
   '/$locale/pricing': typeof LocalePricingRoute
   '/$locale/privacy': typeof LocalePrivacyRoute
+  '/$locale/signup': typeof LocaleSignupRoute
   '/$locale/status': typeof LocaleStatusRoute
   '/$locale/terms': typeof LocaleTermsRoute
   '/$locale/what-is': typeof LocaleWhatIsRoute
@@ -990,6 +1015,7 @@ export interface FileRoutesById {
   '/$locale/i18n/react': typeof LocaleI18nReactRoute
   '/$locale/i18n/react-intl': typeof LocaleI18nReactIntlRoute
   '/$locale/i18n/react-native-localization': typeof LocaleI18nReactNativeLocalizationRoute
+  '/$locale/i18n/remix-hydrogen': typeof LocaleI18nRemixHydrogenRoute
   '/$locale/i18n/ruby': typeof LocaleI18nRubyRoute
   '/$locale/i18n/security-compliance': typeof LocaleI18nSecurityComplianceRoute
   '/$locale/i18n/seo-international-audiences': typeof LocaleI18nSeoInternationalAudiencesRoute
@@ -1002,6 +1028,7 @@ export interface FileRoutesById {
   '/$locale/i18n/technical-multilingual-seo': typeof LocaleI18nTechnicalMultilingualSeoRoute
   '/$locale/i18n/translation-management-system': typeof LocaleI18nTranslationManagementSystemRoute
   '/$locale/i18n/translation-solutions': typeof LocaleI18nTranslationSolutionsRoute
+  '/$locale/i18n/vite': typeof LocaleI18nViteRoute
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
@@ -1050,6 +1077,7 @@ export interface FileRouteTypes {
     | '/$locale/integrations'
     | '/$locale/pricing'
     | '/$locale/privacy'
+    | '/$locale/signup'
     | '/$locale/status'
     | '/$locale/terms'
     | '/$locale/what-is'
@@ -1101,6 +1129,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/react'
     | '/$locale/i18n/react-intl'
     | '/$locale/i18n/react-native-localization'
+    | '/$locale/i18n/remix-hydrogen'
     | '/$locale/i18n/ruby'
     | '/$locale/i18n/security-compliance'
     | '/$locale/i18n/seo-international-audiences'
@@ -1113,6 +1142,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/technical-multilingual-seo'
     | '/$locale/i18n/translation-management-system'
     | '/$locale/i18n/translation-solutions'
+    | '/$locale/i18n/vite'
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
@@ -1158,6 +1188,7 @@ export interface FileRouteTypes {
     | '/$locale/integrations'
     | '/$locale/pricing'
     | '/$locale/privacy'
+    | '/$locale/signup'
     | '/$locale/status'
     | '/$locale/terms'
     | '/$locale/what-is'
@@ -1209,6 +1240,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/react'
     | '/$locale/i18n/react-intl'
     | '/$locale/i18n/react-native-localization'
+    | '/$locale/i18n/remix-hydrogen'
     | '/$locale/i18n/ruby'
     | '/$locale/i18n/security-compliance'
     | '/$locale/i18n/seo-international-audiences'
@@ -1221,6 +1253,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/technical-multilingual-seo'
     | '/$locale/i18n/translation-management-system'
     | '/$locale/i18n/translation-solutions'
+    | '/$locale/i18n/vite'
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
@@ -1267,6 +1300,7 @@ export interface FileRouteTypes {
     | '/$locale/integrations'
     | '/$locale/pricing'
     | '/$locale/privacy'
+    | '/$locale/signup'
     | '/$locale/status'
     | '/$locale/terms'
     | '/$locale/what-is'
@@ -1318,6 +1352,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/react'
     | '/$locale/i18n/react-intl'
     | '/$locale/i18n/react-native-localization'
+    | '/$locale/i18n/remix-hydrogen'
     | '/$locale/i18n/ruby'
     | '/$locale/i18n/security-compliance'
     | '/$locale/i18n/seo-international-audiences'
@@ -1330,6 +1365,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/technical-multilingual-seo'
     | '/$locale/i18n/translation-management-system'
     | '/$locale/i18n/translation-solutions'
+    | '/$locale/i18n/vite'
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
@@ -1377,6 +1413,7 @@ export interface RootRouteChildren {
   LocaleIntegrationsRoute: typeof LocaleIntegrationsRoute
   LocalePricingRoute: typeof LocalePricingRoute
   LocalePrivacyRoute: typeof LocalePrivacyRoute
+  LocaleSignupRoute: typeof LocaleSignupRoute
   LocaleStatusRoute: typeof LocaleStatusRoute
   LocaleTermsRoute: typeof LocaleTermsRoute
   LocaleWhatIsRoute: typeof LocaleWhatIsRoute
@@ -1427,6 +1464,7 @@ export interface RootRouteChildren {
   LocaleI18nReactRoute: typeof LocaleI18nReactRoute
   LocaleI18nReactIntlRoute: typeof LocaleI18nReactIntlRoute
   LocaleI18nReactNativeLocalizationRoute: typeof LocaleI18nReactNativeLocalizationRoute
+  LocaleI18nRemixHydrogenRoute: typeof LocaleI18nRemixHydrogenRoute
   LocaleI18nRubyRoute: typeof LocaleI18nRubyRoute
   LocaleI18nSecurityComplianceRoute: typeof LocaleI18nSecurityComplianceRoute
   LocaleI18nSeoInternationalAudiencesRoute: typeof LocaleI18nSeoInternationalAudiencesRoute
@@ -1439,6 +1477,7 @@ export interface RootRouteChildren {
   LocaleI18nTechnicalMultilingualSeoRoute: typeof LocaleI18nTechnicalMultilingualSeoRoute
   LocaleI18nTranslationManagementSystemRoute: typeof LocaleI18nTranslationManagementSystemRoute
   LocaleI18nTranslationSolutionsRoute: typeof LocaleI18nTranslationSolutionsRoute
+  LocaleI18nViteRoute: typeof LocaleI18nViteRoute
   LocaleI18nVueRoute: typeof LocaleI18nVueRoute
   LocaleI18nWebsiteLocalizationRoute: typeof LocaleI18nWebsiteLocalizationRoute
   LocaleI18nWebsiteTranslationRoute: typeof LocaleI18nWebsiteTranslationRoute
@@ -1575,6 +1614,13 @@ declare module '@tanstack/react-router' {
       path: '/$locale/status'
       fullPath: '/$locale/status'
       preLoaderRoute: typeof LocaleStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/signup': {
+      id: '/$locale/signup'
+      path: '/$locale/signup'
+      fullPath: '/$locale/signup'
+      preLoaderRoute: typeof LocaleSignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/privacy': {
@@ -1801,6 +1847,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nVueRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/i18n/vite': {
+      id: '/$locale/i18n/vite'
+      path: '/$locale/i18n/vite'
+      fullPath: '/$locale/i18n/vite'
+      preLoaderRoute: typeof LocaleI18nViteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/i18n/translation-solutions': {
       id: '/$locale/i18n/translation-solutions'
       path: '/$locale/i18n/translation-solutions'
@@ -1883,6 +1936,13 @@ declare module '@tanstack/react-router' {
       path: '/$locale/i18n/ruby'
       fullPath: '/$locale/i18n/ruby'
       preLoaderRoute: typeof LocaleI18nRubyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/i18n/remix-hydrogen': {
+      id: '/$locale/i18n/remix-hydrogen'
+      path: '/$locale/i18n/remix-hydrogen'
+      fullPath: '/$locale/i18n/remix-hydrogen'
+      preLoaderRoute: typeof LocaleI18nRemixHydrogenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/i18n/react-native-localization': {
@@ -2253,6 +2313,7 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleIntegrationsRoute: LocaleIntegrationsRoute,
   LocalePricingRoute: LocalePricingRoute,
   LocalePrivacyRoute: LocalePrivacyRoute,
+  LocaleSignupRoute: LocaleSignupRoute,
   LocaleStatusRoute: LocaleStatusRoute,
   LocaleTermsRoute: LocaleTermsRoute,
   LocaleWhatIsRoute: LocaleWhatIsRoute,
@@ -2307,6 +2368,7 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleI18nReactIntlRoute: LocaleI18nReactIntlRoute,
   LocaleI18nReactNativeLocalizationRoute:
     LocaleI18nReactNativeLocalizationRoute,
+  LocaleI18nRemixHydrogenRoute: LocaleI18nRemixHydrogenRoute,
   LocaleI18nRubyRoute: LocaleI18nRubyRoute,
   LocaleI18nSecurityComplianceRoute: LocaleI18nSecurityComplianceRoute,
   LocaleI18nSeoInternationalAudiencesRoute:
@@ -2324,6 +2386,7 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleI18nTranslationManagementSystemRoute:
     LocaleI18nTranslationManagementSystemRoute,
   LocaleI18nTranslationSolutionsRoute: LocaleI18nTranslationSolutionsRoute,
+  LocaleI18nViteRoute: LocaleI18nViteRoute,
   LocaleI18nVueRoute: LocaleI18nVueRoute,
   LocaleI18nWebsiteLocalizationRoute: LocaleI18nWebsiteLocalizationRoute,
   LocaleI18nWebsiteTranslationRoute: LocaleI18nWebsiteTranslationRoute,

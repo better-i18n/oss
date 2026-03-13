@@ -99,22 +99,42 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
   if (pages.length === 0) return null;
 
   return (
-    <section className="py-12 border-t border-mist-200">
+    <section className="py-14">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <h2 className="text-lg font-medium text-mist-950 mb-6">{t.has("title") ? t("title") : "Explore More"}</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mb-8 max-w-2xl">
+          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-mist-500">
+            {t.has("eyebrow") ? t("eyebrow") : "Discover"}
+          </p>
+          <h2 className="mt-2 font-display text-2xl/[1.08] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.04]">
+            {t.has("title") ? t("title") : "Explore More"}
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-mist-600">
+            {t.has("subtitle")
+              ? t("subtitle")
+              : "Keep moving through product pages, framework guides, and high-intent localization content."}
+          </p>
+        </div>
+
+        <div className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {pages.map((page) => (
             <Link
               key={page.href}
               to={page.href as AllowedRoute}
               params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+              className="group flex h-full flex-col justify-between rounded-2xl border border-mist-200 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-mist-300 hover:shadow-md"
             >
               <div>
-                <h3 className="text-sm font-medium text-mist-950">{t.has(page.titleKey) ? t(page.titleKey) : page.titleFallback}</h3>
-                <p className="text-xs text-mist-500 mt-1">{t.has(page.descKey) ? t(page.descKey) : page.descFallback}</p>
+                <h3 className="text-sm font-medium text-mist-950">
+                  {t.has(page.titleKey) ? t(page.titleKey) : page.titleFallback}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-mist-500">
+                  {t.has(page.descKey) ? t(page.descKey) : page.descFallback}
+                </p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" aria-hidden="true" />
+              <div className="mt-5 flex items-center text-sm font-medium text-mist-700">
+                <span>{t.has("openPage") ? t("openPage") : "Open page"}</span>
+                <IconArrowRight className="ml-2 h-4 w-4 text-mist-400 transition-all group-hover:translate-x-1 group-hover:text-mist-600" aria-hidden="true" />
+              </div>
             </Link>
           ))}
         </div>
