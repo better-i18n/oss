@@ -64,6 +64,8 @@ export const MARKETING_PAGES = [
   { path: "i18n/expo", priority: 0.9, changefreq: "weekly", prerender: true },
   { path: "i18n/server", priority: 0.9, changefreq: "weekly", prerender: true },
   { path: "i18n/tanstack-start", priority: 0.9, changefreq: "weekly", prerender: true },
+  { path: "i18n/vite", priority: 0.85, changefreq: "weekly", prerender: true },
+  { path: "i18n/remix-hydrogen", priority: 0.85, changefreq: "weekly", prerender: true },
   { path: "i18n/best-tms", priority: 0.85, changefreq: "weekly", prerender: true },
   { path: "i18n/best-library", priority: 0.85, changefreq: "weekly", prerender: true },
   { path: "i18n/for-developers", priority: 0.85, changefreq: "weekly", prerender: true },

@@ -10,10 +10,10 @@ export const getRouter = () => {
     context: {
       locale: undefined!, // Set by root route beforeLoad
       locales: undefined!, // Set by root route beforeLoad
-      messages: undefined!, // Set by root route beforeLoad
     },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
+    defaultStaleTime: 60_000, // Root loader won't re-run for 60s — prevents nav white flash
   });
 
   return router;

@@ -4,8 +4,11 @@ import {
   getAlternateLinks,
   getCanonicalLink,
   getCanonicalUrl,
+  SITE_NAME,
 } from "./meta";
 import { getLocaleTier } from "@/seo/locale-tiers";
+import { getMessages } from "@better-i18n/use-intl/server";
+import { i18nConfig } from "../i18n.config";
 import {
   getDefaultStructuredData,
   getHomePageStructuredData,
@@ -72,6 +75,13 @@ interface PageSEOOptions {
   faqItems?: Array<{ question: string; answer: string }>;
   /** Mark page as noindex (e.g., thin content with low translation coverage) */
   noindex?: boolean;
+  /** Fallback meta when CDN-provided meta keys do not exist yet */
+  metaFallback?: {
+    title: string;
+    description: string;
+    ogTitle?: string;
+    ogDescription?: string;
+  };
 }
 
 /**
@@ -145,6 +155,23 @@ export function getPageHead(options: PageSEOOptions) {
     locale,
     pathname,
   });
+  const resolvedMeta = {
+    ...meta,
+    title:
+      meta.title === SITE_NAME && options.metaFallback?.title
+        ? options.metaFallback.title
+        : meta.title,
+    description: meta.description || options.metaFallback?.description || "",
+    ogTitle:
+      meta.ogTitle === SITE_NAME
+        ? options.metaFallback?.ogTitle || options.metaFallback?.title || meta.ogTitle
+        : meta.ogTitle,
+    ogDescription:
+      meta.ogDescription ||
+      options.metaFallback?.ogDescription ||
+      options.metaFallback?.description ||
+      "",
+  };
 
   // Auto-populate URL in structured data options from canonical URL
   const enrichedStructuredDataOptions = structuredDataOptions
@@ -196,7 +223,7 @@ export function getPageHead(options: PageSEOOptions) {
   }
 
   return {
-    meta: formatMetaTags(meta, {
+    meta: formatMetaTags(resolvedMeta, {
       locale,
       locales,
       noindex: options.noindex || getLocaleTier(locale) === "tier3",
@@ -210,14 +237,18 @@ export function getPageHead(options: PageSEOOptions) {
 }
 
 /**
- * Create a standard loader that exposes messages and locale for head().
- * Use this in route definitions.
+ * Create a standard async loader that fetches messages and exposes them for head().
+ * Messages are fetched via getMessages() — TtlCache ensures no duplicate CDN calls.
+ * Use this in route definitions instead of reading context.messages.
  */
 export function createPageLoader() {
-  return ({ context }: { context: { messages: Record<string, string>; locale: string } }) => ({
-    messages: context.messages,
-    locale: context.locale,
-  });
+  return async ({ context }: { context: { locale: string; locales: string[] } }) => {
+    const messages = await getMessages({
+      project: i18nConfig.project,
+      locale: context.locale,
+    });
+    return { messages, locale: context.locale, locales: context.locales };
+  };
 }
 
 /**
@@ -226,4 +257,5 @@ export function createPageLoader() {
 export interface PageLoaderData {
   messages: Record<string, string>;
   locale: string;
+  locales: string[];
 }
