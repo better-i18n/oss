@@ -97,37 +97,38 @@ export default function Hero() {
           {[0, 1].map((i) => (
             <div key={i} className="logo-track">
               {/* Carna */}
-              <span className="flex h-8 items-center justify-center shrink-0">
+              <a href="http://carna.ai/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/carna.png"
                   alt="Carna - Better i18n customer"
                   width={112}
                   height={28}
                   loading="lazy"
-                  className="h-7 w-auto opacity-50 grayscale"
+                  className="h-7 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity"
                 />
-              </span>
+              </a>
               {/* Nomad Work */}
-              <span className="flex h-8 items-center justify-center shrink-0">
+              <a href="https://hellonomad.app/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/nomadwork.png"
                   alt="Nomad Work - Better i18n customer"
                   width={112}
                   height={28}
                   loading="lazy"
-                  className="h-7 w-auto opacity-50 grayscale"
+                  className="h-7 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity"
                 />
-              </span>
-              <span className="flex h-8 items-center justify-center shrink-0">
+              </a>
+              {/* Hellospace */}
+              <a href="https://hellospace.world/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/hellospace.png"
                   alt="Hellospace - Better i18n customer"
                   width={112}
                   height={28}
                   loading="lazy"
-                  className="h-7 w-auto opacity-50 grayscale"
+                  className="h-7 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity"
                 />
-              </span>
+              </a>
               {/* Masraff */}
               <a href="https://masraff.ai" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                 <img
@@ -140,16 +141,16 @@ export default function Hero() {
                 />
               </a>
               {/* Cloudflare */}
-              <span className="flex h-8 items-center justify-center shrink-0">
+              <a href="https://www.cloudflare.com/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                 <img
                   src="/cloudflare.png"
                   alt="Cloudflare - Better i18n customer"
                   width={112}
                   height={28}
                   loading="lazy"
-                  className="h-7 w-auto opacity-50 grayscale"
+                  className="h-7 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity"
                 />
-              </span>
+              </a>
             </div>
           ))}
         </div>

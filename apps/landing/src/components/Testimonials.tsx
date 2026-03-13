@@ -5,30 +5,35 @@ const testimonialsData = [
     name: "Samet Selcuk",
     title: "Founder, Hellospace",
     image: "/comments/samet.jpeg",
+    url: "https://hellospace.world/",
     quote: "Better i18n completely changed how we handle localization. The AI translations are incredibly accurate and context-aware.",
   },
   {
     name: "Tevfik Can Karanfil",
     title: "Founder, Carna",
     image: "/comments/tcan.jpeg",
+    url: "http://carna.ai/",
     quote: "The git-native workflow is a game changer. We went from manual JSON file management to fully automated translations.",
   },
   {
     name: "Mehmet Hanifi Şentürk",
     title: "AI Engineer, Enuygun",
     image: "/comments/mehmeth.jpeg",
+    url: "https://www.enuygun.com/",
     quote: "The MCP integration lets us use translations directly in our AI workflows. It's the most developer-friendly i18n tool I've used.",
   },
   {
     name: "Eray Gündoğmuş",
     title: "Software Engineer, Aceware",
     image: "/comments/eray.jpeg",
+    url: "https://aceware.io/",
     quote: "Setting up took minutes, not days. The CDN delivery means our translations load instantly across all regions.",
   },
   {
     name: "Arhun Hınçalan",
     title: "Engineering Manager, Masraff",
     image: "/comments/arhun.png",
+    url: "https://masraff.ai",
     quote: "Better i18n transformed our localization pipeline. We manage 20+ languages across our fintech products with zero friction — the AI understands financial terminology perfectly.",
   },
 ];
@@ -77,9 +82,34 @@ export default function Testimonials() {
                     <p className="text-sm font-medium">
                       {t(`${index + 1}.name`, { defaultValue: testimonial.name })}
                     </p>
-                    <p className="text-mist-700 text-sm">
-                      {t(`${index + 1}.title`, { defaultValue: testimonial.title })}
-                    </p>
+                    <div className="flex items-center gap-1">
+                      <p className="text-mist-700 text-sm">
+                        {t(`${index + 1}.title`, { defaultValue: testimonial.title })}
+                      </p>
+                      {testimonial.url && (
+                        <a
+                          href={testimonial.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-mist-400 hover:text-mist-700 transition-colors flex-shrink-0"
+                        >
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                          </svg>
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </figcaption>
               </figure>
