@@ -123,51 +123,50 @@ export const i18nMiddleware = createBetterI18nMiddleware({
 
 ## Custom Middleware
 
-For advanced use cases, create a custom middleware:
+For advanced use cases, use `detectLocale` from `@better-i18n/use-intl/server` to handle locale detection:
 
 ```ts title="app/middleware/i18n.ts"
-import { createMiddleware } from "@tanstack/react-start/server"
+import { createMiddleware, getRequest } from "@tanstack/react-start/server"
+import { detectLocale } from "@better-i18n/use-intl/server" // [!code highlight]
 
-export const i18nMiddleware = createMiddleware().server(async ({ next, request }) => {
-  // Extract locale from various sources
-  const pathLocale = new URL(request.url).pathname.split("/")[1]
-  const cookieLocale = getCookie(request, "locale")
-  const browserLocale = request.headers.get("accept-language")?.split(",")[0]?.slice(0, 2)
+export const i18nMiddleware = createMiddleware().server(async ({ next }) => {
+  const request = getRequest()
+  const locale = detectLocale({ // [!code highlight]
+    request, // [!code highlight]
+    availableLocales: ["en", "tr", "de"], // [!code highlight]
+    defaultLocale: "en", // [!code highlight]
+  }) // [!code highlight]
 
-  // Determine locale with priority
-  let locale = "en"
-
-  if (pathLocale && isValidLocale(pathLocale)) {
-    locale = pathLocale
-  } else if (cookieLocale && isValidLocale(cookieLocale)) {
-    locale = cookieLocale
-  } else if (browserLocale && isValidLocale(browserLocale)) {
-    locale = browserLocale
-  }
-
-  // Set cookie for persistence
-  if (locale !== cookieLocale) {
-    response.headers.set(
-      "Set-Cookie",
-      `locale=${locale}; path=/; max-age=31536000; SameSite=Lax`
-    )
-  }
-
-  // Continue with locale in context
   return next({ context: { locale } })
 })
+```
 
-function isValidLocale(locale: string): boolean {
-  const supportedLocales = ["en", "tr", "de", "es"]
-  return supportedLocales.includes(locale)
-}
+`detectLocale` handles Accept-Language header parsing, quality factor (q-value) sorting, and best-match selection — no boilerplate needed.
 
-function getCookie(request: Request, name: string): string | null {
-  const cookies = request.headers.get("cookie")
-  if (!cookies) return null
-  const match = cookies.match(new RegExp(`${name}=([^;]+)`))
-  return match ? match[1] : null
-}
+### detectLocale Parameters
+
+| Parameter | Description |
+|---|---|
+| `request` | Server `Request` object — `Accept-Language` header is read from here |
+| `availableLocales` | List of supported locales to match against |
+| `defaultLocale` | Fallback locale when no match is found |
+
+<Callout>
+Server-side, `request` is used to read the `Accept-Language` header. On client-side navigation, `navigator.languages` is used automatically — the same `detectLocale` function works in both environments.
+</Callout>
+
+### Advanced: Manual Parsing
+
+For custom logic, you can use the lower-level utilities directly:
+
+```ts
+import { parseAcceptLanguage, matchLocale } from "@better-i18n/use-intl/server"
+
+const languages = parseAcceptLanguage(request.headers.get("accept-language") ?? "")
+// → [{ locale: "tr", quality: 1 }, { locale: "en", quality: 0.8 }]
+
+const locale = matchLocale(languages, ["en", "tr", "de"], "en")
+// → "tr"
 ```
 
 ## Accessing Locale in Routes
