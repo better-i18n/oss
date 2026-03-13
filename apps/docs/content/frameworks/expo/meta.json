@@ -1,5 +1,6 @@
 {
   "title": "Expo",
+  "icon": "ExpoIcon",
   "defaultOpen": false,
   "pages": [
     "index",

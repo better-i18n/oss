@@ -1,5 +1,6 @@
 {
   "title": "Flutter",
+  "icon": "FlutterIcon",
   "defaultOpen": false,
   "pages": [
     "index",

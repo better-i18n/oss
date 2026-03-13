@@ -1,5 +1,6 @@
 {
   "title": "iOS (Swift)",
+  "icon": "Smartphone",
   "defaultOpen": false,
   "pages": [
     "index",
