@@ -11,7 +11,6 @@ import {
   IconChevronBottom,
   IconGlobe,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { useT } from "@/lib/i18n";
 
 /**
  * Language switcher with proper router integration.
@@ -26,7 +25,6 @@ import { useT } from "@/lib/i18n";
 export function LanguageSwitcher() {
   const { locale, navigate, isReady } = useLocaleRouter();
   const { languages, isLoading: isLoadingLangs } = useLanguages();
-  const t = useT("common");
 
   const handleChange = (newLocale: string) => {
     // Router navigation handles everything:
@@ -38,10 +36,7 @@ export function LanguageSwitcher() {
 
   if (!isReady || isLoadingLangs) {
     return (
-      <Button variant="ghost" size="sm" disabled className="text-mist-500">
-        <IconGlobe className="mr-2 h-4 w-4" />
-        {t("loading", "Loading...")}
-      </Button>
+      <div className="h-9 w-28 animate-pulse rounded-md bg-mist-100" />
     );
   }
 
