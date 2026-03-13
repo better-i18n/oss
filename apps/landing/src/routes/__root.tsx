@@ -13,7 +13,7 @@ import {
   getLocaleFromPath,
   useTranslations,
 } from "@better-i18n/use-intl";
-import { getMessages } from "@better-i18n/use-intl/server";
+import { getMessages, detectLocale } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
 import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
@@ -62,8 +62,24 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     ) {
       const search = location.searchStr || "";
       const hash = location.hash || "";
+
+      // SSR context'te Accept-Language header'ı, client'ta navigator.languages kullan
+      // Dynamic import: statik import @tanstack/react-start/server'ı module chain'e çekip
+      // Vite'ın router-manifest.js'i analiz etmesine ve virtual module hatasına neden olur.
+      const request = typeof window === "undefined"
+        ? await import("@tanstack/react-start/server").then((m) => m.getRequest())
+        : null;
+      const detectedLocale = detectLocale({
+        request,
+        availableLocales: locales,
+        defaultLocale: i18nConfig.defaultLocale,
+      });
+
+      // Cache ısıtma: redirect'ten önce yükle → loader anında TtlCache'e hit eder → flash yok
+      await getMessages({ project: i18nConfig.project, locale: detectedLocale }).catch(() => {});
+
       throw redirect({
-        href: `/${i18nConfig.defaultLocale}${location.pathname}${search}${hash}`,
+        href: `/${detectedLocale}${location.pathname}${search}${hash}`,
         statusCode: 301,
       });
     }

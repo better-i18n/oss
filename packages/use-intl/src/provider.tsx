@@ -72,18 +72,14 @@ export function BetterI18nProvider({
 }: BetterI18nProviderProps) {
   // Locale is controlled by props (from URL/router)
   const locale = propLocale;
-  const [messages, setMessages] = useState<Messages | undefined>(propMessages);
+  // clientMessages is only used in CSR mode (when propMessages is not provided).
+  // In SSG/SSR mode, propMessages comes from the loader and is used directly —
+  // synchronous derivation avoids the useEffect delay that causes white flash on hydration.
+  const [clientMessages, setClientMessages] = useState<Messages | undefined>();
+  const messages = propMessages ?? clientMessages;
   const [languages, setLanguages] = useState<LanguageOption[]>([]);
-  const [isLoadingMessages, setIsLoadingMessages] = useState(!propMessages);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(propMessages === undefined);
   const [isLoadingLanguages, setIsLoadingLanguages] = useState(true);
-
-  // Sync messages when props change (e.g., from router navigation with new loader data)
-  useEffect(() => {
-    if (propMessages) {
-      setMessages(propMessages);
-      setIsLoadingMessages(false);
-    }
-  }, [propMessages]);
 
   // Create i18n core instance
   const i18nCore = useMemo(
@@ -144,7 +140,7 @@ export function BetterI18nProvider({
       try {
         const msgs = await i18nCore.getMessages(locale);
         if (!cancelled) {
-          setMessages(msgs as Messages);
+          setClientMessages(msgs as Messages);
         }
       } catch (error) {
         console.error(
@@ -191,7 +187,7 @@ export function BetterI18nProvider({
           onError={() => {}}
           getMessageFallback={customGetMessageFallback}
         >
-          {children}
+          {children as never}
         </IntlProvider>
       </BetterI18nContext.Provider>
     );
@@ -207,7 +203,7 @@ export function BetterI18nProvider({
         onError={onError ?? (() => {})}
         getMessageFallback={customGetMessageFallback}
       >
-        {children}
+        {children as never}
       </IntlProvider>
     </BetterI18nContext.Provider>
   );

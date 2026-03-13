@@ -38,21 +38,42 @@ app/routes/
 
 ### Step 2: Root Index Redirect
 
-Redirect the root to the detected locale:
+Detect the locale and redirect — preloading messages into the cache to avoid a flash after redirect:
 
-```tsx title="app/routes/index.tsx"
+```tsx title="app/routes/__root.tsx"
 import { createFileRoute, redirect } from "@tanstack/react-router"
+import { getRequest } from "@tanstack/react-start/server"
+import { getMessages, detectLocale } from "@better-i18n/use-intl/server" // [!code highlight]
 import { i18nConfig } from "../i18n.config"
 
-export const Route = createFileRoute("/")({
-  beforeLoad: ({ context }) => { // [!code highlight]
-    throw redirect({ // [!code highlight]
-      to: "/$locale", // [!code highlight]
-      params: { locale: context.locale || i18nConfig.defaultLocale }, // [!code highlight]
-    }) // [!code highlight]
+export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async ({ location }) => {
+    const locales = await fetchLocales()
+    const firstSegment = location.pathname.split("/").filter(Boolean)[0]
+
+    if (firstSegment && !locales.includes(firstSegment)) {
+      const request = typeof window === "undefined" ? getRequest() : null
+      const detectedLocale = detectLocale({ // [!code highlight]
+        request, // [!code highlight]
+        availableLocales: locales, // [!code highlight]
+        defaultLocale: i18nConfig.defaultLocale, // [!code highlight]
+      }) // [!code highlight]
+
+      // Cache warm-up: preload before redirect so the loader hits TtlCache instantly
+      await getMessages({ project: i18nConfig.project, locale: detectedLocale }).catch(() => {}) // [!code highlight]
+
+      throw redirect({
+        href: `/${detectedLocale}${location.pathname}`,
+        statusCode: 301,
+      })
+    }
   },
 })
 ```
+
+<Callout type="info">
+`getMessages` is called before the redirect to warm up TtlCache. When the redirect lands and the loader runs, it hits the same in-memory cache — no second network round-trip, no white flash.
+</Callout>
 
 ### Step 3: Update Root Layout
 

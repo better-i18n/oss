@@ -9,6 +9,19 @@ import {
   IconConsole,
   IconSparklesSoft,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import {
+  NextjsIcon,
+  TanStackIcon,
+  ViteIcon,
+  RemixIcon,
+  ExpoIcon,
+  ReactIcon,
+  VueIcon,
+  AngularIcon,
+  SvelteIcon,
+  NuxtIcon,
+  AstroIcon,
+} from "@/components/icons/FrameworkIcons";
 
 export const Route = createFileRoute("/$locale/integrations")({
   loader: createPageLoader(),
@@ -34,17 +47,17 @@ function IntegrationsPage() {
   const { locale } = Route.useParams();
 
   const frameworks = [
-    { name: "React", icon: "⚛️", descKey: "frameworks.react.description" },
-    { name: "Next.js", icon: "▲", descKey: "frameworks.nextjs.description" },
-    { name: "Vue", icon: "💚", descKey: "frameworks.vue.description" },
-    { name: "Angular", icon: "🅰️", descKey: "frameworks.angular.description" },
-    { name: "Svelte", icon: "🔥", descKey: "frameworks.svelte.description" },
-    { name: "Nuxt", icon: "💚", descKey: "frameworks.nuxt.description" },
-    { name: "Remix", icon: "💿", descKey: "frameworks.remix.description" },
-    { name: "Astro", icon: "🚀", descKey: "frameworks.astro.description" },
-    { name: "TanStack Start", icon: "🔀", descKey: "frameworks.tanstack.description" },
-    { name: "Vite", icon: "⚡", descKey: "frameworks.vite.description" },
-    { name: "Expo", icon: "📱", descKey: "frameworks.expo.description" },
+    { name: "React",          icon: ReactIcon,    descKey: "frameworks.react.description" },
+    { name: "Next.js",        icon: NextjsIcon,   descKey: "frameworks.nextjs.description" },
+    { name: "Vue",            icon: VueIcon,      descKey: "frameworks.vue.description" },
+    { name: "Angular",        icon: AngularIcon,  descKey: "frameworks.angular.description" },
+    { name: "Svelte",         icon: SvelteIcon,   descKey: "frameworks.svelte.description" },
+    { name: "Nuxt",           icon: NuxtIcon,     descKey: "frameworks.nuxt.description" },
+    { name: "Remix",          icon: RemixIcon,    descKey: "frameworks.remix.description" },
+    { name: "Astro",          icon: AstroIcon,    descKey: "frameworks.astro.description" },
+    { name: "TanStack Start", icon: TanStackIcon, descKey: "frameworks.tanstack.description" },
+    { name: "Vite",           icon: ViteIcon,     descKey: "frameworks.vite.description" },
+    { name: "Expo",           icon: ExpoIcon,     descKey: "frameworks.expo.description" },
   ];
 
   const tools = [
@@ -88,7 +101,9 @@ function IntegrationsPage() {
                 key={fw.name}
                 className="p-5 rounded-xl bg-mist-50 border border-mist-100 hover:border-mist-300 transition-colors"
               >
-                <div className="text-2xl mb-3">{fw.icon}</div>
+                <div className="flex size-9 items-center justify-center rounded-xl border border-mist-100 bg-white text-mist-700 mb-3">
+                  <fw.icon className="size-[18px]" />
+                </div>
                 <h3 className="text-base font-medium text-mist-950">{fw.name}</h3>
                 <p className="mt-1 text-sm text-mist-600 leading-relaxed">{t(fw.descKey)}</p>
               </div>
