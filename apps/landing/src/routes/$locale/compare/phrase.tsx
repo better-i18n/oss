@@ -11,7 +11,7 @@ import {
 } from "@/components/ComparisonTable";
 import { UserComplaints } from "@/components/UserComplaints";
 import { WhySwitchSection } from "@/components/WhySwitchSection";
-import { getPageHead } from "@/lib/page-seo";
+import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
   IconCode,
@@ -21,7 +21,7 @@ import {
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/compare/phrase")({
-  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},

@@ -11,11 +11,11 @@ import DeveloperResources from "@/components/developers/DeveloperResources";
 import DeveloperIDESupport from "@/components/developers/DeveloperIDESupport";
 import DeveloperPainPromiseProof from "@/components/developers/DeveloperPainPromiseProof";
 import { RelatedPages } from "@/components/RelatedPages";
-import { getPageHead, getEducationalPageStructuredData, formatStructuredData } from "@/lib/page-seo";
+import { getPageHead, getEducationalPageStructuredData, formatStructuredData, createPageLoader } from "@/lib/page-seo";
 import { getHowToSchema } from "@/lib/structured-data";
 
 export const Route = createFileRoute("/$locale/for-developers")({
-  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
     const messages = loaderData?.messages || {};
     const locale = loaderData?.locale || "en";

@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { getPageHead, formatStructuredData } from "@/lib/page-seo";
+import { getPageHead, formatStructuredData, createPageLoader } from "@/lib/page-seo";
 import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
 import { SITE_URL } from "@/lib/meta";
 import { useT } from "@/lib/i18n";
 import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/")({
-  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
     const frameworkListSchema = getComparisonSchema({
       title: "i18n Framework Guides",
@@ -15,10 +15,17 @@ export const Route = createFileRoute("/$locale/i18n/")({
       items: [
         { name: "React i18n", description: "Type-safe React internationalization with hooks", url: `${SITE_URL}/en/i18n/react` },
         { name: "Next.js i18n", description: "Server-side i18n for Next.js apps", url: `${SITE_URL}/en/i18n/nextjs` },
+        { name: "TanStack Start i18n", description: "Full-stack localization for TanStack Start apps", url: `${SITE_URL}/en/i18n/tanstack-start` },
+        { name: "Vite i18n", description: "Fast frontend internationalization for Vite projects", url: `${SITE_URL}/en/i18n/vite` },
+        { name: "Remix & Hydrogen i18n", description: "Localized route-driven storefronts and server-rendered apps", url: `${SITE_URL}/en/i18n/remix-hydrogen` },
         { name: "Vue i18n", description: "Vue.js internationalization integration", url: `${SITE_URL}/en/i18n/vue` },
         { name: "Nuxt i18n", description: "Nuxt.js localization module", url: `${SITE_URL}/en/i18n/nuxt` },
         { name: "Angular i18n", description: "Angular internationalization support", url: `${SITE_URL}/en/i18n/angular` },
         { name: "Svelte i18n", description: "Svelte internationalization integration", url: `${SITE_URL}/en/i18n/svelte` },
+        { name: "Expo i18n", description: "React Native and Expo localization workflows", url: `${SITE_URL}/en/i18n/expo` },
+        { name: "iOS Localization", description: "SwiftUI and String Catalog localization for iOS apps", url: `${SITE_URL}/en/i18n/ios` },
+        { name: "Flutter Localization", description: "ARB-based localization for Flutter apps", url: `${SITE_URL}/en/i18n/flutter` },
+        { name: "Server-Side i18n", description: "Middleware-driven localization for APIs and edge runtimes", url: `${SITE_URL}/en/i18n/server` },
       ],
     });
 
@@ -37,10 +44,17 @@ export const Route = createFileRoute("/$locale/i18n/")({
 const frameworks = [
   { key: "react", name: "React", slug: "react", defaultDesc: "Type-safe React internationalization with hooks and context" },
   { key: "nextjs", name: "Next.js", slug: "nextjs", defaultDesc: "Server-side i18n for Next.js apps with App Router support" },
+  { key: "tanstackStart", name: "TanStack Start", slug: "tanstack-start", defaultDesc: "Full-stack i18n for TanStack Start with SSR and route-aware localization" },
+  { key: "vite", name: "Vite", slug: "vite", defaultDesc: "Fast frontend i18n for Vite projects with typed translation workflows" },
+  { key: "remixHydrogen", name: "Remix & Hydrogen", slug: "remix-hydrogen", defaultDesc: "Localized route-driven apps and storefront experiences" },
   { key: "vue", name: "Vue", slug: "vue", defaultDesc: "Vue.js internationalization with Composition API integration" },
   { key: "nuxt", name: "Nuxt", slug: "nuxt", defaultDesc: "Nuxt.js localization module with automatic routing" },
   { key: "angular", name: "Angular", slug: "angular", defaultDesc: "Angular internationalization with built-in i18n support" },
   { key: "svelte", name: "Svelte", slug: "svelte", defaultDesc: "Lightweight Svelte internationalization integration" },
+  { key: "expo", name: "Expo", slug: "expo", defaultDesc: "Offline-ready localization for Expo and React Native apps" },
+  { key: "ios", name: "iOS", slug: "ios", defaultDesc: "String Catalog and SwiftUI localization for native iOS apps" },
+  { key: "flutter", name: "Flutter", slug: "flutter", defaultDesc: "ARB-based localization for Flutter mobile and web apps" },
+  { key: "server", name: "Server", slug: "server", defaultDesc: "Middleware-based internationalization for APIs and edge runtimes" },
 ];
 
 const topics = [

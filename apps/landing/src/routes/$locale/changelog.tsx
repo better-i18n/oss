@@ -13,16 +13,21 @@ import {
 import { getChangelogs, type ChangelogEntry } from "@/lib/changelog";
 import { getDefaultStructuredData } from "@/lib/structured-data";
 import { withTimeout } from "@/lib/fetch-utils";
+import { getMessages } from "@better-i18n/use-intl/server";
+import { i18nConfig } from "@/i18n.config";
 
 export const Route = createFileRoute("/$locale/changelog")({
   loader: async ({ context, params }) => {
     const locale = params.locale as "en" | "tr";
     // Wrap with 4s timeout so the page renders even if the content API is slow.
     // Client-side useQuery will retry on navigation.
-    const releases = await withTimeout(getChangelogs(locale), 4000, []);
+    const [messages, releases] = await Promise.all([
+      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      withTimeout(getChangelogs(locale), 4000, []),
+    ]);
 
     return {
-      messages: context.messages,
+      messages,
       locale: context.locale,
       locales: context.locales,
       releases,

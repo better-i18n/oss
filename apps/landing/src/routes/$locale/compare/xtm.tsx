@@ -9,7 +9,7 @@ import {
   ComparisonRelatedTopics,
   type ComparisonFeature,
 } from "@/components/ComparisonTable";
-import { getPageHead } from "@/lib/page-seo";
+import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
   IconCode,
@@ -21,7 +21,7 @@ import { UserComplaints } from "@/components/UserComplaints";
 import { WhySwitchSection } from "@/components/WhySwitchSection";
 
 export const Route = createFileRoute("/$locale/compare/xtm")({
-  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},

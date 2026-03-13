@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { getPageHead } from "@/lib/page-seo";
+import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
   IconCheckmark1,
@@ -12,7 +12,7 @@ import {
 export const Route = createFileRoute(
   "/$locale/i18n/localization-vs-internationalization",
 )({
-  loader: ({ context }) => ({ messages: context.messages, locale: context.locale, locales: context.locales }),
+  loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},
