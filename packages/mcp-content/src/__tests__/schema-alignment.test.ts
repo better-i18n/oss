@@ -532,6 +532,7 @@ describe("response type conformance", () => {
       kind: "collection",
       ico: null,
       vh: true,
+      ib: false,
       flds: [],
     };
     expect(response).toHaveProperty("id");
@@ -541,6 +542,7 @@ describe("response type conformance", () => {
     expect(response).toHaveProperty("kind");
     expect(response).toHaveProperty("ico");
     expect(response).toHaveProperty("vh");
+    expect(response).toHaveProperty("ib");
     expect(response).toHaveProperty("flds");
     expect(Array.isArray(response.flds)).toBe(true);
   });
@@ -653,6 +655,7 @@ describe("response type conformance", () => {
           kind: "collection",
           ico: "newspaper",
           ec: 42,
+          ib: false,
           flds: [],
         },
       ],
@@ -671,6 +674,7 @@ describe("response type conformance", () => {
       kind: "collection",
       ico: null,
       ec: 10,
+      ib: false,
       flds: [],
     };
     // ec (entry count) is on summary
@@ -685,6 +689,7 @@ describe("response type conformance", () => {
       kind: "collection",
       ico: null,
       vh: true,
+      ib: false,
       flds: [],
     };
     expect(detail).toHaveProperty("vh");
@@ -750,6 +755,7 @@ describe("response type conformance", () => {
         kind: "collection",
         ico: null,
         ec: 5,
+        ib: false,
         flds: [],
       },
       cfv: {},
