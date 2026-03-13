@@ -63,14 +63,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       const search = location.searchStr || "";
       const hash = location.hash || "";
 
-      // SSR context'te Accept-Language header'ı, client'ta navigator.languages kullan
-      // Dynamic import: statik import @tanstack/react-start/server'ı module chain'e çekip
-      // Vite'ın router-manifest.js'i analiz etmesine ve virtual module hatasına neden olur.
-      const request = typeof window === "undefined"
-        ? await import("@tanstack/react-start/server").then((m) => m.getRequest())
-        : null;
       const detectedLocale = detectLocale({
-        request,
         availableLocales: locales,
         defaultLocale: i18nConfig.defaultLocale,
       });
