@@ -19,6 +19,7 @@ better-i18n-oss/
 │   ├── server/        # Server-side (Hono + Node.js)
 │   ├── mcp/           # MCP server for AI agent integration
 │   ├── mcp-content/   # MCP content management tools
+│   ├── mcp-types/     # Shared types/schemas — synced from internal, DO NOT edit manually
 │   ├── cli/           # CLI tool
 │   ├── sdk/           # SDK
 │   ├── schemas/       # Shared schemas
@@ -55,6 +56,23 @@ When modifying MCP tools, always consider:
 3. **Add warnings to response** (reactive — catches misuse after the fact)
 
 **Reference incident:** An AI agent created 1005 phantom keys by using `createKeys` with wrong namespace instead of `updateKeys`. This led to cross-namespace warnings and improved tool descriptions.
+
+## packages/mcp-types — Kaynak Yönetimi (KRİTİK)
+
+`packages/mcp-types/src/` dosyaları **internal repodan otomatik olarak sync'lenir**.
+Bu dizindeki dosyaları elle düzenleme — değişiklikler bir sonraki sync'te kaybolur.
+
+### Değişiklik yapmak için
+
+1. Internal repoda (`packages/mcp-types/src/`) düzenlemeyi yap
+2. Internal'de çalıştır: `bun run sync:mcp-types`
+3. OSS'e gelen değişikliği commit et
+
+### Neden `private: true`?
+
+Bu paket npm'e publish edilmez. OSS release script'i `private: true` olan
+paketleri otomatik atlar. `packages/mcp` ve `packages/mcp-content` ise
+`workspace:*` ile bu paketi doğrudan kaynak olarak kullanır.
 
 ## Testing (CRITICAL)
 
