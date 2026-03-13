@@ -1,5 +1,6 @@
 {
   "title": "Next.js",
+  "icon": "NextjsIcon",
   "defaultOpen": false,
   "pages": [
     "index",
