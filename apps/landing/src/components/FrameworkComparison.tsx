@@ -305,7 +305,11 @@ const allFrameworks = [
   { name: "Nuxt", slug: "nuxt" },
   { name: "Angular", slug: "angular" },
   { name: "Svelte", slug: "svelte" },
+  { name: "Vite", slug: "vite" },
+  { name: "Remix & Hydrogen", slug: "remix-hydrogen" },
   { name: "Expo", slug: "expo" },
+  { name: "iOS", slug: "ios" },
+  { name: "Flutter", slug: "flutter" },
   { name: "TanStack Start", slug: "tanstack-start" },
   { name: "Server / Hono", slug: "server" },
 ];
@@ -333,7 +337,11 @@ export function OtherFrameworks({
                   | "/$locale/i18n/nuxt"
                   | "/$locale/i18n/angular"
                   | "/$locale/i18n/svelte"
+                  | "/$locale/i18n/vite"
+                  | "/$locale/i18n/remix-hydrogen"
                   | "/$locale/i18n/expo"
+                  | "/$locale/i18n/ios"
+                  | "/$locale/i18n/flutter"
                   | "/$locale/i18n/tanstack-start"
                   | "/$locale/i18n/server"
               }

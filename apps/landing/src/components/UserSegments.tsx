@@ -1,316 +1,164 @@
+import { Link, useParams } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
 import {
-  IconGlobe,
+  IconArrowRight,
   IconCode,
+  IconGlobe,
   IconGroup1,
-  IconGithub,
-  IconCheckmark1,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import type { ComponentType } from "react";
 
-function TranslatorsCard() {
-  const t = useT("segments.translators");
+type SegmentCardProps = {
+  accentClassName: string;
+  icon: ComponentType<{ className?: string }>;
+  id: string;
+  namespace: string;
+  to:
+    | "/$locale/for-developers"
+    | "/$locale/for-product-teams"
+    | "/$locale/for-translators";
+  locale: string;
+};
 
-  return (
-    <div
-      id="for-translators"
-      className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-sm scroll-mt-24"
-    >
-      {/* Visual Demo Area */}
-      <div className="h-[280px] bg-gradient-to-br from-blue-50 to-mist-50 relative overflow-hidden p-6 flex flex-col items-center justify-center shrink-0">
-        <div className="size-20 rounded-2xl bg-white border border-mist-200 shadow-lg flex items-center justify-center mb-4">
-          <IconGlobe className="w-10 h-10 text-blue-600" />
-        </div>
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-mist-200 rounded-full shadow-sm">
-            <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-medium text-mist-700">
-              {t("statusBadge", { defaultValue: "AI-Powered" })}
-            </span>
-          </div>
-        </div>
-      </div>
+function SegmentCard({
+  accentClassName,
+  icon: Icon,
+  id,
+  locale,
+  namespace,
+  to,
+}: SegmentCardProps) {
+  const t = useT(namespace);
 
-      {/* Content */}
-      <div className="p-6 flex-1 flex flex-col">
-        <h3 className="text-xl font-semibold text-mist-950">
-          {t("title", { defaultValue: "For Translators" })}
-        </h3>
-        <p className="mt-3 text-base text-mist-700 leading-relaxed">
-          {t("description", {
-            defaultValue:
-              "Ship translations faster with AI-powered suggestions backed by your brand glossary. Review and approve in one place, then publish instantly to CDN or GitHub.",
-          })}
-        </p>
-
-        {/* Key Features */}
-        <div className="mt-6 space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="size-5 rounded-full bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
-              <IconCheckmark1 className="size-3 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-mist-950">
-                {t("feature1Title", { defaultValue: "Context-Aware AI" })}
-              </p>
-              <p className="text-xs text-mist-600 mt-0.5">
-                {t("feature1Desc", {
-                  defaultValue: "Translations that match your brand voice",
-                })}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="size-5 rounded-full bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
-              <IconCheckmark1 className="size-3 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-mist-950">
-                {t("feature2Title", {
-                  defaultValue: "Human-in-the-Loop",
-                })}
-              </p>
-              <p className="text-xs text-mist-600 mt-0.5">
-                {t("feature2Desc", {
-                  defaultValue: "Review, edit, and approve before publishing",
-                })}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="size-5 rounded-full bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
-              <IconCheckmark1 className="size-3 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-mist-950">
-                {t("feature3Title", {
-                  defaultValue: "Instant Publishing",
-                })}
-              </p>
-              <p className="text-xs text-mist-600 mt-0.5">
-                {t("feature3Desc", {
-                  defaultValue: "Push to CDN or GitHub with one click",
-                })}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DevelopersCard() {
-  const t = useT("segments.developers");
+  const features = [
+    t("feature1Title", { defaultValue: "Feature One" }),
+    t("feature2Title", { defaultValue: "Feature Two" }),
+  ];
 
   return (
-    <div
-      id="for-developers"
-      className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-sm scroll-mt-24"
+    <Link
+      id={id}
+      to={to}
+      params={{ locale }}
+      className="group flex h-full scroll-mt-24 flex-col rounded-2xl border border-mist-200 bg-white p-5 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:border-mist-300 hover:shadow-md"
     >
-      {/* Visual Demo Area */}
-      <div className="h-[280px] bg-gradient-to-br from-violet-50 to-mist-50 relative overflow-hidden p-6 flex flex-col items-center justify-center shrink-0">
-        <div className="size-20 rounded-2xl bg-white border border-mist-200 shadow-lg flex items-center justify-center mb-4">
-          <IconCode className="w-10 h-10 text-violet-600" />
-        </div>
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-mist-200 rounded-full shadow-sm">
-            <IconGithub className="size-3 text-mist-900" />
-            <span className="text-xs font-medium text-mist-700">
-              {t("statusBadge", { defaultValue: "GitHub Integration" })}
-            </span>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div
+            className={`flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/80 bg-white shadow-sm ${accentClassName}`}
+          >
+            <Icon className="size-5" />
+          </div>
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-mist-500">
+              {t("statusBadge", { defaultValue: "Team Workflow" })}
+            </p>
+            <h3 className="mt-2 text-lg font-semibold text-mist-950">
+              {t("title", { defaultValue: "For Teams" })}
+            </h3>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="p-6 flex-1 flex flex-col">
-        <h3 className="text-xl font-semibold text-mist-950">
-          {t("title", { defaultValue: "For Developers" })}
-        </h3>
-        <p className="mt-3 text-base text-mist-700 leading-relaxed">
-          {t("description", {
-            defaultValue:
-              "Build smarter with automatic key discovery from your codebase. Type-safe SDKs for React, Next.js, and more. Deploy instantly to global CDN with zero config.",
-          })}
-        </p>
-
-        {/* Key Features */}
-        <div className="mt-6 space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="size-5 rounded-full bg-violet-50 flex items-center justify-center shrink-0 mt-0.5">
-              <IconCheckmark1 className="size-3 text-violet-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-mist-950">
-                {t("feature1Title", { defaultValue: "Auto Key Discovery" })}
-              </p>
-              <p className="text-xs text-mist-600 mt-0.5">
-                {t("feature1Desc", {
-                  defaultValue: "Scans your repo and finds all translation keys",
-                })}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="size-5 rounded-full bg-violet-50 flex items-center justify-center shrink-0 mt-0.5">
-              <IconCheckmark1 className="size-3 text-violet-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-mist-950">
-                {t("feature2Title", { defaultValue: "Type-Safe SDKs" })}
-              </p>
-              <p className="text-xs text-mist-600 mt-0.5">
-                {t("feature2Desc", {
-                  defaultValue: "Full TypeScript support with autocomplete",
-                })}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="size-5 rounded-full bg-violet-50 flex items-center justify-center shrink-0 mt-0.5">
-              <IconCheckmark1 className="size-3 text-violet-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-mist-950">
-                {t("feature3Title", { defaultValue: "Global CDN" })}
-              </p>
-              <p className="text-xs text-mist-600 mt-0.5">
-                {t("feature3Desc", {
-                  defaultValue: "Instant updates, cached at the edge worldwide",
-                })}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ProductTeamsCard() {
-  const t = useT("segments.productTeams");
-
-  return (
-    <div
-      id="for-product-teams"
-      className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-sm scroll-mt-24"
-    >
-      {/* Visual Demo Area */}
-      <div className="h-[280px] bg-gradient-to-br from-amber-50 to-mist-50 relative overflow-hidden p-6 flex flex-col items-center justify-center shrink-0">
-        <div className="size-20 rounded-2xl bg-white border border-mist-200 shadow-lg flex items-center justify-center mb-4">
-          <IconGroup1 className="w-10 h-10 text-amber-600" />
-        </div>
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-mist-200 rounded-full shadow-sm">
-            <IconGroup1 className="size-3 text-amber-600" />
-            <span className="text-xs font-medium text-mist-700">
-              {t("statusBadge", { defaultValue: "Team Collaboration" })}
-            </span>
-          </div>
+        <div className="rounded-full border border-mist-200 bg-white p-2 text-mist-400 transition-colors group-hover:text-mist-700">
+          <IconArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-6 flex-1 flex flex-col">
-        <h3 className="text-xl font-semibold text-mist-950">
-          {t("title", { defaultValue: "For Product Teams" })}
-        </h3>
-        <p className="mt-3 text-base text-mist-700 leading-relaxed">
-          {t("description", {
-            defaultValue:
-              "Launch globally faster by managing all languages from one dashboard. Track progress in real-time, coordinate with translators and developers, and ship updates instantly.",
-          })}
-        </p>
+      <p className="mt-4 text-sm leading-7 text-mist-700">
+        {t("description", {
+          defaultValue: "Built to support your localization workflow.",
+        })}
+      </p>
 
-        {/* Key Features */}
-        <div className="mt-6 space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="size-5 rounded-full bg-amber-50 flex items-center justify-center shrink-0 mt-0.5">
-              <IconCheckmark1 className="size-3 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-mist-950">
-                {t("feature1Title", {
-                  defaultValue: "Centralized Dashboard",
-                })}
-              </p>
-              <p className="text-xs text-mist-600 mt-0.5">
-                {t("feature1Desc", {
-                  defaultValue: "All languages, all projects, one place",
-                })}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="size-5 rounded-full bg-amber-50 flex items-center justify-center shrink-0 mt-0.5">
-              <IconCheckmark1 className="size-3 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-mist-950">
-                {t("feature2Title", { defaultValue: "Progress Tracking" })}
-              </p>
-              <p className="text-xs text-mist-600 mt-0.5">
-                {t("feature2Desc", {
-                  defaultValue:
-                    "Real-time visibility into translation completion",
-                })}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="size-5 rounded-full bg-amber-50 flex items-center justify-center shrink-0 mt-0.5">
-              <IconCheckmark1 className="size-3 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-mist-950">
-                {t("feature3Title", { defaultValue: "Instant Deployment" })}
-              </p>
-              <p className="text-xs text-mist-600 mt-0.5">
-                {t("feature3Desc", {
-                  defaultValue: "Ship approved translations to production immediately",
-                })}
-              </p>
-            </div>
-          </div>
-        </div>
+      <div className="mt-5 flex flex-wrap gap-2">
+        {features.map((feature) => (
+          <span
+            key={feature}
+            className="inline-flex items-center rounded-full border border-mist-200 bg-white px-3 py-1 text-xs font-medium text-mist-700"
+          >
+            {feature}
+          </span>
+        ))}
       </div>
-    </div>
+
+      <p className="mt-4 text-sm text-mist-500">
+        {t("feature3Title", { defaultValue: "More workflow support" })}
+      </p>
+    </Link>
   );
 }
 
 export default function UserSegments() {
   const t = useT("userSegments");
+  const { locale } = useParams({ strict: false });
+  const currentLocale = locale || "en";
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="flex flex-col gap-16">
-          {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("title", {
-                defaultValue: "Built for Every Team",
-              })}
-            </h2>
-            <p className="mt-4 text-lg/8 text-mist-700">
-              {t("subtitle", {
-                defaultValue:
-                  "Whether you're translating, building, or managing - Better i18n adapts to your workflow.",
-              })}
-            </p>
+        <div className="space-y-10">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <h2 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
+                {t("title", {
+                  defaultValue: "Built for Every Team",
+                })}
+              </h2>
+              <p className="mt-4 text-lg text-mist-700">
+                {t("subtitle", {
+                  defaultValue:
+                    "Whether you're translating, building, or managing - Better i18n adapts to your workflow.",
+                })}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2 lg:max-w-xl lg:justify-end">
+              <span className="inline-flex items-center rounded-full border border-mist-200 bg-mist-50/60 px-3 py-1.5 text-sm text-mist-700">
+                {t("highlight1", {
+                  defaultValue:
+                    "AI assistance where translators still keep approval control.",
+                })}
+              </span>
+              <span className="inline-flex items-center rounded-full border border-mist-200 bg-mist-50/60 px-3 py-1.5 text-sm text-mist-700">
+                {t("highlight2", {
+                  defaultValue:
+                    "Git-native tooling that fits existing developer workflows.",
+                })}
+              </span>
+              <span className="inline-flex items-center rounded-full border border-mist-200 bg-mist-50/60 px-3 py-1.5 text-sm text-mist-700">
+                {t("highlight3", {
+                  defaultValue:
+                    "Shared visibility for product, engineering, and localization.",
+                })}
+              </span>
+            </div>
           </div>
 
-          {/* Segment Cards Grid */}
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 items-stretch">
-            <TranslatorsCard />
-            <DevelopersCard />
-            <ProductTeamsCard />
+          <div className="grid gap-4 lg:grid-cols-3">
+            <SegmentCard
+              id="for-translators"
+              namespace="segments.translators"
+              icon={IconGlobe}
+              accentClassName="text-sky-700"
+              to="/$locale/for-translators"
+              locale={currentLocale}
+            />
+            <SegmentCard
+              id="for-developers"
+              namespace="segments.developers"
+              icon={IconCode}
+              accentClassName="text-indigo-700"
+              to="/$locale/for-developers"
+              locale={currentLocale}
+            />
+            <SegmentCard
+              id="for-product-teams"
+              namespace="segments.productTeams"
+              icon={IconGroup1}
+              accentClassName="text-amber-700"
+              to="/$locale/for-product-teams"
+              locale={currentLocale}
+            />
           </div>
         </div>
       </div>
