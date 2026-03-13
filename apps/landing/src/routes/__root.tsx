@@ -13,7 +13,7 @@ import {
   getLocaleFromPath,
   useTranslations,
 } from "@better-i18n/use-intl";
-import { getMessages, detectLocale } from "@better-i18n/use-intl/server";
+import { getMessages, getLanguages, detectLocale } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
 import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
@@ -83,11 +83,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   },
 
   loader: async ({ context }) => {
-    const messages = await getMessages({
-      project: i18nConfig.project,
-      locale: context.locale,
-    });
-    return { locale: context.locale, locales: context.locales, messages };
+    const [messages, languages] = await Promise.all([
+      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      getLanguages({ project: i18nConfig.project }),
+    ]);
+    return { locale: context.locale, locales: context.locales, messages, languages };
   },
 
   head: () => {
@@ -199,7 +199,7 @@ function NotFoundPage() {
 
 function RootComponent() {
   const { locale, locales } = Route.useRouteContext();
-  const { messages } = Route.useLoaderData();
+  const { messages, languages } = Route.useLoaderData();
 
   useEffect(() => {
     if (import.meta.env.DEV) {
@@ -240,6 +240,7 @@ function RootComponent() {
             locale={locale}
             messages={messages}
             timeZone="UTC"
+            initialLanguages={languages}
             getMessageFallback={({ key }) => {
               const lastSegment = key.split(".").pop() || key;
               return lastSegment

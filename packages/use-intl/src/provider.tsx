@@ -9,6 +9,8 @@ import type { BetterI18nProviderConfig, Messages } from "./types.js";
 
 export interface BetterI18nProviderProps extends BetterI18nProviderConfig {
   children: ReactNode;
+  /** Pre-loaded languages from SSR loader — skips loading state on first render */
+  initialLanguages?: LanguageOption[];
   /** Custom fallback when a message key is missing */
   getMessageFallback?: (info: {
     error: Error;
@@ -68,6 +70,7 @@ export function BetterI18nProvider({
   staticData,
   fetchTimeout,
   retryCount,
+  initialLanguages,
   getMessageFallback: customGetMessageFallback,
 }: BetterI18nProviderProps) {
   // Locale is controlled by props (from URL/router)
@@ -77,9 +80,9 @@ export function BetterI18nProvider({
   // synchronous derivation avoids the useEffect delay that causes white flash on hydration.
   const [clientMessages, setClientMessages] = useState<Messages | undefined>();
   const messages = propMessages ?? clientMessages;
-  const [languages, setLanguages] = useState<LanguageOption[]>([]);
+  const [languages, setLanguages] = useState<LanguageOption[]>(initialLanguages ?? []);
   const [isLoadingMessages, setIsLoadingMessages] = useState(propMessages === undefined);
-  const [isLoadingLanguages, setIsLoadingLanguages] = useState(true);
+  const [isLoadingLanguages, setIsLoadingLanguages] = useState(!initialLanguages);
 
   // Create i18n core instance
   const i18nCore = useMemo(
