@@ -2,13 +2,8 @@ import { getCachedLocales } from "./locales";
 import { SITE_URL } from "@/seo/pages";
 import { getActiveVariant } from "@/seo/title-variants";
 const SITE_NAME = "Better i18n";
-/**
- * OG image service is currently down (404).
- * Falling back to static logo until the service is restored.
- * TODO: restore dynamic OG images when og.better-i18n.com is live
- * OG_SERVICE_URL was: "https://og.better-i18n.com"
- */
-const DEFAULT_OG_IMAGE = `https://better-i18n.com/logo.png`;
+const OG_SERVICE_URL = "https://og.better-i18n.com";
+const DEFAULT_OG_IMAGE = `${OG_SERVICE_URL}/og`;
 const TWITTER_HANDLE = "@betteri18n";
 const MAX_TITLE_LENGTH = 70;
 const BRAND_SUFFIX_SEPARATOR_PIPE = ` | ${SITE_NAME}`;
@@ -258,16 +253,18 @@ export function getCanonicalLink(locale: string, pathname: string = "/") {
 
 /**
  * Builds a dynamic OG image URL via the OG image service.
- * Currently returns static fallback since og.better-i18n.com is down (404).
- * TODO: restore dynamic OG images when the service is live
  */
 export function buildOgImageUrl(
-  _endpoint: "og" | "og/blog" | "og/docs",
-  _params: Record<string, string | undefined>
+  endpoint: "og" | "og/blog" | "og/docs",
+  params: Record<string, string | undefined>
 ): string {
-  // OG image service is down — return static fallback
-  return DEFAULT_OG_IMAGE;
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value) searchParams.set(key, value);
+  }
+  const qs = searchParams.toString();
+  return qs ? `${OG_SERVICE_URL}/${endpoint}?${qs}` : `${OG_SERVICE_URL}/${endpoint}`;
 }
 
 export { SITE_URL } from "@/seo/pages";
-export { SITE_NAME, DEFAULT_OG_IMAGE, TWITTER_HANDLE };
+export { SITE_NAME, DEFAULT_OG_IMAGE, OG_SERVICE_URL, TWITTER_HANDLE };

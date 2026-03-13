@@ -147,6 +147,7 @@ const ENGLISH_PAGE_TITLES: Readonly<Record<string, string>> = {
   "i18n/android": "Android Localization Guide", "i18n/ios": "iOS Localization Guide",
   "i18n/flutter": "Flutter Localization Guide", "i18n/expo": "Expo i18n Guide",
   "i18n/server": "Server-Side i18n Guide", "i18n/tanstack-start": "TanStack Start i18n Guide",
+  "i18n/vite": "Vite i18n Guide", "i18n/remix-hydrogen": "Remix & Hydrogen i18n Guide",
   "i18n/react-intl": "React Intl Guide", "i18n/react-native-localization": "React Native Localization",
   "i18n/for-developers": "i18n for Developers",
   compare: "Comparisons Overview", "compare/crowdin": "Better i18n vs Crowdin",
@@ -218,6 +219,8 @@ const ENGLISH_PAGE_DESCRIPTIONS: Readonly<Record<string, string>> = {
   "i18n/react": "Step-by-step React i18n setup with @better-i18n/use-intl, hooks, and context API.",
   "i18n/nextjs": "Next.js App Router i18n with Server Components, middleware locale detection, and SSR.",
   "i18n/vue": "Vue 3 Composition API i18n integration with reactive translations and lazy loading.",
+  "i18n/vite": "Vite internationalization for fast frontend projects with typed translations and CDN-delivered messages.",
+  "i18n/remix-hydrogen": "Remix and Hydrogen localization with server-loaded locale state and SEO-friendly storefront content.",
   "i18n/doctor": "Automated translation health checks — missing keys, unused translations, inconsistencies.",
 };
 
@@ -285,7 +288,8 @@ const STATIC_SECTIONS: readonly LlmsTxtSectionDef[] = [
     paths: [
       "i18n", "i18n/react", "i18n/nextjs", "i18n/vue", "i18n/nuxt",
       "i18n/angular", "i18n/svelte", "i18n/expo", "i18n/server",
-      "i18n/tanstack-start", "i18n/react-intl", "i18n/react-native-localization",
+      "i18n/tanstack-start", "i18n/vite", "i18n/remix-hydrogen",
+      "i18n/react-intl", "i18n/react-native-localization",
       "i18n/django", "i18n/ruby", "i18n/javascript", "i18n/android",
       "i18n/ios", "i18n/flutter", "i18n/for-developers",
     ],

@@ -9,6 +9,23 @@ let _cachedLocales: string[] | null = null;
  */
 export async function fetchLocales(): Promise<string[]> {
   if (_cachedLocales) return _cachedLocales;
+
+  // Client-side: read from SSR-injected script tag to avoid a CDN round-trip
+  if (typeof document !== "undefined") {
+    const el = document.getElementById("__i18n_locales__");
+    if (el?.textContent) {
+      try {
+        const parsed = JSON.parse(el.textContent);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          _cachedLocales = parsed;
+          return _cachedLocales;
+        }
+      } catch {
+        // parse failed → fall through to CDN fetch
+      }
+    }
+  }
+
   _cachedLocales = await getLocales({ project: i18nConfig.project });
   return _cachedLocales;
 }

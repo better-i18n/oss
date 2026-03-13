@@ -683,9 +683,9 @@ export function getPricingPageStructuredData(options?: {
       name: messages?.["schema.product.name"] ?? `${SITE_NAME} Translation Management`,
       description: messages?.["schema.product.description"] ?? "AI-powered translation management system for developers",
       offers: [
-        { name: "Free", price: 0, priceCurrency: "USD", description: messages?.["schema.offers.free.planDescription"] ?? "For hobby projects", url: pricingUrl },
-        { name: "Pro", price: 19, priceCurrency: "USD", description: messages?.["schema.offers.pro.planDescription"] ?? "For growing teams", url: pricingUrl },
-        { name: "Enterprise", price: 0, priceCurrency: "USD", description: messages?.["schema.offers.enterprise.planDescription"] ?? "Custom pricing", url: pricingUrl },
+        { name: "Free", price: 0, priceCurrency: "USD", description: messages?.["schema.offers.free.planDescription"] ?? "Perfect for side projects and open source", url: pricingUrl },
+        { name: "Pro", price: 19, priceCurrency: "USD", description: messages?.["schema.offers.pro.planDescription"] ?? "Advanced features for scaling teams", url: pricingUrl },
+        { name: "Enterprise", price: 0, priceCurrency: "USD", description: messages?.["schema.offers.enterprise.planDescription"] ?? "Custom solutions for large organizations", url: pricingUrl },
       ],
     }),
   ]);
