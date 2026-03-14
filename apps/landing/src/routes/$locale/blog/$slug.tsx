@@ -337,7 +337,7 @@ function BlogPostPage() {
                   title={cta.title}
                   description={cta.description}
                   ctaText={cta.ctaText}
-                  ctaUrl={`/${locale}${cta.ctaUrl.startsWith("/") ? cta.ctaUrl : `/${cta.ctaUrl}`}/`}
+                  ctaUrl={cta.ctaUrl.startsWith("http") ? cta.ctaUrl : `/${locale}${cta.ctaUrl}/`}
                 />
 
                 {/* Internal links — topical cluster connections */}
@@ -386,7 +386,7 @@ function BlogPostPage() {
       {/* Floating CTA — appears after 40% scroll */}
       <FloatingCTA
         ctaText={cta.ctaText}
-        ctaUrl={`/${locale}${cta.ctaUrl.startsWith("/") ? cta.ctaUrl : `/${cta.ctaUrl}`}/`}
+        ctaUrl={cta.ctaUrl.startsWith("http") ? cta.ctaUrl : `/${locale}${cta.ctaUrl}/`}
       />
     </div>
   );
