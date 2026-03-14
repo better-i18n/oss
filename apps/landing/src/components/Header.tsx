@@ -64,13 +64,6 @@ export default function Header({ className }: { className?: string }) {
             >
               {t("features", { defaultValue: "Features" })}
             </Link>
-            <Link
-              to="/$locale/tools"
-              params={{ locale: locale || "en" }}
-              className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
-            >
-              {t("tools", { defaultValue: "Tools" })}
-            </Link>
             {/* For Product Mega Menu */}
             <div className="relative group">
               <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
@@ -567,6 +560,18 @@ export default function Header({ className }: { className?: string }) {
                         <IconGlobe className="size-4 text-mist-600" />
                         <span className="text-sm font-medium text-mist-950">
                           {t("resources.whatIsI18n", { defaultValue: "What is i18n?" })}
+                        </span>
+                      </Link>
+
+                      {/* Free Tools */}
+                      <Link
+                        to="/$locale/tools"
+                        params={{ locale: locale || "en" }}
+                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
+                      >
+                        <IconCodeBrackets className="size-4 text-mist-600" />
+                        <span className="text-sm font-medium text-mist-950">
+                          {t("resources.freeTools", { defaultValue: "Free Tools" })}
                         </span>
                       </Link>
                     </div>
