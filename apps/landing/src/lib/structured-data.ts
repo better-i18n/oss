@@ -386,7 +386,7 @@ export function getProductSchema(options: {
       ...(offer.description && { description: offer.description }),
       ...(offer.url && { url: offer.url }),
       availability: "https://schema.org/InStock",
-      priceValidUntil: "2026-12-31",
+      priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
     })),
   };
 }

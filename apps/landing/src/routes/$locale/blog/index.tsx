@@ -28,6 +28,7 @@ import {
 } from "@/lib/structured-data";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
+import { getLocaleTier } from "@/seo/locale-tiers";
 
 const loadBlogPosts = createServerFn({ method: "GET" })
   .inputValidator((data: { locale: string }) => data)
@@ -77,7 +78,7 @@ export const Route = createFileRoute("/$locale/blog/")({
     ]);
 
     return {
-      meta: formatMetaTags(meta, { locale, locales: loaderData?.locales }),
+      meta: formatMetaTags(meta, { locale, locales: loaderData?.locales, noindex: getLocaleTier(locale) === "tier3" }),
       links: [
         ...getAlternateLinks(pathname, loaderData?.locales),
         getCanonicalLink(locale, pathname),
