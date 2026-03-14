@@ -34,13 +34,8 @@ export function LanguageSwitcher() {
     navigate(newLocale);
   };
 
-  if (!isReady || isLoadingLangs) {
-    return (
-      <div className="h-9 w-28 animate-pulse rounded-md bg-mist-100" />
-    );
-  }
-
-  const currentLanguage = languages.find((l) => l.code === locale);
+  const isLoading = !isReady || isLoadingLangs;
+  const currentLanguage = isLoading ? undefined : languages.find((l) => l.code === locale);
 
   return (
     <DropdownMenu>
@@ -48,7 +43,11 @@ export function LanguageSwitcher() {
         <Button
           variant="ghost"
           size="sm"
-          className="h-9 px-3 font-medium text-mist-600 hover:text-mist-950 hover:bg-mist-100"
+          disabled={isLoading}
+          className={cn(
+            "h-9 px-3 font-medium text-mist-600 hover:text-mist-950 hover:bg-mist-100",
+            isLoading && "animate-pulse",
+          )}
         >
           {currentLanguage?.flagUrl ? (
             <img

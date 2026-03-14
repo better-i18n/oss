@@ -102,8 +102,10 @@ export function BetterI18nProvider({
     [project, locale, cdnBaseUrl, debug, logLevel, customFetch, storage, staticData, fetchTimeout, retryCount]
   );
 
-  // Load languages on mount
+  // Load languages on mount — skip if SSR already provided them
   useEffect(() => {
+    if (initialLanguages) return;
+
     let cancelled = false;
 
     const loadLanguages = async () => {
@@ -126,7 +128,7 @@ export function BetterI18nProvider({
     return () => {
       cancelled = true;
     };
-  }, [i18nCore]);
+  }, [i18nCore, initialLanguages]);
 
   // Load messages when locale changes and no pre-loaded messages available
   useEffect(() => {

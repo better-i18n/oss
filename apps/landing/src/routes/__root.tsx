@@ -6,7 +6,7 @@ import {
   Link,
   redirect,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   BetterI18nProvider,
@@ -21,14 +21,16 @@ import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes cache
-      refetchOnWindowFocus: false,
+function createQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 5 * 60 * 1000, // 5 minutes cache
+        refetchOnWindowFocus: false,
+      },
     },
-  },
-});
+  });
+}
 
 interface RouterContext {
   locale: string;
@@ -91,7 +93,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     // Only serialize the namespaces this page actually needs.
     // Reduces HTML payload from ~40KB to ~3-5KB per page.
     const messages = filterMessagesByPath(allMessages, location.pathname);
-    return { locale: context.locale, locales: context.locales, messages, languages };
+    const now = new Date();
+    return { locale: context.locale, locales: context.locales, messages, languages, now };
   },
 
   head: () => {
@@ -192,7 +195,9 @@ function NotFoundPage() {
 
 function RootComponent() {
   const { locale, locales } = Route.useRouteContext();
-  const { messages, languages } = Route.useLoaderData();
+  const { messages, languages, now } = Route.useLoaderData();
+  // Per-mount QueryClient — prevents cross-request cache leak on CF Workers
+  const [queryClient] = useState(createQueryClient);
 
   useEffect(() => {
     if (import.meta.env.DEV) {
@@ -233,6 +238,7 @@ function RootComponent() {
             locale={locale}
             messages={messages}
             timeZone="UTC"
+            now={now}
             initialLanguages={languages}
             getMessageFallback={({ key }) => {
               const lastSegment = key.split(".").pop() || key;
