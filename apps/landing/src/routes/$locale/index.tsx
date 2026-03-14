@@ -38,12 +38,13 @@ export const Route = createFileRoute("/$locale/")({
       getMessages({ project: i18nConfig.project, locale: context.locale }),
       withTimeout(getChangelogsMeta(locale), 3000, []),
     ]);
-    // head() only accesses meta.home.*, hero.{title,subtitle}, testimonials.{N}.quote
+    // head() only accesses meta.home.*, hero.{title,subtitle}, testimonials.{N}.quote, homeFaq.{N}.*
     const messages = filterMessages(allMessages, [
       "meta",
       "breadcrumbs",
       "hero",
       "testimonials",
+      "homeFaq",
     ]);
     return {
       messages,
@@ -90,6 +91,18 @@ export const Route = createFileRoute("/$locale/")({
       })
       .filter((item): item is { author: string; reviewBody: string } => item !== null);
 
+    // Extract localized FAQ items from i18n messages (homeFaq namespace)
+    const faqNs = (messages as Record<string, unknown>)?.homeFaq as
+      | Record<string, Record<string, string>>
+      | undefined;
+    const faqItems = [1, 2, 3, 4]
+      .map((i) => {
+        const question = faqNs?.[String(i)]?.question;
+        const answer = faqNs?.[String(i)]?.answer;
+        return question && answer ? { question, answer } : null;
+      })
+      .filter((item): item is { question: string; answer: string } => item !== null);
+
     return {
       meta: formatMetaTags(meta, { locale, locales: loaderData?.locales }),
       links: [
@@ -101,17 +114,9 @@ export const Route = createFileRoute("/$locale/")({
           reviews: reviewItems.length > 0 ? reviewItems : undefined,
           locale,
         }),
-        ...formatStructuredData(
-          getFAQSchema(
-            [
-              { question: "How is Better i18n different from Crowdin?", answer: "Better i18n is built for modern developer workflows with AI-powered translations, Git-native sync, and instant CDN delivery. Unlike Crowdin, there are no manual file imports or complex setup — just push code and translations sync automatically." },
-              { question: "Why switch from Lokalise to Better i18n?", answer: "Better i18n offers transparent pricing with a generous free tier for open source, AI chat for fixing translation errors in natural language, and automated i18n health checks that catch issues before your users do." },
-              { question: "How does Better i18n compare on pricing?", answer: "Better i18n is free for open source projects. Paid plans start lower than Crowdin, Lokalise, or Phrase, with no per-seat pricing and unlimited collaborators on all plans." },
-              { question: "What makes Better i18n unique for developers?", answer: "Better i18n integrates directly into your IDE via MCP, offers a CLI for CI/CD pipelines, provides Git-native workflows, and delivers translations via a global CDN with sub-50ms latency — no build step required." },
-            ],
-            locale,
-          )
-        ),
+        ...(faqItems.length > 0
+          ? formatStructuredData(getFAQSchema(faqItems, locale))
+          : []),
       ],
     };
   },
