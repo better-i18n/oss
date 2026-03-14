@@ -71,13 +71,6 @@ export interface FeaturePageMeta {
 // ─── Constants ───────────────────────────────────────────────────────
 
 /**
- * Posts per page for blog listing pagination.
- * Must match POSTS_PER_PAGE in src/lib/content.ts.
- * Duplicated here because this module runs at build-time outside Vite's module graph.
- */
-const POSTS_PER_PAGE = 24;
-
-/**
  * Locales with translation coverage below this threshold (30%) are considered
  * thin content and will be marked as noindex to prevent Google penalties.
  */
@@ -167,7 +160,13 @@ export function generateMarketingPages(
   // Tier 3 locales are excluded from sitemap generation
   const sitemapLocales = locales.filter((l) => getLocaleTier(l) !== "tier3");
 
-  return MARKETING_PAGES.flatMap((page) => {
+  // Pages with sitemap: false are excluded from sitemap generation
+  // but may still be prerendered (they remain routable).
+  const sitemapPages = MARKETING_PAGES.filter(
+    (p) => !("sitemap" in p) || p.sitemap !== false,
+  );
+
+  return sitemapPages.flatMap((page) => {
     // hreflang alternates only reference locales present in the sitemap
     const alternateRefs = buildAlternateRefs(sitemapLocales, (locale) =>
       buildPageUrl(locale, page.path),
@@ -260,8 +259,6 @@ function generateBlogListingPages(
     const count = localePostCounts.get(locale) ?? 0;
     if (count === 0) continue;
 
-    const totalPages = Math.ceil(count / POSTS_PER_PAGE);
-
     // hreflang alternates only reference sitemap-eligible locales with posts
     const validLocalesForPage1 = sitemapLocales.filter(
       (l) => (localePostCounts.get(l) ?? 0) > 0,
@@ -280,25 +277,9 @@ function generateBlogListingPages(
       // SSR — no prerender
     });
 
-    // Page 2+: /{locale}/blog/page/{N}/ — lower priority, noindex
-    for (let pageNum = 2; pageNum <= totalPages; pageNum++) {
-      const validLocales = sitemapLocales.filter(
-        (l) =>
-          Math.ceil((localePostCounts.get(l) ?? 0) / POSTS_PER_PAGE) >= pageNum,
-      );
-
-      pages.push({
-        path: buildPagePath(locale, `blog/page/${pageNum}`),
-        sitemap: {
-          priority: 0.4,
-          changefreq: "daily",
-          alternateRefs: buildAlternateRefs(validLocales, (l) =>
-            buildPageUrl(l, `blog/page/${pageNum}`),
-          ),
-          noindex: true,
-        },
-      });
-    }
+    // Page 2+: excluded from sitemap entirely.
+    // These pages are noindex and add no SEO value — keeping them out
+    // of the sitemap avoids bloat and wasted crawl budget.
   }
 
   return pages;
