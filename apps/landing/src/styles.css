@@ -2,6 +2,23 @@
 @plugin "@tailwindcss/typography";
 @source "../node_modules/@better-i18n/ui";
 
+/* Self-hosted Geist fonts (variable woff2 from geist npm package) */
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Dark mode'u komple devre dışı bırak - landing sadece light tema */
 /* Asla eşleşmeyecek selector ile dark stilleri tamamen devre dışı */
 @custom-variant dark (&:where(.force-dark));
