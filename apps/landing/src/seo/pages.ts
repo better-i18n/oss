@@ -93,6 +93,14 @@ export const MARKETING_PAGES = [
   { path: "what-is-internationalization", priority: 0.85, changefreq: "monthly", prerender: true },
   { path: "what-is-localization", priority: 0.85, changefreq: "monthly", prerender: true },
 
+  // Free developer tools
+  { path: "tools", priority: 0.8, changefreq: "monthly", prerender: true },
+  { path: "tools/locale-explorer", priority: 0.9, changefreq: "monthly", prerender: true },
+  { path: "tools/icu-playground", priority: 0.9, changefreq: "monthly", prerender: true },
+  { path: "tools/translation-file-converter", priority: 0.9, changefreq: "monthly", prerender: true },
+  { path: "tools/cost-calculator", priority: 0.9, changefreq: "monthly", prerender: true },
+  { path: "tools/hreflang-generator", priority: 0.9, changefreq: "monthly", prerender: true },
+
   // Company pages — excluded from sitemap (not primary SEO assets)
   { path: "about", priority: 0.7, changefreq: "monthly", prerender: true, sitemap: false },
   { path: "careers", priority: 0.7, changefreq: "weekly", prerender: true, sitemap: false },
