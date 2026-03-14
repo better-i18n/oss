@@ -3,7 +3,11 @@
  *
  * Instead of serializing ALL translation namespaces into every page's HTML,
  * only the namespaces that the page actually uses are included.
- * This dramatically reduces the HTML payload (from ~40KB to ~3-5KB per page).
+ *
+ * Supports two levels of filtering:
+ * 1. Top-level namespace filtering (e.g., "pricing" keeps only messages.pricing)
+ * 2. Sub-path filtering with dot notation (e.g., "marketing.i18n.react" keeps
+ *    only messages.marketing.i18n.react, discarding the rest of marketing)
  *
  * When a page is not found in the map, ALL namespaces are returned as a safe fallback.
  */
@@ -13,10 +17,6 @@ type Messages = Record<string, Record<string, unknown>>;
 
 // ─── Shared namespaces (included on every page) ─────────────────────
 
-/**
- * Namespaces required by layout components (Header, Footer, MarketingLayout)
- * and SEO utilities (getPageHead, breadcrumbs).
- */
 const SHARED_NAMESPACES = [
   "common",
   "header",
@@ -25,86 +25,215 @@ const SHARED_NAMESPACES = [
   "breadcrumbs",
 ] as const;
 
+// ─── Types ──────────────────────────────────────────────────────────
+
+/**
+ * A namespace specifier can be:
+ * - "pricing"              → include full messages.pricing
+ * - "marketing.i18n.react" → include only messages.marketing.i18n.react
+ *                            (rebuilds marketing with only the i18n.react subtree)
+ */
+type NamespaceSpec = string;
+
+interface PageConfig {
+  readonly namespaces: readonly NamespaceSpec[];
+}
+
 // ─── Page-specific namespace map ────────────────────────────────────
 
 /**
- * Maps URL path patterns (without locale prefix) to the extra namespaces
- * that page needs beyond SHARED_NAMESPACES.
+ * useT("marketing.i18n.react") → accesses messages.marketing.i18n.react.*
+ * So we need to keep marketing.i18n.react subtree plus marketing top-level
+ * shared keys (titles, descriptions used across pages).
  *
- * Pattern matching order:
- * 1. Exact match (e.g., "pricing")
- * 2. Prefix match (e.g., "i18n/" matches "i18n/react", "i18n/nextjs", etc.)
- *
- * To add a new page: add its path and the namespaces its components use via useT().
+ * "marketing.i18n.react" means: rebuild { marketing: { i18n: { react: {...} } } }
+ * "marketing.compare"    means: rebuild { marketing: { compare: {...} } }
  */
-const PAGE_NAMESPACE_MAP: ReadonlyMap<string, readonly string[]> = new Map([
+
+const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   // ─── Homepage ───────────────────────────────────────────────
   [
     "",
-    [
-      "hero",
-      "features",
-      "pricing",
-      "testimonials",
-      "alternatives",
-      "frameworkSupport",
-      "userSegments",
-      "segments",
-      "metrics",
-      "industryStats",
-      "changelog",
-      "developerFeatures",
-      "integrations",
-      "cta",
-      "relatedPages",
-    ],
+    {
+      namespaces: [
+        "hero",
+        "features",
+        "pricing",
+        "testimonials",
+        "alternatives",
+        "frameworkSupport",
+        "userSegments",
+        "segments",
+        "metrics",
+        "industryStats",
+        "changelog",
+        "developerFeatures",
+        "integrations",
+        "cta",
+        "relatedPages",
+      ],
+    },
   ],
 
   // ─── Core pages ─────────────────────────────────────────────
-  ["pricing", ["pricing", "pricingPage", "relatedPages"]],
-  ["features", ["featuresPage", "relatedPages"]],
-  ["integrations", ["integrationsPage", "integrations", "relatedPages"]],
-  ["about", ["aboutPage", "relatedPages"]],
-  ["careers", ["careersPage", "relatedPages"]],
-  ["status", ["statusPage"]],
-  ["changelog", ["changelogPage", "changelog"]],
+  ["pricing", { namespaces: ["pricing", "pricingPage", "relatedPages"] }],
+  ["features", { namespaces: ["featuresPage", "relatedPages"] }],
+  ["integrations", { namespaces: ["integrationsPage", "integrations", "relatedPages"] }],
+  ["about", { namespaces: ["aboutPage", "relatedPages"] }],
+  ["careers", { namespaces: ["careersPage", "relatedPages"] }],
+  ["status", { namespaces: ["statusPage"] }],
+  ["changelog", { namespaces: ["changelogPage", "changelog"] }],
 
   // ─── Legal ──────────────────────────────────────────────────
-  ["privacy", ["legal"]],
-  ["terms", ["legal"]],
+  ["privacy", { namespaces: ["legal"] }],
+  ["terms", { namespaces: ["legal"] }],
 
-  // ─── Persona pages (/for-*) ─────────────────────────────────
-  ["for-developers", ["developers", "relatedPages", "cta"]],
-  ["for-translators", ["translators", "relatedPages", "cta"]],
-  ["for-product-teams", ["product-teams", "relatedPages", "cta"]],
+  // ─── Persona pages (hardcoded routes) ─────────────────────────
+  ["for-developers", { namespaces: ["developers", "relatedPages", "cta"] }],
+  ["for-translators", { namespaces: ["translators", "relatedPages", "cta"] }],
+  ["for-product-teams", { namespaces: ["product-teams", "relatedPages", "cta"] }],
 
   // ─── Educational pages ──────────────────────────────────────
-  ["what-is", ["marketing", "relatedPages"]],
-  ["what-is-internationalization", ["marketing", "relatedPages"]],
-  ["what-is-localization", ["marketing", "relatedPages"]],
+  ["what-is", { namespaces: ["marketing.whatIsPage", "relatedPages"] }],
+  ["what-is-internationalization", { namespaces: ["marketing.whatIsInternationalization", "relatedPages"] }],
+  ["what-is-localization", { namespaces: ["marketing.whatIsLocalization", "relatedPages"] }],
+
+  // ─── i18n hub ────────────────────────────────────────────────
+  ["i18n", { namespaces: ["marketing.i18n", "relatedPages"] }],
+
+  // ─── Compare hub ─────────────────────────────────────────────
+  ["compare", { namespaces: ["marketing.compare", "alternatives", "relatedPages"] }],
 ]);
 
 /**
- * Prefix-based namespace mapping for route groups.
- * Matched when no exact match is found.
+ * Dynamic page config resolver for route groups.
+ * Returns a config based on the page path, or null if no match.
+ *
+ * Sub-namespace specs (e.g., "marketing.i18n.react") automatically include
+ * parent scalar keys via mergeShallowAtPath — no need to add "marketing.i18n"
+ * separately.
  */
-const PREFIX_NAMESPACE_MAP: ReadonlyMap<string, readonly string[]> = new Map([
-  // All /i18n/* pages use the "marketing" namespace
-  ["i18n/", ["marketing", "relatedPages"]],
+function resolveDynamicConfig(pagePath: string): PageConfig | null {
+  // /i18n/{subpage} → marketing.i18n.{subpage}
+  if (pagePath.startsWith("i18n/")) {
+    const subpage = pagePath.slice(5);
+    const camelSubpage = kebabToCamel(subpage);
+    return {
+      namespaces: [
+        `marketing.i18n.${camelSubpage}`,
+        "relatedPages",
+      ],
+    };
+  }
 
-  // All /compare/* pages use "marketing" + "alternatives"
-  ["compare/", ["marketing", "alternatives", "relatedPages"]],
+  // /compare/{competitor} → marketing.compare.{competitor}
+  if (pagePath.startsWith("compare/")) {
+    const competitor = pagePath.slice(8);
+    const camelCompetitor = kebabToCamel(competitor);
+    return {
+      namespaces: [
+        `marketing.compare.${camelCompetitor}`,
+        "alternatives",
+        "relatedPages",
+      ],
+    };
+  }
 
-  // CMS-driven persona pages (/for-agencies, /for-saas, etc.)
-  ["for-", ["persona", "cta"]],
+  // /for-{role} (CMS-driven persona pages)
+  if (pagePath.startsWith("for-")) {
+    return { namespaces: ["persona", "cta"] };
+  }
 
-  // Blog pages
-  ["blog/", ["blog", "relatedPages"]],
-  ["blog", ["blog", "relatedPages"]],
+  // /blog/*
+  if (pagePath.startsWith("blog")) {
+    return { namespaces: ["blog", "relatedPages"] };
+  }
 
-  // Feature detail pages
-  ["features/", ["featuresPage", "relatedPages"]],
-]);
+  // /features/{slug}
+  if (pagePath.startsWith("features/")) {
+    return { namespaces: ["featuresPage", "relatedPages"] };
+  }
+
+  return null;
+}
+
+// ─── Helpers ────────────────────────────────────────────────────────
+
+/**
+ * Convert kebab-case to camelCase.
+ * "best-tms" → "bestTms", "cli-code-scanning" → "cliCodeScanning"
+ */
+function kebabToCamel(str: string): string {
+  return str.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+/**
+ * Get a nested value from an object using a dot-path.
+ * "i18n.react" on { i18n: { react: {...} } } → {...}
+ */
+function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
+  const keys = path.split(".");
+  let current: unknown = obj;
+  for (const key of keys) {
+    if (current === null || current === undefined || typeof current !== "object") {
+      return undefined;
+    }
+    current = (current as Record<string, unknown>)[key];
+  }
+  return current;
+}
+
+/**
+ * Set a nested value in an object using a dot-path, creating intermediate objects.
+ * Mutates the target (used only on fresh objects we own).
+ */
+function setNestedValue(obj: Record<string, unknown>, path: string, value: unknown): void {
+  const keys = path.split(".");
+  let current: Record<string, unknown> = obj;
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    if (!current[key] || typeof current[key] !== "object") {
+      current[key] = {};
+    }
+    current = current[key] as Record<string, unknown>;
+  }
+  current[keys[keys.length - 1]] = value;
+}
+
+/**
+ * Merge a source object's keys shallowly into a target at a given path.
+ * Only copies keys that don't already exist in target (non-destructive).
+ * Used for including shared sibling keys from a parent namespace.
+ *
+ * Example: merging "marketing.i18n" shared keys (title, description)
+ * alongside the specific "marketing.i18n.react" subtree.
+ */
+function mergeShallowAtPath(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>,
+  path: string,
+): void {
+  const sourceValue = getNestedValue(source, path);
+  if (!sourceValue || typeof sourceValue !== "object") return;
+
+  // Ensure path exists in target
+  const keys = path.split(".");
+  let current: Record<string, unknown> = target;
+  for (const key of keys) {
+    if (!current[key] || typeof current[key] !== "object") {
+      current[key] = {};
+    }
+    current = current[key] as Record<string, unknown>;
+  }
+
+  // Copy only scalar values (strings, numbers) — not sub-objects.
+  // Sub-objects are other page namespaces we want to exclude.
+  for (const [key, value] of Object.entries(sourceValue as Record<string, unknown>)) {
+    if (!(key in current) && typeof value === "string") {
+      current[key] = value;
+    }
+  }
+}
 
 // ─── Public API ─────────────────────────────────────────────────────
 
@@ -118,8 +247,20 @@ const PREFIX_NAMESPACE_MAP: ReadonlyMap<string, readonly string[]> = new Map([
  */
 export function extractPagePath(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean);
-  // First segment is always the locale — skip it
   return segments.slice(1).join("/");
+}
+
+/**
+ * Get the page config for a given page path.
+ * Returns null when no mapping is found (meaning: don't filter, use all).
+ */
+function getPageConfig(pagePath: string): PageConfig | null {
+  // 1. Exact match
+  const exact = PAGE_NAMESPACE_MAP.get(pagePath);
+  if (exact) return exact;
+
+  // 2. Dynamic resolution (prefix-based with smart sub-namespace)
+  return resolveDynamicConfig(pagePath);
 }
 
 /**
@@ -127,21 +268,9 @@ export function extractPagePath(pathname: string): string {
  * Returns null when no mapping is found (meaning: don't filter, use all).
  */
 export function getNamespacesForPage(pagePath: string): readonly string[] | null {
-  // 1. Exact match
-  const exact = PAGE_NAMESPACE_MAP.get(pagePath);
-  if (exact) {
-    return [...SHARED_NAMESPACES, ...exact];
-  }
-
-  // 2. Prefix match
-  for (const [prefix, namespaces] of PREFIX_NAMESPACE_MAP) {
-    if (pagePath.startsWith(prefix) || pagePath === prefix.replace(/\/$/, "")) {
-      return [...SHARED_NAMESPACES, ...namespaces];
-    }
-  }
-
-  // 3. No match — return null to signal "keep all namespaces"
-  return null;
+  const config = getPageConfig(pagePath);
+  if (!config) return null;
+  return [...SHARED_NAMESPACES, ...config.namespaces];
 }
 
 /**
@@ -166,19 +295,77 @@ export function filterMessages(
 
 /**
  * Filter messages based on the current URL pathname.
- * If no namespace mapping exists for the page, returns all messages unchanged.
+ * Supports both top-level filtering and sub-namespace filtering.
+ *
+ * Examples:
+ * - "pricing" → keeps messages.pricing entirely
+ * - "marketing.i18n.react" → rebuilds { marketing: { i18n: { react: {...} } } }
+ *   (discards all other marketing sub-trees)
  */
 export function filterMessagesByPath(
   messages: Messages,
   pathname: string,
 ): Messages {
   const pagePath = extractPagePath(pathname);
-  const namespaces = getNamespacesForPage(pagePath);
+  const config = getPageConfig(pagePath);
 
-  if (!namespaces) {
-    // No mapping found — safe fallback: return everything
-    return messages;
+  if (!config) return messages;
+
+  const allSpecs = [...SHARED_NAMESPACES, ...config.namespaces];
+  const filtered: Record<string, Record<string, unknown>> = {};
+
+  // Group specs: top-level vs dot-path
+  const topLevel: string[] = [];
+  const dotPaths: string[] = [];
+
+  for (const spec of allSpecs) {
+    if (spec.includes(".")) {
+      dotPaths.push(spec);
+    } else {
+      topLevel.push(spec);
+    }
   }
 
-  return filterMessages(messages, namespaces);
+  // 1. Copy top-level namespaces directly
+  const topLevelSet = new Set(topLevel);
+  for (const key of Object.keys(messages)) {
+    if (topLevelSet.has(key)) {
+      filtered[key] = messages[key];
+    }
+  }
+
+  // 2. Handle dot-path specs — extract subtrees and rebuild
+  for (const dotPath of dotPaths) {
+    const rootKey = dotPath.split(".")[0];
+    const subPath = dotPath.slice(rootKey.length + 1); // e.g., "i18n.react"
+    const sourceNs = messages[rootKey];
+
+    if (!sourceNs) continue;
+
+    const value = getNestedValue(sourceNs, subPath);
+    if (value === undefined) continue;
+
+    // Ensure root key exists in filtered
+    if (!filtered[rootKey]) {
+      filtered[rootKey] = {};
+    }
+
+    // Set the subtree
+    setNestedValue(filtered[rootKey] as Record<string, unknown>, subPath, value);
+
+    // Also merge shallow scalar keys from parent path for shared labels.
+    // e.g., for "marketing.i18n.react", also include marketing.i18n.{scalarKeys}
+    const parentPath = subPath.includes(".")
+      ? subPath.slice(0, subPath.lastIndexOf("."))
+      : null;
+    if (parentPath) {
+      mergeShallowAtPath(
+        filtered[rootKey] as Record<string, unknown>,
+        sourceNs,
+        parentPath,
+      );
+    }
+  }
+
+  return filtered;
 }
