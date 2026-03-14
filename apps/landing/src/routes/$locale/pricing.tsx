@@ -9,7 +9,7 @@ import { useTranslations } from "@better-i18n/use-intl";
 import { IconCheckmark1 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/pricing")({
-  loader: createPageLoader(),
+  loader: createPageLoader(["pricingPage"]),
   head: ({ loaderData }) => {
     const messages = loaderData?.messages || {};
     const locale = loaderData?.locale || "en";

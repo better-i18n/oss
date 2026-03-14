@@ -153,9 +153,9 @@ export function buildAlternateRefs(
  *
  * Tier and coverage rules:
  * - **Tier 3** locales are excluded from the sitemap entirely.
- * - **Tier 2** locales get reduced sitemap priority and are not prerendered.
+ * - **Tier 2** locales get reduced sitemap priority but are prerendered.
  * - Locales below THIN_CONTENT_THRESHOLD or in tier 3 are marked noindex.
- * - Only **tier 1** locales are prerendered.
+ * - **Tier 1** and **tier 2** locales are prerendered.
  */
 export function generateMarketingPages(
   locales: readonly string[],
@@ -182,8 +182,9 @@ export function generateMarketingPages(
       const priorityMultiplier = TIER_PRIORITY_MULTIPLIER[tier];
       const adjustedPriority = Math.round(page.priority * priorityMultiplier * 100) / 100;
 
-      // Only tier 1 locales get prerendered
-      const shouldPrerender = page.prerender && tier === "tier1";
+      // Prerender tier 1 and tier 2 locales so crawlers see full HTML
+      // (on-demand SSR on Cloudflare Workers sends an empty Suspense shell)
+      const shouldPrerender = page.prerender && (tier === "tier1" || tier === "tier2");
 
       return {
         path: buildPagePath(locale, page.path),
@@ -207,7 +208,7 @@ export function generateMarketingPages(
  * (one per post per available language).
  *
  * - Listing pages are prerendered.
- * - Detail pages are NOT prerendered (rendered on demand).
+ * - Detail pages are prerendered for tier 1 and tier 2 locales.
  * - Falls back to allLocales when a post has no availableLanguages.
  */
 export function generateBlogPages(
@@ -312,16 +313,23 @@ function generateBlogDetailPages(
     buildPageUrl(locale, `blog/${post.slug}`),
   );
 
-  return postLocales.map((locale): PageEntry => ({
-    path: buildPagePath(locale, `blog/${post.slug}`),
-    sitemap: {
-      priority: 0.7,
-      changefreq: "weekly",
-      lastmod: post.publishedAt ?? undefined,
-      alternateRefs,
-    },
-    prerender: undefined,
-  }));
+  return postLocales.map((locale): PageEntry => {
+    const tier = getLocaleTier(locale);
+    // Prerender tier 1 and tier 2 blog posts so crawlers see full HTML
+    // (on-demand SSR on Cloudflare Workers sends an empty Suspense shell)
+    const shouldPrerender = tier === "tier1" || tier === "tier2";
+
+    return {
+      path: buildPagePath(locale, `blog/${post.slug}`),
+      sitemap: {
+        priority: 0.7,
+        changefreq: "weekly",
+        lastmod: post.publishedAt ?? undefined,
+        alternateRefs,
+      },
+      prerender: shouldPrerender ? { enabled: true } : undefined,
+    };
+  });
 }
 
 // ─── Generator: Feature Detail Pages ─────────────────────────────────
@@ -344,16 +352,21 @@ export function generateFeatureDetailPages(
       buildPageUrl(locale, `features/${feature.slug}`),
     );
 
-    return featureLocales.map((locale): PageEntry => ({
-      path: buildPagePath(locale, `features/${feature.slug}`),
-      sitemap: {
-        priority: 0.7,
-        changefreq: "weekly",
-        lastmod: feature.publishedAt ?? undefined,
-        alternateRefs,
-      },
-      prerender: undefined,
-    }));
+    return featureLocales.map((locale): PageEntry => {
+      const tier = getLocaleTier(locale);
+      const shouldPrerender = tier === "tier1" || tier === "tier2";
+
+      return {
+        path: buildPagePath(locale, `features/${feature.slug}`),
+        sitemap: {
+          priority: 0.7,
+          changefreq: "weekly",
+          lastmod: feature.publishedAt ?? undefined,
+          alternateRefs,
+        },
+        prerender: shouldPrerender ? { enabled: true } : undefined,
+      };
+    });
   });
 }
 
