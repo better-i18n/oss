@@ -40,7 +40,7 @@ export function ToolFAQ({
   };
 
   return (
-    <section className="py-16">
+    <section className="py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         {includeSchema && (
           <script

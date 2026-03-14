@@ -13,34 +13,19 @@ export function ToolCard({ tool, locale }: ToolCardProps) {
     <Link
       to={`/$locale/${tool.href}` as never}
       params={{ locale }}
-      className="group flex h-full flex-col justify-between rounded-2xl border border-mist-200 bg-white p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-mist-300 hover:shadow-md"
+      className="group block rounded-2xl border border-mist-200 bg-white p-6 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
       aria-label={tool.fallbackTitle}
     >
-      <div>
-        <div className="mb-3 text-2xl" aria-hidden="true">
-          {tool.icon}
-        </div>
-        <h3 className="text-base font-medium text-mist-950 group-hover:text-mist-800">
-          {tool.fallbackTitle}
-        </h3>
-        <p className="mt-2 text-sm leading-6 text-mist-600">
-          {tool.fallbackDescription}
-        </p>
+      <div className="mb-4 flex size-11 items-center justify-center rounded-xl border border-mist-100 bg-mist-50 text-mist-700 shadow-sm">
+        {tool.icon}
       </div>
-      <div className="mt-5 flex items-center text-sm font-medium text-mist-700">
-        <span>Open tool</span>
-        <svg
-          className="ml-2 h-4 w-4 text-mist-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-mist-600"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
-            clipRule="evenodd"
-          />
-        </svg>
+      <h3 className="font-display text-lg/[1.3] font-medium text-mist-950 mb-2">
+        {tool.fallbackTitle}
+      </h3>
+      <p className="text-sm/6 text-mist-600">{tool.fallbackDescription}</p>
+      <div className="mt-4 flex items-center gap-1 text-sm font-medium text-mist-700 group-hover:text-mist-950 transition-colors">
+        Try it free
+        <span className="transition-transform group-hover:translate-x-0.5">→</span>
       </div>
     </Link>
   );

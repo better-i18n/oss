@@ -38,15 +38,15 @@ export function CodeOutput({
   };
 
   return (
-    <div className="overflow-hidden rounded-xl border border-mist-200 bg-mist-950">
-      <div className="flex items-center justify-between border-b border-mist-800 px-4 py-2.5">
+    <div className="overflow-hidden rounded-2xl border border-mist-200 bg-mist-950">
+      <div className="flex items-center justify-between border-b border-mist-800 bg-mist-50/[0.05] px-4 py-2.5">
         <span className="text-xs font-medium text-mist-400">
           {label ?? language}
         </span>
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium text-mist-400 transition-colors hover:bg-mist-800 hover:text-mist-200"
+          className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-mist-400 transition-colors hover:bg-mist-800 hover:text-mist-200"
           aria-label={copied ? "Copied" : "Copy to clipboard"}
         >
           {copied ? (
