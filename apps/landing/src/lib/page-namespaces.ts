@@ -84,8 +84,8 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   ["changelog", { namespaces: ["changelogPage", "changelog"] }],
 
   // ─── Legal ──────────────────────────────────────────────────
-  ["privacy", { namespaces: ["legal"] }],
-  ["terms", { namespaces: ["legal"] }],
+  ["privacy", { namespaces: ["legal", "privacy"] }],
+  ["terms", { namespaces: ["legal", "terms"] }],
 
   // ─── Persona pages (hardcoded routes) ─────────────────────────
   ["for-developers", { namespaces: ["developers", "relatedPages", "cta"] }],
