@@ -121,6 +121,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       publishedTime: post?.publishedAt || "",
       modifiedTime: post?.publishedAt || "",
       author: authorName,
+      noindex: getLocaleTier(locale) === "tier3",
     });
 
     // Article-specific tags that formatMetaTags does not cover
