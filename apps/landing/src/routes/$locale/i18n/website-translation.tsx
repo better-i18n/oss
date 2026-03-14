@@ -67,7 +67,7 @@ function WebsiteTranslationPage() {
   const relatedPages = [
     { name: "Translation Solutions", href: "/$locale/i18n/translation-solutions", description: t("related.translationSolutions", { defaultValue: "Compare platforms and tools for website translation" }) },
     { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("related.websiteLocalization", { defaultValue: "Beyond translation — full cultural adaptation for global markets" }) },
-    { name: "Localization Tools", href: "/$locale/i18n/localization-tools", description: t("related.localizationTools", { defaultValue: "The best localization tools for modern development teams" }) },
+    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("related.localizationSoftware", { defaultValue: "Platforms and software for managing localization at scale" }) },
     { name: "Content Localization", href: "/$locale/i18n/content-localization", description: t("related.contentLocalization", { defaultValue: "Adapt every piece of content for every market" }) },
   ];
 

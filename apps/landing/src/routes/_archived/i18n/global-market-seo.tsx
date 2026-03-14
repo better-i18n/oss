@@ -14,7 +14,7 @@ import {
   IconCodeBrackets,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
-export const Route = createFileRoute("/$locale/i18n/global-market-seo")({
+export const Route = createFileRoute("/_archived/i18n/global-market-seo")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({

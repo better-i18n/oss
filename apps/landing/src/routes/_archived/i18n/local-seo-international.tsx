@@ -15,7 +15,7 @@ import {
   IconAiTranslate,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
-export const Route = createFileRoute("/$locale/i18n/local-seo-international")({
+export const Route = createFileRoute("/_archived/i18n/local-seo-international")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({

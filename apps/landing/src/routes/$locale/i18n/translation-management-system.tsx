@@ -70,8 +70,8 @@ function TranslationManagementSystemPage() {
   const relatedPages = [
     { name: "Best TMS Platforms", href: "/$locale/i18n/best-tms", description: t("related.bestTms", { defaultValue: "Compare top TMS solutions side by side" }) },
     { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("related.websiteLocalization", { defaultValue: "Localize your web application for global users" }) },
-    { name: "Software Localization Services", href: "/$locale/i18n/software-localization-services", description: t("related.services", { defaultValue: "Platform vs agency localization approaches" }) },
-    { name: "Localization Management", href: "/$locale/i18n/localization-management", description: t("related.management", { defaultValue: "Managing translation workflows at scale" }) },
+    { name: "Software Localization", href: "/$locale/i18n/software-localization", description: t("related.softwareLocalization", { defaultValue: "Complete guide to localizing software for global markets" }) },
+    { name: "Translation Solutions", href: "/$locale/i18n/translation-solutions", description: t("related.translationSolutions", { defaultValue: "Compare platforms and tools for translation" }) },
   ];
 
   return (

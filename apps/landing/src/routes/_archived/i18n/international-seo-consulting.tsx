@@ -14,7 +14,7 @@ import {
   IconShieldCheck,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
-export const Route = createFileRoute("/$locale/i18n/international-seo-consulting")({
+export const Route = createFileRoute("/_archived/i18n/international-seo-consulting")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({

@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { personaLoader, personaHead } from "@/lib/cms-persona-helpers";
 import { CmsPersonaPage, CmsPersonaNotFound } from "@/components/CmsPersonaPage";
 
-export const Route = createFileRoute("/$locale/for-designers")({
-  loader: ({ params, context }) => personaLoader("for-designers", params.locale, context.locales),
+export const Route = createFileRoute("/_archived/audience/for-content-teams")({
+  loader: ({ params, context }) => personaLoader("for-content-teams", params.locale, context.locales),
   head: ({ loaderData }) => personaHead(loaderData),
   component: () => {
     const data = Route.useLoaderData();
@@ -11,6 +11,6 @@ export const Route = createFileRoute("/$locale/for-designers")({
   },
   notFoundComponent: () => {
     const { locale } = Route.useParams();
-    return <CmsPersonaNotFound locale={locale} slug="for-designers" />;
+    return <CmsPersonaNotFound locale={locale} slug="for-content-teams" />;
   },
 });

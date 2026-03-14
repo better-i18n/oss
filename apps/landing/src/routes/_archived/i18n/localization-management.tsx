@@ -13,7 +13,7 @@ import {
   IconZap,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
-export const Route = createFileRoute("/$locale/i18n/localization-management")({
+export const Route = createFileRoute("/_archived/i18n/localization-management")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({

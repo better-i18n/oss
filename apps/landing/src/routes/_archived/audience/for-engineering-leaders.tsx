@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { personaLoader, personaHead } from "@/lib/cms-persona-helpers";
 import { CmsPersonaPage, CmsPersonaNotFound } from "@/components/CmsPersonaPage";
 
-export const Route = createFileRoute("/$locale/for-engineering-leaders")({
+export const Route = createFileRoute("/_archived/audience/for-engineering-leaders")({
   loader: ({ params, context }) => personaLoader("for-engineering-leaders", params.locale, context.locales),
   head: ({ loaderData }) => personaHead(loaderData),
   component: () => {

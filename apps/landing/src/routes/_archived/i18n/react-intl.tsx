@@ -12,7 +12,7 @@ import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 
-export const Route = createFileRoute("/$locale/i18n/react-intl")({
+export const Route = createFileRoute("/_archived/i18n/react-intl")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({

@@ -65,9 +65,9 @@ function ReactNativeLocalizationPage() {
 
   const relatedPages = [
     { name: "React i18n", href: "/$locale/i18n/react", description: t("related.react", { defaultValue: "Internationalize React apps with hooks, context, and type-safe translations" }) },
-    { name: "Localization Tools", href: "/$locale/i18n/localization-tools", description: t("related.localizationTools", { defaultValue: "Developer tools and integrations for localization workflows" }) },
+    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("related.localizationSoftware", { defaultValue: "Platforms and software for managing localization at scale" }) },
     { name: "For Developers", href: "/$locale/i18n/for-developers", description: t("related.forDevelopers", { defaultValue: "Developer-first localization with CLI, SDK, and CI/CD integrations" }) },
-    { name: "Localization Platforms", href: "/$locale/i18n/localization-platforms", description: t("related.localizationPlatforms", { defaultValue: "Manage every translation workflow from a single platform" }) },
+    { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("related.websiteLocalization", { defaultValue: "Localizing your web application for global markets" }) },
   ];
 
   return (
