@@ -73,6 +73,10 @@ import { Route as ArchivedAudienceForEngineeringLeadersRouteImport } from './rou
 import { Route as ArchivedAudienceForEducationRouteImport } from './routes/_archived/audience/for-education'
 import { Route as ArchivedAudienceForDesignersRouteImport } from './routes/_archived/audience/for-designers'
 import { Route as ArchivedAudienceForContentTeamsRouteImport } from './routes/_archived/audience/for-content-teams'
+import { Route as LocaleToolsLocaleExplorerRouteImport } from './routes/$locale/tools/locale-explorer'
+import { Route as LocaleToolsIcuPlaygroundRouteImport } from './routes/$locale/tools/icu-playground'
+import { Route as LocaleToolsHreflangGeneratorRouteImport } from './routes/$locale/tools/hreflang-generator'
+import { Route as LocaleToolsCostCalculatorRouteImport } from './routes/$locale/tools/cost-calculator'
 import { Route as LocaleI18nWebsiteTranslationRouteImport } from './routes/$locale/i18n/website-translation'
 import { Route as LocaleI18nWebsiteLocalizationRouteImport } from './routes/$locale/i18n/website-localization'
 import { Route as LocaleI18nVueRouteImport } from './routes/$locale/i18n/vue'
@@ -118,6 +122,7 @@ import { Route as LocaleCompareCrowdinVsLokaliseRouteImport } from './routes/$lo
 import { Route as LocaleCompareCrowdinRouteImport } from './routes/$locale/compare/crowdin'
 import { Route as LocaleBlogSlugRouteImport } from './routes/$locale/blog/$slug'
 import { Route as LocaleBlogPageIndexRouteImport } from './routes/$locale/blog/page/index'
+import { Route as LocaleToolsLocaleExplorerLocaleCodeRouteImport } from './routes/$locale/tools/locale-explorer.$localeCode'
 import { Route as LocaleBlogPagePageRouteImport } from './routes/$locale/blog/page/$page'
 
 const TermsRoute = TermsRouteImport.update({
@@ -467,6 +472,30 @@ const ArchivedAudienceForContentTeamsRoute =
     path: '/audience/for-content-teams',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LocaleToolsLocaleExplorerRoute =
+  LocaleToolsLocaleExplorerRouteImport.update({
+    id: '/$locale/tools/locale-explorer',
+    path: '/$locale/tools/locale-explorer',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LocaleToolsIcuPlaygroundRoute =
+  LocaleToolsIcuPlaygroundRouteImport.update({
+    id: '/$locale/tools/icu-playground',
+    path: '/$locale/tools/icu-playground',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LocaleToolsHreflangGeneratorRoute =
+  LocaleToolsHreflangGeneratorRouteImport.update({
+    id: '/$locale/tools/hreflang-generator',
+    path: '/$locale/tools/hreflang-generator',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LocaleToolsCostCalculatorRoute =
+  LocaleToolsCostCalculatorRouteImport.update({
+    id: '/$locale/tools/cost-calculator',
+    path: '/$locale/tools/cost-calculator',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LocaleI18nWebsiteTranslationRoute =
   LocaleI18nWebsiteTranslationRouteImport.update({
     id: '/$locale/i18n/website-translation',
@@ -706,6 +735,12 @@ const LocaleBlogPageIndexRoute = LocaleBlogPageIndexRouteImport.update({
   path: '/$locale/blog/page/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleToolsLocaleExplorerLocaleCodeRoute =
+  LocaleToolsLocaleExplorerLocaleCodeRouteImport.update({
+    id: '/$localeCode',
+    path: '/$localeCode',
+    getParentRoute: () => LocaleToolsLocaleExplorerRoute,
+  } as any)
 const LocaleBlogPagePageRoute = LocaleBlogPagePageRouteImport.update({
   id: '/$locale/blog/page/$page',
   path: '/$locale/blog/page/$page',
@@ -791,6 +826,10 @@ export interface FileRoutesByFullPath {
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
+  '/$locale/tools/cost-calculator': typeof LocaleToolsCostCalculatorRoute
+  '/$locale/tools/hreflang-generator': typeof LocaleToolsHreflangGeneratorRoute
+  '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
+  '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
   '/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
   '/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
   '/audience/for-education': typeof ArchivedAudienceForEducationRoute
@@ -822,6 +861,7 @@ export interface FileRoutesByFullPath {
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
   '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
+  '/$locale/tools/locale-explorer/$localeCode': typeof LocaleToolsLocaleExplorerLocaleCodeRoute
   '/$locale/blog/page': typeof LocaleBlogPageIndexRoute
 }
 export interface FileRoutesByTo {
@@ -902,6 +942,10 @@ export interface FileRoutesByTo {
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
+  '/$locale/tools/cost-calculator': typeof LocaleToolsCostCalculatorRoute
+  '/$locale/tools/hreflang-generator': typeof LocaleToolsHreflangGeneratorRoute
+  '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
+  '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
   '/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
   '/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
   '/audience/for-education': typeof ArchivedAudienceForEducationRoute
@@ -933,6 +977,7 @@ export interface FileRoutesByTo {
   '/$locale/features': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
   '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
+  '/$locale/tools/locale-explorer/$localeCode': typeof LocaleToolsLocaleExplorerLocaleCodeRoute
   '/$locale/blog/page': typeof LocaleBlogPageIndexRoute
 }
 export interface FileRoutesById {
@@ -1015,6 +1060,10 @@ export interface FileRoutesById {
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
+  '/$locale/tools/cost-calculator': typeof LocaleToolsCostCalculatorRoute
+  '/$locale/tools/hreflang-generator': typeof LocaleToolsHreflangGeneratorRoute
+  '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
+  '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
   '/_archived/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
   '/_archived/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
   '/_archived/audience/for-education': typeof ArchivedAudienceForEducationRoute
@@ -1046,6 +1095,7 @@ export interface FileRoutesById {
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n/': typeof LocaleI18nIndexRoute
   '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
+  '/$locale/tools/locale-explorer/$localeCode': typeof LocaleToolsLocaleExplorerLocaleCodeRoute
   '/$locale/blog/page/': typeof LocaleBlogPageIndexRoute
 }
 export interface FileRouteTypes {
@@ -1129,6 +1179,10 @@ export interface FileRouteTypes {
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
+    | '/$locale/tools/cost-calculator'
+    | '/$locale/tools/hreflang-generator'
+    | '/$locale/tools/icu-playground'
+    | '/$locale/tools/locale-explorer'
     | '/audience/for-content-teams'
     | '/audience/for-designers'
     | '/audience/for-education'
@@ -1160,6 +1214,7 @@ export interface FileRouteTypes {
     | '/$locale/features/'
     | '/$locale/i18n'
     | '/$locale/blog/page/$page'
+    | '/$locale/tools/locale-explorer/$localeCode'
     | '/$locale/blog/page'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1240,6 +1295,10 @@ export interface FileRouteTypes {
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
+    | '/$locale/tools/cost-calculator'
+    | '/$locale/tools/hreflang-generator'
+    | '/$locale/tools/icu-playground'
+    | '/$locale/tools/locale-explorer'
     | '/audience/for-content-teams'
     | '/audience/for-designers'
     | '/audience/for-education'
@@ -1271,6 +1330,7 @@ export interface FileRouteTypes {
     | '/$locale/features'
     | '/$locale/i18n'
     | '/$locale/blog/page/$page'
+    | '/$locale/tools/locale-explorer/$localeCode'
     | '/$locale/blog/page'
   id:
     | '__root__'
@@ -1352,6 +1412,10 @@ export interface FileRouteTypes {
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
+    | '/$locale/tools/cost-calculator'
+    | '/$locale/tools/hreflang-generator'
+    | '/$locale/tools/icu-playground'
+    | '/$locale/tools/locale-explorer'
     | '/_archived/audience/for-content-teams'
     | '/_archived/audience/for-designers'
     | '/_archived/audience/for-education'
@@ -1383,6 +1447,7 @@ export interface FileRouteTypes {
     | '/$locale/features/'
     | '/$locale/i18n/'
     | '/$locale/blog/page/$page'
+    | '/$locale/tools/locale-explorer/$localeCode'
     | '/$locale/blog/page/'
   fileRoutesById: FileRoutesById
 }
@@ -1464,6 +1529,10 @@ export interface RootRouteChildren {
   LocaleI18nVueRoute: typeof LocaleI18nVueRoute
   LocaleI18nWebsiteLocalizationRoute: typeof LocaleI18nWebsiteLocalizationRoute
   LocaleI18nWebsiteTranslationRoute: typeof LocaleI18nWebsiteTranslationRoute
+  LocaleToolsCostCalculatorRoute: typeof LocaleToolsCostCalculatorRoute
+  LocaleToolsHreflangGeneratorRoute: typeof LocaleToolsHreflangGeneratorRoute
+  LocaleToolsIcuPlaygroundRoute: typeof LocaleToolsIcuPlaygroundRoute
+  LocaleToolsLocaleExplorerRoute: typeof LocaleToolsLocaleExplorerRouteWithChildren
   ArchivedAudienceForContentTeamsRoute: typeof ArchivedAudienceForContentTeamsRoute
   ArchivedAudienceForDesignersRoute: typeof ArchivedAudienceForDesignersRoute
   ArchivedAudienceForEducationRoute: typeof ArchivedAudienceForEducationRoute
@@ -1947,6 +2016,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArchivedAudienceForContentTeamsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/tools/locale-explorer': {
+      id: '/$locale/tools/locale-explorer'
+      path: '/$locale/tools/locale-explorer'
+      fullPath: '/$locale/tools/locale-explorer'
+      preLoaderRoute: typeof LocaleToolsLocaleExplorerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/tools/icu-playground': {
+      id: '/$locale/tools/icu-playground'
+      path: '/$locale/tools/icu-playground'
+      fullPath: '/$locale/tools/icu-playground'
+      preLoaderRoute: typeof LocaleToolsIcuPlaygroundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/tools/hreflang-generator': {
+      id: '/$locale/tools/hreflang-generator'
+      path: '/$locale/tools/hreflang-generator'
+      fullPath: '/$locale/tools/hreflang-generator'
+      preLoaderRoute: typeof LocaleToolsHreflangGeneratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/tools/cost-calculator': {
+      id: '/$locale/tools/cost-calculator'
+      path: '/$locale/tools/cost-calculator'
+      fullPath: '/$locale/tools/cost-calculator'
+      preLoaderRoute: typeof LocaleToolsCostCalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/i18n/website-translation': {
       id: '/$locale/i18n/website-translation'
       path: '/$locale/i18n/website-translation'
@@ -2262,6 +2359,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleBlogPageIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/tools/locale-explorer/$localeCode': {
+      id: '/$locale/tools/locale-explorer/$localeCode'
+      path: '/$localeCode'
+      fullPath: '/$locale/tools/locale-explorer/$localeCode'
+      preLoaderRoute: typeof LocaleToolsLocaleExplorerLocaleCodeRouteImport
+      parentRoute: typeof LocaleToolsLocaleExplorerRoute
+    }
     '/$locale/blog/page/$page': {
       id: '/$locale/blog/page/$page'
       path: '/$locale/blog/page/$page'
@@ -2285,6 +2389,21 @@ const LocaleFeaturesRouteChildren: LocaleFeaturesRouteChildren = {
 const LocaleFeaturesRouteWithChildren = LocaleFeaturesRoute._addFileChildren(
   LocaleFeaturesRouteChildren,
 )
+
+interface LocaleToolsLocaleExplorerRouteChildren {
+  LocaleToolsLocaleExplorerLocaleCodeRoute: typeof LocaleToolsLocaleExplorerLocaleCodeRoute
+}
+
+const LocaleToolsLocaleExplorerRouteChildren: LocaleToolsLocaleExplorerRouteChildren =
+  {
+    LocaleToolsLocaleExplorerLocaleCodeRoute:
+      LocaleToolsLocaleExplorerLocaleCodeRoute,
+  }
+
+const LocaleToolsLocaleExplorerRouteWithChildren =
+  LocaleToolsLocaleExplorerRoute._addFileChildren(
+    LocaleToolsLocaleExplorerRouteChildren,
+  )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -2367,6 +2486,10 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleI18nVueRoute: LocaleI18nVueRoute,
   LocaleI18nWebsiteLocalizationRoute: LocaleI18nWebsiteLocalizationRoute,
   LocaleI18nWebsiteTranslationRoute: LocaleI18nWebsiteTranslationRoute,
+  LocaleToolsCostCalculatorRoute: LocaleToolsCostCalculatorRoute,
+  LocaleToolsHreflangGeneratorRoute: LocaleToolsHreflangGeneratorRoute,
+  LocaleToolsIcuPlaygroundRoute: LocaleToolsIcuPlaygroundRoute,
+  LocaleToolsLocaleExplorerRoute: LocaleToolsLocaleExplorerRouteWithChildren,
   ArchivedAudienceForContentTeamsRoute: ArchivedAudienceForContentTeamsRoute,
   ArchivedAudienceForDesignersRoute: ArchivedAudienceForDesignersRoute,
   ArchivedAudienceForEducationRoute: ArchivedAudienceForEducationRoute,
