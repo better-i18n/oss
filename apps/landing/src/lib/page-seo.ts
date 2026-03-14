@@ -9,6 +9,7 @@ import {
 import { getLocaleTier } from "@/seo/locale-tiers";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
+import { filterMessages } from "./page-namespaces";
 import {
   getDefaultStructuredData,
   getHomePageStructuredData,
@@ -237,16 +238,33 @@ export function getPageHead(options: PageSEOOptions) {
 }
 
 /**
+ * Namespaces needed by head() / getPageHead():
+ * - "meta" for getLocalizedMeta() which reads meta.{pageKey}.title etc.
+ * - "breadcrumbs" for breadcrumb schema generation
+ */
+const HEAD_NAMESPACES = ["meta", "breadcrumbs"] as const;
+
+/**
  * Create a standard async loader that fetches messages and exposes them for head().
  * Messages are fetched via getMessages() — TtlCache ensures no duplicate CDN calls.
- * Use this in route definitions instead of reading context.messages.
+ *
+ * Only serializes HEAD_NAMESPACES into the page HTML (meta + breadcrumbs).
+ * Page components get their messages from the root loader's BetterI18nProvider.
+ *
+ * @param extraNamespaces - Additional namespaces the head() function needs
+ *   beyond meta + breadcrumbs (e.g., ["pricingPage"] for FAQ schema extraction).
  */
-export function createPageLoader() {
+export function createPageLoader(extraNamespaces?: readonly string[]) {
+  const namespaces = extraNamespaces
+    ? [...HEAD_NAMESPACES, ...extraNamespaces]
+    : [...HEAD_NAMESPACES];
+
   return async ({ context }: { context: { locale: string; locales: string[] } }) => {
-    const messages = await getMessages({
+    const allMessages = await getMessages({
       project: i18nConfig.project,
       locale: context.locale,
     });
+    const messages = filterMessages(allMessages, namespaces);
     return { messages, locale: context.locale, locales: context.locales };
   };
 }

@@ -15,6 +15,7 @@ import {
 } from "@better-i18n/use-intl";
 import { getMessages, getLanguages, detectLocale } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
+import { filterMessagesByPath } from "../lib/page-namespaces";
 import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
@@ -82,11 +83,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     return { locale, locales };
   },
 
-  loader: async ({ context }) => {
-    const [messages, languages] = await Promise.all([
+  loader: async ({ context, location }) => {
+    const [allMessages, languages] = await Promise.all([
       getMessages({ project: i18nConfig.project, locale: context.locale }),
       getLanguages({ project: i18nConfig.project }),
     ]);
+    // Only serialize the namespaces this page actually needs.
+    // Reduces HTML payload from ~40KB to ~3-5KB per page.
+    const messages = filterMessagesByPath(allMessages, location.pathname);
     return { locale: context.locale, locales: context.locales, messages, languages };
   },
 

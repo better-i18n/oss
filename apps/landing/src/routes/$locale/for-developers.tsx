@@ -15,7 +15,7 @@ import { getPageHead, getEducationalPageStructuredData, formatStructuredData, cr
 import { getHowToSchema } from "@/lib/structured-data";
 
 export const Route = createFileRoute("/$locale/for-developers")({
-  loader: createPageLoader(),
+  loader: createPageLoader(["developers"]),
   head: ({ loaderData }) => {
     const messages = loaderData?.messages || {};
     const locale = loaderData?.locale || "en";

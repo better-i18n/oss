@@ -26,6 +26,7 @@ import { getChangelogsMeta } from "@/lib/changelog";
 import { withTimeout } from "@/lib/fetch-utils";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
+import { filterMessages } from "@/lib/page-namespaces";
 
 export const Route = createFileRoute("/$locale/")({
   loader: async ({ context, params }) => {
@@ -33,9 +34,16 @@ export const Route = createFileRoute("/$locale/")({
     // Use metadata-only fetch (single API call) instead of full content (N+1 calls)
     // to keep homepage load time within crawler timeout limits.
     // Wrap with 3s timeout so the page renders even if the API is slow.
-    const [messages, releases] = await Promise.all([
+    const [allMessages, releases] = await Promise.all([
       getMessages({ project: i18nConfig.project, locale: context.locale }),
       withTimeout(getChangelogsMeta(locale), 3000, []),
+    ]);
+    // head() only accesses meta.home.*, hero.{title,subtitle}, testimonials.{N}.quote
+    const messages = filterMessages(allMessages, [
+      "meta",
+      "breadcrumbs",
+      "hero",
+      "testimonials",
     ]);
     return {
       messages,
