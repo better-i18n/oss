@@ -6,9 +6,11 @@ import { buildOgImageUrl } from "@/lib/meta";
 interface BlogCardProps {
   post: BlogPostListItem;
   locale: string;
+  /** Mark as LCP candidate — disables lazy loading and sets fetchpriority="high" */
+  priority?: boolean;
 }
 
-export default function BlogCard({ post, locale }: BlogCardProps) {
+export default function BlogCard({ post, locale, priority = false }: BlogCardProps) {
   const bannerUrl = buildOgImageUrl("og/blog", {
     title: post.title,
     author: post.authorName ?? undefined,
@@ -33,9 +35,10 @@ export default function BlogCard({ post, locale }: BlogCardProps) {
       <div className="aspect-[1200/630] mb-4 rounded-lg overflow-hidden bg-mist-950/5">
         <img
           src={bannerUrl}
-          alt=""
+          alt={post.title}
           className="w-full h-full object-cover"
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          {...(priority ? { fetchPriority: "high" } : {})}
         />
       </div>
 
@@ -68,6 +71,8 @@ export default function BlogCard({ post, locale }: BlogCardProps) {
               <img
                 src={post.authorAvatar}
                 alt={post.authorName}
+                width={24}
+                height={24}
                 className="w-6 h-6 rounded-full object-cover"
               />
             ) : (

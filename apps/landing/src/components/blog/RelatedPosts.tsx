@@ -45,7 +45,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
               <div className="aspect-[1200/630] overflow-hidden bg-mist-950/5">
                 <img
                   src={bannerUrl}
-                  alt=""
+                  alt={post.title}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />

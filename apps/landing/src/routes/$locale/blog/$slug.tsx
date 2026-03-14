@@ -237,6 +237,8 @@ function BlogPostPage() {
                     <img
                       src={post.authorAvatar}
                       alt={post.authorName}
+                      width={44}
+                      height={44}
                       className="w-11 h-11 rounded-full object-cover ring-2 ring-mist-100"
                     />
                   ) : (
@@ -274,7 +276,7 @@ function BlogPostPage() {
           <div className="mt-10 aspect-[1200/630] rounded-xl overflow-hidden bg-mist-50">
             <img
               src={heroBannerUrl}
-              alt=""
+              alt={post.title}
               className="w-full h-full object-cover"
               loading="eager"
               fetchPriority="high"
