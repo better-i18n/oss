@@ -384,6 +384,36 @@ export function getHowToSchema(options: {
 }
 
 /**
+ * WebApplication Schema — for free interactive tools.
+ */
+export function getToolSchema(options: {
+  readonly name: string;
+  readonly description: string;
+  readonly url: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: options.name,
+    description: options.description,
+    url: options.url,
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Any",
+    browserRequirements: "Requires a modern web browser",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+  };
+}
+
+/**
  * Product Schema - for pricing page
  *
  * Google requires `price` as a string and recommends `priceValidUntil`
