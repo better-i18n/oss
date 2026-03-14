@@ -70,9 +70,9 @@ function PhraseComparisonPage() {
       <UserComplaints
         competitor="Phrase"
         complaints={[
-          { source: "G2", quote: "Overly complex UI for simple tasks", category: "Usability" },
-          { source: "Capterra", quote: "Integration setup takes days", category: "Setup" },
-          { source: "G2", quote: "Pricing not transparent", category: "Pricing" },
+          { source: "G2", quote: t("compare.phrase.userComplaints.1.quote"), category: t("compare.phrase.userComplaints.1.category") },
+          { source: "Capterra", quote: t("compare.phrase.userComplaints.2.quote"), category: t("compare.phrase.userComplaints.2.category") },
+          { source: "G2", quote: t("compare.phrase.userComplaints.3.quote"), category: t("compare.phrase.userComplaints.3.category") },
         ]}
       />
 
@@ -110,10 +110,10 @@ function PhraseComparisonPage() {
       <WhySwitchSection
         competitor="Phrase"
         reasons={[
-          { painPoint: "Overly complex UI adds friction to simple translation tasks", solution: "Clean, developer-first interface focused on what matters" },
-          { painPoint: "Integration setup takes days of engineering time", solution: "Drop-in SDKs for React, Next.js, Vue, and more — set up in minutes" },
-          { painPoint: "Opaque pricing requires sales calls to get a quote", solution: "Transparent pricing visible on our website — no surprises" },
-          { painPoint: "Enterprise-focused features add bloat for smaller teams", solution: "Lean platform that scales from side projects to production apps" },
+          { painPoint: t("compare.phrase.switchReasons.1.pain"), solution: t("compare.phrase.switchReasons.1.solution") },
+          { painPoint: t("compare.phrase.switchReasons.2.pain"), solution: t("compare.phrase.switchReasons.2.solution") },
+          { painPoint: t("compare.phrase.switchReasons.3.pain"), solution: t("compare.phrase.switchReasons.3.solution") },
+          { painPoint: t("compare.phrase.switchReasons.4.pain"), solution: t("compare.phrase.switchReasons.4.solution") },
         ]}
       />
 

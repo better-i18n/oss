@@ -70,9 +70,9 @@ function LokaliseComparisonPage() {
       <UserComplaints
         competitor="Lokalise"
         complaints={[
-          { source: "G2", quote: "Steep learning curve for non-technical users", category: "Usability" },
-          { source: "Capterra", quote: "API rate limits cause issues", category: "API" },
-          { source: "G2", quote: "Expensive for small teams", category: "Pricing" },
+          { source: "G2", quote: t("compare.lokalise.userComplaints.1.quote"), category: t("compare.lokalise.userComplaints.1.category") },
+          { source: "Capterra", quote: t("compare.lokalise.userComplaints.2.quote"), category: t("compare.lokalise.userComplaints.2.category") },
+          { source: "G2", quote: t("compare.lokalise.userComplaints.3.quote"), category: t("compare.lokalise.userComplaints.3.category") },
         ]}
       />
 
@@ -110,9 +110,9 @@ function LokaliseComparisonPage() {
       <WhySwitchSection
         competitor="Lokalise"
         reasons={[
-          { painPoint: "Steep learning curve alienates non-technical team members", solution: "Intuitive dashboard anyone can use — no training required" },
-          { painPoint: "API rate limits block CI/CD pipelines during deployments", solution: "CDN-first delivery with no rate limits on translation fetches" },
-          { painPoint: "Costs escalate quickly as team and key count grows", solution: "Predictable pricing that scales with your project, not your headcount" },
+          { painPoint: t("compare.lokalise.switchReasons.1.pain"), solution: t("compare.lokalise.switchReasons.1.solution") },
+          { painPoint: t("compare.lokalise.switchReasons.2.pain"), solution: t("compare.lokalise.switchReasons.2.solution") },
+          { painPoint: t("compare.lokalise.switchReasons.3.pain"), solution: t("compare.lokalise.switchReasons.3.solution") },
         ]}
       />
 

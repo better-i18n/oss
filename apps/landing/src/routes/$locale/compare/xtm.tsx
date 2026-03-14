@@ -118,9 +118,9 @@ function XTMComparisonPage() {
       <UserComplaints
         competitor="XTM"
         complaints={[
-          { source: "G2", quote: "Batch processing is slow", category: "Performance" },
-          { source: "Capterra", quote: "Translation memory sharing limited", category: "TM" },
-          { source: "G2", quote: "Mobile experience poor", category: "Mobile" },
+          { source: "G2", quote: t("compare.xtm.userComplaints.1.quote"), category: t("compare.xtm.userComplaints.1.category") },
+          { source: "Capterra", quote: t("compare.xtm.userComplaints.2.quote"), category: t("compare.xtm.userComplaints.2.category") },
+          { source: "G2", quote: t("compare.xtm.userComplaints.3.quote"), category: t("compare.xtm.userComplaints.3.category") },
         ]}
       />
 
@@ -159,10 +159,10 @@ function XTMComparisonPage() {
       <WhySwitchSection
         competitor="XTM"
         reasons={[
-          { painPoint: "Batch processing bottlenecks slow down large translation jobs", solution: "CDN-first delivery with instant key updates — no batch processing needed" },
-          { painPoint: "Limited translation memory sharing across projects", solution: "Namespace-based organization with cross-project key reuse built in" },
-          { painPoint: "Poor mobile experience limits on-the-go translation review", solution: "Responsive dashboard works seamlessly on any device" },
-          { painPoint: "CAT tool dependency adds complexity for developer workflows", solution: "Developer-first approach — manage translations from your IDE or CI/CD pipeline" },
+          { painPoint: t("compare.xtm.switchReasons.1.pain"), solution: t("compare.xtm.switchReasons.1.solution") },
+          { painPoint: t("compare.xtm.switchReasons.2.pain"), solution: t("compare.xtm.switchReasons.2.solution") },
+          { painPoint: t("compare.xtm.switchReasons.3.pain"), solution: t("compare.xtm.switchReasons.3.solution") },
+          { painPoint: t("compare.xtm.switchReasons.4.pain"), solution: t("compare.xtm.switchReasons.4.solution") },
         ]}
       />
 

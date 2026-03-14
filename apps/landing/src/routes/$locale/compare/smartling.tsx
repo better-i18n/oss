@@ -117,9 +117,9 @@ function SmartlingComparisonPage() {
       <UserComplaints
         competitor="Smartling"
         complaints={[
-          { source: "G2", quote: "Enterprise pricing prohibitive", category: "Pricing" },
-          { source: "Capterra", quote: "Setup requires dedicated engineer", category: "Setup" },
-          { source: "G2", quote: "Lock-in concerns", category: "Vendor Lock-in" },
+          { source: "G2", quote: t("compare.smartling.userComplaints.1.quote"), category: t("compare.smartling.userComplaints.1.category") },
+          { source: "Capterra", quote: t("compare.smartling.userComplaints.2.quote"), category: t("compare.smartling.userComplaints.2.category") },
+          { source: "G2", quote: t("compare.smartling.userComplaints.3.quote"), category: t("compare.smartling.userComplaints.3.category") },
         ]}
       />
 
@@ -164,9 +164,9 @@ function SmartlingComparisonPage() {
       <WhySwitchSection
         competitor="Smartling"
         reasons={[
-          { painPoint: "Enterprise pricing puts localization out of reach for most teams", solution: "Start free, scale affordably — no enterprise sales process required" },
-          { painPoint: "Setup requires a dedicated engineer and weeks of integration work", solution: "Simple SDK integration — get translations running in under an hour" },
-          { painPoint: "Vendor lock-in makes switching costly and risky", solution: "Git-native architecture means your translations live in your repo, not our servers" },
+          { painPoint: t("compare.smartling.switchReasons.1.pain"), solution: t("compare.smartling.switchReasons.1.solution") },
+          { painPoint: t("compare.smartling.switchReasons.2.pain"), solution: t("compare.smartling.switchReasons.2.solution") },
+          { painPoint: t("compare.smartling.switchReasons.3.pain"), solution: t("compare.smartling.switchReasons.3.solution") },
         ]}
       />
 
