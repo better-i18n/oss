@@ -128,6 +128,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           href: "https://docs.better-i18n.com",
         },
         {
+          rel: "preload",
+          href: "/fonts/Geist-Variable.woff2",
+          as: "font",
+          type: "font/woff2",
+          crossOrigin: "anonymous",
+        },
+        {
           rel: "stylesheet",
           href: appCss,
         },
