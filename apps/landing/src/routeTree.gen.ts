@@ -43,6 +43,7 @@ import { Route as LocaleFeaturesRouteImport } from './routes/$locale/features'
 import { Route as LocaleChangelogRouteImport } from './routes/$locale/changelog'
 import { Route as LocaleCareersRouteImport } from './routes/$locale/careers'
 import { Route as LocaleAboutRouteImport } from './routes/$locale/about'
+import { Route as LocaleToolsIndexRouteImport } from './routes/$locale/tools/index'
 import { Route as LocaleI18nIndexRouteImport } from './routes/$locale/i18n/index'
 import { Route as LocaleFeaturesIndexRouteImport } from './routes/$locale/features/index'
 import { Route as LocaleCompareIndexRouteImport } from './routes/$locale/compare/index'
@@ -297,6 +298,11 @@ const LocaleCareersRoute = LocaleCareersRouteImport.update({
 const LocaleAboutRoute = LocaleAboutRouteImport.update({
   id: '/$locale/about',
   path: '/$locale/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleToolsIndexRoute = LocaleToolsIndexRouteImport.update({
+  id: '/$locale/tools/',
+  path: '/$locale/tools/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleI18nIndexRoute = LocaleI18nIndexRouteImport.update({
@@ -875,6 +881,7 @@ export interface FileRoutesByFullPath {
   '/$locale/compare': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
+  '/$locale/tools': typeof LocaleToolsIndexRoute
   '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
   '/$locale/tools/locale-explorer/$localeCode': typeof LocaleToolsLocaleExplorerLocaleCodeRoute
   '/$locale/tools/translation-file-converter/$pair': typeof LocaleToolsTranslationFileConverterPairRoute
@@ -993,6 +1000,7 @@ export interface FileRoutesByTo {
   '/$locale/compare': typeof LocaleCompareIndexRoute
   '/$locale/features': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
+  '/$locale/tools': typeof LocaleToolsIndexRoute
   '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
   '/$locale/tools/locale-explorer/$localeCode': typeof LocaleToolsLocaleExplorerLocaleCodeRoute
   '/$locale/tools/translation-file-converter/$pair': typeof LocaleToolsTranslationFileConverterPairRoute
@@ -1113,6 +1121,7 @@ export interface FileRoutesById {
   '/$locale/compare/': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n/': typeof LocaleI18nIndexRoute
+  '/$locale/tools/': typeof LocaleToolsIndexRoute
   '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
   '/$locale/tools/locale-explorer/$localeCode': typeof LocaleToolsLocaleExplorerLocaleCodeRoute
   '/$locale/tools/translation-file-converter/$pair': typeof LocaleToolsTranslationFileConverterPairRoute
@@ -1234,6 +1243,7 @@ export interface FileRouteTypes {
     | '/$locale/compare'
     | '/$locale/features/'
     | '/$locale/i18n'
+    | '/$locale/tools'
     | '/$locale/blog/page/$page'
     | '/$locale/tools/locale-explorer/$localeCode'
     | '/$locale/tools/translation-file-converter/$pair'
@@ -1352,6 +1362,7 @@ export interface FileRouteTypes {
     | '/$locale/compare'
     | '/$locale/features'
     | '/$locale/i18n'
+    | '/$locale/tools'
     | '/$locale/blog/page/$page'
     | '/$locale/tools/locale-explorer/$localeCode'
     | '/$locale/tools/translation-file-converter/$pair'
@@ -1471,6 +1482,7 @@ export interface FileRouteTypes {
     | '/$locale/compare/'
     | '/$locale/features/'
     | '/$locale/i18n/'
+    | '/$locale/tools/'
     | '/$locale/blog/page/$page'
     | '/$locale/tools/locale-explorer/$localeCode'
     | '/$locale/tools/translation-file-converter/$pair'
@@ -1589,6 +1601,7 @@ export interface RootRouteChildren {
   LocaleBlogIndexRoute: typeof LocaleBlogIndexRoute
   LocaleCompareIndexRoute: typeof LocaleCompareIndexRoute
   LocaleI18nIndexRoute: typeof LocaleI18nIndexRoute
+  LocaleToolsIndexRoute: typeof LocaleToolsIndexRoute
   LocaleBlogPagePageRoute: typeof LocaleBlogPagePageRoute
   LocaleBlogPageIndexRoute: typeof LocaleBlogPageIndexRoute
 }
@@ -1831,6 +1844,13 @@ declare module '@tanstack/react-router' {
       path: '/$locale/about'
       fullPath: '/$locale/about'
       preLoaderRoute: typeof LocaleAboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/tools/': {
+      id: '/$locale/tools/'
+      path: '/$locale/tools'
+      fullPath: '/$locale/tools'
+      preLoaderRoute: typeof LocaleToolsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/i18n/': {
@@ -2588,6 +2608,7 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleBlogIndexRoute: LocaleBlogIndexRoute,
   LocaleCompareIndexRoute: LocaleCompareIndexRoute,
   LocaleI18nIndexRoute: LocaleI18nIndexRoute,
+  LocaleToolsIndexRoute: LocaleToolsIndexRoute,
   LocaleBlogPagePageRoute: LocaleBlogPagePageRoute,
   LocaleBlogPageIndexRoute: LocaleBlogPageIndexRoute,
 }
