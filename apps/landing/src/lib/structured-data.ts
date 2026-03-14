@@ -45,14 +45,12 @@ export function getOrganizationSchema(options?: {
   knowsAbout?: readonly string[];
   contactType?: string;
 }) {
-  const locale = options?.locale ?? "en";
   const languages = options?.availableLanguages ?? ["en"];
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: SITE_NAME,
     url: SITE_URL,
-    ...(options?.locale && { inLanguage: locale }),
     logo: {
       "@type": "ImageObject",
       url: `${SITE_URL}/logo.png`,
@@ -308,7 +306,7 @@ export function getComparisonSchema(options: {
       position: index + 1,
       name: item.name,
       item: {
-        "@type": "SoftwareApplication",
+        "@type": "Thing",
         name: item.name,
         description: item.description,
         url: item.url,

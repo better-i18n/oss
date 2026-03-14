@@ -11,6 +11,7 @@ export const getRouter = () => {
       locale: undefined!, // Set by root route beforeLoad
       locales: undefined!, // Set by root route beforeLoad
     },
+    trailingSlash: "always",
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
     defaultStaleTime: 60_000, // Root loader won't re-run for 60s — prevents nav white flash
