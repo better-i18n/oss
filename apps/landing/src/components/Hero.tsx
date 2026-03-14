@@ -99,7 +99,7 @@ export default function Hero() {
               {/* Carna */}
               <a href="http://carna.ai/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                 <img
-                  src="/carna.png"
+                  src="/carna.webp"
                   alt="Carna - Better i18n customer"
                   width={112}
                   height={28}
@@ -110,7 +110,7 @@ export default function Hero() {
               {/* Nomad Work */}
               <a href="https://hellonomad.app/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                 <img
-                  src="/nomadwork.png"
+                  src="/nomadwork.webp"
                   alt="Nomad Work - Better i18n customer"
                   width={112}
                   height={28}
@@ -121,7 +121,7 @@ export default function Hero() {
               {/* Hellospace */}
               <a href="https://hellospace.world/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                 <img
-                  src="/hellospace.png"
+                  src="/hellospace.webp"
                   alt="Hellospace - Better i18n customer"
                   width={112}
                   height={28}
@@ -132,7 +132,7 @@ export default function Hero() {
               {/* Masraff */}
               <a href="https://masraff.ai" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                 <img
-                  src="/masraff.png"
+                  src="/masraff.webp"
                   alt="Masraff - Better i18n customer"
                   width={28}
                   height={28}
@@ -143,7 +143,7 @@ export default function Hero() {
               {/* Cloudflare */}
               <a href="https://www.cloudflare.com/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                 <img
-                  src="/cloudflare.png"
+                  src="/cloudflare.webp"
                   alt="Cloudflare - Better i18n customer"
                   width={112}
                   height={28}
