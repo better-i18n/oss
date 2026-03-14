@@ -36,6 +36,7 @@ import {
   getOrganizationSchema,
   getBreadcrumbSchema,
 } from "@/lib/structured-data";
+import { getLocaleTier } from "@/seo/locale-tiers";
 
 const loadBlogPost = createServerFn({ method: "GET" })
   .inputValidator((data: { slug: string; locale: string }) => data)
