@@ -73,7 +73,9 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
       throw notFound();
     }
 
-    const messages = await getMessages({ project: i18nConfig.project, locale: context.locale });
+    const { filterMessages } = await import("@/lib/page-namespaces");
+    const allMessages = await getMessages({ project: i18nConfig.project, locale: context.locale });
+    const messages = filterMessages(allMessages, ["meta", "breadcrumbs"]);
     return {
       ...result,
       messages,

@@ -110,13 +110,13 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
     { namespaces: ["marketing.whatIsLocalization", "relatedPages"] },
   ],
 
-  // ─── i18n hub ────────────────────────────────────────────────
-  ["i18n", { namespaces: ["marketing.i18n", "relatedPages"] }],
+  // ─── i18n hub (only index-level keys, NOT all sub-page content) ──
+  ["i18n", { namespaces: ["marketing.i18n.index", "relatedPages"] }],
 
-  // ─── Compare hub ─────────────────────────────────────────────
+  // ─── Compare hub (only index-level keys) ────────────────────────
   [
     "compare",
-    { namespaces: ["marketing.compare", "alternatives", "relatedPages"] },
+    { namespaces: ["marketing.compare.index", "alternatives", "relatedPages"] },
   ],
 ]);
 

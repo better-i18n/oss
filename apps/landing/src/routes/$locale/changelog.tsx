@@ -21,10 +21,12 @@ export const Route = createFileRoute("/$locale/changelog")({
     const locale = params.locale as "en" | "tr";
     // Wrap with 4s timeout so the page renders even if the content API is slow.
     // Client-side useQuery will retry on navigation.
-    const [messages, releases] = await Promise.all([
+    const { filterMessages } = await import("@/lib/page-namespaces");
+    const [allMessages, releases] = await Promise.all([
       getMessages({ project: i18nConfig.project, locale: context.locale }),
       withTimeout(getChangelogs(locale), 4000, []),
     ]);
+    const messages = filterMessages(allMessages, ["meta", "breadcrumbs"]);
 
     return {
       messages,
