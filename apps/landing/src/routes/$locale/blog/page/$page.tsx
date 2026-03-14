@@ -28,6 +28,7 @@ import {
 } from "@/lib/structured-data";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
+import { getLocaleTier } from "@/seo/locale-tiers";
 
 /** Pages at or beyond this threshold get noindex,follow to preserve crawl budget. */
 const NOINDEX_THRESHOLD = 8;
@@ -118,8 +119,9 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
       paginationLinks.push({ rel: "next", href: `${SITE_URL}/${locale}/blog/page/${currentPage + 1}/` });
     }
 
-    // Deep pages (>= 8) get noindex to preserve crawl budget
-    const robotsMeta = currentPage >= NOINDEX_THRESHOLD
+    // noindex for: deep pages (>= 8) OR tier 3 locales
+    const shouldNoindex = currentPage >= NOINDEX_THRESHOLD || getLocaleTier(locale) === "tier3";
+    const robotsMeta = shouldNoindex
       ? [{ name: "robots", content: "noindex, follow" }]
       : [];
 

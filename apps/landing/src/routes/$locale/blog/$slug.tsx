@@ -28,6 +28,7 @@ import {
   getLocalizedMeta,
   formatMetaTags,
   buildOgImageUrl,
+  truncateTitle,
 } from "@/lib/meta";
 import {
   getArticleSchema,
@@ -106,7 +107,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     // Override with blog-specific values (immutable spread)
     const blogMeta = {
       ...meta,
-      title: `${postTitle} - Better i18n Blog`,
+      title: truncateTitle(`${postTitle} - Better i18n Blog`),
       description: excerpt,
       ogTitle: postTitle,
       ogDescription: excerpt,
@@ -361,9 +362,9 @@ function BlogPostNotFound() {
             <IconCircleInfo className="h-8 w-8 text-mist-400" />
           </div>
 
-          <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
+          <p className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
             {t("notFound.title", { defaultValue: "Post not found" })}
-          </h1>
+          </p>
           <p className="mt-4 text-lg text-mist-600">
             {t("notFound.description", {
               defaultValue:

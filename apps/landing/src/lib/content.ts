@@ -61,6 +61,27 @@ export function getContentClient(): ContentClient {
   return _client;
 }
 
+// ─── Server-side TTL Cache ──────────────────────────────────────────
+
+/** Simple in-memory TTL cache for Content API responses on CF Workers. */
+const contentCache = new Map<string, { data: unknown; expiresAt: number }>();
+const CONTENT_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+function getCached<T>(key: string): T | undefined {
+  const entry = contentCache.get(key);
+  if (!entry) return undefined;
+  if (Date.now() > entry.expiresAt) {
+    contentCache.delete(key);
+    return undefined;
+  }
+  return entry.data as T;
+}
+
+function setCache<T>(key: string, data: T): T {
+  contentCache.set(key, { data, expiresAt: Date.now() + CONTENT_CACHE_TTL_MS });
+  return data;
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────
 
 const EXCERPT_MAX_LENGTH = 155;
@@ -165,6 +186,9 @@ export async function getBlogPosts(
   hasMore: boolean;
 }> {
   const { limit = 12, page = 1 } = options;
+  const cacheKey = `blog-posts:${locale}:${limit}:${page}`;
+  const cached = getCached<{ posts: BlogPostListItem[]; total: number; hasMore: boolean }>(cacheKey);
+  if (cached) return cached;
 
   try {
     const result = await getContentClient().getEntries(BLOG_MODEL, {
@@ -177,7 +201,7 @@ export async function getBlogPosts(
       expand: ["author", "category"],
     });
 
-    return {
+    const data = {
       posts: result.items.map((item) => ({
         slug: item.slug,
         title: item.title,
@@ -188,6 +212,7 @@ export async function getBlogPosts(
       total: result.total,
       hasMore: result.hasMore,
     };
+    return setCache(cacheKey, data);
   } catch (error) {
     console.error("Content API error:", error);
     return { posts: [], total: 0, hasMore: false };
@@ -224,6 +249,10 @@ export async function getBlogPost(
   slug: string,
   locale: string,
 ): Promise<BlogPost | null> {
+  const cacheKey = `blog-post:${locale}:${slug}`;
+  const cached = getCached<BlogPost | null>(cacheKey);
+  if (cached !== undefined) return cached;
+
   try {
     const entry = await getContentClient().getEntry(BLOG_MODEL, slug, {
       language: locale,
@@ -237,7 +266,7 @@ export async function getBlogPost(
           (v): v is string => typeof v === "string",
         )
       : null;
-    return {
+    const post: BlogPost = {
       id: entry.id,
       slug: entry.slug,
       status: entry.status,
@@ -249,6 +278,7 @@ export async function getBlogPost(
       availableLanguages,
       ...mapEntryBase(entry),
     };
+    return setCache(cacheKey, post);
   } catch {
     return null;
   }
@@ -268,6 +298,7 @@ export interface MarketingPage {
   targetKeywords: string | null;
   authorName: string | null;
   authorAvatar: string | null;
+  availableLanguages: readonly string[] | null;
 }
 
 export interface MarketingPageListItem {
@@ -285,6 +316,10 @@ export async function getMarketingPages(
   locale: string,
   pageType?: "feature" | "persona",
 ): Promise<MarketingPageListItem[]> {
+  const cacheKey = `marketing-pages:${locale}:${pageType || "all"}`;
+  const cached = getCached<MarketingPageListItem[]>(cacheKey);
+  if (cached) return cached;
+
   try {
     const result = await getContentClient().getEntries(MARKETING_MODEL, {
       language: locale,
@@ -293,7 +328,7 @@ export async function getMarketingPages(
       expand: ["author"],
     });
 
-    return result.items
+    const pages = result.items
       .filter((item) => !pageType || item.page_type === pageType)
       .map((item) => ({
         slug: item.slug,
@@ -302,6 +337,8 @@ export async function getMarketingPages(
         pageType: (item.page_type as "feature" | "persona") || "feature",
         heroSubtitle: (item.hero_subtitle as string | null) ?? null,
       }));
+
+    return setCache(cacheKey, pages);
   } catch (error) {
     console.error("Marketing pages API error:", error);
     return [];
@@ -313,6 +350,10 @@ export async function getMarketingPage(
   slug: string,
   locale: string,
 ): Promise<MarketingPage | null> {
+  const cacheKey = `marketing-page:${locale}:${slug}`;
+  const cached = getCached<MarketingPage | null>(cacheKey);
+  if (cached !== undefined) return cached;
+
   try {
     const entry = await getContentClient().getEntry(MARKETING_MODEL, slug, {
       language: locale,
@@ -320,7 +361,13 @@ export async function getMarketingPage(
     });
     const bodyHtml = entry.body ? String(await marked(entry.body)) : null;
     const excerpt = extractExcerpt(entry.body);
-    return {
+    const raw = entry as unknown as Record<string, unknown>;
+    const availableLanguages = Array.isArray(raw.availableLanguages)
+      ? (raw.availableLanguages as unknown[]).filter(
+          (v): v is string => typeof v === "string",
+        )
+      : null;
+    const page: MarketingPage = {
       id: entry.id,
       slug: entry.slug,
       title: entry.title,
@@ -332,7 +379,9 @@ export async function getMarketingPage(
       targetKeywords: (entry.target_keywords as string | null) ?? null,
       authorName: entry.relations?.author?.title ?? null,
       authorAvatar: entry.relations?.author?.avatar ?? null,
+      availableLanguages,
     };
+    return setCache(cacheKey, page);
   } catch {
     return null;
   }

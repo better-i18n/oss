@@ -13,6 +13,7 @@ import {
   buildOgImageUrl,
 } from "@/lib/meta";
 import { getCachedLocales } from "@/lib/locales";
+import { getLocaleTier } from "@/seo/locale-tiers";
 import {
   getEducationalPageStructuredData,
   getBreadcrumbSchema,
@@ -35,15 +36,17 @@ const loadRelatedFeatures = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/$locale/features/$slug")({
   loader: async ({ params }) => {
-    const page = await loadFeaturePage({
-      data: { slug: params.slug, locale: params.locale },
-    });
+    const [page, relatedFeatures] = await Promise.all([
+      loadFeaturePage({
+        data: { slug: params.slug, locale: params.locale },
+      }),
+      loadRelatedFeatures({
+        data: { slug: params.slug, locale: params.locale },
+      }),
+    ]);
     if (!page) {
       throw notFound();
     }
-    const relatedFeatures = await loadRelatedFeatures({
-      data: { slug: params.slug, locale: params.locale },
-    });
     return { page, locale: params.locale, relatedFeatures };
   },
   head: ({ loaderData }) => {
@@ -89,7 +92,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
         { property: "og:url", content: canonicalUrl },
         { property: "og:site_name", content: "Better i18n" },
         { property: "og:locale", content: locale },
-        ...getCachedLocales()
+        ...(page?.availableLanguages ?? getCachedLocales())
           .filter((loc) => loc !== locale)
           .map((loc) => ({
             property: "og:locale:alternate",
@@ -106,15 +109,16 @@ export const Route = createFileRoute("/$locale/features/$slug")({
         },
         {
           name: "robots",
-          content:
-            "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+          content: getLocaleTier(locale) === "tier3"
+            ? "noindex, follow"
+            : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
         },
         ...(page?.targetKeywords
           ? [{ name: "keywords", content: page.targetKeywords }]
           : []),
       ],
       links: [
-        ...getAlternateLinks(pathname),
+        ...getAlternateLinks(pathname, page?.availableLanguages ?? undefined),
         getCanonicalLink(locale, pathname),
       ],
       scripts: [...educationalScripts, ...breadcrumbScripts],

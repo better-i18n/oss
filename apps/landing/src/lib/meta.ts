@@ -1,5 +1,6 @@
 import { getCachedLocales } from "./locales";
 import { SITE_URL } from "@/seo/pages";
+import { getLocaleTier } from "@/seo/locale-tiers";
 import { getActiveVariant } from "@/seo/title-variants";
 const SITE_NAME = "Better i18n";
 const OG_SERVICE_URL = "https://og.better-i18n.com";
@@ -217,13 +218,16 @@ export function formatMetaTags(
  * All locales use /$locale/ prefix so hreflang URLs return HTTP 200 (not 301 redirects).
  * All URLs include a trailing slash to avoid 307 redirects.
  */
-export function getAlternateLinks(pathname: string = "/", locales?: string[]) {
+export function getAlternateLinks(pathname: string = "/", locales?: readonly string[]) {
   if (!locales) {
     locales = getCachedLocales();
   }
+  // Exclude tier 3 locales from hreflang alternates to prevent
+  // search engines from discovering noindex pages via hreflang signals.
+  const filteredLocales = locales.filter((l) => getLocaleTier(l) !== "tier3");
   const cleanPath = pathname.replace(/^\/[a-z]{2}\//, "/").replace(/^\/+/, "").replace(/\/+$/, "");
 
-  const links = locales.map((locale) => ({
+  const links = filteredLocales.map((locale) => ({
     rel: "alternate",
     href: cleanPath
       ? `${SITE_URL}/${locale}/${cleanPath}/`
@@ -267,4 +271,4 @@ export function buildOgImageUrl(
 }
 
 export { SITE_URL } from "@/seo/pages";
-export { SITE_NAME, DEFAULT_OG_IMAGE, OG_SERVICE_URL, TWITTER_HANDLE };
+export { SITE_NAME, DEFAULT_OG_IMAGE, OG_SERVICE_URL, TWITTER_HANDLE, truncateTitle };

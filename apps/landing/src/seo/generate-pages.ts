@@ -240,7 +240,12 @@ function generateBlogListingPages(
 ): readonly PageEntry[] {
   const pages: PageEntry[] = [];
 
-  // Count posts per locale
+  // Only tier 1 and tier 2 locales get sitemap entries for blog listings
+  const sitemapLocales = allLocales.filter(
+    (l) => getLocaleTier(l) !== "tier3",
+  );
+
+  // Count posts per locale (still count all locales for hreflang accuracy)
   const localePostCounts = new Map<string, number>();
   for (const locale of allLocales) {
     const count = posts.filter(
@@ -251,17 +256,18 @@ function generateBlogListingPages(
     localePostCounts.set(locale, count);
   }
 
-  for (const locale of allLocales) {
+  for (const locale of sitemapLocales) {
     const count = localePostCounts.get(locale) ?? 0;
     if (count === 0) continue;
 
     const totalPages = Math.ceil(count / POSTS_PER_PAGE);
 
-    // Page 1: /{locale}/blog/
-    const validLocalesForPage1 = allLocales.filter(
+    // hreflang alternates only reference sitemap-eligible locales with posts
+    const validLocalesForPage1 = sitemapLocales.filter(
       (l) => (localePostCounts.get(l) ?? 0) > 0,
     );
 
+    // Page 1: /{locale}/blog/
     pages.push({
       path: buildPagePath(locale, "blog"),
       sitemap: {
@@ -274,9 +280,9 @@ function generateBlogListingPages(
       // SSR — no prerender
     });
 
-    // Page 2+: /{locale}/blog/page/{N}/
+    // Page 2+: /{locale}/blog/page/{N}/ — lower priority, noindex
     for (let pageNum = 2; pageNum <= totalPages; pageNum++) {
-      const validLocales = allLocales.filter(
+      const validLocales = sitemapLocales.filter(
         (l) =>
           Math.ceil((localePostCounts.get(l) ?? 0) / POSTS_PER_PAGE) >= pageNum,
       );
@@ -284,11 +290,12 @@ function generateBlogListingPages(
       pages.push({
         path: buildPagePath(locale, `blog/page/${pageNum}`),
         sitemap: {
-          priority: 0.6,
+          priority: 0.4,
           changefreq: "daily",
           alternateRefs: buildAlternateRefs(validLocales, (l) =>
             buildPageUrl(l, `blog/page/${pageNum}`),
           ),
+          noindex: true,
         },
       });
     }
@@ -304,16 +311,25 @@ function generateBlogDetailPages(
   // Only generate pages for languages the post is actually published in.
   // Falling back to allLocales would create sitemap entries for non-existent
   // translations, causing soft 404s and thin content warnings in Google Search Console.
-  const postLocales =
+  const rawLocales =
     post.availableLanguages && post.availableLanguages.length > 0
       ? post.availableLanguages
       : ["en"];
 
-  const alternateRefs = buildAlternateRefs(postLocales, (locale) =>
+  // Apply locale tier filtering: tier 3 locales are excluded from sitemap
+  // and marked noindex, same as marketing pages. Without this filter, blog
+  // posts bypass the tier system and leak tier 3 pages into the sitemap.
+  const sitemapLocales = rawLocales.filter(
+    (l) => getLocaleTier(l) !== "tier3",
+  );
+
+  // hreflang alternates only reference locales present in the sitemap
+  const alternateRefs = buildAlternateRefs(sitemapLocales, (locale) =>
     buildPageUrl(locale, `blog/${post.slug}`),
   );
 
-  return postLocales.map((locale): PageEntry => {
+  // Generate sitemap entries for tier 1 and tier 2 locales
+  const sitemapEntries = sitemapLocales.map((locale): PageEntry => {
     const tier = getLocaleTier(locale);
     // Prerender tier 1 and tier 2 blog posts so crawlers see full HTML
     // (on-demand SSR on Cloudflare Workers sends an empty Suspense shell)
@@ -330,6 +346,24 @@ function generateBlogDetailPages(
       prerender: shouldPrerender ? { enabled: true } : undefined,
     };
   });
+
+  // Tier 3 locales still get page entries (for prerender/SSR) but are
+  // excluded from the sitemap and marked noindex to prevent Google indexing.
+  const tier3Locales = rawLocales.filter(
+    (l) => getLocaleTier(l) === "tier3",
+  );
+  const tier3Entries = tier3Locales.map((locale): PageEntry => ({
+    path: buildPagePath(locale, `blog/${post.slug}`),
+    sitemap: {
+      priority: 0,
+      changefreq: "weekly",
+      lastmod: post.publishedAt ?? undefined,
+      alternateRefs,
+      noindex: true,
+    },
+  }));
+
+  return [...sitemapEntries, ...tier3Entries];
 }
 
 // ─── Generator: Feature Detail Pages ─────────────────────────────────
@@ -343,16 +377,21 @@ export function generateFeatureDetailPages(
   allLocales: readonly string[],
 ): readonly PageEntry[] {
   return features.flatMap((feature) => {
-    const featureLocales =
+    const rawLocales =
       feature.availableLanguages && feature.availableLanguages.length > 0
         ? feature.availableLanguages
         : allLocales;
 
-    const alternateRefs = buildAlternateRefs(featureLocales, (locale) =>
+    // Apply locale tier filtering: tier 3 locales get noindex entries
+    const sitemapLocales = rawLocales.filter(
+      (l) => getLocaleTier(l) !== "tier3",
+    );
+
+    const alternateRefs = buildAlternateRefs(sitemapLocales, (locale) =>
       buildPageUrl(locale, `features/${feature.slug}`),
     );
 
-    return featureLocales.map((locale): PageEntry => {
+    const sitemapEntries = sitemapLocales.map((locale): PageEntry => {
       const tier = getLocaleTier(locale);
       const shouldPrerender = tier === "tier1" || tier === "tier2";
 
@@ -367,6 +406,23 @@ export function generateFeatureDetailPages(
         prerender: shouldPrerender ? { enabled: true } : undefined,
       };
     });
+
+    // Tier 3 locales: noindex, excluded from sitemap priority
+    const tier3Locales = rawLocales.filter(
+      (l) => getLocaleTier(l) === "tier3",
+    );
+    const tier3Entries = tier3Locales.map((locale): PageEntry => ({
+      path: buildPagePath(locale, `features/${feature.slug}`),
+      sitemap: {
+        priority: 0,
+        changefreq: "weekly",
+        lastmod: feature.publishedAt ?? undefined,
+        alternateRefs,
+        noindex: true,
+      },
+    }));
+
+    return [...sitemapEntries, ...tier3Entries];
   });
 }
 
