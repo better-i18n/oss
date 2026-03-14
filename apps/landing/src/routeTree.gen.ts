@@ -73,6 +73,7 @@ import { Route as ArchivedAudienceForEngineeringLeadersRouteImport } from './rou
 import { Route as ArchivedAudienceForEducationRouteImport } from './routes/_archived/audience/for-education'
 import { Route as ArchivedAudienceForDesignersRouteImport } from './routes/_archived/audience/for-designers'
 import { Route as ArchivedAudienceForContentTeamsRouteImport } from './routes/_archived/audience/for-content-teams'
+import { Route as LocaleToolsTranslationFileConverterRouteImport } from './routes/$locale/tools/translation-file-converter'
 import { Route as LocaleToolsLocaleExplorerRouteImport } from './routes/$locale/tools/locale-explorer'
 import { Route as LocaleToolsIcuPlaygroundRouteImport } from './routes/$locale/tools/icu-playground'
 import { Route as LocaleToolsHreflangGeneratorRouteImport } from './routes/$locale/tools/hreflang-generator'
@@ -122,6 +123,7 @@ import { Route as LocaleCompareCrowdinVsLokaliseRouteImport } from './routes/$lo
 import { Route as LocaleCompareCrowdinRouteImport } from './routes/$locale/compare/crowdin'
 import { Route as LocaleBlogSlugRouteImport } from './routes/$locale/blog/$slug'
 import { Route as LocaleBlogPageIndexRouteImport } from './routes/$locale/blog/page/index'
+import { Route as LocaleToolsTranslationFileConverterPairRouteImport } from './routes/$locale/tools/translation-file-converter.$pair'
 import { Route as LocaleToolsLocaleExplorerLocaleCodeRouteImport } from './routes/$locale/tools/locale-explorer.$localeCode'
 import { Route as LocaleBlogPagePageRouteImport } from './routes/$locale/blog/page/$page'
 
@@ -472,6 +474,12 @@ const ArchivedAudienceForContentTeamsRoute =
     path: '/audience/for-content-teams',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LocaleToolsTranslationFileConverterRoute =
+  LocaleToolsTranslationFileConverterRouteImport.update({
+    id: '/$locale/tools/translation-file-converter',
+    path: '/$locale/tools/translation-file-converter',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LocaleToolsLocaleExplorerRoute =
   LocaleToolsLocaleExplorerRouteImport.update({
     id: '/$locale/tools/locale-explorer',
@@ -735,6 +743,12 @@ const LocaleBlogPageIndexRoute = LocaleBlogPageIndexRouteImport.update({
   path: '/$locale/blog/page/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleToolsTranslationFileConverterPairRoute =
+  LocaleToolsTranslationFileConverterPairRouteImport.update({
+    id: '/$pair',
+    path: '/$pair',
+    getParentRoute: () => LocaleToolsTranslationFileConverterRoute,
+  } as any)
 const LocaleToolsLocaleExplorerLocaleCodeRoute =
   LocaleToolsLocaleExplorerLocaleCodeRouteImport.update({
     id: '/$localeCode',
@@ -830,6 +844,7 @@ export interface FileRoutesByFullPath {
   '/$locale/tools/hreflang-generator': typeof LocaleToolsHreflangGeneratorRoute
   '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
   '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
+  '/$locale/tools/translation-file-converter': typeof LocaleToolsTranslationFileConverterRouteWithChildren
   '/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
   '/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
   '/audience/for-education': typeof ArchivedAudienceForEducationRoute
@@ -862,6 +877,7 @@ export interface FileRoutesByFullPath {
   '/$locale/i18n': typeof LocaleI18nIndexRoute
   '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
   '/$locale/tools/locale-explorer/$localeCode': typeof LocaleToolsLocaleExplorerLocaleCodeRoute
+  '/$locale/tools/translation-file-converter/$pair': typeof LocaleToolsTranslationFileConverterPairRoute
   '/$locale/blog/page': typeof LocaleBlogPageIndexRoute
 }
 export interface FileRoutesByTo {
@@ -946,6 +962,7 @@ export interface FileRoutesByTo {
   '/$locale/tools/hreflang-generator': typeof LocaleToolsHreflangGeneratorRoute
   '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
   '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
+  '/$locale/tools/translation-file-converter': typeof LocaleToolsTranslationFileConverterRouteWithChildren
   '/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
   '/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
   '/audience/for-education': typeof ArchivedAudienceForEducationRoute
@@ -978,6 +995,7 @@ export interface FileRoutesByTo {
   '/$locale/i18n': typeof LocaleI18nIndexRoute
   '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
   '/$locale/tools/locale-explorer/$localeCode': typeof LocaleToolsLocaleExplorerLocaleCodeRoute
+  '/$locale/tools/translation-file-converter/$pair': typeof LocaleToolsTranslationFileConverterPairRoute
   '/$locale/blog/page': typeof LocaleBlogPageIndexRoute
 }
 export interface FileRoutesById {
@@ -1064,6 +1082,7 @@ export interface FileRoutesById {
   '/$locale/tools/hreflang-generator': typeof LocaleToolsHreflangGeneratorRoute
   '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
   '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
+  '/$locale/tools/translation-file-converter': typeof LocaleToolsTranslationFileConverterRouteWithChildren
   '/_archived/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
   '/_archived/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
   '/_archived/audience/for-education': typeof ArchivedAudienceForEducationRoute
@@ -1096,6 +1115,7 @@ export interface FileRoutesById {
   '/$locale/i18n/': typeof LocaleI18nIndexRoute
   '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
   '/$locale/tools/locale-explorer/$localeCode': typeof LocaleToolsLocaleExplorerLocaleCodeRoute
+  '/$locale/tools/translation-file-converter/$pair': typeof LocaleToolsTranslationFileConverterPairRoute
   '/$locale/blog/page/': typeof LocaleBlogPageIndexRoute
 }
 export interface FileRouteTypes {
@@ -1183,6 +1203,7 @@ export interface FileRouteTypes {
     | '/$locale/tools/hreflang-generator'
     | '/$locale/tools/icu-playground'
     | '/$locale/tools/locale-explorer'
+    | '/$locale/tools/translation-file-converter'
     | '/audience/for-content-teams'
     | '/audience/for-designers'
     | '/audience/for-education'
@@ -1215,6 +1236,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n'
     | '/$locale/blog/page/$page'
     | '/$locale/tools/locale-explorer/$localeCode'
+    | '/$locale/tools/translation-file-converter/$pair'
     | '/$locale/blog/page'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1299,6 +1321,7 @@ export interface FileRouteTypes {
     | '/$locale/tools/hreflang-generator'
     | '/$locale/tools/icu-playground'
     | '/$locale/tools/locale-explorer'
+    | '/$locale/tools/translation-file-converter'
     | '/audience/for-content-teams'
     | '/audience/for-designers'
     | '/audience/for-education'
@@ -1331,6 +1354,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n'
     | '/$locale/blog/page/$page'
     | '/$locale/tools/locale-explorer/$localeCode'
+    | '/$locale/tools/translation-file-converter/$pair'
     | '/$locale/blog/page'
   id:
     | '__root__'
@@ -1416,6 +1440,7 @@ export interface FileRouteTypes {
     | '/$locale/tools/hreflang-generator'
     | '/$locale/tools/icu-playground'
     | '/$locale/tools/locale-explorer'
+    | '/$locale/tools/translation-file-converter'
     | '/_archived/audience/for-content-teams'
     | '/_archived/audience/for-designers'
     | '/_archived/audience/for-education'
@@ -1448,6 +1473,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/'
     | '/$locale/blog/page/$page'
     | '/$locale/tools/locale-explorer/$localeCode'
+    | '/$locale/tools/translation-file-converter/$pair'
     | '/$locale/blog/page/'
   fileRoutesById: FileRoutesById
 }
@@ -1533,6 +1559,7 @@ export interface RootRouteChildren {
   LocaleToolsHreflangGeneratorRoute: typeof LocaleToolsHreflangGeneratorRoute
   LocaleToolsIcuPlaygroundRoute: typeof LocaleToolsIcuPlaygroundRoute
   LocaleToolsLocaleExplorerRoute: typeof LocaleToolsLocaleExplorerRouteWithChildren
+  LocaleToolsTranslationFileConverterRoute: typeof LocaleToolsTranslationFileConverterRouteWithChildren
   ArchivedAudienceForContentTeamsRoute: typeof ArchivedAudienceForContentTeamsRoute
   ArchivedAudienceForDesignersRoute: typeof ArchivedAudienceForDesignersRoute
   ArchivedAudienceForEducationRoute: typeof ArchivedAudienceForEducationRoute
@@ -2016,6 +2043,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArchivedAudienceForContentTeamsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/tools/translation-file-converter': {
+      id: '/$locale/tools/translation-file-converter'
+      path: '/$locale/tools/translation-file-converter'
+      fullPath: '/$locale/tools/translation-file-converter'
+      preLoaderRoute: typeof LocaleToolsTranslationFileConverterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/tools/locale-explorer': {
       id: '/$locale/tools/locale-explorer'
       path: '/$locale/tools/locale-explorer'
@@ -2359,6 +2393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleBlogPageIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/tools/translation-file-converter/$pair': {
+      id: '/$locale/tools/translation-file-converter/$pair'
+      path: '/$pair'
+      fullPath: '/$locale/tools/translation-file-converter/$pair'
+      preLoaderRoute: typeof LocaleToolsTranslationFileConverterPairRouteImport
+      parentRoute: typeof LocaleToolsTranslationFileConverterRoute
+    }
     '/$locale/tools/locale-explorer/$localeCode': {
       id: '/$locale/tools/locale-explorer/$localeCode'
       path: '/$localeCode'
@@ -2403,6 +2444,21 @@ const LocaleToolsLocaleExplorerRouteChildren: LocaleToolsLocaleExplorerRouteChil
 const LocaleToolsLocaleExplorerRouteWithChildren =
   LocaleToolsLocaleExplorerRoute._addFileChildren(
     LocaleToolsLocaleExplorerRouteChildren,
+  )
+
+interface LocaleToolsTranslationFileConverterRouteChildren {
+  LocaleToolsTranslationFileConverterPairRoute: typeof LocaleToolsTranslationFileConverterPairRoute
+}
+
+const LocaleToolsTranslationFileConverterRouteChildren: LocaleToolsTranslationFileConverterRouteChildren =
+  {
+    LocaleToolsTranslationFileConverterPairRoute:
+      LocaleToolsTranslationFileConverterPairRoute,
+  }
+
+const LocaleToolsTranslationFileConverterRouteWithChildren =
+  LocaleToolsTranslationFileConverterRoute._addFileChildren(
+    LocaleToolsTranslationFileConverterRouteChildren,
   )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -2490,6 +2546,8 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleToolsHreflangGeneratorRoute: LocaleToolsHreflangGeneratorRoute,
   LocaleToolsIcuPlaygroundRoute: LocaleToolsIcuPlaygroundRoute,
   LocaleToolsLocaleExplorerRoute: LocaleToolsLocaleExplorerRouteWithChildren,
+  LocaleToolsTranslationFileConverterRoute:
+    LocaleToolsTranslationFileConverterRouteWithChildren,
   ArchivedAudienceForContentTeamsRoute: ArchivedAudienceForContentTeamsRoute,
   ArchivedAudienceForDesignersRoute: ArchivedAudienceForDesignersRoute,
   ArchivedAudienceForEducationRoute: ArchivedAudienceForEducationRoute,
