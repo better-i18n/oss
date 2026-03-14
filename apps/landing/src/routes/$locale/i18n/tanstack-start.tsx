@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import {
   FrameworkHero,
   FeatureList,
@@ -115,6 +116,7 @@ export default function AboutPage() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
         title="TanStack Start i18n — Full-Stack Localization"
         subtitle="Add internationalization to your TanStack Start app with SSR support, automatic locale detection, and type-safe translations that work on both client and server."

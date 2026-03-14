@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import {
   FrameworkHero,
   FeatureList,
@@ -74,6 +75,7 @@ const { t } = useI18n()
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
         title={t("i18n.nuxt.hero.title")}
         subtitle={t("i18n.nuxt.hero.subtitle")}

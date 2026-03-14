@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import {
   ComparisonTable,
   ComparisonHero,
@@ -54,6 +55,7 @@ function TransifexComparisonPage() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="compare" locale={locale} />
       <ComparisonHero
         competitorName="Transifex"
         title={t("compare.transifex.hero.title")}

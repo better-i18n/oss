@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
+import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
@@ -78,6 +80,7 @@ function MultilingualWebsiteSeoPage() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="i18n" locale={locale} />
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
@@ -287,6 +290,8 @@ function MultilingualWebsiteSeoPage() {
         </div>
       </section>
 
+
+      <SeeAlso currentSlug="multilingual-website-seo" locale={locale} />
       <section className="py-12 border-t border-mist-200">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}</h2>

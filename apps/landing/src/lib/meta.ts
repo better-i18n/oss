@@ -5,7 +5,7 @@ const SITE_NAME = "Better i18n";
 const OG_SERVICE_URL = "https://og.better-i18n.com";
 const DEFAULT_OG_IMAGE = `${OG_SERVICE_URL}/og`;
 const TWITTER_HANDLE = "@betteri18n";
-const MAX_TITLE_LENGTH = 70;
+const MAX_TITLE_LENGTH = 60;
 const BRAND_SUFFIX_SEPARATOR_PIPE = ` | ${SITE_NAME}`;
 const BRAND_SUFFIX_SEPARATOR_DASH = ` - ${SITE_NAME}`;
 

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import {
   FrameworkHero,
   FeatureList,
@@ -101,6 +102,7 @@ function HomeScreen() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
         title="Expo i18n — Localize your React Native app"
         subtitle="Add internationalization to your Expo app with offline support, automatic device locale detection, and OTA translation updates."

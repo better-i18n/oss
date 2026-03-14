@@ -14,6 +14,10 @@ import BlogContent from "@/components/blog/BlogContent";
 import RelatedPosts from "@/components/blog/RelatedPosts";
 import TableOfContents from "@/components/blog/TableOfContents";
 import ReadingProgress from "@/components/blog/ReadingProgress";
+import InlineCTA from "@/components/blog/InlineCTA";
+import FloatingCTA from "@/components/blog/FloatingCTA";
+import { getBlogCTA } from "@/lib/blog-ctas";
+import { getRelatedPages } from "@/seo/internal-links";
 import Breadcrumb from "@/components/blog/Breadcrumb";
 import ShareButtons from "@/components/blog/ShareButtons";
 import {
@@ -193,6 +197,8 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
 function BlogPostPage() {
   const { post, locale, relatedPosts } = Route.useLoaderData();
   const t = useT("blog");
+  const cta = getBlogCTA(post.slug, post.category);
+  const internalLinks = getRelatedPages(`blog/${post.slug}`);
 
   const canonicalUrl = `${SITE_URL}/${locale}/blog/${post.slug}`;
 
@@ -325,6 +331,36 @@ function BlogPostPage() {
                     prose-li:text-mist-700 prose-li:leading-[1.8]
                     prose-hr:border-mist-100"
                 />
+
+                {/* Contextual CTA — matches blog post topic */}
+                <InlineCTA
+                  title={cta.title}
+                  description={cta.description}
+                  ctaText={cta.ctaText}
+                  ctaUrl={`/${locale}${cta.ctaUrl.startsWith("/") ? cta.ctaUrl : `/${cta.ctaUrl}`}/`}
+                />
+
+                {/* Internal links — topical cluster connections */}
+                {internalLinks.length > 0 && (
+                  <nav className="mt-10 not-prose border-t border-mist-100 pt-8" aria-label="Related guides">
+                    <p className="text-sm font-medium text-mist-500 uppercase tracking-wider mb-3">
+                      {t("continueReading", { defaultValue: "Continue reading" })}
+                    </p>
+                    <ul className="flex flex-wrap gap-2">
+                      {internalLinks.map((link) => (
+                        <li key={link.path}>
+                          <Link
+                            to={`/$locale/${link.path}`}
+                            params={{ locale }}
+                            className="inline-flex items-center gap-1 rounded-lg border border-mist-200 bg-mist-50/50 px-3 py-1.5 text-sm text-mist-700 hover:bg-mist-100 hover:text-mist-900 transition-colors"
+                          >
+                            {link.anchor}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
+                )}
               </article>
 
               {/* TOC sidebar - desktop only, right side */}
@@ -346,6 +382,12 @@ function BlogPostPage() {
       </main>
       <RelatedPages currentPage="blog" locale={locale} variant="mixed" />
       <Footer />
+
+      {/* Floating CTA — appears after 40% scroll */}
+      <FloatingCTA
+        ctaText={cta.ctaText}
+        ctaUrl={`/${locale}${cta.ctaUrl.startsWith("/") ? cta.ctaUrl : `/${cta.ctaUrl}`}/`}
+      />
     </div>
   );
 }

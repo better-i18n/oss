@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import CTA from "./CTA";
+import { MarketingBreadcrumb, type BreadcrumbItem } from "./MarketingBreadcrumb";
 import { cn } from "@better-i18n/ui/lib/utils";
 import { useT } from "@/lib/i18n";
 
@@ -13,6 +14,8 @@ interface MarketingLayoutProps {
   bgClassName?: string;
   /** Whether to show CTA section before footer */
   showCTA?: boolean;
+  /** Breadcrumb trail items (last item = current page, no href) */
+  breadcrumbs?: readonly BreadcrumbItem[];
 }
 
 /**
@@ -24,6 +27,7 @@ export function MarketingLayout({
   headerClassName,
   bgClassName = "bg-mist-100",
   showCTA = true,
+  breadcrumbs,
 }: MarketingLayoutProps) {
   const t = useT("common");
 
@@ -36,7 +40,14 @@ export function MarketingLayout({
         {t("skipToContent", "Skip to content")}
       </a>
       <Header className={headerClassName} />
-      <main id="main-content">{children}</main>
+      <main id="main-content">
+        {breadcrumbs && breadcrumbs.length > 0 && (
+          <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+            <MarketingBreadcrumb items={breadcrumbs} />
+          </div>
+        )}
+        {children}
+      </main>
       {showCTA && <CTA />}
       <Footer />
     </div>

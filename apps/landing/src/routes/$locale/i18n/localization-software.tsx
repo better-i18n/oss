@@ -1,7 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
+import { SeeAlso } from "@/components/SeeAlso";
+import { PillarBlogPosts } from "@/components/PillarBlogPosts";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { loadPillarBlogPosts } from "@/lib/pillar-blog-loader";
 import { useT } from "@/lib/i18n";
+
+const PILLAR_KEYWORDS = ["localization", "software", "tool"] as const;
+
+const baseLoader = createPageLoader();
 import {
   IconCheckmark1,
   IconArrowRight,
@@ -13,7 +21,15 @@ import {
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/localization-software")({
-  loader: createPageLoader(),
+  loader: async (args: Parameters<typeof baseLoader>[0]) => {
+    const [base, pillarPosts] = await Promise.all([
+      baseLoader(args),
+      loadPillarBlogPosts({
+        data: { locale: args.context.locale, keywords: PILLAR_KEYWORDS },
+      }),
+    ]);
+    return { ...base, pillarPosts };
+  },
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},
@@ -43,6 +59,7 @@ function LocalizationSoftwarePage() {
   const t = useT("marketing.i18n.localizationSoftware");
   const tCommon = useT("marketing");
   const { locale } = Route.useParams();
+  const { pillarPosts } = Route.useLoaderData();
 
   const benefits = [
     { key: "benefits.list.fasterRelease", defaultValue: "Ship multilingual features faster with automated translation workflows" },
@@ -69,6 +86,7 @@ function LocalizationSoftwarePage() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="i18n" locale={locale} />
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
@@ -278,6 +296,9 @@ function LocalizationSoftwarePage() {
         </div>
       </section>
 
+
+      <SeeAlso currentSlug="localization-software" locale={locale} />
+      <PillarBlogPosts posts={pillarPosts} locale={locale} />
       <section className="py-12 border-t border-mist-200">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}</h2>

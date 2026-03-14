@@ -130,14 +130,11 @@ function pathToKey(pagePath: string): string {
 const ENGLISH_PAGE_TITLES: Readonly<Record<string, string>> = {
   "": "Home", features: "Features", pricing: "Pricing", integrations: "Integrations",
   "for-developers": "For Developers", "for-translators": "For Translators",
-  "for-product-teams": "For Product Teams", "for-marketers": "For Marketers",
+  "for-product-teams": "For Product Teams",
   "for-agencies": "For Agencies", "for-enterprises": "For Enterprises",
-  "for-startups": "For Startups", "for-engineering-leaders": "For Engineering Leaders",
-  "for-content-teams": "For Content Teams", "for-ecommerce": "For E-Commerce",
-  "for-saas": "For SaaS", "for-mobile-teams": "For Mobile Teams",
-  "for-designers": "For Designers", "for-freelancers": "For Freelancers",
-  "for-open-source": "For Open Source", "for-gaming": "For Gaming",
-  "for-education": "For Education", "for-healthcare": "For Healthcare",
+  "for-startups": "For Startups",
+  "for-ecommerce": "For E-Commerce",
+  "for-saas": "For SaaS",
   about: "About", blog: "Blog", changelog: "Changelog", careers: "Careers",
   i18n: "i18n Overview", "i18n/react": "React i18n Guide",
   "i18n/nextjs": "Next.js i18n Guide", "i18n/vue": "Vue i18n Guide",
@@ -271,16 +268,13 @@ const STATIC_SECTIONS: readonly LlmsTxtSectionDef[] = [
   {
     headingKey: "solutionsByRole",
     paths: [
-      "for-marketers", "for-agencies", "for-engineering-leaders",
-      "for-content-teams", "for-designers", "for-freelancers",
+      "for-agencies",
     ],
   },
   {
     headingKey: "solutionsByIndustry",
     paths: [
       "for-enterprises", "for-startups", "for-ecommerce", "for-saas",
-      "for-mobile-teams", "for-open-source", "for-gaming",
-      "for-education", "for-healthcare",
     ],
   },
   {
@@ -289,7 +283,7 @@ const STATIC_SECTIONS: readonly LlmsTxtSectionDef[] = [
       "i18n", "i18n/react", "i18n/nextjs", "i18n/vue", "i18n/nuxt",
       "i18n/angular", "i18n/svelte", "i18n/expo", "i18n/server",
       "i18n/tanstack-start", "i18n/vite", "i18n/remix-hydrogen",
-      "i18n/react-intl", "i18n/react-native-localization",
+      "i18n/react-native-localization",
       "i18n/django", "i18n/ruby", "i18n/javascript", "i18n/android",
       "i18n/ios", "i18n/flutter", "i18n/for-developers",
     ],
@@ -313,30 +307,22 @@ const STATIC_SECTIONS: readonly LlmsTxtSectionDef[] = [
   {
     headingKey: "localizationGuides",
     paths: [
-      "i18n/content-localization", "i18n/content-localization-services",
-      "i18n/cultural-adaptation", "i18n/website-translation",
-      "i18n/translation-solutions", "i18n/localization-software",
-      "i18n/localization-platforms", "i18n/localization-tools",
-      "i18n/translation-management-system", "i18n/website-localization",
-      "i18n/software-localization", "i18n/software-localization-services",
-      "i18n/localization-management",
+      "i18n/content-localization", "i18n/cultural-adaptation",
+      "i18n/website-translation", "i18n/translation-solutions",
+      "i18n/localization-software", "i18n/translation-management-system",
+      "i18n/website-localization", "i18n/software-localization",
     ],
   },
   {
     headingKey: "multilingualSeoGuides",
     paths: [
-      "i18n/multilingual-seo", "i18n/international-seo",
-      "i18n/international-seo-consulting", "i18n/technical-multilingual-seo",
-      "i18n/technical-international-seo", "i18n/multilingual-website-seo",
-      "i18n/global-market-seo", "i18n/seo-international-audiences",
-      "i18n/local-seo-international", "i18n/ecommerce-global-seo",
+      "i18n/international-seo",
     ],
   },
   {
     headingKey: "developerTools",
     paths: [
       "i18n/doctor", "i18n/cli-code-scanning",
-      "i18n/formatting-utilities", "i18n/security-compliance",
     ],
   },
 ];

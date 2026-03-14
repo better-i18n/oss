@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import {
   FrameworkHero,
   FeatureList,
@@ -10,11 +11,25 @@ import {
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
 import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
+import { PillarBlogPosts } from "@/components/PillarBlogPosts";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { loadPillarBlogPosts } from "@/lib/pillar-blog-loader";
 import { useT } from "@/lib/i18n";
 
+const PILLAR_KEYWORDS = ["react", "i18n", "internationalization"] as const;
+
+const baseLoader = createPageLoader();
+
 export const Route = createFileRoute("/$locale/i18n/react")({
-  loader: createPageLoader(),
+  loader: async (args: Parameters<typeof baseLoader>[0]) => {
+    const [base, pillarPosts] = await Promise.all([
+      baseLoader(args),
+      loadPillarBlogPosts({
+        data: { locale: args.context.locale, keywords: PILLAR_KEYWORDS },
+      }),
+    ]);
+    return { ...base, pillarPosts };
+  },
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},
@@ -36,6 +51,7 @@ export const Route = createFileRoute("/$locale/i18n/react")({
 function ReactI18nPage() {
   const t = useT("marketing");
   const { locale } = Route.useParams();
+  const { pillarPosts } = Route.useLoaderData();
 
   const features = [
     t("i18n.react.features.hooks"),
@@ -154,6 +170,7 @@ function MyComponent() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
         title={t("i18n.react.hero.title")}
         subtitle={t("i18n.react.hero.subtitle")}
@@ -181,6 +198,8 @@ function MyComponent() {
         description={t("i18n.react.codeExample.description")}
         code={codeExample}
       />
+
+      <PillarBlogPosts posts={pillarPosts} locale={locale} />
 
       <ComparisonRelatedTopics heading={t("i18n.react.relatedTitle")} links={relatedLinks} locale={locale} />
 

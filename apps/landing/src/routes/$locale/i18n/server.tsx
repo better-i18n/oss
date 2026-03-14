@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import {
   FrameworkHero,
   FeatureList,
@@ -111,6 +112,7 @@ app.get('/api/users/:id', (req, res) => {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
         title="Server-Side i18n for Hono, Express & Edge"
         subtitle="Internationalize your API and server-rendered apps. Better i18n provides middleware for Hono, Express, Fastify, and edge runtimes with automatic locale detection."

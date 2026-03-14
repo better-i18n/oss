@@ -2,16 +2,6 @@ import { SITE_URL, SITE_NAME } from "./meta";
 
 const BUILD_DATE = process.env.BUILD_DATE ?? "2026-03-12";
 const FOUNDING_DATE = "2026";
-const DEFAULT_REVIEW_DATE = "2026-01-15";
-
-const AGGREGATE_RATING = {
-  "@type": "AggregateRating" as const,
-  ratingValue: 4.68,
-  bestRating: 5,
-  worstRating: 1,
-  ratingCount: 42,
-  reviewCount: 42,
-} as const;
 
 /** English fallback — used when i18n messages are not available */
 const DEFAULT_SLOGAN = "Ship multilingual apps faster";
@@ -86,22 +76,14 @@ export function getWebSiteSchema(locale?: string) {
   };
 }
 
-interface SoftwareAppReview {
-  author: string;
-  reviewBody: string;
-}
-
 /**
  * SoftwareApplication Schema - for the product
  *
- * Google requires `price` as a string and recommends nesting `review`
- * inside the main schema rather than using standalone Review schemas.
+ * Google requires `price` as a string.
  */
 export function getSoftwareApplicationSchema(options?: {
-  reviews?: SoftwareAppReview[];
   offerDescription?: string;
 }) {
-  const reviews = options?.reviews;
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -120,21 +102,6 @@ export function getSoftwareApplicationSchema(options?: {
       availability: "https://schema.org/InStock",
       url: `${SITE_URL}/en/pricing`,
     },
-    aggregateRating: { ...AGGREGATE_RATING },
-    ...(reviews && reviews.length > 0 && {
-      review: reviews.map((r) => ({
-        "@type": "Review",
-        author: { "@type": "Person", name: r.author },
-        reviewBody: r.reviewBody,
-        datePublished: DEFAULT_REVIEW_DATE,
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: 5,
-          bestRating: 5,
-          worstRating: 1,
-        },
-      })),
-    }),
   };
 }
 
@@ -265,10 +232,78 @@ export function getDefaultStructuredData(locale?: string) {
 }
 
 /**
+ * Verified customer testimonials — real quotes from real users.
+ * These are displayed in the Testimonials UI component and also
+ * emitted as schema.org Review markup on the homepage.
+ *
+ * NOTE: No aggregateRating is included because these are direct
+ * testimonials, not sourced from a third-party review platform
+ * (G2, Capterra, etc.). Adding aggregateRating without a verifiable
+ * source risks a Google manual action for fabricated structured data.
+ */
+const TESTIMONIAL_REVIEWS = [
+  {
+    author: "Samet Selcuk",
+    jobTitle: "Founder",
+    worksFor: "Hellospace",
+    url: "https://hellospace.world/",
+    quote: "Better i18n completely changed how we handle localization. The AI translations are incredibly accurate and context-aware.",
+  },
+  {
+    author: "Tevfik Can Karanfil",
+    jobTitle: "Founder",
+    worksFor: "Carna",
+    url: "http://carna.ai/",
+    quote: "The git-native workflow is a game changer. We went from manual JSON file management to fully automated translations.",
+  },
+  {
+    author: "Mehmet Hanifi Şentürk",
+    jobTitle: "AI Engineer",
+    worksFor: "Enuygun",
+    url: "https://www.enuygun.com/",
+    quote: "The MCP integration lets us use translations directly in our AI workflows. It's the most developer-friendly i18n tool I've used.",
+  },
+  {
+    author: "Eray Gündoğmuş",
+    jobTitle: "Software Engineer",
+    worksFor: "Aceware",
+    url: "https://aceware.io/",
+    quote: "Setting up took minutes, not days. The CDN delivery means our translations load instantly across all regions.",
+  },
+  {
+    author: "Arhun Hınçalan",
+    jobTitle: "Engineering Manager",
+    worksFor: "Masraff",
+    url: "https://masraff.ai",
+    quote: "Better i18n transformed our localization pipeline. We manage 20+ languages across our fintech products with zero friction — the AI understands financial terminology perfectly.",
+  },
+] as const;
+
+function getReviewSchemas() {
+  return TESTIMONIAL_REVIEWS.map((t) => ({
+    "@type": "Review" as const,
+    author: {
+      "@type": "Person" as const,
+      name: t.author,
+      jobTitle: t.jobTitle,
+      worksFor: {
+        "@type": "Organization" as const,
+        name: t.worksFor,
+        url: t.url,
+      },
+    },
+    reviewBody: t.quote,
+    itemReviewed: {
+      "@type": "SoftwareApplication" as const,
+      name: SITE_NAME,
+    },
+  }));
+}
+
+/**
  * Get home page structured data
  */
 export function getHomePageStructuredData(options?: {
-  reviews?: SoftwareAppReview[];
   locale?: string;
   offerDescription?: string;
 }) {
@@ -276,9 +311,9 @@ export function getHomePageStructuredData(options?: {
     getOrganizationSchema(options?.locale ? { locale: options.locale } : undefined),
     getWebSiteSchema(options?.locale),
     getSoftwareApplicationSchema({
-      reviews: options?.reviews,
       offerDescription: options?.offerDescription,
     }),
+    ...getReviewSchemas(),
   ]);
 }
 
@@ -377,7 +412,6 @@ export function getProductSchema(options: {
       "@type": "Brand",
       name: options.brand || SITE_NAME,
     },
-    aggregateRating: { ...AGGREGATE_RATING },
     offers: options.offers.map((offer) => ({
       "@type": "Offer",
       name: offer.name,
@@ -547,43 +581,6 @@ export function getCollectionPageSchema(options: {
     },
     ...(options.inLanguage && { inLanguage: options.inLanguage }),
   };
-}
-
-interface ReviewItem {
-  author: string;
-  reviewBody: string;
-}
-
-/**
- * Review Schema - for testimonial sections
- */
-export function getReviewSchema(
-  reviews: ReviewItem[],
-  defaultDatePublished: string = DEFAULT_REVIEW_DATE,
-  locale?: string,
-) {
-  return reviews.map((review) => ({
-    "@context": "https://schema.org",
-    "@type": "Review",
-    author: {
-      "@type": "Person",
-      name: review.author,
-    },
-    reviewBody: review.reviewBody,
-    datePublished: defaultDatePublished,
-    itemReviewed: {
-      "@type": "SoftwareApplication",
-      name: SITE_NAME,
-      applicationCategory: "DeveloperApplication",
-    },
-    reviewRating: {
-      "@type": "Rating",
-      ratingValue: 5,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    ...(locale && { inLanguage: locale }),
-  }));
 }
 
 interface JobPostingSalary {
