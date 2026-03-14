@@ -66,7 +66,7 @@ export default function TranslatorHero() {
                 }}
               >
                 <img
-                  src="/translators.png"
+                  src="/translators.webp"
                   alt="Better i18n Translation Editor"
                   className="w-full h-full object-cover object-top"
                 />
