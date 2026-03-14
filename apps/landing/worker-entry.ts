@@ -57,6 +57,11 @@ export default {
     newHeaders.set("X-Content-Type-Options", "nosniff");
     newHeaders.set("X-Frame-Options", "SAMEORIGIN");
     newHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
+    newHeaders.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    newHeaders.set(
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; img-src 'self' https://og.better-i18n.com https://cdn.better-i18n.com data: https:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://cdn.better-i18n.com https://www.google-analytics.com https://*.better-i18n.com; frame-src https://www.googletagmanager.com;"
+    );
 
     const cacheControl = getCacheControl(request, response);
     if (cacheControl) {
