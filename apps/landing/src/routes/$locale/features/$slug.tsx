@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { RelatedPages } from "@/components/RelatedPages";
 import BlogContent from "@/components/blog/BlogContent";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { BackToHub } from "@/components/BackToHub";
 import {
   SITE_URL,
   getAlternateLinks,
@@ -135,18 +136,9 @@ function FeaturePageComponent() {
   return (
     <div className="bg-white">
       <Header className="bg-white" />
+      <BackToHub hub="features" locale={locale} />
       <main className="py-16">
         <article className="mx-auto max-w-4xl px-6 lg:px-10">
-          {/* Back link */}
-          <Link
-            to="/$locale/features"
-            params={{ locale }}
-            className="inline-flex items-center gap-2 text-sm font-medium text-mist-700 hover:text-mist-950 transition-colors mb-8"
-          >
-            <IconArrowLeft className="w-4 h-4" />
-            {t("allFeatures", "All Features")}
-          </Link>
-
           {/* Hero */}
           <header className="mb-12">
             <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-mist-500 mb-4">

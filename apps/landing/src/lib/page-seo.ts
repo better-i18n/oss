@@ -281,3 +281,53 @@ export interface PageLoaderData {
   locale: string;
   locales: string[];
 }
+
+/** Category labels for breadcrumb generation, keyed by first path segment */
+const CATEGORY_LABELS: Readonly<Record<string, { readonly label: string; readonly href: string }>> = {
+  "i18n": { label: "i18n Guides", href: "/i18n" },
+  "compare": { label: "Comparisons", href: "/compare" },
+  "blog": { label: "Blog", href: "/blog" },
+  "features": { label: "Features", href: "/features" },
+};
+
+/**
+ * Generate breadcrumb items array from a pathname for the visual MarketingBreadcrumb component.
+ *
+ * @param pathname - URL pathname without locale prefix (e.g., "/i18n/react", "/compare/crowdin")
+ * @param messages - i18n messages for translating breadcrumb labels (breadcrumbs namespace)
+ * @returns Breadcrumb items array where the last item has no href (current page)
+ */
+export function getBreadcrumbItems(
+  pathname: string,
+  messages: Readonly<Record<string, string>> = {},
+): ReadonlyArray<{ readonly label: string; readonly href?: string }> {
+  const homeLabel = messages["breadcrumbs.home"] ?? "Home";
+  const cleanPath = pathname.replace(/^\/+/, "").replace(/\/+$/, "");
+
+  if (!cleanPath) return [];
+
+  const segments = cleanPath.split("/").filter(Boolean);
+  const items: Array<{ readonly label: string; readonly href?: string }> = [
+    { label: homeLabel, href: "/" },
+  ];
+
+  if (segments.length === 1) {
+    // Single segment: Home > Page (e.g., /for-developers, /pricing)
+    const segmentLabel = messages[`breadcrumbs.${segments[0]}`]
+      ?? segments[0].replace(/^for-/, "For ").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    items.push({ label: segmentLabel });
+  } else {
+    // Multi-segment: Home > Category > Page (e.g., /i18n/react, /compare/crowdin)
+    const category = CATEGORY_LABELS[segments[0]];
+    const categoryLabel = messages[`breadcrumbs.${segments[0]}`] ?? category?.label
+      ?? segments[0].charAt(0).toUpperCase() + segments[0].slice(1);
+    items.push({ label: categoryLabel, href: category?.href ?? `/${segments[0]}` });
+
+    const pageSegment = segments[segments.length - 1];
+    const pageLabel = messages[`breadcrumbs.${pageSegment}`]
+      ?? pageSegment.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    items.push({ label: pageLabel });
+  }
+
+  return items;
+}

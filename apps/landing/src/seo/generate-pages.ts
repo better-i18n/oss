@@ -74,7 +74,7 @@ export interface FeaturePageMeta {
  * Locales with translation coverage below this threshold (30%) are considered
  * thin content and will be marked as noindex to prevent Google penalties.
  */
-export const THIN_CONTENT_THRESHOLD = 0.3;
+export const THIN_CONTENT_THRESHOLD = 0.5;
 
 // ─── Helpers ────────────────────────────────────────────────────────
 

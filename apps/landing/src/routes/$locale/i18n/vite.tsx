@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import {
   CodeExample,
   FeatureList,
@@ -131,6 +132,7 @@ export default function App() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
         title="Vite i18n without slowing down development"
         subtitle="Use Better i18n with Vite projects to keep hot reload fast, translation keys typed, and locale content easy to ship across app and marketing surfaces."

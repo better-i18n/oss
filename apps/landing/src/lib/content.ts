@@ -244,6 +244,31 @@ export async function getRelatedPosts(
   }
 }
 
+/** Fetch blog posts matching any of the given keywords (case-insensitive title/excerpt match). */
+export async function getPostsByKeywords(
+  locale: string,
+  keywords: readonly string[],
+  limit: number = 3,
+): Promise<BlogPostListItem[]> {
+  try {
+    const { posts } = await getBlogPosts(locale, { limit: 30 });
+    const lowerKeywords = keywords.map((k) => k.toLowerCase());
+
+    const scored = posts
+      .map((post) => {
+        const text = `${post.title} ${post.excerpt}`.toLowerCase();
+        const matches = lowerKeywords.filter((kw) => text.includes(kw)).length;
+        return { post, matches };
+      })
+      .filter((entry) => entry.matches > 0)
+      .sort((a, b) => b.matches - a.matches);
+
+    return scored.slice(0, limit).map((entry) => entry.post);
+  } catch {
+    return [];
+  }
+}
+
 /** Fetch a single blog post by slug. */
 export async function getBlogPost(
   slug: string,

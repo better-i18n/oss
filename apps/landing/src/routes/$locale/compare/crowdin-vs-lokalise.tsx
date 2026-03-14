@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import {
   MultiComparisonTable,
   ThreeWayHero,
@@ -125,6 +126,7 @@ function CrowdinVsLokalisePage() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="compare" locale={locale} />
       {/* Hero */}
       <ThreeWayHero
         competitors={[...COMPETITORS]}

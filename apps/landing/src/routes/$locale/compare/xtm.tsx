@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import {
   ComparisonTable,
   ComparisonHero,
@@ -99,6 +100,7 @@ function XTMComparisonPage() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="compare" locale={locale} />
       <ComparisonHero
         competitorName="XTM"
         title={t("compare.xtm.hero.title")}

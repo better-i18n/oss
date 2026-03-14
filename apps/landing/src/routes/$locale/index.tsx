@@ -38,12 +38,11 @@ export const Route = createFileRoute("/$locale/")({
       getMessages({ project: i18nConfig.project, locale: context.locale }),
       withTimeout(getChangelogsMeta(locale), 3000, []),
     ]);
-    // head() only accesses meta.home.*, hero.{title,subtitle}, testimonials.{N}.quote, homeFaq.{N}.*
+    // head() only accesses meta.home.*, hero.{title,subtitle}, homeFaq.{N}.*
     const messages = filterMessages(allMessages, [
       "meta",
       "breadcrumbs",
       "hero",
-      "testimonials",
       "homeFaq",
     ]);
     return {
@@ -74,23 +73,6 @@ export const Route = createFileRoute("/$locale/")({
       }),
     });
 
-    // Extract testimonial quotes for Review structured data
-    const testimonialsNs = (messages as Record<string, unknown>)?.testimonials as
-      | Record<string, Record<string, string>>
-      | undefined;
-    const testimonialAuthors = [
-      "Samet Selcuk",
-      "Tevfik Can Karanfil",
-      "Mehmet Hanifi Şentürk",
-      "Eray Gündoğmuş",
-    ];
-    const reviewItems = testimonialAuthors
-      .map((author, i) => {
-        const quote = testimonialsNs?.[String(i + 1)]?.quote;
-        return quote ? { author, reviewBody: quote } : null;
-      })
-      .filter((item): item is { author: string; reviewBody: string } => item !== null);
-
     // Extract localized FAQ items from i18n messages (homeFaq namespace)
     const faqNs = (messages as Record<string, unknown>)?.homeFaq as
       | Record<string, Record<string, string>>
@@ -111,7 +93,6 @@ export const Route = createFileRoute("/$locale/")({
       ],
       scripts: [
         ...getHomePageStructuredData({
-          reviews: reviewItems.length > 0 ? reviewItems : undefined,
           locale,
         }),
         ...(faqItems.length > 0

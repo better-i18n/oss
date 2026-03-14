@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
@@ -71,6 +72,7 @@ function ReactNativeLocalizationPage() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="i18n" locale={locale} />
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">

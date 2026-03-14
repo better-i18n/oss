@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import {
   CodeExample,
   FeatureList,
@@ -131,6 +132,7 @@ export default function App() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
         title="Remix & Hydrogen i18n for storefront and route-driven apps"
         subtitle="Use Better i18n to keep server-rendered locale state, localized storefront content, and search-facing routes aligned in one workflow."

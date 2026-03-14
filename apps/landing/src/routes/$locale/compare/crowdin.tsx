@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { BackToHub } from "@/components/BackToHub";
 import {
   ComparisonTable,
   ComparisonHero,
@@ -9,8 +10,14 @@ import {
   ComparisonRelatedTopics,
   type ComparisonFeature,
 } from "@/components/ComparisonTable";
+import { PillarBlogPosts } from "@/components/PillarBlogPosts";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { loadPillarBlogPosts } from "@/lib/pillar-blog-loader";
 import { useT } from "@/lib/i18n";
+
+const PILLAR_KEYWORDS = ["crowdin", "comparison", "alternative"] as const;
+
+const baseLoader = createPageLoader();
 import {
   IconCode,
   IconRobot,
@@ -21,7 +28,15 @@ import { UserComplaints } from "@/components/UserComplaints";
 import { WhySwitchSection } from "@/components/WhySwitchSection";
 
 export const Route = createFileRoute("/$locale/compare/crowdin")({
-  loader: createPageLoader(),
+  loader: async (args: Parameters<typeof baseLoader>[0]) => {
+    const [base, pillarPosts] = await Promise.all([
+      baseLoader(args),
+      loadPillarBlogPosts({
+        data: { locale: args.context.locale, keywords: PILLAR_KEYWORDS },
+      }),
+    ]);
+    return { ...base, pillarPosts };
+  },
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},
@@ -39,6 +54,7 @@ export const Route = createFileRoute("/$locale/compare/crowdin")({
 function CrowdinComparisonPage() {
   const t = useT("marketing");
   const { locale } = Route.useParams();
+  const { pillarPosts } = Route.useLoaderData();
 
   const features: ComparisonFeature[] = [
     { name: t("compare.crowdin.features.gitIntegration"), betterI18n: true, competitor: true },
@@ -55,6 +71,7 @@ function CrowdinComparisonPage() {
 
   return (
     <MarketingLayout showCTA={false}>
+      <BackToHub hub="compare" locale={locale} />
       <ComparisonHero
         competitorName="Crowdin"
         title={t("compare.crowdin.hero.title")}
@@ -117,6 +134,8 @@ function CrowdinComparisonPage() {
           { painPoint: t("compare.crowdin.switchReasons.4.pain"), solution: t("compare.crowdin.switchReasons.4.solution") },
         ]}
       />
+
+      <PillarBlogPosts posts={pillarPosts} locale={locale} />
 
       <ComparisonRelatedTopics
         heading={t("compare.crowdin.relatedTopics", { defaultValue: "Learn More" })}
