@@ -21,7 +21,6 @@ const SHARED_NAMESPACES = [
   "common",
   "header",
   "footer",
-  "meta",
   "breadcrumbs",
 ] as const;
 
@@ -293,14 +292,78 @@ export function filterMessages(
   return filtered;
 }
 
+// ─── URL → pageKey mapping ──────────────────────────────────────────
+
+/**
+ * Maps URL page paths to their `getPageHead({ pageKey })` values.
+ * Used to filter the `meta` namespace to only include the current page's meta.
+ *
+ * Pages not in this map get the full `meta` namespace as fallback.
+ */
+const PAGE_KEY_MAP: ReadonlyMap<string, string> = new Map([
+  ["", "home"],
+  ["pricing", "pricing"],
+  ["features", "features"],
+  ["integrations", "integrations"],
+  ["about", "about"],
+  ["careers", "careers"],
+  ["status", "status"],
+  ["changelog", "changelog"],
+  ["privacy", "privacy"],
+  ["terms", "terms"],
+  ["for-developers", "forDevelopers"],
+  ["for-translators", "forTranslators"],
+  ["for-product-teams", "forProductTeams"],
+  ["what-is", "whatIs"],
+  ["what-is-internationalization", "whatIsInternationalization"],
+  ["what-is-localization", "whatIsLocalization"],
+  ["i18n", "i18n"],
+  ["compare", "compare"],
+]);
+
+/**
+ * Resolve the pageKey for dynamic routes.
+ */
+function resolvePageKey(pagePath: string): string | null {
+  const exact = PAGE_KEY_MAP.get(pagePath);
+  if (exact) return exact;
+
+  // /i18n/{subpage} → "i18n" + camelCase(subpage)
+  if (pagePath.startsWith("i18n/")) {
+    const subpage = pagePath.slice(5);
+    return `i18n${subpage.charAt(0).toUpperCase()}${kebabToCamel(subpage).slice(1)}`;
+  }
+
+  // /compare/{competitor} → "compare" + PascalCase(competitor)
+  if (pagePath.startsWith("compare/")) {
+    const competitor = pagePath.slice(8);
+    const camel = kebabToCamel(competitor);
+    return `compare${camel.charAt(0).toUpperCase()}${camel.slice(1)}`;
+  }
+
+  // /for-{role} → "for" + PascalCase(role)
+  if (pagePath.startsWith("for-")) {
+    const role = pagePath.slice(4);
+    const camel = kebabToCamel(role);
+    return `for${camel.charAt(0).toUpperCase()}${camel.slice(1)}`;
+  }
+
+  // /blog/* → "blog"
+  if (pagePath.startsWith("blog")) return "blog";
+
+  // /features/{slug} → "features"
+  if (pagePath.startsWith("features/")) return "features";
+
+  return null;
+}
+
 /**
  * Filter messages based on the current URL pathname.
  * Supports both top-level filtering and sub-namespace filtering.
  *
- * Examples:
- * - "pricing" → keeps messages.pricing entirely
- * - "marketing.i18n.react" → rebuilds { marketing: { i18n: { react: {...} } } }
- *   (discards all other marketing sub-trees)
+ * Also automatically filters the `meta` namespace to only include
+ * the current page's meta keys (title, description, ogTitle, etc.)
+ * instead of ALL pages' meta.
  */
 export function filterMessagesByPath(
   messages: Messages,
@@ -364,6 +427,18 @@ export function filterMessagesByPath(
         sourceNs,
         parentPath,
       );
+    }
+  }
+
+  // 3. Filter `meta` namespace — only include this page's meta keys
+  const metaNs = messages["meta"];
+  if (metaNs) {
+    const pageKey = resolvePageKey(pagePath);
+    if (pageKey && metaNs[pageKey]) {
+      filtered["meta"] = { [pageKey]: metaNs[pageKey] };
+    } else {
+      // Unknown page — include full meta as fallback
+      filtered["meta"] = metaNs;
     }
   }
 
