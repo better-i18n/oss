@@ -80,9 +80,9 @@ function MultilingualSeoPage() {
 
   const relatedPages = [
     { name: "International SEO Strategy", href: "/$locale/i18n/international-seo", description: t("related.internationalSeo", { defaultValue: "Build a comprehensive international SEO strategy" }) },
-    { name: "Technical Multilingual SEO", href: "/$locale/i18n/technical-multilingual-seo", description: t("related.technicalMultilingualSeo", { defaultValue: "Technical implementation of multilingual SEO" }) },
-    { name: "Multilingual Website SEO", href: "/$locale/i18n/multilingual-website-seo", description: t("related.multilingualWebsiteSeo", { defaultValue: "Practical guide to multilingual website optimization" }) },
     { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("related.websiteLocalization", { defaultValue: "Adapt your website for global audiences" }) },
+    { name: "Website Translation", href: "/$locale/i18n/website-translation", description: t("related.websiteTranslation", { defaultValue: "Translate your website for international users" }) },
+    { name: "Translation Management System", href: "/$locale/i18n/translation-management-system", description: t("related.tms", { defaultValue: "Centralize your localization workflow with a TMS" }) },
   ];
 
   return (

@@ -78,8 +78,8 @@ function LocalizationSoftwarePage() {
   ];
 
   const relatedPages = [
-    { name: "Localization Platforms", href: "/$locale/i18n/localization-platforms", description: t("related.localizationPlatforms", { defaultValue: "How localization management platforms differ from standalone tools" }) },
-    { name: "Localization Tools", href: "/$locale/i18n/localization-tools", description: t("related.localizationTools", { defaultValue: "The best developer-facing localization tools available today" }) },
+    { name: "Software Localization", href: "/$locale/i18n/software-localization", description: t("related.softwareLocalization", { defaultValue: "Complete guide to localizing software for global markets" }) },
+    { name: "Content Localization", href: "/$locale/i18n/content-localization", description: t("related.contentLocalization", { defaultValue: "Adapting content for different markets and audiences" }) },
     { name: "Translation Management System", href: "/$locale/i18n/translation-management-system", description: t("related.tms", { defaultValue: "How a TMS centralizes your entire localization workflow" }) },
     { name: "Best TMS", href: "/$locale/i18n/best-tms", description: t("related.bestTms", { defaultValue: "Compare the top TMS platforms side by side" }) },
   ];

@@ -13,7 +13,7 @@ import {
   IconGlobe,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
-export const Route = createFileRoute("/$locale/i18n/security-compliance")({
+export const Route = createFileRoute("/_archived/i18n/security-compliance")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({

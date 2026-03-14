@@ -14,33 +14,26 @@ type TopicCluster = {
   readonly pages: readonly TopicClusterPage[];
 };
 
+/**
+ * Only pages that still exist in MARKETING_PAGES (pages.ts) should be listed here.
+ * Consolidated/removed pages (see redirects.ts) must NOT appear — they cause
+ * internal links to 301 redirect targets, which wastes link equity and confuses users.
+ */
 export const TOPIC_CLUSTERS: readonly TopicCluster[] = [
   {
     id: "seo",
     pages: [
-      { slug: "multilingual-seo", titleFallback: "Multilingual SEO", descFallback: "Optimize your website for multiple languages and regions" },
       { slug: "international-seo", titleFallback: "International SEO", descFallback: "Reach global audiences with international SEO strategy" },
-      { slug: "international-seo-consulting", titleFallback: "International SEO Consulting", descFallback: "Expert consulting for global search visibility" },
-      { slug: "technical-multilingual-seo", titleFallback: "Technical Multilingual SEO", descFallback: "Technical implementation of multilingual SEO" },
-      { slug: "technical-international-seo", titleFallback: "Technical International SEO", descFallback: "Technical deep-dive into international SEO" },
-      { slug: "multilingual-website-seo", titleFallback: "Multilingual Website SEO", descFallback: "Practical guide to multilingual website optimization" },
-      { slug: "global-market-seo", titleFallback: "Global Market SEO", descFallback: "SEO strategies for entering global markets" },
-      { slug: "seo-international-audiences", titleFallback: "SEO for International Audiences", descFallback: "Target international audiences with SEO" },
-      { slug: "local-seo-international", titleFallback: "Local SEO International", descFallback: "Local SEO strategies for international markets" },
-      { slug: "ecommerce-global-seo", titleFallback: "E-commerce Global SEO", descFallback: "Global SEO for e-commerce platforms" },
+      { slug: "website-localization", titleFallback: "Website Localization", descFallback: "Adapt your website for global audiences" },
+      { slug: "website-translation", titleFallback: "Website Translation", descFallback: "Translate your website for international users" },
     ],
   },
   {
     id: "localization",
     pages: [
       { slug: "localization-software", titleFallback: "Localization Software", descFallback: "Top localization software platforms compared" },
-      { slug: "localization-platforms", titleFallback: "Localization Platforms", descFallback: "Compare localization management platforms" },
-      { slug: "localization-tools", titleFallback: "Localization Tools", descFallback: "Best developer-facing localization tools" },
-      { slug: "localization-management", titleFallback: "Localization Management", descFallback: "Managing translation workflows at scale" },
       { slug: "content-localization", titleFallback: "Content Localization", descFallback: "Adapt content for global audiences" },
-      { slug: "content-localization-services", titleFallback: "Content Localization Services", descFallback: "Professional content localization services" },
       { slug: "software-localization", titleFallback: "Software Localization", descFallback: "Complete guide to software localization" },
-      { slug: "software-localization-services", titleFallback: "Software Localization Services", descFallback: "Platform vs agency localization approaches" },
       { slug: "website-localization", titleFallback: "Website Localization", descFallback: "Adapt your website for global audiences" },
       { slug: "website-translation", titleFallback: "Website Translation", descFallback: "Translate your website for international users" },
     ],

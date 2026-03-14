@@ -67,7 +67,7 @@ function CulturalAdaptationPage() {
     { name: "Content Localization", href: "/$locale/i18n/content-localization", description: t("related.contentLocalization", { defaultValue: "In-depth guide to adapting content for different markets" }) },
     { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("related.websiteLocalization", { defaultValue: "Localizing your entire web application for global audiences" }) },
     { name: "What is Localization?", href: "/$locale/what-is-localization", description: t("related.whatIsLocalization", { defaultValue: "Localization fundamentals and core definitions" }) },
-    { name: "International SEO", href: "/$locale/i18n/seo-international-audiences", description: t("related.seoInternational", { defaultValue: "SEO strategies for reaching international audiences" }) },
+    { name: "International SEO", href: "/$locale/i18n/international-seo", description: t("related.internationalSeo", { defaultValue: "Build a comprehensive international SEO strategy" }) },
   ];
 
   return (

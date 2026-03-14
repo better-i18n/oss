@@ -15,7 +15,7 @@ import {
   IconRocket,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
-export const Route = createFileRoute("/$locale/i18n/ecommerce-global-seo")({
+export const Route = createFileRoute("/_archived/i18n/ecommerce-global-seo")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({

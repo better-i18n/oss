@@ -35,19 +35,9 @@ import { Route as LocaleForTranslatorsRouteImport } from './routes/$locale/for-t
 import { Route as LocaleForStartupsRouteImport } from './routes/$locale/for-startups'
 import { Route as LocaleForSaasRouteImport } from './routes/$locale/for-saas'
 import { Route as LocaleForProductTeamsRouteImport } from './routes/$locale/for-product-teams'
-import { Route as LocaleForOpenSourceRouteImport } from './routes/$locale/for-open-source'
-import { Route as LocaleForMobileTeamsRouteImport } from './routes/$locale/for-mobile-teams'
-import { Route as LocaleForMarketersRouteImport } from './routes/$locale/for-marketers'
-import { Route as LocaleForHealthcareRouteImport } from './routes/$locale/for-healthcare'
-import { Route as LocaleForGamingRouteImport } from './routes/$locale/for-gaming'
-import { Route as LocaleForFreelancersRouteImport } from './routes/$locale/for-freelancers'
 import { Route as LocaleForEnterprisesRouteImport } from './routes/$locale/for-enterprises'
-import { Route as LocaleForEngineeringLeadersRouteImport } from './routes/$locale/for-engineering-leaders'
-import { Route as LocaleForEducationRouteImport } from './routes/$locale/for-education'
 import { Route as LocaleForEcommerceRouteImport } from './routes/$locale/for-ecommerce'
 import { Route as LocaleForDevelopersRouteImport } from './routes/$locale/for-developers'
-import { Route as LocaleForDesignersRouteImport } from './routes/$locale/for-designers'
-import { Route as LocaleForContentTeamsRouteImport } from './routes/$locale/for-content-teams'
 import { Route as LocaleForAgenciesRouteImport } from './routes/$locale/for-agencies'
 import { Route as LocaleFeaturesRouteImport } from './routes/$locale/features'
 import { Route as LocaleChangelogRouteImport } from './routes/$locale/changelog'
@@ -57,50 +47,60 @@ import { Route as LocaleI18nIndexRouteImport } from './routes/$locale/i18n/index
 import { Route as LocaleFeaturesIndexRouteImport } from './routes/$locale/features/index'
 import { Route as LocaleCompareIndexRouteImport } from './routes/$locale/compare/index'
 import { Route as LocaleBlogIndexRouteImport } from './routes/$locale/blog/index'
+import { Route as ArchivedI18nTechnicalMultilingualSeoRouteImport } from './routes/_archived/i18n/technical-multilingual-seo'
+import { Route as ArchivedI18nTechnicalInternationalSeoRouteImport } from './routes/_archived/i18n/technical-international-seo'
+import { Route as ArchivedI18nSoftwareLocalizationServicesRouteImport } from './routes/_archived/i18n/software-localization-services'
+import { Route as ArchivedI18nSeoInternationalAudiencesRouteImport } from './routes/_archived/i18n/seo-international-audiences'
+import { Route as ArchivedI18nSecurityComplianceRouteImport } from './routes/_archived/i18n/security-compliance'
+import { Route as ArchivedI18nReactIntlRouteImport } from './routes/_archived/i18n/react-intl'
+import { Route as ArchivedI18nMultilingualWebsiteSeoRouteImport } from './routes/_archived/i18n/multilingual-website-seo'
+import { Route as ArchivedI18nLocalizationToolsRouteImport } from './routes/_archived/i18n/localization-tools'
+import { Route as ArchivedI18nLocalizationPlatformsRouteImport } from './routes/_archived/i18n/localization-platforms'
+import { Route as ArchivedI18nLocalizationManagementRouteImport } from './routes/_archived/i18n/localization-management'
+import { Route as ArchivedI18nLocalSeoInternationalRouteImport } from './routes/_archived/i18n/local-seo-international'
+import { Route as ArchivedI18nInternationalSeoConsultingRouteImport } from './routes/_archived/i18n/international-seo-consulting'
+import { Route as ArchivedI18nGlobalMarketSeoRouteImport } from './routes/_archived/i18n/global-market-seo'
+import { Route as ArchivedI18nFormattingUtilitiesRouteImport } from './routes/_archived/i18n/formatting-utilities'
+import { Route as ArchivedI18nEcommerceGlobalSeoRouteImport } from './routes/_archived/i18n/ecommerce-global-seo'
+import { Route as ArchivedI18nContentLocalizationServicesRouteImport } from './routes/_archived/i18n/content-localization-services'
+import { Route as ArchivedAudienceForOpenSourceRouteImport } from './routes/_archived/audience/for-open-source'
+import { Route as ArchivedAudienceForMobileTeamsRouteImport } from './routes/_archived/audience/for-mobile-teams'
+import { Route as ArchivedAudienceForMarketersRouteImport } from './routes/_archived/audience/for-marketers'
+import { Route as ArchivedAudienceForHealthcareRouteImport } from './routes/_archived/audience/for-healthcare'
+import { Route as ArchivedAudienceForGamingRouteImport } from './routes/_archived/audience/for-gaming'
+import { Route as ArchivedAudienceForFreelancersRouteImport } from './routes/_archived/audience/for-freelancers'
+import { Route as ArchivedAudienceForEngineeringLeadersRouteImport } from './routes/_archived/audience/for-engineering-leaders'
+import { Route as ArchivedAudienceForEducationRouteImport } from './routes/_archived/audience/for-education'
+import { Route as ArchivedAudienceForDesignersRouteImport } from './routes/_archived/audience/for-designers'
+import { Route as ArchivedAudienceForContentTeamsRouteImport } from './routes/_archived/audience/for-content-teams'
 import { Route as LocaleI18nWebsiteTranslationRouteImport } from './routes/$locale/i18n/website-translation'
 import { Route as LocaleI18nWebsiteLocalizationRouteImport } from './routes/$locale/i18n/website-localization'
 import { Route as LocaleI18nVueRouteImport } from './routes/$locale/i18n/vue'
 import { Route as LocaleI18nViteRouteImport } from './routes/$locale/i18n/vite'
 import { Route as LocaleI18nTranslationSolutionsRouteImport } from './routes/$locale/i18n/translation-solutions'
 import { Route as LocaleI18nTranslationManagementSystemRouteImport } from './routes/$locale/i18n/translation-management-system'
-import { Route as LocaleI18nTechnicalMultilingualSeoRouteImport } from './routes/$locale/i18n/technical-multilingual-seo'
-import { Route as LocaleI18nTechnicalInternationalSeoRouteImport } from './routes/$locale/i18n/technical-international-seo'
 import { Route as LocaleI18nTanstackStartRouteImport } from './routes/$locale/i18n/tanstack-start'
 import { Route as LocaleI18nSvelteRouteImport } from './routes/$locale/i18n/svelte'
-import { Route as LocaleI18nSoftwareLocalizationServicesRouteImport } from './routes/$locale/i18n/software-localization-services'
 import { Route as LocaleI18nSoftwareLocalizationRouteImport } from './routes/$locale/i18n/software-localization'
 import { Route as LocaleI18nServerRouteImport } from './routes/$locale/i18n/server'
-import { Route as LocaleI18nSeoInternationalAudiencesRouteImport } from './routes/$locale/i18n/seo-international-audiences'
-import { Route as LocaleI18nSecurityComplianceRouteImport } from './routes/$locale/i18n/security-compliance'
 import { Route as LocaleI18nRubyRouteImport } from './routes/$locale/i18n/ruby'
 import { Route as LocaleI18nRemixHydrogenRouteImport } from './routes/$locale/i18n/remix-hydrogen'
 import { Route as LocaleI18nReactNativeLocalizationRouteImport } from './routes/$locale/i18n/react-native-localization'
-import { Route as LocaleI18nReactIntlRouteImport } from './routes/$locale/i18n/react-intl'
 import { Route as LocaleI18nReactRouteImport } from './routes/$locale/i18n/react'
 import { Route as LocaleI18nNuxtRouteImport } from './routes/$locale/i18n/nuxt'
 import { Route as LocaleI18nNextjsRouteImport } from './routes/$locale/i18n/nextjs'
-import { Route as LocaleI18nMultilingualWebsiteSeoRouteImport } from './routes/$locale/i18n/multilingual-website-seo'
 import { Route as LocaleI18nMultilingualSeoRouteImport } from './routes/$locale/i18n/multilingual-seo'
 import { Route as LocaleI18nLocalizationVsInternationalizationRouteImport } from './routes/$locale/i18n/localization-vs-internationalization'
-import { Route as LocaleI18nLocalizationToolsRouteImport } from './routes/$locale/i18n/localization-tools'
 import { Route as LocaleI18nLocalizationSoftwareRouteImport } from './routes/$locale/i18n/localization-software'
-import { Route as LocaleI18nLocalizationPlatformsRouteImport } from './routes/$locale/i18n/localization-platforms'
-import { Route as LocaleI18nLocalizationManagementRouteImport } from './routes/$locale/i18n/localization-management'
-import { Route as LocaleI18nLocalSeoInternationalRouteImport } from './routes/$locale/i18n/local-seo-international'
 import { Route as LocaleI18nJavascriptRouteImport } from './routes/$locale/i18n/javascript'
 import { Route as LocaleI18nIosRouteImport } from './routes/$locale/i18n/ios'
-import { Route as LocaleI18nInternationalSeoConsultingRouteImport } from './routes/$locale/i18n/international-seo-consulting'
 import { Route as LocaleI18nInternationalSeoRouteImport } from './routes/$locale/i18n/international-seo'
-import { Route as LocaleI18nGlobalMarketSeoRouteImport } from './routes/$locale/i18n/global-market-seo'
-import { Route as LocaleI18nFormattingUtilitiesRouteImport } from './routes/$locale/i18n/formatting-utilities'
 import { Route as LocaleI18nForDevelopersRouteImport } from './routes/$locale/i18n/for-developers'
 import { Route as LocaleI18nFlutterRouteImport } from './routes/$locale/i18n/flutter'
 import { Route as LocaleI18nExpoRouteImport } from './routes/$locale/i18n/expo'
-import { Route as LocaleI18nEcommerceGlobalSeoRouteImport } from './routes/$locale/i18n/ecommerce-global-seo'
 import { Route as LocaleI18nDoctorRouteImport } from './routes/$locale/i18n/doctor'
 import { Route as LocaleI18nDjangoRouteImport } from './routes/$locale/i18n/django'
 import { Route as LocaleI18nCulturalAdaptationRouteImport } from './routes/$locale/i18n/cultural-adaptation'
-import { Route as LocaleI18nContentLocalizationServicesRouteImport } from './routes/$locale/i18n/content-localization-services'
 import { Route as LocaleI18nContentLocalizationRouteImport } from './routes/$locale/i18n/content-localization'
 import { Route as LocaleI18nCompleteGuideRouteImport } from './routes/$locale/i18n/complete-guide'
 import { Route as LocaleI18nCliCodeScanningRouteImport } from './routes/$locale/i18n/cli-code-scanning'
@@ -252,50 +252,9 @@ const LocaleForProductTeamsRoute = LocaleForProductTeamsRouteImport.update({
   path: '/$locale/for-product-teams',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LocaleForOpenSourceRoute = LocaleForOpenSourceRouteImport.update({
-  id: '/$locale/for-open-source',
-  path: '/$locale/for-open-source',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocaleForMobileTeamsRoute = LocaleForMobileTeamsRouteImport.update({
-  id: '/$locale/for-mobile-teams',
-  path: '/$locale/for-mobile-teams',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocaleForMarketersRoute = LocaleForMarketersRouteImport.update({
-  id: '/$locale/for-marketers',
-  path: '/$locale/for-marketers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocaleForHealthcareRoute = LocaleForHealthcareRouteImport.update({
-  id: '/$locale/for-healthcare',
-  path: '/$locale/for-healthcare',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocaleForGamingRoute = LocaleForGamingRouteImport.update({
-  id: '/$locale/for-gaming',
-  path: '/$locale/for-gaming',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocaleForFreelancersRoute = LocaleForFreelancersRouteImport.update({
-  id: '/$locale/for-freelancers',
-  path: '/$locale/for-freelancers',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LocaleForEnterprisesRoute = LocaleForEnterprisesRouteImport.update({
   id: '/$locale/for-enterprises',
   path: '/$locale/for-enterprises',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocaleForEngineeringLeadersRoute =
-  LocaleForEngineeringLeadersRouteImport.update({
-    id: '/$locale/for-engineering-leaders',
-    path: '/$locale/for-engineering-leaders',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LocaleForEducationRoute = LocaleForEducationRouteImport.update({
-  id: '/$locale/for-education',
-  path: '/$locale/for-education',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleForEcommerceRoute = LocaleForEcommerceRouteImport.update({
@@ -306,16 +265,6 @@ const LocaleForEcommerceRoute = LocaleForEcommerceRouteImport.update({
 const LocaleForDevelopersRoute = LocaleForDevelopersRouteImport.update({
   id: '/$locale/for-developers',
   path: '/$locale/for-developers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocaleForDesignersRoute = LocaleForDesignersRouteImport.update({
-  id: '/$locale/for-designers',
-  path: '/$locale/for-designers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocaleForContentTeamsRoute = LocaleForContentTeamsRouteImport.update({
-  id: '/$locale/for-content-teams',
-  path: '/$locale/for-content-teams',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleForAgenciesRoute = LocaleForAgenciesRouteImport.update({
@@ -363,6 +312,161 @@ const LocaleBlogIndexRoute = LocaleBlogIndexRouteImport.update({
   path: '/$locale/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArchivedI18nTechnicalMultilingualSeoRoute =
+  ArchivedI18nTechnicalMultilingualSeoRouteImport.update({
+    id: '/_archived/i18n/technical-multilingual-seo',
+    path: '/i18n/technical-multilingual-seo',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nTechnicalInternationalSeoRoute =
+  ArchivedI18nTechnicalInternationalSeoRouteImport.update({
+    id: '/_archived/i18n/technical-international-seo',
+    path: '/i18n/technical-international-seo',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nSoftwareLocalizationServicesRoute =
+  ArchivedI18nSoftwareLocalizationServicesRouteImport.update({
+    id: '/_archived/i18n/software-localization-services',
+    path: '/i18n/software-localization-services',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nSeoInternationalAudiencesRoute =
+  ArchivedI18nSeoInternationalAudiencesRouteImport.update({
+    id: '/_archived/i18n/seo-international-audiences',
+    path: '/i18n/seo-international-audiences',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nSecurityComplianceRoute =
+  ArchivedI18nSecurityComplianceRouteImport.update({
+    id: '/_archived/i18n/security-compliance',
+    path: '/i18n/security-compliance',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nReactIntlRoute = ArchivedI18nReactIntlRouteImport.update({
+  id: '/_archived/i18n/react-intl',
+  path: '/i18n/react-intl',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchivedI18nMultilingualWebsiteSeoRoute =
+  ArchivedI18nMultilingualWebsiteSeoRouteImport.update({
+    id: '/_archived/i18n/multilingual-website-seo',
+    path: '/i18n/multilingual-website-seo',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nLocalizationToolsRoute =
+  ArchivedI18nLocalizationToolsRouteImport.update({
+    id: '/_archived/i18n/localization-tools',
+    path: '/i18n/localization-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nLocalizationPlatformsRoute =
+  ArchivedI18nLocalizationPlatformsRouteImport.update({
+    id: '/_archived/i18n/localization-platforms',
+    path: '/i18n/localization-platforms',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nLocalizationManagementRoute =
+  ArchivedI18nLocalizationManagementRouteImport.update({
+    id: '/_archived/i18n/localization-management',
+    path: '/i18n/localization-management',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nLocalSeoInternationalRoute =
+  ArchivedI18nLocalSeoInternationalRouteImport.update({
+    id: '/_archived/i18n/local-seo-international',
+    path: '/i18n/local-seo-international',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nInternationalSeoConsultingRoute =
+  ArchivedI18nInternationalSeoConsultingRouteImport.update({
+    id: '/_archived/i18n/international-seo-consulting',
+    path: '/i18n/international-seo-consulting',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nGlobalMarketSeoRoute =
+  ArchivedI18nGlobalMarketSeoRouteImport.update({
+    id: '/_archived/i18n/global-market-seo',
+    path: '/i18n/global-market-seo',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nFormattingUtilitiesRoute =
+  ArchivedI18nFormattingUtilitiesRouteImport.update({
+    id: '/_archived/i18n/formatting-utilities',
+    path: '/i18n/formatting-utilities',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nEcommerceGlobalSeoRoute =
+  ArchivedI18nEcommerceGlobalSeoRouteImport.update({
+    id: '/_archived/i18n/ecommerce-global-seo',
+    path: '/i18n/ecommerce-global-seo',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedI18nContentLocalizationServicesRoute =
+  ArchivedI18nContentLocalizationServicesRouteImport.update({
+    id: '/_archived/i18n/content-localization-services',
+    path: '/i18n/content-localization-services',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedAudienceForOpenSourceRoute =
+  ArchivedAudienceForOpenSourceRouteImport.update({
+    id: '/_archived/audience/for-open-source',
+    path: '/audience/for-open-source',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedAudienceForMobileTeamsRoute =
+  ArchivedAudienceForMobileTeamsRouteImport.update({
+    id: '/_archived/audience/for-mobile-teams',
+    path: '/audience/for-mobile-teams',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedAudienceForMarketersRoute =
+  ArchivedAudienceForMarketersRouteImport.update({
+    id: '/_archived/audience/for-marketers',
+    path: '/audience/for-marketers',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedAudienceForHealthcareRoute =
+  ArchivedAudienceForHealthcareRouteImport.update({
+    id: '/_archived/audience/for-healthcare',
+    path: '/audience/for-healthcare',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedAudienceForGamingRoute =
+  ArchivedAudienceForGamingRouteImport.update({
+    id: '/_archived/audience/for-gaming',
+    path: '/audience/for-gaming',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedAudienceForFreelancersRoute =
+  ArchivedAudienceForFreelancersRouteImport.update({
+    id: '/_archived/audience/for-freelancers',
+    path: '/audience/for-freelancers',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedAudienceForEngineeringLeadersRoute =
+  ArchivedAudienceForEngineeringLeadersRouteImport.update({
+    id: '/_archived/audience/for-engineering-leaders',
+    path: '/audience/for-engineering-leaders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedAudienceForEducationRoute =
+  ArchivedAudienceForEducationRouteImport.update({
+    id: '/_archived/audience/for-education',
+    path: '/audience/for-education',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedAudienceForDesignersRoute =
+  ArchivedAudienceForDesignersRouteImport.update({
+    id: '/_archived/audience/for-designers',
+    path: '/audience/for-designers',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ArchivedAudienceForContentTeamsRoute =
+  ArchivedAudienceForContentTeamsRouteImport.update({
+    id: '/_archived/audience/for-content-teams',
+    path: '/audience/for-content-teams',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LocaleI18nWebsiteTranslationRoute =
   LocaleI18nWebsiteTranslationRouteImport.update({
     id: '/$locale/i18n/website-translation',
@@ -397,18 +501,6 @@ const LocaleI18nTranslationManagementSystemRoute =
     path: '/$locale/i18n/translation-management-system',
     getParentRoute: () => rootRouteImport,
   } as any)
-const LocaleI18nTechnicalMultilingualSeoRoute =
-  LocaleI18nTechnicalMultilingualSeoRouteImport.update({
-    id: '/$locale/i18n/technical-multilingual-seo',
-    path: '/$locale/i18n/technical-multilingual-seo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LocaleI18nTechnicalInternationalSeoRoute =
-  LocaleI18nTechnicalInternationalSeoRouteImport.update({
-    id: '/$locale/i18n/technical-international-seo',
-    path: '/$locale/i18n/technical-international-seo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LocaleI18nTanstackStartRoute = LocaleI18nTanstackStartRouteImport.update({
   id: '/$locale/i18n/tanstack-start',
   path: '/$locale/i18n/tanstack-start',
@@ -419,12 +511,6 @@ const LocaleI18nSvelteRoute = LocaleI18nSvelteRouteImport.update({
   path: '/$locale/i18n/svelte',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LocaleI18nSoftwareLocalizationServicesRoute =
-  LocaleI18nSoftwareLocalizationServicesRouteImport.update({
-    id: '/$locale/i18n/software-localization-services',
-    path: '/$locale/i18n/software-localization-services',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LocaleI18nSoftwareLocalizationRoute =
   LocaleI18nSoftwareLocalizationRouteImport.update({
     id: '/$locale/i18n/software-localization',
@@ -436,18 +522,6 @@ const LocaleI18nServerRoute = LocaleI18nServerRouteImport.update({
   path: '/$locale/i18n/server',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LocaleI18nSeoInternationalAudiencesRoute =
-  LocaleI18nSeoInternationalAudiencesRouteImport.update({
-    id: '/$locale/i18n/seo-international-audiences',
-    path: '/$locale/i18n/seo-international-audiences',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LocaleI18nSecurityComplianceRoute =
-  LocaleI18nSecurityComplianceRouteImport.update({
-    id: '/$locale/i18n/security-compliance',
-    path: '/$locale/i18n/security-compliance',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LocaleI18nRubyRoute = LocaleI18nRubyRouteImport.update({
   id: '/$locale/i18n/ruby',
   path: '/$locale/i18n/ruby',
@@ -464,11 +538,6 @@ const LocaleI18nReactNativeLocalizationRoute =
     path: '/$locale/i18n/react-native-localization',
     getParentRoute: () => rootRouteImport,
   } as any)
-const LocaleI18nReactIntlRoute = LocaleI18nReactIntlRouteImport.update({
-  id: '/$locale/i18n/react-intl',
-  path: '/$locale/i18n/react-intl',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LocaleI18nReactRoute = LocaleI18nReactRouteImport.update({
   id: '/$locale/i18n/react',
   path: '/$locale/i18n/react',
@@ -484,12 +553,6 @@ const LocaleI18nNextjsRoute = LocaleI18nNextjsRouteImport.update({
   path: '/$locale/i18n/nextjs',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LocaleI18nMultilingualWebsiteSeoRoute =
-  LocaleI18nMultilingualWebsiteSeoRouteImport.update({
-    id: '/$locale/i18n/multilingual-website-seo',
-    path: '/$locale/i18n/multilingual-website-seo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LocaleI18nMultilingualSeoRoute =
   LocaleI18nMultilingualSeoRouteImport.update({
     id: '/$locale/i18n/multilingual-seo',
@@ -502,34 +565,10 @@ const LocaleI18nLocalizationVsInternationalizationRoute =
     path: '/$locale/i18n/localization-vs-internationalization',
     getParentRoute: () => rootRouteImport,
   } as any)
-const LocaleI18nLocalizationToolsRoute =
-  LocaleI18nLocalizationToolsRouteImport.update({
-    id: '/$locale/i18n/localization-tools',
-    path: '/$locale/i18n/localization-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LocaleI18nLocalizationSoftwareRoute =
   LocaleI18nLocalizationSoftwareRouteImport.update({
     id: '/$locale/i18n/localization-software',
     path: '/$locale/i18n/localization-software',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LocaleI18nLocalizationPlatformsRoute =
-  LocaleI18nLocalizationPlatformsRouteImport.update({
-    id: '/$locale/i18n/localization-platforms',
-    path: '/$locale/i18n/localization-platforms',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LocaleI18nLocalizationManagementRoute =
-  LocaleI18nLocalizationManagementRouteImport.update({
-    id: '/$locale/i18n/localization-management',
-    path: '/$locale/i18n/localization-management',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LocaleI18nLocalSeoInternationalRoute =
-  LocaleI18nLocalSeoInternationalRouteImport.update({
-    id: '/$locale/i18n/local-seo-international',
-    path: '/$locale/i18n/local-seo-international',
     getParentRoute: () => rootRouteImport,
   } as any)
 const LocaleI18nJavascriptRoute = LocaleI18nJavascriptRouteImport.update({
@@ -542,28 +581,10 @@ const LocaleI18nIosRoute = LocaleI18nIosRouteImport.update({
   path: '/$locale/i18n/ios',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LocaleI18nInternationalSeoConsultingRoute =
-  LocaleI18nInternationalSeoConsultingRouteImport.update({
-    id: '/$locale/i18n/international-seo-consulting',
-    path: '/$locale/i18n/international-seo-consulting',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LocaleI18nInternationalSeoRoute =
   LocaleI18nInternationalSeoRouteImport.update({
     id: '/$locale/i18n/international-seo',
     path: '/$locale/i18n/international-seo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LocaleI18nGlobalMarketSeoRoute =
-  LocaleI18nGlobalMarketSeoRouteImport.update({
-    id: '/$locale/i18n/global-market-seo',
-    path: '/$locale/i18n/global-market-seo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LocaleI18nFormattingUtilitiesRoute =
-  LocaleI18nFormattingUtilitiesRouteImport.update({
-    id: '/$locale/i18n/formatting-utilities',
-    path: '/$locale/i18n/formatting-utilities',
     getParentRoute: () => rootRouteImport,
   } as any)
 const LocaleI18nForDevelopersRoute = LocaleI18nForDevelopersRouteImport.update({
@@ -581,12 +602,6 @@ const LocaleI18nExpoRoute = LocaleI18nExpoRouteImport.update({
   path: '/$locale/i18n/expo',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LocaleI18nEcommerceGlobalSeoRoute =
-  LocaleI18nEcommerceGlobalSeoRouteImport.update({
-    id: '/$locale/i18n/ecommerce-global-seo',
-    path: '/$locale/i18n/ecommerce-global-seo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LocaleI18nDoctorRoute = LocaleI18nDoctorRouteImport.update({
   id: '/$locale/i18n/doctor',
   path: '/$locale/i18n/doctor',
@@ -601,12 +616,6 @@ const LocaleI18nCulturalAdaptationRoute =
   LocaleI18nCulturalAdaptationRouteImport.update({
     id: '/$locale/i18n/cultural-adaptation',
     path: '/$locale/i18n/cultural-adaptation',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LocaleI18nContentLocalizationServicesRoute =
-  LocaleI18nContentLocalizationServicesRouteImport.update({
-    id: '/$locale/i18n/content-localization-services',
-    path: '/$locale/i18n/content-localization-services',
     getParentRoute: () => rootRouteImport,
   } as any)
 const LocaleI18nContentLocalizationRoute =
@@ -719,19 +728,9 @@ export interface FileRoutesByFullPath {
   '/$locale/changelog': typeof LocaleChangelogRoute
   '/$locale/features': typeof LocaleFeaturesRouteWithChildren
   '/$locale/for-agencies': typeof LocaleForAgenciesRoute
-  '/$locale/for-content-teams': typeof LocaleForContentTeamsRoute
-  '/$locale/for-designers': typeof LocaleForDesignersRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
   '/$locale/for-ecommerce': typeof LocaleForEcommerceRoute
-  '/$locale/for-education': typeof LocaleForEducationRoute
-  '/$locale/for-engineering-leaders': typeof LocaleForEngineeringLeadersRoute
   '/$locale/for-enterprises': typeof LocaleForEnterprisesRoute
-  '/$locale/for-freelancers': typeof LocaleForFreelancersRoute
-  '/$locale/for-gaming': typeof LocaleForGamingRoute
-  '/$locale/for-healthcare': typeof LocaleForHealthcareRoute
-  '/$locale/for-marketers': typeof LocaleForMarketersRoute
-  '/$locale/for-mobile-teams': typeof LocaleForMobileTeamsRoute
-  '/$locale/for-open-source': typeof LocaleForOpenSourceRoute
   '/$locale/for-product-teams': typeof LocaleForProductTeamsRoute
   '/$locale/for-saas': typeof LocaleForSaasRoute
   '/$locale/for-startups': typeof LocaleForStartupsRoute
@@ -764,50 +763,60 @@ export interface FileRoutesByFullPath {
   '/$locale/i18n/cli-code-scanning': typeof LocaleI18nCliCodeScanningRoute
   '/$locale/i18n/complete-guide': typeof LocaleI18nCompleteGuideRoute
   '/$locale/i18n/content-localization': typeof LocaleI18nContentLocalizationRoute
-  '/$locale/i18n/content-localization-services': typeof LocaleI18nContentLocalizationServicesRoute
   '/$locale/i18n/cultural-adaptation': typeof LocaleI18nCulturalAdaptationRoute
   '/$locale/i18n/django': typeof LocaleI18nDjangoRoute
   '/$locale/i18n/doctor': typeof LocaleI18nDoctorRoute
-  '/$locale/i18n/ecommerce-global-seo': typeof LocaleI18nEcommerceGlobalSeoRoute
   '/$locale/i18n/expo': typeof LocaleI18nExpoRoute
   '/$locale/i18n/flutter': typeof LocaleI18nFlutterRoute
   '/$locale/i18n/for-developers': typeof LocaleI18nForDevelopersRoute
-  '/$locale/i18n/formatting-utilities': typeof LocaleI18nFormattingUtilitiesRoute
-  '/$locale/i18n/global-market-seo': typeof LocaleI18nGlobalMarketSeoRoute
   '/$locale/i18n/international-seo': typeof LocaleI18nInternationalSeoRoute
-  '/$locale/i18n/international-seo-consulting': typeof LocaleI18nInternationalSeoConsultingRoute
   '/$locale/i18n/ios': typeof LocaleI18nIosRoute
   '/$locale/i18n/javascript': typeof LocaleI18nJavascriptRoute
-  '/$locale/i18n/local-seo-international': typeof LocaleI18nLocalSeoInternationalRoute
-  '/$locale/i18n/localization-management': typeof LocaleI18nLocalizationManagementRoute
-  '/$locale/i18n/localization-platforms': typeof LocaleI18nLocalizationPlatformsRoute
   '/$locale/i18n/localization-software': typeof LocaleI18nLocalizationSoftwareRoute
-  '/$locale/i18n/localization-tools': typeof LocaleI18nLocalizationToolsRoute
   '/$locale/i18n/localization-vs-internationalization': typeof LocaleI18nLocalizationVsInternationalizationRoute
   '/$locale/i18n/multilingual-seo': typeof LocaleI18nMultilingualSeoRoute
-  '/$locale/i18n/multilingual-website-seo': typeof LocaleI18nMultilingualWebsiteSeoRoute
   '/$locale/i18n/nextjs': typeof LocaleI18nNextjsRoute
   '/$locale/i18n/nuxt': typeof LocaleI18nNuxtRoute
   '/$locale/i18n/react': typeof LocaleI18nReactRoute
-  '/$locale/i18n/react-intl': typeof LocaleI18nReactIntlRoute
   '/$locale/i18n/react-native-localization': typeof LocaleI18nReactNativeLocalizationRoute
   '/$locale/i18n/remix-hydrogen': typeof LocaleI18nRemixHydrogenRoute
   '/$locale/i18n/ruby': typeof LocaleI18nRubyRoute
-  '/$locale/i18n/security-compliance': typeof LocaleI18nSecurityComplianceRoute
-  '/$locale/i18n/seo-international-audiences': typeof LocaleI18nSeoInternationalAudiencesRoute
   '/$locale/i18n/server': typeof LocaleI18nServerRoute
   '/$locale/i18n/software-localization': typeof LocaleI18nSoftwareLocalizationRoute
-  '/$locale/i18n/software-localization-services': typeof LocaleI18nSoftwareLocalizationServicesRoute
   '/$locale/i18n/svelte': typeof LocaleI18nSvelteRoute
   '/$locale/i18n/tanstack-start': typeof LocaleI18nTanstackStartRoute
-  '/$locale/i18n/technical-international-seo': typeof LocaleI18nTechnicalInternationalSeoRoute
-  '/$locale/i18n/technical-multilingual-seo': typeof LocaleI18nTechnicalMultilingualSeoRoute
   '/$locale/i18n/translation-management-system': typeof LocaleI18nTranslationManagementSystemRoute
   '/$locale/i18n/translation-solutions': typeof LocaleI18nTranslationSolutionsRoute
   '/$locale/i18n/vite': typeof LocaleI18nViteRoute
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
+  '/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
+  '/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
+  '/audience/for-education': typeof ArchivedAudienceForEducationRoute
+  '/audience/for-engineering-leaders': typeof ArchivedAudienceForEngineeringLeadersRoute
+  '/audience/for-freelancers': typeof ArchivedAudienceForFreelancersRoute
+  '/audience/for-gaming': typeof ArchivedAudienceForGamingRoute
+  '/audience/for-healthcare': typeof ArchivedAudienceForHealthcareRoute
+  '/audience/for-marketers': typeof ArchivedAudienceForMarketersRoute
+  '/audience/for-mobile-teams': typeof ArchivedAudienceForMobileTeamsRoute
+  '/audience/for-open-source': typeof ArchivedAudienceForOpenSourceRoute
+  '/i18n/content-localization-services': typeof ArchivedI18nContentLocalizationServicesRoute
+  '/i18n/ecommerce-global-seo': typeof ArchivedI18nEcommerceGlobalSeoRoute
+  '/i18n/formatting-utilities': typeof ArchivedI18nFormattingUtilitiesRoute
+  '/i18n/global-market-seo': typeof ArchivedI18nGlobalMarketSeoRoute
+  '/i18n/international-seo-consulting': typeof ArchivedI18nInternationalSeoConsultingRoute
+  '/i18n/local-seo-international': typeof ArchivedI18nLocalSeoInternationalRoute
+  '/i18n/localization-management': typeof ArchivedI18nLocalizationManagementRoute
+  '/i18n/localization-platforms': typeof ArchivedI18nLocalizationPlatformsRoute
+  '/i18n/localization-tools': typeof ArchivedI18nLocalizationToolsRoute
+  '/i18n/multilingual-website-seo': typeof ArchivedI18nMultilingualWebsiteSeoRoute
+  '/i18n/react-intl': typeof ArchivedI18nReactIntlRoute
+  '/i18n/security-compliance': typeof ArchivedI18nSecurityComplianceRoute
+  '/i18n/seo-international-audiences': typeof ArchivedI18nSeoInternationalAudiencesRoute
+  '/i18n/software-localization-services': typeof ArchivedI18nSoftwareLocalizationServicesRoute
+  '/i18n/technical-international-seo': typeof ArchivedI18nTechnicalInternationalSeoRoute
+  '/i18n/technical-multilingual-seo': typeof ArchivedI18nTechnicalMultilingualSeoRoute
   '/$locale/blog': typeof LocaleBlogIndexRoute
   '/$locale/compare': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
@@ -830,19 +839,9 @@ export interface FileRoutesByTo {
   '/$locale/careers': typeof LocaleCareersRoute
   '/$locale/changelog': typeof LocaleChangelogRoute
   '/$locale/for-agencies': typeof LocaleForAgenciesRoute
-  '/$locale/for-content-teams': typeof LocaleForContentTeamsRoute
-  '/$locale/for-designers': typeof LocaleForDesignersRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
   '/$locale/for-ecommerce': typeof LocaleForEcommerceRoute
-  '/$locale/for-education': typeof LocaleForEducationRoute
-  '/$locale/for-engineering-leaders': typeof LocaleForEngineeringLeadersRoute
   '/$locale/for-enterprises': typeof LocaleForEnterprisesRoute
-  '/$locale/for-freelancers': typeof LocaleForFreelancersRoute
-  '/$locale/for-gaming': typeof LocaleForGamingRoute
-  '/$locale/for-healthcare': typeof LocaleForHealthcareRoute
-  '/$locale/for-marketers': typeof LocaleForMarketersRoute
-  '/$locale/for-mobile-teams': typeof LocaleForMobileTeamsRoute
-  '/$locale/for-open-source': typeof LocaleForOpenSourceRoute
   '/$locale/for-product-teams': typeof LocaleForProductTeamsRoute
   '/$locale/for-saas': typeof LocaleForSaasRoute
   '/$locale/for-startups': typeof LocaleForStartupsRoute
@@ -875,50 +874,60 @@ export interface FileRoutesByTo {
   '/$locale/i18n/cli-code-scanning': typeof LocaleI18nCliCodeScanningRoute
   '/$locale/i18n/complete-guide': typeof LocaleI18nCompleteGuideRoute
   '/$locale/i18n/content-localization': typeof LocaleI18nContentLocalizationRoute
-  '/$locale/i18n/content-localization-services': typeof LocaleI18nContentLocalizationServicesRoute
   '/$locale/i18n/cultural-adaptation': typeof LocaleI18nCulturalAdaptationRoute
   '/$locale/i18n/django': typeof LocaleI18nDjangoRoute
   '/$locale/i18n/doctor': typeof LocaleI18nDoctorRoute
-  '/$locale/i18n/ecommerce-global-seo': typeof LocaleI18nEcommerceGlobalSeoRoute
   '/$locale/i18n/expo': typeof LocaleI18nExpoRoute
   '/$locale/i18n/flutter': typeof LocaleI18nFlutterRoute
   '/$locale/i18n/for-developers': typeof LocaleI18nForDevelopersRoute
-  '/$locale/i18n/formatting-utilities': typeof LocaleI18nFormattingUtilitiesRoute
-  '/$locale/i18n/global-market-seo': typeof LocaleI18nGlobalMarketSeoRoute
   '/$locale/i18n/international-seo': typeof LocaleI18nInternationalSeoRoute
-  '/$locale/i18n/international-seo-consulting': typeof LocaleI18nInternationalSeoConsultingRoute
   '/$locale/i18n/ios': typeof LocaleI18nIosRoute
   '/$locale/i18n/javascript': typeof LocaleI18nJavascriptRoute
-  '/$locale/i18n/local-seo-international': typeof LocaleI18nLocalSeoInternationalRoute
-  '/$locale/i18n/localization-management': typeof LocaleI18nLocalizationManagementRoute
-  '/$locale/i18n/localization-platforms': typeof LocaleI18nLocalizationPlatformsRoute
   '/$locale/i18n/localization-software': typeof LocaleI18nLocalizationSoftwareRoute
-  '/$locale/i18n/localization-tools': typeof LocaleI18nLocalizationToolsRoute
   '/$locale/i18n/localization-vs-internationalization': typeof LocaleI18nLocalizationVsInternationalizationRoute
   '/$locale/i18n/multilingual-seo': typeof LocaleI18nMultilingualSeoRoute
-  '/$locale/i18n/multilingual-website-seo': typeof LocaleI18nMultilingualWebsiteSeoRoute
   '/$locale/i18n/nextjs': typeof LocaleI18nNextjsRoute
   '/$locale/i18n/nuxt': typeof LocaleI18nNuxtRoute
   '/$locale/i18n/react': typeof LocaleI18nReactRoute
-  '/$locale/i18n/react-intl': typeof LocaleI18nReactIntlRoute
   '/$locale/i18n/react-native-localization': typeof LocaleI18nReactNativeLocalizationRoute
   '/$locale/i18n/remix-hydrogen': typeof LocaleI18nRemixHydrogenRoute
   '/$locale/i18n/ruby': typeof LocaleI18nRubyRoute
-  '/$locale/i18n/security-compliance': typeof LocaleI18nSecurityComplianceRoute
-  '/$locale/i18n/seo-international-audiences': typeof LocaleI18nSeoInternationalAudiencesRoute
   '/$locale/i18n/server': typeof LocaleI18nServerRoute
   '/$locale/i18n/software-localization': typeof LocaleI18nSoftwareLocalizationRoute
-  '/$locale/i18n/software-localization-services': typeof LocaleI18nSoftwareLocalizationServicesRoute
   '/$locale/i18n/svelte': typeof LocaleI18nSvelteRoute
   '/$locale/i18n/tanstack-start': typeof LocaleI18nTanstackStartRoute
-  '/$locale/i18n/technical-international-seo': typeof LocaleI18nTechnicalInternationalSeoRoute
-  '/$locale/i18n/technical-multilingual-seo': typeof LocaleI18nTechnicalMultilingualSeoRoute
   '/$locale/i18n/translation-management-system': typeof LocaleI18nTranslationManagementSystemRoute
   '/$locale/i18n/translation-solutions': typeof LocaleI18nTranslationSolutionsRoute
   '/$locale/i18n/vite': typeof LocaleI18nViteRoute
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
+  '/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
+  '/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
+  '/audience/for-education': typeof ArchivedAudienceForEducationRoute
+  '/audience/for-engineering-leaders': typeof ArchivedAudienceForEngineeringLeadersRoute
+  '/audience/for-freelancers': typeof ArchivedAudienceForFreelancersRoute
+  '/audience/for-gaming': typeof ArchivedAudienceForGamingRoute
+  '/audience/for-healthcare': typeof ArchivedAudienceForHealthcareRoute
+  '/audience/for-marketers': typeof ArchivedAudienceForMarketersRoute
+  '/audience/for-mobile-teams': typeof ArchivedAudienceForMobileTeamsRoute
+  '/audience/for-open-source': typeof ArchivedAudienceForOpenSourceRoute
+  '/i18n/content-localization-services': typeof ArchivedI18nContentLocalizationServicesRoute
+  '/i18n/ecommerce-global-seo': typeof ArchivedI18nEcommerceGlobalSeoRoute
+  '/i18n/formatting-utilities': typeof ArchivedI18nFormattingUtilitiesRoute
+  '/i18n/global-market-seo': typeof ArchivedI18nGlobalMarketSeoRoute
+  '/i18n/international-seo-consulting': typeof ArchivedI18nInternationalSeoConsultingRoute
+  '/i18n/local-seo-international': typeof ArchivedI18nLocalSeoInternationalRoute
+  '/i18n/localization-management': typeof ArchivedI18nLocalizationManagementRoute
+  '/i18n/localization-platforms': typeof ArchivedI18nLocalizationPlatformsRoute
+  '/i18n/localization-tools': typeof ArchivedI18nLocalizationToolsRoute
+  '/i18n/multilingual-website-seo': typeof ArchivedI18nMultilingualWebsiteSeoRoute
+  '/i18n/react-intl': typeof ArchivedI18nReactIntlRoute
+  '/i18n/security-compliance': typeof ArchivedI18nSecurityComplianceRoute
+  '/i18n/seo-international-audiences': typeof ArchivedI18nSeoInternationalAudiencesRoute
+  '/i18n/software-localization-services': typeof ArchivedI18nSoftwareLocalizationServicesRoute
+  '/i18n/technical-international-seo': typeof ArchivedI18nTechnicalInternationalSeoRoute
+  '/i18n/technical-multilingual-seo': typeof ArchivedI18nTechnicalMultilingualSeoRoute
   '/$locale/blog': typeof LocaleBlogIndexRoute
   '/$locale/compare': typeof LocaleCompareIndexRoute
   '/$locale/features': typeof LocaleFeaturesIndexRoute
@@ -943,19 +952,9 @@ export interface FileRoutesById {
   '/$locale/changelog': typeof LocaleChangelogRoute
   '/$locale/features': typeof LocaleFeaturesRouteWithChildren
   '/$locale/for-agencies': typeof LocaleForAgenciesRoute
-  '/$locale/for-content-teams': typeof LocaleForContentTeamsRoute
-  '/$locale/for-designers': typeof LocaleForDesignersRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
   '/$locale/for-ecommerce': typeof LocaleForEcommerceRoute
-  '/$locale/for-education': typeof LocaleForEducationRoute
-  '/$locale/for-engineering-leaders': typeof LocaleForEngineeringLeadersRoute
   '/$locale/for-enterprises': typeof LocaleForEnterprisesRoute
-  '/$locale/for-freelancers': typeof LocaleForFreelancersRoute
-  '/$locale/for-gaming': typeof LocaleForGamingRoute
-  '/$locale/for-healthcare': typeof LocaleForHealthcareRoute
-  '/$locale/for-marketers': typeof LocaleForMarketersRoute
-  '/$locale/for-mobile-teams': typeof LocaleForMobileTeamsRoute
-  '/$locale/for-open-source': typeof LocaleForOpenSourceRoute
   '/$locale/for-product-teams': typeof LocaleForProductTeamsRoute
   '/$locale/for-saas': typeof LocaleForSaasRoute
   '/$locale/for-startups': typeof LocaleForStartupsRoute
@@ -988,50 +987,60 @@ export interface FileRoutesById {
   '/$locale/i18n/cli-code-scanning': typeof LocaleI18nCliCodeScanningRoute
   '/$locale/i18n/complete-guide': typeof LocaleI18nCompleteGuideRoute
   '/$locale/i18n/content-localization': typeof LocaleI18nContentLocalizationRoute
-  '/$locale/i18n/content-localization-services': typeof LocaleI18nContentLocalizationServicesRoute
   '/$locale/i18n/cultural-adaptation': typeof LocaleI18nCulturalAdaptationRoute
   '/$locale/i18n/django': typeof LocaleI18nDjangoRoute
   '/$locale/i18n/doctor': typeof LocaleI18nDoctorRoute
-  '/$locale/i18n/ecommerce-global-seo': typeof LocaleI18nEcommerceGlobalSeoRoute
   '/$locale/i18n/expo': typeof LocaleI18nExpoRoute
   '/$locale/i18n/flutter': typeof LocaleI18nFlutterRoute
   '/$locale/i18n/for-developers': typeof LocaleI18nForDevelopersRoute
-  '/$locale/i18n/formatting-utilities': typeof LocaleI18nFormattingUtilitiesRoute
-  '/$locale/i18n/global-market-seo': typeof LocaleI18nGlobalMarketSeoRoute
   '/$locale/i18n/international-seo': typeof LocaleI18nInternationalSeoRoute
-  '/$locale/i18n/international-seo-consulting': typeof LocaleI18nInternationalSeoConsultingRoute
   '/$locale/i18n/ios': typeof LocaleI18nIosRoute
   '/$locale/i18n/javascript': typeof LocaleI18nJavascriptRoute
-  '/$locale/i18n/local-seo-international': typeof LocaleI18nLocalSeoInternationalRoute
-  '/$locale/i18n/localization-management': typeof LocaleI18nLocalizationManagementRoute
-  '/$locale/i18n/localization-platforms': typeof LocaleI18nLocalizationPlatformsRoute
   '/$locale/i18n/localization-software': typeof LocaleI18nLocalizationSoftwareRoute
-  '/$locale/i18n/localization-tools': typeof LocaleI18nLocalizationToolsRoute
   '/$locale/i18n/localization-vs-internationalization': typeof LocaleI18nLocalizationVsInternationalizationRoute
   '/$locale/i18n/multilingual-seo': typeof LocaleI18nMultilingualSeoRoute
-  '/$locale/i18n/multilingual-website-seo': typeof LocaleI18nMultilingualWebsiteSeoRoute
   '/$locale/i18n/nextjs': typeof LocaleI18nNextjsRoute
   '/$locale/i18n/nuxt': typeof LocaleI18nNuxtRoute
   '/$locale/i18n/react': typeof LocaleI18nReactRoute
-  '/$locale/i18n/react-intl': typeof LocaleI18nReactIntlRoute
   '/$locale/i18n/react-native-localization': typeof LocaleI18nReactNativeLocalizationRoute
   '/$locale/i18n/remix-hydrogen': typeof LocaleI18nRemixHydrogenRoute
   '/$locale/i18n/ruby': typeof LocaleI18nRubyRoute
-  '/$locale/i18n/security-compliance': typeof LocaleI18nSecurityComplianceRoute
-  '/$locale/i18n/seo-international-audiences': typeof LocaleI18nSeoInternationalAudiencesRoute
   '/$locale/i18n/server': typeof LocaleI18nServerRoute
   '/$locale/i18n/software-localization': typeof LocaleI18nSoftwareLocalizationRoute
-  '/$locale/i18n/software-localization-services': typeof LocaleI18nSoftwareLocalizationServicesRoute
   '/$locale/i18n/svelte': typeof LocaleI18nSvelteRoute
   '/$locale/i18n/tanstack-start': typeof LocaleI18nTanstackStartRoute
-  '/$locale/i18n/technical-international-seo': typeof LocaleI18nTechnicalInternationalSeoRoute
-  '/$locale/i18n/technical-multilingual-seo': typeof LocaleI18nTechnicalMultilingualSeoRoute
   '/$locale/i18n/translation-management-system': typeof LocaleI18nTranslationManagementSystemRoute
   '/$locale/i18n/translation-solutions': typeof LocaleI18nTranslationSolutionsRoute
   '/$locale/i18n/vite': typeof LocaleI18nViteRoute
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
+  '/_archived/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
+  '/_archived/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
+  '/_archived/audience/for-education': typeof ArchivedAudienceForEducationRoute
+  '/_archived/audience/for-engineering-leaders': typeof ArchivedAudienceForEngineeringLeadersRoute
+  '/_archived/audience/for-freelancers': typeof ArchivedAudienceForFreelancersRoute
+  '/_archived/audience/for-gaming': typeof ArchivedAudienceForGamingRoute
+  '/_archived/audience/for-healthcare': typeof ArchivedAudienceForHealthcareRoute
+  '/_archived/audience/for-marketers': typeof ArchivedAudienceForMarketersRoute
+  '/_archived/audience/for-mobile-teams': typeof ArchivedAudienceForMobileTeamsRoute
+  '/_archived/audience/for-open-source': typeof ArchivedAudienceForOpenSourceRoute
+  '/_archived/i18n/content-localization-services': typeof ArchivedI18nContentLocalizationServicesRoute
+  '/_archived/i18n/ecommerce-global-seo': typeof ArchivedI18nEcommerceGlobalSeoRoute
+  '/_archived/i18n/formatting-utilities': typeof ArchivedI18nFormattingUtilitiesRoute
+  '/_archived/i18n/global-market-seo': typeof ArchivedI18nGlobalMarketSeoRoute
+  '/_archived/i18n/international-seo-consulting': typeof ArchivedI18nInternationalSeoConsultingRoute
+  '/_archived/i18n/local-seo-international': typeof ArchivedI18nLocalSeoInternationalRoute
+  '/_archived/i18n/localization-management': typeof ArchivedI18nLocalizationManagementRoute
+  '/_archived/i18n/localization-platforms': typeof ArchivedI18nLocalizationPlatformsRoute
+  '/_archived/i18n/localization-tools': typeof ArchivedI18nLocalizationToolsRoute
+  '/_archived/i18n/multilingual-website-seo': typeof ArchivedI18nMultilingualWebsiteSeoRoute
+  '/_archived/i18n/react-intl': typeof ArchivedI18nReactIntlRoute
+  '/_archived/i18n/security-compliance': typeof ArchivedI18nSecurityComplianceRoute
+  '/_archived/i18n/seo-international-audiences': typeof ArchivedI18nSeoInternationalAudiencesRoute
+  '/_archived/i18n/software-localization-services': typeof ArchivedI18nSoftwareLocalizationServicesRoute
+  '/_archived/i18n/technical-international-seo': typeof ArchivedI18nTechnicalInternationalSeoRoute
+  '/_archived/i18n/technical-multilingual-seo': typeof ArchivedI18nTechnicalMultilingualSeoRoute
   '/$locale/blog/': typeof LocaleBlogIndexRoute
   '/$locale/compare/': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
@@ -1057,19 +1066,9 @@ export interface FileRouteTypes {
     | '/$locale/changelog'
     | '/$locale/features'
     | '/$locale/for-agencies'
-    | '/$locale/for-content-teams'
-    | '/$locale/for-designers'
     | '/$locale/for-developers'
     | '/$locale/for-ecommerce'
-    | '/$locale/for-education'
-    | '/$locale/for-engineering-leaders'
     | '/$locale/for-enterprises'
-    | '/$locale/for-freelancers'
-    | '/$locale/for-gaming'
-    | '/$locale/for-healthcare'
-    | '/$locale/for-marketers'
-    | '/$locale/for-mobile-teams'
-    | '/$locale/for-open-source'
     | '/$locale/for-product-teams'
     | '/$locale/for-saas'
     | '/$locale/for-startups'
@@ -1102,50 +1101,60 @@ export interface FileRouteTypes {
     | '/$locale/i18n/cli-code-scanning'
     | '/$locale/i18n/complete-guide'
     | '/$locale/i18n/content-localization'
-    | '/$locale/i18n/content-localization-services'
     | '/$locale/i18n/cultural-adaptation'
     | '/$locale/i18n/django'
     | '/$locale/i18n/doctor'
-    | '/$locale/i18n/ecommerce-global-seo'
     | '/$locale/i18n/expo'
     | '/$locale/i18n/flutter'
     | '/$locale/i18n/for-developers'
-    | '/$locale/i18n/formatting-utilities'
-    | '/$locale/i18n/global-market-seo'
     | '/$locale/i18n/international-seo'
-    | '/$locale/i18n/international-seo-consulting'
     | '/$locale/i18n/ios'
     | '/$locale/i18n/javascript'
-    | '/$locale/i18n/local-seo-international'
-    | '/$locale/i18n/localization-management'
-    | '/$locale/i18n/localization-platforms'
     | '/$locale/i18n/localization-software'
-    | '/$locale/i18n/localization-tools'
     | '/$locale/i18n/localization-vs-internationalization'
     | '/$locale/i18n/multilingual-seo'
-    | '/$locale/i18n/multilingual-website-seo'
     | '/$locale/i18n/nextjs'
     | '/$locale/i18n/nuxt'
     | '/$locale/i18n/react'
-    | '/$locale/i18n/react-intl'
     | '/$locale/i18n/react-native-localization'
     | '/$locale/i18n/remix-hydrogen'
     | '/$locale/i18n/ruby'
-    | '/$locale/i18n/security-compliance'
-    | '/$locale/i18n/seo-international-audiences'
     | '/$locale/i18n/server'
     | '/$locale/i18n/software-localization'
-    | '/$locale/i18n/software-localization-services'
     | '/$locale/i18n/svelte'
     | '/$locale/i18n/tanstack-start'
-    | '/$locale/i18n/technical-international-seo'
-    | '/$locale/i18n/technical-multilingual-seo'
     | '/$locale/i18n/translation-management-system'
     | '/$locale/i18n/translation-solutions'
     | '/$locale/i18n/vite'
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
+    | '/audience/for-content-teams'
+    | '/audience/for-designers'
+    | '/audience/for-education'
+    | '/audience/for-engineering-leaders'
+    | '/audience/for-freelancers'
+    | '/audience/for-gaming'
+    | '/audience/for-healthcare'
+    | '/audience/for-marketers'
+    | '/audience/for-mobile-teams'
+    | '/audience/for-open-source'
+    | '/i18n/content-localization-services'
+    | '/i18n/ecommerce-global-seo'
+    | '/i18n/formatting-utilities'
+    | '/i18n/global-market-seo'
+    | '/i18n/international-seo-consulting'
+    | '/i18n/local-seo-international'
+    | '/i18n/localization-management'
+    | '/i18n/localization-platforms'
+    | '/i18n/localization-tools'
+    | '/i18n/multilingual-website-seo'
+    | '/i18n/react-intl'
+    | '/i18n/security-compliance'
+    | '/i18n/seo-international-audiences'
+    | '/i18n/software-localization-services'
+    | '/i18n/technical-international-seo'
+    | '/i18n/technical-multilingual-seo'
     | '/$locale/blog'
     | '/$locale/compare'
     | '/$locale/features/'
@@ -1168,19 +1177,9 @@ export interface FileRouteTypes {
     | '/$locale/careers'
     | '/$locale/changelog'
     | '/$locale/for-agencies'
-    | '/$locale/for-content-teams'
-    | '/$locale/for-designers'
     | '/$locale/for-developers'
     | '/$locale/for-ecommerce'
-    | '/$locale/for-education'
-    | '/$locale/for-engineering-leaders'
     | '/$locale/for-enterprises'
-    | '/$locale/for-freelancers'
-    | '/$locale/for-gaming'
-    | '/$locale/for-healthcare'
-    | '/$locale/for-marketers'
-    | '/$locale/for-mobile-teams'
-    | '/$locale/for-open-source'
     | '/$locale/for-product-teams'
     | '/$locale/for-saas'
     | '/$locale/for-startups'
@@ -1213,50 +1212,60 @@ export interface FileRouteTypes {
     | '/$locale/i18n/cli-code-scanning'
     | '/$locale/i18n/complete-guide'
     | '/$locale/i18n/content-localization'
-    | '/$locale/i18n/content-localization-services'
     | '/$locale/i18n/cultural-adaptation'
     | '/$locale/i18n/django'
     | '/$locale/i18n/doctor'
-    | '/$locale/i18n/ecommerce-global-seo'
     | '/$locale/i18n/expo'
     | '/$locale/i18n/flutter'
     | '/$locale/i18n/for-developers'
-    | '/$locale/i18n/formatting-utilities'
-    | '/$locale/i18n/global-market-seo'
     | '/$locale/i18n/international-seo'
-    | '/$locale/i18n/international-seo-consulting'
     | '/$locale/i18n/ios'
     | '/$locale/i18n/javascript'
-    | '/$locale/i18n/local-seo-international'
-    | '/$locale/i18n/localization-management'
-    | '/$locale/i18n/localization-platforms'
     | '/$locale/i18n/localization-software'
-    | '/$locale/i18n/localization-tools'
     | '/$locale/i18n/localization-vs-internationalization'
     | '/$locale/i18n/multilingual-seo'
-    | '/$locale/i18n/multilingual-website-seo'
     | '/$locale/i18n/nextjs'
     | '/$locale/i18n/nuxt'
     | '/$locale/i18n/react'
-    | '/$locale/i18n/react-intl'
     | '/$locale/i18n/react-native-localization'
     | '/$locale/i18n/remix-hydrogen'
     | '/$locale/i18n/ruby'
-    | '/$locale/i18n/security-compliance'
-    | '/$locale/i18n/seo-international-audiences'
     | '/$locale/i18n/server'
     | '/$locale/i18n/software-localization'
-    | '/$locale/i18n/software-localization-services'
     | '/$locale/i18n/svelte'
     | '/$locale/i18n/tanstack-start'
-    | '/$locale/i18n/technical-international-seo'
-    | '/$locale/i18n/technical-multilingual-seo'
     | '/$locale/i18n/translation-management-system'
     | '/$locale/i18n/translation-solutions'
     | '/$locale/i18n/vite'
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
+    | '/audience/for-content-teams'
+    | '/audience/for-designers'
+    | '/audience/for-education'
+    | '/audience/for-engineering-leaders'
+    | '/audience/for-freelancers'
+    | '/audience/for-gaming'
+    | '/audience/for-healthcare'
+    | '/audience/for-marketers'
+    | '/audience/for-mobile-teams'
+    | '/audience/for-open-source'
+    | '/i18n/content-localization-services'
+    | '/i18n/ecommerce-global-seo'
+    | '/i18n/formatting-utilities'
+    | '/i18n/global-market-seo'
+    | '/i18n/international-seo-consulting'
+    | '/i18n/local-seo-international'
+    | '/i18n/localization-management'
+    | '/i18n/localization-platforms'
+    | '/i18n/localization-tools'
+    | '/i18n/multilingual-website-seo'
+    | '/i18n/react-intl'
+    | '/i18n/security-compliance'
+    | '/i18n/seo-international-audiences'
+    | '/i18n/software-localization-services'
+    | '/i18n/technical-international-seo'
+    | '/i18n/technical-multilingual-seo'
     | '/$locale/blog'
     | '/$locale/compare'
     | '/$locale/features'
@@ -1280,19 +1289,9 @@ export interface FileRouteTypes {
     | '/$locale/changelog'
     | '/$locale/features'
     | '/$locale/for-agencies'
-    | '/$locale/for-content-teams'
-    | '/$locale/for-designers'
     | '/$locale/for-developers'
     | '/$locale/for-ecommerce'
-    | '/$locale/for-education'
-    | '/$locale/for-engineering-leaders'
     | '/$locale/for-enterprises'
-    | '/$locale/for-freelancers'
-    | '/$locale/for-gaming'
-    | '/$locale/for-healthcare'
-    | '/$locale/for-marketers'
-    | '/$locale/for-mobile-teams'
-    | '/$locale/for-open-source'
     | '/$locale/for-product-teams'
     | '/$locale/for-saas'
     | '/$locale/for-startups'
@@ -1325,50 +1324,60 @@ export interface FileRouteTypes {
     | '/$locale/i18n/cli-code-scanning'
     | '/$locale/i18n/complete-guide'
     | '/$locale/i18n/content-localization'
-    | '/$locale/i18n/content-localization-services'
     | '/$locale/i18n/cultural-adaptation'
     | '/$locale/i18n/django'
     | '/$locale/i18n/doctor'
-    | '/$locale/i18n/ecommerce-global-seo'
     | '/$locale/i18n/expo'
     | '/$locale/i18n/flutter'
     | '/$locale/i18n/for-developers'
-    | '/$locale/i18n/formatting-utilities'
-    | '/$locale/i18n/global-market-seo'
     | '/$locale/i18n/international-seo'
-    | '/$locale/i18n/international-seo-consulting'
     | '/$locale/i18n/ios'
     | '/$locale/i18n/javascript'
-    | '/$locale/i18n/local-seo-international'
-    | '/$locale/i18n/localization-management'
-    | '/$locale/i18n/localization-platforms'
     | '/$locale/i18n/localization-software'
-    | '/$locale/i18n/localization-tools'
     | '/$locale/i18n/localization-vs-internationalization'
     | '/$locale/i18n/multilingual-seo'
-    | '/$locale/i18n/multilingual-website-seo'
     | '/$locale/i18n/nextjs'
     | '/$locale/i18n/nuxt'
     | '/$locale/i18n/react'
-    | '/$locale/i18n/react-intl'
     | '/$locale/i18n/react-native-localization'
     | '/$locale/i18n/remix-hydrogen'
     | '/$locale/i18n/ruby'
-    | '/$locale/i18n/security-compliance'
-    | '/$locale/i18n/seo-international-audiences'
     | '/$locale/i18n/server'
     | '/$locale/i18n/software-localization'
-    | '/$locale/i18n/software-localization-services'
     | '/$locale/i18n/svelte'
     | '/$locale/i18n/tanstack-start'
-    | '/$locale/i18n/technical-international-seo'
-    | '/$locale/i18n/technical-multilingual-seo'
     | '/$locale/i18n/translation-management-system'
     | '/$locale/i18n/translation-solutions'
     | '/$locale/i18n/vite'
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
+    | '/_archived/audience/for-content-teams'
+    | '/_archived/audience/for-designers'
+    | '/_archived/audience/for-education'
+    | '/_archived/audience/for-engineering-leaders'
+    | '/_archived/audience/for-freelancers'
+    | '/_archived/audience/for-gaming'
+    | '/_archived/audience/for-healthcare'
+    | '/_archived/audience/for-marketers'
+    | '/_archived/audience/for-mobile-teams'
+    | '/_archived/audience/for-open-source'
+    | '/_archived/i18n/content-localization-services'
+    | '/_archived/i18n/ecommerce-global-seo'
+    | '/_archived/i18n/formatting-utilities'
+    | '/_archived/i18n/global-market-seo'
+    | '/_archived/i18n/international-seo-consulting'
+    | '/_archived/i18n/local-seo-international'
+    | '/_archived/i18n/localization-management'
+    | '/_archived/i18n/localization-platforms'
+    | '/_archived/i18n/localization-tools'
+    | '/_archived/i18n/multilingual-website-seo'
+    | '/_archived/i18n/react-intl'
+    | '/_archived/i18n/security-compliance'
+    | '/_archived/i18n/seo-international-audiences'
+    | '/_archived/i18n/software-localization-services'
+    | '/_archived/i18n/technical-international-seo'
+    | '/_archived/i18n/technical-multilingual-seo'
     | '/$locale/blog/'
     | '/$locale/compare/'
     | '/$locale/features/'
@@ -1393,19 +1402,9 @@ export interface RootRouteChildren {
   LocaleChangelogRoute: typeof LocaleChangelogRoute
   LocaleFeaturesRoute: typeof LocaleFeaturesRouteWithChildren
   LocaleForAgenciesRoute: typeof LocaleForAgenciesRoute
-  LocaleForContentTeamsRoute: typeof LocaleForContentTeamsRoute
-  LocaleForDesignersRoute: typeof LocaleForDesignersRoute
   LocaleForDevelopersRoute: typeof LocaleForDevelopersRoute
   LocaleForEcommerceRoute: typeof LocaleForEcommerceRoute
-  LocaleForEducationRoute: typeof LocaleForEducationRoute
-  LocaleForEngineeringLeadersRoute: typeof LocaleForEngineeringLeadersRoute
   LocaleForEnterprisesRoute: typeof LocaleForEnterprisesRoute
-  LocaleForFreelancersRoute: typeof LocaleForFreelancersRoute
-  LocaleForGamingRoute: typeof LocaleForGamingRoute
-  LocaleForHealthcareRoute: typeof LocaleForHealthcareRoute
-  LocaleForMarketersRoute: typeof LocaleForMarketersRoute
-  LocaleForMobileTeamsRoute: typeof LocaleForMobileTeamsRoute
-  LocaleForOpenSourceRoute: typeof LocaleForOpenSourceRoute
   LocaleForProductTeamsRoute: typeof LocaleForProductTeamsRoute
   LocaleForSaasRoute: typeof LocaleForSaasRoute
   LocaleForStartupsRoute: typeof LocaleForStartupsRoute
@@ -1437,50 +1436,60 @@ export interface RootRouteChildren {
   LocaleI18nCliCodeScanningRoute: typeof LocaleI18nCliCodeScanningRoute
   LocaleI18nCompleteGuideRoute: typeof LocaleI18nCompleteGuideRoute
   LocaleI18nContentLocalizationRoute: typeof LocaleI18nContentLocalizationRoute
-  LocaleI18nContentLocalizationServicesRoute: typeof LocaleI18nContentLocalizationServicesRoute
   LocaleI18nCulturalAdaptationRoute: typeof LocaleI18nCulturalAdaptationRoute
   LocaleI18nDjangoRoute: typeof LocaleI18nDjangoRoute
   LocaleI18nDoctorRoute: typeof LocaleI18nDoctorRoute
-  LocaleI18nEcommerceGlobalSeoRoute: typeof LocaleI18nEcommerceGlobalSeoRoute
   LocaleI18nExpoRoute: typeof LocaleI18nExpoRoute
   LocaleI18nFlutterRoute: typeof LocaleI18nFlutterRoute
   LocaleI18nForDevelopersRoute: typeof LocaleI18nForDevelopersRoute
-  LocaleI18nFormattingUtilitiesRoute: typeof LocaleI18nFormattingUtilitiesRoute
-  LocaleI18nGlobalMarketSeoRoute: typeof LocaleI18nGlobalMarketSeoRoute
   LocaleI18nInternationalSeoRoute: typeof LocaleI18nInternationalSeoRoute
-  LocaleI18nInternationalSeoConsultingRoute: typeof LocaleI18nInternationalSeoConsultingRoute
   LocaleI18nIosRoute: typeof LocaleI18nIosRoute
   LocaleI18nJavascriptRoute: typeof LocaleI18nJavascriptRoute
-  LocaleI18nLocalSeoInternationalRoute: typeof LocaleI18nLocalSeoInternationalRoute
-  LocaleI18nLocalizationManagementRoute: typeof LocaleI18nLocalizationManagementRoute
-  LocaleI18nLocalizationPlatformsRoute: typeof LocaleI18nLocalizationPlatformsRoute
   LocaleI18nLocalizationSoftwareRoute: typeof LocaleI18nLocalizationSoftwareRoute
-  LocaleI18nLocalizationToolsRoute: typeof LocaleI18nLocalizationToolsRoute
   LocaleI18nLocalizationVsInternationalizationRoute: typeof LocaleI18nLocalizationVsInternationalizationRoute
   LocaleI18nMultilingualSeoRoute: typeof LocaleI18nMultilingualSeoRoute
-  LocaleI18nMultilingualWebsiteSeoRoute: typeof LocaleI18nMultilingualWebsiteSeoRoute
   LocaleI18nNextjsRoute: typeof LocaleI18nNextjsRoute
   LocaleI18nNuxtRoute: typeof LocaleI18nNuxtRoute
   LocaleI18nReactRoute: typeof LocaleI18nReactRoute
-  LocaleI18nReactIntlRoute: typeof LocaleI18nReactIntlRoute
   LocaleI18nReactNativeLocalizationRoute: typeof LocaleI18nReactNativeLocalizationRoute
   LocaleI18nRemixHydrogenRoute: typeof LocaleI18nRemixHydrogenRoute
   LocaleI18nRubyRoute: typeof LocaleI18nRubyRoute
-  LocaleI18nSecurityComplianceRoute: typeof LocaleI18nSecurityComplianceRoute
-  LocaleI18nSeoInternationalAudiencesRoute: typeof LocaleI18nSeoInternationalAudiencesRoute
   LocaleI18nServerRoute: typeof LocaleI18nServerRoute
   LocaleI18nSoftwareLocalizationRoute: typeof LocaleI18nSoftwareLocalizationRoute
-  LocaleI18nSoftwareLocalizationServicesRoute: typeof LocaleI18nSoftwareLocalizationServicesRoute
   LocaleI18nSvelteRoute: typeof LocaleI18nSvelteRoute
   LocaleI18nTanstackStartRoute: typeof LocaleI18nTanstackStartRoute
-  LocaleI18nTechnicalInternationalSeoRoute: typeof LocaleI18nTechnicalInternationalSeoRoute
-  LocaleI18nTechnicalMultilingualSeoRoute: typeof LocaleI18nTechnicalMultilingualSeoRoute
   LocaleI18nTranslationManagementSystemRoute: typeof LocaleI18nTranslationManagementSystemRoute
   LocaleI18nTranslationSolutionsRoute: typeof LocaleI18nTranslationSolutionsRoute
   LocaleI18nViteRoute: typeof LocaleI18nViteRoute
   LocaleI18nVueRoute: typeof LocaleI18nVueRoute
   LocaleI18nWebsiteLocalizationRoute: typeof LocaleI18nWebsiteLocalizationRoute
   LocaleI18nWebsiteTranslationRoute: typeof LocaleI18nWebsiteTranslationRoute
+  ArchivedAudienceForContentTeamsRoute: typeof ArchivedAudienceForContentTeamsRoute
+  ArchivedAudienceForDesignersRoute: typeof ArchivedAudienceForDesignersRoute
+  ArchivedAudienceForEducationRoute: typeof ArchivedAudienceForEducationRoute
+  ArchivedAudienceForEngineeringLeadersRoute: typeof ArchivedAudienceForEngineeringLeadersRoute
+  ArchivedAudienceForFreelancersRoute: typeof ArchivedAudienceForFreelancersRoute
+  ArchivedAudienceForGamingRoute: typeof ArchivedAudienceForGamingRoute
+  ArchivedAudienceForHealthcareRoute: typeof ArchivedAudienceForHealthcareRoute
+  ArchivedAudienceForMarketersRoute: typeof ArchivedAudienceForMarketersRoute
+  ArchivedAudienceForMobileTeamsRoute: typeof ArchivedAudienceForMobileTeamsRoute
+  ArchivedAudienceForOpenSourceRoute: typeof ArchivedAudienceForOpenSourceRoute
+  ArchivedI18nContentLocalizationServicesRoute: typeof ArchivedI18nContentLocalizationServicesRoute
+  ArchivedI18nEcommerceGlobalSeoRoute: typeof ArchivedI18nEcommerceGlobalSeoRoute
+  ArchivedI18nFormattingUtilitiesRoute: typeof ArchivedI18nFormattingUtilitiesRoute
+  ArchivedI18nGlobalMarketSeoRoute: typeof ArchivedI18nGlobalMarketSeoRoute
+  ArchivedI18nInternationalSeoConsultingRoute: typeof ArchivedI18nInternationalSeoConsultingRoute
+  ArchivedI18nLocalSeoInternationalRoute: typeof ArchivedI18nLocalSeoInternationalRoute
+  ArchivedI18nLocalizationManagementRoute: typeof ArchivedI18nLocalizationManagementRoute
+  ArchivedI18nLocalizationPlatformsRoute: typeof ArchivedI18nLocalizationPlatformsRoute
+  ArchivedI18nLocalizationToolsRoute: typeof ArchivedI18nLocalizationToolsRoute
+  ArchivedI18nMultilingualWebsiteSeoRoute: typeof ArchivedI18nMultilingualWebsiteSeoRoute
+  ArchivedI18nReactIntlRoute: typeof ArchivedI18nReactIntlRoute
+  ArchivedI18nSecurityComplianceRoute: typeof ArchivedI18nSecurityComplianceRoute
+  ArchivedI18nSeoInternationalAudiencesRoute: typeof ArchivedI18nSeoInternationalAudiencesRoute
+  ArchivedI18nSoftwareLocalizationServicesRoute: typeof ArchivedI18nSoftwareLocalizationServicesRoute
+  ArchivedI18nTechnicalInternationalSeoRoute: typeof ArchivedI18nTechnicalInternationalSeoRoute
+  ArchivedI18nTechnicalMultilingualSeoRoute: typeof ArchivedI18nTechnicalMultilingualSeoRoute
   LocaleBlogIndexRoute: typeof LocaleBlogIndexRoute
   LocaleCompareIndexRoute: typeof LocaleCompareIndexRoute
   LocaleI18nIndexRoute: typeof LocaleI18nIndexRoute
@@ -1672,67 +1681,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleForProductTeamsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$locale/for-open-source': {
-      id: '/$locale/for-open-source'
-      path: '/$locale/for-open-source'
-      fullPath: '/$locale/for-open-source'
-      preLoaderRoute: typeof LocaleForOpenSourceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/for-mobile-teams': {
-      id: '/$locale/for-mobile-teams'
-      path: '/$locale/for-mobile-teams'
-      fullPath: '/$locale/for-mobile-teams'
-      preLoaderRoute: typeof LocaleForMobileTeamsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/for-marketers': {
-      id: '/$locale/for-marketers'
-      path: '/$locale/for-marketers'
-      fullPath: '/$locale/for-marketers'
-      preLoaderRoute: typeof LocaleForMarketersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/for-healthcare': {
-      id: '/$locale/for-healthcare'
-      path: '/$locale/for-healthcare'
-      fullPath: '/$locale/for-healthcare'
-      preLoaderRoute: typeof LocaleForHealthcareRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/for-gaming': {
-      id: '/$locale/for-gaming'
-      path: '/$locale/for-gaming'
-      fullPath: '/$locale/for-gaming'
-      preLoaderRoute: typeof LocaleForGamingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/for-freelancers': {
-      id: '/$locale/for-freelancers'
-      path: '/$locale/for-freelancers'
-      fullPath: '/$locale/for-freelancers'
-      preLoaderRoute: typeof LocaleForFreelancersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/$locale/for-enterprises': {
       id: '/$locale/for-enterprises'
       path: '/$locale/for-enterprises'
       fullPath: '/$locale/for-enterprises'
       preLoaderRoute: typeof LocaleForEnterprisesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/for-engineering-leaders': {
-      id: '/$locale/for-engineering-leaders'
-      path: '/$locale/for-engineering-leaders'
-      fullPath: '/$locale/for-engineering-leaders'
-      preLoaderRoute: typeof LocaleForEngineeringLeadersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/for-education': {
-      id: '/$locale/for-education'
-      path: '/$locale/for-education'
-      fullPath: '/$locale/for-education'
-      preLoaderRoute: typeof LocaleForEducationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/for-ecommerce': {
@@ -1747,20 +1700,6 @@ declare module '@tanstack/react-router' {
       path: '/$locale/for-developers'
       fullPath: '/$locale/for-developers'
       preLoaderRoute: typeof LocaleForDevelopersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/for-designers': {
-      id: '/$locale/for-designers'
-      path: '/$locale/for-designers'
-      fullPath: '/$locale/for-designers'
-      preLoaderRoute: typeof LocaleForDesignersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/for-content-teams': {
-      id: '/$locale/for-content-teams'
-      path: '/$locale/for-content-teams'
-      fullPath: '/$locale/for-content-teams'
-      preLoaderRoute: typeof LocaleForContentTeamsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/for-agencies': {
@@ -1826,6 +1765,188 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleBlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_archived/i18n/technical-multilingual-seo': {
+      id: '/_archived/i18n/technical-multilingual-seo'
+      path: '/i18n/technical-multilingual-seo'
+      fullPath: '/i18n/technical-multilingual-seo'
+      preLoaderRoute: typeof ArchivedI18nTechnicalMultilingualSeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/technical-international-seo': {
+      id: '/_archived/i18n/technical-international-seo'
+      path: '/i18n/technical-international-seo'
+      fullPath: '/i18n/technical-international-seo'
+      preLoaderRoute: typeof ArchivedI18nTechnicalInternationalSeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/software-localization-services': {
+      id: '/_archived/i18n/software-localization-services'
+      path: '/i18n/software-localization-services'
+      fullPath: '/i18n/software-localization-services'
+      preLoaderRoute: typeof ArchivedI18nSoftwareLocalizationServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/seo-international-audiences': {
+      id: '/_archived/i18n/seo-international-audiences'
+      path: '/i18n/seo-international-audiences'
+      fullPath: '/i18n/seo-international-audiences'
+      preLoaderRoute: typeof ArchivedI18nSeoInternationalAudiencesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/security-compliance': {
+      id: '/_archived/i18n/security-compliance'
+      path: '/i18n/security-compliance'
+      fullPath: '/i18n/security-compliance'
+      preLoaderRoute: typeof ArchivedI18nSecurityComplianceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/react-intl': {
+      id: '/_archived/i18n/react-intl'
+      path: '/i18n/react-intl'
+      fullPath: '/i18n/react-intl'
+      preLoaderRoute: typeof ArchivedI18nReactIntlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/multilingual-website-seo': {
+      id: '/_archived/i18n/multilingual-website-seo'
+      path: '/i18n/multilingual-website-seo'
+      fullPath: '/i18n/multilingual-website-seo'
+      preLoaderRoute: typeof ArchivedI18nMultilingualWebsiteSeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/localization-tools': {
+      id: '/_archived/i18n/localization-tools'
+      path: '/i18n/localization-tools'
+      fullPath: '/i18n/localization-tools'
+      preLoaderRoute: typeof ArchivedI18nLocalizationToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/localization-platforms': {
+      id: '/_archived/i18n/localization-platforms'
+      path: '/i18n/localization-platforms'
+      fullPath: '/i18n/localization-platforms'
+      preLoaderRoute: typeof ArchivedI18nLocalizationPlatformsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/localization-management': {
+      id: '/_archived/i18n/localization-management'
+      path: '/i18n/localization-management'
+      fullPath: '/i18n/localization-management'
+      preLoaderRoute: typeof ArchivedI18nLocalizationManagementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/local-seo-international': {
+      id: '/_archived/i18n/local-seo-international'
+      path: '/i18n/local-seo-international'
+      fullPath: '/i18n/local-seo-international'
+      preLoaderRoute: typeof ArchivedI18nLocalSeoInternationalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/international-seo-consulting': {
+      id: '/_archived/i18n/international-seo-consulting'
+      path: '/i18n/international-seo-consulting'
+      fullPath: '/i18n/international-seo-consulting'
+      preLoaderRoute: typeof ArchivedI18nInternationalSeoConsultingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/global-market-seo': {
+      id: '/_archived/i18n/global-market-seo'
+      path: '/i18n/global-market-seo'
+      fullPath: '/i18n/global-market-seo'
+      preLoaderRoute: typeof ArchivedI18nGlobalMarketSeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/formatting-utilities': {
+      id: '/_archived/i18n/formatting-utilities'
+      path: '/i18n/formatting-utilities'
+      fullPath: '/i18n/formatting-utilities'
+      preLoaderRoute: typeof ArchivedI18nFormattingUtilitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/ecommerce-global-seo': {
+      id: '/_archived/i18n/ecommerce-global-seo'
+      path: '/i18n/ecommerce-global-seo'
+      fullPath: '/i18n/ecommerce-global-seo'
+      preLoaderRoute: typeof ArchivedI18nEcommerceGlobalSeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/i18n/content-localization-services': {
+      id: '/_archived/i18n/content-localization-services'
+      path: '/i18n/content-localization-services'
+      fullPath: '/i18n/content-localization-services'
+      preLoaderRoute: typeof ArchivedI18nContentLocalizationServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/audience/for-open-source': {
+      id: '/_archived/audience/for-open-source'
+      path: '/audience/for-open-source'
+      fullPath: '/audience/for-open-source'
+      preLoaderRoute: typeof ArchivedAudienceForOpenSourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/audience/for-mobile-teams': {
+      id: '/_archived/audience/for-mobile-teams'
+      path: '/audience/for-mobile-teams'
+      fullPath: '/audience/for-mobile-teams'
+      preLoaderRoute: typeof ArchivedAudienceForMobileTeamsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/audience/for-marketers': {
+      id: '/_archived/audience/for-marketers'
+      path: '/audience/for-marketers'
+      fullPath: '/audience/for-marketers'
+      preLoaderRoute: typeof ArchivedAudienceForMarketersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/audience/for-healthcare': {
+      id: '/_archived/audience/for-healthcare'
+      path: '/audience/for-healthcare'
+      fullPath: '/audience/for-healthcare'
+      preLoaderRoute: typeof ArchivedAudienceForHealthcareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/audience/for-gaming': {
+      id: '/_archived/audience/for-gaming'
+      path: '/audience/for-gaming'
+      fullPath: '/audience/for-gaming'
+      preLoaderRoute: typeof ArchivedAudienceForGamingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/audience/for-freelancers': {
+      id: '/_archived/audience/for-freelancers'
+      path: '/audience/for-freelancers'
+      fullPath: '/audience/for-freelancers'
+      preLoaderRoute: typeof ArchivedAudienceForFreelancersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/audience/for-engineering-leaders': {
+      id: '/_archived/audience/for-engineering-leaders'
+      path: '/audience/for-engineering-leaders'
+      fullPath: '/audience/for-engineering-leaders'
+      preLoaderRoute: typeof ArchivedAudienceForEngineeringLeadersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/audience/for-education': {
+      id: '/_archived/audience/for-education'
+      path: '/audience/for-education'
+      fullPath: '/audience/for-education'
+      preLoaderRoute: typeof ArchivedAudienceForEducationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/audience/for-designers': {
+      id: '/_archived/audience/for-designers'
+      path: '/audience/for-designers'
+      fullPath: '/audience/for-designers'
+      preLoaderRoute: typeof ArchivedAudienceForDesignersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_archived/audience/for-content-teams': {
+      id: '/_archived/audience/for-content-teams'
+      path: '/audience/for-content-teams'
+      fullPath: '/audience/for-content-teams'
+      preLoaderRoute: typeof ArchivedAudienceForContentTeamsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/i18n/website-translation': {
       id: '/$locale/i18n/website-translation'
       path: '/$locale/i18n/website-translation'
@@ -1868,20 +1989,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nTranslationManagementSystemRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$locale/i18n/technical-multilingual-seo': {
-      id: '/$locale/i18n/technical-multilingual-seo'
-      path: '/$locale/i18n/technical-multilingual-seo'
-      fullPath: '/$locale/i18n/technical-multilingual-seo'
-      preLoaderRoute: typeof LocaleI18nTechnicalMultilingualSeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/i18n/technical-international-seo': {
-      id: '/$locale/i18n/technical-international-seo'
-      path: '/$locale/i18n/technical-international-seo'
-      fullPath: '/$locale/i18n/technical-international-seo'
-      preLoaderRoute: typeof LocaleI18nTechnicalInternationalSeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/$locale/i18n/tanstack-start': {
       id: '/$locale/i18n/tanstack-start'
       path: '/$locale/i18n/tanstack-start'
@@ -1896,13 +2003,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nSvelteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$locale/i18n/software-localization-services': {
-      id: '/$locale/i18n/software-localization-services'
-      path: '/$locale/i18n/software-localization-services'
-      fullPath: '/$locale/i18n/software-localization-services'
-      preLoaderRoute: typeof LocaleI18nSoftwareLocalizationServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/$locale/i18n/software-localization': {
       id: '/$locale/i18n/software-localization'
       path: '/$locale/i18n/software-localization'
@@ -1915,20 +2015,6 @@ declare module '@tanstack/react-router' {
       path: '/$locale/i18n/server'
       fullPath: '/$locale/i18n/server'
       preLoaderRoute: typeof LocaleI18nServerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/i18n/seo-international-audiences': {
-      id: '/$locale/i18n/seo-international-audiences'
-      path: '/$locale/i18n/seo-international-audiences'
-      fullPath: '/$locale/i18n/seo-international-audiences'
-      preLoaderRoute: typeof LocaleI18nSeoInternationalAudiencesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/i18n/security-compliance': {
-      id: '/$locale/i18n/security-compliance'
-      path: '/$locale/i18n/security-compliance'
-      fullPath: '/$locale/i18n/security-compliance'
-      preLoaderRoute: typeof LocaleI18nSecurityComplianceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/i18n/ruby': {
@@ -1952,13 +2038,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nReactNativeLocalizationRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$locale/i18n/react-intl': {
-      id: '/$locale/i18n/react-intl'
-      path: '/$locale/i18n/react-intl'
-      fullPath: '/$locale/i18n/react-intl'
-      preLoaderRoute: typeof LocaleI18nReactIntlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/$locale/i18n/react': {
       id: '/$locale/i18n/react'
       path: '/$locale/i18n/react'
@@ -1980,13 +2059,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nNextjsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$locale/i18n/multilingual-website-seo': {
-      id: '/$locale/i18n/multilingual-website-seo'
-      path: '/$locale/i18n/multilingual-website-seo'
-      fullPath: '/$locale/i18n/multilingual-website-seo'
-      preLoaderRoute: typeof LocaleI18nMultilingualWebsiteSeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/$locale/i18n/multilingual-seo': {
       id: '/$locale/i18n/multilingual-seo'
       path: '/$locale/i18n/multilingual-seo'
@@ -2001,39 +2073,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nLocalizationVsInternationalizationRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$locale/i18n/localization-tools': {
-      id: '/$locale/i18n/localization-tools'
-      path: '/$locale/i18n/localization-tools'
-      fullPath: '/$locale/i18n/localization-tools'
-      preLoaderRoute: typeof LocaleI18nLocalizationToolsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/$locale/i18n/localization-software': {
       id: '/$locale/i18n/localization-software'
       path: '/$locale/i18n/localization-software'
       fullPath: '/$locale/i18n/localization-software'
       preLoaderRoute: typeof LocaleI18nLocalizationSoftwareRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/i18n/localization-platforms': {
-      id: '/$locale/i18n/localization-platforms'
-      path: '/$locale/i18n/localization-platforms'
-      fullPath: '/$locale/i18n/localization-platforms'
-      preLoaderRoute: typeof LocaleI18nLocalizationPlatformsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/i18n/localization-management': {
-      id: '/$locale/i18n/localization-management'
-      path: '/$locale/i18n/localization-management'
-      fullPath: '/$locale/i18n/localization-management'
-      preLoaderRoute: typeof LocaleI18nLocalizationManagementRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/i18n/local-seo-international': {
-      id: '/$locale/i18n/local-seo-international'
-      path: '/$locale/i18n/local-seo-international'
-      fullPath: '/$locale/i18n/local-seo-international'
-      preLoaderRoute: typeof LocaleI18nLocalSeoInternationalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/i18n/javascript': {
@@ -2050,32 +2094,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nIosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$locale/i18n/international-seo-consulting': {
-      id: '/$locale/i18n/international-seo-consulting'
-      path: '/$locale/i18n/international-seo-consulting'
-      fullPath: '/$locale/i18n/international-seo-consulting'
-      preLoaderRoute: typeof LocaleI18nInternationalSeoConsultingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/$locale/i18n/international-seo': {
       id: '/$locale/i18n/international-seo'
       path: '/$locale/i18n/international-seo'
       fullPath: '/$locale/i18n/international-seo'
       preLoaderRoute: typeof LocaleI18nInternationalSeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/i18n/global-market-seo': {
-      id: '/$locale/i18n/global-market-seo'
-      path: '/$locale/i18n/global-market-seo'
-      fullPath: '/$locale/i18n/global-market-seo'
-      preLoaderRoute: typeof LocaleI18nGlobalMarketSeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/i18n/formatting-utilities': {
-      id: '/$locale/i18n/formatting-utilities'
-      path: '/$locale/i18n/formatting-utilities'
-      fullPath: '/$locale/i18n/formatting-utilities'
-      preLoaderRoute: typeof LocaleI18nFormattingUtilitiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/i18n/for-developers': {
@@ -2099,13 +2122,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleI18nExpoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$locale/i18n/ecommerce-global-seo': {
-      id: '/$locale/i18n/ecommerce-global-seo'
-      path: '/$locale/i18n/ecommerce-global-seo'
-      fullPath: '/$locale/i18n/ecommerce-global-seo'
-      preLoaderRoute: typeof LocaleI18nEcommerceGlobalSeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/$locale/i18n/doctor': {
       id: '/$locale/i18n/doctor'
       path: '/$locale/i18n/doctor'
@@ -2125,13 +2141,6 @@ declare module '@tanstack/react-router' {
       path: '/$locale/i18n/cultural-adaptation'
       fullPath: '/$locale/i18n/cultural-adaptation'
       preLoaderRoute: typeof LocaleI18nCulturalAdaptationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$locale/i18n/content-localization-services': {
-      id: '/$locale/i18n/content-localization-services'
-      path: '/$locale/i18n/content-localization-services'
-      fullPath: '/$locale/i18n/content-localization-services'
-      preLoaderRoute: typeof LocaleI18nContentLocalizationServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/i18n/content-localization': {
@@ -2293,19 +2302,9 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleChangelogRoute: LocaleChangelogRoute,
   LocaleFeaturesRoute: LocaleFeaturesRouteWithChildren,
   LocaleForAgenciesRoute: LocaleForAgenciesRoute,
-  LocaleForContentTeamsRoute: LocaleForContentTeamsRoute,
-  LocaleForDesignersRoute: LocaleForDesignersRoute,
   LocaleForDevelopersRoute: LocaleForDevelopersRoute,
   LocaleForEcommerceRoute: LocaleForEcommerceRoute,
-  LocaleForEducationRoute: LocaleForEducationRoute,
-  LocaleForEngineeringLeadersRoute: LocaleForEngineeringLeadersRoute,
   LocaleForEnterprisesRoute: LocaleForEnterprisesRoute,
-  LocaleForFreelancersRoute: LocaleForFreelancersRoute,
-  LocaleForGamingRoute: LocaleForGamingRoute,
-  LocaleForHealthcareRoute: LocaleForHealthcareRoute,
-  LocaleForMarketersRoute: LocaleForMarketersRoute,
-  LocaleForMobileTeamsRoute: LocaleForMobileTeamsRoute,
-  LocaleForOpenSourceRoute: LocaleForOpenSourceRoute,
   LocaleForProductTeamsRoute: LocaleForProductTeamsRoute,
   LocaleForSaasRoute: LocaleForSaasRoute,
   LocaleForStartupsRoute: LocaleForStartupsRoute,
@@ -2337,52 +2336,30 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleI18nCliCodeScanningRoute: LocaleI18nCliCodeScanningRoute,
   LocaleI18nCompleteGuideRoute: LocaleI18nCompleteGuideRoute,
   LocaleI18nContentLocalizationRoute: LocaleI18nContentLocalizationRoute,
-  LocaleI18nContentLocalizationServicesRoute:
-    LocaleI18nContentLocalizationServicesRoute,
   LocaleI18nCulturalAdaptationRoute: LocaleI18nCulturalAdaptationRoute,
   LocaleI18nDjangoRoute: LocaleI18nDjangoRoute,
   LocaleI18nDoctorRoute: LocaleI18nDoctorRoute,
-  LocaleI18nEcommerceGlobalSeoRoute: LocaleI18nEcommerceGlobalSeoRoute,
   LocaleI18nExpoRoute: LocaleI18nExpoRoute,
   LocaleI18nFlutterRoute: LocaleI18nFlutterRoute,
   LocaleI18nForDevelopersRoute: LocaleI18nForDevelopersRoute,
-  LocaleI18nFormattingUtilitiesRoute: LocaleI18nFormattingUtilitiesRoute,
-  LocaleI18nGlobalMarketSeoRoute: LocaleI18nGlobalMarketSeoRoute,
   LocaleI18nInternationalSeoRoute: LocaleI18nInternationalSeoRoute,
-  LocaleI18nInternationalSeoConsultingRoute:
-    LocaleI18nInternationalSeoConsultingRoute,
   LocaleI18nIosRoute: LocaleI18nIosRoute,
   LocaleI18nJavascriptRoute: LocaleI18nJavascriptRoute,
-  LocaleI18nLocalSeoInternationalRoute: LocaleI18nLocalSeoInternationalRoute,
-  LocaleI18nLocalizationManagementRoute: LocaleI18nLocalizationManagementRoute,
-  LocaleI18nLocalizationPlatformsRoute: LocaleI18nLocalizationPlatformsRoute,
   LocaleI18nLocalizationSoftwareRoute: LocaleI18nLocalizationSoftwareRoute,
-  LocaleI18nLocalizationToolsRoute: LocaleI18nLocalizationToolsRoute,
   LocaleI18nLocalizationVsInternationalizationRoute:
     LocaleI18nLocalizationVsInternationalizationRoute,
   LocaleI18nMultilingualSeoRoute: LocaleI18nMultilingualSeoRoute,
-  LocaleI18nMultilingualWebsiteSeoRoute: LocaleI18nMultilingualWebsiteSeoRoute,
   LocaleI18nNextjsRoute: LocaleI18nNextjsRoute,
   LocaleI18nNuxtRoute: LocaleI18nNuxtRoute,
   LocaleI18nReactRoute: LocaleI18nReactRoute,
-  LocaleI18nReactIntlRoute: LocaleI18nReactIntlRoute,
   LocaleI18nReactNativeLocalizationRoute:
     LocaleI18nReactNativeLocalizationRoute,
   LocaleI18nRemixHydrogenRoute: LocaleI18nRemixHydrogenRoute,
   LocaleI18nRubyRoute: LocaleI18nRubyRoute,
-  LocaleI18nSecurityComplianceRoute: LocaleI18nSecurityComplianceRoute,
-  LocaleI18nSeoInternationalAudiencesRoute:
-    LocaleI18nSeoInternationalAudiencesRoute,
   LocaleI18nServerRoute: LocaleI18nServerRoute,
   LocaleI18nSoftwareLocalizationRoute: LocaleI18nSoftwareLocalizationRoute,
-  LocaleI18nSoftwareLocalizationServicesRoute:
-    LocaleI18nSoftwareLocalizationServicesRoute,
   LocaleI18nSvelteRoute: LocaleI18nSvelteRoute,
   LocaleI18nTanstackStartRoute: LocaleI18nTanstackStartRoute,
-  LocaleI18nTechnicalInternationalSeoRoute:
-    LocaleI18nTechnicalInternationalSeoRoute,
-  LocaleI18nTechnicalMultilingualSeoRoute:
-    LocaleI18nTechnicalMultilingualSeoRoute,
   LocaleI18nTranslationManagementSystemRoute:
     LocaleI18nTranslationManagementSystemRoute,
   LocaleI18nTranslationSolutionsRoute: LocaleI18nTranslationSolutionsRoute,
@@ -2390,6 +2367,43 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleI18nVueRoute: LocaleI18nVueRoute,
   LocaleI18nWebsiteLocalizationRoute: LocaleI18nWebsiteLocalizationRoute,
   LocaleI18nWebsiteTranslationRoute: LocaleI18nWebsiteTranslationRoute,
+  ArchivedAudienceForContentTeamsRoute: ArchivedAudienceForContentTeamsRoute,
+  ArchivedAudienceForDesignersRoute: ArchivedAudienceForDesignersRoute,
+  ArchivedAudienceForEducationRoute: ArchivedAudienceForEducationRoute,
+  ArchivedAudienceForEngineeringLeadersRoute:
+    ArchivedAudienceForEngineeringLeadersRoute,
+  ArchivedAudienceForFreelancersRoute: ArchivedAudienceForFreelancersRoute,
+  ArchivedAudienceForGamingRoute: ArchivedAudienceForGamingRoute,
+  ArchivedAudienceForHealthcareRoute: ArchivedAudienceForHealthcareRoute,
+  ArchivedAudienceForMarketersRoute: ArchivedAudienceForMarketersRoute,
+  ArchivedAudienceForMobileTeamsRoute: ArchivedAudienceForMobileTeamsRoute,
+  ArchivedAudienceForOpenSourceRoute: ArchivedAudienceForOpenSourceRoute,
+  ArchivedI18nContentLocalizationServicesRoute:
+    ArchivedI18nContentLocalizationServicesRoute,
+  ArchivedI18nEcommerceGlobalSeoRoute: ArchivedI18nEcommerceGlobalSeoRoute,
+  ArchivedI18nFormattingUtilitiesRoute: ArchivedI18nFormattingUtilitiesRoute,
+  ArchivedI18nGlobalMarketSeoRoute: ArchivedI18nGlobalMarketSeoRoute,
+  ArchivedI18nInternationalSeoConsultingRoute:
+    ArchivedI18nInternationalSeoConsultingRoute,
+  ArchivedI18nLocalSeoInternationalRoute:
+    ArchivedI18nLocalSeoInternationalRoute,
+  ArchivedI18nLocalizationManagementRoute:
+    ArchivedI18nLocalizationManagementRoute,
+  ArchivedI18nLocalizationPlatformsRoute:
+    ArchivedI18nLocalizationPlatformsRoute,
+  ArchivedI18nLocalizationToolsRoute: ArchivedI18nLocalizationToolsRoute,
+  ArchivedI18nMultilingualWebsiteSeoRoute:
+    ArchivedI18nMultilingualWebsiteSeoRoute,
+  ArchivedI18nReactIntlRoute: ArchivedI18nReactIntlRoute,
+  ArchivedI18nSecurityComplianceRoute: ArchivedI18nSecurityComplianceRoute,
+  ArchivedI18nSeoInternationalAudiencesRoute:
+    ArchivedI18nSeoInternationalAudiencesRoute,
+  ArchivedI18nSoftwareLocalizationServicesRoute:
+    ArchivedI18nSoftwareLocalizationServicesRoute,
+  ArchivedI18nTechnicalInternationalSeoRoute:
+    ArchivedI18nTechnicalInternationalSeoRoute,
+  ArchivedI18nTechnicalMultilingualSeoRoute:
+    ArchivedI18nTechnicalMultilingualSeoRoute,
   LocaleBlogIndexRoute: LocaleBlogIndexRoute,
   LocaleCompareIndexRoute: LocaleCompareIndexRoute,
   LocaleI18nIndexRoute: LocaleI18nIndexRoute,

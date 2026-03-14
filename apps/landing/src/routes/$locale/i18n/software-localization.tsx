@@ -90,7 +90,7 @@ function SoftwareLocalizationPage() {
 
   const relatedPages = [
     { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("related.websiteLocalization", { defaultValue: "Adapting websites for global audiences" }) },
-    { name: "Software Localization Services", href: "/$locale/i18n/software-localization-services", description: t("related.services", { defaultValue: "Platform vs agency approaches" }) },
+    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("related.localizationSoftware", { defaultValue: "Platforms and software for managing localization at scale" }) },
     { name: "Localization vs Internationalization", href: "/$locale/i18n/localization-vs-internationalization", description: t("related.l10nVsI18n", { defaultValue: "Understanding the key differences" }) },
     { name: "What is Localization?", href: "/$locale/what-is-localization", description: t("related.whatIsL10n", { defaultValue: "Fundamentals of localization" }) },
   ];

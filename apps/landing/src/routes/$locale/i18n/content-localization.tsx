@@ -64,7 +64,7 @@ function ContentLocalizationPage() {
   ];
 
   const relatedPages = [
-    { name: "Content Localization Services", href: "/$locale/i18n/content-localization-services", description: t("related.contentLocalizationServices", { defaultValue: "How to choose the right localization service provider" }) },
+    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("related.localizationSoftware", { defaultValue: "Platforms and software for managing localization at scale" }) },
     { name: "Cultural Adaptation", href: "/$locale/i18n/cultural-adaptation", description: t("related.culturalAdaptation", { defaultValue: "Adapting your content for different cultural contexts" }) },
     { name: "What is Localization?", href: "/$locale/what-is-localization", description: t("related.whatIsLocalization", { defaultValue: "Localization fundamentals and definitions explained" }) },
     { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("related.websiteLocalization", { defaultValue: "Localizing your web application for global markets" }) },

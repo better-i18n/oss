@@ -159,10 +159,10 @@ const relatedPages = [
     defaultDesc: "Developer-focused i18n tools with type-safe SDKs and Git-first workflows",
   },
   {
-    name: "Localization Tools",
-    href: "/$locale/i18n/localization-tools",
-    descKey: "related.localizationTools",
-    defaultDesc: "Developer tools and integrations for localization workflows",
+    name: "Localization Software",
+    href: "/$locale/i18n/localization-software",
+    descKey: "related.localizationSoftware",
+    defaultDesc: "Platforms and software for managing localization at scale",
   },
   {
     name: "Translation Management",
