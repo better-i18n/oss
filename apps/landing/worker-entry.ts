@@ -57,8 +57,8 @@ function getSeoRedirect(pathname: string): string | null {
   if (parts.length < 2) return null;
 
   const locale = parts[0];
-  // Locale codes are 2-3 chars (en, de, zh, etc.)
-  if (locale.length < 2 || locale.length > 3) return null;
+  // Locale codes are 2-7 chars (en, de, zh-hans, etc.)
+  if (locale.length < 2 || locale.length > 7) return null;
 
   const pagePath = parts.slice(1).join("/");
   const target = SEO_REDIRECTS.get(pagePath);

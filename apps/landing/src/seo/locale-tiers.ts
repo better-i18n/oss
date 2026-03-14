@@ -12,7 +12,7 @@
 
 export const LOCALE_TIERS = {
   tier1: ["en", "de", "fr", "es", "pt", "ja"],
-  tier2: ["tr", "it", "nl", "ko", "zh"],
+  tier2: ["tr", "it", "nl", "ko", "zh-hans"],
   tier3: [],
 } as const;
 
