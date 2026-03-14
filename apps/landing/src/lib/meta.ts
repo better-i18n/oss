@@ -12,7 +12,7 @@ const BRAND_SUFFIX_SEPARATOR_DASH = ` - ${SITE_NAME}`;
 const OG_LOCALE_MAP: Record<string, string> = {
   en: "en_US", tr: "tr_TR", de: "de_DE", fr: "fr_FR",
   es: "es_ES", pt: "pt_BR", ja: "ja_JP", ko: "ko_KR",
-  zh: "zh_CN", it: "it_IT", nl: "nl_NL", pl: "pl_PL",
+  "zh-hans": "zh_CN", it: "it_IT", nl: "nl_NL", pl: "pl_PL",
   ru: "ru_RU", ar: "ar_SA", hi: "hi_IN", th: "th_TH",
   vi: "vi_VN", id: "id_ID", ms: "ms_MY", uk: "uk_UA",
   cs: "cs_CZ", ro: "ro_RO", sv: "sv_SE",
