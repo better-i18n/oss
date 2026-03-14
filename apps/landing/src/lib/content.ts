@@ -286,8 +286,9 @@ export async function getBlogPost(
     const bodyHtml = entry.body ? String(await marked(entry.body)) : null;
     const excerpt = extractExcerpt(entry.body);
     const raw = entry as unknown as Record<string, unknown>;
-    const availableLanguages = Array.isArray(raw.availableLanguages)
-      ? (raw.availableLanguages as unknown[]).filter(
+    const rawLangs = raw.availableLanguages ?? raw.langs;
+    const availableLanguages = Array.isArray(rawLangs)
+      ? (rawLangs as unknown[]).filter(
           (v): v is string => typeof v === "string",
         )
       : null;
@@ -387,8 +388,9 @@ export async function getMarketingPage(
     const bodyHtml = entry.body ? String(await marked(entry.body)) : null;
     const excerpt = extractExcerpt(entry.body);
     const raw = entry as unknown as Record<string, unknown>;
-    const availableLanguages = Array.isArray(raw.availableLanguages)
-      ? (raw.availableLanguages as unknown[]).filter(
+    const rawLangs = raw.availableLanguages ?? raw.langs;
+    const availableLanguages = Array.isArray(rawLangs)
+      ? (rawLangs as unknown[]).filter(
           (v): v is string => typeof v === "string",
         )
       : null;

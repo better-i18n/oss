@@ -36,7 +36,7 @@ const loadRelatedFeatures = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/$locale/features/$slug")({
-  loader: async ({ params }) => {
+  loader: async ({ params, context }) => {
     const [page, relatedFeatures] = await Promise.all([
       loadFeaturePage({
         data: { slug: params.slug, locale: params.locale },
@@ -48,11 +48,12 @@ export const Route = createFileRoute("/$locale/features/$slug")({
     if (!page) {
       throw notFound();
     }
-    return { page, locale: params.locale, relatedFeatures };
+    return { page, locale: params.locale, locales: context.locales, relatedFeatures };
   },
   head: ({ loaderData }) => {
     const page = loaderData?.page;
     const locale = loaderData?.locale || "en";
+    const locales = loaderData?.locales;
     const pathname = `/features/${page?.slug || ""}`;
     const canonicalUrl = `${SITE_URL}/${locale}${pathname}/`;
 
@@ -93,7 +94,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
         { property: "og:url", content: canonicalUrl },
         { property: "og:site_name", content: "Better i18n" },
         { property: "og:locale", content: locale },
-        ...(page?.availableLanguages ?? getCachedLocales())
+        ...(locales ?? getCachedLocales())
           .filter((loc) => loc !== locale)
           .map((loc) => ({
             property: "og:locale:alternate",
@@ -119,7 +120,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
           : []),
       ],
       links: [
-        ...getAlternateLinks(pathname, page?.availableLanguages ?? undefined),
+        ...getAlternateLinks(pathname, locales),
         getCanonicalLink(locale, pathname),
       ],
       scripts: [...educationalScripts, ...breadcrumbScripts],
