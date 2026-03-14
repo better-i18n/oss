@@ -138,13 +138,18 @@ function resolveDynamicConfig(pagePath: string): PageConfig | null {
     };
   }
 
-  // /compare/{competitor} → marketing.compare.{competitor}
+  // /compare/{competitor} → marketing.compare.{competitor} + shared compare keys
+  // mergeShallowAtPath copies scalar keys (featureLabel, otherComparisons) from
+  // the parent "compare" level, but shared nested objects (complaints, whySwitch)
+  // are skipped. Add them explicitly as dot-path specs.
   if (pagePath.startsWith("compare/")) {
     const competitor = pagePath.slice(8);
     const camelCompetitor = kebabToCamel(competitor);
     return {
       namespaces: [
         `marketing.compare.${camelCompetitor}`,
+        "marketing.compare.complaints",
+        "marketing.compare.whySwitch",
         "alternatives",
         "relatedPages",
       ],
