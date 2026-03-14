@@ -16,6 +16,8 @@ import { SITE_URL, MARKETING_PAGES } from "./pages";
 import type { ChangeFreq } from "./pages";
 import { getLocaleTier, TIER_PRIORITY_MULTIPLIER } from "./locale-tiers";
 import type { LocaleTier } from "./locale-tiers";
+import { ALL_LOCALE_CODES } from "../lib/tools/locales";
+import { ALL_FORMAT_PAIR_SLUGS } from "../lib/tools/formats";
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -587,6 +589,98 @@ export async function fetchSeoData(options: {
   return { locales, blogPosts, featurePages, i18nMessages, localeCoverage };
 }
 
+// ─── Generator: Locale Explorer Detail Pages ─────────────────────────
+
+function generateLocaleExplorerPages(
+  allLocales: readonly string[],
+): readonly PageEntry[] {
+  return ALL_LOCALE_CODES.flatMap((localeCode) => {
+    const sitemapLocales = allLocales.filter(
+      (l) => getLocaleTier(l) !== "tier3",
+    );
+    const alternateRefs = buildAlternateRefs(sitemapLocales, (locale) =>
+      buildPageUrl(locale, `tools/locale-explorer/${localeCode}`),
+    );
+
+    const sitemapEntries = sitemapLocales.map((locale): PageEntry => {
+      const tier = getLocaleTier(locale);
+      const shouldPrerender = tier === "tier1" || tier === "tier2";
+      const priorityMultiplier = TIER_PRIORITY_MULTIPLIER[tier];
+
+      return {
+        path: buildPagePath(locale, `tools/locale-explorer/${localeCode}`),
+        sitemap: {
+          priority: +(0.6 * priorityMultiplier).toFixed(2),
+          changefreq: "yearly",
+          alternateRefs,
+        },
+        prerender: shouldPrerender ? { enabled: true } : undefined,
+      };
+    });
+
+    const tier3Locales = allLocales.filter(
+      (l) => getLocaleTier(l) === "tier3",
+    );
+    const tier3Entries = tier3Locales.map((locale): PageEntry => ({
+      path: buildPagePath(locale, `tools/locale-explorer/${localeCode}`),
+      sitemap: {
+        priority: 0,
+        changefreq: "yearly",
+        alternateRefs,
+        noindex: true,
+      },
+    }));
+
+    return [...sitemapEntries, ...tier3Entries];
+  });
+}
+
+// ─── Generator: Converter Format Pair Pages ──────────────────────────
+
+function generateConverterPairPages(
+  allLocales: readonly string[],
+): readonly PageEntry[] {
+  return ALL_FORMAT_PAIR_SLUGS.flatMap((pairSlug) => {
+    const sitemapLocales = allLocales.filter(
+      (l) => getLocaleTier(l) !== "tier3",
+    );
+    const alternateRefs = buildAlternateRefs(sitemapLocales, (locale) =>
+      buildPageUrl(locale, `tools/translation-file-converter/${pairSlug}`),
+    );
+
+    const sitemapEntries = sitemapLocales.map((locale): PageEntry => {
+      const tier = getLocaleTier(locale);
+      const shouldPrerender = tier === "tier1" || tier === "tier2";
+      const priorityMultiplier = TIER_PRIORITY_MULTIPLIER[tier];
+
+      return {
+        path: buildPagePath(locale, `tools/translation-file-converter/${pairSlug}`),
+        sitemap: {
+          priority: +(0.7 * priorityMultiplier).toFixed(2),
+          changefreq: "monthly",
+          alternateRefs,
+        },
+        prerender: shouldPrerender ? { enabled: true } : undefined,
+      };
+    });
+
+    const tier3Locales = allLocales.filter(
+      (l) => getLocaleTier(l) === "tier3",
+    );
+    const tier3Entries = tier3Locales.map((locale): PageEntry => ({
+      path: buildPagePath(locale, `tools/translation-file-converter/${pairSlug}`),
+      sitemap: {
+        priority: 0,
+        changefreq: "monthly",
+        alternateRefs,
+        noindex: true,
+      },
+    }));
+
+    return [...sitemapEntries, ...tier3Entries];
+  });
+}
+
 /**
  * Generates all page entries from pre-fetched SEO data.
  * Pure function — no I/O.
@@ -596,7 +690,10 @@ export function generatePages(data: SeoData, buildDate?: string): readonly PageE
   const marketingPages = generateMarketingPages(locales, buildDate, localeCoverage);
   const blogPages = generateBlogPages(blogPosts, locales);
   const featureDetailPages = generateFeatureDetailPages(featurePages, locales);
-  const allPages = [...marketingPages, ...blogPages, ...featureDetailPages];
+  const localeExplorerPages = generateLocaleExplorerPages(locales);
+  const converterPairPages = generateConverterPairPages(locales);
+  const allPages = [...marketingPages, ...blogPages, ...featureDetailPages,
+                     ...localeExplorerPages, ...converterPairPages];
 
   const noindexCount = allPages.filter((p) => p.sitemap.noindex).length;
   console.log(`[SEO] Generated ${allPages.length} pages (${noindexCount} noindex)`);
