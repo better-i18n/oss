@@ -88,10 +88,10 @@ export function FileUploadZone({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={[
-          "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-10 text-center transition-colors",
+          "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-all duration-200",
           isDragging
-            ? "border-mist-400 bg-mist-100"
-            : "border-mist-300 bg-mist-50 hover:border-mist-400 hover:bg-mist-100",
+            ? "border-mist-400 bg-mist-100 shadow-inner"
+            : "border-mist-300 bg-mist-50 hover:border-mist-400 hover:bg-mist-100 hover:-translate-y-0.5",
         ].join(" ")}
       >
         <svg
@@ -138,7 +138,7 @@ export function FileUploadZone({
       </div>
 
       <textarea
-        className="min-h-[160px] w-full resize-y rounded-xl border border-mist-200 bg-white px-4 py-3 font-mono text-sm text-mist-950 placeholder:text-mist-400 focus:border-mist-400 focus:outline-none focus:ring-2 focus:ring-mist-200"
+        className="min-h-[160px] w-full resize-y rounded-2xl border border-mist-200 bg-white px-4 py-3 font-mono text-sm text-mist-950 placeholder:text-mist-400 focus:border-mist-400 focus:outline-none focus:ring-2 focus:ring-mist-200"
         placeholder={placeholder}
         onChange={handlePaste}
         spellCheck={false}
