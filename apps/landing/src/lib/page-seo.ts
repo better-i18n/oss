@@ -24,6 +24,7 @@ import {
   getOrganizationSchema,
   getWebSiteSchema,
   getWebPageSchema,
+  getToolSchema,
 } from "./structured-data";
 import { SITE_URL } from "./meta";
 
@@ -42,7 +43,7 @@ export {
   getCareersPageStructuredData,
 };
 
-type PageType = "default" | "home" | "pricing" | "comparison" | "framework" | "educational";
+type PageType = "default" | "home" | "pricing" | "comparison" | "framework" | "educational" | "tool";
 
 interface PageSEOOptions {
   /** i18n messages object */
@@ -118,6 +119,15 @@ function getStructuredDataForPageType(
             url: options.url,
           })
         : getDefaultStructuredData();
+    case "tool":
+      return formatStructuredData([
+        getOrganizationSchema(),
+        getToolSchema({
+          name: options?.title ?? "Free i18n Tool",
+          description: options?.description ?? "",
+          url: options?.url ?? SITE_URL,
+        }),
+      ]);
     case "default":
     default:
       return options?.title && options?.description
@@ -288,6 +298,7 @@ const CATEGORY_LABELS: Readonly<Record<string, { readonly label: string; readonl
   "compare": { label: "Comparisons", href: "/compare" },
   "blog": { label: "Blog", href: "/blog" },
   "features": { label: "Features", href: "/features" },
+  "tools": { label: "Free Tools", href: "/tools" },
 };
 
 /**
@@ -316,12 +327,29 @@ export function getBreadcrumbItems(
     const segmentLabel = messages[`breadcrumbs.${segments[0]}`]
       ?? segments[0].replace(/^for-/, "For ").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     items.push({ label: segmentLabel });
-  } else {
-    // Multi-segment: Home > Category > Page (e.g., /i18n/react, /compare/crowdin)
+  } else if (segments.length === 2) {
     const category = CATEGORY_LABELS[segments[0]];
     const categoryLabel = messages[`breadcrumbs.${segments[0]}`] ?? category?.label
       ?? segments[0].charAt(0).toUpperCase() + segments[0].slice(1);
     items.push({ label: categoryLabel, href: category?.href ?? `/${segments[0]}` });
+
+    const pageSegment = segments[segments.length - 1];
+    const pageLabel = messages[`breadcrumbs.${pageSegment}`]
+      ?? pageSegment.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    items.push({ label: pageLabel });
+  } else {
+    // 3+ segments: Home > Category > Subcategory > ... > Page
+    const category = CATEGORY_LABELS[segments[0]];
+    const categoryLabel = messages[`breadcrumbs.${segments[0]}`] ?? category?.label
+      ?? segments[0].charAt(0).toUpperCase() + segments[0].slice(1);
+    items.push({ label: categoryLabel, href: category?.href ?? `/${segments[0]}` });
+
+    for (let i = 1; i < segments.length - 1; i++) {
+      const subPath = segments.slice(0, i + 1).join("/");
+      const subLabel = messages[`breadcrumbs.${segments[i]}`]
+        ?? segments[i].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      items.push({ label: subLabel, href: `/${subPath}` });
+    }
 
     const pageSegment = segments[segments.length - 1];
     const pageLabel = messages[`breadcrumbs.${pageSegment}`]
