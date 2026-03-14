@@ -134,12 +134,12 @@ export function personaHead(loaderData?: {
       ...(page?.targetKeywords
         ? [{ name: "keywords", content: page.targetKeywords }]
         : []),
-      ...getCachedLocales()
+      ...(page?.availableLanguages ?? getCachedLocales())
         .filter((loc) => loc !== locale)
         .map((loc) => ({ property: "og:locale:alternate", content: loc })),
     ],
     links: [
-      ...getAlternateLinks(pathname),
+      ...getAlternateLinks(pathname, page?.availableLanguages ?? undefined),
       getCanonicalLink(locale, pathname),
     ],
     scripts: [...educationalScripts, ...breadcrumbScripts],

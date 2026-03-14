@@ -42,17 +42,42 @@ export function getChangelogClient(): ContentClient {
   return _changelogClient;
 }
 
+// ─── TTL Cache ──────────────────────────────────────────────────────
+
+const changelogCache = new Map<string, { data: unknown; expiresAt: number }>();
+const CHANGELOG_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+function getCached<T>(key: string): T | undefined {
+  const entry = changelogCache.get(key);
+  if (!entry) return undefined;
+  if (Date.now() > entry.expiresAt) {
+    changelogCache.delete(key);
+    return undefined;
+  }
+  return entry.data as T;
+}
+
+function setCache<T>(key: string, data: T): T {
+  changelogCache.set(key, { data, expiresAt: Date.now() + CHANGELOG_CACHE_TTL_MS });
+  return data;
+}
+
 // ─── Public API ──────────────────────────────────────────────────────
 
 const CHANGELOG_MODEL = "changelog";
 
 /**
  * Get all changelog entries for a locale, sorted by date (newest first)
- * Fetches full content for each entry
+ * Fetches full content for each entry.
+ * Results are cached for 5 minutes to avoid N+1 API calls on repeated requests.
  */
 export async function getChangelogs(
   locale: string
 ): Promise<ChangelogEntry[]> {
+  const cacheKey = `changelogs:${locale}`;
+  const cached = getCached<ChangelogEntry[]>(cacheKey);
+  if (cached) return cached;
+
   try {
     const result = await getChangelogClient().getEntries(CHANGELOG_MODEL, {
       language: locale,
@@ -73,7 +98,7 @@ export async function getChangelogs(
       )
     );
 
-    return fullEntries;
+    return setCache(cacheKey, fullEntries);
   } catch (error) {
     console.error("Changelog API error:", error);
     return [];

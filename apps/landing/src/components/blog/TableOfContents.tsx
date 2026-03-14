@@ -13,17 +13,20 @@ interface TableOfContentsProps {
 }
 
 /**
- * Extract h2 and h3 headings from raw HTML content.
+ * Extract h1, h2 and h3 headings from raw HTML content.
+ * h1 headings are treated as h2 level since BlogContent downlevels them.
  * Strips inner HTML tags to get plain text, then generates
  * matching slug ids via the shared slugify function.
  */
 function extractHeadings(html: string): TocItem[] {
-  const headingRegex = /<(h[23])[^>]*>(.*?)<\/\1>/gi;
+  const headingRegex = /<(h[123])[^>]*>(.*?)<\/\1>/gi;
   const items: TocItem[] = [];
   let match;
 
   while ((match = headingRegex.exec(html)) !== null) {
-    const level = match[1].toLowerCase() === "h2" ? 2 : 3;
+    const tag = match[1].toLowerCase();
+    // h1 is downleveled to h2 by BlogContent, so treat as level 2
+    const level: 2 | 3 = tag === "h3" ? 3 : 2;
     // Strip HTML tags from heading text
     const text = match[2].replace(/<[^>]*>/g, "").trim();
     if (text) {

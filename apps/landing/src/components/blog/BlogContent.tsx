@@ -83,6 +83,18 @@ export default function BlogContent({ html, className, locale }: BlogContentProp
         return;
       }
 
+      // Downlevel h1 → h2 to prevent multiple H1 tags on the page
+      // (the page template already renders the post title as H1)
+      if (domNode.name === "h1") {
+        const text = getTextContent(domNode);
+        const id = slugify(text);
+        return (
+          <h2 {...domNode.attribs} id={id}>
+            {domToReact(domNode.children as DOMNode[], parserOptions)}
+          </h2>
+        );
+      }
+
       // Add id attributes to h2/h3 for anchor linking
       if (domNode.name === "h2" || domNode.name === "h3") {
         const text = getTextContent(domNode);
