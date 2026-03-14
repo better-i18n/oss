@@ -1,10 +1,6 @@
 # Sitemap
 Sitemap: https://better-i18n.com/sitemap.xml
 
-# AI content discovery
-llms.txt: https://better-i18n.com/llms.txt
-llms-full.txt: https://better-i18n.com/llms-full.txt
-
 # Default crawl rules
 User-agent: *
 Allow: /
