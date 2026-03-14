@@ -186,6 +186,12 @@ const ENGLISH_PAGE_TITLES: Readonly<Record<string, string>> = {
   "i18n/cli-code-scanning": "CLI Code Scanning",
   "i18n/formatting-utilities": "Formatting Utilities",
   "i18n/security-compliance": "Security & Compliance",
+  "tools": "Free i18n & Localization Developer Tools",
+  "tools/locale-explorer": "Locale Explorer — Language & Region Reference",
+  "tools/icu-playground": "ICU Message Format Playground & Validator",
+  "tools/translation-file-converter": "Translation File Format Converter",
+  "tools/cost-calculator": "Localization Cost Calculator",
+  "tools/hreflang-generator": "Hreflang Tag Generator & Validator",
   privacy: "Privacy Policy", terms: "Terms of Service", status: "System Status",
 };
 
@@ -219,6 +225,12 @@ const ENGLISH_PAGE_DESCRIPTIONS: Readonly<Record<string, string>> = {
   "i18n/vite": "Vite internationalization for fast frontend projects with typed translations and CDN-delivered messages.",
   "i18n/remix-hydrogen": "Remix and Hydrogen localization with server-loaded locale state and SEO-friendly storefront content.",
   "i18n/doctor": "Automated translation health checks — missing keys, unused translations, inconsistencies.",
+  "tools": "Free browser-based tools for i18n developers — locale reference, ICU message testing, file format conversion, cost estimation, and hreflang generation.",
+  "tools/locale-explorer": "Interactive locale explorer with Intl API formatting examples, CLDR plural rules, and framework config generators for 250+ locales.",
+  "tools/icu-playground": "Live ICU MessageFormat playground with syntax validation, multi-locale preview, variable injection, and code snippet generation.",
+  "tools/translation-file-converter": "Convert between JSON, PO, XLIFF, ARB, YAML, CSV, Android XML, iOS Strings, and Java Properties translation file formats.",
+  "tools/cost-calculator": "Estimate localization costs across human translation, AI+review, and Better i18n — with per-language breakdown and ROI projection.",
+  "tools/hreflang-generator": "Generate and validate hreflang tags for multilingual SEO — HTML link tags, XML sitemap entries, and HTTP headers.",
 };
 
 /**
@@ -323,6 +335,9 @@ const STATIC_SECTIONS: readonly LlmsTxtSectionDef[] = [
     headingKey: "developerTools",
     paths: [
       "i18n/doctor", "i18n/cli-code-scanning",
+      "tools", "tools/locale-explorer", "tools/icu-playground",
+      "tools/translation-file-converter", "tools/cost-calculator",
+      "tools/hreflang-generator",
     ],
   },
 ];
