@@ -65,7 +65,9 @@ export default defineConfig(async ({ mode }) => {
         projects: ["./tsconfig.json"],
       }),
       tanstackStart({
-        pages: pages.map((p) => ({
+        pages: pages
+          .filter((p) => !p.sitemap.noindex)
+          .map((p) => ({
           path: p.path,
           sitemap: {
             ...p.sitemap,
