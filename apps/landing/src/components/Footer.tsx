@@ -74,6 +74,7 @@ const footerLinks = [
         href: "https://docs.better-i18n.com/",
       },
       { key: "whatIs", label: "What is i18n?", href: "/$locale/what-is" },
+      { key: "tools", label: "Free Tools", href: "/$locale/tools" },
       { key: "status", label: "Status", href: "https://status.better-i18n.com" },
       { key: "changelog", label: "Changelog", href: "/$locale/changelog" },
     ],
@@ -131,7 +132,7 @@ export default function Footer() {
                         </a>
                       ) : (
                         <Link
-                          to={link.href as "/$locale" | "/$locale/features" | "/$locale/pricing" | "/$locale/integrations" | "/$locale/about" | "/$locale/careers" | "/$locale/blog" | "/$locale/changelog" | "/$locale/privacy" | "/$locale/terms" | "/$locale/what-is" | "/$locale/for-translators" | "/$locale/for-developers" | "/$locale/for-product-teams" | "/$locale/for-enterprises" | "/$locale/for-startups" | "/$locale/for-agencies" | "/$locale/for-ecommerce" | "/$locale/for-saas" | "/$locale/compare" | "/$locale/compare/crowdin" | "/$locale/compare/lokalise" | "/$locale/compare/phrase" | "/$locale/compare/transifex" | "/$locale/i18n/react" | "/$locale/i18n/nextjs" | "/$locale/i18n/vue" | "/$locale/i18n/nuxt" | "/$locale/i18n/angular" | "/$locale/i18n/svelte"}
+                          to={link.href as "/$locale" | "/$locale/features" | "/$locale/pricing" | "/$locale/integrations" | "/$locale/about" | "/$locale/careers" | "/$locale/blog" | "/$locale/changelog" | "/$locale/privacy" | "/$locale/terms" | "/$locale/what-is" | "/$locale/tools" | "/$locale/for-translators" | "/$locale/for-developers" | "/$locale/for-product-teams" | "/$locale/for-enterprises" | "/$locale/for-startups" | "/$locale/for-agencies" | "/$locale/for-ecommerce" | "/$locale/for-saas" | "/$locale/compare" | "/$locale/compare/crowdin" | "/$locale/compare/lokalise" | "/$locale/compare/phrase" | "/$locale/compare/transifex" | "/$locale/i18n/react" | "/$locale/i18n/nextjs" | "/$locale/i18n/vue" | "/$locale/i18n/nuxt" | "/$locale/i18n/angular" | "/$locale/i18n/svelte"}
                           params={{ locale: currentLocale }}
                           className="hover:text-mist-950"
                         >

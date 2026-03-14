@@ -201,6 +201,16 @@ export function MobileNav() {
               {t("features", { defaultValue: "Features" })}
             </Link>
 
+            {/* Tools - simple link */}
+            <Link
+              to="/$locale/tools"
+              params={{ locale: localeParam }}
+              onClick={close}
+              className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+            >
+              {t("tools", { defaultValue: "Tools" })}
+            </Link>
+
             {/* Product - expandable */}
             <AccordionSection
               label={t("forProduct", { defaultValue: "Product" })}
