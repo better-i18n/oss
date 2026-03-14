@@ -76,14 +76,14 @@ function CrowdinVsLokalisePage() {
 
   // ── Pricing table (10-person team scenario) ───────────────────────
   const pricingRows: readonly PricingRow[] = [
-    { label: t("compare.crowdinVsLokalise.pricing.monthlyPrice"), values: ["$19/mo", "$100/mo", "$120/mo"], highlight: true },
-    { label: t("compare.crowdinVsLokalise.pricing.annualPrice"), values: ["$15/mo", "$83/mo", "$100/mo"], highlight: true },
-    { label: t("compare.crowdinVsLokalise.pricing.freeTier"), values: ["Yes", "Yes (OSS)", "Limited"] },
-    { label: t("compare.crowdinVsLokalise.pricing.seats"), values: ["Unlimited", "5", "5"] },
-    { label: t("compare.crowdinVsLokalise.pricing.perSeatCost"), values: ["$0", "$20/seat", "$24/seat"] },
-    { label: t("compare.crowdinVsLokalise.pricing.aiTranslations"), values: ["Unlimited", "Limited", "Pay per word"] },
-    { label: t("compare.crowdinVsLokalise.pricing.overageCost"), values: ["None", "Per word", "Per word"] },
-    { label: t("compare.crowdinVsLokalise.pricing.annualSavings"), values: ["—", "$204/yr", "$240/yr"] },
+    { label: t("compare.crowdinVsLokalise.pricing.monthlyPrice"), values: [t("compare.crowdinVsLokalise.pricing.monthlyPrice.better"), t("compare.crowdinVsLokalise.pricing.monthlyPrice.crowdin"), t("compare.crowdinVsLokalise.pricing.monthlyPrice.lokalise")], highlight: true },
+    { label: t("compare.crowdinVsLokalise.pricing.annualPrice"), values: [t("compare.crowdinVsLokalise.pricing.annualPrice.better"), t("compare.crowdinVsLokalise.pricing.annualPrice.crowdin"), t("compare.crowdinVsLokalise.pricing.annualPrice.lokalise")], highlight: true },
+    { label: t("compare.crowdinVsLokalise.pricing.freeTier"), values: [t("compare.crowdinVsLokalise.pricing.freeTier.better"), t("compare.crowdinVsLokalise.pricing.freeTier.crowdin"), t("compare.crowdinVsLokalise.pricing.freeTier.lokalise")] },
+    { label: t("compare.crowdinVsLokalise.pricing.seats"), values: [t("compare.crowdinVsLokalise.pricing.seats.better"), t("compare.crowdinVsLokalise.pricing.seats.crowdin"), t("compare.crowdinVsLokalise.pricing.seats.lokalise")] },
+    { label: t("compare.crowdinVsLokalise.pricing.perSeatCost"), values: [t("compare.crowdinVsLokalise.pricing.perSeatCost.better"), t("compare.crowdinVsLokalise.pricing.perSeatCost.crowdin"), t("compare.crowdinVsLokalise.pricing.perSeatCost.lokalise")] },
+    { label: t("compare.crowdinVsLokalise.pricing.aiTranslations"), values: [t("compare.crowdinVsLokalise.pricing.aiTranslations.better"), t("compare.crowdinVsLokalise.pricing.aiTranslations.crowdin"), t("compare.crowdinVsLokalise.pricing.aiTranslations.lokalise")] },
+    { label: t("compare.crowdinVsLokalise.pricing.overageCost"), values: [t("compare.crowdinVsLokalise.pricing.overageCost.better"), t("compare.crowdinVsLokalise.pricing.overageCost.crowdin"), t("compare.crowdinVsLokalise.pricing.overageCost.lokalise")] },
+    { label: t("compare.crowdinVsLokalise.pricing.annualSavings"), values: [t("compare.crowdinVsLokalise.pricing.annualSavings.better"), t("compare.crowdinVsLokalise.pricing.annualSavings.crowdin"), t("compare.crowdinVsLokalise.pricing.annualSavings.lokalise")] },
   ];
 
   // ── DX comparison (CLI, API, SDK) ─────────────────────────────────

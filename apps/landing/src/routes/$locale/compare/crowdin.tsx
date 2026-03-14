@@ -71,9 +71,9 @@ function CrowdinComparisonPage() {
       <UserComplaints
         competitor="Crowdin"
         complaints={[
-          { source: "G2", quote: "Migration between versions is painful", category: "Migration" },
-          { source: "G2", quote: "Complex pricing tiers", category: "Pricing" },
-          { source: "Capterra", quote: "Limited real-time collaboration", category: "Collaboration" },
+          { source: "G2", quote: t("compare.crowdin.userComplaints.1.quote"), category: t("compare.crowdin.userComplaints.1.category") },
+          { source: "G2", quote: t("compare.crowdin.userComplaints.2.quote"), category: t("compare.crowdin.userComplaints.2.category") },
+          { source: "Capterra", quote: t("compare.crowdin.userComplaints.3.quote"), category: t("compare.crowdin.userComplaints.3.category") },
         ]}
       />
 
@@ -111,10 +111,10 @@ function CrowdinComparisonPage() {
       <WhySwitchSection
         competitor="Crowdin"
         reasons={[
-          { painPoint: "Version migration breaks workflows and causes downtime", solution: "Git-native sync means zero migration — your repo is the source of truth" },
-          { painPoint: "Complex pricing tiers make budgeting unpredictable", solution: "Simple, transparent pricing with a generous free tier for open source" },
-          { painPoint: "Limited real-time collaboration slows translation teams", solution: "MCP-powered AI agents collaborate with your team in real-time" },
-          { painPoint: "Manual key management across multiple projects", solution: "AST-based key discovery automatically finds and syncs translation keys" },
+          { painPoint: t("compare.crowdin.switchReasons.1.pain"), solution: t("compare.crowdin.switchReasons.1.solution") },
+          { painPoint: t("compare.crowdin.switchReasons.2.pain"), solution: t("compare.crowdin.switchReasons.2.solution") },
+          { painPoint: t("compare.crowdin.switchReasons.3.pain"), solution: t("compare.crowdin.switchReasons.3.solution") },
+          { painPoint: t("compare.crowdin.switchReasons.4.pain"), solution: t("compare.crowdin.switchReasons.4.solution") },
         ]}
       />
 

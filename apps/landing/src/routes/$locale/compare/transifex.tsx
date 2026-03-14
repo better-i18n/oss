@@ -70,9 +70,9 @@ function TransifexComparisonPage() {
       <UserComplaints
         competitor="Transifex"
         complaints={[
-          { source: "G2", quote: "Outdated UI feels clunky", category: "Usability" },
-          { source: "Capterra", quote: "Limited automation options", category: "Automation" },
-          { source: "G2", quote: "Slow customer support", category: "Support" },
+          { source: "G2", quote: t("compare.transifex.userComplaints.1.quote"), category: t("compare.transifex.userComplaints.1.category") },
+          { source: "Capterra", quote: t("compare.transifex.userComplaints.2.quote"), category: t("compare.transifex.userComplaints.2.category") },
+          { source: "G2", quote: t("compare.transifex.userComplaints.3.quote"), category: t("compare.transifex.userComplaints.3.category") },
         ]}
       />
 
@@ -110,9 +110,9 @@ function TransifexComparisonPage() {
       <WhySwitchSection
         competitor="Transifex"
         reasons={[
-          { painPoint: "Outdated UI makes daily translation work frustrating", solution: "Modern, responsive interface built with the latest web standards" },
-          { painPoint: "Limited automation means repetitive manual work", solution: "AI-powered automation handles key discovery, translation, and deployment" },
-          { painPoint: "Slow support response times delay critical fixes", solution: "Developer community and documentation-first approach for fast self-service" },
+          { painPoint: t("compare.transifex.switchReasons.1.pain"), solution: t("compare.transifex.switchReasons.1.solution") },
+          { painPoint: t("compare.transifex.switchReasons.2.pain"), solution: t("compare.transifex.switchReasons.2.solution") },
+          { painPoint: t("compare.transifex.switchReasons.3.pain"), solution: t("compare.transifex.switchReasons.3.solution") },
         ]}
       />
 
