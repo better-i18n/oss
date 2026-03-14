@@ -70,6 +70,7 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
         "integrations",
         "cta",
         "relatedPages",
+        "demo",
       ],
     },
   ],
@@ -77,7 +78,10 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   // ─── Core pages ─────────────────────────────────────────────
   ["pricing", { namespaces: ["pricing", "pricingPage", "relatedPages"] }],
   ["features", { namespaces: ["featuresPage", "relatedPages"] }],
-  ["integrations", { namespaces: ["integrationsPage", "integrations", "relatedPages"] }],
+  [
+    "integrations",
+    { namespaces: ["integrationsPage", "integrations", "relatedPages"] },
+  ],
   ["about", { namespaces: ["aboutPage", "relatedPages"] }],
   ["careers", { namespaces: ["careersPage", "relatedPages"] }],
   ["status", { namespaces: ["statusPage"] }],
@@ -90,18 +94,30 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   // ─── Persona pages (hardcoded routes) ─────────────────────────
   ["for-developers", { namespaces: ["developers", "relatedPages", "cta"] }],
   ["for-translators", { namespaces: ["translators", "relatedPages", "cta"] }],
-  ["for-product-teams", { namespaces: ["product-teams", "relatedPages", "cta"] }],
+  [
+    "for-product-teams",
+    { namespaces: ["product-teams", "relatedPages", "cta"] },
+  ],
 
   // ─── Educational pages ──────────────────────────────────────
   ["what-is", { namespaces: ["marketing.whatIsPage", "relatedPages"] }],
-  ["what-is-internationalization", { namespaces: ["marketing.whatIsInternationalization", "relatedPages"] }],
-  ["what-is-localization", { namespaces: ["marketing.whatIsLocalization", "relatedPages"] }],
+  [
+    "what-is-internationalization",
+    { namespaces: ["marketing.whatIsInternationalization", "relatedPages"] },
+  ],
+  [
+    "what-is-localization",
+    { namespaces: ["marketing.whatIsLocalization", "relatedPages"] },
+  ],
 
   // ─── i18n hub ────────────────────────────────────────────────
   ["i18n", { namespaces: ["marketing.i18n", "relatedPages"] }],
 
   // ─── Compare hub ─────────────────────────────────────────────
-  ["compare", { namespaces: ["marketing.compare", "alternatives", "relatedPages"] }],
+  [
+    "compare",
+    { namespaces: ["marketing.compare", "alternatives", "relatedPages"] },
+  ],
 ]);
 
 /**
@@ -118,10 +134,7 @@ function resolveDynamicConfig(pagePath: string): PageConfig | null {
     const subpage = pagePath.slice(5);
     const camelSubpage = kebabToCamel(subpage);
     return {
-      namespaces: [
-        `marketing.i18n.${camelSubpage}`,
-        "relatedPages",
-      ],
+      namespaces: [`marketing.i18n.${camelSubpage}`, "relatedPages"],
     };
   }
 
@@ -174,7 +187,11 @@ function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
   const keys = path.split(".");
   let current: unknown = obj;
   for (const key of keys) {
-    if (current === null || current === undefined || typeof current !== "object") {
+    if (
+      current === null ||
+      current === undefined ||
+      typeof current !== "object"
+    ) {
       return undefined;
     }
     current = (current as Record<string, unknown>)[key];
@@ -186,7 +203,11 @@ function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
  * Set a nested value in an object using a dot-path, creating intermediate objects.
  * Mutates the target (used only on fresh objects we own).
  */
-function setNestedValue(obj: Record<string, unknown>, path: string, value: unknown): void {
+function setNestedValue(
+  obj: Record<string, unknown>,
+  path: string,
+  value: unknown,
+): void {
   const keys = path.split(".");
   let current: Record<string, unknown> = obj;
   for (let i = 0; i < keys.length - 1; i++) {
@@ -227,7 +248,9 @@ function mergeShallowAtPath(
 
   // Copy only scalar values (strings, numbers) — not sub-objects.
   // Sub-objects are other page namespaces we want to exclude.
-  for (const [key, value] of Object.entries(sourceValue as Record<string, unknown>)) {
+  for (const [key, value] of Object.entries(
+    sourceValue as Record<string, unknown>,
+  )) {
     if (!(key in current) && typeof value === "string") {
       current[key] = value;
     }
@@ -266,7 +289,9 @@ function getPageConfig(pagePath: string): PageConfig | null {
  * Get the list of namespace keys needed for a given page path.
  * Returns null when no mapping is found (meaning: don't filter, use all).
  */
-export function getNamespacesForPage(pagePath: string): readonly string[] | null {
+export function getNamespacesForPage(
+  pagePath: string,
+): readonly string[] | null {
   const config = getPageConfig(pagePath);
   if (!config) return null;
   return [...SHARED_NAMESPACES, ...config.namespaces];
@@ -414,7 +439,11 @@ export function filterMessagesByPath(
     }
 
     // Set the subtree
-    setNestedValue(filtered[rootKey] as Record<string, unknown>, subPath, value);
+    setNestedValue(
+      filtered[rootKey] as Record<string, unknown>,
+      subPath,
+      value,
+    );
 
     // Also merge shallow scalar keys from parent path for shared labels.
     // e.g., for "marketing.i18n.react", also include marketing.i18n.{scalarKeys}
