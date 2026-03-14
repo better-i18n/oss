@@ -245,11 +245,15 @@ export function getPageHead(options: PageSEOOptions) {
 const HEAD_NAMESPACES = ["meta", "breadcrumbs"] as const;
 
 /**
- * Create a standard async loader that fetches messages and exposes them for head().
- * Messages are fetched via getMessages() — TtlCache ensures no duplicate CDN calls.
+ * Create a standard async loader for route head() meta tags.
  *
- * Only serializes HEAD_NAMESPACES into the page HTML (meta + breadcrumbs).
- * Page components get their messages from the root loader's BetterI18nProvider.
+ * Only serializes the minimal data needed by head() into the HTML:
+ * - `messages`: filtered to HEAD_NAMESPACES only (meta + breadcrumbs)
+ *
+ * locale/locales are NOT returned — head() should use params.locale
+ * and context.locales to avoid duplicating data already in root loader's $_TSR.
+ *
+ * Page components get their i18n messages from the root loader's BetterI18nProvider.
  *
  * @param extraNamespaces - Additional namespaces the head() function needs
  *   beyond meta + breadcrumbs (e.g., ["pricingPage"] for FAQ schema extraction).

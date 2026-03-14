@@ -1,15 +1,17 @@
+import { lazy, Suspense } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ProductHero from "@/components/product-teams/ProductHero";
-import ProductPainPoints from "@/components/product-teams/ProductPainPoints";
-import ProductWorkflow from "@/components/product-teams/ProductWorkflow";
-import ProductFeatures from "@/components/product-teams/ProductFeatures";
-import ProductCollaboration from "@/components/product-teams/ProductCollaboration";
-import ProductCTA from "@/components/product-teams/ProductCTA";
-import ProductPainPromiseProof from "@/components/product-teams/ProductPainPromiseProof";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
+
+const ProductHero = lazy(() => import("@/components/product-teams/ProductHero"));
+const ProductPainPoints = lazy(() => import("@/components/product-teams/ProductPainPoints"));
+const ProductPainPromiseProof = lazy(() => import("@/components/product-teams/ProductPainPromiseProof"));
+const ProductWorkflow = lazy(() => import("@/components/product-teams/ProductWorkflow"));
+const ProductFeatures = lazy(() => import("@/components/product-teams/ProductFeatures"));
+const ProductCollaboration = lazy(() => import("@/components/product-teams/ProductCollaboration"));
+const ProductCTA = lazy(() => import("@/components/product-teams/ProductCTA"));
 
 export const Route = createFileRoute("/$locale/for-product-teams")({
   loader: createPageLoader(),
@@ -45,14 +47,16 @@ function ForProductTeamsPage() {
     <div className="bg-mist-100">
       <Header />
       <main>
-        <ProductHero />
-        <ProductPainPoints />
-        <ProductPainPromiseProof />
-        <ProductWorkflow />
-        <ProductFeatures />
-        <ProductCollaboration />
-        <RelatedPages currentPage="for-product-teams" locale={locale} variant="for" />
-        <ProductCTA />
+        <Suspense fallback={null}>
+          <ProductHero />
+          <ProductPainPoints />
+          <ProductPainPromiseProof />
+          <ProductWorkflow />
+          <ProductFeatures />
+          <ProductCollaboration />
+          <RelatedPages currentPage="for-product-teams" locale={locale} variant="for" />
+          <ProductCTA />
+        </Suspense>
       </main>
       <Footer />
     </div>

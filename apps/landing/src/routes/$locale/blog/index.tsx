@@ -45,10 +45,12 @@ const loadBlogPosts = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/$locale/blog/")({
   loader: async ({ params, context }) => {
-    const [messages, result] = await Promise.all([
+    const { filterMessages } = await import("@/lib/page-namespaces");
+    const [allMessages, result] = await Promise.all([
       getMessages({ project: i18nConfig.project, locale: context.locale }),
       loadBlogPosts({ data: { locale: params.locale } }),
     ]);
+    const messages = filterMessages(allMessages, ["meta", "breadcrumbs"]);
     return {
       ...result,
       messages,

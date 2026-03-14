@@ -23,10 +23,13 @@ const loadFeaturePages = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/$locale/features/")({
   loader: async ({ params, context }) => {
-    const [messages, featurePages] = await Promise.all([
+    const [allMessages, featurePages] = await Promise.all([
       getMessages({ project: i18nConfig.project, locale: context.locale }),
       loadFeaturePages({ data: { locale: params.locale } }),
     ]);
+    // Only serialize meta + breadcrumbs for head() — components use root loader's provider
+    const { filterMessages } = await import("@/lib/page-namespaces");
+    const messages = filterMessages(allMessages, ["meta", "breadcrumbs"]);
     return {
       messages,
       locale: context.locale,
