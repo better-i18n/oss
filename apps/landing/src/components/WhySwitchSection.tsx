@@ -28,7 +28,7 @@ export function WhySwitchSection({ competitor, reasons }: WhySwitchSectionProps)
             >
               <div className="rounded-lg bg-red-50 border border-red-100 p-4">
                 <span className="text-xs font-medium uppercase tracking-wide text-red-500 mb-1 block">
-                  Pain
+                  {t("compare.whySwitch.painLabel", "Pain")}
                 </span>
                 <p className="text-sm text-red-700">{reason.painPoint}</p>
               </div>
@@ -37,7 +37,7 @@ export function WhySwitchSection({ competitor, reasons }: WhySwitchSectionProps)
               </div>
               <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-4">
                 <span className="text-xs font-medium uppercase tracking-wide text-emerald-600 mb-1 block">
-                  Solution
+                  {t("compare.whySwitch.solutionLabel", "Solution")}
                 </span>
                 <p className="text-sm text-emerald-700">{reason.solution}</p>
               </div>
