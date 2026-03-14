@@ -18,6 +18,8 @@ export interface PageDefinition {
   readonly priority: number;
   readonly changefreq: ChangeFreq;
   readonly prerender: boolean;
+  /** When false, the page is excluded from the sitemap but still routable. */
+  readonly sitemap?: boolean;
 }
 
 export const MARKETING_PAGES = [
@@ -118,13 +120,13 @@ export const MARKETING_PAGES = [
   { path: "what-is-internationalization", priority: 0.85, changefreq: "monthly", prerender: true },
   { path: "what-is-localization", priority: 0.85, changefreq: "monthly", prerender: true },
 
-  // Company pages
-  { path: "about", priority: 0.7, changefreq: "monthly", prerender: true },
-  { path: "careers", priority: 0.7, changefreq: "weekly", prerender: true },
-  { path: "status", priority: 0.6, changefreq: "daily", prerender: false },
-  { path: "changelog", priority: 0.8, changefreq: "daily", prerender: false },
+  // Company pages — excluded from sitemap (not primary SEO assets)
+  { path: "about", priority: 0.7, changefreq: "monthly", prerender: true, sitemap: false },
+  { path: "careers", priority: 0.7, changefreq: "weekly", prerender: true, sitemap: false },
+  { path: "status", priority: 0.6, changefreq: "daily", prerender: false, sitemap: false },
+  { path: "changelog", priority: 0.8, changefreq: "daily", prerender: false, sitemap: false },
 
-  // Legal pages
-  { path: "privacy", priority: 0.3, changefreq: "yearly", prerender: true },
-  { path: "terms", priority: 0.3, changefreq: "yearly", prerender: true },
+  // Legal pages — excluded from sitemap
+  { path: "privacy", priority: 0.3, changefreq: "yearly", prerender: true, sitemap: false },
+  { path: "terms", priority: 0.3, changefreq: "yearly", prerender: true, sitemap: false },
 ] as const satisfies readonly PageDefinition[];

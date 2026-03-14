@@ -1,7 +1,6 @@
 import { getCachedLocales } from "./locales";
 import { SITE_URL } from "@/seo/pages";
 import { getLocaleTier } from "@/seo/locale-tiers";
-import { getActiveVariant } from "@/seo/title-variants";
 const SITE_NAME = "Better i18n";
 const OG_SERVICE_URL = "https://og.better-i18n.com";
 const DEFAULT_OG_IMAGE = `${OG_SERVICE_URL}/og`;
@@ -129,8 +128,7 @@ export function getLocalizedMeta(
   const ogDescriptionValue = getNestedValue(messages, `${metaPrefix}.ogDescription`);
   const ogImageValue = getNestedValue(messages, `${metaPrefix}.ogImage`);
 
-  const variantTitle = locale === "en" ? getActiveVariant(pageKey) : undefined;
-  const safeTitle = truncateTitle(variantTitle || title || SITE_NAME);
+  const safeTitle = truncateTitle(title || SITE_NAME);
 
   return {
     title: safeTitle,
