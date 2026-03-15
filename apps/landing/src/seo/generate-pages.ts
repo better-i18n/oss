@@ -703,10 +703,13 @@ export function generatePages(data: SeoData, buildDate?: string): readonly PageE
   const marketingPages = generateMarketingPages(locales, buildDate, localeCoverage);
   const blogPages = generateBlogPages(blogPosts, locales);
   const featureDetailPages = generateFeatureDetailPages(featurePages, locales);
-  const localeExplorerPages = generateLocaleExplorerPages(locales);
+  // Locale explorer detail pages excluded from sitemap — 2750 low-value URLs
+  // were consuming crawl budget. The main /tools/locale-explorer/ listing page
+  // remains in sitemap (via marketingPages). Detail pages are still accessible
+  // and discoverable via internal links from the listing page.
   const converterPairPages = generateConverterPairPages(locales);
   const allPages = [...marketingPages, ...blogPages, ...featureDetailPages,
-                     ...localeExplorerPages, ...converterPairPages];
+                     ...converterPairPages];
 
   const noindexCount = allPages.filter((p) => p.sitemap.noindex).length;
   console.log(`[SEO] Generated ${allPages.length} pages (${noindexCount} noindex)`);
