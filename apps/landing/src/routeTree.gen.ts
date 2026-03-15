@@ -48,32 +48,6 @@ import { Route as LocaleI18nIndexRouteImport } from './routes/$locale/i18n/index
 import { Route as LocaleFeaturesIndexRouteImport } from './routes/$locale/features/index'
 import { Route as LocaleCompareIndexRouteImport } from './routes/$locale/compare/index'
 import { Route as LocaleBlogIndexRouteImport } from './routes/$locale/blog/index'
-import { Route as ArchivedI18nTechnicalMultilingualSeoRouteImport } from './routes/_archived/i18n/technical-multilingual-seo'
-import { Route as ArchivedI18nTechnicalInternationalSeoRouteImport } from './routes/_archived/i18n/technical-international-seo'
-import { Route as ArchivedI18nSoftwareLocalizationServicesRouteImport } from './routes/_archived/i18n/software-localization-services'
-import { Route as ArchivedI18nSeoInternationalAudiencesRouteImport } from './routes/_archived/i18n/seo-international-audiences'
-import { Route as ArchivedI18nSecurityComplianceRouteImport } from './routes/_archived/i18n/security-compliance'
-import { Route as ArchivedI18nReactIntlRouteImport } from './routes/_archived/i18n/react-intl'
-import { Route as ArchivedI18nMultilingualWebsiteSeoRouteImport } from './routes/_archived/i18n/multilingual-website-seo'
-import { Route as ArchivedI18nLocalizationToolsRouteImport } from './routes/_archived/i18n/localization-tools'
-import { Route as ArchivedI18nLocalizationPlatformsRouteImport } from './routes/_archived/i18n/localization-platforms'
-import { Route as ArchivedI18nLocalizationManagementRouteImport } from './routes/_archived/i18n/localization-management'
-import { Route as ArchivedI18nLocalSeoInternationalRouteImport } from './routes/_archived/i18n/local-seo-international'
-import { Route as ArchivedI18nInternationalSeoConsultingRouteImport } from './routes/_archived/i18n/international-seo-consulting'
-import { Route as ArchivedI18nGlobalMarketSeoRouteImport } from './routes/_archived/i18n/global-market-seo'
-import { Route as ArchivedI18nFormattingUtilitiesRouteImport } from './routes/_archived/i18n/formatting-utilities'
-import { Route as ArchivedI18nEcommerceGlobalSeoRouteImport } from './routes/_archived/i18n/ecommerce-global-seo'
-import { Route as ArchivedI18nContentLocalizationServicesRouteImport } from './routes/_archived/i18n/content-localization-services'
-import { Route as ArchivedAudienceForOpenSourceRouteImport } from './routes/_archived/audience/for-open-source'
-import { Route as ArchivedAudienceForMobileTeamsRouteImport } from './routes/_archived/audience/for-mobile-teams'
-import { Route as ArchivedAudienceForMarketersRouteImport } from './routes/_archived/audience/for-marketers'
-import { Route as ArchivedAudienceForHealthcareRouteImport } from './routes/_archived/audience/for-healthcare'
-import { Route as ArchivedAudienceForGamingRouteImport } from './routes/_archived/audience/for-gaming'
-import { Route as ArchivedAudienceForFreelancersRouteImport } from './routes/_archived/audience/for-freelancers'
-import { Route as ArchivedAudienceForEngineeringLeadersRouteImport } from './routes/_archived/audience/for-engineering-leaders'
-import { Route as ArchivedAudienceForEducationRouteImport } from './routes/_archived/audience/for-education'
-import { Route as ArchivedAudienceForDesignersRouteImport } from './routes/_archived/audience/for-designers'
-import { Route as ArchivedAudienceForContentTeamsRouteImport } from './routes/_archived/audience/for-content-teams'
 import { Route as LocaleToolsTranslationFileConverterRouteImport } from './routes/$locale/tools/translation-file-converter'
 import { Route as LocaleToolsLocaleExplorerRouteImport } from './routes/$locale/tools/locale-explorer'
 import { Route as LocaleToolsIcuPlaygroundRouteImport } from './routes/$locale/tools/icu-playground'
@@ -325,161 +299,6 @@ const LocaleBlogIndexRoute = LocaleBlogIndexRouteImport.update({
   path: '/$locale/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ArchivedI18nTechnicalMultilingualSeoRoute =
-  ArchivedI18nTechnicalMultilingualSeoRouteImport.update({
-    id: '/_archived/i18n/technical-multilingual-seo',
-    path: '/i18n/technical-multilingual-seo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nTechnicalInternationalSeoRoute =
-  ArchivedI18nTechnicalInternationalSeoRouteImport.update({
-    id: '/_archived/i18n/technical-international-seo',
-    path: '/i18n/technical-international-seo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nSoftwareLocalizationServicesRoute =
-  ArchivedI18nSoftwareLocalizationServicesRouteImport.update({
-    id: '/_archived/i18n/software-localization-services',
-    path: '/i18n/software-localization-services',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nSeoInternationalAudiencesRoute =
-  ArchivedI18nSeoInternationalAudiencesRouteImport.update({
-    id: '/_archived/i18n/seo-international-audiences',
-    path: '/i18n/seo-international-audiences',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nSecurityComplianceRoute =
-  ArchivedI18nSecurityComplianceRouteImport.update({
-    id: '/_archived/i18n/security-compliance',
-    path: '/i18n/security-compliance',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nReactIntlRoute = ArchivedI18nReactIntlRouteImport.update({
-  id: '/_archived/i18n/react-intl',
-  path: '/i18n/react-intl',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ArchivedI18nMultilingualWebsiteSeoRoute =
-  ArchivedI18nMultilingualWebsiteSeoRouteImport.update({
-    id: '/_archived/i18n/multilingual-website-seo',
-    path: '/i18n/multilingual-website-seo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nLocalizationToolsRoute =
-  ArchivedI18nLocalizationToolsRouteImport.update({
-    id: '/_archived/i18n/localization-tools',
-    path: '/i18n/localization-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nLocalizationPlatformsRoute =
-  ArchivedI18nLocalizationPlatformsRouteImport.update({
-    id: '/_archived/i18n/localization-platforms',
-    path: '/i18n/localization-platforms',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nLocalizationManagementRoute =
-  ArchivedI18nLocalizationManagementRouteImport.update({
-    id: '/_archived/i18n/localization-management',
-    path: '/i18n/localization-management',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nLocalSeoInternationalRoute =
-  ArchivedI18nLocalSeoInternationalRouteImport.update({
-    id: '/_archived/i18n/local-seo-international',
-    path: '/i18n/local-seo-international',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nInternationalSeoConsultingRoute =
-  ArchivedI18nInternationalSeoConsultingRouteImport.update({
-    id: '/_archived/i18n/international-seo-consulting',
-    path: '/i18n/international-seo-consulting',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nGlobalMarketSeoRoute =
-  ArchivedI18nGlobalMarketSeoRouteImport.update({
-    id: '/_archived/i18n/global-market-seo',
-    path: '/i18n/global-market-seo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nFormattingUtilitiesRoute =
-  ArchivedI18nFormattingUtilitiesRouteImport.update({
-    id: '/_archived/i18n/formatting-utilities',
-    path: '/i18n/formatting-utilities',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nEcommerceGlobalSeoRoute =
-  ArchivedI18nEcommerceGlobalSeoRouteImport.update({
-    id: '/_archived/i18n/ecommerce-global-seo',
-    path: '/i18n/ecommerce-global-seo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedI18nContentLocalizationServicesRoute =
-  ArchivedI18nContentLocalizationServicesRouteImport.update({
-    id: '/_archived/i18n/content-localization-services',
-    path: '/i18n/content-localization-services',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedAudienceForOpenSourceRoute =
-  ArchivedAudienceForOpenSourceRouteImport.update({
-    id: '/_archived/audience/for-open-source',
-    path: '/audience/for-open-source',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedAudienceForMobileTeamsRoute =
-  ArchivedAudienceForMobileTeamsRouteImport.update({
-    id: '/_archived/audience/for-mobile-teams',
-    path: '/audience/for-mobile-teams',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedAudienceForMarketersRoute =
-  ArchivedAudienceForMarketersRouteImport.update({
-    id: '/_archived/audience/for-marketers',
-    path: '/audience/for-marketers',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedAudienceForHealthcareRoute =
-  ArchivedAudienceForHealthcareRouteImport.update({
-    id: '/_archived/audience/for-healthcare',
-    path: '/audience/for-healthcare',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedAudienceForGamingRoute =
-  ArchivedAudienceForGamingRouteImport.update({
-    id: '/_archived/audience/for-gaming',
-    path: '/audience/for-gaming',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedAudienceForFreelancersRoute =
-  ArchivedAudienceForFreelancersRouteImport.update({
-    id: '/_archived/audience/for-freelancers',
-    path: '/audience/for-freelancers',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedAudienceForEngineeringLeadersRoute =
-  ArchivedAudienceForEngineeringLeadersRouteImport.update({
-    id: '/_archived/audience/for-engineering-leaders',
-    path: '/audience/for-engineering-leaders',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedAudienceForEducationRoute =
-  ArchivedAudienceForEducationRouteImport.update({
-    id: '/_archived/audience/for-education',
-    path: '/audience/for-education',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedAudienceForDesignersRoute =
-  ArchivedAudienceForDesignersRouteImport.update({
-    id: '/_archived/audience/for-designers',
-    path: '/audience/for-designers',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ArchivedAudienceForContentTeamsRoute =
-  ArchivedAudienceForContentTeamsRouteImport.update({
-    id: '/_archived/audience/for-content-teams',
-    path: '/audience/for-content-teams',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LocaleToolsTranslationFileConverterRoute =
   LocaleToolsTranslationFileConverterRouteImport.update({
     id: '/$locale/tools/translation-file-converter',
@@ -851,32 +670,6 @@ export interface FileRoutesByFullPath {
   '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
   '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
   '/$locale/tools/translation-file-converter': typeof LocaleToolsTranslationFileConverterRouteWithChildren
-  '/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
-  '/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
-  '/audience/for-education': typeof ArchivedAudienceForEducationRoute
-  '/audience/for-engineering-leaders': typeof ArchivedAudienceForEngineeringLeadersRoute
-  '/audience/for-freelancers': typeof ArchivedAudienceForFreelancersRoute
-  '/audience/for-gaming': typeof ArchivedAudienceForGamingRoute
-  '/audience/for-healthcare': typeof ArchivedAudienceForHealthcareRoute
-  '/audience/for-marketers': typeof ArchivedAudienceForMarketersRoute
-  '/audience/for-mobile-teams': typeof ArchivedAudienceForMobileTeamsRoute
-  '/audience/for-open-source': typeof ArchivedAudienceForOpenSourceRoute
-  '/i18n/content-localization-services': typeof ArchivedI18nContentLocalizationServicesRoute
-  '/i18n/ecommerce-global-seo': typeof ArchivedI18nEcommerceGlobalSeoRoute
-  '/i18n/formatting-utilities': typeof ArchivedI18nFormattingUtilitiesRoute
-  '/i18n/global-market-seo': typeof ArchivedI18nGlobalMarketSeoRoute
-  '/i18n/international-seo-consulting': typeof ArchivedI18nInternationalSeoConsultingRoute
-  '/i18n/local-seo-international': typeof ArchivedI18nLocalSeoInternationalRoute
-  '/i18n/localization-management': typeof ArchivedI18nLocalizationManagementRoute
-  '/i18n/localization-platforms': typeof ArchivedI18nLocalizationPlatformsRoute
-  '/i18n/localization-tools': typeof ArchivedI18nLocalizationToolsRoute
-  '/i18n/multilingual-website-seo': typeof ArchivedI18nMultilingualWebsiteSeoRoute
-  '/i18n/react-intl': typeof ArchivedI18nReactIntlRoute
-  '/i18n/security-compliance': typeof ArchivedI18nSecurityComplianceRoute
-  '/i18n/seo-international-audiences': typeof ArchivedI18nSeoInternationalAudiencesRoute
-  '/i18n/software-localization-services': typeof ArchivedI18nSoftwareLocalizationServicesRoute
-  '/i18n/technical-international-seo': typeof ArchivedI18nTechnicalInternationalSeoRoute
-  '/i18n/technical-multilingual-seo': typeof ArchivedI18nTechnicalMultilingualSeoRoute
   '/$locale/blog': typeof LocaleBlogIndexRoute
   '/$locale/compare': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
@@ -970,32 +763,6 @@ export interface FileRoutesByTo {
   '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
   '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
   '/$locale/tools/translation-file-converter': typeof LocaleToolsTranslationFileConverterRouteWithChildren
-  '/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
-  '/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
-  '/audience/for-education': typeof ArchivedAudienceForEducationRoute
-  '/audience/for-engineering-leaders': typeof ArchivedAudienceForEngineeringLeadersRoute
-  '/audience/for-freelancers': typeof ArchivedAudienceForFreelancersRoute
-  '/audience/for-gaming': typeof ArchivedAudienceForGamingRoute
-  '/audience/for-healthcare': typeof ArchivedAudienceForHealthcareRoute
-  '/audience/for-marketers': typeof ArchivedAudienceForMarketersRoute
-  '/audience/for-mobile-teams': typeof ArchivedAudienceForMobileTeamsRoute
-  '/audience/for-open-source': typeof ArchivedAudienceForOpenSourceRoute
-  '/i18n/content-localization-services': typeof ArchivedI18nContentLocalizationServicesRoute
-  '/i18n/ecommerce-global-seo': typeof ArchivedI18nEcommerceGlobalSeoRoute
-  '/i18n/formatting-utilities': typeof ArchivedI18nFormattingUtilitiesRoute
-  '/i18n/global-market-seo': typeof ArchivedI18nGlobalMarketSeoRoute
-  '/i18n/international-seo-consulting': typeof ArchivedI18nInternationalSeoConsultingRoute
-  '/i18n/local-seo-international': typeof ArchivedI18nLocalSeoInternationalRoute
-  '/i18n/localization-management': typeof ArchivedI18nLocalizationManagementRoute
-  '/i18n/localization-platforms': typeof ArchivedI18nLocalizationPlatformsRoute
-  '/i18n/localization-tools': typeof ArchivedI18nLocalizationToolsRoute
-  '/i18n/multilingual-website-seo': typeof ArchivedI18nMultilingualWebsiteSeoRoute
-  '/i18n/react-intl': typeof ArchivedI18nReactIntlRoute
-  '/i18n/security-compliance': typeof ArchivedI18nSecurityComplianceRoute
-  '/i18n/seo-international-audiences': typeof ArchivedI18nSeoInternationalAudiencesRoute
-  '/i18n/software-localization-services': typeof ArchivedI18nSoftwareLocalizationServicesRoute
-  '/i18n/technical-international-seo': typeof ArchivedI18nTechnicalInternationalSeoRoute
-  '/i18n/technical-multilingual-seo': typeof ArchivedI18nTechnicalMultilingualSeoRoute
   '/$locale/blog': typeof LocaleBlogIndexRoute
   '/$locale/compare': typeof LocaleCompareIndexRoute
   '/$locale/features': typeof LocaleFeaturesIndexRoute
@@ -1091,32 +858,6 @@ export interface FileRoutesById {
   '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
   '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
   '/$locale/tools/translation-file-converter': typeof LocaleToolsTranslationFileConverterRouteWithChildren
-  '/_archived/audience/for-content-teams': typeof ArchivedAudienceForContentTeamsRoute
-  '/_archived/audience/for-designers': typeof ArchivedAudienceForDesignersRoute
-  '/_archived/audience/for-education': typeof ArchivedAudienceForEducationRoute
-  '/_archived/audience/for-engineering-leaders': typeof ArchivedAudienceForEngineeringLeadersRoute
-  '/_archived/audience/for-freelancers': typeof ArchivedAudienceForFreelancersRoute
-  '/_archived/audience/for-gaming': typeof ArchivedAudienceForGamingRoute
-  '/_archived/audience/for-healthcare': typeof ArchivedAudienceForHealthcareRoute
-  '/_archived/audience/for-marketers': typeof ArchivedAudienceForMarketersRoute
-  '/_archived/audience/for-mobile-teams': typeof ArchivedAudienceForMobileTeamsRoute
-  '/_archived/audience/for-open-source': typeof ArchivedAudienceForOpenSourceRoute
-  '/_archived/i18n/content-localization-services': typeof ArchivedI18nContentLocalizationServicesRoute
-  '/_archived/i18n/ecommerce-global-seo': typeof ArchivedI18nEcommerceGlobalSeoRoute
-  '/_archived/i18n/formatting-utilities': typeof ArchivedI18nFormattingUtilitiesRoute
-  '/_archived/i18n/global-market-seo': typeof ArchivedI18nGlobalMarketSeoRoute
-  '/_archived/i18n/international-seo-consulting': typeof ArchivedI18nInternationalSeoConsultingRoute
-  '/_archived/i18n/local-seo-international': typeof ArchivedI18nLocalSeoInternationalRoute
-  '/_archived/i18n/localization-management': typeof ArchivedI18nLocalizationManagementRoute
-  '/_archived/i18n/localization-platforms': typeof ArchivedI18nLocalizationPlatformsRoute
-  '/_archived/i18n/localization-tools': typeof ArchivedI18nLocalizationToolsRoute
-  '/_archived/i18n/multilingual-website-seo': typeof ArchivedI18nMultilingualWebsiteSeoRoute
-  '/_archived/i18n/react-intl': typeof ArchivedI18nReactIntlRoute
-  '/_archived/i18n/security-compliance': typeof ArchivedI18nSecurityComplianceRoute
-  '/_archived/i18n/seo-international-audiences': typeof ArchivedI18nSeoInternationalAudiencesRoute
-  '/_archived/i18n/software-localization-services': typeof ArchivedI18nSoftwareLocalizationServicesRoute
-  '/_archived/i18n/technical-international-seo': typeof ArchivedI18nTechnicalInternationalSeoRoute
-  '/_archived/i18n/technical-multilingual-seo': typeof ArchivedI18nTechnicalMultilingualSeoRoute
   '/$locale/blog/': typeof LocaleBlogIndexRoute
   '/$locale/compare/': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
@@ -1213,32 +954,6 @@ export interface FileRouteTypes {
     | '/$locale/tools/icu-playground'
     | '/$locale/tools/locale-explorer'
     | '/$locale/tools/translation-file-converter'
-    | '/audience/for-content-teams'
-    | '/audience/for-designers'
-    | '/audience/for-education'
-    | '/audience/for-engineering-leaders'
-    | '/audience/for-freelancers'
-    | '/audience/for-gaming'
-    | '/audience/for-healthcare'
-    | '/audience/for-marketers'
-    | '/audience/for-mobile-teams'
-    | '/audience/for-open-source'
-    | '/i18n/content-localization-services'
-    | '/i18n/ecommerce-global-seo'
-    | '/i18n/formatting-utilities'
-    | '/i18n/global-market-seo'
-    | '/i18n/international-seo-consulting'
-    | '/i18n/local-seo-international'
-    | '/i18n/localization-management'
-    | '/i18n/localization-platforms'
-    | '/i18n/localization-tools'
-    | '/i18n/multilingual-website-seo'
-    | '/i18n/react-intl'
-    | '/i18n/security-compliance'
-    | '/i18n/seo-international-audiences'
-    | '/i18n/software-localization-services'
-    | '/i18n/technical-international-seo'
-    | '/i18n/technical-multilingual-seo'
     | '/$locale/blog'
     | '/$locale/compare'
     | '/$locale/features/'
@@ -1332,32 +1047,6 @@ export interface FileRouteTypes {
     | '/$locale/tools/icu-playground'
     | '/$locale/tools/locale-explorer'
     | '/$locale/tools/translation-file-converter'
-    | '/audience/for-content-teams'
-    | '/audience/for-designers'
-    | '/audience/for-education'
-    | '/audience/for-engineering-leaders'
-    | '/audience/for-freelancers'
-    | '/audience/for-gaming'
-    | '/audience/for-healthcare'
-    | '/audience/for-marketers'
-    | '/audience/for-mobile-teams'
-    | '/audience/for-open-source'
-    | '/i18n/content-localization-services'
-    | '/i18n/ecommerce-global-seo'
-    | '/i18n/formatting-utilities'
-    | '/i18n/global-market-seo'
-    | '/i18n/international-seo-consulting'
-    | '/i18n/local-seo-international'
-    | '/i18n/localization-management'
-    | '/i18n/localization-platforms'
-    | '/i18n/localization-tools'
-    | '/i18n/multilingual-website-seo'
-    | '/i18n/react-intl'
-    | '/i18n/security-compliance'
-    | '/i18n/seo-international-audiences'
-    | '/i18n/software-localization-services'
-    | '/i18n/technical-international-seo'
-    | '/i18n/technical-multilingual-seo'
     | '/$locale/blog'
     | '/$locale/compare'
     | '/$locale/features'
@@ -1452,32 +1141,6 @@ export interface FileRouteTypes {
     | '/$locale/tools/icu-playground'
     | '/$locale/tools/locale-explorer'
     | '/$locale/tools/translation-file-converter'
-    | '/_archived/audience/for-content-teams'
-    | '/_archived/audience/for-designers'
-    | '/_archived/audience/for-education'
-    | '/_archived/audience/for-engineering-leaders'
-    | '/_archived/audience/for-freelancers'
-    | '/_archived/audience/for-gaming'
-    | '/_archived/audience/for-healthcare'
-    | '/_archived/audience/for-marketers'
-    | '/_archived/audience/for-mobile-teams'
-    | '/_archived/audience/for-open-source'
-    | '/_archived/i18n/content-localization-services'
-    | '/_archived/i18n/ecommerce-global-seo'
-    | '/_archived/i18n/formatting-utilities'
-    | '/_archived/i18n/global-market-seo'
-    | '/_archived/i18n/international-seo-consulting'
-    | '/_archived/i18n/local-seo-international'
-    | '/_archived/i18n/localization-management'
-    | '/_archived/i18n/localization-platforms'
-    | '/_archived/i18n/localization-tools'
-    | '/_archived/i18n/multilingual-website-seo'
-    | '/_archived/i18n/react-intl'
-    | '/_archived/i18n/security-compliance'
-    | '/_archived/i18n/seo-international-audiences'
-    | '/_archived/i18n/software-localization-services'
-    | '/_archived/i18n/technical-international-seo'
-    | '/_archived/i18n/technical-multilingual-seo'
     | '/$locale/blog/'
     | '/$locale/compare/'
     | '/$locale/features/'
@@ -1572,32 +1235,6 @@ export interface RootRouteChildren {
   LocaleToolsIcuPlaygroundRoute: typeof LocaleToolsIcuPlaygroundRoute
   LocaleToolsLocaleExplorerRoute: typeof LocaleToolsLocaleExplorerRouteWithChildren
   LocaleToolsTranslationFileConverterRoute: typeof LocaleToolsTranslationFileConverterRouteWithChildren
-  ArchivedAudienceForContentTeamsRoute: typeof ArchivedAudienceForContentTeamsRoute
-  ArchivedAudienceForDesignersRoute: typeof ArchivedAudienceForDesignersRoute
-  ArchivedAudienceForEducationRoute: typeof ArchivedAudienceForEducationRoute
-  ArchivedAudienceForEngineeringLeadersRoute: typeof ArchivedAudienceForEngineeringLeadersRoute
-  ArchivedAudienceForFreelancersRoute: typeof ArchivedAudienceForFreelancersRoute
-  ArchivedAudienceForGamingRoute: typeof ArchivedAudienceForGamingRoute
-  ArchivedAudienceForHealthcareRoute: typeof ArchivedAudienceForHealthcareRoute
-  ArchivedAudienceForMarketersRoute: typeof ArchivedAudienceForMarketersRoute
-  ArchivedAudienceForMobileTeamsRoute: typeof ArchivedAudienceForMobileTeamsRoute
-  ArchivedAudienceForOpenSourceRoute: typeof ArchivedAudienceForOpenSourceRoute
-  ArchivedI18nContentLocalizationServicesRoute: typeof ArchivedI18nContentLocalizationServicesRoute
-  ArchivedI18nEcommerceGlobalSeoRoute: typeof ArchivedI18nEcommerceGlobalSeoRoute
-  ArchivedI18nFormattingUtilitiesRoute: typeof ArchivedI18nFormattingUtilitiesRoute
-  ArchivedI18nGlobalMarketSeoRoute: typeof ArchivedI18nGlobalMarketSeoRoute
-  ArchivedI18nInternationalSeoConsultingRoute: typeof ArchivedI18nInternationalSeoConsultingRoute
-  ArchivedI18nLocalSeoInternationalRoute: typeof ArchivedI18nLocalSeoInternationalRoute
-  ArchivedI18nLocalizationManagementRoute: typeof ArchivedI18nLocalizationManagementRoute
-  ArchivedI18nLocalizationPlatformsRoute: typeof ArchivedI18nLocalizationPlatformsRoute
-  ArchivedI18nLocalizationToolsRoute: typeof ArchivedI18nLocalizationToolsRoute
-  ArchivedI18nMultilingualWebsiteSeoRoute: typeof ArchivedI18nMultilingualWebsiteSeoRoute
-  ArchivedI18nReactIntlRoute: typeof ArchivedI18nReactIntlRoute
-  ArchivedI18nSecurityComplianceRoute: typeof ArchivedI18nSecurityComplianceRoute
-  ArchivedI18nSeoInternationalAudiencesRoute: typeof ArchivedI18nSeoInternationalAudiencesRoute
-  ArchivedI18nSoftwareLocalizationServicesRoute: typeof ArchivedI18nSoftwareLocalizationServicesRoute
-  ArchivedI18nTechnicalInternationalSeoRoute: typeof ArchivedI18nTechnicalInternationalSeoRoute
-  ArchivedI18nTechnicalMultilingualSeoRoute: typeof ArchivedI18nTechnicalMultilingualSeoRoute
   LocaleBlogIndexRoute: typeof LocaleBlogIndexRoute
   LocaleCompareIndexRoute: typeof LocaleCompareIndexRoute
   LocaleI18nIndexRoute: typeof LocaleI18nIndexRoute
@@ -1879,188 +1516,6 @@ declare module '@tanstack/react-router' {
       path: '/$locale/blog'
       fullPath: '/$locale/blog'
       preLoaderRoute: typeof LocaleBlogIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/technical-multilingual-seo': {
-      id: '/_archived/i18n/technical-multilingual-seo'
-      path: '/i18n/technical-multilingual-seo'
-      fullPath: '/i18n/technical-multilingual-seo'
-      preLoaderRoute: typeof ArchivedI18nTechnicalMultilingualSeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/technical-international-seo': {
-      id: '/_archived/i18n/technical-international-seo'
-      path: '/i18n/technical-international-seo'
-      fullPath: '/i18n/technical-international-seo'
-      preLoaderRoute: typeof ArchivedI18nTechnicalInternationalSeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/software-localization-services': {
-      id: '/_archived/i18n/software-localization-services'
-      path: '/i18n/software-localization-services'
-      fullPath: '/i18n/software-localization-services'
-      preLoaderRoute: typeof ArchivedI18nSoftwareLocalizationServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/seo-international-audiences': {
-      id: '/_archived/i18n/seo-international-audiences'
-      path: '/i18n/seo-international-audiences'
-      fullPath: '/i18n/seo-international-audiences'
-      preLoaderRoute: typeof ArchivedI18nSeoInternationalAudiencesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/security-compliance': {
-      id: '/_archived/i18n/security-compliance'
-      path: '/i18n/security-compliance'
-      fullPath: '/i18n/security-compliance'
-      preLoaderRoute: typeof ArchivedI18nSecurityComplianceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/react-intl': {
-      id: '/_archived/i18n/react-intl'
-      path: '/i18n/react-intl'
-      fullPath: '/i18n/react-intl'
-      preLoaderRoute: typeof ArchivedI18nReactIntlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/multilingual-website-seo': {
-      id: '/_archived/i18n/multilingual-website-seo'
-      path: '/i18n/multilingual-website-seo'
-      fullPath: '/i18n/multilingual-website-seo'
-      preLoaderRoute: typeof ArchivedI18nMultilingualWebsiteSeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/localization-tools': {
-      id: '/_archived/i18n/localization-tools'
-      path: '/i18n/localization-tools'
-      fullPath: '/i18n/localization-tools'
-      preLoaderRoute: typeof ArchivedI18nLocalizationToolsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/localization-platforms': {
-      id: '/_archived/i18n/localization-platforms'
-      path: '/i18n/localization-platforms'
-      fullPath: '/i18n/localization-platforms'
-      preLoaderRoute: typeof ArchivedI18nLocalizationPlatformsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/localization-management': {
-      id: '/_archived/i18n/localization-management'
-      path: '/i18n/localization-management'
-      fullPath: '/i18n/localization-management'
-      preLoaderRoute: typeof ArchivedI18nLocalizationManagementRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/local-seo-international': {
-      id: '/_archived/i18n/local-seo-international'
-      path: '/i18n/local-seo-international'
-      fullPath: '/i18n/local-seo-international'
-      preLoaderRoute: typeof ArchivedI18nLocalSeoInternationalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/international-seo-consulting': {
-      id: '/_archived/i18n/international-seo-consulting'
-      path: '/i18n/international-seo-consulting'
-      fullPath: '/i18n/international-seo-consulting'
-      preLoaderRoute: typeof ArchivedI18nInternationalSeoConsultingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/global-market-seo': {
-      id: '/_archived/i18n/global-market-seo'
-      path: '/i18n/global-market-seo'
-      fullPath: '/i18n/global-market-seo'
-      preLoaderRoute: typeof ArchivedI18nGlobalMarketSeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/formatting-utilities': {
-      id: '/_archived/i18n/formatting-utilities'
-      path: '/i18n/formatting-utilities'
-      fullPath: '/i18n/formatting-utilities'
-      preLoaderRoute: typeof ArchivedI18nFormattingUtilitiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/ecommerce-global-seo': {
-      id: '/_archived/i18n/ecommerce-global-seo'
-      path: '/i18n/ecommerce-global-seo'
-      fullPath: '/i18n/ecommerce-global-seo'
-      preLoaderRoute: typeof ArchivedI18nEcommerceGlobalSeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/i18n/content-localization-services': {
-      id: '/_archived/i18n/content-localization-services'
-      path: '/i18n/content-localization-services'
-      fullPath: '/i18n/content-localization-services'
-      preLoaderRoute: typeof ArchivedI18nContentLocalizationServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/audience/for-open-source': {
-      id: '/_archived/audience/for-open-source'
-      path: '/audience/for-open-source'
-      fullPath: '/audience/for-open-source'
-      preLoaderRoute: typeof ArchivedAudienceForOpenSourceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/audience/for-mobile-teams': {
-      id: '/_archived/audience/for-mobile-teams'
-      path: '/audience/for-mobile-teams'
-      fullPath: '/audience/for-mobile-teams'
-      preLoaderRoute: typeof ArchivedAudienceForMobileTeamsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/audience/for-marketers': {
-      id: '/_archived/audience/for-marketers'
-      path: '/audience/for-marketers'
-      fullPath: '/audience/for-marketers'
-      preLoaderRoute: typeof ArchivedAudienceForMarketersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/audience/for-healthcare': {
-      id: '/_archived/audience/for-healthcare'
-      path: '/audience/for-healthcare'
-      fullPath: '/audience/for-healthcare'
-      preLoaderRoute: typeof ArchivedAudienceForHealthcareRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/audience/for-gaming': {
-      id: '/_archived/audience/for-gaming'
-      path: '/audience/for-gaming'
-      fullPath: '/audience/for-gaming'
-      preLoaderRoute: typeof ArchivedAudienceForGamingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/audience/for-freelancers': {
-      id: '/_archived/audience/for-freelancers'
-      path: '/audience/for-freelancers'
-      fullPath: '/audience/for-freelancers'
-      preLoaderRoute: typeof ArchivedAudienceForFreelancersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/audience/for-engineering-leaders': {
-      id: '/_archived/audience/for-engineering-leaders'
-      path: '/audience/for-engineering-leaders'
-      fullPath: '/audience/for-engineering-leaders'
-      preLoaderRoute: typeof ArchivedAudienceForEngineeringLeadersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/audience/for-education': {
-      id: '/_archived/audience/for-education'
-      path: '/audience/for-education'
-      fullPath: '/audience/for-education'
-      preLoaderRoute: typeof ArchivedAudienceForEducationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/audience/for-designers': {
-      id: '/_archived/audience/for-designers'
-      path: '/audience/for-designers'
-      fullPath: '/audience/for-designers'
-      preLoaderRoute: typeof ArchivedAudienceForDesignersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_archived/audience/for-content-teams': {
-      id: '/_archived/audience/for-content-teams'
-      path: '/audience/for-content-teams'
-      fullPath: '/audience/for-content-teams'
-      preLoaderRoute: typeof ArchivedAudienceForContentTeamsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/tools/translation-file-converter': {
@@ -2568,43 +2023,6 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleToolsLocaleExplorerRoute: LocaleToolsLocaleExplorerRouteWithChildren,
   LocaleToolsTranslationFileConverterRoute:
     LocaleToolsTranslationFileConverterRouteWithChildren,
-  ArchivedAudienceForContentTeamsRoute: ArchivedAudienceForContentTeamsRoute,
-  ArchivedAudienceForDesignersRoute: ArchivedAudienceForDesignersRoute,
-  ArchivedAudienceForEducationRoute: ArchivedAudienceForEducationRoute,
-  ArchivedAudienceForEngineeringLeadersRoute:
-    ArchivedAudienceForEngineeringLeadersRoute,
-  ArchivedAudienceForFreelancersRoute: ArchivedAudienceForFreelancersRoute,
-  ArchivedAudienceForGamingRoute: ArchivedAudienceForGamingRoute,
-  ArchivedAudienceForHealthcareRoute: ArchivedAudienceForHealthcareRoute,
-  ArchivedAudienceForMarketersRoute: ArchivedAudienceForMarketersRoute,
-  ArchivedAudienceForMobileTeamsRoute: ArchivedAudienceForMobileTeamsRoute,
-  ArchivedAudienceForOpenSourceRoute: ArchivedAudienceForOpenSourceRoute,
-  ArchivedI18nContentLocalizationServicesRoute:
-    ArchivedI18nContentLocalizationServicesRoute,
-  ArchivedI18nEcommerceGlobalSeoRoute: ArchivedI18nEcommerceGlobalSeoRoute,
-  ArchivedI18nFormattingUtilitiesRoute: ArchivedI18nFormattingUtilitiesRoute,
-  ArchivedI18nGlobalMarketSeoRoute: ArchivedI18nGlobalMarketSeoRoute,
-  ArchivedI18nInternationalSeoConsultingRoute:
-    ArchivedI18nInternationalSeoConsultingRoute,
-  ArchivedI18nLocalSeoInternationalRoute:
-    ArchivedI18nLocalSeoInternationalRoute,
-  ArchivedI18nLocalizationManagementRoute:
-    ArchivedI18nLocalizationManagementRoute,
-  ArchivedI18nLocalizationPlatformsRoute:
-    ArchivedI18nLocalizationPlatformsRoute,
-  ArchivedI18nLocalizationToolsRoute: ArchivedI18nLocalizationToolsRoute,
-  ArchivedI18nMultilingualWebsiteSeoRoute:
-    ArchivedI18nMultilingualWebsiteSeoRoute,
-  ArchivedI18nReactIntlRoute: ArchivedI18nReactIntlRoute,
-  ArchivedI18nSecurityComplianceRoute: ArchivedI18nSecurityComplianceRoute,
-  ArchivedI18nSeoInternationalAudiencesRoute:
-    ArchivedI18nSeoInternationalAudiencesRoute,
-  ArchivedI18nSoftwareLocalizationServicesRoute:
-    ArchivedI18nSoftwareLocalizationServicesRoute,
-  ArchivedI18nTechnicalInternationalSeoRoute:
-    ArchivedI18nTechnicalInternationalSeoRoute,
-  ArchivedI18nTechnicalMultilingualSeoRoute:
-    ArchivedI18nTechnicalMultilingualSeoRoute,
   LocaleBlogIndexRoute: LocaleBlogIndexRoute,
   LocaleCompareIndexRoute: LocaleCompareIndexRoute,
   LocaleI18nIndexRoute: LocaleI18nIndexRoute,
