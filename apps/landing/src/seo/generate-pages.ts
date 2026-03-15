@@ -428,8 +428,10 @@ export function generateFeatureDetailPages(
  */
 function toBlogPostMeta(item: ContentEntryListItem): BlogPostMeta {
   const raw = item as unknown as Record<string, unknown>;
-  const availableLanguages = Array.isArray(raw.availableLanguages)
-    ? (raw.availableLanguages as unknown[]).flatMap((v): string[] => {
+  // API returns `langs` (list response) or `availableLanguages` (SDK type) — check both
+  const rawLangs = Array.isArray(raw.langs) ? raw.langs : raw.availableLanguages;
+  const availableLanguages = Array.isArray(rawLangs)
+    ? (rawLangs as unknown[]).flatMap((v): string[] => {
       if (typeof v === "string") return [v];
       if (v !== null && typeof v === "object") {
         const code = (v as Record<string, unknown>).code;
@@ -452,8 +454,10 @@ function toBlogPostMeta(item: ContentEntryListItem): BlogPostMeta {
 
 function toFeaturePageMeta(item: ContentEntryListItem): FeaturePageMeta {
   const raw = item as unknown as Record<string, unknown>;
-  const availableLanguages = Array.isArray(raw.availableLanguages)
-    ? (raw.availableLanguages as unknown[]).flatMap((v): string[] => {
+  // API returns `langs` (list response) or `availableLanguages` (SDK type) — check both
+  const rawLangs = Array.isArray(raw.langs) ? raw.langs : raw.availableLanguages;
+  const availableLanguages = Array.isArray(rawLangs)
+    ? (rawLangs as unknown[]).flatMap((v): string[] => {
       if (typeof v === "string") return [v];
       if (v !== null && typeof v === "object") {
         const code = (v as Record<string, unknown>).code;
