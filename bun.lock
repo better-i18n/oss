@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@better-i18n/root",
@@ -155,7 +154,7 @@
     },
     "packages/cli": {
       "name": "@better-i18n/cli",
-      "version": "0.2.5",
+      "version": "0.2.6",
       "bin": {
         "better-i18n": "./dist/index.js",
       },

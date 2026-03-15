@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.6
+
+### Patch Changes
+
+- Fix doctor false positives and add comprehensive test suite
+  - Eliminate 216 false positives in doctor code analysis (jsx-attribute coordinate/hex/CSS filters, jsx-text decimal ignoring)
+  - Fix orphan-keys false positives in doctor diagnostics
+  - Add 260 new tests for doctor pipeline
+
 ## 0.2.5
 
 ### Patch Changes
