@@ -1,21 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconGlobe,
-  IconCodeBrackets,
-  IconSettingsGear1,
-  IconGroup1,
-  IconRocket,
-  IconZap,
-  IconChart1,
-  IconSparklesSoft,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/software-localization")({
   loader: createPageLoader(),
@@ -23,7 +12,6 @@ export const Route = createFileRoute("/$locale/i18n/software-localization")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "softwareLocalization",
       pathname: "/i18n/software-localization",
       pageType: "educational",
@@ -38,16 +26,16 @@ export const Route = createFileRoute("/$locale/i18n/software-localization")({
 });
 
 const localizationTypes = [
-  { icon: IconGlobe, titleKey: "types.web.title", descKey: "types.web.description", defaultTitle: "Web Application Localization", defaultDesc: "Adapting single-page applications (SPAs) and server-rendered frameworks for multiple locales. Involves browser locale detection, CDN-delivered translation bundles, dynamic route-based locale switching, and SEO-friendly hreflang implementation." },
-  { icon: IconRocket, titleKey: "types.mobile.title", descKey: "types.mobile.description", defaultTitle: "Mobile App Localization", defaultDesc: "Localizing iOS apps using .strings and .stringsdict files, Android apps using XML string resources, and cross-platform frameworks like React Native and Flutter. Includes app store listing localization for each target market." },
-  { icon: IconCodeBrackets, titleKey: "types.desktop.title", descKey: "types.desktop.description", defaultTitle: "Desktop Application Localization", defaultDesc: "Adapting Windows applications using .resx resource files, macOS apps using .lproj bundles, and Linux apps using gettext PO files. Covers installer localization, help documentation, and system-level integration." },
-  { icon: IconSettingsGear1, titleKey: "types.saas.title", descKey: "types.saas.description", defaultTitle: "SaaS Platform Localization", defaultDesc: "Multi-tenant locale support for cloud platforms including user-facing dashboards, admin interfaces, transactional emails, API response messages, and in-app notifications. Requires coordinating localization across microservices." },
+  { icon: "globe", titleKey: "types.web.title", descKey: "types.web.description", defaultTitle: "Web Application Localization", defaultDesc: "Adapting single-page applications (SPAs) and server-rendered frameworks for multiple locales. Involves browser locale detection, CDN-delivered translation bundles, dynamic route-based locale switching, and SEO-friendly hreflang implementation." },
+  { icon: "rocket", titleKey: "types.mobile.title", descKey: "types.mobile.description", defaultTitle: "Mobile App Localization", defaultDesc: "Localizing iOS apps using .strings and .stringsdict files, Android apps using XML string resources, and cross-platform frameworks like React Native and Flutter. Includes app store listing localization for each target market." },
+  { icon: "code-brackets", titleKey: "types.desktop.title", descKey: "types.desktop.description", defaultTitle: "Desktop Application Localization", defaultDesc: "Adapting Windows applications using .resx resource files, macOS apps using .lproj bundles, and Linux apps using gettext PO files. Covers installer localization, help documentation, and system-level integration." },
+  { icon: "settings-gear", titleKey: "types.saas.title", descKey: "types.saas.description", defaultTitle: "SaaS Platform Localization", defaultDesc: "Multi-tenant locale support for cloud platforms including user-facing dashboards, admin interfaces, transactional emails, API response messages, and in-app notifications. Requires coordinating localization across microservices." },
 ];
 
 const toolCategories = [
-  { icon: IconGroup1, titleKey: "tools.tms.title", descKey: "tools.tms.description", defaultTitle: "Translation Management Systems (TMS)", defaultDesc: "Centralized platforms that manage the full translation lifecycle — organizing string files, coordinating translator assignments, maintaining translation memory, and tracking progress across languages. A TMS is the backbone of any scalable localization workflow." },
-  { icon: IconSparklesSoft, titleKey: "tools.cat.title", descKey: "tools.cat.description", defaultTitle: "Computer-Assisted Translation (CAT) Tools", defaultDesc: "Desktop or cloud-based tools that help professional translators work faster with translation memory, glossary lookups, and terminology management. CAT tools suggest previously approved translations and enforce consistency across large projects." },
-  { icon: IconZap, titleKey: "tools.continuous.title", descKey: "tools.continuous.description", defaultTitle: "Continuous Localization Platforms", defaultDesc: "Developer-first platforms like Better i18n that integrate directly with CI/CD pipelines and source control. They automatically detect new strings, trigger translations, and deploy updated language files — keeping localization in sync with every code release." },
+  { icon: "group", titleKey: "tools.tms.title", descKey: "tools.tms.description", defaultTitle: "Translation Management Systems (TMS)", defaultDesc: "Centralized platforms that manage the full translation lifecycle — organizing string files, coordinating translator assignments, maintaining translation memory, and tracking progress across languages. A TMS is the backbone of any scalable localization workflow." },
+  { icon: "sparkles-soft", titleKey: "tools.cat.title", descKey: "tools.cat.description", defaultTitle: "Computer-Assisted Translation (CAT) Tools", defaultDesc: "Desktop or cloud-based tools that help professional translators work faster with translation memory, glossary lookups, and terminology management. CAT tools suggest previously approved translations and enforce consistency across large projects." },
+  { icon: "zap", titleKey: "tools.continuous.title", descKey: "tools.continuous.description", defaultTitle: "Continuous Localization Platforms", defaultDesc: "Developer-first platforms like Better i18n that integrate directly with CI/CD pipelines and source control. They automatically detect new strings, trigger translations, and deploy updated language files — keeping localization in sync with every code release." },
 ];
 
 const localizationMetrics = [
@@ -59,10 +47,10 @@ const localizationMetrics = [
 ];
 
 const processSteps = [
-  { icon: IconCodeBrackets, titleKey: "process.internationalization.title", descKey: "process.internationalization.description", defaultTitle: "Internationalization (i18n)", defaultDesc: "Prepare your codebase by externalizing strings, supporting Unicode, and abstracting locale-dependent logic like dates and currencies." },
-  { icon: IconGlobe, titleKey: "process.translation.title", descKey: "process.translation.description", defaultTitle: "Translation", defaultDesc: "Translate all user-facing strings using professional translators, AI-powered tools, or a hybrid workflow managed through a TMS." },
-  { icon: IconSettingsGear1, titleKey: "process.adaptation.title", descKey: "process.adaptation.description", defaultTitle: "Cultural Adaptation", defaultDesc: "Adjust layouts for text expansion, support RTL languages, localize images and icons, and adapt content to regional cultural norms." },
-  { icon: IconGroup1, titleKey: "process.testing.title", descKey: "process.testing.description", defaultTitle: "Localization Testing", defaultDesc: "Run linguistic, functional, and visual QA across every supported locale to catch truncation, encoding issues, and cultural mismatches." },
+  { icon: "code-brackets", titleKey: "process.internationalization.title", descKey: "process.internationalization.description", defaultTitle: "Internationalization (i18n)", defaultDesc: "Prepare your codebase by externalizing strings, supporting Unicode, and abstracting locale-dependent logic like dates and currencies." },
+  { icon: "globe", titleKey: "process.translation.title", descKey: "process.translation.description", defaultTitle: "Translation", defaultDesc: "Translate all user-facing strings using professional translators, AI-powered tools, or a hybrid workflow managed through a TMS." },
+  { icon: "settings-gear", titleKey: "process.adaptation.title", descKey: "process.adaptation.description", defaultTitle: "Cultural Adaptation", defaultDesc: "Adjust layouts for text expansion, support RTL languages, localize images and icons, and adapt content to regional cultural norms." },
+  { icon: "group", titleKey: "process.testing.title", descKey: "process.testing.description", defaultTitle: "Localization Testing", defaultDesc: "Run linguistic, functional, and visual QA across every supported locale to catch truncation, encoding issues, and cultural mismatches." },
 ];
 
 function SoftwareLocalizationPage() {
@@ -103,7 +91,7 @@ function SoftwareLocalizationPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconCodeBrackets className="size-4" />
+              <SpriteIcon name="code-brackets" className="size-4" />
               <span>{t("badge", { defaultValue: "Software Localization" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -143,23 +131,23 @@ function SoftwareLocalizationPage() {
               </h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <IconCheckmark1 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
                   {t("scope.uiStrings", { defaultValue: "User interface strings and labels" })}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <IconCheckmark1 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
                   {t("scope.dateTime", { defaultValue: "Date, time, and number formatting" })}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <IconCheckmark1 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
                   {t("scope.layout", { defaultValue: "Layout and RTL language support" })}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <IconCheckmark1 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
                   {t("scope.media", { defaultValue: "Images, icons, and multimedia content" })}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <IconCheckmark1 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
                   {t("scope.legal", { defaultValue: "Legal and compliance requirements" })}
                 </li>
               </ul>
@@ -183,7 +171,7 @@ function SoftwareLocalizationPage() {
             {localizationTypes.map((type) => (
               <div key={type.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-full bg-mist-100 flex items-center justify-center mb-4">
-                  <type.icon className="size-5 text-mist-700" />
+                  <SpriteIcon name={type.icon} className="size-5 text-mist-700" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(type.titleKey, { defaultValue: type.defaultTitle })}
@@ -215,7 +203,7 @@ function SoftwareLocalizationPage() {
                   <div className="size-8 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium">
                     {index + 1}
                   </div>
-                  <step.icon className="size-5 text-mist-600" />
+                  <SpriteIcon name={step.icon} className="size-5 text-mist-600" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(step.titleKey, { defaultValue: step.defaultTitle })}
@@ -245,7 +233,7 @@ function SoftwareLocalizationPage() {
               <ul className="space-y-4">
                 {benefits.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
@@ -296,7 +284,7 @@ function SoftwareLocalizationPage() {
             {toolCategories.map((tool) => (
               <div key={tool.titleKey} className="p-6 rounded-xl bg-mist-50 border border-mist-200">
                 <div className="size-10 rounded-full bg-mist-100 flex items-center justify-center mb-4">
-                  <tool.icon className="size-5 text-mist-700" />
+                  <SpriteIcon name={tool.icon} className="size-5 text-mist-700" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(tool.titleKey, { defaultValue: tool.defaultTitle })}
@@ -325,7 +313,7 @@ function SoftwareLocalizationPage() {
             {localizationMetrics.map((metric) => (
               <div key={metric.labelKey} className="p-5 rounded-xl bg-white border border-mist-200 text-center">
                 <div className="size-8 rounded-full bg-mist-100 flex items-center justify-center mx-auto mb-3">
-                  <IconChart1 className="size-4 text-mist-700" />
+                  <SpriteIcon name="chart" className="size-4 text-mist-700" />
                 </div>
                 <h3 className="text-sm font-medium text-mist-950 mb-1">
                   {t(metric.labelKey, { defaultValue: metric.defaultLabel })}
@@ -428,7 +416,7 @@ function SoftwareLocalizationPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

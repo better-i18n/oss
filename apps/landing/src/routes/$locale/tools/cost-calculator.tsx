@@ -18,7 +18,6 @@ export const Route = createFileRoute("/$locale/tools/cost-calculator")({
     getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "toolsCostCalculator",
       pathname: "/tools/cost-calculator",
       pageType: "tool",

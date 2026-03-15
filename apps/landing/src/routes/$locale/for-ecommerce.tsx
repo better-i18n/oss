@@ -3,7 +3,7 @@ import { personaLoader, personaHead } from "@/lib/cms-persona-helpers";
 import { CmsPersonaPage, CmsPersonaNotFound } from "@/components/CmsPersonaPage";
 
 export const Route = createFileRoute("/$locale/for-ecommerce")({
-  loader: ({ params, context }) => personaLoader("for-ecommerce", params.locale, context.locales),
+  loader: ({ params }) => personaLoader("for-ecommerce", params.locale),
   head: ({ loaderData }) => personaHead(loaderData),
   component: () => {
     const data = Route.useLoaderData();

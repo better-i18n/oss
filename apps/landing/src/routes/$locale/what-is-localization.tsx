@@ -1,14 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
-  IconGlobe,
   IconImages1,
   IconCoin1,
-  IconCheckmark1,
   IconFiles,
-  IconArrowRight,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/what-is-localization")({
@@ -17,7 +15,6 @@ export const Route = createFileRoute("/$locale/what-is-localization")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "whatIsLocalization",
       pathname: "/what-is-localization",
       pageType: "educational",
@@ -36,7 +33,7 @@ function WhatIsLocalizationPage() {
   const { locale } = Route.useParams();
 
   const elements = [
-    { icon: IconGlobe, titleKey: "elements.translation.title", descKey: "elements.translation.description" },
+    { icon: "globe", titleKey: "elements.translation.title", descKey: "elements.translation.description" },
     { icon: IconCoin1, titleKey: "elements.formatting.title", descKey: "elements.formatting.description" },
     { icon: IconImages1, titleKey: "elements.cultural.title", descKey: "elements.cultural.description" },
     { icon: IconFiles, titleKey: "elements.legal.title", descKey: "elements.legal.description" },
@@ -67,7 +64,7 @@ function WhatIsLocalizationPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mist-100 text-mist-700 text-sm font-medium mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               {t("badge")}
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1] lg:text-6xl/[1.1]">
@@ -126,7 +123,7 @@ function WhatIsLocalizationPage() {
             {elements.map((element) => (
               <div key={element.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <element.icon className="size-5" />
+                  {typeof element.icon === "string" ? <SpriteIcon name={element.icon} className="size-5" /> : <element.icon className="size-5" />}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">{t(element.titleKey)}</h3>
                 <p className="text-sm text-mist-700 leading-relaxed">{t(element.descKey)}</p>
@@ -174,7 +171,7 @@ function WhatIsLocalizationPage() {
               <ul className="space-y-4">
                 {benefits.map((benefitKey) => (
                   <li key={benefitKey} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefitKey)}</span>
                   </li>
                 ))}
@@ -218,7 +215,7 @@ function WhatIsLocalizationPage() {
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.i18n")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.i18nDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
               to="/$locale/what-is"
@@ -229,7 +226,7 @@ function WhatIsLocalizationPage() {
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.overview")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.overviewDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
               to="/$locale/i18n"
@@ -240,7 +237,7 @@ function WhatIsLocalizationPage() {
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.frameworks")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.frameworksDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
               to="/$locale/compare"
@@ -251,7 +248,7 @@ function WhatIsLocalizationPage() {
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.compare")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.compareDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
           </div>
         </div>

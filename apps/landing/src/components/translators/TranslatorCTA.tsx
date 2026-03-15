@@ -1,8 +1,5 @@
 import { useTranslations } from "@better-i18n/use-intl";
-import {
-  IconArrowRight,
-  IconChevronRight,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 export default function TranslatorCTA() {
   const t = useTranslations("translators");
@@ -28,14 +25,14 @@ export default function TranslatorCTA() {
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-white/90 transition-colors"
               >
                 {t("cta.startTrial")}
-                <IconArrowRight className="size-4" />
+                <SpriteIcon name="arrow-right" className="size-4" />
               </a>
               <a
                 href="https://cal.com/better-i18n/30min?overlayCalendar=true"
                 className="inline-flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white transition-colors"
               >
                 {t("cta.bookDemo")}
-                <IconChevronRight className="size-4" />
+                <SpriteIcon name="chevron-right" className="size-4" />
               </a>
             </div>
 

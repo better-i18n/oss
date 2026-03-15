@@ -4,11 +4,9 @@ import { useT } from "@/lib/i18n";
 import { Link, useParams } from "@tanstack/react-router";
 import {
   IconCircleInfo,
-  IconCheckmark1,
   IconPageText,
-  IconGithub,
-  IconArrowRight,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -138,7 +136,7 @@ function AIFeatureCard() {
                       </div>
                     ) : (
                       <div className="text-mist-900 font-bold py-1.5 bg-mist-100 rounded text-[10px] text-center flex items-center justify-center gap-1.5 border border-mist-200 animate-in zoom-in-95 duration-300">
-                        <IconCheckmark1 className="size-3" />
+                        <SpriteIcon name="checkmark" className="size-3" />
                         {t("brandConsistent", {
                           defaultValue: "Brand-consistent \u2713",
                         })}
@@ -271,7 +269,7 @@ function PublishFeatureCard() {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <IconGithub className="size-3.5 text-mist-900" />
+                <SpriteIcon name="github" className="size-3.5 text-mist-900" />
                 <span className="text-[10px] font-bold text-mist-950">
                   {t("pullRequest", { defaultValue: "Pull Request" })}
                 </span>
@@ -425,7 +423,7 @@ function AIContextCard() {
                 )}
               >
                 <div className="size-4 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
-                  <IconCheckmark1 className="size-2.5 text-emerald-600" />
+                  <SpriteIcon name="checkmark" className="size-2.5 text-emerald-600" />
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-bold text-mist-900 leading-none">
@@ -500,7 +498,7 @@ export default function Features() {
               className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950 w-fit"
             >
               {t("seeHowItWorks", { defaultValue: "See how it works" })}
-              <IconArrowRight className="w-4 h-4" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4" />
             </Link>
           </div>
 

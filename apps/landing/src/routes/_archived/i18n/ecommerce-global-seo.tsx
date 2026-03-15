@@ -1,19 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconGlobe,
-  IconCheckmark1,
-  IconArrowRight,
-  IconChart1,
-  IconSettingsGear1,
-  IconMagnifyingGlass,
-  IconGroup1,
-  IconRocket,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/ecommerce-global-seo")({
   loader: createPageLoader(),
@@ -21,7 +12,6 @@ export const Route = createFileRoute("/_archived/i18n/ecommerce-global-seo")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "ecommerceGlobalSeo",
       pathname: "/i18n/ecommerce-global-seo",
       pageType: "educational",
@@ -36,10 +26,10 @@ export const Route = createFileRoute("/_archived/i18n/ecommerce-global-seo")({
 });
 
 const challenges = [
-  { icon: IconGroup1, titleKey: "challenges.productVariants.title", descKey: "challenges.productVariants.description", defaultTitle: "Product Variant Management", defaultDesc: "Each locale may have different product variants, sizes, or availability — requiring unique SKU-level pages with localized structured data for every market." },
-  { icon: IconSettingsGear1, titleKey: "challenges.pricingCurrency.title", descKey: "challenges.pricingCurrency.description", defaultTitle: "Pricing & Currency Localization", defaultDesc: "Product schema must display correct local currencies and pricing, and price changes must propagate across all localized pages without breaking rich results." },
-  { icon: IconMagnifyingGlass, titleKey: "challenges.canonicalization.title", descKey: "challenges.canonicalization.description", defaultTitle: "Cross-Market Canonicalization", defaultDesc: "Canonical tags and hreflang annotations must correctly link language variants of the same product to prevent duplicate content penalties across international storefronts." },
-  { icon: IconRocket, titleKey: "challenges.shoppingFeeds.title", descKey: "challenges.shoppingFeeds.description", defaultTitle: "Shopping Feed Localization", defaultDesc: "Google Shopping, Amazon, and regional marketplace feeds must be localized with translated titles, descriptions, and market-specific attributes for each target country." },
+  { icon: "group", titleKey: "challenges.productVariants.title", descKey: "challenges.productVariants.description", defaultTitle: "Product Variant Management", defaultDesc: "Each locale may have different product variants, sizes, or availability — requiring unique SKU-level pages with localized structured data for every market." },
+  { icon: "settings-gear", titleKey: "challenges.pricingCurrency.title", descKey: "challenges.pricingCurrency.description", defaultTitle: "Pricing & Currency Localization", defaultDesc: "Product schema must display correct local currencies and pricing, and price changes must propagate across all localized pages without breaking rich results." },
+  { icon: "magnifying-glass", titleKey: "challenges.canonicalization.title", descKey: "challenges.canonicalization.description", defaultTitle: "Cross-Market Canonicalization", defaultDesc: "Canonical tags and hreflang annotations must correctly link language variants of the same product to prevent duplicate content penalties across international storefronts." },
+  { icon: "rocket", titleKey: "challenges.shoppingFeeds.title", descKey: "challenges.shoppingFeeds.description", defaultTitle: "Shopping Feed Localization", defaultDesc: "Google Shopping, Amazon, and regional marketplace feeds must be localized with translated titles, descriptions, and market-specific attributes for each target country." },
 ];
 
 function EcommerceGlobalSeoPage() {
@@ -83,7 +73,7 @@ function EcommerceGlobalSeoPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               <span>{t("badge", { defaultValue: "E-Commerce Global SEO" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -142,7 +132,7 @@ function EcommerceGlobalSeoPage() {
             {challenges.map((challenge) => (
               <div key={challenge.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <challenge.icon className="size-5" />
+                  <SpriteIcon name={challenge.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
@@ -170,7 +160,7 @@ function EcommerceGlobalSeoPage() {
             {marketplaces.map((marketplace) => (
               <div key={marketplace.titleKey} className="p-6 rounded-xl border border-mist-200 bg-mist-50">
                 <div className="flex items-center gap-3 mb-3">
-                  <IconChart1 className="size-5 text-mist-700" />
+                  <SpriteIcon name="chart" className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
                     {t(marketplace.titleKey, { defaultValue: marketplace.defaultTitle })}
                   </h3>
@@ -199,7 +189,7 @@ function EcommerceGlobalSeoPage() {
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
@@ -293,7 +283,7 @@ function EcommerceGlobalSeoPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

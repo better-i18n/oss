@@ -1,6 +1,6 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
-import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 const alternatives = [
   { key: "crowdin", name: "Crowdin", href: "/$locale/compare/crowdin" },
@@ -62,7 +62,7 @@ export default function Alternatives() {
                 className="inline-flex items-center gap-2 rounded-full border border-mist-200 bg-mist-950 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-mist-800"
               >
                 {t("viewFullComparison", { defaultValue: "View full comparison" })}
-                <IconArrowRight className="h-4 w-4" />
+                <SpriteIcon name="arrow-right" className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function Alternatives() {
                     {t("vsLabel", { defaultValue: "VS" })}
                   </span>
                   <div className="rounded-full border border-mist-200 bg-mist-50 p-2 text-mist-400 transition-colors group-hover:text-mist-700">
-                    <IconArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    <SpriteIcon name="arrow-right" className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </div>
                 </div>
 

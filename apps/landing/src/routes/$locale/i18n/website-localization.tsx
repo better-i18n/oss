@@ -1,17 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconGlobe,
-  IconCheckmark1,
-  IconArrowRight,
-  IconCodeBrackets,
-  IconGroup1,
-  IconZap,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/website-localization")({
   loader: createPageLoader(),
@@ -19,7 +12,6 @@ export const Route = createFileRoute("/$locale/i18n/website-localization")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "websiteLocalization",
       pathname: "/i18n/website-localization",
       pageType: "educational",
@@ -34,10 +26,10 @@ export const Route = createFileRoute("/$locale/i18n/website-localization")({
 });
 
 const challenges = [
-  { icon: IconCodeBrackets, titleKey: "challenges.contentManagement.title", descKey: "challenges.contentManagement.description", defaultTitle: "Content Management", defaultDesc: "Managing translations across hundreds of pages, components, and dynamic content while keeping everything in sync with source updates." },
-  { icon: IconGlobe, titleKey: "challenges.culturalAdaptation.title", descKey: "challenges.culturalAdaptation.description", defaultTitle: "Cultural Adaptation", defaultDesc: "Adapting imagery, colors, layouts, and messaging to resonate with local audiences beyond simple text translation." },
-  { icon: IconGroup1, titleKey: "challenges.teamCoordination.title", descKey: "challenges.teamCoordination.description", defaultTitle: "Team Coordination", defaultDesc: "Coordinating developers, translators, and reviewers across time zones without bottlenecks or miscommunication." },
-  { icon: IconZap, titleKey: "challenges.performance.title", descKey: "challenges.performance.description", defaultTitle: "Performance Optimization", defaultDesc: "Loading translations efficiently without impacting page speed, bundle size, or time to first meaningful paint." },
+  { icon: "code-brackets", titleKey: "challenges.contentManagement.title", descKey: "challenges.contentManagement.description", defaultTitle: "Content Management", defaultDesc: "Managing translations across hundreds of pages, components, and dynamic content while keeping everything in sync with source updates." },
+  { icon: "globe", titleKey: "challenges.culturalAdaptation.title", descKey: "challenges.culturalAdaptation.description", defaultTitle: "Cultural Adaptation", defaultDesc: "Adapting imagery, colors, layouts, and messaging to resonate with local audiences beyond simple text translation." },
+  { icon: "group", titleKey: "challenges.teamCoordination.title", descKey: "challenges.teamCoordination.description", defaultTitle: "Team Coordination", defaultDesc: "Coordinating developers, translators, and reviewers across time zones without bottlenecks or miscommunication." },
+  { icon: "zap", titleKey: "challenges.performance.title", descKey: "challenges.performance.description", defaultTitle: "Performance Optimization", defaultDesc: "Loading translations efficiently without impacting page speed, bundle size, or time to first meaningful paint." },
 ];
 
 function WebsiteLocalizationPage() {
@@ -76,7 +68,7 @@ function WebsiteLocalizationPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               <span>{t("badge", { defaultValue: "Website Localization" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -134,7 +126,7 @@ function WebsiteLocalizationPage() {
             {challenges.map((challenge) => (
               <div key={challenge.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <challenge.icon className="size-5" />
+                  <SpriteIcon name={challenge.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
@@ -164,7 +156,7 @@ function WebsiteLocalizationPage() {
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
@@ -261,7 +253,7 @@ function WebsiteLocalizationPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

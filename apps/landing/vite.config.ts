@@ -5,6 +5,7 @@ import viteReact from "@vitejs/plugin-react";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import { fileURLToPath, URL } from "url";
 import tailwindcss from "@tailwindcss/vite";
+import { ViteMinifyPlugin } from "vite-plugin-minify";
 
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -91,6 +92,12 @@ export default defineConfig(async ({ mode }) => {
           : undefined,
       }),
       viteReact(),
+      ViteMinifyPlugin({
+        collapseWhitespace: true,
+        removeComments: true,
+        removeRedundantAttributes: true,
+        minifyCSS: true,
+      }),
       ...(llmsFiles
         ? [
             {

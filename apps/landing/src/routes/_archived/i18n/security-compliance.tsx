@@ -1,17 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconShieldCheck,
-  IconGroup1,
-  IconZap,
-  IconSettingsGear1,
-  IconGlobe,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/security-compliance")({
   loader: createPageLoader(),
@@ -19,7 +11,6 @@ export const Route = createFileRoute("/_archived/i18n/security-compliance")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "securityCompliance",
       pathname: "/i18n/security-compliance",
       pageType: "educational",
@@ -34,11 +25,11 @@ export const Route = createFileRoute("/_archived/i18n/security-compliance")({
 });
 
 const dataProtectionFeatures = [
-  { icon: IconShieldCheck, titleKey: "features.aes256.title", descKey: "features.aes256.description", defaultTitle: "AES-256 Encryption at Rest", defaultDesc: "All translation data is encrypted with AES-256 before being written to disk, ensuring your content remains protected even if storage is compromised." },
-  { icon: IconShieldCheck, titleKey: "features.tls13.title", descKey: "features.tls13.description", defaultTitle: "TLS 1.3 in Transit", defaultDesc: "Every API request and dashboard session uses TLS 1.3, preventing eavesdropping and man-in-the-middle attacks on your translation data." },
-  { icon: IconZap, titleKey: "features.bcrypt.title", descKey: "features.bcrypt.description", defaultTitle: "Bcrypt-Hashed API Keys", defaultDesc: "API keys are hashed with bcrypt before storage. Even in the event of a database breach, your credentials cannot be reversed." },
-  { icon: IconSettingsGear1, titleKey: "features.scopedKeys.title", descKey: "features.scopedKeys.description", defaultTitle: "Scoped API Keys", defaultDesc: "Generate API keys scoped to specific projects and permission levels, limiting blast radius if a key is ever exposed." },
-  { icon: IconZap, titleKey: "features.keyRevocation.title", descKey: "features.keyRevocation.description", defaultTitle: "Instant Key Revocation", defaultDesc: "Revoke any API key immediately from the dashboard. Revoked keys are rejected on the next request with zero propagation delay." },
+  { icon: "shield-check", titleKey: "features.aes256.title", descKey: "features.aes256.description", defaultTitle: "AES-256 Encryption at Rest", defaultDesc: "All translation data is encrypted with AES-256 before being written to disk, ensuring your content remains protected even if storage is compromised." },
+  { icon: "shield-check", titleKey: "features.tls13.title", descKey: "features.tls13.description", defaultTitle: "TLS 1.3 in Transit", defaultDesc: "Every API request and dashboard session uses TLS 1.3, preventing eavesdropping and man-in-the-middle attacks on your translation data." },
+  { icon: "zap", titleKey: "features.bcrypt.title", descKey: "features.bcrypt.description", defaultTitle: "Bcrypt-Hashed API Keys", defaultDesc: "API keys are hashed with bcrypt before storage. Even in the event of a database breach, your credentials cannot be reversed." },
+  { icon: "settings-gear", titleKey: "features.scopedKeys.title", descKey: "features.scopedKeys.description", defaultTitle: "Scoped API Keys", defaultDesc: "Generate API keys scoped to specific projects and permission levels, limiting blast radius if a key is ever exposed." },
+  { icon: "zap", titleKey: "features.keyRevocation.title", descKey: "features.keyRevocation.description", defaultTitle: "Instant Key Revocation", defaultDesc: "Revoke any API key immediately from the dashboard. Revoked keys are rejected on the next request with zero propagation delay." },
 ];
 
 function SecurityCompliancePage() {
@@ -88,7 +79,7 @@ function SecurityCompliancePage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconShieldCheck className="size-4" />
+              <SpriteIcon name="shield-check" className="size-4" />
               <span>{t("badge", { defaultValue: "Security & Compliance" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -115,7 +106,7 @@ function SecurityCompliancePage() {
             {dataProtectionFeatures.map((feature) => (
               <div key={feature.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <feature.icon className="size-5" />
+                  <SpriteIcon name={feature.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
@@ -142,7 +133,7 @@ function SecurityCompliancePage() {
               <ul className="space-y-4">
                 {accessControlItems.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
@@ -154,21 +145,21 @@ function SecurityCompliancePage() {
               </h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <IconGroup1 className="size-5 text-mist-700 mt-0.5 shrink-0" />
+                  <SpriteIcon name="group" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-mist-950 mb-1">{t("accessControl.details.rbac.title", { defaultValue: "Role-Based Access Control" })}</h4>
                     <p className="text-sm text-mist-600">{t("accessControl.details.rbac.description", { defaultValue: "Assign owner, admin, and member roles at the organization level. Each role inherits a scoped set of permissions for projects, keys, and settings." })}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <IconGroup1 className="size-5 text-mist-700 mt-0.5 shrink-0" />
+                  <SpriteIcon name="group" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-mist-950 mb-1">{t("accessControl.details.audit.title", { defaultValue: "Audit Logging" })}</h4>
                     <p className="text-sm text-mist-600">{t("accessControl.details.audit.description", { defaultValue: "Every sensitive operation — key creation, role change, project deletion — is recorded with a timestamp, actor, and action for full traceability." })}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <IconGroup1 className="size-5 text-mist-700 mt-0.5 shrink-0" />
+                  <SpriteIcon name="group" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-mist-950 mb-1">{t("accessControl.details.oauth.title", { defaultValue: "OAuth Delegation" })}</h4>
                     <p className="text-sm text-mist-600">{t("accessControl.details.oauth.description", { defaultValue: "Authentication is delegated to GitHub OAuth. Better i18n never stores passwords — reducing the attack surface and simplifying onboarding." })}</p>
@@ -195,7 +186,7 @@ function SecurityCompliancePage() {
               <ul className="space-y-4">
                 {complianceItems.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
@@ -218,7 +209,7 @@ function SecurityCompliancePage() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {infrastructureItems.map((item) => (
               <div key={item.key} className="flex items-start gap-3 p-6 rounded-xl bg-white border border-mist-200">
-                <IconGlobe className="size-5 text-mist-700 mt-0.5 shrink-0" />
+                <SpriteIcon name="globe" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                 <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
               </div>
             ))}
@@ -280,7 +271,7 @@ function SecurityCompliancePage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

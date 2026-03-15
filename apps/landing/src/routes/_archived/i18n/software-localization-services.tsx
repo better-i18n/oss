@@ -1,16 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconRobot,
-  IconGroup1,
-  IconGlobe,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute(
   "/_archived/i18n/software-localization-services",
@@ -20,7 +14,6 @@ export const Route = createFileRoute(
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "softwareLocalizationServices",
       pathname: "/i18n/software-localization-services",
       pageType: "educational",
@@ -40,9 +33,9 @@ function SoftwareLocalizationServicesPage() {
   const { locale } = Route.useParams();
 
   const serviceTypes = [
-    { titleKey: "types.platform.title", descKey: "types.platform.description", icon: IconRobot, defaultTitle: "Platform-Based Services", defaultDesc: "Self-service localization platforms with AI translation, developer SDKs, and automated workflows. Best for engineering-driven teams that want full control over their localization pipeline." },
-    { titleKey: "types.agency.title", descKey: "types.agency.description", icon: IconGroup1, defaultTitle: "Agency Services", defaultDesc: "Traditional localization agencies with professional human translators and project managers. Ideal for high-stakes content like legal, medical, or marketing copy that requires native-level fluency." },
-    { titleKey: "types.hybrid.title", descKey: "types.hybrid.description", icon: IconGlobe, defaultTitle: "Hybrid Approach", defaultDesc: "Combine platform automation for UI strings and developer content with agency translators for marketing and legal materials. Balances speed with quality for teams managing multiple content types." },
+    { titleKey: "types.platform.title", descKey: "types.platform.description", icon: "robot", defaultTitle: "Platform-Based Services", defaultDesc: "Self-service localization platforms with AI translation, developer SDKs, and automated workflows. Best for engineering-driven teams that want full control over their localization pipeline." },
+    { titleKey: "types.agency.title", descKey: "types.agency.description", icon: "group", defaultTitle: "Agency Services", defaultDesc: "Traditional localization agencies with professional human translators and project managers. Ideal for high-stakes content like legal, medical, or marketing copy that requires native-level fluency." },
+    { titleKey: "types.hybrid.title", descKey: "types.hybrid.description", icon: "globe", defaultTitle: "Hybrid Approach", defaultDesc: "Combine platform automation for UI strings and developer content with agency translators for marketing and legal materials. Balances speed with quality for teams managing multiple content types." },
   ];
 
   const platformBenefits = [
@@ -103,7 +96,7 @@ function SoftwareLocalizationServicesPage() {
             {serviceTypes.map((type) => (
               <div key={type.titleKey} className="p-8 rounded-2xl bg-mist-50 border border-mist-100">
                 <div className="size-12 rounded-xl bg-white border border-mist-200 flex items-center justify-center text-mist-700 mb-5">
-                  <type.icon className="size-6" />
+                  <SpriteIcon name={type.icon} className="size-6" />
                 </div>
                 <h3 className="text-lg font-medium text-mist-950 mb-3">
                   {t(type.titleKey, { defaultValue: type.defaultTitle })}
@@ -133,7 +126,7 @@ function SoftwareLocalizationServicesPage() {
               <ul className="space-y-4">
                 {platformBenefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
@@ -189,7 +182,7 @@ function SoftwareLocalizationServicesPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

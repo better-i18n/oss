@@ -18,7 +18,6 @@ export const Route = createFileRoute("/$locale/i18n/ruby")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18nRuby",
       pathname: "/i18n/ruby",
       pageType: "framework",

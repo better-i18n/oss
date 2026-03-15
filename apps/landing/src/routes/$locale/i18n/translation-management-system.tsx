@@ -1,19 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconGlobe,
-  IconGithub,
-  IconRobot,
-  IconZap,
-  IconCodeBrackets,
-  IconGroup1,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute(
   "/$locale/i18n/translation-management-system",
@@ -23,7 +14,6 @@ export const Route = createFileRoute(
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "translationManagementSystem",
       pathname: "/i18n/translation-management-system",
       pageType: "educational",
@@ -38,12 +28,12 @@ export const Route = createFileRoute(
 });
 
 const coreFeatures = [
-  { icon: IconRobot, titleKey: "features.ai.title", descKey: "features.ai.description", defaultTitle: "AI-Powered Translation", defaultDesc: "Leverage AI translation engines for instant first drafts that human translators can review and refine." },
-  { icon: IconGithub, titleKey: "features.git.title", descKey: "features.git.description", defaultTitle: "Git Integration", defaultDesc: "Sync translation files directly with your Git repository so translations stay in lockstep with code changes." },
-  { icon: IconGlobe, titleKey: "features.cdn.title", descKey: "features.cdn.description", defaultTitle: "CDN Delivery", defaultDesc: "Serve translated content from a global CDN for fast load times in every locale without redeploying your app." },
-  { icon: IconZap, titleKey: "features.automation.title", descKey: "features.automation.description", defaultTitle: "Workflow Automation", defaultDesc: "Automate assignment, review, and publishing workflows to eliminate manual steps in the localization process." },
-  { icon: IconCodeBrackets, titleKey: "features.sdk.title", descKey: "features.sdk.description", defaultTitle: "Developer SDKs", defaultDesc: "Use client and server SDKs to load translations at runtime or build time with framework-native integrations." },
-  { icon: IconGroup1, titleKey: "features.collaboration.title", descKey: "features.collaboration.description", defaultTitle: "Real-Time Collaboration", defaultDesc: "Enable translators, reviewers, and project managers to collaborate simultaneously on translation projects." },
+  { icon: "robot", titleKey: "features.ai.title", descKey: "features.ai.description", defaultTitle: "AI-Powered Translation", defaultDesc: "Leverage AI translation engines for instant first drafts that human translators can review and refine." },
+  { icon: "github", titleKey: "features.git.title", descKey: "features.git.description", defaultTitle: "Git Integration", defaultDesc: "Sync translation files directly with your Git repository so translations stay in lockstep with code changes." },
+  { icon: "globe", titleKey: "features.cdn.title", descKey: "features.cdn.description", defaultTitle: "CDN Delivery", defaultDesc: "Serve translated content from a global CDN for fast load times in every locale without redeploying your app." },
+  { icon: "zap", titleKey: "features.automation.title", descKey: "features.automation.description", defaultTitle: "Workflow Automation", defaultDesc: "Automate assignment, review, and publishing workflows to eliminate manual steps in the localization process." },
+  { icon: "code-brackets", titleKey: "features.sdk.title", descKey: "features.sdk.description", defaultTitle: "Developer SDKs", defaultDesc: "Use client and server SDKs to load translations at runtime or build time with framework-native integrations." },
+  { icon: "group", titleKey: "features.collaboration.title", descKey: "features.collaboration.description", defaultTitle: "Real-Time Collaboration", defaultDesc: "Enable translators, reviewers, and project managers to collaborate simultaneously on translation projects." },
 ];
 
 function TranslationManagementSystemPage() {
@@ -139,7 +129,7 @@ function TranslationManagementSystemPage() {
             {coreFeatures.map((feature) => (
               <div key={feature.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <feature.icon className="size-5" />
+                  <SpriteIcon name={feature.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
@@ -169,7 +159,7 @@ function TranslationManagementSystemPage() {
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
@@ -225,7 +215,7 @@ function TranslationManagementSystemPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

@@ -1,19 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconGlobe,
-  IconCheckmark1,
-  IconArrowRight,
-  IconMagnifyingGlass,
-  IconRocket,
-  IconApiConnection,
-  IconGroup1,
-  IconAiTranslate,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconAiTranslate } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/local-seo-international")({
   loader: createPageLoader(),
@@ -21,7 +13,6 @@ export const Route = createFileRoute("/_archived/i18n/local-seo-international")(
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "localSeoInternational",
       pathname: "/i18n/local-seo-international",
       pageType: "educational",
@@ -36,10 +27,10 @@ export const Route = createFileRoute("/_archived/i18n/local-seo-international")(
 });
 
 const challenges = [
-  { icon: IconMagnifyingGlass, titleKey: "challenges.localKeywords.title", descKey: "challenges.localKeywords.description", defaultTitle: "Local Keyword Variations", defaultDesc: "Search terms for the same service differ dramatically between countries. Direct translation of keywords misses locally used phrases and colloquial search patterns." },
-  { icon: IconApiConnection, titleKey: "challenges.citations.title", descKey: "challenges.citations.description", defaultTitle: "Citation Ecosystem Differences", defaultDesc: "Every country has its own dominant business directories and citation sources. Building authority requires market-specific citation strategies, not a one-size-fits-all approach." },
-  { icon: IconGroup1, titleKey: "challenges.reviews.title", descKey: "challenges.reviews.description", defaultTitle: "Cross-Market Review Management", defaultDesc: "Review platforms and consumer review behavior vary by country. Managing reputation across Google, Yelp, Trustpilot, and local alternatives requires dedicated local-language workflows." },
-  { icon: IconRocket, titleKey: "challenges.geotargeting.title", descKey: "challenges.geotargeting.description", defaultTitle: "Geo-Targeting Configuration", defaultDesc: "Correctly configuring geo-targeting signals — Search Console settings, hreflang tags, and server location — prevents search engines from showing the wrong locale version to local users." },
+  { icon: "magnifying-glass", titleKey: "challenges.localKeywords.title", descKey: "challenges.localKeywords.description", defaultTitle: "Local Keyword Variations", defaultDesc: "Search terms for the same service differ dramatically between countries. Direct translation of keywords misses locally used phrases and colloquial search patterns." },
+  { icon: "api-connection", titleKey: "challenges.citations.title", descKey: "challenges.citations.description", defaultTitle: "Citation Ecosystem Differences", defaultDesc: "Every country has its own dominant business directories and citation sources. Building authority requires market-specific citation strategies, not a one-size-fits-all approach." },
+  { icon: "group", titleKey: "challenges.reviews.title", descKey: "challenges.reviews.description", defaultTitle: "Cross-Market Review Management", defaultDesc: "Review platforms and consumer review behavior vary by country. Managing reputation across Google, Yelp, Trustpilot, and local alternatives requires dedicated local-language workflows." },
+  { icon: "rocket", titleKey: "challenges.geotargeting.title", descKey: "challenges.geotargeting.description", defaultTitle: "Geo-Targeting Configuration", defaultDesc: "Correctly configuring geo-targeting signals — Search Console settings, hreflang tags, and server location — prevents search engines from showing the wrong locale version to local users." },
 ];
 
 function LocalSeoInternationalPage() {
@@ -83,7 +74,7 @@ function LocalSeoInternationalPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               <span>{t("badge", { defaultValue: "Local SEO International" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -142,7 +133,7 @@ function LocalSeoInternationalPage() {
             {challenges.map((challenge) => (
               <div key={challenge.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <challenge.icon className="size-5" />
+                  <SpriteIcon name={challenge.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
@@ -199,7 +190,7 @@ function LocalSeoInternationalPage() {
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
@@ -293,7 +284,7 @@ function LocalSeoInternationalPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

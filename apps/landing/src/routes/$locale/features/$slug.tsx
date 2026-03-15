@@ -48,12 +48,11 @@ export const Route = createFileRoute("/$locale/features/$slug")({
     if (!page) {
       throw notFound();
     }
-    return { page, locale: params.locale, locales: context.locales, relatedFeatures };
+    return { page, locale: params.locale, relatedFeatures };
   },
   head: ({ loaderData }) => {
     const page = loaderData?.page;
     const locale = loaderData?.locale || "en";
-    const locales = loaderData?.locales;
     const pathname = `/features/${page?.slug || ""}`;
     const canonicalUrl = `${SITE_URL}/${locale}${pathname}/`;
 
@@ -94,7 +93,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
         { property: "og:url", content: canonicalUrl },
         { property: "og:site_name", content: "Better i18n" },
         { property: "og:locale", content: locale },
-        ...(locales ?? getCachedLocales())
+        ...getCachedLocales()
           .filter((loc) => loc !== locale)
           .map((loc) => ({
             property: "og:locale:alternate",
@@ -120,7 +119,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
           : []),
       ],
       links: [
-        ...getAlternateLinks(pathname, locales),
+        ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
       scripts: [...educationalScripts, ...breadcrumbScripts],

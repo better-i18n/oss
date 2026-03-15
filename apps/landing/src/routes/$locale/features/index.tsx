@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { createServerFn } from "@tanstack/react-start";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
@@ -7,13 +8,6 @@ import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 import { useT } from "@/lib/i18n";
 import { getMarketingPages, type MarketingPageListItem } from "@/lib/content";
-import {
-  IconArrowRight,
-  IconCheckmark1,
-  IconGlobe,
-  IconSettingsGear1,
-  IconZap,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 const loadFeaturePages = createServerFn({ method: "GET" })
   .inputValidator((data: { locale: string }) => data)
@@ -33,7 +27,6 @@ export const Route = createFileRoute("/$locale/features/")({
     return {
       messages,
       locale: context.locale,
-      locales: context.locales,
       featurePages,
     };
   },
@@ -41,7 +34,6 @@ export const Route = createFileRoute("/$locale/features/")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "features",
       pathname: "/features",
       pageType: "default",
@@ -56,7 +48,7 @@ function FeaturesPage() {
   const { featurePages } = Route.useLoaderData();
   const overviewCards = [
     {
-      icon: IconZap,
+      icon: "zap",
       title: t("overview.ai.title", "Translate with product context"),
       description: t(
         "overview.ai.description",
@@ -64,7 +56,7 @@ function FeaturesPage() {
       ),
     },
     {
-      icon: IconSettingsGear1,
+      icon: "settings-gear",
       title: t("overview.workflow.title", "Keep shipping inside your workflow"),
       description: t(
         "overview.workflow.description",
@@ -72,7 +64,7 @@ function FeaturesPage() {
       ),
     },
     {
-      icon: IconGlobe,
+      icon: "globe",
       title: t("overview.delivery.title", "Go live globally without friction"),
       description: t(
         "overview.delivery.description",
@@ -83,7 +75,7 @@ function FeaturesPage() {
 
   const coreCapabilities = [
     {
-      icon: IconZap,
+      icon: "zap",
       step: "01",
       badge: t("core.ai.badge", "AI Translation Engine"),
       title: t("core.ai.title", "Translations that understand your product"),
@@ -137,7 +129,7 @@ function FeaturesPage() {
       ],
     },
     {
-      icon: IconSettingsGear1,
+      icon: "settings-gear",
       step: "02",
       badge: t("core.workflow.badge", "Developer Workflow"),
       title: t("core.workflow.title", "Git-native from day one"),
@@ -191,7 +183,7 @@ function FeaturesPage() {
       ],
     },
     {
-      icon: IconGlobe,
+      icon: "globe",
       step: "03",
       badge: t("core.discovery.badge", "Content Discovery"),
       title: t(
@@ -301,7 +293,7 @@ function FeaturesPage() {
                 className="rounded-2xl border border-mist-200 bg-white p-6 transition-colors hover:border-mist-300"
               >
                 <div className="flex size-11 items-center justify-center rounded-xl border border-mist-100 bg-white text-mist-700 shadow-sm">
-                  <card.icon className="size-5" />
+                  <SpriteIcon name={card.icon} className="size-5" />
                 </div>
                 <h3 className="mt-5 text-base font-medium text-mist-950">
                   {card.title}
@@ -325,7 +317,7 @@ function FeaturesPage() {
                 <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
                   <div className={index % 2 === 1 ? "lg:order-2" : undefined}>
                     <div className="flex size-12 items-center justify-center rounded-xl border border-mist-100 bg-mist-50 text-mist-700 shadow-sm">
-                      <capability.icon className="size-5" />
+                      <SpriteIcon name={capability.icon} className="size-5" />
                     </div>
                     <div className="mt-5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-mist-500">
                       <span>{capability.step}</span>
@@ -345,7 +337,7 @@ function FeaturesPage() {
                           key={point}
                           className="flex items-start gap-3 text-sm/6 text-mist-700"
                         >
-                          <IconCheckmark1 className="mt-0.5 size-4 shrink-0 text-emerald-500" />
+                          <SpriteIcon name="checkmark" className="mt-0.5 size-4 shrink-0 text-emerald-500" />
                           <span>{point}</span>
                         </li>
                       ))}
@@ -542,7 +534,7 @@ function FeaturePagesGrid({
                   <span>{t("deepDive.cardLabel", "Feature guide")}</span>
                 </div>
                 <div className="rounded-full border border-mist-200 bg-mist-50 p-2 text-mist-400 transition-colors group-hover:text-mist-700">
-                  <IconArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  <SpriteIcon name="arrow-right" className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </div>
 

@@ -1,7 +1,7 @@
 import { cn } from "@better-i18n/ui/lib/utils";
 import { useT } from "@/lib/i18n";
 import { useState } from "react";
-import { IconCheckmark1 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 type BillingPeriod = "monthly" | "yearly";
 type PlanKey = "free" | "pro" | "enterprise";
@@ -152,7 +152,7 @@ const featureLabelDefaults: Record<FeatureKey, string> = {
 function FeatureIndicator({ enabled }: { enabled: boolean }) {
   return enabled ? (
     <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-mist-950 text-white">
-      <IconCheckmark1 className="h-3.5 w-3.5" />
+      <SpriteIcon name="checkmark" className="h-3.5 w-3.5" />
     </span>
   ) : (
     <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-mist-200 text-xs font-medium text-mist-300">

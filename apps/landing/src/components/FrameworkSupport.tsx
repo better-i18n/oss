@@ -2,14 +2,13 @@ import { Link, useParams } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
 import {
   IconApple,
-  IconChevronRight,
   IconConsole,
-  IconGlobe,
   IconLayersThree,
   IconModelcontextprotocol,
   IconScanCode,
   IconServer1,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import {
   ExpoIcon,
   FlutterIcon,
@@ -104,14 +103,18 @@ const frameworks: Array<{
   },
 ];
 
-const seoSurfaces: Array<{
+type SeoSurface = {
   description: string;
   href: ResourceRoute;
-  icon: ComponentType<{ className?: string }>;
   key: string;
   label: string;
   title: string;
-}> = [
+} & (
+  | { icon: ComponentType<{ className?: string }>; spriteName?: never }
+  | { spriteName: import("@/components/SpriteIcon").SpriteIconName; icon?: never }
+);
+
+const seoSurfaces: SeoSurface[] = [
   {
     key: "doctor",
     label: "CLI",
@@ -134,7 +137,7 @@ const seoSurfaces: Array<{
     title: "Best TMS",
     description: "Capture comparison traffic with sharper solution pages.",
     href: "/$locale/i18n/best-tms",
-    icon: IconGlobe,
+    spriteName: "globe",
   },
 ];
 
@@ -199,7 +202,7 @@ export default function FrameworkSupport() {
                         })}
                       </span>
                     </div>
-                    <IconChevronRight className="size-5 shrink-0 text-mist-400 transition-all group-hover:translate-x-0.5 group-hover:text-mist-700" />
+                    <SpriteIcon name="chevron-right" className="size-5 shrink-0 text-mist-400 transition-all group-hover:translate-x-0.5 group-hover:text-mist-700" />
                   </Link>
                 );
               })}
@@ -208,8 +211,6 @@ export default function FrameworkSupport() {
 
           <div className="flex h-full flex-col gap-3 sm:grid sm:grid-cols-3 lg:flex lg:flex-col">
             {seoSurfaces.map((surface) => {
-              const Icon = surface.icon;
-
               return (
                 <Link
                   key={surface.key}
@@ -220,7 +221,11 @@ export default function FrameworkSupport() {
                   <div className="flex w-full items-start justify-between gap-4">
                     <div className="flex min-w-0 items-start gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-mist-100 bg-mist-50 text-mist-700">
-                        <Icon className="size-[18px]" />
+                        {surface.spriteName ? (
+                          <SpriteIcon name={surface.spriteName} className="size-[18px]" />
+                        ) : (
+                          <surface.icon className="size-[18px]" />
+                        )}
                       </div>
                       <div className="min-w-0">
                         <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-mist-500">
@@ -240,7 +245,7 @@ export default function FrameworkSupport() {
                         </p>
                       </div>
                     </div>
-                    <IconChevronRight className="mt-1 size-5 shrink-0 text-mist-400 transition-all group-hover:translate-x-0.5 group-hover:text-mist-700" />
+                    <SpriteIcon name="chevron-right" className="mt-1 size-5 shrink-0 text-mist-400 transition-all group-hover:translate-x-0.5 group-hover:text-mist-700" />
                   </div>
                 </Link>
               );

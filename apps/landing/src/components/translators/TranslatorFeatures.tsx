@@ -1,15 +1,13 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import {
-  IconSparklesSoft,
-  IconCheckmark1,
-  IconBook,
   IconAt,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 const features = [
-  { key: "multiModel", icon: <IconSparklesSoft className="size-5" /> },
-  { key: "humanControl", icon: <IconCheckmark1 className="size-5" /> },
-  { key: "glossary", icon: <IconBook className="size-5" /> },
+  { key: "multiModel", icon: <SpriteIcon name="sparkles-soft" className="size-5" /> },
+  { key: "humanControl", icon: <SpriteIcon name="checkmark" className="size-5" /> },
+  { key: "glossary", icon: <SpriteIcon name="book" className="size-5" /> },
   { key: "mentions", icon: <IconAt className="size-5" /> },
 ];
 

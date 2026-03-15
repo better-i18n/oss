@@ -1,20 +1,17 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import {
-  IconCheckmark1,
-  IconChevronRight,
-  IconGithub,
   IconLightBulb,
-  IconMagnifyingGlass,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 const stepKeys = [
   {
     key: "connect",
-    icon: <IconGithub className="size-5" />,
+    icon: <SpriteIcon name="github" className="size-5" />,
   },
   {
     key: "discover",
-    icon: <IconMagnifyingGlass className="size-5" />,
+    icon: <SpriteIcon name="magnifying-glass" className="size-5" />,
   },
   {
     key: "translate",
@@ -22,7 +19,7 @@ const stepKeys = [
   },
   {
     key: "publish",
-    icon: <IconCheckmark1 className="size-5" />,
+    icon: <SpriteIcon name="checkmark" className="size-5" />,
   },
 ];
 
@@ -61,7 +58,7 @@ export default function DeveloperWorkflow() {
                   {/* Arrow (between steps) */}
                   {index < stepKeys.length - 1 && (
                     <div className="absolute top-12 left-[calc(50%+48px)] w-[calc(100%-96px)] flex items-center justify-center">
-                      <IconChevronRight className="size-4 text-mist-400" />
+                      <SpriteIcon name="chevron-right" className="size-4 text-mist-400" />
                     </div>
                   )}
 

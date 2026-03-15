@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslations } from "@better-i18n/use-intl";
-import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 type PageLink = {
   href: string;
@@ -133,7 +133,7 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
               </div>
               <div className="mt-5 flex items-center text-sm font-medium text-mist-700">
                 <span>{t.has("openPage") ? t("openPage") : "Open page"}</span>
-                <IconArrowRight className="ml-2 h-4 w-4 text-mist-400 transition-all group-hover:translate-x-1 group-hover:text-mist-600" aria-hidden="true" />
+                <SpriteIcon name="arrow-right" className="ml-2 h-4 w-4 text-mist-400 transition-all group-hover:translate-x-1 group-hover:text-mist-600" aria-hidden="true" />
               </div>
             </Link>
           ))}

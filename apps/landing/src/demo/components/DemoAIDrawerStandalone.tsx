@@ -4,19 +4,16 @@ import {
   ContextContentHeader,
   ContextTrigger,
 } from "@better-i18n/ui/components/ai/context";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { AI_MODELS, type AIModelConfig } from "@better-i18n/schemas";
 import { Button } from "@better-i18n/ui/components/button";
 import { Checkbox } from "@better-i18n/ui/components/checkbox";
 import { cn } from "@better-i18n/ui/lib/utils";
 import {
   IconArrowUp,
-  IconChevronBottom,
   IconCircleDashed,
   IconFolder1,
-  IconGlobe,
   IconMagicWand,
-  IconMagnifyingGlass,
-  IconSparklesSoft,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DemoModelSelector } from "./DemoModelSelector";
@@ -292,7 +289,7 @@ function renderMessageWithMentions(content: string, mentions: MentionItem[]) {
             ) : mention.type === "namespace" ? (
               <IconFolder1 className="w-3.5 h-3.5 text-gray-400" />
             ) : (
-              <IconSparklesSoft className="w-3.5 h-3.5 text-gray-400" />
+              <SpriteIcon name="sparkles-soft" className="w-3.5 h-3.5 text-gray-400" />
             )}
             <span>{mention.label}</span>
           </span>
@@ -318,7 +315,7 @@ const ToolWrapper = ({ children, header }: ToolWrapperProps) => {
           <button className="h-auto w-full px-3 py-1.5 bg-gray-100 text-gray-900 cursor-pointer hover:bg-gray-200 transition-colors text-left">
             <div className="flex items-center justify-between">
               {header}
-              <IconChevronBottom
+              <SpriteIcon name="chevron-bottom"
                 className={cn(
                   "h-4 w-4 text-gray-400 transition-transform duration-200",
                   isOpen && "rotate-180",
@@ -348,7 +345,7 @@ function CollapsibleInput({ input, label }: { input: Record<string, unknown>; la
         <h4 className="text-[10px] font-semibold uppercase tracking-wide text-gray-500">
           {label}
         </h4>
-        <IconChevronBottom
+        <SpriteIcon name="chevron-bottom"
           className={cn(
             "h-3.5 w-3.5 text-gray-400 transition-transform",
             isOpen && "rotate-180",
@@ -397,7 +394,7 @@ export function DemoAIDrawerStandalone() {
   const suggestions = useMemo(() => [
     {
       text: t("suggestions.findUntranslated"),
-      icon: IconMagnifyingGlass,
+      icon: "magnifying-glass" as const,
       value: "Find all untranslated keys",
     },
     {
@@ -407,7 +404,7 @@ export function DemoAIDrawerStandalone() {
     },
     {
       text: t("suggestions.translateAuth"),
-      icon: IconGlobe,
+      icon: "globe" as const,
       value: "Translate all missing keys in @ns:auth",
     },
   ], [t]);
@@ -1011,9 +1008,9 @@ export function DemoAIDrawerStandalone() {
   const getMentionIcon = (type: MentionItem["type"]) => {
     switch (type) {
       case "special":
-        return IconSparklesSoft;
+        return "sparkles-soft" as const;
       case "language":
-        return IconGlobe;
+        return "globe" as const;
       case "namespace":
         return IconFolder1;
     }
@@ -1551,7 +1548,6 @@ export function DemoAIDrawerStandalone() {
         <div className="mb-2 overflow-x-auto scrollbar-hide">
           <div className="flex items-center gap-2 pb-2">
             {suggestions.map((item, idx) => {
-              const Icon = item.icon;
               return (
                 <button
                   key={idx}
@@ -1565,7 +1561,7 @@ export function DemoAIDrawerStandalone() {
                   }}
                   className="inline-flex items-center gap-1.5 shrink-0 px-2.5 py-1.5 text-xs font-medium rounded-xl border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 transition-colors cursor-pointer"
                 >
-                  <Icon className="h-3.5 w-3.5 text-gray-500" />
+                  {typeof item.icon === "string" ? <SpriteIcon name={item.icon} className="h-3.5 w-3.5 text-gray-500" /> : <item.icon className="h-3.5 w-3.5 text-gray-500" />}
                   <span className="whitespace-nowrap">{item.text}</span>
                 </button>
               );
@@ -1604,7 +1600,7 @@ export function DemoAIDrawerStandalone() {
                     {filteredMentions
                       .filter((m) => m.type === "special")
                       .map((mention) => {
-                        const Icon = getMentionIcon(mention.type);
+                        const IconResult = getMentionIcon(mention.type);
                         const globalIdx = filteredMentions.indexOf(mention);
                         return (
                           <button
@@ -1619,7 +1615,7 @@ export function DemoAIDrawerStandalone() {
                             )}
                           >
                             <span className="shrink-0 w-4 flex items-center justify-center">
-                              <Icon className="w-3.5 h-3.5 text-gray-400" />
+                              {typeof IconResult === "string" ? <SpriteIcon name={IconResult} className="w-3.5 h-3.5 text-gray-400" /> : <IconResult className="w-3.5 h-3.5 text-gray-400" />}
                             </span>
                             <span className="text-gray-700 truncate flex-1">
                               {mention.label}
@@ -1684,7 +1680,7 @@ export function DemoAIDrawerStandalone() {
                     {filteredMentions
                       .filter((m) => m.type === "namespace")
                       .map((mention) => {
-                        const Icon = getMentionIcon(mention.type);
+                        const IconResult = getMentionIcon(mention.type);
                         const globalIdx = filteredMentions.indexOf(mention);
                         return (
                           <button
@@ -1699,7 +1695,7 @@ export function DemoAIDrawerStandalone() {
                             )}
                           >
                             <span className="shrink-0 w-4 flex items-center justify-center">
-                              <Icon className="w-3.5 h-3.5 text-gray-400" />
+                              {typeof IconResult === "string" ? <SpriteIcon name={IconResult} className="w-3.5 h-3.5 text-gray-400" /> : <IconResult className="w-3.5 h-3.5 text-gray-400" />}
                             </span>
                             <span className="text-gray-700 truncate flex-1">
                               {mention.label}

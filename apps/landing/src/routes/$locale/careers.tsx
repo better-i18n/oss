@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, getCareersPageStructuredData, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
-import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/careers")({
   loader: createPageLoader(),
@@ -11,7 +11,6 @@ export const Route = createFileRoute("/$locale/careers")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "careers",
       pathname: "/careers",
       customStructuredData: getCareersPageStructuredData([
@@ -115,7 +114,7 @@ function CareersPage() {
                     </p>
                     <p className="mt-2 text-sm text-mist-700">{t(job.descKey)}</p>
                   </div>
-                  <IconArrowRight className="size-5 text-mist-400 group-hover:text-mist-600 shrink-0 mt-1" />
+                  <SpriteIcon name="arrow-right" className="size-5 text-mist-400 group-hover:text-mist-600 shrink-0 mt-1" />
                 </div>
               </a>
             ))}

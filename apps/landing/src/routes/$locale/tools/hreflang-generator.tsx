@@ -20,7 +20,6 @@ export const Route = createFileRoute("/$locale/tools/hreflang-generator")({
     getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "toolsHreflangGenerator",
       pathname: "/tools/hreflang-generator",
       pageType: "tool",

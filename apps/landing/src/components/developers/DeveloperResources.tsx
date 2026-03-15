@@ -1,10 +1,9 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import {
-  IconChevronRight,
-  IconCodeBrackets,
   IconConsole,
   IconServer1,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 const resourceKeys = [
   {
@@ -55,7 +54,7 @@ const resourceKeys = [
   {
     key: "sdk",
     href: "https://docs.better-i18n.com/sdk",
-    icon: <IconCodeBrackets className="size-6" />,
+    icon: <SpriteIcon name="code-brackets" className="size-6" />,
   },
   {
     key: "cli",
@@ -102,7 +101,7 @@ export default function DeveloperResources() {
               </p>
               <div className="mt-4 flex items-center gap-1.5 text-sm font-medium text-mist-700 group-hover:text-mist-900 transition-colors">
                 {t("resources.viewDocs")}
-                <IconChevronRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                <SpriteIcon name="chevron-right" className="size-4 transition-transform group-hover:translate-x-0.5" />
               </div>
             </a>
           ))}

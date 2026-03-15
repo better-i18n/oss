@@ -1,17 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconCodeBrackets,
-  IconScript,
-  IconMagnifyingGlass,
-  IconSettingsGear1,
-  IconZap,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/cli-code-scanning")({
   loader: createPageLoader(),
@@ -19,7 +11,6 @@ export const Route = createFileRoute("/$locale/i18n/cli-code-scanning")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "cliCodeScanning",
       pathname: "/i18n/cli-code-scanning",
       pageType: "educational",
@@ -34,11 +25,11 @@ export const Route = createFileRoute("/$locale/i18n/cli-code-scanning")({
 });
 
 const coreFeatures = [
-  { icon: IconMagnifyingGlass, titleKey: "features.hardcodedDetection.title", descKey: "features.hardcodedDetection.description", defaultTitle: "Hardcoded String Detection", defaultDesc: "Automatically find every user-facing string that is not wrapped in a translation function, including strings in JSX children and component props." },
-  { icon: IconCodeBrackets, titleKey: "features.astParsing.title", descKey: "features.astParsing.description", defaultTitle: "AST-Based Parsing", defaultDesc: "Parses your source code into an Abstract Syntax Tree for precise, context-aware detection that eliminates the false positives of regex-based scanners." },
-  { icon: IconScript, titleKey: "features.jsxText.title", descKey: "features.jsxText.description", defaultTitle: "JSX Text Node Scanning", defaultDesc: "Detects untranslated text content inside JSX elements, including expressions and template literals rendered directly in your components." },
-  { icon: IconSettingsGear1, titleKey: "features.jsxAttributes.title", descKey: "features.jsxAttributes.description", defaultTitle: "JSX Attribute Scanning", defaultDesc: "Finds hardcoded strings in JSX attributes like placeholder, aria-label, and title that are often missed during manual i18n audits." },
-  { icon: IconZap, titleKey: "features.smartFiltering.title", descKey: "features.smartFiltering.description", defaultTitle: "Smart Filtering", defaultDesc: "Ignores non-translatable values like CSS class names, import paths, and numeric literals so you only see actionable results." },
+  { icon: "magnifying-glass", titleKey: "features.hardcodedDetection.title", descKey: "features.hardcodedDetection.description", defaultTitle: "Hardcoded String Detection", defaultDesc: "Automatically find every user-facing string that is not wrapped in a translation function, including strings in JSX children and component props." },
+  { icon: "code-brackets", titleKey: "features.astParsing.title", descKey: "features.astParsing.description", defaultTitle: "AST-Based Parsing", defaultDesc: "Parses your source code into an Abstract Syntax Tree for precise, context-aware detection that eliminates the false positives of regex-based scanners." },
+  { icon: "script", titleKey: "features.jsxText.title", descKey: "features.jsxText.description", defaultTitle: "JSX Text Node Scanning", defaultDesc: "Detects untranslated text content inside JSX elements, including expressions and template literals rendered directly in your components." },
+  { icon: "settings-gear", titleKey: "features.jsxAttributes.title", descKey: "features.jsxAttributes.description", defaultTitle: "JSX Attribute Scanning", defaultDesc: "Finds hardcoded strings in JSX attributes like placeholder, aria-label, and title that are often missed during manual i18n audits." },
+  { icon: "zap", titleKey: "features.smartFiltering.title", descKey: "features.smartFiltering.description", defaultTitle: "Smart Filtering", defaultDesc: "Ignores non-translatable values like CSS class names, import paths, and numeric literals so you only see actionable results." },
 ];
 
 function CliCodeScanningPage() {
@@ -82,7 +73,7 @@ function CliCodeScanningPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconScript className="size-4" />
+              <SpriteIcon name="script" className="size-4" />
               <span>{t("badge", { defaultValue: "CLI & Code Scanning" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -109,7 +100,7 @@ function CliCodeScanningPage() {
             {coreFeatures.map((feature) => (
               <div key={feature.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <feature.icon className="size-5" />
+                  <SpriteIcon name={feature.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
@@ -141,7 +132,7 @@ function CliCodeScanningPage() {
               <ul className="space-y-4">
                 {cliCommands.map((cmd) => (
                   <li key={cmd.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(cmd.key, { defaultValue: cmd.defaultValue })}</span>
                   </li>
                 ))}
@@ -168,7 +159,7 @@ function CliCodeScanningPage() {
             <div className="mt-10 lg:mt-0 space-y-4">
               {outputFormats.map((format) => (
                 <div key={format.titleKey} className="flex items-start gap-3">
-                  <IconCodeBrackets className="size-5 text-mist-700 mt-0.5 shrink-0" />
+                  <SpriteIcon name="code-brackets" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-mist-950 mb-1">{t(format.titleKey, { defaultValue: format.defaultTitle })}</h4>
                     <p className="text-sm text-mist-600">{t(format.descKey, { defaultValue: format.defaultDesc })}</p>
@@ -262,7 +253,7 @@ function CliCodeScanningPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

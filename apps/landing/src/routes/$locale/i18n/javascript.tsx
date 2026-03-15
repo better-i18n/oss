@@ -18,7 +18,6 @@ export const Route = createFileRoute("/$locale/i18n/javascript")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18nJavaScript",
       pathname: "/i18n/javascript",
       pageType: "framework",

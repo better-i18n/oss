@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
 import { getClusterSiblings } from "@/seo/topic-clusters";
-import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 type SeeAlsoProps = {
   readonly currentSlug: string;
@@ -39,7 +39,8 @@ export function SeeAlso({ currentSlug, locale, limit = 5 }: SeeAlsoProps) {
               </div>
               <div className="mt-4 flex items-center text-sm font-medium text-mist-700">
                 <span>{t("open", { defaultValue: "Read guide" })}</span>
-                <IconArrowRight
+                <SpriteIcon
+                  name="arrow-right"
                   className="ml-2 h-4 w-4 text-mist-400 transition-all group-hover:translate-x-1 group-hover:text-mist-600"
                   aria-hidden="true"
                 />

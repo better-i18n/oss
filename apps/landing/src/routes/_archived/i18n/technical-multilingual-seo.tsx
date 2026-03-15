@@ -1,18 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconCodeBrackets,
-  IconSettingsGear1,
-  IconMagnifyingGlass,
-  IconShieldCheck,
-  IconZap,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/technical-multilingual-seo")({
   loader: createPageLoader(),
@@ -20,7 +12,6 @@ export const Route = createFileRoute("/_archived/i18n/technical-multilingual-seo
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "technicalMultilingualSeo",
       pathname: "/i18n/technical-multilingual-seo",
       pageType: "educational",
@@ -35,10 +26,10 @@ export const Route = createFileRoute("/_archived/i18n/technical-multilingual-seo
 });
 
 const technicalAreas = [
-  { icon: IconCodeBrackets, titleKey: "technicalAreas.hreflang.title", descKey: "technicalAreas.hreflang.description", defaultTitle: "Hreflang Tags", defaultDesc: "Declare every language variant with bidirectional hreflang annotations so search engines serve the correct locale to each user." },
-  { icon: IconSettingsGear1, titleKey: "technicalAreas.canonicals.title", descKey: "technicalAreas.canonicals.description", defaultTitle: "Canonical URLs", defaultDesc: "Set self-referencing canonicals on each language variant to prevent duplicate content penalties across locales." },
-  { icon: IconMagnifyingGlass, titleKey: "technicalAreas.sitemaps.title", descKey: "technicalAreas.sitemaps.description", defaultTitle: "Locale-Specific Sitemaps", defaultDesc: "Generate per-locale XML sitemaps with hreflang entries so crawlers discover and index every language version efficiently." },
-  { icon: IconZap, titleKey: "technicalAreas.languageDetection.title", descKey: "technicalAreas.languageDetection.description", defaultTitle: "Language Detection", defaultDesc: "Implement server-side language detection using Accept-Language headers and geolocation to route users to the right locale automatically." },
+  { icon: "code-brackets", titleKey: "technicalAreas.hreflang.title", descKey: "technicalAreas.hreflang.description", defaultTitle: "Hreflang Tags", defaultDesc: "Declare every language variant with bidirectional hreflang annotations so search engines serve the correct locale to each user." },
+  { icon: "settings-gear", titleKey: "technicalAreas.canonicals.title", descKey: "technicalAreas.canonicals.description", defaultTitle: "Canonical URLs", defaultDesc: "Set self-referencing canonicals on each language variant to prevent duplicate content penalties across locales." },
+  { icon: "magnifying-glass", titleKey: "technicalAreas.sitemaps.title", descKey: "technicalAreas.sitemaps.description", defaultTitle: "Locale-Specific Sitemaps", defaultDesc: "Generate per-locale XML sitemaps with hreflang entries so crawlers discover and index every language version efficiently." },
+  { icon: "zap", titleKey: "technicalAreas.languageDetection.title", descKey: "technicalAreas.languageDetection.description", defaultTitle: "Language Detection", defaultDesc: "Implement server-side language detection using Accept-Language headers and geolocation to route users to the right locale automatically." },
 ];
 
 function TechnicalMultilingualSeoPage() {
@@ -84,7 +75,7 @@ function TechnicalMultilingualSeoPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconCodeBrackets className="size-4" />
+              <SpriteIcon name="code-brackets" className="size-4" />
               <span>{t("badge", { defaultValue: "Technical Multilingual SEO" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -143,7 +134,7 @@ function TechnicalMultilingualSeoPage() {
             {technicalAreas.map((area) => (
               <div key={area.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <area.icon className="size-5" />
+                  <SpriteIcon name={area.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(area.titleKey, { defaultValue: area.defaultTitle })}
@@ -171,7 +162,7 @@ function TechnicalMultilingualSeoPage() {
             {urlOptions.map((option) => (
               <div key={option.titleKey} className="p-6 rounded-xl border border-mist-200 bg-mist-50">
                 <div className="flex items-center gap-3 mb-3">
-                  <IconSettingsGear1 className="size-5 text-mist-700" />
+                  <SpriteIcon name="settings-gear" className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
                     {t(option.titleKey, { defaultValue: option.defaultTitle })}
                   </h3>
@@ -198,7 +189,7 @@ function TechnicalMultilingualSeoPage() {
               <ul className="space-y-4">
                 {implementationChecklist.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
@@ -206,7 +197,7 @@ function TechnicalMultilingualSeoPage() {
             </div>
             <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
               <div className="flex items-center gap-3 mb-4">
-                <IconShieldCheck className="size-6 text-mist-700" />
+                <SpriteIcon name="shield-check" className="size-6 text-mist-700" />
                 <h3 className="text-lg font-medium text-mist-950">
                   {t("ssr.title", { defaultValue: "Server-Side Rendering and SEO" })}
                 </h3>
@@ -306,7 +297,7 @@ function TechnicalMultilingualSeoPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

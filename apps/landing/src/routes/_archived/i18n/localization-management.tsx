@@ -1,17 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconGroup1,
-  IconGlobe,
-  IconSettingsGear1,
-  IconZap,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/localization-management")({
   loader: createPageLoader(),
@@ -19,7 +12,6 @@ export const Route = createFileRoute("/_archived/i18n/localization-management")(
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "localizationManagement",
       pathname: "/i18n/localization-management",
       pageType: "educational",
@@ -39,10 +31,10 @@ function LocalizationManagementPage() {
   const { locale } = Route.useParams();
 
   const pillars = [
-    { icon: IconSettingsGear1, titleKey: "pillars.workflow.title", descKey: "pillars.workflow.description", defaultTitle: "Workflow Design", defaultDesc: "Define clear translation workflows with stage gates, role assignments, and approval chains that keep content moving from source to published." },
-    { icon: IconGroup1, titleKey: "pillars.collaboration.title", descKey: "pillars.collaboration.description", defaultTitle: "Team Collaboration", defaultDesc: "Connect developers, translators, and product managers in a shared workspace with contextual commenting and real-time progress visibility." },
-    { icon: IconGlobe, titleKey: "pillars.quality.title", descKey: "pillars.quality.description", defaultTitle: "Quality Assurance", defaultDesc: "Enforce glossary consistency, run automated QA checks, and leverage translation memory to maintain quality across every language." },
-    { icon: IconZap, titleKey: "pillars.automation.title", descKey: "pillars.automation.description", defaultTitle: "Automation", defaultDesc: "Automate key extraction, string syncing, and CI/CD integration so localization keeps pace with your development cycle." },
+    { icon: "settings-gear", titleKey: "pillars.workflow.title", descKey: "pillars.workflow.description", defaultTitle: "Workflow Design", defaultDesc: "Define clear translation workflows with stage gates, role assignments, and approval chains that keep content moving from source to published." },
+    { icon: "group", titleKey: "pillars.collaboration.title", descKey: "pillars.collaboration.description", defaultTitle: "Team Collaboration", defaultDesc: "Connect developers, translators, and product managers in a shared workspace with contextual commenting and real-time progress visibility." },
+    { icon: "globe", titleKey: "pillars.quality.title", descKey: "pillars.quality.description", defaultTitle: "Quality Assurance", defaultDesc: "Enforce glossary consistency, run automated QA checks, and leverage translation memory to maintain quality across every language." },
+    { icon: "zap", titleKey: "pillars.automation.title", descKey: "pillars.automation.description", defaultTitle: "Automation", defaultDesc: "Automate key extraction, string syncing, and CI/CD integration so localization keeps pace with your development cycle." },
   ];
 
   const challenges = [
@@ -76,7 +68,7 @@ function LocalizationManagementPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGroup1 className="size-4" />
+              <SpriteIcon name="group" className="size-4" />
               <span>{t("badge", { defaultValue: "Localization Management" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -110,23 +102,23 @@ function LocalizationManagementPage() {
               </h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <IconCheckmark1 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
                   {t("scope.workflowDesign", { defaultValue: "Translation workflow design and optimization" })}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <IconCheckmark1 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
                   {t("scope.teamCoordination", { defaultValue: "Cross-functional team coordination" })}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <IconCheckmark1 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
                   {t("scope.qualityAssurance", { defaultValue: "Translation quality assurance" })}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <IconCheckmark1 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
                   {t("scope.toolSelection", { defaultValue: "Tooling and platform selection" })}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <IconCheckmark1 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
                   {t("scope.progressTracking", { defaultValue: "Progress tracking and reporting" })}
                 </li>
               </ul>
@@ -150,7 +142,7 @@ function LocalizationManagementPage() {
             {pillars.map((pillar) => (
               <div key={pillar.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <pillar.icon className="size-5" />
+                  <SpriteIcon name={pillar.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(pillar.titleKey, { defaultValue: pillar.defaultTitle })}
@@ -203,7 +195,7 @@ function LocalizationManagementPage() {
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
@@ -233,7 +225,7 @@ function LocalizationManagementPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

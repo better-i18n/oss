@@ -21,13 +21,11 @@ export const Route = createFileRoute("/$locale/compare/crowdin-vs-lokalise")({
   loader: ({ context }) => ({
     messages: context.messages,
     locale: context.locale,
-    locales: context.locales,
   }),
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "compareCrowdinVsLokalise",
       pathname: "/compare/crowdin-vs-lokalise",
       pageType: "comparison",

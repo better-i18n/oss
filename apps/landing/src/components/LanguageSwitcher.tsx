@@ -7,10 +7,7 @@ import {
 } from "@better-i18n/ui/components/dropdown-menu";
 import { cn } from "@better-i18n/ui/lib/utils";
 import { useLanguages, useLocaleRouter } from "@better-i18n/use-intl";
-import {
-  IconChevronBottom,
-  IconGlobe,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 /**
  * Language switcher with proper router integration.
@@ -56,10 +53,10 @@ export function LanguageSwitcher() {
               className="h-4 w-4 rounded-full object-cover"
             />
           ) : (
-            <IconGlobe className="mr-2 h-4 w-4" />
+            <SpriteIcon name="globe" className="mr-2 h-4 w-4" />
           )}
           {currentLanguage?.nativeName || locale.toUpperCase()}
-          <IconChevronBottom className="ml-2 h-3 w-3 opacity-50" />
+          <SpriteIcon name="chevron-bottom" className="ml-2 h-3 w-3 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

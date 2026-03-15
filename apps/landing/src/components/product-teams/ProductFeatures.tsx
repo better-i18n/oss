@@ -3,22 +3,24 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import { motion } from "framer-motion";
 import {
-  IconChart1,
-  IconSparklesSoft,
   IconPencil,
   IconSend,
   IconFileText,
-  IconBook,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import type { ComponentType, SVGProps } from "react";
+import { SpriteIcon } from "@/components/SpriteIcon";
+import type { ComponentType } from "react";
+import type { SpriteIconName } from "@/components/SpriteIcon";
 
-const featureIcons: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
-  dashboard: IconChart1,
-  aiHuman: IconSparklesSoft,
+const spriteIcons: Record<string, SpriteIconName> = {
+  dashboard: "chart",
+  aiHuman: "sparkles-soft",
+  glossary: "book",
+};
+
+const legacyIcons: Record<string, ComponentType<{ className?: string }>> = {
   noCode: IconPencil,
   publish: IconSend,
   draft: IconFileText,
-  glossary: IconBook,
 };
 
 const featureKeys = [
@@ -71,7 +73,8 @@ export default function ProductFeatures() {
             viewport={{ once: true, margin: "-100px" }}
           >
             {featureKeys.map((key, idx) => {
-              const Icon = featureIcons[key];
+              const spriteName = spriteIcons[key];
+              const LegacyIcon = legacyIcons[key];
               return (
                 <motion.div
                   key={idx}
@@ -79,7 +82,11 @@ export default function ProductFeatures() {
                   className="group bg-white rounded-2xl p-6 border border-mist-200 hover:border-mist-300 hover:shadow-sm transition-all"
                 >
                   <div className="w-10 h-10 rounded-xl bg-mist-100 flex items-center justify-center mb-4 group-hover:bg-mist-200 transition-colors">
-                    <Icon className="size-5 text-mist-600" />
+                    {spriteName ? (
+                      <SpriteIcon name={spriteName} className="size-5 text-mist-600" />
+                    ) : LegacyIcon ? (
+                      <LegacyIcon className="size-5 text-mist-600" />
+                    ) : null}
                   </div>
                   <h3 className="text-base font-medium text-mist-950 mb-2">
                     {t(`features.items.${key}.title`)}

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import {
@@ -14,12 +15,6 @@ import { UserComplaints } from "@/components/UserComplaints";
 import { WhySwitchSection } from "@/components/WhySwitchSection";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCode,
-  IconRobot,
-  IconZap,
-  IconRocket,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/compare/phrase")({
   loader: createPageLoader(),
@@ -27,7 +22,6 @@ export const Route = createFileRoute("/$locale/compare/phrase")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "comparePhrase",
       pathname: "/compare/phrase",
       pageType: "comparison",
@@ -86,22 +80,22 @@ function PhraseComparisonPage() {
           </h2>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
             <Differentiator
-              icon={<IconRocket className="w-5 h-5" />}
+              icon={<SpriteIcon name="rocket" className="w-5 h-5" />}
               title={t("compare.phrase.whyBetter.pricing.title")}
               description={t("compare.phrase.whyBetter.pricing.description")}
             />
             <Differentiator
-              icon={<IconZap className="w-5 h-5" />}
+              icon={<SpriteIcon name="zap" className="w-5 h-5" />}
               title={t("compare.phrase.whyBetter.simplicity.title")}
               description={t("compare.phrase.whyBetter.simplicity.description")}
             />
             <Differentiator
-              icon={<IconRobot className="w-5 h-5" />}
+              icon={<SpriteIcon name="robot" className="w-5 h-5" />}
               title={t("compare.phrase.whyBetter.mcpNative.title")}
               description={t("compare.phrase.whyBetter.mcpNative.description")}
             />
             <Differentiator
-              icon={<IconCode className="w-5 h-5" />}
+              icon={<SpriteIcon name="code" className="w-5 h-5" />}
               title={t("compare.phrase.whyBetter.developerFirst.title")}
               description={t("compare.phrase.whyBetter.developerFirst.description")}
             />

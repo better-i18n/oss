@@ -18,7 +18,6 @@ export const Route = createFileRoute("/$locale/i18n/django")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18nDjango",
       pathname: "/i18n/django",
       pageType: "framework",

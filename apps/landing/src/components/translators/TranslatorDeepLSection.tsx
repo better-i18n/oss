@@ -1,14 +1,13 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import {
   IconArrowsRepeat,
-  IconCheckmark1,
-  IconGlobe,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 const benefits = [
-  { key: "consistent", icon: <IconCheckmark1 className="size-5" /> },
+  { key: "consistent", icon: <SpriteIcon name="checkmark" className="size-5" /> },
   { key: "autoSync", icon: <IconArrowsRepeat className="size-5" /> },
-  { key: "allPairs", icon: <IconGlobe className="size-5" /> },
+  { key: "allPairs", icon: <SpriteIcon name="globe" className="size-5" /> },
 ];
 
 export default function TranslatorDeepLSection() {
@@ -20,7 +19,7 @@ export default function TranslatorDeepLSection() {
         {/* Header */}
         <div className="mb-12 lg:mb-16 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1.5 text-sm text-blue-700 mb-6">
-            <IconGlobe className="size-4" />
+            <SpriteIcon name="globe" className="size-4" />
             {t("deepl.badge")}
           </div>
           <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">

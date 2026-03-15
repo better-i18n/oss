@@ -1,19 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconGlobe,
-  IconCheckmark1,
-  IconArrowRight,
-  IconAiTranslate,
-  IconShieldCheck,
-  IconRocket,
-  IconSparklesSoft,
-  IconGroup1,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconAiTranslate } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/cultural-adaptation")({
   loader: createPageLoader(),
@@ -21,7 +13,6 @@ export const Route = createFileRoute("/$locale/i18n/cultural-adaptation")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "culturalAdaptation",
       pathname: "/i18n/cultural-adaptation",
       pageType: "educational",
@@ -36,10 +27,10 @@ export const Route = createFileRoute("/$locale/i18n/cultural-adaptation")({
 });
 
 const dimensions = [
-  { icon: IconSparklesSoft, titleKey: "dimensions.colorsImagery.title", descKey: "dimensions.colorsImagery.description", defaultTitle: "Colors & Imagery", defaultDesc: "Color meanings vary across cultures — white symbolizes purity in the West but mourning in parts of Asia. Imagery must reflect local demographics, dress codes, and visual expectations to build trust." },
+  { icon: "sparkles-soft", titleKey: "dimensions.colorsImagery.title", descKey: "dimensions.colorsImagery.description", defaultTitle: "Colors & Imagery", defaultDesc: "Color meanings vary across cultures — white symbolizes purity in the West but mourning in parts of Asia. Imagery must reflect local demographics, dress codes, and visual expectations to build trust." },
   { icon: IconAiTranslate, titleKey: "dimensions.toneFormality.title", descKey: "dimensions.toneFormality.description", defaultTitle: "Tone & Formality", defaultDesc: "Formality levels differ dramatically between markets. Japanese and Korean audiences expect formal, respectful language, while US and Australian users prefer casual, direct communication." },
-  { icon: IconGlobe, titleKey: "dimensions.rtlSupport.title", descKey: "dimensions.rtlSupport.description", defaultTitle: "RTL Layout Support", defaultDesc: "Arabic, Hebrew, and Persian require right-to-left layouts. Full RTL support means mirroring navigation, reversing flex directions, flipping icons, and adjusting text alignment throughout the UI." },
-  { icon: IconRocket, titleKey: "dimensions.humorIdioms.title", descKey: "dimensions.humorIdioms.description", defaultTitle: "Humor & Idioms", defaultDesc: "Humor rarely translates directly between cultures. Idioms, wordplay, and cultural references must be adapted or replaced with locally resonant alternatives to avoid confusion or offense." },
+  { icon: "globe", titleKey: "dimensions.rtlSupport.title", descKey: "dimensions.rtlSupport.description", defaultTitle: "RTL Layout Support", defaultDesc: "Arabic, Hebrew, and Persian require right-to-left layouts. Full RTL support means mirroring navigation, reversing flex directions, flipping icons, and adjusting text alignment throughout the UI." },
+  { icon: "rocket", titleKey: "dimensions.humorIdioms.title", descKey: "dimensions.humorIdioms.description", defaultTitle: "Humor & Idioms", defaultDesc: "Humor rarely translates directly between cultures. Idioms, wordplay, and cultural references must be adapted or replaced with locally resonant alternatives to avoid confusion or offense." },
 ];
 
 function CulturalAdaptationPage() {
@@ -77,7 +68,7 @@ function CulturalAdaptationPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               <span>{t("badge", { defaultValue: "Cultural Adaptation" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -136,7 +127,7 @@ function CulturalAdaptationPage() {
             {dimensions.map((dimension) => (
               <div key={dimension.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <dimension.icon className="size-5" />
+                  {typeof dimension.icon === "string" ? <SpriteIcon name={dimension.icon} className="size-5" /> : <dimension.icon className="size-5" />}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(dimension.titleKey, { defaultValue: dimension.defaultTitle })}
@@ -171,7 +162,7 @@ function CulturalAdaptationPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-              <IconGlobe className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="globe" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("technical.currency.title", { defaultValue: "Currency & Payment Methods" })}
               </h3>
@@ -180,7 +171,7 @@ function CulturalAdaptationPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-              <IconGroup1 className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="group" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("technical.rtl.title", { defaultValue: "RTL Language Support" })}
               </h3>
@@ -189,7 +180,7 @@ function CulturalAdaptationPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-              <IconShieldCheck className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="shield-check" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("technical.legal.title", { defaultValue: "Legal & Compliance Considerations" })}
               </h3>
@@ -198,7 +189,7 @@ function CulturalAdaptationPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-              <IconRocket className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="rocket" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("technical.seo.title", { defaultValue: "Locale-Specific SEO" })}
               </h3>
@@ -207,7 +198,7 @@ function CulturalAdaptationPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-              <IconSparklesSoft className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="sparkles-soft" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("technical.imagery.title", { defaultValue: "Imagery & Visual Culture" })}
               </h3>
@@ -234,7 +225,7 @@ function CulturalAdaptationPage() {
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
@@ -328,7 +319,7 @@ function CulturalAdaptationPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

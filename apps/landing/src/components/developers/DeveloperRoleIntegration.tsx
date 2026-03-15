@@ -1,8 +1,8 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import {
-  IconCheckmark1,
   IconCrossMedium,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 const workflowStepKeys = [
   { key: "addKey", kept: true },
@@ -66,7 +66,7 @@ export default function DeveloperRoleIntegration() {
                       >
                         {step.kept ? (
                           <span className="shrink-0 size-6 rounded-full bg-mist-900 text-white flex items-center justify-center">
-                            <IconCheckmark1 className="size-3.5" />
+                            <SpriteIcon name="checkmark" className="size-3.5" />
                           </span>
                         ) : (
                           <span className="shrink-0 size-6 rounded-full bg-mist-200 text-mist-400 flex items-center justify-center">

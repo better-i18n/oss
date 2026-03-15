@@ -16,16 +16,15 @@ export const Route = createFileRoute("/$locale/privacy")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     const locale = loaderData?.locale || "en";
-    const locales = loaderData?.locales;
     const pathname = "/privacy";
     const meta = getLocalizedMeta(loaderData?.messages || {}, "privacy", {
       locale,
       pathname,
     });
     return {
-      meta: formatMetaTags(meta, { locale, locales }),
+      meta: formatMetaTags(meta, { locale }),
       links: [
-        ...getAlternateLinks(pathname, locales),
+        ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
       scripts: getDefaultStructuredData(locale),

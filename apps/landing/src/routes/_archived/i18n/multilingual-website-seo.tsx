@@ -1,19 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconGlobe,
-  IconCheckmark1,
-  IconArrowRight,
-  IconSettingsGear1,
-  IconMagnifyingGlass,
-  IconSparklesSoft,
-  IconRocket,
-  IconGroup1,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/multilingual-website-seo")({
   loader: createPageLoader(),
@@ -21,7 +12,6 @@ export const Route = createFileRoute("/_archived/i18n/multilingual-website-seo")
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "multilingualWebsiteSeo",
       pathname: "/i18n/multilingual-website-seo",
       pageType: "educational",
@@ -36,10 +26,10 @@ export const Route = createFileRoute("/_archived/i18n/multilingual-website-seo")
 });
 
 const practicalAreas = [
-  { icon: IconSettingsGear1, titleKey: "practicalAreas.urlStructure.title", descKey: "practicalAreas.urlStructure.description", defaultTitle: "URL Structure Optimization", defaultDesc: "Choose and implement a consistent, locale-aware URL structure that consolidates domain authority and helps search engines crawl every language variant efficiently." },
-  { icon: IconSparklesSoft, titleKey: "practicalAreas.transcreation.title", descKey: "practicalAreas.transcreation.description", defaultTitle: "Content Transcreation", defaultDesc: "Adapt headings, calls-to-action, and landing page copy to match local search intent rather than translating word-for-word from your primary language." },
-  { icon: IconMagnifyingGlass, titleKey: "practicalAreas.metaTags.title", descKey: "practicalAreas.metaTags.description", defaultTitle: "Per-Locale Meta Tags", defaultDesc: "Write unique title tags, meta descriptions, and Open Graph tags for each locale using locally researched keywords instead of machine-translated copies." },
-  { icon: IconGroup1, titleKey: "practicalAreas.imageLocalization.title", descKey: "practicalAreas.imageLocalization.description", defaultTitle: "Image Localization", defaultDesc: "Translate alt text, caption text, and on-image copy for every locale so that image search drives traffic in each target market." },
+  { icon: "settings-gear", titleKey: "practicalAreas.urlStructure.title", descKey: "practicalAreas.urlStructure.description", defaultTitle: "URL Structure Optimization", defaultDesc: "Choose and implement a consistent, locale-aware URL structure that consolidates domain authority and helps search engines crawl every language variant efficiently." },
+  { icon: "sparkles-soft", titleKey: "practicalAreas.transcreation.title", descKey: "practicalAreas.transcreation.description", defaultTitle: "Content Transcreation", defaultDesc: "Adapt headings, calls-to-action, and landing page copy to match local search intent rather than translating word-for-word from your primary language." },
+  { icon: "magnifying-glass", titleKey: "practicalAreas.metaTags.title", descKey: "practicalAreas.metaTags.description", defaultTitle: "Per-Locale Meta Tags", defaultDesc: "Write unique title tags, meta descriptions, and Open Graph tags for each locale using locally researched keywords instead of machine-translated copies." },
+  { icon: "group", titleKey: "practicalAreas.imageLocalization.title", descKey: "practicalAreas.imageLocalization.description", defaultTitle: "Image Localization", defaultDesc: "Translate alt text, caption text, and on-image copy for every locale so that image search drives traffic in each target market." },
 ];
 
 function MultilingualWebsiteSeoPage() {
@@ -85,7 +75,7 @@ function MultilingualWebsiteSeoPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               <span>{t("badge", { defaultValue: "Multilingual Website SEO" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -144,7 +134,7 @@ function MultilingualWebsiteSeoPage() {
             {practicalAreas.map((area) => (
               <div key={area.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <area.icon className="size-5" />
+                  <SpriteIcon name={area.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(area.titleKey, { defaultValue: area.defaultTitle })}
@@ -172,7 +162,7 @@ function MultilingualWebsiteSeoPage() {
             {urlDecisions.map((decision) => (
               <div key={decision.titleKey} className="p-6 rounded-xl border border-mist-200 bg-mist-50">
                 <div className="flex items-center gap-3 mb-3">
-                  <IconRocket className="size-5 text-mist-700" />
+                  <SpriteIcon name="rocket" className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
                     {t(decision.titleKey, { defaultValue: decision.defaultTitle })}
                   </h3>
@@ -199,7 +189,7 @@ function MultilingualWebsiteSeoPage() {
               <ul className="space-y-4">
                 {actionableChecklist.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
@@ -207,7 +197,7 @@ function MultilingualWebsiteSeoPage() {
             </div>
             <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
               <div className="flex items-center gap-3 mb-4">
-                <IconSparklesSoft className="size-6 text-mist-700" />
+                <SpriteIcon name="sparkles-soft" className="size-6 text-mist-700" />
                 <h3 className="text-lg font-medium text-mist-950">
                   {t("transcreation.title", { defaultValue: "Translation vs. Transcreation for SEO" })}
                 </h3>
@@ -307,7 +297,7 @@ function MultilingualWebsiteSeoPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

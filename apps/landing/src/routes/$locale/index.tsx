@@ -48,7 +48,6 @@ export const Route = createFileRoute("/$locale/")({
     return {
       messages,
       locale: context.locale,
-      locales: context.locales,
       recentChangelogs: releases.slice(0, 4),
     };
   },
@@ -86,9 +85,9 @@ export const Route = createFileRoute("/$locale/")({
       .filter((item): item is { question: string; answer: string } => item !== null);
 
     return {
-      meta: formatMetaTags(meta, { locale, locales: loaderData?.locales }),
+      meta: formatMetaTags(meta, { locale }),
       links: [
-        ...getAlternateLinks(pathname, loaderData?.locales),
+        ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
       scripts: [

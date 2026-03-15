@@ -1,18 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconMagnifyingGlass,
-  IconChart1,
-  IconSettingsGear1,
-  IconZap,
-  IconRocket,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/technical-international-seo")({
   loader: createPageLoader(),
@@ -20,7 +12,6 @@ export const Route = createFileRoute("/_archived/i18n/technical-international-se
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "technicalInternationalSeo",
       pathname: "/i18n/technical-international-seo",
       pageType: "educational",
@@ -35,10 +26,10 @@ export const Route = createFileRoute("/_archived/i18n/technical-international-se
 });
 
 const technicalPillars = [
-  { icon: IconMagnifyingGlass, titleKey: "pillars.keywordResearch.title", descKey: "pillars.keywordResearch.description", defaultTitle: "Keyword Research", defaultDesc: "Discover high-intent keywords in every target locale using native-speaker seed lists, local search volume data, and competitive gap analysis." },
-  { icon: IconRocket, titleKey: "pillars.onPageSeo.title", descKey: "pillars.onPageSeo.description", defaultTitle: "On-Page SEO", defaultDesc: "Apply localized titles, meta descriptions, heading structures, and internal linking to each language version for maximum search relevance." },
-  { icon: IconChart1, titleKey: "pillars.structuredData.title", descKey: "pillars.structuredData.description", defaultTitle: "Structured Data", defaultDesc: "Implement schema.org markup in each locale with localized addresses, currency codes, and language-specific content annotations." },
-  { icon: IconZap, titleKey: "pillars.coreWebVitals.title", descKey: "pillars.coreWebVitals.description", defaultTitle: "Core Web Vitals", defaultDesc: "Optimize LCP, FID, and CLS for international visitors by serving translation bundles from edge nodes closest to each market." },
+  { icon: "magnifying-glass", titleKey: "pillars.keywordResearch.title", descKey: "pillars.keywordResearch.description", defaultTitle: "Keyword Research", defaultDesc: "Discover high-intent keywords in every target locale using native-speaker seed lists, local search volume data, and competitive gap analysis." },
+  { icon: "rocket", titleKey: "pillars.onPageSeo.title", descKey: "pillars.onPageSeo.description", defaultTitle: "On-Page SEO", defaultDesc: "Apply localized titles, meta descriptions, heading structures, and internal linking to each language version for maximum search relevance." },
+  { icon: "chart", titleKey: "pillars.structuredData.title", descKey: "pillars.structuredData.description", defaultTitle: "Structured Data", defaultDesc: "Implement schema.org markup in each locale with localized addresses, currency codes, and language-specific content annotations." },
+  { icon: "zap", titleKey: "pillars.coreWebVitals.title", descKey: "pillars.coreWebVitals.description", defaultTitle: "Core Web Vitals", defaultDesc: "Optimize LCP, FID, and CLS for international visitors by serving translation bundles from edge nodes closest to each market." },
 ];
 
 function TechnicalInternationalSeoPage() {
@@ -78,7 +69,7 @@ function TechnicalInternationalSeoPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconSettingsGear1 className="size-4" />
+              <SpriteIcon name="settings-gear" className="size-4" />
               <span>{t("badge", { defaultValue: "Technical International SEO" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -137,7 +128,7 @@ function TechnicalInternationalSeoPage() {
             {technicalPillars.map((pillar) => (
               <div key={pillar.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <pillar.icon className="size-5" />
+                  <SpriteIcon name={pillar.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(pillar.titleKey, { defaultValue: pillar.defaultTitle })}
@@ -164,7 +155,7 @@ function TechnicalInternationalSeoPage() {
               <ul className="space-y-4">
                 {onPageBestPractices.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
@@ -173,7 +164,7 @@ function TechnicalInternationalSeoPage() {
             <div className="mt-10 lg:mt-0 space-y-6">
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
                 <div className="flex items-center gap-3 mb-3">
-                  <IconChart1 className="size-5 text-mist-700" />
+                  <SpriteIcon name="chart" className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
                     {t("structuredData.title", { defaultValue: "Structured Data for International Sites" })}
                   </h3>
@@ -184,7 +175,7 @@ function TechnicalInternationalSeoPage() {
               </div>
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
                 <div className="flex items-center gap-3 mb-3">
-                  <IconZap className="size-5 text-mist-700" />
+                  <SpriteIcon name="zap" className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
                     {t("cdnStrategy.title", { defaultValue: "CDN Strategy for Global Performance" })}
                   </h3>
@@ -282,7 +273,7 @@ function TechnicalInternationalSeoPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

@@ -3,10 +3,9 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import { motion } from "framer-motion";
 import {
-  IconArrowRight,
-  IconChevronRight,
   IconEarth,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 export default function ProductHero() {
   const t = useTranslations("product-teams");
@@ -69,14 +68,14 @@ export default function ProductHero() {
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-mist-950 px-6 py-3 text-sm font-medium text-white hover:bg-mist-900 transition-colors"
                 >
                   {t("hero.cta.primary")}
-                  <IconArrowRight className="size-4" />
+                  <SpriteIcon name="arrow-right" className="size-4" />
                 </a>
                 <a
                   href="#workflow"
                   className="inline-flex items-center gap-2 text-sm font-medium text-mist-600 hover:text-mist-950 transition-colors"
                 >
                   {t("hero.cta.secondary")}
-                  <IconChevronRight className="size-4" />
+                  <SpriteIcon name="chevron-right" className="size-4" />
                 </a>
               </div>
             </motion.div>

@@ -2,20 +2,12 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { Link, useParams } from "@tanstack/react-router";
 import { cn } from "@better-i18n/ui/lib/utils";
 import {
-  IconChevronBottom,
   IconAiTranslate,
-  IconCodeBrackets,
-  IconRocket,
   IconPeople,
-  IconShieldCheck,
-  IconScript,
-  IconBook,
-  IconSparklesSoft,
   IconNewspaper,
-  IconApiConnection,
   IconLiveActivity,
-  IconGlobe,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { useT } from "@/lib/i18n";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
@@ -246,7 +238,7 @@ export function MobileNav() {
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
                 >
                   <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-mist-200 bg-white text-mist-700 shadow-sm">
-                    <IconCodeBrackets className="size-4" />
+                    <SpriteIcon name="code-brackets" className="size-4" />
                   </div>
                   <div>
                     <div className="text-sm font-medium text-mist-950">
@@ -267,7 +259,7 @@ export function MobileNav() {
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
                 >
                   <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-mist-200 bg-white text-mist-700 shadow-sm">
-                    <IconRocket className="size-4" />
+                    <SpriteIcon name="rocket" className="size-4" />
                   </div>
                   <div>
                     <div className="text-sm font-medium text-mist-950">
@@ -409,7 +401,7 @@ export function MobileNav() {
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
                 >
-                  <IconShieldCheck className="size-4 text-mist-600" />
+                  <SpriteIcon name="shield-check" className="size-4 text-mist-600" />
                   <span className="text-sm font-medium text-mist-950">
                     {t("resources.privacy.title", { defaultValue: "Privacy Policy" })}
                   </span>
@@ -421,7 +413,7 @@ export function MobileNav() {
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
                 >
-                  <IconScript className="size-4 text-mist-600" />
+                  <SpriteIcon name="script" className="size-4 text-mist-600" />
                   <span className="text-sm font-medium text-mist-950">
                     {t("resources.terms.title", { defaultValue: "Terms of Service" })}
                   </span>
@@ -435,7 +427,7 @@ export function MobileNav() {
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
                 >
-                  <IconBook className="size-4 text-mist-600" />
+                  <SpriteIcon name="book" className="size-4 text-mist-600" />
                   <span className="text-sm font-medium text-mist-950">
                     {t("documentation", { defaultValue: "Documentation" })}
                   </span>
@@ -447,7 +439,7 @@ export function MobileNav() {
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
                 >
-                  <IconSparklesSoft className="size-4 text-mist-600" />
+                  <SpriteIcon name="sparkles-soft" className="size-4 text-mist-600" />
                   <span className="text-sm font-medium text-mist-950">
                     {t("changelog", { defaultValue: "Changelog" })}
                   </span>
@@ -471,7 +463,7 @@ export function MobileNav() {
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
                 >
-                  <IconApiConnection className="size-4 text-mist-600" />
+                  <SpriteIcon name="api-connection" className="size-4 text-mist-600" />
                   <span className="text-sm font-medium text-mist-950">
                     {t("apiReference", { defaultValue: "API Reference" })}
                   </span>
@@ -495,7 +487,7 @@ export function MobileNav() {
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
                 >
-                  <IconGlobe className="size-4 text-mist-600" />
+                  <SpriteIcon name="globe" className="size-4 text-mist-600" />
                   <span className="text-sm font-medium text-mist-950">
                     {t("resources.whatIsI18n", { defaultValue: "What is i18n?" })}
                   </span>
@@ -552,7 +544,8 @@ function AccordionSection({
         className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
       >
         {label}
-        <IconChevronBottom
+        <SpriteIcon
+          name="chevron-bottom"
           className={cn(
             "size-4 text-mist-600 transition-transform duration-200",
             isExpanded && "rotate-180",

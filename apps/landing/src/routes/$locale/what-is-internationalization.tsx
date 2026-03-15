@@ -1,15 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
-import {
-  IconGlobe,
-  IconCodeBrackets,
-  IconSettingsGear1,
-  IconCalendar1,
-  IconCheckmark1,
-  IconArrowRight,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconCalendar1 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/what-is-internationalization")({
   loader: createPageLoader(),
@@ -17,7 +11,6 @@ export const Route = createFileRoute("/$locale/what-is-internationalization")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "whatIsInternationalization",
       pathname: "/what-is-internationalization",
       pageType: "educational",
@@ -36,9 +29,9 @@ function WhatIsInternationalizationPage() {
   const { locale } = Route.useParams();
 
   const keyPrinciples = [
-    { icon: IconCodeBrackets, titleKey: "principles.separation.title", descKey: "principles.separation.description" },
+    { icon: "code-brackets", titleKey: "principles.separation.title", descKey: "principles.separation.description" },
     { icon: IconCalendar1, titleKey: "principles.formatting.title", descKey: "principles.formatting.description" },
-    { icon: IconSettingsGear1, titleKey: "principles.configuration.title", descKey: "principles.configuration.description" },
+    { icon: "settings-gear", titleKey: "principles.configuration.title", descKey: "principles.configuration.description" },
   ];
 
   const benefits = [
@@ -64,7 +57,7 @@ function WhatIsInternationalizationPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mist-100 text-mist-700 text-sm font-medium mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               {t("badge")}
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1] lg:text-6xl/[1.1]">
@@ -123,7 +116,7 @@ function WhatIsInternationalizationPage() {
             {keyPrinciples.map((principle) => (
               <div key={principle.titleKey} className="p-8 rounded-2xl bg-white border border-mist-200">
                 <div className="size-12 rounded-xl bg-mist-100 flex items-center justify-center text-mist-700 mb-5">
-                  <principle.icon className="size-6" />
+                  {typeof principle.icon === "string" ? <SpriteIcon name={principle.icon} className="size-6" /> : <principle.icon className="size-6" />}
                 </div>
                 <h3 className="text-lg font-medium text-mist-950 mb-3">{t(principle.titleKey)}</h3>
                 <p className="text-mist-700 leading-relaxed">{t(principle.descKey)}</p>
@@ -149,7 +142,7 @@ function WhatIsInternationalizationPage() {
               <ul className="space-y-4">
                 {benefits.map((benefitKey) => (
                   <li key={benefitKey} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefitKey)}</span>
                   </li>
                 ))}
@@ -219,7 +212,7 @@ function WhatIsInternationalizationPage() {
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.l10n")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.l10nDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
               to="/$locale/what-is"
@@ -230,7 +223,7 @@ function WhatIsInternationalizationPage() {
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.overview")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.overviewDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
               to="/$locale/i18n"
@@ -241,7 +234,7 @@ function WhatIsInternationalizationPage() {
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.frameworks")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.frameworksDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
               to="/$locale/compare"
@@ -252,7 +245,7 @@ function WhatIsInternationalizationPage() {
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.compare")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.compareDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
           </div>
         </div>

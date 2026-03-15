@@ -1,18 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconGlobe,
-  IconCheckmark1,
-  IconArrowRight,
-  IconGroup1,
-  IconRocket,
-  IconSparklesSoft,
-  IconAiTranslate,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconAiTranslate } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/content-localization")({
   loader: createPageLoader(),
@@ -20,7 +13,6 @@ export const Route = createFileRoute("/$locale/i18n/content-localization")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "contentLocalization",
       pathname: "/i18n/content-localization",
       pageType: "educational",
@@ -35,10 +27,10 @@ export const Route = createFileRoute("/$locale/i18n/content-localization")({
 });
 
 const challenges = [
-  { icon: IconGroup1, titleKey: "challenges.contentVolume.title", descKey: "challenges.contentVolume.description", defaultTitle: "Content Volume", defaultDesc: "Marketing pages, help docs, product UI, and legal content multiply with every new locale. Without automation, teams drown in spreadsheets and stale translations." },
-  { icon: IconRocket, titleKey: "challenges.culturalNuance.title", descKey: "challenges.culturalNuance.description", defaultTitle: "Cultural Nuance", defaultDesc: "Humor, idioms, color associations, and imagery that resonate in one market can confuse or offend in another. True localization requires cultural expertise, not just language skills." },
+  { icon: "group", titleKey: "challenges.contentVolume.title", descKey: "challenges.contentVolume.description", defaultTitle: "Content Volume", defaultDesc: "Marketing pages, help docs, product UI, and legal content multiply with every new locale. Without automation, teams drown in spreadsheets and stale translations." },
+  { icon: "rocket", titleKey: "challenges.culturalNuance.title", descKey: "challenges.culturalNuance.description", defaultTitle: "Cultural Nuance", defaultDesc: "Humor, idioms, color associations, and imagery that resonate in one market can confuse or offend in another. True localization requires cultural expertise, not just language skills." },
   { icon: IconAiTranslate, titleKey: "challenges.consistency.title", descKey: "challenges.consistency.description", defaultTitle: "Terminology Consistency", defaultDesc: "Brand terms, feature names, and product vocabulary must stay consistent across dozens of languages. A single inconsistency erodes user trust and confuses support teams." },
-  { icon: IconGlobe, titleKey: "challenges.scalability.title", descKey: "challenges.scalability.description", defaultTitle: "Scalability", defaultDesc: "Adding a new locale should not require re-engineering your content pipeline. Scalable localization demands structured workflows, reusable glossaries, and automated syncing." },
+  { icon: "globe", titleKey: "challenges.scalability.title", descKey: "challenges.scalability.description", defaultTitle: "Scalability", defaultDesc: "Adding a new locale should not require re-engineering your content pipeline. Scalable localization demands structured workflows, reusable glossaries, and automated syncing." },
 ];
 
 function ContentLocalizationPage() {
@@ -77,7 +69,7 @@ function ContentLocalizationPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGroup1 className="size-4" />
+              <SpriteIcon name="group" className="size-4" />
               <span>{t("badge", { defaultValue: "Content Localization" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -136,7 +128,7 @@ function ContentLocalizationPage() {
             {challenges.map((challenge) => (
               <div key={challenge.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <challenge.icon className="size-5" />
+                  {typeof challenge.icon === "string" ? <SpriteIcon name={challenge.icon} className="size-5" /> : <challenge.icon className="size-5" />}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
@@ -165,7 +157,7 @@ function ContentLocalizationPage() {
               <ul className="space-y-4">
                 {benefits.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
@@ -215,7 +207,7 @@ function ContentLocalizationPage() {
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <div className="p-6 rounded-xl bg-white border border-mist-200">
-              <IconRocket className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="rocket" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("quality.engagement.title", { defaultValue: "Engagement Metrics" })}
               </h3>
@@ -224,7 +216,7 @@ function ContentLocalizationPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-200">
-              <IconSparklesSoft className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="sparkles-soft" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("quality.conversion.title", { defaultValue: "Conversion Rate by Locale" })}
               </h3>
@@ -233,7 +225,7 @@ function ContentLocalizationPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-200">
-              <IconRocket className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="rocket" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("quality.roi.title", { defaultValue: "Revenue Attribution" })}
               </h3>
@@ -301,7 +293,7 @@ function ContentLocalizationPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

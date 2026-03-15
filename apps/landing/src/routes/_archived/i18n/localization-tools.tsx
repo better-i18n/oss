@@ -1,18 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconCodeBrackets,
-  IconZap,
-  IconSettingsGear1,
-  IconSparklesSoft,
-  IconGroup1,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/localization-tools")({
   loader: createPageLoader(),
@@ -20,7 +12,6 @@ export const Route = createFileRoute("/_archived/i18n/localization-tools")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "localizationTools",
       pathname: "/i18n/localization-tools",
       pageType: "educational",
@@ -35,10 +26,10 @@ export const Route = createFileRoute("/_archived/i18n/localization-tools")({
 });
 
 const categories = [
-  { icon: IconGroup1, titleKey: "categories.tms.title", descKey: "categories.tms.description", defaultTitle: "Translation Management Systems", defaultDesc: "Centralized platforms for managing translation workflows, translator assignments, and progress tracking across all your locales." },
-  { icon: IconSparklesSoft, titleKey: "categories.ai.title", descKey: "categories.ai.description", defaultTitle: "AI Translation Engines", defaultDesc: "Context-aware machine translation powered by large language models that respect glossaries, tone, and formatting constraints." },
-  { icon: IconCodeBrackets, titleKey: "categories.sdk.title", descKey: "categories.sdk.description", defaultTitle: "Developer SDKs & CLIs", defaultDesc: "Type-safe libraries and command-line tools that integrate localization directly into your build pipeline and CI/CD workflow." },
-  { icon: IconSettingsGear1, titleKey: "categories.cat.title", descKey: "categories.cat.description", defaultTitle: "CAT Tools", defaultDesc: "Computer-assisted translation tools with translation memory, glossary management, and quality assurance checks for professional linguists." },
+  { icon: "group", titleKey: "categories.tms.title", descKey: "categories.tms.description", defaultTitle: "Translation Management Systems", defaultDesc: "Centralized platforms for managing translation workflows, translator assignments, and progress tracking across all your locales." },
+  { icon: "sparkles-soft", titleKey: "categories.ai.title", descKey: "categories.ai.description", defaultTitle: "AI Translation Engines", defaultDesc: "Context-aware machine translation powered by large language models that respect glossaries, tone, and formatting constraints." },
+  { icon: "code-brackets", titleKey: "categories.sdk.title", descKey: "categories.sdk.description", defaultTitle: "Developer SDKs & CLIs", defaultDesc: "Type-safe libraries and command-line tools that integrate localization directly into your build pipeline and CI/CD workflow." },
+  { icon: "settings-gear", titleKey: "categories.cat.title", descKey: "categories.cat.description", defaultTitle: "CAT Tools", defaultDesc: "Computer-assisted translation tools with translation memory, glossary management, and quality assurance checks for professional linguists." },
 ];
 
 function LocalizationToolsPage() {
@@ -82,7 +73,7 @@ function LocalizationToolsPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconZap className="size-4" />
+              <SpriteIcon name="zap" className="size-4" />
               <span>{t("badge", { defaultValue: "Localization Tools" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -141,7 +132,7 @@ function LocalizationToolsPage() {
             {categories.map((category) => (
               <div key={category.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <category.icon className="size-5" />
+                  <SpriteIcon name={category.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(category.titleKey, { defaultValue: category.defaultTitle })}
@@ -195,7 +186,7 @@ function LocalizationToolsPage() {
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
@@ -289,7 +280,7 @@ function LocalizationToolsPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

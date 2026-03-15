@@ -35,11 +35,9 @@ export const loadRelatedPersonas = createServerFn({ method: "GET" })
 export async function personaLoader(
   slug: string,
   locale: string,
-  locales?: string[],
 ): Promise<{
   page: MarketingPage;
   locale: string;
-  locales?: string[];
   relatedPersonas: MarketingPageListItem[];
 }> {
   const page = await loadPersonaPage({ data: { slug, locale } });
@@ -49,7 +47,7 @@ export async function personaLoader(
   const relatedPersonas = await loadRelatedPersonas({
     data: { slug, locale },
   });
-  return { page, locale, locales, relatedPersonas };
+  return { page, locale, relatedPersonas };
 }
 
 // ─── Head ────────────────────────────────────────────────────────────
@@ -83,11 +81,9 @@ export function getPersonaLabel(slug: string): string {
 export function personaHead(loaderData?: {
   page?: MarketingPage;
   locale?: string;
-  locales?: string[];
 } | null) {
   const page = loaderData?.page;
   const locale = loaderData?.locale || "en";
-  const locales = loaderData?.locales;
   const slug = page?.slug || "";
   const pathname = `/${slug}`;
   const canonicalUrl = `${SITE_URL}/${locale}${pathname}/`;
@@ -137,12 +133,12 @@ export function personaHead(loaderData?: {
       ...(page?.targetKeywords
         ? [{ name: "keywords", content: page.targetKeywords }]
         : []),
-      ...(locales ?? getCachedLocales())
+      ...getCachedLocales()
         .filter((loc) => loc !== locale)
         .map((loc) => ({ property: "og:locale:alternate", content: loc })),
     ],
     links: [
-      ...getAlternateLinks(pathname, locales),
+      ...getAlternateLinks(pathname),
       getCanonicalLink(locale, pathname),
     ],
     scripts: [...educationalScripts, ...breadcrumbScripts],

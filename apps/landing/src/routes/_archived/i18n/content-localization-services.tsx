@@ -1,19 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconMagnifyingGlass,
-  IconSettingsGear1,
-  IconShieldCheck,
-  IconZap,
-  IconGroup1,
-  IconGlobe,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/content-localization-services")({
   loader: createPageLoader(),
@@ -21,7 +12,6 @@ export const Route = createFileRoute("/_archived/i18n/content-localization-servi
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "contentLocalizationServices",
       pathname: "/i18n/content-localization-services",
       pageType: "educational",
@@ -36,10 +26,10 @@ export const Route = createFileRoute("/_archived/i18n/content-localization-servi
 });
 
 const serviceTypes = [
-  { icon: IconGlobe, titleKey: "services.website.title", descKey: "services.website.description", defaultTitle: "Website Localization", defaultDesc: "Full website translation including UI strings, metadata, multimedia, and SEO-optimized content for each target market." },
-  { icon: IconSettingsGear1, titleKey: "services.app.title", descKey: "services.app.description", defaultTitle: "App Localization", defaultDesc: "Mobile and desktop application translation covering UI, push notifications, app store listings, and in-app content." },
-  { icon: IconZap, titleKey: "services.game.title", descKey: "services.game.description", defaultTitle: "Game Translation", defaultDesc: "Game localization services including UI strings, subtitles, voice scripts, and marketing assets adapted for each region." },
-  { icon: IconGroup1, titleKey: "services.marketing.title", descKey: "services.marketing.description", defaultTitle: "Marketing Content", defaultDesc: "Multilingual content marketing including blog posts, ad copy, email campaigns, and social media adapted for local audiences." },
+  { icon: "globe", titleKey: "services.website.title", descKey: "services.website.description", defaultTitle: "Website Localization", defaultDesc: "Full website translation including UI strings, metadata, multimedia, and SEO-optimized content for each target market." },
+  { icon: "settings-gear", titleKey: "services.app.title", descKey: "services.app.description", defaultTitle: "App Localization", defaultDesc: "Mobile and desktop application translation covering UI, push notifications, app store listings, and in-app content." },
+  { icon: "zap", titleKey: "services.game.title", descKey: "services.game.description", defaultTitle: "Game Translation", defaultDesc: "Game localization services including UI strings, subtitles, voice scripts, and marketing assets adapted for each region." },
+  { icon: "group", titleKey: "services.marketing.title", descKey: "services.marketing.description", defaultTitle: "Marketing Content", defaultDesc: "Multilingual content marketing including blog posts, ad copy, email campaigns, and social media adapted for local audiences." },
 ];
 
 function ContentLocalizationServicesPage() {
@@ -77,7 +67,7 @@ function ContentLocalizationServicesPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconMagnifyingGlass className="size-4" />
+              <SpriteIcon name="magnifying-glass" className="size-4" />
               <span>{t("badge", { defaultValue: "Localization Services" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -136,7 +126,7 @@ function ContentLocalizationServicesPage() {
             {serviceTypes.map((service) => (
               <div key={service.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <service.icon className="size-5" />
+                  <SpriteIcon name={service.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(service.titleKey, { defaultValue: service.defaultTitle })}
@@ -165,7 +155,7 @@ function ContentLocalizationServicesPage() {
               <ul className="space-y-4">
                 {selectionCriteria.map((criterion) => (
                   <li key={criterion.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(criterion.key, { defaultValue: criterion.defaultValue })}</span>
                   </li>
                 ))}
@@ -215,7 +205,7 @@ function ContentLocalizationServicesPage() {
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <div className="p-6 rounded-xl bg-white border border-mist-200">
-              <IconShieldCheck className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="shield-check" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("cost.perWord.title", { defaultValue: "Per-Word Pricing" })}
               </h3>
@@ -224,7 +214,7 @@ function ContentLocalizationServicesPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-200">
-              <IconZap className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="zap" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("cost.subscription.title", { defaultValue: "Subscription Platforms" })}
               </h3>
@@ -233,7 +223,7 @@ function ContentLocalizationServicesPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-200">
-              <IconGroup1 className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="group" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("cost.managed.title", { defaultValue: "Managed Service Retainers" })}
               </h3>
@@ -301,7 +291,7 @@ function ContentLocalizationServicesPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

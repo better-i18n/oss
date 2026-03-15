@@ -1,5 +1,5 @@
 import { useT } from "@/lib/i18n";
-import { IconChevronRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 export default function CTA() {
   const t = useT("cta");
@@ -28,7 +28,7 @@ export default function CTA() {
               className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950"
             >
               {t("bookDemo", { defaultValue: "Book a demo" })}
-              <IconChevronRight className="w-4 h-4" />
+              <SpriteIcon name="chevron-right" className="w-4 h-4" />
             </a>
           </div>
         </div>

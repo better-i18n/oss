@@ -17,7 +17,6 @@ export const Route = createFileRoute("/$locale/i18n/server")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "serverI18n",
       pathname: "/i18n/server",
       pageType: "framework",

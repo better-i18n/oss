@@ -18,7 +18,6 @@ export const Route = createFileRoute("/_archived/i18n/react-intl")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "reactIntl",
       pathname: "/i18n/react-intl",
       pageType: "framework",
