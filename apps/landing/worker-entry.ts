@@ -101,10 +101,78 @@ function getCacheControl(
   return null;
 }
 
+/** ASSETS binding type from wrangler.jsonc */
+interface Env {
+  ASSETS: { fetch: (request: Request | string) => Promise<Response> };
+  [key: string]: unknown;
+}
+
+/**
+ * Try to serve a pre-compressed Brotli version of the HTML response.
+ *
+ * Pre-compressed .html.br files are generated at build time with Brotli
+ * quality 11 (~20-30% smaller than Cloudflare's default edge compression).
+ * This function checks if:
+ *   1. The response is HTML
+ *   2. The client accepts Brotli encoding
+ *   3. A .br asset exists for the resolved path
+ *
+ * Returns the compressed response if all conditions are met, or null to
+ * signal the caller should use the original response.
+ */
+async function tryServeBrotli(
+  request: Request,
+  response: Response,
+  env: Env,
+): Promise<Response | null> {
+  // Only compress HTML responses
+  const contentType = response.headers.get("Content-Type") || "";
+  if (!contentType.includes("text/html")) return null;
+
+  // Only if client accepts Brotli
+  const acceptEncoding = request.headers.get("Accept-Encoding") || "";
+  if (!acceptEncoding.includes("br")) return null;
+
+  // Only for successful GET responses
+  if (request.method !== "GET" || response.status !== 200) return null;
+
+  // Build the .br asset URL: /en/page/ → /en/page/index.html.br
+  const url = new URL(request.url);
+  const brPaths = url.pathname.endsWith("/")
+    ? [`${url.pathname}index.html.br`]
+    : [`${url.pathname}/index.html.br`, `${url.pathname}.br`];
+
+  try {
+    for (const brPath of brPaths) {
+      const brResponse = await env.ASSETS.fetch(
+        new Request(`${url.origin}${brPath}`, { method: "GET" }),
+      );
+      if (brResponse.ok) return brResponse;
+    }
+    return null;
+  } catch {
+    // ASSETS.fetch failure — fall back silently
+    return null;
+  }
+}
+
+/** Security headers applied to every response. */
+const SECURITY_HEADERS: ReadonlyArray<readonly [string, string]> = [
+  ["Strict-Transport-Security", "max-age=31536000; includeSubDomains"],
+  ["X-Content-Type-Options", "nosniff"],
+  ["X-Frame-Options", "SAMEORIGIN"],
+  ["Referrer-Policy", "strict-origin-when-cross-origin"],
+  ["Permissions-Policy", "camera=(), microphone=(), geolocation=()"],
+  [
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; img-src 'self' https://og.better-i18n.com https://cdn.better-i18n.com data: https:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://cdn.better-i18n.com https://www.google-analytics.com https://*.better-i18n.com; frame-src https://www.googletagmanager.com;",
+  ],
+] as const;
+
 export default {
   async fetch(
     request: Request,
-    env: Record<string, unknown>,
+    env: Env,
     ctx: ExecutionContext
   ): Promise<Response> {
     // Handle SEO redirects before hitting TanStack — instant 301 at edge
@@ -119,27 +187,31 @@ export default {
 
     const response = await tanstack.fetch(request, env, ctx);
 
-    // Clone the response to add security + cache headers
+    // Try serving pre-compressed Brotli for HTML pages
+    const brResponse = await tryServeBrotli(request, response, env);
+
+    const finalBody = brResponse ? brResponse.body : response.body;
     const newHeaders = new Headers(response.headers);
-    newHeaders.set(
-      "Strict-Transport-Security",
-      "max-age=31536000; includeSubDomains"
-    );
-    newHeaders.set("X-Content-Type-Options", "nosniff");
-    newHeaders.set("X-Frame-Options", "SAMEORIGIN");
-    newHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
-    newHeaders.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
-    newHeaders.set(
-      "Content-Security-Policy",
-      "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; img-src 'self' https://og.better-i18n.com https://cdn.better-i18n.com data: https:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://cdn.better-i18n.com https://www.google-analytics.com https://*.better-i18n.com; frame-src https://www.googletagmanager.com;"
-    );
+
+    if (brResponse) {
+      newHeaders.set("Content-Encoding", "br");
+      newHeaders.set("Content-Type", "text/html; charset=utf-8");
+      newHeaders.delete("Content-Length");
+      // Vary on Accept-Encoding so caches store both versions
+      newHeaders.set("Vary", "Accept-Encoding");
+    }
+
+    // Apply security headers
+    for (const [key, value] of SECURITY_HEADERS) {
+      newHeaders.set(key, value);
+    }
 
     const cacheControl = getCacheControl(request, response);
     if (cacheControl) {
       newHeaders.set("Cache-Control", cacheControl);
     }
 
-    return new Response(response.body, {
+    return new Response(finalBody, {
       status: response.status,
       statusText: response.statusText,
       headers: newHeaders,
