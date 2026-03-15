@@ -13,6 +13,7 @@ import {
   getLocaleFromPath,
   useTranslations,
 } from "@better-i18n/use-intl";
+import type { Messages } from "@better-i18n/use-intl";
 import { getMessages, detectLocale } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
 import { filterMessagesByPath } from "../lib/page-namespaces";
@@ -21,6 +22,33 @@ import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
 import { SvgSprite } from "../components/SvgSprite";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+
+/**
+ * Per-request SSR side-channel for i18n messages.
+ *
+ * Keyed by a unique requestId generated in beforeLoad — safe under concurrent
+ * requests on CF Workers (unlike a single module-scoped variable).
+ *
+ * Entries are deleted immediately after the synchronous React render reads them.
+ * Safety cap of 50 entries prevents leaks from errored requests that never render.
+ */
+const ssrMessagesByRequest = new Map<string, Messages>();
+const SSR_MAP_MAX_SIZE = 50;
+
+/**
+ * Reads i18n messages from the `<script id="__i18n_messages__">` tag
+ * injected during SSR. Called synchronously during React hydration.
+ */
+function getClientMessages(): Messages | undefined {
+  if (typeof document === "undefined") return undefined;
+  const el = document.getElementById("__i18n_messages__");
+  if (!el?.textContent) return undefined;
+  try {
+    return JSON.parse(el.textContent) as Messages;
+  } catch {
+    return undefined;
+  }
+}
 
 function createQueryClient() {
   return new QueryClient({
@@ -35,7 +63,8 @@ function createQueryClient() {
 
 interface RouterContext {
   locale: string;
-  locales: string[]; // Populated by beforeLoad via fetchLocales()
+  locales: string[];
+  requestId: string; // Unique per SSR request — keys into ssrMessagesByRequest
 }
 
 /**
@@ -82,15 +111,26 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     }
 
     const locale = getLocaleFromPath(location.pathname, localeConfig);
+    const requestId = crypto.randomUUID();
 
-    return { locale, locales };
+    return { locale, locales, requestId };
   },
 
   loader: async ({ context, location }) => {
     const allMessages = await getMessages({ project: i18nConfig.project, locale: context.locale });
-    // Only serialize the namespaces this page actually needs.
     const messages = filterMessagesByPath(allMessages, location.pathname);
-    return { locale: context.locale, messages };
+
+    const isSSR = typeof document === "undefined";
+    if (isSSR) {
+      // SSR: store in per-request Map, keep out of loader data (avoids dehydration).
+      if (ssrMessagesByRequest.size >= SSR_MAP_MAX_SIZE) {
+        const firstKey = ssrMessagesByRequest.keys().next().value;
+        if (firstKey) ssrMessagesByRequest.delete(firstKey);
+      }
+      ssrMessagesByRequest.set(context.requestId, messages);
+    }
+    // SSR: messages=undefined (tiny in dehydration). Client nav: messages=full data.
+    return { locale: context.locale, messages: isSSR ? undefined : messages };
   },
 
   head: () => {
@@ -194,10 +234,23 @@ function NotFoundPage() {
 }
 
 function RootComponent() {
-  const { locale, locales } = Route.useRouteContext();
-  const { messages } = Route.useLoaderData();
+  const { locale, locales, requestId } = Route.useRouteContext();
   // Per-mount QueryClient — prevents cross-request cache leak on CF Workers
   const [queryClient] = useState(createQueryClient);
+
+  const loaderData = Route.useLoaderData();
+
+  // SSR: per-request Map (race-free across concurrent CF Worker requests)
+  // Client hydration: <script id="__i18n_messages__"> tag from SSR HTML
+  // Client navigation: loader data (fresh messages for the new page)
+  const messages = (() => {
+    if (typeof document === "undefined") {
+      const msgs = ssrMessagesByRequest.get(requestId);
+      if (msgs) ssrMessagesByRequest.delete(requestId);
+      return msgs;
+    }
+    return loaderData.messages ?? getClientMessages();
+  })();
 
   useEffect(() => {
     if (import.meta.env.DEV) {
@@ -223,6 +276,16 @@ function RootComponent() {
         </script>
       </head>
       <body className="no-dark text-mist-950">
+        {/* SSR messages — keeps ~30-60 KB out of TSR's dehydration pipeline.
+            type="application/json" = browser never executes this (no XSS risk).
+            Client reads synchronously during hydration via getClientMessages(). */}
+        <script
+          type="application/json"
+          id="__i18n_messages__"
+          suppressHydrationWarning
+        >
+          {JSON.stringify(messages)}
+        </script>
         <SvgSprite />
         {/* Google Tag Manager (noscript) */}
         <noscript>
