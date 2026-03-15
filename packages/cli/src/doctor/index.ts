@@ -206,7 +206,11 @@ async function runCodeAnalysis(
   fileCount: number;
   allIssues: Issue[];
 }> {
-  const files = await collectFiles({ rootDir: directory });
+  const files = await collectFiles({
+    rootDir: directory,
+    include: lintConfig?.include,
+    exclude: lintConfig?.exclude,
+  });
   const codeDiagnostics: I18nDiagnostic[] = [];
   const keys: string[] = [];
   const allIssues: Issue[] = [];
