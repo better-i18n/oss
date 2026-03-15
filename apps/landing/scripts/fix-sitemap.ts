@@ -29,7 +29,9 @@ for (const file of sitemapFiles) {
       '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">',
       '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
     )
-    .replaceAll(/ xmlns=""/g, "");
+    .replaceAll(/ xmlns=""/g, "")
+    // Remove bare root URL — it 301-redirects to /{defaultLocale}/ and should not be in sitemap
+    .replace(/\s*<url>\s*<loc>https:\/\/better-i18n\.com\/<\/loc>\s*<\/url>/g, "");
 
   if (fixed !== xml) {
     writeFileSync(filePath, fixed);
