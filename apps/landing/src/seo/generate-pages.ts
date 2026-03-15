@@ -257,26 +257,35 @@ function generateBlogListingPages(
     localePostCounts.set(locale, count);
   }
 
+  // hreflang alternates only reference sitemap-eligible locales with posts
+  const validLocalesForPage1 = sitemapLocales.filter(
+    (l) => (localePostCounts.get(l) ?? 0) > 0,
+  );
+
   for (const locale of sitemapLocales) {
     const count = localePostCounts.get(locale) ?? 0;
-    if (count === 0) continue;
-
-    // hreflang alternates only reference sitemap-eligible locales with posts
-    const validLocalesForPage1 = sitemapLocales.filter(
-      (l) => (localePostCounts.get(l) ?? 0) > 0,
-    );
 
     // Page 1: /{locale}/blog/
+    // Always generate for all sitemap locales (even with 0 posts) so the
+    // page is routable and prerendered. The blog component handles the
+    // empty state gracefully.
     pages.push({
       path: buildPagePath(locale, "blog"),
-      sitemap: {
-        priority: 0.8,
-        changefreq: "daily",
-        alternateRefs: buildAlternateRefs(validLocalesForPage1, (l) =>
-          buildPageUrl(l, "blog"),
-        ),
-      },
-      // SSR — no prerender
+      sitemap: count > 0
+        ? {
+            priority: 0.8,
+            changefreq: "daily",
+            alternateRefs: buildAlternateRefs(validLocalesForPage1, (l) =>
+              buildPageUrl(l, "blog"),
+            ),
+          }
+        : {
+            priority: 0.3,
+            changefreq: "weekly",
+            noindex: true,
+            alternateRefs: [],
+          },
+      prerender: { enabled: true },
     });
 
     // Page 2+: excluded from sitemap entirely.
