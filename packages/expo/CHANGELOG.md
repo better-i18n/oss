@@ -1,5 +1,12 @@
 # @better-i18n/expo
 
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @better-i18n/core@0.2.3
+
 ## 0.7.0
 
 ### Minor Changes
