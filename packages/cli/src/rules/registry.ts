@@ -8,7 +8,7 @@
  * externalized in categories.ts (react-doctor pattern) for central management.
  */
 
-import type { ProjectContext } from "../analyzer/types.js";
+import type { Issue, ProjectContext } from "../analyzer/types.js";
 
 /**
  * Universal diagnostic type — the single "currency" of i18n Doctor.
@@ -86,4 +86,8 @@ export interface HealthRuleContext {
   projectContext: ProjectContext | null;
   /** Locale → representative file path mapping (from discovery or CDN) */
   localeFilePaths?: Record<string, string>;
+  /** All issues from code analysis (for dynamic pattern + namespace matching) */
+  allIssues?: Issue[];
+  /** Whether sync analysis is available (orphan-keys skips when true to avoid duplication with unused-remote-key) */
+  syncAvailable?: boolean;
 }
