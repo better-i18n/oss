@@ -285,18 +285,7 @@ export function MobileNav() {
                       { to: "/$locale/for-saas" as const, key: "saas", label: "SaaS" },
                       { to: "/$locale/for-ecommerce" as const, key: "ecommerce", label: "E-Commerce" },
                       { to: "/$locale/for-startups" as const, key: "startups", label: "Startups" },
-                      { to: "/$locale/for-healthcare" as const, key: "healthcare", label: "Healthcare" },
-                      { to: "/$locale/for-education" as const, key: "education", label: "Education" },
-                      { to: "/$locale/for-gaming" as const, key: "gaming", label: "Gaming" },
-                      { to: "/$locale/for-open-source" as const, key: "openSource", label: "Open Source" },
-                      // Teams & Roles
-                      { to: "/$locale/for-marketers" as const, key: "marketers", label: "Marketers" },
-                      { to: "/$locale/for-designers" as const, key: "designers", label: "Designers" },
-                      { to: "/$locale/for-content-teams" as const, key: "contentTeams", label: "Content Teams" },
-                      { to: "/$locale/for-engineering-leaders" as const, key: "engineeringLeaders", label: "Engineering Leaders" },
-                      { to: "/$locale/for-mobile-teams" as const, key: "mobileTeams", label: "Mobile Teams" },
                       { to: "/$locale/for-agencies" as const, key: "agencies", label: "Agencies" },
-                      { to: "/$locale/for-freelancers" as const, key: "freelancers", label: "Freelancers" },
                     ].map((item) => (
                       <Link
                         key={item.to}
