@@ -118,6 +118,9 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
     "compare",
     { namespaces: ["marketing.compare.index", "alternatives", "relatedPages"] },
   ],
+
+  // ─── Tools hub (no custom namespaces — UI is hardcoded English) ──
+  ["tools", { namespaces: [] }],
 ]);
 
 /**
@@ -169,6 +172,11 @@ function resolveDynamicConfig(pagePath: string): PageConfig | null {
   // /features/{slug}
   if (pagePath.startsWith("features/")) {
     return { namespaces: ["featuresPage", "relatedPages"] };
+  }
+
+  // /tools/{tool} — tool pages use hardcoded strings, no custom namespaces needed
+  if (pagePath.startsWith("tools/")) {
+    return { namespaces: [] };
   }
 
   return null;
@@ -349,6 +357,12 @@ const PAGE_KEY_MAP: ReadonlyMap<string, string> = new Map([
   ["what-is-localization", "whatIsLocalization"],
   ["i18n", "i18n"],
   ["compare", "compare"],
+  ["tools", "tools"],
+  ["for-agencies", "forAgencies"],
+  ["for-enterprises", "forEnterprises"],
+  ["for-startups", "forStartups"],
+  ["for-ecommerce", "forEcommerce"],
+  ["for-saas", "forSaas"],
 ]);
 
 /**
@@ -376,6 +390,13 @@ function resolvePageKey(pagePath: string): string | null {
     const role = pagePath.slice(4);
     const camel = kebabToCamel(role);
     return `for${camel.charAt(0).toUpperCase()}${camel.slice(1)}`;
+  }
+
+  // /tools/{tool} → "tools" + PascalCase(tool)
+  if (pagePath.startsWith("tools/")) {
+    const tool = pagePath.slice(6);
+    const camel = kebabToCamel(tool);
+    return `tools${camel.charAt(0).toUpperCase()}${camel.slice(1)}`;
   }
 
   // /blog/* → "blog"
