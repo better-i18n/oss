@@ -117,7 +117,25 @@ export async function diagnose(
     allIssues = result.allIssues;
   }
 
-  // 3. Locale file discovery and health rule execution
+  // 3. Sync analysis (remote CDN comparison) — run BEFORE health rules
+  // so we can tell orphan-keys to skip when sync is available (avoids duplication)
+  let syncAvailable = false;
+  if (!options.skipSync && context?.workspaceId && context?.projectSlug) {
+    // Filter to only translation key extractions (info severity),
+    // matching sync command's filtering behavior
+    const keyExtractionIssues = allIssues.filter(
+      (i) => i.severity === "info" && i.key,
+    );
+    const syncResult = await runSyncAnalysis(
+      context,
+      keyExtractionIssues,
+      options.verbose,
+    );
+    syncAvailable = syncResult.success;
+    diagnostics.push(...syncResult.diagnostics);
+  }
+
+  // 4. Locale file discovery and health rule execution
   let keysChecked = 0;
   let localesChecked = 0;
 
@@ -126,6 +144,8 @@ export async function diagnose(
       directory,
       context,
       codeKeys,
+      allIssues,
+      syncAvailable,
       options.verbose,
     );
     diagnostics.push(...healthResult.diagnostics);
@@ -133,22 +153,7 @@ export async function diagnose(
     localesChecked = healthResult.localesChecked;
   }
 
-  // 3.5. Sync analysis (remote CDN comparison)
-  if (!options.skipSync && context?.workspaceId && context?.projectSlug) {
-    // Filter to only translation key extractions (info severity),
-    // matching sync command's filtering behavior
-    const keyExtractionIssues = allIssues.filter(
-      (i) => i.severity === "info" && i.key,
-    );
-    const syncDiagnostics = await runSyncAnalysis(
-      context,
-      keyExtractionIssues,
-      options.verbose,
-    );
-    diagnostics.push(...syncDiagnostics);
-  }
-
-  // 4. Calculate score
+  // 5. Calculate score
   const score = calculateHealthScore(
     diagnostics,
     options.passThreshold ?? 70,
@@ -237,6 +242,8 @@ async function runHealthAnalysis(
   directory: string,
   context: Awaited<ReturnType<typeof detectProjectContext>>,
   codeKeys: Set<string>,
+  allIssues: Issue[],
+  syncAvailable: boolean,
   verbose?: boolean,
 ): Promise<{
   diagnostics: I18nDiagnostic[];
@@ -311,6 +318,8 @@ async function runHealthAnalysis(
     rootDir: directory,
     projectContext: context,
     localeFilePaths,
+    allIssues,
+    syncAvailable,
   };
 
   const diagnostics: I18nDiagnostic[] = [];
@@ -346,7 +355,7 @@ async function runSyncAnalysis(
   context: NonNullable<Awaited<ReturnType<typeof detectProjectContext>>>,
   allIssues: Issue[],
   verbose?: boolean,
-): Promise<I18nDiagnostic[]> {
+): Promise<{ diagnostics: I18nDiagnostic[]; success: boolean }> {
   try {
     const cdnBaseUrl = context.cdnBaseUrl || "https://cdn.better-i18n.com";
 
@@ -418,7 +427,7 @@ async function runSyncAnalysis(
       );
     }
 
-    return diagnostics;
+    return { diagnostics, success: true };
   } catch (error) {
     // Graceful degradation: CDN unreachable or no manifest
     if (verbose) {
@@ -426,7 +435,7 @@ async function runSyncAnalysis(
         `[VERBOSE] Sync analysis skipped: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
-    return [];
+    return { diagnostics: [], success: false };
   }
 }
 
