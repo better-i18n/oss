@@ -2,699 +2,72 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <!-- ============================================ -->
-  <!-- Core Pages (homepage, features, pricing, integrations) -->
+  <!-- HERO PAGES — Top ~50 pages for authority -->
   <!-- ============================================ -->
+
+  <!-- Money Pages -->
   <url><loc>https://better-i18n.com/en/</loc></url>
-  <url><loc>https://better-i18n.com/de/</loc></url>
-  <url><loc>https://better-i18n.com/fr/</loc></url>
-  <url><loc>https://better-i18n.com/es/</loc></url>
-  <url><loc>https://better-i18n.com/ja/</loc></url>
-  <url><loc>https://better-i18n.com/tr/</loc></url>
-  <url><loc>https://better-i18n.com/it/</loc></url>
-  <url><loc>https://better-i18n.com/nl/</loc></url>
-  <url><loc>https://better-i18n.com/ko/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/features/</loc></url>
-  <url><loc>https://better-i18n.com/de/features/</loc></url>
-  <url><loc>https://better-i18n.com/fr/features/</loc></url>
-  <url><loc>https://better-i18n.com/es/features/</loc></url>
-  <url><loc>https://better-i18n.com/ja/features/</loc></url>
-  <url><loc>https://better-i18n.com/tr/features/</loc></url>
-  <url><loc>https://better-i18n.com/it/features/</loc></url>
-  <url><loc>https://better-i18n.com/nl/features/</loc></url>
-  <url><loc>https://better-i18n.com/ko/features/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/features/</loc></url>
-
   <url><loc>https://better-i18n.com/en/pricing/</loc></url>
-  <url><loc>https://better-i18n.com/de/pricing/</loc></url>
-  <url><loc>https://better-i18n.com/fr/pricing/</loc></url>
-  <url><loc>https://better-i18n.com/es/pricing/</loc></url>
-  <url><loc>https://better-i18n.com/ja/pricing/</loc></url>
-  <url><loc>https://better-i18n.com/tr/pricing/</loc></url>
-  <url><loc>https://better-i18n.com/it/pricing/</loc></url>
-  <url><loc>https://better-i18n.com/nl/pricing/</loc></url>
-  <url><loc>https://better-i18n.com/ko/pricing/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/pricing/</loc></url>
-
+  <url><loc>https://better-i18n.com/en/features/</loc></url>
   <url><loc>https://better-i18n.com/en/integrations/</loc></url>
-  <url><loc>https://better-i18n.com/de/integrations/</loc></url>
-  <url><loc>https://better-i18n.com/fr/integrations/</loc></url>
-  <url><loc>https://better-i18n.com/es/integrations/</loc></url>
-  <url><loc>https://better-i18n.com/ja/integrations/</loc></url>
-  <url><loc>https://better-i18n.com/tr/integrations/</loc></url>
-  <url><loc>https://better-i18n.com/it/integrations/</loc></url>
-  <url><loc>https://better-i18n.com/nl/integrations/</loc></url>
-  <url><loc>https://better-i18n.com/ko/integrations/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/integrations/</loc></url>
 
-  <!-- ============================================ -->
-  <!-- Audience Pages -->
-  <!-- ============================================ -->
+  <!-- Persona Pages (conversion) -->
   <url><loc>https://better-i18n.com/en/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/de/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/fr/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/es/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/ja/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/tr/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/it/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/nl/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/ko/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/for-developers/</loc></url>
-
   <url><loc>https://better-i18n.com/en/for-translators/</loc></url>
-  <url><loc>https://better-i18n.com/de/for-translators/</loc></url>
-  <url><loc>https://better-i18n.com/fr/for-translators/</loc></url>
-  <url><loc>https://better-i18n.com/es/for-translators/</loc></url>
-  <url><loc>https://better-i18n.com/ja/for-translators/</loc></url>
-  <url><loc>https://better-i18n.com/tr/for-translators/</loc></url>
-  <url><loc>https://better-i18n.com/it/for-translators/</loc></url>
-  <url><loc>https://better-i18n.com/nl/for-translators/</loc></url>
-  <url><loc>https://better-i18n.com/ko/for-translators/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/for-translators/</loc></url>
-
   <url><loc>https://better-i18n.com/en/for-product-teams/</loc></url>
-  <url><loc>https://better-i18n.com/de/for-product-teams/</loc></url>
-  <url><loc>https://better-i18n.com/fr/for-product-teams/</loc></url>
-  <url><loc>https://better-i18n.com/es/for-product-teams/</loc></url>
-  <url><loc>https://better-i18n.com/ja/for-product-teams/</loc></url>
-  <url><loc>https://better-i18n.com/tr/for-product-teams/</loc></url>
-  <url><loc>https://better-i18n.com/it/for-product-teams/</loc></url>
-  <url><loc>https://better-i18n.com/nl/for-product-teams/</loc></url>
-  <url><loc>https://better-i18n.com/ko/for-product-teams/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/for-product-teams/</loc></url>
-
   <url><loc>https://better-i18n.com/en/for-agencies/</loc></url>
-  <url><loc>https://better-i18n.com/de/for-agencies/</loc></url>
-  <url><loc>https://better-i18n.com/fr/for-agencies/</loc></url>
-  <url><loc>https://better-i18n.com/es/for-agencies/</loc></url>
-  <url><loc>https://better-i18n.com/ja/for-agencies/</loc></url>
-  <url><loc>https://better-i18n.com/tr/for-agencies/</loc></url>
-  <url><loc>https://better-i18n.com/it/for-agencies/</loc></url>
-  <url><loc>https://better-i18n.com/nl/for-agencies/</loc></url>
-  <url><loc>https://better-i18n.com/ko/for-agencies/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/for-agencies/</loc></url>
-
   <url><loc>https://better-i18n.com/en/for-enterprises/</loc></url>
-  <url><loc>https://better-i18n.com/de/for-enterprises/</loc></url>
-  <url><loc>https://better-i18n.com/fr/for-enterprises/</loc></url>
-  <url><loc>https://better-i18n.com/es/for-enterprises/</loc></url>
-  <url><loc>https://better-i18n.com/ja/for-enterprises/</loc></url>
-  <url><loc>https://better-i18n.com/tr/for-enterprises/</loc></url>
-  <url><loc>https://better-i18n.com/it/for-enterprises/</loc></url>
-  <url><loc>https://better-i18n.com/nl/for-enterprises/</loc></url>
-  <url><loc>https://better-i18n.com/ko/for-enterprises/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/for-enterprises/</loc></url>
-
   <url><loc>https://better-i18n.com/en/for-startups/</loc></url>
-  <url><loc>https://better-i18n.com/de/for-startups/</loc></url>
-  <url><loc>https://better-i18n.com/fr/for-startups/</loc></url>
-  <url><loc>https://better-i18n.com/es/for-startups/</loc></url>
-  <url><loc>https://better-i18n.com/ja/for-startups/</loc></url>
-  <url><loc>https://better-i18n.com/tr/for-startups/</loc></url>
-  <url><loc>https://better-i18n.com/it/for-startups/</loc></url>
-  <url><loc>https://better-i18n.com/nl/for-startups/</loc></url>
-  <url><loc>https://better-i18n.com/ko/for-startups/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/for-startups/</loc></url>
-
   <url><loc>https://better-i18n.com/en/for-ecommerce/</loc></url>
-  <url><loc>https://better-i18n.com/de/for-ecommerce/</loc></url>
-  <url><loc>https://better-i18n.com/fr/for-ecommerce/</loc></url>
-  <url><loc>https://better-i18n.com/es/for-ecommerce/</loc></url>
-  <url><loc>https://better-i18n.com/ja/for-ecommerce/</loc></url>
-  <url><loc>https://better-i18n.com/tr/for-ecommerce/</loc></url>
-  <url><loc>https://better-i18n.com/it/for-ecommerce/</loc></url>
-  <url><loc>https://better-i18n.com/nl/for-ecommerce/</loc></url>
-  <url><loc>https://better-i18n.com/ko/for-ecommerce/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/for-ecommerce/</loc></url>
-
   <url><loc>https://better-i18n.com/en/for-saas/</loc></url>
-  <url><loc>https://better-i18n.com/de/for-saas/</loc></url>
-  <url><loc>https://better-i18n.com/fr/for-saas/</loc></url>
-  <url><loc>https://better-i18n.com/es/for-saas/</loc></url>
-  <url><loc>https://better-i18n.com/ja/for-saas/</loc></url>
-  <url><loc>https://better-i18n.com/tr/for-saas/</loc></url>
-  <url><loc>https://better-i18n.com/it/for-saas/</loc></url>
-  <url><loc>https://better-i18n.com/nl/for-saas/</loc></url>
-  <url><loc>https://better-i18n.com/ko/for-saas/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/for-saas/</loc></url>
 
-  <!-- ============================================ -->
-  <!-- Framework Guides -->
-  <!-- ============================================ -->
+  <!-- Top Framework Guides -->
   <url><loc>https://better-i18n.com/en/i18n/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/</loc></url>
-
   <url><loc>https://better-i18n.com/en/i18n/react/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/react/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/react/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/react/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/react/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/react/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/react/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/react/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/react/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/react/</loc></url>
-
   <url><loc>https://better-i18n.com/en/i18n/nextjs/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/nextjs/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/nextjs/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/nextjs/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/nextjs/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/nextjs/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/nextjs/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/nextjs/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/nextjs/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/nextjs/</loc></url>
-
   <url><loc>https://better-i18n.com/en/i18n/vue/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/vue/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/vue/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/vue/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/vue/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/vue/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/vue/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/vue/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/vue/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/vue/</loc></url>
-
   <url><loc>https://better-i18n.com/en/i18n/nuxt/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/nuxt/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/nuxt/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/nuxt/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/nuxt/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/nuxt/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/nuxt/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/nuxt/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/nuxt/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/nuxt/</loc></url>
-
   <url><loc>https://better-i18n.com/en/i18n/angular/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/angular/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/angular/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/angular/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/angular/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/angular/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/angular/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/angular/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/angular/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/angular/</loc></url>
-
   <url><loc>https://better-i18n.com/en/i18n/svelte/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/svelte/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/svelte/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/svelte/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/svelte/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/svelte/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/svelte/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/svelte/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/svelte/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/svelte/</loc></url>
-
   <url><loc>https://better-i18n.com/en/i18n/django/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/django/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/django/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/django/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/django/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/django/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/django/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/django/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/django/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/django/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/ruby/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/ruby/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/ruby/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/ruby/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/ruby/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/ruby/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/ruby/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/ruby/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/ruby/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/ruby/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/javascript/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/javascript/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/javascript/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/javascript/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/javascript/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/javascript/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/javascript/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/javascript/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/javascript/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/javascript/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/android/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/android/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/android/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/android/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/android/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/android/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/android/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/android/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/android/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/android/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/ios/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/ios/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/ios/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/ios/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/ios/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/ios/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/ios/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/ios/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/ios/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/ios/</loc></url>
-
   <url><loc>https://better-i18n.com/en/i18n/flutter/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/flutter/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/flutter/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/flutter/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/flutter/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/flutter/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/flutter/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/flutter/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/flutter/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/flutter/</loc></url>
-
   <url><loc>https://better-i18n.com/en/i18n/expo/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/expo/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/expo/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/expo/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/expo/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/expo/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/expo/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/expo/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/expo/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/expo/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/server/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/server/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/server/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/server/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/server/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/server/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/server/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/server/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/server/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/server/</loc></url>
-
   <url><loc>https://better-i18n.com/en/i18n/tanstack-start/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/tanstack-start/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/tanstack-start/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/tanstack-start/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/tanstack-start/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/tanstack-start/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/tanstack-start/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/tanstack-start/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/tanstack-start/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/tanstack-start/</loc></url>
+  <url><loc>https://better-i18n.com/en/i18n/server/</loc></url>
 
-  <!-- ============================================ -->
-  <!-- More Framework/Guide Pages -->
-  <!-- ============================================ -->
-  <url><loc>https://better-i18n.com/en/i18n/vite/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/vite/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/vite/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/vite/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/vite/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/vite/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/vite/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/vite/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/vite/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/vite/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/remix-hydrogen/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/remix-hydrogen/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/remix-hydrogen/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/remix-hydrogen/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/remix-hydrogen/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/remix-hydrogen/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/remix-hydrogen/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/remix-hydrogen/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/remix-hydrogen/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/remix-hydrogen/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/best-tms/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/best-tms/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/best-tms/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/best-tms/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/best-tms/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/best-tms/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/best-tms/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/best-tms/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/best-tms/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/best-tms/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/best-library/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/best-library/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/best-library/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/best-library/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/best-library/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/best-library/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/best-library/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/best-library/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/best-library/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/best-library/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/for-developers/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/for-developers/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/complete-guide/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/complete-guide/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/complete-guide/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/complete-guide/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/complete-guide/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/complete-guide/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/complete-guide/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/complete-guide/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/complete-guide/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/complete-guide/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/doctor/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/doctor/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/doctor/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/doctor/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/doctor/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/doctor/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/doctor/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/doctor/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/doctor/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/doctor/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/cli-code-scanning/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/cli-code-scanning/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/cli-code-scanning/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/cli-code-scanning/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/cli-code-scanning/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/cli-code-scanning/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/cli-code-scanning/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/cli-code-scanning/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/cli-code-scanning/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/cli-code-scanning/</loc></url>
-
-  <!-- ============================================ -->
-  <!-- SEO Pillar Pages -->
-  <!-- ============================================ -->
-  <url><loc>https://better-i18n.com/en/i18n/localization-software/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/localization-software/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/localization-software/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/localization-software/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/localization-software/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/localization-software/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/localization-software/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/localization-software/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/localization-software/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/localization-software/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/translation-management-system/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/translation-management-system/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/translation-management-system/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/translation-management-system/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/translation-management-system/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/translation-management-system/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/translation-management-system/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/translation-management-system/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/translation-management-system/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/translation-management-system/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/website-localization/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/website-localization/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/website-localization/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/website-localization/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/website-localization/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/website-localization/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/website-localization/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/website-localization/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/website-localization/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/website-localization/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/translation-solutions/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/translation-solutions/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/translation-solutions/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/translation-solutions/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/translation-solutions/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/translation-solutions/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/translation-solutions/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/translation-solutions/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/translation-solutions/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/translation-solutions/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/international-seo/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/international-seo/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/international-seo/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/international-seo/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/international-seo/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/international-seo/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/international-seo/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/international-seo/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/international-seo/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/international-seo/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/react-native-localization/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/react-native-localization/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/react-native-localization/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/react-native-localization/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/react-native-localization/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/react-native-localization/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/react-native-localization/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/react-native-localization/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/react-native-localization/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/react-native-localization/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/localization-vs-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/localization-vs-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/localization-vs-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/localization-vs-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/localization-vs-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/localization-vs-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/localization-vs-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/localization-vs-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/localization-vs-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/localization-vs-internationalization/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/content-localization/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/content-localization/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/content-localization/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/content-localization/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/content-localization/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/content-localization/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/content-localization/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/content-localization/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/content-localization/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/content-localization/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/software-localization/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/software-localization/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/software-localization/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/software-localization/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/software-localization/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/software-localization/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/software-localization/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/software-localization/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/software-localization/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/software-localization/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/cultural-adaptation/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/cultural-adaptation/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/cultural-adaptation/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/cultural-adaptation/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/cultural-adaptation/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/cultural-adaptation/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/cultural-adaptation/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/cultural-adaptation/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/cultural-adaptation/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/cultural-adaptation/</loc></url>
-
-  <url><loc>https://better-i18n.com/en/i18n/website-translation/</loc></url>
-  <url><loc>https://better-i18n.com/de/i18n/website-translation/</loc></url>
-  <url><loc>https://better-i18n.com/fr/i18n/website-translation/</loc></url>
-  <url><loc>https://better-i18n.com/es/i18n/website-translation/</loc></url>
-  <url><loc>https://better-i18n.com/ja/i18n/website-translation/</loc></url>
-  <url><loc>https://better-i18n.com/tr/i18n/website-translation/</loc></url>
-  <url><loc>https://better-i18n.com/it/i18n/website-translation/</loc></url>
-  <url><loc>https://better-i18n.com/nl/i18n/website-translation/</loc></url>
-  <url><loc>https://better-i18n.com/ko/i18n/website-translation/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/i18n/website-translation/</loc></url>
-
-
-
-  <!-- ============================================ -->
   <!-- Comparison Pages -->
-  <!-- ============================================ -->
   <url><loc>https://better-i18n.com/en/compare/</loc></url>
-  <url><loc>https://better-i18n.com/de/compare/</loc></url>
-  <url><loc>https://better-i18n.com/fr/compare/</loc></url>
-  <url><loc>https://better-i18n.com/es/compare/</loc></url>
-  <url><loc>https://better-i18n.com/ja/compare/</loc></url>
-  <url><loc>https://better-i18n.com/tr/compare/</loc></url>
-  <url><loc>https://better-i18n.com/it/compare/</loc></url>
-  <url><loc>https://better-i18n.com/nl/compare/</loc></url>
-  <url><loc>https://better-i18n.com/ko/compare/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/compare/</loc></url>
-
   <url><loc>https://better-i18n.com/en/compare/crowdin/</loc></url>
-  <url><loc>https://better-i18n.com/de/compare/crowdin/</loc></url>
-  <url><loc>https://better-i18n.com/fr/compare/crowdin/</loc></url>
-  <url><loc>https://better-i18n.com/es/compare/crowdin/</loc></url>
-  <url><loc>https://better-i18n.com/ja/compare/crowdin/</loc></url>
-  <url><loc>https://better-i18n.com/tr/compare/crowdin/</loc></url>
-  <url><loc>https://better-i18n.com/it/compare/crowdin/</loc></url>
-  <url><loc>https://better-i18n.com/nl/compare/crowdin/</loc></url>
-  <url><loc>https://better-i18n.com/ko/compare/crowdin/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/compare/crowdin/</loc></url>
-
   <url><loc>https://better-i18n.com/en/compare/lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/de/compare/lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/fr/compare/lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/es/compare/lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/ja/compare/lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/tr/compare/lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/it/compare/lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/nl/compare/lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/ko/compare/lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/compare/lokalise/</loc></url>
-
   <url><loc>https://better-i18n.com/en/compare/phrase/</loc></url>
-  <url><loc>https://better-i18n.com/de/compare/phrase/</loc></url>
-  <url><loc>https://better-i18n.com/fr/compare/phrase/</loc></url>
-  <url><loc>https://better-i18n.com/es/compare/phrase/</loc></url>
-  <url><loc>https://better-i18n.com/ja/compare/phrase/</loc></url>
-  <url><loc>https://better-i18n.com/tr/compare/phrase/</loc></url>
-  <url><loc>https://better-i18n.com/it/compare/phrase/</loc></url>
-  <url><loc>https://better-i18n.com/nl/compare/phrase/</loc></url>
-  <url><loc>https://better-i18n.com/ko/compare/phrase/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/compare/phrase/</loc></url>
-
   <url><loc>https://better-i18n.com/en/compare/transifex/</loc></url>
-  <url><loc>https://better-i18n.com/de/compare/transifex/</loc></url>
-  <url><loc>https://better-i18n.com/fr/compare/transifex/</loc></url>
-  <url><loc>https://better-i18n.com/es/compare/transifex/</loc></url>
-  <url><loc>https://better-i18n.com/ja/compare/transifex/</loc></url>
-  <url><loc>https://better-i18n.com/tr/compare/transifex/</loc></url>
-  <url><loc>https://better-i18n.com/it/compare/transifex/</loc></url>
-  <url><loc>https://better-i18n.com/nl/compare/transifex/</loc></url>
-  <url><loc>https://better-i18n.com/ko/compare/transifex/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/compare/transifex/</loc></url>
-
   <url><loc>https://better-i18n.com/en/compare/smartling/</loc></url>
-  <url><loc>https://better-i18n.com/de/compare/smartling/</loc></url>
-  <url><loc>https://better-i18n.com/fr/compare/smartling/</loc></url>
-  <url><loc>https://better-i18n.com/es/compare/smartling/</loc></url>
-  <url><loc>https://better-i18n.com/ja/compare/smartling/</loc></url>
-  <url><loc>https://better-i18n.com/tr/compare/smartling/</loc></url>
-  <url><loc>https://better-i18n.com/it/compare/smartling/</loc></url>
-  <url><loc>https://better-i18n.com/nl/compare/smartling/</loc></url>
-  <url><loc>https://better-i18n.com/ko/compare/smartling/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/compare/smartling/</loc></url>
-
   <url><loc>https://better-i18n.com/en/compare/xtm/</loc></url>
-  <url><loc>https://better-i18n.com/de/compare/xtm/</loc></url>
-  <url><loc>https://better-i18n.com/fr/compare/xtm/</loc></url>
-  <url><loc>https://better-i18n.com/es/compare/xtm/</loc></url>
-  <url><loc>https://better-i18n.com/ja/compare/xtm/</loc></url>
-  <url><loc>https://better-i18n.com/tr/compare/xtm/</loc></url>
-  <url><loc>https://better-i18n.com/it/compare/xtm/</loc></url>
-  <url><loc>https://better-i18n.com/nl/compare/xtm/</loc></url>
-  <url><loc>https://better-i18n.com/ko/compare/xtm/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/compare/xtm/</loc></url>
-
   <url><loc>https://better-i18n.com/en/compare/crowdin-vs-lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/de/compare/crowdin-vs-lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/fr/compare/crowdin-vs-lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/es/compare/crowdin-vs-lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/ja/compare/crowdin-vs-lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/tr/compare/crowdin-vs-lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/it/compare/crowdin-vs-lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/nl/compare/crowdin-vs-lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/ko/compare/crowdin-vs-lokalise/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/compare/crowdin-vs-lokalise/</loc></url>
 
-  <!-- ============================================ -->
+  <!-- SEO Pillar Pages -->
+  <url><loc>https://better-i18n.com/en/i18n/complete-guide/</loc></url>
+  <url><loc>https://better-i18n.com/en/i18n/localization-software/</loc></url>
+  <url><loc>https://better-i18n.com/en/i18n/translation-management-system/</loc></url>
+  <url><loc>https://better-i18n.com/en/i18n/international-seo/</loc></url>
+  <url><loc>https://better-i18n.com/en/i18n/software-localization/</loc></url>
+  <url><loc>https://better-i18n.com/en/i18n/website-localization/</loc></url>
+  <url><loc>https://better-i18n.com/en/i18n/best-tms/</loc></url>
+  <url><loc>https://better-i18n.com/en/i18n/best-library/</loc></url>
+
   <!-- Educational Pages -->
-  <!-- ============================================ -->
   <url><loc>https://better-i18n.com/en/what-is/</loc></url>
-  <url><loc>https://better-i18n.com/de/what-is/</loc></url>
-  <url><loc>https://better-i18n.com/fr/what-is/</loc></url>
-  <url><loc>https://better-i18n.com/es/what-is/</loc></url>
-  <url><loc>https://better-i18n.com/ja/what-is/</loc></url>
-  <url><loc>https://better-i18n.com/tr/what-is/</loc></url>
-  <url><loc>https://better-i18n.com/it/what-is/</loc></url>
-  <url><loc>https://better-i18n.com/nl/what-is/</loc></url>
-  <url><loc>https://better-i18n.com/ko/what-is/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/what-is/</loc></url>
-
   <url><loc>https://better-i18n.com/en/what-is-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/de/what-is-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/fr/what-is-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/es/what-is-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/ja/what-is-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/tr/what-is-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/it/what-is-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/nl/what-is-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/ko/what-is-internationalization/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/what-is-internationalization/</loc></url>
-
   <url><loc>https://better-i18n.com/en/what-is-localization/</loc></url>
-  <url><loc>https://better-i18n.com/de/what-is-localization/</loc></url>
-  <url><loc>https://better-i18n.com/fr/what-is-localization/</loc></url>
-  <url><loc>https://better-i18n.com/es/what-is-localization/</loc></url>
-  <url><loc>https://better-i18n.com/ja/what-is-localization/</loc></url>
-  <url><loc>https://better-i18n.com/tr/what-is-localization/</loc></url>
-  <url><loc>https://better-i18n.com/it/what-is-localization/</loc></url>
-  <url><loc>https://better-i18n.com/nl/what-is-localization/</loc></url>
-  <url><loc>https://better-i18n.com/ko/what-is-localization/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/what-is-localization/</loc></url>
 
-  <!-- ============================================ -->
+  <!-- Developer Tools -->
+  <url><loc>https://better-i18n.com/en/i18n/doctor/</loc></url>
+  <url><loc>https://better-i18n.com/en/i18n/cli-code-scanning/</loc></url>
+  <url><loc>https://better-i18n.com/en/tools/locale-explorer/</loc></url>
+  <url><loc>https://better-i18n.com/en/tools/hreflang-generator/</loc></url>
+  <url><loc>https://better-i18n.com/en/tools/translation-file-converter/</loc></url>
+
   <!-- Blog Listing -->
-  <!-- ============================================ -->
   <url><loc>https://better-i18n.com/en/blog/</loc></url>
-  <url><loc>https://better-i18n.com/de/blog/</loc></url>
-  <url><loc>https://better-i18n.com/fr/blog/</loc></url>
-  <url><loc>https://better-i18n.com/es/blog/</loc></url>
-  <url><loc>https://better-i18n.com/ja/blog/</loc></url>
-  <url><loc>https://better-i18n.com/tr/blog/</loc></url>
-  <url><loc>https://better-i18n.com/it/blog/</loc></url>
-  <url><loc>https://better-i18n.com/nl/blog/</loc></url>
-  <url><loc>https://better-i18n.com/ko/blog/</loc></url>
-  <url><loc>https://better-i18n.com/zh-hans/blog/</loc></url>
-
-  <!-- ============================================ -->
-  <!-- Blog Posts — English only -->
-  <!-- ============================================ -->
-  <url><loc>https://better-i18n.com/en/blog/icu-message-format/</loc></url>
-  <url><loc>https://better-i18n.com/en/blog/ai-translation-tools-2026/</loc></url>
-  <url><loc>https://better-i18n.com/en/blog/llm-translation-vs-nmt/</loc></url>
-  <url><loc>https://better-i18n.com/en/blog/multilingual-schema-markup/</loc></url>
-  <url><loc>https://better-i18n.com/en/blog/salesforce-localization/</loc></url>
-  <url><loc>https://better-i18n.com/en/blog/open-source-tms-alternatives/</loc></url>
-  <url><loc>https://better-i18n.com/en/blog/machine-translation-tools/</loc></url>
-
-  <!-- ============================================ -->
-  <!-- Blog Posts — Top Non-EN performers -->
-  <!-- ============================================ -->
-  <url><loc>https://better-i18n.com/hi/blog/icu-message-format/</loc></url>
-  <url><loc>https://better-i18n.com/hi/blog/ai-translation-tools-2026/</loc></url>
-  <url><loc>https://better-i18n.com/id/blog/multilingual-schema-markup/</loc></url>
-  <url><loc>https://better-i18n.com/pl/blog/salesforce-localization/</loc></url>
-  <url><loc>https://better-i18n.com/he/blog/open-source-tms-alternatives/</loc></url>
-  <url><loc>https://better-i18n.com/uk/blog/multilingual-schema-markup/</loc></url>
 
 </urlset>
