@@ -54,7 +54,7 @@
     },
     "apps/hono-example": {
       "name": "hono-example",
-      "version": "0.0.3",
+      "version": "0.0.4",
       "dependencies": {
         "@better-i18n/server": "workspace:*",
         "@hono/zod-openapi": "^0.19.4",
@@ -70,7 +70,7 @@
     },
     "apps/hydrogen-demo": {
       "name": "hydrogen-demo",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "@better-i18n/remix": "workspace:*",
         "@shopify/hydrogen": "^2026.1.0",
@@ -171,7 +171,7 @@
     },
     "packages/core": {
       "name": "@better-i18n/core",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "devDependencies": {
         "@types/node": "^20.0.0",
         "typescript": "~5.9.2",
@@ -179,7 +179,7 @@
     },
     "packages/expo": {
       "name": "@better-i18n/expo",
-      "version": "0.7.0",
+      "version": "0.7.1",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
       },
@@ -248,7 +248,7 @@
     },
     "packages/next": {
       "name": "@better-i18n/next",
-      "version": "0.5.8",
+      "version": "0.5.9",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
       },
@@ -268,7 +268,7 @@
     },
     "packages/remix": {
       "name": "@better-i18n/remix",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
       },
@@ -293,7 +293,7 @@
     },
     "packages/server": {
       "name": "@better-i18n/server",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
         "use-intl": ">=4.0.0",
@@ -313,7 +313,7 @@
     },
     "packages/use-intl": {
       "name": "@better-i18n/use-intl",
-      "version": "0.1.14",
+      "version": "0.1.15",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
       },
@@ -335,7 +335,7 @@
     },
     "tests/expo-native": {
       "name": "expo-native",
-      "version": "1.0.15",
+      "version": "1.0.16",
       "dependencies": {
         "@better-i18n/expo": "workspace:*",
         "@expo/vector-icons": "^15.0.3",

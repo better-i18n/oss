@@ -1,5 +1,13 @@
 # @better-i18n/core
 
+## 0.2.3
+
+### Patch Changes
+
+- Fix CDN caching behavior for Cloudflare Workers
+  - Use `no-store` cache option to bypass Cloudflare subrequest cache for CDN fetches
+  - Reduce default cache TTL from 5 minutes to 60 seconds for fresher translations
+
 ## 0.2.2
 
 ### Patch Changes
