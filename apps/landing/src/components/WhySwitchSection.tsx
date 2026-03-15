@@ -1,5 +1,5 @@
 import { useT } from "@/lib/i18n";
-import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 interface SwitchReason {
   readonly painPoint: string;
@@ -33,7 +33,7 @@ export function WhySwitchSection({ competitor, reasons }: WhySwitchSectionProps)
                 <p className="text-sm text-red-700">{reason.painPoint}</p>
               </div>
               <div className="hidden sm:flex items-center justify-center">
-                <IconArrowRight className="w-5 h-5 text-mist-400" aria-hidden="true" />
+                <SpriteIcon name="arrow-right" className="w-5 h-5 text-mist-400" aria-hidden="true" />
               </div>
               <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-4">
                 <span className="text-xs font-medium uppercase tracking-wide text-emerald-600 mb-1 block">

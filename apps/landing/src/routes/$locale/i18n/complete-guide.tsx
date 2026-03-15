@@ -1,16 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
-  IconGlobe,
-  IconCheckmark1,
-  IconArrowRight,
-  IconCodeBrackets,
-  IconSettingsGear1,
-  IconGroup1,
-  IconMagnifyingGlass,
-  IconRocket,
   IconFileText,
   IconCircleQuestionmark,
   IconClipboard,
@@ -23,7 +16,6 @@ export const Route = createFileRoute("/$locale/i18n/complete-guide")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18nCompleteGuide",
       pathname: "/i18n/complete-guide",
       pageType: "educational",
@@ -38,12 +30,12 @@ export const Route = createFileRoute("/$locale/i18n/complete-guide")({
 });
 
 const keyConcepts = [
-  { icon: IconGlobe, titleKey: "concepts.locale.title", descKey: "concepts.locale.description", defaultTitle: "Locale Identifiers (BCP 47)", defaultDesc: "BCP 47 tags like en-US or zh-Hans-CN encode language, script, and region. They are the foundation of every i18n system and determine which translations, formats, and rules apply." },
-  { icon: IconCodeBrackets, titleKey: "concepts.unicode.title", descKey: "concepts.unicode.description", defaultTitle: "Unicode & UTF-8", defaultDesc: "Unicode assigns a unique code point to every character in every script. UTF-8 is the dominant encoding on the web and ensures text renders correctly regardless of language." },
-  { icon: IconSettingsGear1, titleKey: "concepts.keys.title", descKey: "concepts.keys.description", defaultTitle: "Translation Keys", defaultDesc: "Translation keys are stable identifiers that map to locale-specific strings. They decouple your source code from translatable content, enabling parallel development and translation." },
-  { icon: IconGroup1, titleKey: "concepts.plurals.title", descKey: "concepts.plurals.description", defaultTitle: "Pluralization (ICU)", defaultDesc: "Languages have different plural rules — English has two forms, Arabic has six. ICU MessageFormat handles plurals, gender, and select expressions in a single syntax." },
-  { icon: IconArrowRight, titleKey: "concepts.rtl.title", descKey: "concepts.rtl.description", defaultTitle: "RTL Support", defaultDesc: "Arabic, Hebrew, and other scripts read right-to-left. RTL support requires mirroring layouts, flipping icons, and using CSS logical properties instead of left/right." },
-  { icon: IconMagnifyingGlass, titleKey: "concepts.formatting.title", descKey: "concepts.formatting.description", defaultTitle: "Date / Number / Currency", defaultDesc: "Dates, numbers, and currencies vary by locale. The Intl API and libraries like date-fns provide locale-aware formatting so 1,000.50 renders as 1.000,50 in German." },
+  { icon: "globe", titleKey: "concepts.locale.title", descKey: "concepts.locale.description", defaultTitle: "Locale Identifiers (BCP 47)", defaultDesc: "BCP 47 tags like en-US or zh-Hans-CN encode language, script, and region. They are the foundation of every i18n system and determine which translations, formats, and rules apply." },
+  { icon: "code-brackets", titleKey: "concepts.unicode.title", descKey: "concepts.unicode.description", defaultTitle: "Unicode & UTF-8", defaultDesc: "Unicode assigns a unique code point to every character in every script. UTF-8 is the dominant encoding on the web and ensures text renders correctly regardless of language." },
+  { icon: "settings-gear", titleKey: "concepts.keys.title", descKey: "concepts.keys.description", defaultTitle: "Translation Keys", defaultDesc: "Translation keys are stable identifiers that map to locale-specific strings. They decouple your source code from translatable content, enabling parallel development and translation." },
+  { icon: "group", titleKey: "concepts.plurals.title", descKey: "concepts.plurals.description", defaultTitle: "Pluralization (ICU)", defaultDesc: "Languages have different plural rules — English has two forms, Arabic has six. ICU MessageFormat handles plurals, gender, and select expressions in a single syntax." },
+  { icon: "arrow-right", titleKey: "concepts.rtl.title", descKey: "concepts.rtl.description", defaultTitle: "RTL Support", defaultDesc: "Arabic, Hebrew, and other scripts read right-to-left. RTL support requires mirroring layouts, flipping icons, and using CSS logical properties instead of left/right." },
+  { icon: "magnifying-glass", titleKey: "concepts.formatting.title", descKey: "concepts.formatting.description", defaultTitle: "Date / Number / Currency", defaultDesc: "Dates, numbers, and currencies vary by locale. The Intl API and libraries like date-fns provide locale-aware formatting so 1,000.50 renders as 1.000,50 in German." },
 ];
 
 const processSteps = [
@@ -54,10 +46,10 @@ const processSteps = [
 ];
 
 const commonMistakes = [
-  { icon: IconCodeBrackets, titleKey: "mistakes.concatenation.title", descKey: "mistakes.concatenation.description", defaultTitle: "String Concatenation", defaultDesc: "Building sentences by concatenating fragments breaks in languages with different word order. Use ICU MessageFormat with placeholders instead." },
-  { icon: IconSettingsGear1, titleKey: "mistakes.hardcoded.title", descKey: "mistakes.hardcoded.description", defaultTitle: "Hardcoded Strings", defaultDesc: "Embedding user-facing text directly in source code makes translation impossible without code changes. Externalize every string from day one." },
-  { icon: IconGroup1, titleKey: "mistakes.plurals.title", descKey: "mistakes.plurals.description", defaultTitle: "Ignoring Plurals", defaultDesc: "Simple if/else for singular/plural only works in English. Many languages have multiple plural forms that require proper ICU plural rules." },
-  { icon: IconRocket, titleKey: "mistakes.afterthought.title", descKey: "mistakes.afterthought.description", defaultTitle: "Translation as Afterthought", defaultDesc: "Bolting on i18n after launch means expensive refactoring. Designing for internationalization from the start saves time and prevents architectural debt." },
+  { icon: "code-brackets", titleKey: "mistakes.concatenation.title", descKey: "mistakes.concatenation.description", defaultTitle: "String Concatenation", defaultDesc: "Building sentences by concatenating fragments breaks in languages with different word order. Use ICU MessageFormat with placeholders instead." },
+  { icon: "settings-gear", titleKey: "mistakes.hardcoded.title", descKey: "mistakes.hardcoded.description", defaultTitle: "Hardcoded Strings", defaultDesc: "Embedding user-facing text directly in source code makes translation impossible without code changes. Externalize every string from day one." },
+  { icon: "group", titleKey: "mistakes.plurals.title", descKey: "mistakes.plurals.description", defaultTitle: "Ignoring Plurals", defaultDesc: "Simple if/else for singular/plural only works in English. Many languages have multiple plural forms that require proper ICU plural rules." },
+  { icon: "rocket", titleKey: "mistakes.afterthought.title", descKey: "mistakes.afterthought.description", defaultTitle: "Translation as Afterthought", defaultDesc: "Bolting on i18n after launch means expensive refactoring. Designing for internationalization from the start saves time and prevents architectural debt." },
 ];
 
 const frameworkGuides = [
@@ -81,10 +73,10 @@ const fileFormats = [
 ];
 
 const tmsCriteria = [
-  { icon: IconCodeBrackets, titleKey: "tms.integration.title", descKey: "tms.integration.description", defaultTitle: "Developer Integration", defaultDesc: "Evaluate CLI tools, SDK support, Git-based workflows, and CI/CD hooks. The best TMS platforms integrate directly into your development pipeline so translations stay in sync with code changes automatically." },
-  { icon: IconMagnifyingGlass, titleKey: "tms.memory.title", descKey: "tms.memory.description", defaultTitle: "Translation Memory", defaultDesc: "Translation memory stores previously approved translations and suggests them for similar or identical strings. This reduces translation cost, speeds up turnaround, and maintains consistency across your product." },
-  { icon: IconGroup1, titleKey: "tms.collaboration.title", descKey: "tms.collaboration.description", defaultTitle: "Collaboration Features", defaultDesc: "Look for reviewer workflows, inline comments, shared glossaries, and approval chains. These features enable translators, reviewers, and developers to work together without bottlenecks or miscommunication." },
-  { icon: IconRocket, titleKey: "tms.automation.title", descKey: "tms.automation.description", defaultTitle: "AI and Automation", defaultDesc: "Modern TMS platforms offer machine translation suggestions, automated quality checks, batch operations, and smart routing. AI-assisted workflows reduce manual effort while maintaining translation quality." },
+  { icon: "code-brackets", titleKey: "tms.integration.title", descKey: "tms.integration.description", defaultTitle: "Developer Integration", defaultDesc: "Evaluate CLI tools, SDK support, Git-based workflows, and CI/CD hooks. The best TMS platforms integrate directly into your development pipeline so translations stay in sync with code changes automatically." },
+  { icon: "magnifying-glass", titleKey: "tms.memory.title", descKey: "tms.memory.description", defaultTitle: "Translation Memory", defaultDesc: "Translation memory stores previously approved translations and suggests them for similar or identical strings. This reduces translation cost, speeds up turnaround, and maintains consistency across your product." },
+  { icon: "group", titleKey: "tms.collaboration.title", descKey: "tms.collaboration.description", defaultTitle: "Collaboration Features", defaultDesc: "Look for reviewer workflows, inline comments, shared glossaries, and approval chains. These features enable translators, reviewers, and developers to work together without bottlenecks or miscommunication." },
+  { icon: "rocket", titleKey: "tms.automation.title", descKey: "tms.automation.description", defaultTitle: "AI and Automation", defaultDesc: "Modern TMS platforms offer machine translation suggestions, automated quality checks, batch operations, and smart routing. AI-assisted workflows reduce manual effort while maintaining translation quality." },
 ];
 
 const productionChecklist = [
@@ -127,7 +119,7 @@ function CompleteGuideI18nPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               <span>{t("badge", { defaultValue: "i18n & L10n Guide" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -191,7 +183,7 @@ function CompleteGuideI18nPage() {
             {keyConcepts.map((concept) => (
               <div key={concept.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <concept.icon className="size-5" />
+                  <SpriteIcon name={concept.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(concept.titleKey, { defaultValue: concept.defaultTitle })}
@@ -283,7 +275,7 @@ function CompleteGuideI18nPage() {
             {tmsCriteria.map((criterion) => (
               <div key={criterion.titleKey} className="p-6 rounded-xl bg-mist-50 border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <criterion.icon className="size-5" />
+                  <SpriteIcon name={criterion.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(criterion.titleKey, { defaultValue: criterion.defaultTitle })}
@@ -322,7 +314,7 @@ function CompleteGuideI18nPage() {
                     {t(guide.descKey, { defaultValue: guide.defaultDesc })}
                   </p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
               </Link>
             ))}
           </div>
@@ -344,7 +336,7 @@ function CompleteGuideI18nPage() {
             {commonMistakes.map((mistake) => (
               <div key={mistake.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <mistake.icon className="size-5" />
+                  <SpriteIcon name={mistake.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(mistake.titleKey, { defaultValue: mistake.defaultTitle })}
@@ -377,7 +369,7 @@ function CompleteGuideI18nPage() {
             <ul className="space-y-4">
               {productionChecklist.map((item) => (
                 <li key={item.key} className="flex items-start gap-3">
-                  <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                   <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                 </li>
               ))}
@@ -401,23 +393,23 @@ function CompleteGuideI18nPage() {
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
-                  <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                   <span className="text-mist-700">{t("testing.pseudo", { defaultValue: "Use pseudo-localization to catch hardcoded strings and layout issues before real translations arrive" })}</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                   <span className="text-mist-700">{t("testing.visual", { defaultValue: "Run visual regression tests across locales to detect text overflow, truncation, and RTL mirroring bugs" })}</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                   <span className="text-mist-700">{t("testing.automated", { defaultValue: "Automate missing-key detection in CI so untranslated strings never reach production" })}</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                   <span className="text-mist-700">{t("testing.linguistic", { defaultValue: "Conduct linguistic QA with native speakers to verify tone, context, and cultural accuracy" })}</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                   <span className="text-mist-700">{t("testing.expansion", { defaultValue: "Test with text expansion (German, Finnish) and contraction (Chinese, Japanese) to ensure UI flexibility" })}</span>
                 </li>
               </ul>
@@ -474,7 +466,7 @@ function CompleteGuideI18nPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
               </Link>
             ))}
           </div>

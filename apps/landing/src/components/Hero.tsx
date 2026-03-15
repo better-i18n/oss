@@ -1,10 +1,7 @@
 import { useT } from "@/lib/i18n";
 import { Link, useParams } from "@tanstack/react-router";
 import { Demo } from "../demo";
-import {
-  IconChevronRight,
-  IconArrowRight,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 export default function Hero() {
   const t = useT("hero");
@@ -29,7 +26,7 @@ export default function Hero() {
                 <span className="h-3 w-px bg-white/20" />
                 <span className="inline-flex items-center gap-1 font-medium text-white">
                   {t("learnMore", { defaultValue: "Learn more" })}
-                  <IconChevronRight className="w-3.5 h-3.5" />
+                  <SpriteIcon name="chevron-right" className="w-3.5 h-3.5" />
                 </span>
               </Link>
 
@@ -55,7 +52,7 @@ export default function Hero() {
                 />
                 <button className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-white/90 transition-colors">
                   {t("cta", { defaultValue: "Get Started" })}
-                  <IconArrowRight className="w-4 h-4" />
+                  <SpriteIcon name="arrow-right" className="w-4 h-4" />
                 </button>
               </div>
             </div>

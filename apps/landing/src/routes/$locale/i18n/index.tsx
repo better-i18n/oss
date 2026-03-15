@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, formatStructuredData, createPageLoader } from "@/lib/page-seo";
 import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
 import { SITE_URL } from "@/lib/meta";
 import { useT } from "@/lib/i18n";
-import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/")({
   loader: createPageLoader(),
@@ -32,7 +32,6 @@ export const Route = createFileRoute("/$locale/i18n/")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18n",
       pathname: "/i18n",
       customStructuredData: formatStructuredData([getOrganizationSchema({ locale: loaderData?.locale }), frameworkListSchema]),
@@ -137,7 +136,7 @@ function I18nIndexPage() {
                       {t(`i18n.index.frameworks.${framework.key}.description`, { defaultValue: framework.defaultDesc })}
                     </p>
                   </div>
-                  <IconArrowRight className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                  <SpriteIcon name="arrow-right" className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
                 </div>
               </Link>
             ))}
@@ -168,7 +167,7 @@ function I18nIndexPage() {
                       {t(`i18n.index.topics.${topic.key}.description`, { defaultValue: topic.defaultDesc })}
                     </p>
                   </div>
-                  <IconArrowRight className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                  <SpriteIcon name="arrow-right" className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
                 </div>
               </Link>
             ))}
@@ -199,7 +198,7 @@ function I18nIndexPage() {
                       {t(`i18n.index.localizationGuides.${guide.key}.description`, { defaultValue: guide.defaultDesc })}
                     </p>
                   </div>
-                  <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
+                  <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
                 </div>
               </Link>
             ))}
@@ -230,7 +229,7 @@ function I18nIndexPage() {
                       {t(`i18n.index.seoGuides.${guide.key}.description`, { defaultValue: guide.defaultDesc })}
                     </p>
                   </div>
-                  <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
+                  <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
                 </div>
               </Link>
             ))}

@@ -1,19 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconRocket,
-  IconChart1,
-  IconGlobe,
-  IconZap,
-  IconApiConnection,
-  IconMagnifyingGlass,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/seo-international-audiences")({
   loader: createPageLoader(),
@@ -21,7 +12,6 @@ export const Route = createFileRoute("/_archived/i18n/seo-international-audience
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "seoInternationalAudiences",
       pathname: "/i18n/seo-international-audiences",
       pageType: "educational",
@@ -36,10 +26,10 @@ export const Route = createFileRoute("/_archived/i18n/seo-international-audience
 });
 
 const audienceSegments = [
-  { icon: IconMagnifyingGlass, titleKey: "segments.localSearch.title", descKey: "segments.localSearch.description", defaultTitle: "Local Search Audiences", defaultDesc: "Users searching for nearby businesses and services in their own language, relying on Google Maps and local pack results." },
-  { icon: IconGlobe, titleKey: "segments.international.title", descKey: "segments.international.description", defaultTitle: "International Organic Audiences", defaultDesc: "Users searching across borders for products, services, and information regardless of their physical location." },
-  { icon: IconRocket, titleKey: "segments.ecommerce.title", descKey: "segments.ecommerce.description", defaultTitle: "Global Ecommerce Shoppers", defaultDesc: "Consumers comparing products across international ecommerce stores, influenced by local pricing, shipping, and payment options." },
-  { icon: IconChart1, titleKey: "segments.contentMarketing.title", descKey: "segments.contentMarketing.description", defaultTitle: "Content-Driven Researchers", defaultDesc: "Audiences discovering your brand through educational content, guides, and thought leadership in their native language." },
+  { icon: "magnifying-glass", titleKey: "segments.localSearch.title", descKey: "segments.localSearch.description", defaultTitle: "Local Search Audiences", defaultDesc: "Users searching for nearby businesses and services in their own language, relying on Google Maps and local pack results." },
+  { icon: "globe", titleKey: "segments.international.title", descKey: "segments.international.description", defaultTitle: "International Organic Audiences", defaultDesc: "Users searching across borders for products, services, and information regardless of their physical location." },
+  { icon: "rocket", titleKey: "segments.ecommerce.title", descKey: "segments.ecommerce.description", defaultTitle: "Global Ecommerce Shoppers", defaultDesc: "Consumers comparing products across international ecommerce stores, influenced by local pricing, shipping, and payment options." },
+  { icon: "chart", titleKey: "segments.contentMarketing.title", descKey: "segments.contentMarketing.description", defaultTitle: "Content-Driven Researchers", defaultDesc: "Audiences discovering your brand through educational content, guides, and thought leadership in their native language." },
 ];
 
 function SeoInternationalAudiencesPage() {
@@ -77,7 +67,7 @@ function SeoInternationalAudiencesPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconRocket className="size-4" />
+              <SpriteIcon name="rocket" className="size-4" />
               <span>{t("badge", { defaultValue: "SEO for International Audiences" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -136,7 +126,7 @@ function SeoInternationalAudiencesPage() {
             {audienceSegments.map((segment) => (
               <div key={segment.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <segment.icon className="size-5" />
+                  <SpriteIcon name={segment.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(segment.titleKey, { defaultValue: segment.defaultTitle })}
@@ -162,7 +152,7 @@ function SeoInternationalAudiencesPage() {
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-              <IconApiConnection className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="api-connection" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("ecommerce.productPages.title", { defaultValue: "Localized Product Pages" })}
               </h3>
@@ -171,7 +161,7 @@ function SeoInternationalAudiencesPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-              <IconZap className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="zap" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("ecommerce.categoryPages.title", { defaultValue: "Category Page Optimization" })}
               </h3>
@@ -180,7 +170,7 @@ function SeoInternationalAudiencesPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-              <IconChart1 className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="chart" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("ecommerce.structured.title", { defaultValue: "Structured Data for Global Ecommerce" })}
               </h3>
@@ -207,7 +197,7 @@ function SeoInternationalAudiencesPage() {
               <ul className="space-y-4">
                 {localSeoTips.map((tip) => (
                   <li key={tip.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(tip.key, { defaultValue: tip.defaultValue })}</span>
                   </li>
                 ))}
@@ -301,7 +291,7 @@ function SeoInternationalAudiencesPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

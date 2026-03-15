@@ -13,12 +13,13 @@ import {
   getLocaleFromPath,
   useTranslations,
 } from "@better-i18n/use-intl";
-import { getMessages, getLanguages, detectLocale } from "@better-i18n/use-intl/server";
+import { getMessages, detectLocale } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
 import { filterMessagesByPath } from "../lib/page-namespaces";
 import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
+import { SvgSprite } from "../components/SvgSprite";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 function createQueryClient() {
@@ -86,15 +87,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   },
 
   loader: async ({ context, location }) => {
-    const [allMessages, languages] = await Promise.all([
-      getMessages({ project: i18nConfig.project, locale: context.locale }),
-      getLanguages({ project: i18nConfig.project }),
-    ]);
+    const allMessages = await getMessages({ project: i18nConfig.project, locale: context.locale });
     // Only serialize the namespaces this page actually needs.
     // Reduces HTML payload from ~40KB to ~3-5KB per page.
     const messages = filterMessagesByPath(allMessages, location.pathname);
-    const now = new Date();
-    return { locale: context.locale, locales: context.locales, messages, languages, now };
+    return { locale: context.locale, messages };
   },
 
   head: () => {
@@ -199,7 +196,7 @@ function NotFoundPage() {
 
 function RootComponent() {
   const { locale, locales } = Route.useRouteContext();
-  const { messages, languages, now } = Route.useLoaderData();
+  const { messages } = Route.useLoaderData();
   // Per-mount QueryClient — prevents cross-request cache leak on CF Workers
   const [queryClient] = useState(createQueryClient);
 
@@ -227,6 +224,7 @@ function RootComponent() {
         </script>
       </head>
       <body className="no-dark text-mist-950">
+        <SvgSprite />
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
@@ -242,8 +240,6 @@ function RootComponent() {
             locale={locale}
             messages={messages}
             timeZone="UTC"
-            now={now}
-            initialLanguages={languages}
             getMessageFallback={({ key }) => {
               const lastSegment = key.split(".").pop() || key;
               return lastSegment

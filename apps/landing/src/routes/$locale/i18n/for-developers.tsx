@@ -1,27 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCodeBrackets,
-  IconGithub,
-  IconRobot,
-  IconScript,
-  IconGlobe,
-  IconZap,
-  IconArrowRight,
-  IconApiConnection,
-  IconShieldCheck,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
-
 export const Route = createFileRoute("/$locale/i18n/for-developers")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "forDevelopersSeo",
       pathname: "/i18n/for-developers",
     });
@@ -31,32 +19,32 @@ export const Route = createFileRoute("/$locale/i18n/for-developers")({
 
 const features = [
   {
-    icon: IconCodeBrackets,
+    icon: "code-brackets",
     title: "Type-Safe SDKs",
     description: "Full TypeScript support with autocomplete for translation keys",
   },
   {
-    icon: IconGithub,
+    icon: "github",
     title: "Git-First Workflow",
     description: "Automatic key discovery from your codebase via AST parsing",
   },
   {
-    icon: IconRobot,
+    icon: "robot",
     title: "MCP Integration",
     description: "Manage translations directly from Claude or Cursor",
   },
   {
-    icon: IconScript,
+    icon: "script",
     title: "CLI Tools",
     description: "Scan codebase, sync translations, and validate keys from terminal",
   },
   {
-    icon: IconGlobe,
+    icon: "globe",
     title: "Edge CDN",
     description: "Sub-50ms translation delivery from Cloudflare's global network",
   },
   {
-    icon: IconZap,
+    icon: "zap",
     title: "Hot Reload",
     description: "See translation changes instantly during development",
   },
@@ -96,7 +84,7 @@ function ForDevelopersSeoPage() {
                 className="rounded-2xl border border-mist-200 bg-white p-6"
               >
                 <div className="w-10 h-10 rounded-lg bg-mist-100 flex items-center justify-center mb-4">
-                  <feature.icon className="w-5 h-5 text-mist-600" />
+                  <SpriteIcon name={feature.icon} className="w-5 h-5 text-mist-600" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950">{feature.title}</h3>
                 <p className="mt-2 text-sm text-mist-600">{feature.description}</p>
@@ -157,7 +145,7 @@ function Component() {
                 { label: "Immutable Assets", detail: "1-year cache for static assets like flags" },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-3 p-3 rounded-lg bg-mist-50 border border-mist-100">
-                  <IconZap className="w-4 h-4 text-mist-600 mt-0.5 shrink-0" />
+                  <SpriteIcon name="zap" className="w-4 h-4 text-mist-600 mt-0.5 shrink-0" />
                   <div>
                     <span className="text-sm font-medium text-mist-950">{item.label}</span>
                     <span className="text-sm text-mist-600"> — {item.detail}</span>
@@ -175,7 +163,7 @@ function Component() {
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
               <div className="w-10 h-10 rounded-lg bg-mist-100 flex items-center justify-center mb-4">
-                <IconApiConnection className="w-5 h-5 text-mist-600" />
+                <SpriteIcon name="api-connection" className="w-5 h-5 text-mist-600" />
               </div>
               <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
                 {t("i18n.forDevelopers.api.title", { defaultValue: "REST API & Webhooks" })}
@@ -245,7 +233,7 @@ deleteKeys(projectId, keyIds[])`}</pre>
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="w-10 h-10 rounded-lg bg-mist-100 flex items-center justify-center mb-4">
-            <IconShieldCheck className="w-5 h-5 text-mist-600" />
+            <SpriteIcon name="shield-check" className="w-5 h-5 text-mist-600" />
           </div>
           <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
             {t("i18n.forDevelopers.infra.title", { defaultValue: "Infrastructure" })}
@@ -296,7 +284,7 @@ deleteKeys(projectId, keyIds[])`}</pre>
                 className="flex items-center justify-center gap-2 p-4 bg-white rounded-xl border border-mist-100 hover:border-mist-300 hover:shadow transition-all"
               >
                 <span className="text-sm font-medium text-mist-950">{fw.name}</span>
-                <IconArrowRight className="w-4 h-4 text-mist-400" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400" />
               </Link>
             ))}
           </div>

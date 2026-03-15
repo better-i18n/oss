@@ -1,17 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconRocket,
-  IconZap,
-  IconCodeBrackets,
-  IconSparklesSoft,
-  IconSettingsGear1,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute(
   "/$locale/i18n/react-native-localization",
@@ -21,7 +13,6 @@ export const Route = createFileRoute(
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "reactNativeLocalization",
       pathname: "/i18n/react-native-localization",
       pageType: "educational",
@@ -36,11 +27,11 @@ export const Route = createFileRoute(
 });
 
 const coreFeatures = [
-  { icon: IconRocket, titleKey: "features.expoSupport.title", descKey: "features.expoSupport.description", defaultTitle: "First-Class Expo Support", defaultDesc: "Works seamlessly with Expo's managed and bare workflows. No native module linking required — just install and start translating." },
-  { icon: IconSettingsGear1, titleKey: "features.deviceLocale.title", descKey: "features.deviceLocale.description", defaultTitle: "Device Locale Detection", defaultDesc: "Automatically detects the user's device language and region settings on both iOS and Android, with graceful fallback to your default locale." },
-  { icon: IconZap, titleKey: "features.offlineCaching.title", descKey: "features.offlineCaching.description", defaultTitle: "Offline Translation Caching", defaultDesc: "Translations are cached locally on the device so your app works flawlessly in airplane mode, subways, and areas with poor connectivity." },
-  { icon: IconCodeBrackets, titleKey: "features.typeSafe.title", descKey: "features.typeSafe.description", defaultTitle: "Type-Safe SDK", defaultDesc: "Full TypeScript support with autocomplete for translation keys. Missing keys are caught at compile time, not discovered by users in production." },
-  { icon: IconSparklesSoft, titleKey: "features.otaUpdates.title", descKey: "features.otaUpdates.description", defaultTitle: "OTA Translation Updates", defaultDesc: "Push new translations and languages to production without resubmitting to the App Store or Google Play. Updates go live in seconds via CDN." },
+  { icon: "rocket", titleKey: "features.expoSupport.title", descKey: "features.expoSupport.description", defaultTitle: "First-Class Expo Support", defaultDesc: "Works seamlessly with Expo's managed and bare workflows. No native module linking required — just install and start translating." },
+  { icon: "settings-gear", titleKey: "features.deviceLocale.title", descKey: "features.deviceLocale.description", defaultTitle: "Device Locale Detection", defaultDesc: "Automatically detects the user's device language and region settings on both iOS and Android, with graceful fallback to your default locale." },
+  { icon: "zap", titleKey: "features.offlineCaching.title", descKey: "features.offlineCaching.description", defaultTitle: "Offline Translation Caching", defaultDesc: "Translations are cached locally on the device so your app works flawlessly in airplane mode, subways, and areas with poor connectivity." },
+  { icon: "code-brackets", titleKey: "features.typeSafe.title", descKey: "features.typeSafe.description", defaultTitle: "Type-Safe SDK", defaultDesc: "Full TypeScript support with autocomplete for translation keys. Missing keys are caught at compile time, not discovered by users in production." },
+  { icon: "sparkles-soft", titleKey: "features.otaUpdates.title", descKey: "features.otaUpdates.description", defaultTitle: "OTA Translation Updates", defaultDesc: "Push new translations and languages to production without resubmitting to the App Store or Google Play. Updates go live in seconds via CDN." },
 ];
 
 function ReactNativeLocalizationPage() {
@@ -77,7 +68,7 @@ function ReactNativeLocalizationPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconRocket className="size-4" />
+              <SpriteIcon name="rocket" className="size-4" />
               <span>{t("badge", { defaultValue: "React Native & Expo" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -104,7 +95,7 @@ function ReactNativeLocalizationPage() {
             {coreFeatures.map((feature) => (
               <div key={feature.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <feature.icon className="size-5" />
+                  <SpriteIcon name={feature.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
@@ -131,7 +122,7 @@ function ReactNativeLocalizationPage() {
               <ul className="space-y-4">
                 {challenges.map((challenge) => (
                   <li key={challenge.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(challenge.key, { defaultValue: challenge.defaultValue })}</span>
                   </li>
                 ))}
@@ -175,21 +166,21 @@ function ReactNativeLocalizationPage() {
               </h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <IconCodeBrackets className="size-5 text-mist-700 mt-0.5 shrink-0" />
+                  <SpriteIcon name="code-brackets" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-mist-950 mb-1">{t("devExperience.hooks.title", { defaultValue: "useTranslations Hook" })}</h4>
                     <p className="text-sm text-mist-600">{t("devExperience.hooks.description", { defaultValue: "Access translated strings in any React Native component with full TypeScript autocomplete. Keys are type-checked at build time so missing translations surface as compile errors, not runtime bugs." })}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <IconSettingsGear1 className="size-5 text-mist-700 mt-0.5 shrink-0" />
+                  <SpriteIcon name="settings-gear" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-mist-950 mb-1">{t("devExperience.locale.title", { defaultValue: "useLocale & useFormatter" })}</h4>
                     <p className="text-sm text-mist-600">{t("devExperience.locale.description", { defaultValue: "Get and set the current locale, detect writing direction, and format numbers, dates, and currencies according to the user's locale — all through a single, consistent API." })}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <IconSparklesSoft className="size-5 text-mist-700 mt-0.5 shrink-0" />
+                  <SpriteIcon name="sparkles-soft" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-mist-950 mb-1">{t("devExperience.fallback.title", { defaultValue: "Fallback Locale Handling" })}</h4>
                     <p className="text-sm text-mist-600">{t("devExperience.fallback.description", { defaultValue: "When a user's device locale is not fully supported, Better i18n falls back gracefully — first to a regional variant, then to the base language, then to your default locale. No blank screens, ever." })}</p>
@@ -283,7 +274,7 @@ function ReactNativeLocalizationPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

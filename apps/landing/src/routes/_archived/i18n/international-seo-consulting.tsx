@@ -1,18 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconGlobe,
-  IconCheckmark1,
-  IconArrowRight,
-  IconMagnifyingGlass,
-  IconRocket,
-  IconChart1,
-  IconShieldCheck,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/international-seo-consulting")({
   loader: createPageLoader(),
@@ -20,7 +12,6 @@ export const Route = createFileRoute("/_archived/i18n/international-seo-consulti
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "internationalSeoConsulting",
       pathname: "/i18n/international-seo-consulting",
       pageType: "educational",
@@ -35,10 +26,10 @@ export const Route = createFileRoute("/_archived/i18n/international-seo-consulti
 });
 
 const problems = [
-  { icon: IconMagnifyingGlass, titleKey: "problems.keywordMapping.title", descKey: "problems.keywordMapping.description", defaultTitle: "Cross-Market Keyword Mapping", defaultDesc: "Direct keyword translation misses local search intent. A consultant maps high-value queries per market using native-language research tools and competitor analysis." },
-  { icon: IconRocket, titleKey: "problems.technicalGaps.title", descKey: "problems.technicalGaps.description", defaultTitle: "Technical SEO Gaps", defaultDesc: "Hreflang errors, duplicate content across locales, and misconfigured canonicals silently suppress rankings in target markets without expert diagnosis." },
-  { icon: IconChart1, titleKey: "problems.roiMeasurement.title", descKey: "problems.roiMeasurement.description", defaultTitle: "ROI Measurement Across Markets", defaultDesc: "Attributing organic revenue per locale requires segmented analytics, currency normalization, and market-adjusted conversion benchmarks." },
-  { icon: IconShieldCheck, titleKey: "problems.competitorAnalysis.title", descKey: "problems.competitorAnalysis.description", defaultTitle: "International Competitor Analysis", defaultDesc: "Local competitors in each market use different SEO strategies. A consultant identifies their backlink profiles, content gaps, and technical advantages." },
+  { icon: "magnifying-glass", titleKey: "problems.keywordMapping.title", descKey: "problems.keywordMapping.description", defaultTitle: "Cross-Market Keyword Mapping", defaultDesc: "Direct keyword translation misses local search intent. A consultant maps high-value queries per market using native-language research tools and competitor analysis." },
+  { icon: "rocket", titleKey: "problems.technicalGaps.title", descKey: "problems.technicalGaps.description", defaultTitle: "Technical SEO Gaps", defaultDesc: "Hreflang errors, duplicate content across locales, and misconfigured canonicals silently suppress rankings in target markets without expert diagnosis." },
+  { icon: "chart", titleKey: "problems.roiMeasurement.title", descKey: "problems.roiMeasurement.description", defaultTitle: "ROI Measurement Across Markets", defaultDesc: "Attributing organic revenue per locale requires segmented analytics, currency normalization, and market-adjusted conversion benchmarks." },
+  { icon: "shield-check", titleKey: "problems.competitorAnalysis.title", descKey: "problems.competitorAnalysis.description", defaultTitle: "International Competitor Analysis", defaultDesc: "Local competitors in each market use different SEO strategies. A consultant identifies their backlink profiles, content gaps, and technical advantages." },
 ];
 
 function InternationalSeoConsultingPage() {
@@ -82,7 +73,7 @@ function InternationalSeoConsultingPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               <span>{t("badge", { defaultValue: "International SEO Consulting" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -141,7 +132,7 @@ function InternationalSeoConsultingPage() {
             {problems.map((problem) => (
               <div key={problem.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <problem.icon className="size-5" />
+                  <SpriteIcon name={problem.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(problem.titleKey, { defaultValue: problem.defaultTitle })}
@@ -169,7 +160,7 @@ function InternationalSeoConsultingPage() {
             {roadmapPhases.map((phase) => (
               <div key={phase.titleKey} className="p-6 rounded-xl border border-mist-200 bg-mist-50">
                 <div className="flex items-center gap-3 mb-3">
-                  <IconRocket className="size-5 text-mist-700" />
+                  <SpriteIcon name="rocket" className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
                     {t(phase.titleKey, { defaultValue: phase.defaultTitle })}
                   </h3>
@@ -198,7 +189,7 @@ function InternationalSeoConsultingPage() {
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
@@ -292,7 +283,7 @@ function InternationalSeoConsultingPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

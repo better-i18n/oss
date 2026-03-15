@@ -34,7 +34,6 @@ export const Route = createFileRoute("/$locale/i18n/nextjs")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18nNextjs",
       pathname: "/i18n/nextjs",
       pageType: "framework",

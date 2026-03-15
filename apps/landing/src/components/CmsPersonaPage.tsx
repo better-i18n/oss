@@ -3,11 +3,8 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import BlogContent from "@/components/blog/BlogContent";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import {
-  IconArrowLeft,
-  IconArrowRight,
-  IconChevronRight,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import type { MarketingPage, MarketingPageListItem } from "@/lib/content";
 import { getPersonaLabel } from "@/lib/cms-persona-helpers";
 import { useT } from "@/lib/i18n";
@@ -54,14 +51,14 @@ export function CmsPersonaPage({
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-mist-950 px-6 py-3 text-sm font-medium text-white hover:bg-mist-900 transition-colors"
               >
                 {t("hero.cta", "Get Started")}
-                <IconArrowRight className="size-4" />
+                <SpriteIcon name="arrow-right" className="size-4" />
               </a>
               <a
                 href="https://cal.com/better-i18n/30min?overlayCalendar=true"
                 className="inline-flex items-center gap-2 text-sm font-medium text-mist-600 hover:text-mist-950 transition-colors"
               >
                 {t("hero.bookDemo", "Book a demo")}
-                <IconChevronRight className="size-4" />
+                <SpriteIcon name="chevron-right" className="size-4" />
               </a>
             </div>
           </div>
@@ -120,7 +117,7 @@ export function CmsPersonaPage({
                       </p>
                     )}
                   </div>
-                  <IconArrowRight className="w-4 h-4 flex-shrink-0 ml-3 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                  <SpriteIcon name="arrow-right" className="w-4 h-4 flex-shrink-0 ml-3 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
                 </Link>
               ))}
             </div>

@@ -5,10 +5,8 @@ import {
   IconWindsurf,
   IconClaudeai,
   IconAntigravity,
-  IconSparklesSoft,
-  IconGlobe,
-  IconZap,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { ZedIcon } from "@/components/ZedIcon";
 
 const ideConfigs = [
@@ -99,17 +97,17 @@ BETTER_I18N_DEBUG: false`,
 
 const features = [
   {
-    icon: IconSparklesSoft,
+    spriteName: "sparkles-soft" as const,
     titleKey: "ideSupport.features.ai.title",
     descKey: "ideSupport.features.ai.description",
   },
   {
-    icon: IconGlobe,
+    spriteName: "globe" as const,
     titleKey: "ideSupport.features.context.title",
     descKey: "ideSupport.features.context.description",
   },
   {
-    icon: IconZap,
+    spriteName: "zap" as const,
     titleKey: "ideSupport.features.realtime.title",
     descKey: "ideSupport.features.realtime.description",
   },
@@ -149,11 +147,10 @@ export default function DeveloperIDESupport() {
             {/* Features list */}
             <div className="mt-10 space-y-6">
               {features.map((feature, idx) => {
-                const Icon = feature.icon;
                 return (
                   <div key={idx} className="flex gap-4">
                     <div className="flex-shrink-0 size-12 rounded-xl bg-mist-100 flex items-center justify-center text-mist-600">
-                      <Icon className="size-6" />
+                      <SpriteIcon name={feature.spriteName} className="size-6" />
                     </div>
                     <div>
                       <h3 className="font-medium text-mist-950 text-base">

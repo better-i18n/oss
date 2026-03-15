@@ -18,7 +18,6 @@ export const Route = createFileRoute("/$locale/i18n/vue")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18nVue",
       pathname: "/i18n/vue",
       pageType: "framework",

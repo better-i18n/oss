@@ -16,16 +16,15 @@ export const Route = createFileRoute("/$locale/terms")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     const locale = loaderData?.locale || "en";
-    const locales = loaderData?.locales;
     const pathname = "/terms";
     const meta = getLocalizedMeta(loaderData?.messages || {}, "terms", {
       locale,
       pathname,
     });
     return {
-      meta: formatMetaTags(meta, { locale, locales }),
+      meta: formatMetaTags(meta, { locale }),
       links: [
-        ...getAlternateLinks(pathname, locales),
+        ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
       scripts: getDefaultStructuredData(locale),

@@ -19,7 +19,6 @@ export const Route = createFileRoute("/$locale/i18n/flutter")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18nFlutter",
       pathname: "/i18n/flutter",
       pageType: "framework",

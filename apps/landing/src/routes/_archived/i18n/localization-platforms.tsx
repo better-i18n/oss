@@ -1,16 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconRocket,
-  IconGroup1,
-  IconChart1,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/localization-platforms")({
   loader: createPageLoader(),
@@ -18,7 +12,6 @@ export const Route = createFileRoute("/_archived/i18n/localization-platforms")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "localizationPlatforms",
       pathname: "/i18n/localization-platforms",
       pageType: "educational",
@@ -33,10 +26,10 @@ export const Route = createFileRoute("/_archived/i18n/localization-platforms")({
 });
 
 const capabilities = [
-  { icon: IconRocket, titleKey: "capabilities.projectManagement.title", descKey: "capabilities.projectManagement.description", defaultTitle: "Project Management", defaultDesc: "Organize translation work by project, locale, and deadline with full visibility into progress and bottlenecks." },
-  { icon: IconRocket, titleKey: "capabilities.workflowAutomation.title", descKey: "capabilities.workflowAutomation.description", defaultTitle: "Workflow Automation", defaultDesc: "Automatically route new strings to translators, trigger reviews on completion, and publish approved translations without manual steps." },
-  { icon: IconGroup1, titleKey: "capabilities.teamCollaboration.title", descKey: "capabilities.teamCollaboration.description", defaultTitle: "Team Collaboration", defaultDesc: "Enable translators, reviewers, and developers to work together in real time with in-context comments and role-based access." },
-  { icon: IconChart1, titleKey: "capabilities.analyticsReporting.title", descKey: "capabilities.analyticsReporting.description", defaultTitle: "Analytics & Reporting", defaultDesc: "Track translation coverage, quality scores, turnaround times, and cost metrics across all projects and locales." },
+  { icon: "rocket", titleKey: "capabilities.projectManagement.title", descKey: "capabilities.projectManagement.description", defaultTitle: "Project Management", defaultDesc: "Organize translation work by project, locale, and deadline with full visibility into progress and bottlenecks." },
+  { icon: "rocket", titleKey: "capabilities.workflowAutomation.title", descKey: "capabilities.workflowAutomation.description", defaultTitle: "Workflow Automation", defaultDesc: "Automatically route new strings to translators, trigger reviews on completion, and publish approved translations without manual steps." },
+  { icon: "group", titleKey: "capabilities.teamCollaboration.title", descKey: "capabilities.teamCollaboration.description", defaultTitle: "Team Collaboration", defaultDesc: "Enable translators, reviewers, and developers to work together in real time with in-context comments and role-based access." },
+  { icon: "chart", titleKey: "capabilities.analyticsReporting.title", descKey: "capabilities.analyticsReporting.description", defaultTitle: "Analytics & Reporting", defaultDesc: "Track translation coverage, quality scores, turnaround times, and cost metrics across all projects and locales." },
 ];
 
 function LocalizationPlatformsPage() {
@@ -74,7 +67,7 @@ function LocalizationPlatformsPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGroup1 className="size-4" />
+              <SpriteIcon name="group" className="size-4" />
               <span>{t("badge", { defaultValue: "Localization Platforms" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -137,7 +130,7 @@ function LocalizationPlatformsPage() {
             {capabilities.map((capability) => (
               <div key={capability.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <capability.icon className="size-5" />
+                  <SpriteIcon name={capability.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(capability.titleKey, { defaultValue: capability.defaultTitle })}
@@ -174,21 +167,21 @@ function LocalizationPlatformsPage() {
               </h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <IconGroup1 className="size-5 text-mist-700 mt-0.5 shrink-0" />
+                  <SpriteIcon name="group" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-mist-950 mb-1">{t("collaboration.roles.title", { defaultValue: "Role-Based Access Control" })}</h4>
                     <p className="text-sm text-mist-600">{t("collaboration.roles.description", { defaultValue: "Assign project manager, translator, reviewer, and developer roles with appropriate permissions per project and locale." })}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <IconGroup1 className="size-5 text-mist-700 mt-0.5 shrink-0" />
+                  <SpriteIcon name="group" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-mist-950 mb-1">{t("collaboration.comments.title", { defaultValue: "In-Context Comments" })}</h4>
                     <p className="text-sm text-mist-600">{t("collaboration.comments.description", { defaultValue: "Translators and reviewers communicate directly on individual segments, reducing email back-and-forth and keeping context attached to the right string." })}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <IconGroup1 className="size-5 text-mist-700 mt-0.5 shrink-0" />
+                  <SpriteIcon name="group" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-mist-950 mb-1">{t("collaboration.vendors.title", { defaultValue: "External Vendor Management" })}</h4>
                     <p className="text-sm text-mist-600">{t("collaboration.vendors.description", { defaultValue: "Invite freelance translators or translation agencies as external collaborators with scoped access to specific projects and language pairs." })}</p>
@@ -215,7 +208,7 @@ function LocalizationPlatformsPage() {
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
@@ -342,7 +335,7 @@ function LocalizationPlatformsPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

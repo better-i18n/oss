@@ -1,14 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconGlobe,
-  IconCodeBrackets,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute(
   "/$locale/i18n/localization-vs-internationalization",
@@ -18,7 +13,6 @@ export const Route = createFileRoute(
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "l10nVsI18n",
       pathname: "/i18n/localization-vs-internationalization",
       pageType: "educational",
@@ -96,7 +90,7 @@ function L10nVsI18nPage() {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             <div className="p-8 rounded-2xl bg-violet-50 border border-violet-100">
               <div className="flex items-center gap-3 mb-4">
-                <IconCodeBrackets className="size-6 text-violet-600" />
+                <SpriteIcon name="code-brackets" className="size-6 text-violet-600" />
                 <h3 className="text-xl font-medium text-mist-950">
                   {t("quickDefs.i18n.title", { defaultValue: "Internationalization (i18n)" })}
                 </h3>
@@ -110,7 +104,7 @@ function L10nVsI18nPage() {
             </div>
             <div className="p-8 rounded-2xl bg-blue-50 border border-blue-100">
               <div className="flex items-center gap-3 mb-4">
-                <IconGlobe className="size-6 text-blue-600" />
+                <SpriteIcon name="globe" className="size-6 text-blue-600" />
                 <h3 className="text-xl font-medium text-mist-950">
                   {t("quickDefs.l10n.title", { defaultValue: "Localization (l10n)" })}
                 </h3>
@@ -135,13 +129,13 @@ function L10nVsI18nPage() {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             <div className="p-6 rounded-xl bg-white border border-mist-200">
               <h3 className="text-lg font-medium text-mist-950 mb-4 flex items-center gap-2">
-                <IconCodeBrackets className="size-5 text-violet-600" />
+                <SpriteIcon name="code-brackets" className="size-5 text-violet-600" />
                 {t("comparison.i18n.title", { defaultValue: "Internationalization Activities" })}
               </h3>
               <ul className="space-y-3">
                 {i18nActivities.map((activity) => (
                   <li key={activity.key} className="flex items-start gap-2">
-                    <IconCheckmark1 className="size-4 text-violet-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-4 text-violet-500 mt-0.5 shrink-0" />
                     <span className="text-sm text-mist-700">{t(activity.key, { defaultValue: activity.defaultValue })}</span>
                   </li>
                 ))}
@@ -149,13 +143,13 @@ function L10nVsI18nPage() {
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-200">
               <h3 className="text-lg font-medium text-mist-950 mb-4 flex items-center gap-2">
-                <IconGlobe className="size-5 text-blue-600" />
+                <SpriteIcon name="globe" className="size-5 text-blue-600" />
                 {t("comparison.l10n.title", { defaultValue: "Localization Activities" })}
               </h3>
               <ul className="space-y-3">
                 {l10nActivities.map((activity) => (
                   <li key={activity.key} className="flex items-start gap-2">
-                    <IconCheckmark1 className="size-4 text-blue-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-4 text-blue-500 mt-0.5 shrink-0" />
                     <span className="text-sm text-mist-700">{t(activity.key, { defaultValue: activity.defaultValue })}</span>
                   </li>
                 ))}
@@ -223,7 +217,7 @@ function L10nVsI18nPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

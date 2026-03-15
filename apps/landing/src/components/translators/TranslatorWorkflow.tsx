@@ -1,5 +1,5 @@
 import { useTranslations } from "@better-i18n/use-intl";
-import { IconChevronRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 const workflowSteps = [
   {
@@ -74,7 +74,7 @@ export default function TranslatorWorkflow() {
                   {/* Arrow (between steps) */}
                   {index < workflowSteps.length - 1 && (
                     <div className="absolute top-14 -translate-y-1/2 left-[calc(50%+56px)] w-[calc(100%-112px)] flex items-center justify-center">
-                      <IconChevronRight className="size-4 text-mist-300" />
+                      <SpriteIcon name="chevron-right" className="size-4 text-mist-300" />
                     </div>
                   )}
 

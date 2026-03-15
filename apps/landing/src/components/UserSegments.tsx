@@ -1,16 +1,10 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
-import {
-  IconArrowRight,
-  IconCode,
-  IconGlobe,
-  IconGroup1,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import type { ComponentType } from "react";
+import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
 
 type SegmentCardProps = {
   accentClassName: string;
-  icon: ComponentType<{ className?: string }>;
+  iconName: SpriteIconName;
   id: string;
   namespace: string;
   to:
@@ -22,7 +16,7 @@ type SegmentCardProps = {
 
 function SegmentCard({
   accentClassName,
-  icon: Icon,
+  iconName,
   id,
   locale,
   namespace,
@@ -47,7 +41,7 @@ function SegmentCard({
           <div
             className={`flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/80 bg-white shadow-sm ${accentClassName}`}
           >
-            <Icon className="size-5" />
+            <SpriteIcon name={iconName} className="size-5" />
           </div>
           <div>
             <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-mist-500">
@@ -60,7 +54,7 @@ function SegmentCard({
         </div>
 
         <div className="rounded-full border border-mist-200 bg-white p-2 text-mist-400 transition-colors group-hover:text-mist-700">
-          <IconArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+          <SpriteIcon name="arrow-right" className="size-4 transition-transform group-hover:translate-x-0.5" />
         </div>
       </div>
 
@@ -138,7 +132,7 @@ export default function UserSegments() {
             <SegmentCard
               id="for-translators"
               namespace="segments.translators"
-              icon={IconGlobe}
+              iconName="globe"
               accentClassName="text-sky-700"
               to="/$locale/for-translators"
               locale={currentLocale}
@@ -146,7 +140,7 @@ export default function UserSegments() {
             <SegmentCard
               id="for-developers"
               namespace="segments.developers"
-              icon={IconCode}
+              iconName="code"
               accentClassName="text-indigo-700"
               to="/$locale/for-developers"
               locale={currentLocale}
@@ -154,7 +148,7 @@ export default function UserSegments() {
             <SegmentCard
               id="for-product-teams"
               namespace="segments.productTeams"
-              icon={IconGroup1}
+              iconName="group"
               accentClassName="text-amber-700"
               to="/$locale/for-product-teams"
               locale={currentLocale}

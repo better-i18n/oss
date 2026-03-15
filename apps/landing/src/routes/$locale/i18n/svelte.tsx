@@ -18,7 +18,6 @@ export const Route = createFileRoute("/$locale/i18n/svelte")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18nSvelte",
       pathname: "/i18n/svelte",
       pageType: "framework",

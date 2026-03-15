@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 interface FrameworkHeroProps {
   title: string;
@@ -53,7 +50,7 @@ export function FeatureList({ title, features }: FeatureListProps) {
               key={index}
               className="flex items-start gap-3 p-4 bg-white rounded-xl border border-mist-100"
             >
-              <IconCheckmark1 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+              <SpriteIcon name="checkmark" className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
               <span className="text-sm text-mist-700">{feature}</span>
             </div>
           ))}
@@ -169,7 +166,7 @@ export function LibraryIntegration({
               </h3>
               <p className="text-sm text-mist-600 mb-4">{lib.description}</p>
               <div className="flex items-start gap-2 p-3 bg-white rounded-lg border border-mist-100">
-                <IconCheckmark1 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <SpriteIcon name="checkmark" className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-mist-700">{lib.integrationText}</p>
               </div>
             </div>
@@ -349,7 +346,7 @@ export function OtherFrameworks({
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-mist-200 bg-white text-sm text-mist-700 hover:border-mist-400 hover:text-mist-950 transition-colors"
             >
               {framework.name} i18n
-              <IconArrowRight className="w-3 h-3" />
+              <SpriteIcon name="arrow-right" className="w-3 h-3" />
             </Link>
           ))}
         </div>

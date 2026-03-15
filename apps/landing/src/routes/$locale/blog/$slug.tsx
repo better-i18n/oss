@@ -1,4 +1,5 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { createServerFn } from "@tanstack/react-start";
 import {
   getBlogPost,
@@ -20,11 +21,7 @@ import { getBlogCTA } from "@/lib/blog-ctas";
 import { getRelatedPages } from "@/seo/internal-links";
 import Breadcrumb from "@/components/blog/Breadcrumb";
 import ShareButtons from "@/components/blog/ShareButtons";
-import {
-  IconArrowLeft,
-  IconChevronBottom,
-  IconCircleInfo,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconArrowLeft, IconCircleInfo } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import {
   SITE_URL,
   getAlternateLinks,
@@ -309,7 +306,7 @@ function BlogPostPage() {
                   <details className="group">
                     <summary className="flex items-center justify-between px-5 py-3.5 text-sm font-medium text-mist-700 cursor-pointer select-none">
                       {t("tableOfContents", { defaultValue: "Table of Contents" })}
-                      <IconChevronBottom className="w-4 h-4 text-mist-400 transition-transform group-open:rotate-180" />
+                      <SpriteIcon name="chevron-bottom" className="w-4 h-4 text-mist-400 transition-transform group-open:rotate-180" />
                     </summary>
                     <div className="px-5 pb-4 border-t border-mist-100 pt-3">
                       <TableOfContents html={post.bodyHtml} />

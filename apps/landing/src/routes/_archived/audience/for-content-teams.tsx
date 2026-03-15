@@ -3,7 +3,7 @@ import { personaLoader, personaHead } from "@/lib/cms-persona-helpers";
 import { CmsPersonaPage, CmsPersonaNotFound } from "@/components/CmsPersonaPage";
 
 export const Route = createFileRoute("/_archived/audience/for-content-teams")({
-  loader: ({ params, context }) => personaLoader("for-content-teams", params.locale, context.locales),
+  loader: ({ params }) => personaLoader("for-content-teams", params.locale),
   head: ({ loaderData }) => personaHead(loaderData),
   component: () => {
     const data = Route.useLoaderData();

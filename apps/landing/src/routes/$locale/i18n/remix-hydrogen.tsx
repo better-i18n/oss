@@ -18,7 +18,6 @@ export const Route = createFileRoute("/$locale/i18n/remix-hydrogen")({
     getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18nRemixHydrogen",
       pathname: "/i18n/remix-hydrogen",
       pageType: "framework",

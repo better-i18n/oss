@@ -1,21 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconArrowRight,
-  IconCodeBrackets,
-  IconScript,
-  IconMagnifyingGlass,
-  IconZap,
-  IconSettingsGear1,
-  IconShieldCheck,
-  IconStar,
-  IconChart1,
-  IconClipboard,
-  IconGlobe,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconStar, IconClipboard } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/doctor")({
   loader: createPageLoader(),
@@ -23,7 +12,6 @@ export const Route = createFileRoute("/$locale/i18n/doctor")({
     getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18nDoctor",
       pathname: "/i18n/doctor",
       pageType: "educational",
@@ -38,7 +26,7 @@ export const Route = createFileRoute("/$locale/i18n/doctor")({
 
 const analysisCategories = [
   {
-    icon: IconCodeBrackets,
+    icon: "code-brackets",
     titleKey: "categories.code.title",
     descKey: "categories.code.description",
     defaultTitle: "Code — Hardcoded String Detection",
@@ -46,7 +34,7 @@ const analysisCategories = [
       "AST-based scanning finds every user-facing string not wrapped in t(). Catches JSX text, attributes, ternary locale logic, toast messages, and string variables.",
   },
   {
-    icon: IconMagnifyingGlass,
+    icon: "magnifying-glass",
     titleKey: "categories.coverage.title",
     descKey: "categories.coverage.description",
     defaultTitle: "Coverage — Missing Translations",
@@ -54,7 +42,7 @@ const analysisCategories = [
       "Compares keys present in your source locale against each target locale. Any key missing from a target locale is reported with its exact namespace and path.",
   },
   {
-    icon: IconShieldCheck,
+    icon: "shield-check",
     titleKey: "categories.quality.title",
     descKey: "categories.quality.description",
     defaultTitle: "Quality — Placeholder Mismatch",
@@ -62,7 +50,7 @@ const analysisCategories = [
       "Verifies interpolation placeholders are consistent across all locales. Supports named {}, double-brace {{}}, printf %s, template ${}, and positional {0} formats.",
   },
   {
-    icon: IconZap,
+    icon: "zap",
     titleKey: "categories.performance.title",
     descKey: "categories.performance.description",
     defaultTitle: "Performance — Orphan Key Detection",
@@ -70,7 +58,7 @@ const analysisCategories = [
       "Detects keys that exist in your translation files but are never referenced in code. Orphan keys increase payload size and create maintenance debt.",
   },
   {
-    icon: IconGlobe,
+    icon: "globe",
     titleKey: "categories.sync.title",
     descKey: "categories.sync.description",
     defaultTitle: "Sync — CDN Comparison",
@@ -287,7 +275,7 @@ function I18nDoctorPage() {
             {analysisCategories.map((category) => (
               <div key={category.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <category.icon className="size-5" />
+                  <SpriteIcon name={category.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(category.titleKey, { defaultValue: category.defaultTitle })}
@@ -449,7 +437,7 @@ function I18nDoctorPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-100">
-              <IconScript className="size-5 text-mist-700 mb-3" />
+              <SpriteIcon name="script" className="size-5 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("features.lexicalScope.title", { defaultValue: "Lexical Scope Tracking" })}
               </h3>
@@ -461,7 +449,7 @@ function I18nDoctorPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-100">
-              <IconSettingsGear1 className="size-5 text-mist-700 mb-3" />
+              <SpriteIcon name="settings-gear" className="size-5 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("features.serverComponents.title", { defaultValue: "Server Component Support" })}
               </h3>
@@ -473,7 +461,7 @@ function I18nDoctorPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-100">
-              <IconChart1 className="size-5 text-mist-700 mb-3" />
+              <SpriteIcon name="chart" className="size-5 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("features.configurable.title", { defaultValue: "Configurable Rules" })}
               </h3>
@@ -485,7 +473,7 @@ function I18nDoctorPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-100">
-              <IconMagnifyingGlass className="size-5 text-mist-700 mb-3" />
+              <SpriteIcon name="magnifying-glass" className="size-5 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("features.smartFiltering.title", { defaultValue: "Smart Filtering" })}
               </h3>
@@ -497,7 +485,7 @@ function I18nDoctorPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-100">
-              <IconCodeBrackets className="size-5 text-mist-700 mb-3" />
+              <SpriteIcon name="code-brackets" className="size-5 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("features.verboseAudit.title", { defaultValue: "Verbose Audit Log" })}
               </h3>
@@ -530,7 +518,7 @@ function I18nDoctorPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{t(page.descKey, { defaultValue: page.defaultDesc })}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

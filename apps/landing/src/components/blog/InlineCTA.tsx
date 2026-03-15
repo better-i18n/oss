@@ -1,4 +1,4 @@
-import { IconChevronRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 interface InlineCTAProps {
   readonly title: string;
@@ -39,7 +39,7 @@ export default function InlineCTA({
           className="inline-flex shrink-0 items-center gap-0.5 text-sm font-medium text-mist-950 hover:text-mist-700 transition-colors"
         >
           {ctaText}
-          <IconChevronRight className="w-3.5 h-3.5" />
+          <SpriteIcon name="chevron-right" className="w-3.5 h-3.5" />
         </a>
       </aside>
     );

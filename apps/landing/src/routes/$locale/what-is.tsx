@@ -1,17 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, getEducationalPageStructuredData, formatStructuredData, createPageLoader } from "@/lib/page-seo";
 import { getHowToSchema } from "@/lib/structured-data";
 import { useTranslations } from "@better-i18n/use-intl";
 import { RelatedPages } from "@/components/RelatedPages";
 import {
-  IconGlobe,
-  IconRocket,
-  IconSparklesSoft,
-  IconGithub,
   IconCalendar1,
-  IconCodeBrackets,
-  IconSettingsGear1,
   IconTranslate,
   IconImages1,
   IconFiles,
@@ -63,7 +58,6 @@ export const Route = createFileRoute("/$locale/what-is")({
     return getPageHead({
       messages,
       locale,
-      locales: loaderData?.locales,
       pageKey: "whatIs",
       pathname: "/what-is",
       customStructuredData: [...educationalScripts, ...howToScript],
@@ -84,8 +78,8 @@ const COMPARISON_ROW_KEYS = [
 const COVERS_ITEMS = [
   { icon: IconImages1, key: "ui" },
   { icon: IconCalendar1, key: "dateTime" },
-  { icon: IconCodeBrackets, key: "encoding" },
-  { icon: IconSettingsGear1, key: "numbers" },
+  { icon: "code-brackets", key: "encoding" },
+  { icon: "settings-gear", key: "numbers" },
   { icon: IconFiles, key: "content" },
   { icon: IconTranslate, key: "plurals" },
 ] as const;
@@ -97,17 +91,17 @@ function WhatIsPage() {
 
   const benefits = [
     {
-      icon: IconRocket,
+      icon: "rocket",
       titleKey: "benefits.speed.title",
       descKey: "benefits.speed.description",
     },
     {
-      icon: IconSparklesSoft,
+      icon: "sparkles-soft",
       titleKey: "benefits.ai.title",
       descKey: "benefits.ai.description",
     },
     {
-      icon: IconGithub,
+      icon: "github",
       titleKey: "benefits.git.title",
       descKey: "benefits.git.description",
     },
@@ -120,7 +114,7 @@ function WhatIsPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mist-100 text-mist-700 text-sm font-medium mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               {t("hero.badge")}
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1] lg:text-6xl/[1.1]">
@@ -251,7 +245,7 @@ function WhatIsPage() {
             {COVERS_ITEMS.map((item) => (
               <div key={item.key} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <item.icon className="size-5" />
+                  {typeof item.icon === "string" ? <SpriteIcon name={item.icon} className="size-5" /> : <item.icon className="size-5" />}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(`covers.${item.key}.title`)}
@@ -291,7 +285,7 @@ function WhatIsPage() {
                     className="p-5 rounded-xl bg-mist-50 border border-mist-100 flex items-start gap-4"
                   >
                     <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 shrink-0">
-                      <benefit.icon className="size-5" />
+                      {typeof benefit.icon === "string" ? <SpriteIcon name={benefit.icon} className="size-5" /> : <benefit.icon className="size-5" />}
                     </div>
                     <div>
                       <h3 className="text-base font-medium text-mist-950">

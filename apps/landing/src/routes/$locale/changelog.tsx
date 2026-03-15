@@ -31,22 +31,20 @@ export const Route = createFileRoute("/$locale/changelog")({
     return {
       messages,
       locale: context.locale,
-      locales: context.locales,
       releases,
     };
   },
   head: ({ loaderData }) => {
     const locale = loaderData?.locale || "en";
-    const locales = loaderData?.locales;
     const pathname = "/changelog";
     const meta = getLocalizedMeta(loaderData?.messages || {}, "changelog", {
       locale,
       pathname,
     });
     return {
-      meta: formatMetaTags(meta, { locale, locales }),
+      meta: formatMetaTags(meta, { locale }),
       links: [
-        ...getAlternateLinks(pathname, locales),
+        ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
       ],
       scripts: getDefaultStructuredData(locale),

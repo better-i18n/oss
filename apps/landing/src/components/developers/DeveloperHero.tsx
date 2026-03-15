@@ -1,9 +1,5 @@
 import { useTranslations } from "@better-i18n/use-intl";
-import {
-  IconArrowRight,
-  IconChevronRight,
-  IconCode
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 export default function DeveloperHero() {
   const t = useTranslations("developers");
 
@@ -17,7 +13,7 @@ export default function DeveloperHero() {
             <div className="flex flex-col gap-6 max-w-3xl">
               {/* Badge */}
               <span className="inline-flex items-center gap-2 rounded-full bg-mist-200 px-3 py-1.5 text-sm text-mist-700 w-fit">
-                <IconCode className="size-4" />
+                <SpriteIcon name="code" className="size-4" />
                 {t("hero.badge")}
               </span>
 
@@ -42,14 +38,14 @@ export default function DeveloperHero() {
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-mist-950 px-6 py-3 text-sm font-medium text-white hover:bg-mist-900 transition-colors"
                 >
                   {t("hero.cta")}
-                  <IconArrowRight className="size-4" />
+                  <SpriteIcon name="arrow-right" className="size-4" />
                 </a>
                 <a
                   href="https://docs.better-i18n.com/frameworks/quick-start"
                   className="inline-flex items-center gap-2 text-sm font-medium text-mist-600 hover:text-mist-950 transition-colors"
                 >
                   {t("hero.viewDocs")}
-                  <IconChevronRight className="size-4" />
+                  <SpriteIcon name="chevron-right" className="size-4" />
                 </a>
               </div>
             </div>

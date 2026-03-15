@@ -16,7 +16,6 @@ export const Route = createFileRoute("/$locale/i18n/tanstack-start")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "tanstackStartI18n",
       pathname: "/i18n/tanstack-start",
       pageType: "framework",

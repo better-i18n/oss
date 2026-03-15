@@ -1,18 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconMagnifyingGlass,
-  IconCheckmark1,
-  IconArrowRight,
-  IconGlobe,
-  IconRocket,
-  IconChart1,
-  IconCodeBrackets,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/global-market-seo")({
   loader: createPageLoader(),
@@ -20,7 +12,6 @@ export const Route = createFileRoute("/_archived/i18n/global-market-seo")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "globalMarketSeo",
       pathname: "/i18n/global-market-seo",
       pageType: "educational",
@@ -35,10 +26,10 @@ export const Route = createFileRoute("/_archived/i18n/global-market-seo")({
 });
 
 const searchEngines = [
-  { icon: IconMagnifyingGlass, titleKey: "engines.google.title", descKey: "engines.google.description", defaultTitle: "Google (Global)", defaultDesc: "Dominates most Western and emerging markets. Requires hreflang, localized content, and country-specific domain or subdirectory strategies." },
-  { icon: IconGlobe, titleKey: "engines.baidu.title", descKey: "engines.baidu.description", defaultTitle: "Baidu (China)", defaultDesc: "Favors .cn domains, simplified Chinese content, and hosting within mainland China. Requires ICP license and unique SEO tactics." },
-  { icon: IconRocket, titleKey: "engines.naver.title", descKey: "engines.naver.description", defaultTitle: "Naver (South Korea)", defaultDesc: "Rewards blog-format content on its own platform. Requires a Naver-specific content strategy beyond standard web SEO." },
-  { icon: IconChart1, titleKey: "engines.yandex.title", descKey: "engines.yandex.description", defaultTitle: "Yandex (Russia & CIS)", defaultDesc: "Emphasizes regional hosting, Cyrillic content quality, and behavioral ranking factors unique to Russian-speaking markets." },
+  { icon: "magnifying-glass", titleKey: "engines.google.title", descKey: "engines.google.description", defaultTitle: "Google (Global)", defaultDesc: "Dominates most Western and emerging markets. Requires hreflang, localized content, and country-specific domain or subdirectory strategies." },
+  { icon: "globe", titleKey: "engines.baidu.title", descKey: "engines.baidu.description", defaultTitle: "Baidu (China)", defaultDesc: "Favors .cn domains, simplified Chinese content, and hosting within mainland China. Requires ICP license and unique SEO tactics." },
+  { icon: "rocket", titleKey: "engines.naver.title", descKey: "engines.naver.description", defaultTitle: "Naver (South Korea)", defaultDesc: "Rewards blog-format content on its own platform. Requires a Naver-specific content strategy beyond standard web SEO." },
+  { icon: "chart", titleKey: "engines.yandex.title", descKey: "engines.yandex.description", defaultTitle: "Yandex (Russia & CIS)", defaultDesc: "Emphasizes regional hosting, Cyrillic content quality, and behavioral ranking factors unique to Russian-speaking markets." },
 ];
 
 function GlobalMarketSeoPage() {
@@ -76,7 +67,7 @@ function GlobalMarketSeoPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconMagnifyingGlass className="size-4" />
+              <SpriteIcon name="magnifying-glass" className="size-4" />
               <span>{t("badge", { defaultValue: "Global Market SEO" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -135,7 +126,7 @@ function GlobalMarketSeoPage() {
             {searchEngines.map((engine) => (
               <div key={engine.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <engine.icon className="size-5" />
+                  <SpriteIcon name={engine.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(engine.titleKey, { defaultValue: engine.defaultTitle })}
@@ -164,7 +155,7 @@ function GlobalMarketSeoPage() {
               <ul className="space-y-4">
                 {seoKeywords.map((keyword) => (
                   <li key={keyword.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(keyword.key, { defaultValue: keyword.defaultValue })}</span>
                   </li>
                 ))}
@@ -214,7 +205,7 @@ function GlobalMarketSeoPage() {
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <div className="p-6 rounded-xl bg-white border border-mist-200">
-              <IconCodeBrackets className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="code-brackets" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("content.technical.title", { defaultValue: "Technical SEO Foundation" })}
               </h3>
@@ -223,7 +214,7 @@ function GlobalMarketSeoPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-200">
-              <IconRocket className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="rocket" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("content.localContent.title", { defaultValue: "Local Content Creation" })}
               </h3>
@@ -232,7 +223,7 @@ function GlobalMarketSeoPage() {
               </p>
             </div>
             <div className="p-6 rounded-xl bg-white border border-mist-200">
-              <IconChart1 className="size-6 text-mist-700 mb-3" />
+              <SpriteIcon name="chart" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
                 {t("content.measurement.title", { defaultValue: "Measuring International SEO Success" })}
               </h3>
@@ -300,7 +291,7 @@ function GlobalMarketSeoPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

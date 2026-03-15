@@ -1,18 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconGlobe,
-  IconCheckmark1,
-  IconArrowRight,
-  IconMagnifyingGlass,
-  IconRocket,
-  IconChart1,
-  IconGroup1,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/international-seo")({
   loader: createPageLoader(),
@@ -20,7 +12,6 @@ export const Route = createFileRoute("/$locale/i18n/international-seo")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "internationalSeo",
       pathname: "/i18n/international-seo",
       pageType: "educational",
@@ -35,10 +26,10 @@ export const Route = createFileRoute("/$locale/i18n/international-seo")({
 });
 
 const pillars = [
-  { icon: IconMagnifyingGlass, titleKey: "pillars.keywordResearch.title", descKey: "pillars.keywordResearch.description", defaultTitle: "Keyword Research", defaultDesc: "Conduct localized keyword research for each target market to discover how users actually search in their language and region." },
-  { icon: IconRocket, titleKey: "pillars.contentLocalization.title", descKey: "pillars.contentLocalization.description", defaultTitle: "Content Localization", defaultDesc: "Adapt your content beyond translation to match cultural norms, local references, and search behavior in each market." },
-  { icon: IconChart1, titleKey: "pillars.technicalSeo.title", descKey: "pillars.technicalSeo.description", defaultTitle: "Technical SEO", defaultDesc: "Implement hreflang tags, canonical URLs, sitemaps, and proper URL structures to signal language targeting to search engines." },
-  { icon: IconGroup1, titleKey: "pillars.linkBuilding.title", descKey: "pillars.linkBuilding.description", defaultTitle: "Link Building", defaultDesc: "Acquire backlinks from authoritative local sources in each target market to build regional domain authority." },
+  { icon: "magnifying-glass", titleKey: "pillars.keywordResearch.title", descKey: "pillars.keywordResearch.description", defaultTitle: "Keyword Research", defaultDesc: "Conduct localized keyword research for each target market to discover how users actually search in their language and region." },
+  { icon: "rocket", titleKey: "pillars.contentLocalization.title", descKey: "pillars.contentLocalization.description", defaultTitle: "Content Localization", defaultDesc: "Adapt your content beyond translation to match cultural norms, local references, and search behavior in each market." },
+  { icon: "chart", titleKey: "pillars.technicalSeo.title", descKey: "pillars.technicalSeo.description", defaultTitle: "Technical SEO", defaultDesc: "Implement hreflang tags, canonical URLs, sitemaps, and proper URL structures to signal language targeting to search engines." },
+  { icon: "group", titleKey: "pillars.linkBuilding.title", descKey: "pillars.linkBuilding.description", defaultTitle: "Link Building", defaultDesc: "Acquire backlinks from authoritative local sources in each target market to build regional domain authority." },
 ];
 
 function InternationalSeoPage() {
@@ -78,7 +69,7 @@ function InternationalSeoPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               <span>{t("badge", { defaultValue: "International SEO" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -137,7 +128,7 @@ function InternationalSeoPage() {
             {pillars.map((pillar) => (
               <div key={pillar.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <pillar.icon className="size-5" />
+                  <SpriteIcon name={pillar.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(pillar.titleKey, { defaultValue: pillar.defaultTitle })}
@@ -164,7 +155,7 @@ function InternationalSeoPage() {
               <ul className="space-y-4">
                 {checklist.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
@@ -269,7 +260,7 @@ function InternationalSeoPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

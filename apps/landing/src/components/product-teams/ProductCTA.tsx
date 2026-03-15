@@ -2,7 +2,7 @@
 
 import { useTranslations } from "@better-i18n/use-intl";
 import { motion } from "framer-motion";
-import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 export default function ProductCTA() {
   const t = useTranslations("product-teams");
@@ -31,7 +31,7 @@ export default function ProductCTA() {
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
               >
                 {t("cta.primary")}
-                <IconArrowRight className="size-4" />
+                <SpriteIcon name="arrow-right" className="size-4" />
               </a>
               <a
                 href="mailto:sales@better-i18n.com"

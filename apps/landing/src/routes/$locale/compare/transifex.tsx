@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import {
@@ -12,12 +13,6 @@ import {
 } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCode,
-  IconRobot,
-  IconZap,
-  IconRocket,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { UserComplaints } from "@/components/UserComplaints";
 import { WhySwitchSection } from "@/components/WhySwitchSection";
 
@@ -27,7 +22,6 @@ export const Route = createFileRoute("/$locale/compare/transifex")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "compareTransifex",
       pathname: "/compare/transifex",
       pageType: "comparison",
@@ -86,22 +80,22 @@ function TransifexComparisonPage() {
           </h2>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
             <Differentiator
-              icon={<IconZap className="w-5 h-5" />}
+              icon={<SpriteIcon name="zap" className="w-5 h-5" />}
               title={t("compare.transifex.whyBetter.modern.title")}
               description={t("compare.transifex.whyBetter.modern.description")}
             />
             <Differentiator
-              icon={<IconRobot className="w-5 h-5" />}
+              icon={<SpriteIcon name="robot" className="w-5 h-5" />}
               title={t("compare.transifex.whyBetter.mcpNative.title")}
               description={t("compare.transifex.whyBetter.mcpNative.description")}
             />
             <Differentiator
-              icon={<IconRocket className="w-5 h-5" />}
+              icon={<SpriteIcon name="rocket" className="w-5 h-5" />}
               title={t("compare.transifex.whyBetter.pricing.title")}
               description={t("compare.transifex.whyBetter.pricing.description")}
             />
             <Differentiator
-              icon={<IconCode className="w-5 h-5" />}
+              icon={<SpriteIcon name="code" className="w-5 h-5" />}
               title={t("compare.transifex.whyBetter.developerFirst.title")}
               description={t("compare.transifex.whyBetter.developerFirst.description")}
             />

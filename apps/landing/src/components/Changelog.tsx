@@ -1,5 +1,5 @@
 import { Link, useParams } from "@tanstack/react-router";
-import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { useT } from "@/lib/i18n";
 import type { ChangelogEntry, ChangelogListItem } from "@/lib/changelog";
 
@@ -54,7 +54,7 @@ export default function Changelog({ releases }: ChangelogProps) {
             className="hidden items-center gap-2 rounded-full border border-mist-200 bg-white px-4 py-2.5 text-sm font-medium text-mist-700 transition-colors hover:text-mist-950 sm:inline-flex"
           >
             {t("seeWhatsNew", { defaultValue: "See what's new" })}
-            <IconArrowRight className="h-4 w-4" />
+            <SpriteIcon name="arrow-right" className="h-4 w-4" />
           </Link>
         </div>
 
@@ -104,7 +104,7 @@ export default function Changelog({ releases }: ChangelogProps) {
             className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950"
           >
             {t("seeWhatsNew", { defaultValue: "See what's new" })}
-            <IconArrowRight className="w-4 h-4" />
+            <SpriteIcon name="arrow-right" className="w-4 h-4" />
           </Link>
         </div>
       </div>

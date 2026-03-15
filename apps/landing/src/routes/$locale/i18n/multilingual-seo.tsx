@@ -1,18 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconGlobe,
-  IconCheckmark1,
-  IconArrowRight,
-  IconMagnifyingGlass,
-  IconRocket,
-  IconApiConnection,
-  IconGroup1,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/multilingual-seo")({
   loader: createPageLoader(),
@@ -20,7 +12,6 @@ export const Route = createFileRoute("/$locale/i18n/multilingual-seo")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "multilingualSeo",
       pathname: "/i18n/multilingual-seo",
       pageType: "educational",
@@ -35,10 +26,10 @@ export const Route = createFileRoute("/$locale/i18n/multilingual-seo")({
 });
 
 const challenges = [
-  { icon: IconApiConnection, titleKey: "challenges.hreflang.title", descKey: "challenges.hreflang.description", defaultTitle: "Hreflang Implementation", defaultDesc: "Correctly implementing hreflang tags to tell search engines which language version to show each user." },
-  { icon: IconGlobe, titleKey: "challenges.urlStructure.title", descKey: "challenges.urlStructure.description", defaultTitle: "URL Structure Decisions", defaultDesc: "Choosing between subdirectories, subdomains, and ccTLDs for your multilingual site architecture." },
-  { icon: IconMagnifyingGlass, titleKey: "challenges.keywordResearch.title", descKey: "challenges.keywordResearch.description", defaultTitle: "Multilingual Keyword Research", defaultDesc: "Conducting keyword research in each language rather than translating English keywords directly." },
-  { icon: IconRocket, titleKey: "challenges.contentDuplication.title", descKey: "challenges.contentDuplication.description", defaultTitle: "Content Duplication Risks", defaultDesc: "Avoiding duplicate content penalties when similar pages exist across multiple language versions." },
+  { icon: "api-connection", titleKey: "challenges.hreflang.title", descKey: "challenges.hreflang.description", defaultTitle: "Hreflang Implementation", defaultDesc: "Correctly implementing hreflang tags to tell search engines which language version to show each user." },
+  { icon: "globe", titleKey: "challenges.urlStructure.title", descKey: "challenges.urlStructure.description", defaultTitle: "URL Structure Decisions", defaultDesc: "Choosing between subdirectories, subdomains, and ccTLDs for your multilingual site architecture." },
+  { icon: "magnifying-glass", titleKey: "challenges.keywordResearch.title", descKey: "challenges.keywordResearch.description", defaultTitle: "Multilingual Keyword Research", defaultDesc: "Conducting keyword research in each language rather than translating English keywords directly." },
+  { icon: "rocket", titleKey: "challenges.contentDuplication.title", descKey: "challenges.contentDuplication.description", defaultTitle: "Content Duplication Risks", defaultDesc: "Avoiding duplicate content penalties when similar pages exist across multiple language versions." },
 ];
 
 function MultilingualSeoPage() {
@@ -92,7 +83,7 @@ function MultilingualSeoPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconGlobe className="size-4" />
+              <SpriteIcon name="globe" className="size-4" />
               <span>{t("badge", { defaultValue: "Multilingual SEO" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -154,7 +145,7 @@ function MultilingualSeoPage() {
             {challenges.map((challenge) => (
               <div key={challenge.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <challenge.icon className="size-5" />
+                  <SpriteIcon name={challenge.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
@@ -182,7 +173,7 @@ function MultilingualSeoPage() {
             {urlStructures.map((structure) => (
               <div key={structure.titleKey} className="p-6 rounded-xl border border-mist-200 bg-mist-50">
                 <div className="flex items-center gap-3 mb-3">
-                  <IconGroup1 className="size-5 text-mist-700" />
+                  <SpriteIcon name="group" className="size-5 text-mist-700" />
                   <h3 className="text-base font-medium text-mist-950">
                     {t(structure.titleKey, { defaultValue: structure.defaultTitle })}
                   </h3>
@@ -213,7 +204,7 @@ function MultilingualSeoPage() {
             <ul className="space-y-4">
               {hreflangChecklist.map((item) => (
                 <li key={item.key} className="flex items-start gap-3 p-4 rounded-xl border border-mist-200 bg-white">
-                  <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                   <span className="text-mist-700 leading-relaxed">{t(item.key, { defaultValue: item.defaultValue })}</span>
                 </li>
               ))}
@@ -237,7 +228,7 @@ function MultilingualSeoPage() {
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
                   </li>
                 ))}
@@ -443,7 +434,7 @@ function MultilingualSeoPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

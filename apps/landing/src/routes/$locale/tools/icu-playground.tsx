@@ -15,7 +15,6 @@ export const Route = createFileRoute("/$locale/tools/icu-playground")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "toolsIcuPlayground",
       pathname: "/tools/icu-playground",
       pageType: "tool",

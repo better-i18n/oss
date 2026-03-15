@@ -1,14 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
-import {
-  IconGithub,
-  IconApiConnection,
-  IconConsole,
-  IconSparklesSoft,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconConsole } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import {
   NextjsIcon,
   TanStackIcon,
@@ -29,7 +25,6 @@ export const Route = createFileRoute("/$locale/integrations")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "integrations",
       pathname: "/integrations",
       pageType: "educational",
@@ -61,10 +56,10 @@ function IntegrationsPage() {
   ];
 
   const tools = [
-    { nameKey: "tools.github.title", icon: IconGithub, descKey: "tools.github.description" },
+    { nameKey: "tools.github.title", icon: "github", descKey: "tools.github.description" },
     { nameKey: "tools.cli.title", icon: IconConsole, descKey: "tools.cli.description" },
-    { nameKey: "tools.api.title", icon: IconApiConnection, descKey: "tools.api.description" },
-    { nameKey: "tools.mcp.title", icon: IconSparklesSoft, descKey: "tools.mcp.description" },
+    { nameKey: "tools.api.title", icon: "api-connection", descKey: "tools.api.description" },
+    { nameKey: "tools.mcp.title", icon: "sparkles-soft", descKey: "tools.mcp.description" },
   ];
 
   return (
@@ -102,7 +97,7 @@ function IntegrationsPage() {
                 className="p-5 rounded-xl bg-mist-50 border border-mist-100 hover:border-mist-300 transition-colors"
               >
                 <div className="flex size-9 items-center justify-center rounded-xl border border-mist-100 bg-white text-mist-700 mb-3">
-                  <fw.icon className="size-[18px]" />
+                  {typeof fw.icon === "string" ? <SpriteIcon name={fw.icon} className="size-[18px]" /> : <fw.icon className="size-[18px]" />}
                 </div>
                 <h3 className="text-base font-medium text-mist-950">{fw.name}</h3>
                 <p className="mt-1 text-sm text-mist-600 leading-relaxed">{t(fw.descKey)}</p>
@@ -131,7 +126,7 @@ function IntegrationsPage() {
               >
                 <div className="flex items-start gap-4">
                   <div className="size-12 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 shrink-0">
-                    <tool.icon className="size-6" />
+                    {typeof tool.icon === "string" ? <SpriteIcon name={tool.icon} className="size-6" /> : <tool.icon className="size-6" />}
                   </div>
                   <div>
                     <h3 className="text-base font-medium text-mist-950">{t(tool.nameKey)}</h3>

@@ -279,7 +279,7 @@ export function createPageLoader(extraNamespaces?: readonly string[]) {
       locale: context.locale,
     });
     const messages = filterMessages(allMessages, namespaces);
-    return { messages, locale: context.locale, locales: context.locales };
+    return { messages, locale: context.locale };
   };
 }
 

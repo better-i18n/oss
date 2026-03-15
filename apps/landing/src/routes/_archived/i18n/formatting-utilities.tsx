@@ -1,17 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-  IconCodeBrackets,
-  IconSettingsGear1,
-  IconGlobe,
-  IconZap,
-  IconScript,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/_archived/i18n/formatting-utilities")({
   loader: createPageLoader(),
@@ -19,7 +11,6 @@ export const Route = createFileRoute("/_archived/i18n/formatting-utilities")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "formattingUtilities",
       pathname: "/i18n/formatting-utilities",
       pageType: "educational",
@@ -34,11 +25,11 @@ export const Route = createFileRoute("/_archived/i18n/formatting-utilities")({
 });
 
 const coreHooks = [
-  { icon: IconSettingsGear1, titleKey: "hooks.useFormatter.title", descKey: "hooks.useFormatter.description", defaultTitle: "useFormatter", defaultDesc: "Format numbers, currencies, dates, times, and lists using the active locale. Wraps the Intl API with automatic locale resolution and SSR safety." },
-  { icon: IconZap, titleKey: "hooks.useNow.title", descKey: "hooks.useNow.description", defaultTitle: "useNow", defaultDesc: "A real-time clock hook that returns the current timestamp and updates at a configurable interval -- perfect for relative time displays like \"5 minutes ago\"." },
-  { icon: IconGlobe, titleKey: "hooks.useLanguages.title", descKey: "hooks.useLanguages.description", defaultTitle: "useLanguages", defaultDesc: "Returns all configured languages with their display names, enabling you to build language switcher UIs without hardcoding locale metadata." },
-  { icon: IconGlobe, titleKey: "hooks.useLocale.title", descKey: "hooks.useLocale.description", defaultTitle: "useLocale", defaultDesc: "Get and set the active locale, detect writing direction (LTR/RTL), and access the full locale object for custom formatting logic." },
-  { icon: IconCodeBrackets, titleKey: "hooks.useTranslations.title", descKey: "hooks.useTranslations.description", defaultTitle: "useTranslations", defaultDesc: "Access translated strings with full TypeScript autocomplete. Keys are validated at compile time so missing translations surface as build errors, not runtime bugs." },
+  { icon: "settings-gear", titleKey: "hooks.useFormatter.title", descKey: "hooks.useFormatter.description", defaultTitle: "useFormatter", defaultDesc: "Format numbers, currencies, dates, times, and lists using the active locale. Wraps the Intl API with automatic locale resolution and SSR safety." },
+  { icon: "zap", titleKey: "hooks.useNow.title", descKey: "hooks.useNow.description", defaultTitle: "useNow", defaultDesc: "A real-time clock hook that returns the current timestamp and updates at a configurable interval -- perfect for relative time displays like \"5 minutes ago\"." },
+  { icon: "globe", titleKey: "hooks.useLanguages.title", descKey: "hooks.useLanguages.description", defaultTitle: "useLanguages", defaultDesc: "Returns all configured languages with their display names, enabling you to build language switcher UIs without hardcoding locale metadata." },
+  { icon: "globe", titleKey: "hooks.useLocale.title", descKey: "hooks.useLocale.description", defaultTitle: "useLocale", defaultDesc: "Get and set the active locale, detect writing direction (LTR/RTL), and access the full locale object for custom formatting logic." },
+  { icon: "code-brackets", titleKey: "hooks.useTranslations.title", descKey: "hooks.useTranslations.description", defaultTitle: "useTranslations", defaultDesc: "Access translated strings with full TypeScript autocomplete. Keys are validated at compile time so missing translations surface as build errors, not runtime bugs." },
 ];
 
 function FormattingUtilitiesPage() {
@@ -89,7 +80,7 @@ function FormattingUtilitiesPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <IconScript className="size-4" />
+              <SpriteIcon name="script" className="size-4" />
               <span>{t("badge", { defaultValue: "Formatting & Utilities" })}</span>
             </div>
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
@@ -116,7 +107,7 @@ function FormattingUtilitiesPage() {
             {coreHooks.map((hook) => (
               <div key={hook.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <hook.icon className="size-5" />
+                  <SpriteIcon name={hook.icon} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(hook.titleKey, { defaultValue: hook.defaultTitle })}
@@ -143,7 +134,7 @@ function FormattingUtilitiesPage() {
               <ul className="space-y-4">
                 {numberFormattingItems.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
@@ -159,7 +150,7 @@ function FormattingUtilitiesPage() {
               <ul className="space-y-4">
                 {dateTimeItems.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
@@ -182,7 +173,7 @@ function FormattingUtilitiesPage() {
               <ul className="space-y-4">
                 {listFormattingItems.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
                   </li>
                 ))}
@@ -224,7 +215,7 @@ function FormattingUtilitiesPage() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {componentItems.map((item) => (
               <div key={item.key} className="flex items-start gap-3 p-6 rounded-xl bg-white border border-mist-200">
-                <IconCheckmark1 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
                 <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
               </div>
             ))}
@@ -286,7 +277,7 @@ function FormattingUtilitiesPage() {
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
               </Link>
             ))}
           </div>

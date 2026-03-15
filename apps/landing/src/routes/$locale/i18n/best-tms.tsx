@@ -1,12 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
-import {
-  IconCheckmark1,
-  IconArrowRight,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/best-tms")({
   loader: createPageLoader(),
@@ -14,7 +11,6 @@ export const Route = createFileRoute("/$locale/i18n/best-tms")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "bestTms",
       pathname: "/i18n/best-tms",
     });
@@ -112,7 +108,7 @@ function BestTmsPage() {
                           key={feature}
                           className="inline-flex items-center gap-1 text-xs text-mist-600"
                         >
-                          <IconCheckmark1 className="w-3 h-3 text-emerald-600" />
+                          <SpriteIcon name="checkmark" className="w-3 h-3 text-emerald-600" />
                           {feature}
                         </span>
                       ))}
@@ -129,7 +125,7 @@ function BestTmsPage() {
                         className="inline-flex items-center gap-1 text-sm text-mist-600 hover:text-mist-950"
                       >
                         {t("i18n.bestTms.compare")}
-                        <IconArrowRight className="w-4 h-4" />
+                        <SpriteIcon name="arrow-right" className="w-4 h-4" />
                       </Link>
                     )}
                   </div>
@@ -154,7 +150,7 @@ function BestTmsPage() {
                 <h3 className="text-sm font-medium text-mist-950">{t("i18n.relatedLinks.bestLibrary")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{t("i18n.relatedLinks.bestLibraryDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
               to="/$locale/what-is-localization"
@@ -165,7 +161,7 @@ function BestTmsPage() {
                 <h3 className="text-sm font-medium text-mist-950">{t("whatIs.links.l10n")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{t("whatIs.links.l10nDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
               to="/$locale/for-translators"
@@ -176,7 +172,7 @@ function BestTmsPage() {
                 <h3 className="text-sm font-medium text-mist-950">{t("whatIs.links.forTranslators")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{t("whatIs.links.forTranslatorsDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
               to="/$locale/i18n"
@@ -187,7 +183,7 @@ function BestTmsPage() {
                 <h3 className="text-sm font-medium text-mist-950">{t("whatIs.links.frameworks")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{t("whatIs.links.frameworksDesc")}</p>
               </div>
-              <IconArrowRight className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
           </div>
         </div>

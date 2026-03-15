@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import Pricing from "@/components/Pricing";
 import { getPageHead, getFAQSchema, formatStructuredData, createPageLoader } from "@/lib/page-seo";
@@ -6,7 +7,6 @@ import { getPricingPageStructuredData } from "@/lib/structured-data";
 import { PricingComparison } from "@/components/PricingComparison";
 import { RelatedPages } from "@/components/RelatedPages";
 import { useTranslations } from "@better-i18n/use-intl";
-import { IconCheckmark1 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/pricing")({
   loader: createPageLoader(["pricingPage"]),
@@ -36,7 +36,6 @@ export const Route = createFileRoute("/$locale/pricing")({
     return getPageHead({
       messages,
       locale,
-      locales: loaderData?.locales,
       pageKey: "pricing",
       pathname: "/pricing",
       pageType: "pricing",
@@ -109,7 +108,7 @@ function PricingPage() {
           <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
             {trustBadges.map((item) => (
               <div key={item.key} className="flex items-center gap-2 justify-center p-4 rounded-lg bg-white border border-mist-200">
-                <IconCheckmark1 className="size-4 text-mist-950" />
+                <SpriteIcon name="checkmark" className="size-4 text-mist-950" />
                 <span className="text-sm font-medium text-mist-700">{item.label}</span>
               </div>
             ))}

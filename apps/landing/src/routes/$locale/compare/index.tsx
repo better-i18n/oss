@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, formatStructuredData, createPageLoader } from "@/lib/page-seo";
 import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
 import { SITE_URL } from "@/lib/meta";
 import { useT } from "@/lib/i18n";
-import { IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/compare/")({
   loader: createPageLoader(),
@@ -23,7 +23,6 @@ export const Route = createFileRoute("/$locale/compare/")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "compare",
       pathname: "/compare",
       customStructuredData: formatStructuredData([getOrganizationSchema({ locale: loaderData?.locale }), comparisonListSchema]),
@@ -79,7 +78,7 @@ function ComparePage() {
                       {t(`competitors.${competitor.key}.description`, { defaultValue: competitor.defaultDesc })}
                     </p>
                   </div>
-                  <IconArrowRight className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                  <SpriteIcon name="arrow-right" className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
                 </div>
                 <div className="mt-4 pt-4 border-t border-mist-100">
                   <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">

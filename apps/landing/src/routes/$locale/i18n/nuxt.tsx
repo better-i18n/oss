@@ -18,7 +18,6 @@ export const Route = createFileRoute("/$locale/i18n/nuxt")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "i18nNuxt",
       pathname: "/i18n/nuxt",
       pageType: "framework",

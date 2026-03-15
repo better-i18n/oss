@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { createServerFn } from "@tanstack/react-start";
 import { getBlogPosts, POSTS_PER_PAGE, type BlogPostListItem } from "@/lib/content";
 import Header from "@/components/Header";
@@ -7,10 +8,7 @@ import BlogCard from "@/components/blog/BlogCard";
 import Pagination from "@/components/blog/Pagination";
 import { RelatedPages } from "@/components/RelatedPages";
 import { useT } from "@/lib/i18n";
-import {
-  IconArrowRight,
-  IconPageText,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconPageText } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import {
   getLocalizedMeta,
   formatMetaTags,
@@ -56,7 +54,6 @@ export const Route = createFileRoute("/$locale/blog/")({
       ...result,
       messages,
       locale: context.locale,
-      locales: context.locales,
     };
   },
   head: ({ loaderData }) => {
@@ -78,9 +75,9 @@ export const Route = createFileRoute("/$locale/blog/")({
     ]);
 
     return {
-      meta: formatMetaTags(meta, { locale, locales: loaderData?.locales, noindex: getLocaleTier(locale) === "tier3" }),
+      meta: formatMetaTags(meta, { locale, noindex: getLocaleTier(locale) === "tier3" }),
       links: [
-        ...getAlternateLinks(pathname, loaderData?.locales),
+        ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
         ...((loaderData?.totalPages ?? 0) > 1
           ? [{ rel: "next", href: `${SITE_URL}/${locale}/blog/page/2/` }]
@@ -130,7 +127,7 @@ function BlogPage() {
               className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950 shrink-0"
             >
               {t("backToHome", { defaultValue: "Back to home" })}
-              <IconArrowRight className="w-4 h-4" />
+              <SpriteIcon name="arrow-right" className="w-4 h-4" />
             </Link>
           </div>
 

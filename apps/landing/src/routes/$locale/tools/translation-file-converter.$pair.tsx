@@ -28,7 +28,6 @@ export const Route = createFileRoute(
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "translationFileConverter",
       pathname: `/tools/translation-file-converter/${loaderData?.formatPair?.slug ?? ""}`,
       pageType: "tool",

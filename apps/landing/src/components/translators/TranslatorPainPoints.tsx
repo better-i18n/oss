@@ -1,13 +1,12 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import {
-  IconMagnifyingGlass,
-  IconBook,
   IconCircleInfo,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { SpriteIcon } from "@/components/SpriteIcon";
 
 const painPoints = [
-  { key: "noContext", icon: <IconMagnifyingGlass className="size-6" /> },
-  { key: "inconsistentTerms", icon: <IconBook className="size-6" /> },
+  { key: "noContext", icon: <SpriteIcon name="magnifying-glass" className="size-6" /> },
+  { key: "inconsistentTerms", icon: <SpriteIcon name="book" className="size-6" /> },
   { key: "blindQuality", icon: <IconCircleInfo className="size-6" /> },
 ];
 

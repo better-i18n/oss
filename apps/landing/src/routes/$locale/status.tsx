@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
-import { IconCheckmark1 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/status")({
   loader: createPageLoader(),
@@ -10,7 +10,6 @@ export const Route = createFileRoute("/$locale/status")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      locales: loaderData?.locales,
       pageKey: "status",
       pathname: "/status",
     });
@@ -116,7 +115,7 @@ function StatusPage() {
           <h2 className="text-base font-medium text-mist-950 mb-4">{t("incidents.title")}</h2>
           {recentIncidents.length === 0 ? (
             <div className="p-8 rounded-xl bg-mist-50 border border-mist-100 text-center">
-              <IconCheckmark1 className="size-8 text-emerald-500 mx-auto mb-3" />
+              <SpriteIcon name="checkmark" className="size-8 text-emerald-500 mx-auto mb-3" />
               <p className="text-sm text-mist-700">{t("incidents.noIncidents")}</p>
             </div>
           ) : (

@@ -6,14 +6,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   IconPeople,
   IconSpeaker,
-  IconChart1,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import type { ComponentType, SVGProps } from "react";
+import { SpriteIcon } from "@/components/SpriteIcon";
+import type { ComponentType } from "react";
+import type { SpriteIconName } from "@/components/SpriteIcon";
 
-const roleIcons: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
+const roleIcons: Record<string, ComponentType<{ className?: string }>> = {
   pm: IconPeople,
   marketing: IconSpeaker,
-  leadership: IconChart1,
+};
+
+const roleSpriteIcons: Record<string, SpriteIconName> = {
+  leadership: "chart",
 };
 
 const roleKeys = ["pm", "marketing", "leadership"] as const;
@@ -48,6 +52,7 @@ export default function ProductCollaboration() {
             <div className="lg:col-span-1 space-y-2">
               {roleKeys.map((roleKey) => {
                 const Icon = roleIcons[roleKey];
+                const spriteName = roleSpriteIcons[roleKey];
                 const isActive = activeRole === roleKey;
                 return (
                   <button
@@ -67,7 +72,11 @@ export default function ProductCollaboration() {
                             : "bg-mist-200 text-mist-600"
                         }`}
                       >
-                        <Icon className="size-5" />
+                        {spriteName ? (
+                          <SpriteIcon name={spriteName} className="size-5" />
+                        ) : Icon ? (
+                          <Icon className="size-5" />
+                        ) : null}
                       </div>
                       <div>
                         <span
