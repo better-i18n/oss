@@ -176,7 +176,77 @@ function mapEntryBase(entry: {
 
 const BLOG_MODEL = "blog-posts";
 
-/** Fetch blog posts for a specific locale. */
+/** Check whether a list entry has a translation in the given locale. */
+function hasTranslation(
+  item: { [key: string]: unknown },
+  locale: string,
+): boolean {
+  const raw = item as Record<string, unknown>;
+  const langs = raw.availableLanguages ?? raw.langs;
+  // No language metadata → assume source language only
+  if (!Array.isArray(langs)) return true;
+  return (langs as string[]).includes(locale);
+}
+
+/**
+ * Fetch ALL published blog posts for a locale, filtered to only those
+ * with an actual translation. Results are cached for 5 minutes.
+ *
+ * The Content API falls back to the source language when a translation
+ * is missing instead of excluding the entry, so we must fetch everything,
+ * filter client-side, and handle pagination ourselves.
+ */
+async function getAllBlogPostsForLocale(
+  locale: string,
+): Promise<BlogPostListItem[]> {
+  const cacheKey = `blog-posts-all:${locale}`;
+  const cached = getCached<BlogPostListItem[]>(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const PAGE_SIZE = 100;
+    let page = 1;
+    let allItems: Array<Record<string, unknown>> = [];
+    let hasMore = true;
+
+    while (hasMore) {
+      const result = await getContentClient().getEntries(BLOG_MODEL, {
+        language: locale,
+        status: "published",
+        sort: "publishedAt",
+        order: "desc",
+        limit: PAGE_SIZE,
+        page,
+        expand: ["author", "category"],
+      });
+      allItems = [...allItems, ...result.items];
+      hasMore = result.hasMore;
+      page++;
+    }
+
+    const posts = allItems
+      .filter((item) => hasTranslation(item, locale))
+      .map((item) => ({
+        slug: item.slug as string,
+        title: item.title as string,
+        excerpt: extractExcerpt((item.body as string | null) ?? null),
+        publishedAt: item.publishedAt as string | null,
+        ...mapEntryBase(
+          item as {
+            relations?: Record<string, RelationValue | null | undefined>;
+            [key: string]: unknown;
+          },
+        ),
+      }));
+
+    return setCache(cacheKey, posts);
+  } catch (error) {
+    console.error("Content API error:", error);
+    return [];
+  }
+}
+
+/** Fetch blog posts for a specific locale with client-side pagination. */
 export async function getBlogPosts(
   locale: string,
   options: { limit?: number; page?: number } = {},
@@ -186,37 +256,15 @@ export async function getBlogPosts(
   hasMore: boolean;
 }> {
   const { limit = 12, page = 1 } = options;
-  const cacheKey = `blog-posts:${locale}:${limit}:${page}`;
-  const cached = getCached<{ posts: BlogPostListItem[]; total: number; hasMore: boolean }>(cacheKey);
-  if (cached) return cached;
+  const allPosts = await getAllBlogPostsForLocale(locale);
+  const start = (page - 1) * limit;
+  const pagePosts = allPosts.slice(start, start + limit);
 
-  try {
-    const result = await getContentClient().getEntries(BLOG_MODEL, {
-      language: locale,
-      status: "published",
-      sort: "publishedAt",
-      order: "desc",
-      limit,
-      page,
-      expand: ["author", "category"],
-    });
-
-    const data = {
-      posts: result.items.map((item) => ({
-        slug: item.slug,
-        title: item.title,
-        excerpt: extractExcerpt((item.body as string | null) ?? null),
-        publishedAt: item.publishedAt,
-        ...mapEntryBase(item),
-      })),
-      total: result.total,
-      hasMore: result.hasMore,
-    };
-    return setCache(cacheKey, data);
-  } catch (error) {
-    console.error("Content API error:", error);
-    return { posts: [], total: 0, hasMore: false };
-  }
+  return {
+    posts: pagePosts,
+    total: allPosts.length,
+    hasMore: start + limit < allPosts.length,
+  };
 }
 
 /** Fetch related posts, prioritizing same category. */
