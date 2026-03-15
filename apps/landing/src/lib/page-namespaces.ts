@@ -132,12 +132,17 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
  * separately.
  */
 function resolveDynamicConfig(pagePath: string): PageConfig | null {
-  // /i18n/{subpage} → marketing.i18n.{subpage}
+  // /i18n/{subpage} → marketing.i18n.{subpage} + shared related link keys
   if (pagePath.startsWith("i18n/")) {
     const subpage = pagePath.slice(5);
     const camelSubpage = kebabToCamel(subpage);
     return {
-      namespaces: [`marketing.i18n.${camelSubpage}`, "relatedPages"],
+      namespaces: [
+        `marketing.i18n.${camelSubpage}`,
+        "marketing.i18n.relatedLinks",
+        "marketing.whatIs.links",
+        "relatedPages",
+      ],
     };
   }
 
