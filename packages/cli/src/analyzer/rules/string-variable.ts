@@ -26,6 +26,7 @@ const IGNORE_PATTERNS = [
   /^[\w-]+:[\w-]+$/, // CSS-like property:value
   /^\s*$/, // Whitespace only
   /^[{}[\]()]+$/, // Brackets only
+  /[\[\]()].*[\[\]()]/, // CSS selectors (e.g., "a[href], button:not([disabled])")
 ];
 
 /**
