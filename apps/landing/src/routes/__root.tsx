@@ -15,6 +15,7 @@ import {
 } from "@better-i18n/use-intl";
 import type { Messages } from "@better-i18n/use-intl";
 import { getMessages, detectLocale } from "@better-i18n/use-intl/server";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { i18nConfig } from "../i18n.config";
 import { filterMessagesByPath } from "../lib/page-namespaces";
 import { fetchLocales } from "../lib/locales";
@@ -24,15 +25,15 @@ import { SvgSprite } from "../components/SvgSprite";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 /**
- * Module-scoped SSR side-channel for i18n messages.
+ * Per-request SSR side-channel for i18n messages.
  *
- * Set during the loader, read during the same SSR render pass.
- * Safe on Cloudflare Workers because each request gets its own module instance.
+ * Uses AsyncLocalStorage (available via nodejs_compat on CF Workers) so
+ * concurrent requests never leak messages across locales.
  *
  * This keeps messages OUT of TanStack Router's dehydration pipeline,
  * reducing the serialized `<script>` tag from ~58 KB to ~2 KB.
  */
-let _ssrMessages: Messages | undefined;
+const ssrMessagesStore = new AsyncLocalStorage<Messages>();
 
 /**
  * Reads i18n messages from the `<script id="__i18n_messages__">` tag
@@ -118,9 +119,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const allMessages = await getMessages({ project: i18nConfig.project, locale: context.locale });
     // Only serialize the namespaces this page actually needs.
     const messages = filterMessagesByPath(allMessages, location.pathname);
-    // Store in module scope for SSR render — NOT in loader data.
+    // Store in per-request AsyncLocalStorage — NOT in loader data.
     // This keeps ~58 KB of messages out of TSR's dehydration <script> tag.
-    _ssrMessages = messages;
+    // Unlike module-scoped variables, ALS is safe under concurrent requests.
+    ssrMessagesStore.enterWith(messages);
     return { locale: context.locale };
   },
 
@@ -229,10 +231,10 @@ function RootComponent() {
   // Per-mount QueryClient — prevents cross-request cache leak on CF Workers
   const [queryClient] = useState(createQueryClient);
 
-  // Server: read from module-scoped side-channel (set in loader, same request)
+  // Server: read from per-request AsyncLocalStorage (set in loader, same request)
   // Client: read from <script id="__i18n_messages__"> tag injected during SSR
   const messages =
-    typeof document === "undefined" ? _ssrMessages : getClientMessages();
+    typeof document === "undefined" ? ssrMessagesStore.getStore() : getClientMessages();
 
   useEffect(() => {
     if (import.meta.env.DEV) {
