@@ -150,7 +150,17 @@ export default function Footer() {
           <span className="text-sm text-mist-700">
             {t("copyright", { defaultValue: "© 2026 Better i18n, Inc." })}
           </span>
-          <LanguageSwitcher />
+          <div className="flex items-center gap-4">
+            <a
+              href="/llms.txt"
+              className="text-sm text-mist-500 hover:text-mist-900 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LLMs.txt
+            </a>
+            <LanguageSwitcher />
+          </div>
         </div>
       </div>
     </footer>
