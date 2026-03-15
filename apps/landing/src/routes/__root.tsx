@@ -13,6 +13,7 @@ import {
   getLocaleFromPath,
   useTranslations,
 } from "@better-i18n/use-intl";
+import type { Messages } from "@better-i18n/use-intl";
 import { getMessages, detectLocale } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
 import { filterMessagesByPath } from "../lib/page-namespaces";
@@ -21,6 +22,33 @@ import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
 import { SvgSprite } from "../components/SvgSprite";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+
+/**
+ * Module-scoped SSR side-channel for i18n messages.
+ *
+ * Set during the loader, read during the same SSR render pass.
+ * Safe on Cloudflare Workers because each request gets its own module instance.
+ *
+ * This keeps messages OUT of TanStack Router's dehydration pipeline,
+ * reducing the serialized `<script>` tag from ~58 KB to ~2 KB.
+ */
+let _ssrMessages: Messages | undefined;
+
+/**
+ * Reads i18n messages from the `<script id="__i18n_messages__">` tag
+ * injected during SSR. Called synchronously during React hydration
+ * so there is no flash of untranslated content.
+ */
+function getClientMessages(): Messages | undefined {
+  if (typeof document === "undefined") return undefined;
+  const el = document.getElementById("__i18n_messages__");
+  if (!el?.textContent) return undefined;
+  try {
+    return JSON.parse(el.textContent) as Messages;
+  } catch {
+    return undefined;
+  }
+}
 
 function createQueryClient() {
   return new QueryClient({
@@ -89,9 +117,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   loader: async ({ context, location }) => {
     const allMessages = await getMessages({ project: i18nConfig.project, locale: context.locale });
     // Only serialize the namespaces this page actually needs.
-    // Reduces HTML payload from ~40KB to ~3-5KB per page.
     const messages = filterMessagesByPath(allMessages, location.pathname);
-    return { locale: context.locale, messages };
+    // Store in module scope for SSR render — NOT in loader data.
+    // This keeps ~58 KB of messages out of TSR's dehydration <script> tag.
+    _ssrMessages = messages;
+    return { locale: context.locale };
   },
 
   head: () => {
@@ -196,9 +226,13 @@ function NotFoundPage() {
 
 function RootComponent() {
   const { locale, locales } = Route.useRouteContext();
-  const { messages } = Route.useLoaderData();
   // Per-mount QueryClient — prevents cross-request cache leak on CF Workers
   const [queryClient] = useState(createQueryClient);
+
+  // Server: read from module-scoped side-channel (set in loader, same request)
+  // Client: read from <script id="__i18n_messages__"> tag injected during SSR
+  const messages =
+    typeof document === "undefined" ? _ssrMessages : getClientMessages();
 
   useEffect(() => {
     if (import.meta.env.DEV) {
@@ -224,6 +258,16 @@ function RootComponent() {
         </script>
       </head>
       <body className="no-dark text-mist-950">
+        {/* SSR messages → keeps ~58 KB out of TSR's dehydration pipeline.
+            type="application/json" means the browser never executes this — no XSS risk.
+            Client reads this synchronously during hydration via getClientMessages(). */}
+        <script
+          type="application/json"
+          id="__i18n_messages__"
+          suppressHydrationWarning
+        >
+          {JSON.stringify(messages)}
+        </script>
         <SvgSprite />
         {/* Google Tag Manager (noscript) */}
         <noscript>
