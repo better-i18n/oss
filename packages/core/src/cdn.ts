@@ -142,7 +142,7 @@ const fetchManifestFromCdn = async (
   const response = await fetchWithRetry(
     fetchFn,
     url,
-    { headers: { "Cache-Control": "no-cache" } },
+    { headers: { "Cache-Control": "no-store" } },
     config.fetchTimeout,
     config.retryCount
   );
@@ -231,7 +231,7 @@ const fetchMessagesFromCdn = async (
   const response = await fetchWithRetry(
     fetchFn,
     url,
-    { headers: { "Cache-Control": "no-cache" } },
+    { headers: { "Cache-Control": "no-store" } },
     config.fetchTimeout,
     config.retryCount
   );
