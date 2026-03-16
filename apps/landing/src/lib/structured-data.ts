@@ -257,13 +257,6 @@ const TESTIMONIAL_REVIEWS = [
     quote: "The git-native workflow is a game changer. We went from manual JSON file management to fully automated translations.",
   },
   {
-    author: "Mehmet Hanifi Şentürk",
-    jobTitle: "AI Engineer",
-    worksFor: "Enuygun",
-    url: "https://www.enuygun.com/",
-    quote: "The MCP integration lets us use translations directly in our AI workflows. It's the most developer-friendly i18n tool I've used.",
-  },
-  {
     author: "Eray Gündoğmuş",
     jobTitle: "Software Engineer",
     worksFor: "Aceware",
