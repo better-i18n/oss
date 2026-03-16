@@ -21,7 +21,6 @@ export default defineConfig(async ({ mode }) => {
     },
     resolve: {
       conditions: [
-        "bun",
         "worker",
         "webworker",
         "browser",
