@@ -20,13 +20,7 @@ export default defineConfig(async ({ mode }) => {
       ),
     },
     resolve: {
-      conditions: [
-        "worker",
-        "webworker",
-        "browser",
-        "module",
-        "development|production",
-      ],
+      dedupe: ["react", "react-dom", "use-intl"],
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
