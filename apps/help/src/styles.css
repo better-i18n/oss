@@ -1,0 +1,114 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@source "../node_modules/@better-i18n/ui";
+
+/* Self-hosted Geist fonts (variable woff2 from geist npm package) */
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Dark mode disabled — help center is light-only */
+@custom-variant dark (&:where(.force-dark));
+
+@theme {
+  --font-sans: "Geist", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  --color-mist-50: #f7f8f8;
+  --color-mist-100: #eef0f1;
+  --color-mist-200: #dfe4e6;
+  --color-mist-300: #c9d1d5;
+  --color-mist-400: #9ba8af;
+  --color-mist-500: #6d7d85;
+  --color-mist-600: #566268;
+  --color-mist-700: #475257;
+  --color-mist-800: #333b3f;
+  --color-mist-900: #262d30;
+  --color-mist-950: #181c1e;
+
+  --color-background: #ffffff;
+  --color-foreground: #181c1e;
+  --color-card: #ffffff;
+  --color-border: #dfe4e6;
+  --color-muted: #eef0f1;
+  --color-muted-foreground: #6d7d85;
+
+  --color-white: oklch(1 0 0);
+  --color-gray-50: oklch(0.985 0 0);
+  --color-gray-100: oklch(0.97 0 0);
+  --color-gray-200: oklch(0.922 0 0);
+  --color-gray-300: oklch(0.855 0 0);
+  --color-gray-400: oklch(0.708 0 0);
+  --color-gray-500: oklch(0.556 0 0);
+  --color-gray-600: oklch(0.439 0 0);
+  --color-gray-700: oklch(0.371 0 0);
+  --color-gray-800: oklch(0.269 0 0);
+  --color-gray-900: oklch(0.205 0 0);
+  --color-black: oklch(0 0 0);
+}
+
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    scroll-padding-top: 5.25rem;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-mist-950);
+  }
+}
+
+@layer components {
+  /* Article prose styling — mist color theme via CSS vars */
+  .help-prose {
+    @apply prose max-w-none;
+    --tw-prose-body: var(--color-mist-700);
+    --tw-prose-headings: var(--color-mist-950);
+    --tw-prose-lead: var(--color-mist-600);
+    --tw-prose-links: var(--color-mist-950);
+    --tw-prose-bold: var(--color-mist-950);
+    --tw-prose-counters: var(--color-mist-500);
+    --tw-prose-bullets: var(--color-mist-400);
+    --tw-prose-hr: var(--color-mist-200);
+    --tw-prose-quotes: var(--color-mist-600);
+    --tw-prose-quote-borders: var(--color-mist-300);
+    --tw-prose-captions: var(--color-mist-500);
+    --tw-prose-kbd: var(--color-mist-950);
+    --tw-prose-kbd-shadows: var(--color-mist-950);
+    --tw-prose-code: var(--color-mist-950);
+    --tw-prose-th-borders: var(--color-mist-300);
+    --tw-prose-td-borders: var(--color-mist-200);
+    @apply prose-headings:scroll-mt-20 prose-headings:font-semibold prose-headings:tracking-tight;
+    @apply prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4;
+    @apply prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-3;
+    @apply prose-p:leading-relaxed;
+    @apply prose-a:underline prose-a:decoration-mist-300 hover:prose-a:decoration-mist-500;
+    @apply prose-code:rounded prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:font-normal;
+    @apply prose-pre:rounded-xl prose-pre:border prose-pre:border-mist-200 prose-pre:bg-mist-50;
+    @apply prose-img:rounded-xl prose-img:border prose-img:border-mist-200;
+    @apply prose-li:text-mist-700;
+  }
+
+  /* Search highlight */
+  .search-highlight mark {
+    @apply bg-amber-100 text-amber-900 rounded-sm px-0.5;
+  }
+}
