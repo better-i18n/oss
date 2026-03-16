@@ -1,7 +1,11 @@
 import { useT } from "@/lib/i18n";
 import { IconQuickSearch } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
-export function SearchHero() {
+interface SearchHeroProps {
+  onSearchClick?: () => void;
+}
+
+export function SearchHero({ onSearchClick }: SearchHeroProps) {
   const t = useT("home");
 
   return (
@@ -24,7 +28,7 @@ export function SearchHero() {
         <div className="mx-auto mt-10 max-w-xl">
           <button
             type="button"
-            onClick={() => document.dispatchEvent(new CustomEvent("open-search"))}
+            onClick={onSearchClick}
             className="flex w-full items-center gap-3 rounded-2xl bg-white px-5 py-3.5 text-left shadow-lg shadow-black/10 transition-all hover:shadow-xl hover:shadow-black/15"
           >
             <IconQuickSearch className="size-5 shrink-0 text-mist-400" />
