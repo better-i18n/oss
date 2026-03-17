@@ -9,10 +9,8 @@ import { getCollectionsWithCounts, getFeaturedArticles, getArticles } from "@/li
 import { formatMetaTags, getDefaultStructuredData } from "@/lib/seo";
 import { getAlternateLinks, getCanonicalLink } from "@/lib/seo";
 import type { HelpCollection, HelpArticleListItem } from "@/lib/content";
-import {
-  IconRocket,
-  IconPageTextSearch,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconPageTextSearch } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { DynamicIcon } from "@/components/shared/dynamic-icon";
 
 export const Route = createFileRoute("/$locale/")({
   loader: async ({ params }) => {
@@ -84,7 +82,7 @@ function buildSources(
           label: c.title,
           subtitle: c.description ?? undefined,
           groupId: "collections",
-          icon: <IconRocket className="size-4" />,
+          icon: <DynamicIcon name={c.icon} className="size-4" />,
           href: `/${locale}/${c.slug}`,
           keywords: [c.slug],
         }));

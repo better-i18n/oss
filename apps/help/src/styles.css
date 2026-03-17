@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "highlight.js/styles/github.css" layer(base);
 @plugin "@tailwindcss/typography";
 @source "../node_modules/@better-i18n/ui";
 
@@ -19,8 +20,8 @@
   font-display: swap;
 }
 
-/* Dark mode disabled — help center is light-only */
-@custom-variant dark (&:where(.force-dark));
+/* Dark mode — class-based, toggled via localStorage */
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   --font-sans: "Geist", system-ui, sans-serif;
@@ -74,6 +75,28 @@
     background-color: var(--color-background);
     color: var(--color-mist-950);
   }
+
+  /* Dark mode overrides */
+  .dark {
+    --color-background: #0f1214;
+    --color-foreground: #e8eaec;
+    --color-card: #181c1e;
+    --color-border: #2a3135;
+    --color-muted: #1e2428;
+    --color-muted-foreground: #9ba8af;
+
+    --color-mist-50: #141a1d;
+    --color-mist-100: #1a2226;
+    --color-mist-200: #2a3135;
+    --color-mist-300: #3a444a;
+    --color-mist-400: #6d7d85;
+    --color-mist-500: #9ba8af;
+    --color-mist-600: #b8c2c8;
+    --color-mist-700: #cdd4d8;
+    --color-mist-800: #dfe4e6;
+    --color-mist-900: #eef0f1;
+    --color-mist-950: #f7f8f8;
+  }
 }
 
 @layer components {
@@ -101,14 +124,82 @@
     @apply prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-3;
     @apply prose-p:leading-relaxed;
     @apply prose-a:underline prose-a:decoration-mist-300 hover:prose-a:decoration-mist-500;
-    @apply prose-code:rounded prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:font-normal;
-    @apply prose-pre:rounded-xl prose-pre:border prose-pre:border-mist-200 prose-pre:bg-mist-50;
+    @apply prose-code:rounded prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:font-medium prose-code:before:content-[''] prose-code:after:content-[''];
     @apply prose-img:rounded-xl prose-img:border prose-img:border-mist-200;
     @apply prose-li:text-mist-700;
   }
+
+  /* Code block styling — uses CSS vars so dark mode remap works */
+  .help-prose pre {
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-mist-200);
+    background-color: var(--color-mist-50) !important;
+  }
+
+  .help-prose pre code {
+    background-color: transparent !important;
+    padding: 0;
+    border-radius: 0;
+    font-weight: 400;
+    font-size: 0.875rem;
+    line-height: 1.625;
+  }
+
+  /* Inline code — stronger contrast */
+  .help-prose :not(pre) > code {
+    color: var(--color-mist-950);
+    background-color: var(--color-mist-200);
+  }
+
+  /* Dark mode: override highlight.js github theme colors */
+  .dark .help-prose pre,
+  .dark .hljs {
+    background-color: var(--color-mist-50) !important;
+    color: var(--color-mist-800);
+  }
+
+  .dark .hljs-keyword,
+  .dark .hljs-selector-tag,
+  .dark .hljs-type { color: #ff7b72; }
+  .dark .hljs-string,
+  .dark .hljs-attr { color: #a5d6ff; }
+  .dark .hljs-title,
+  .dark .hljs-function { color: #d2a8ff; }
+  .dark .hljs-comment { color: #8b949e; }
+  .dark .hljs-number,
+  .dark .hljs-literal { color: #79c0ff; }
+  .dark .hljs-built_in { color: #ffa657; }
+  .dark .hljs-params { color: var(--color-mist-800); }
+  .dark .hljs-meta { color: #79c0ff; }
 
   /* Search highlight */
   .search-highlight mark {
     @apply bg-amber-100 text-amber-900 rounded-sm px-0.5;
   }
+
+  .dark .search-highlight mark {
+    @apply bg-amber-900/40 text-amber-200;
+  }
+}
+
+/* ─── Command Palette Animations ──────────────────────────────────── */
+
+@keyframes cmd-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes cmd-overlay-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes cmd-content-in {
+  from { opacity: 0; transform: scale(0.95) translateY(-8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes cmd-content-out {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to   { opacity: 0; transform: scale(0.95) translateY(-8px); }
 }

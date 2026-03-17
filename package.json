@@ -72,10 +72,11 @@
     ]
   },
   "overrides": {
-    "@tanstack/react-router": "1.149.3",
-    "vite": "~7.1.5"
+    "@tanstack/react-router": "1.149.3"
   },
   "dependencies": {
-    "@better-i18n/mcp-types": "workspace:*"
+    "@better-i18n/mcp-types": "workspace:*",
+    "highlight.js": "^11.11.1",
+    "marked-highlight": "^2.2.3"
   }
 }

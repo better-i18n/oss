@@ -289,7 +289,10 @@ function renderMessageWithMentions(content: string, mentions: MentionItem[]) {
             ) : mention.type === "namespace" ? (
               <IconFolder1 className="w-3.5 h-3.5 text-gray-400" />
             ) : (
-              <SpriteIcon name="sparkles-soft" className="w-3.5 h-3.5 text-gray-400" />
+              <SpriteIcon
+                name="sparkles-soft"
+                className="w-3.5 h-3.5 text-gray-400"
+              />
             )}
             <span>{mention.label}</span>
           </span>
@@ -315,7 +318,8 @@ const ToolWrapper = ({ children, header }: ToolWrapperProps) => {
           <button className="h-auto w-full px-3 py-1.5 bg-gray-100 text-gray-900 cursor-pointer hover:bg-gray-200 transition-colors text-left">
             <div className="flex items-center justify-between">
               {header}
-              <SpriteIcon name="chevron-bottom"
+              <SpriteIcon
+                name="chevron-bottom"
                 className={cn(
                   "h-4 w-4 text-gray-400 transition-transform duration-200",
                   isOpen && "rotate-180",
@@ -331,7 +335,13 @@ const ToolWrapper = ({ children, header }: ToolWrapperProps) => {
 };
 
 // Collapsible Input Component
-function CollapsibleInput({ input, label }: { input: Record<string, unknown>; label: string }) {
+function CollapsibleInput({
+  input,
+  label,
+}: {
+  input: Record<string, unknown>;
+  label: string;
+}) {
   const [isOpen, setIsOpen] = useState(true);
 
   if (!input) return null;
@@ -345,7 +355,8 @@ function CollapsibleInput({ input, label }: { input: Record<string, unknown>; la
         <h4 className="text-[10px] font-semibold uppercase tracking-wide text-gray-500">
           {label}
         </h4>
-        <SpriteIcon name="chevron-bottom"
+        <SpriteIcon
+          name="chevron-bottom"
           className={cn(
             "h-3.5 w-3.5 text-gray-400 transition-transform",
             isOpen && "rotate-180",
@@ -391,23 +402,26 @@ export function DemoAIDrawerStandalone() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Localized suggestions
-  const suggestions = useMemo(() => [
-    {
-      text: t("suggestions.findUntranslated"),
-      icon: "magnifying-glass" as const,
-      value: "Find all untranslated keys",
-    },
-    {
-      text: t("suggestions.translateMissing"),
-      icon: IconMagicWand,
-      value: "Propose translations for all missing keys",
-    },
-    {
-      text: t("suggestions.translateAuth"),
-      icon: "globe" as const,
-      value: "Translate all missing keys in @ns:auth",
-    },
-  ], [t]);
+  const suggestions = useMemo(
+    () => [
+      {
+        text: t("suggestions.findUntranslated"),
+        icon: "magnifying-glass" as const,
+        value: "Find all untranslated keys",
+      },
+      {
+        text: t("suggestions.translateMissing"),
+        icon: IconMagicWand,
+        value: "Propose translations for all missing keys",
+      },
+      {
+        text: t("suggestions.translateAuth"),
+        icon: "globe" as const,
+        value: "Translate all missing keys in @ns:auth",
+      },
+    ],
+    [t],
+  );
 
   // Get demo content for current locale (fallback to en).
   // Normalize zh-hans / zh-hant variants to the base "zh" key.
@@ -536,7 +550,10 @@ export function DemoAIDrawerStandalone() {
           // Filter
           const textNode = editor.childNodes[editor.childNodes.length - 1];
           if (textNode && textNode.nodeType === Node.TEXT_NODE) {
-            textNode.textContent = textNode.textContent!.replace(/@\w*$/, `@${filterText}`);
+            textNode.textContent = textNode.textContent!.replace(
+              /@\w*$/,
+              `@${filterText}`,
+            );
           }
           setMentionQuery(filterText);
           setMentionIndex(0);
@@ -1125,7 +1142,7 @@ export function DemoAIDrawerStandalone() {
                 <img
                   alt="better-i18n"
                   className="h-10 w-10"
-                  src="https://dash.better-i18n.com/logo/dark.png"
+                  src="/brand/logo.svg"
                 />
               </div>
               <div>
@@ -1227,7 +1244,10 @@ export function DemoAIDrawerStandalone() {
                     >
                       {/* Input Parameters - Collapsible */}
                       {msg.toolCall.input && (
-                        <CollapsibleInput input={msg.toolCall.input} label={inputParametersLabel} />
+                        <CollapsibleInput
+                          input={msg.toolCall.input}
+                          label={inputParametersLabel}
+                        />
                       )}
                       {/* Sync Content - File Changes */}
                       <div className="px-3 py-1.5 space-y-2">
@@ -1344,7 +1364,10 @@ export function DemoAIDrawerStandalone() {
                     >
                       {/* Input Parameters - Collapsible */}
                       {msg.toolCall.input && (
-                        <CollapsibleInput input={msg.toolCall.input} label={inputParametersLabel} />
+                        <CollapsibleInput
+                          input={msg.toolCall.input}
+                          label={inputParametersLabel}
+                        />
                       )}
 
                       {/* Tool Content */}
@@ -1561,7 +1584,14 @@ export function DemoAIDrawerStandalone() {
                   }}
                   className="inline-flex items-center gap-1.5 shrink-0 px-2.5 py-1.5 text-xs font-medium rounded-xl border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 transition-colors cursor-pointer"
                 >
-                  {typeof item.icon === "string" ? <SpriteIcon name={item.icon} className="h-3.5 w-3.5 text-gray-500" /> : <item.icon className="h-3.5 w-3.5 text-gray-500" />}
+                  {typeof item.icon === "string" ? (
+                    <SpriteIcon
+                      name={item.icon}
+                      className="h-3.5 w-3.5 text-gray-500"
+                    />
+                  ) : (
+                    <item.icon className="h-3.5 w-3.5 text-gray-500" />
+                  )}
                   <span className="whitespace-nowrap">{item.text}</span>
                 </button>
               );
@@ -1615,7 +1645,14 @@ export function DemoAIDrawerStandalone() {
                             )}
                           >
                             <span className="shrink-0 w-4 flex items-center justify-center">
-                              {typeof IconResult === "string" ? <SpriteIcon name={IconResult} className="w-3.5 h-3.5 text-gray-400" /> : <IconResult className="w-3.5 h-3.5 text-gray-400" />}
+                              {typeof IconResult === "string" ? (
+                                <SpriteIcon
+                                  name={IconResult}
+                                  className="w-3.5 h-3.5 text-gray-400"
+                                />
+                              ) : (
+                                <IconResult className="w-3.5 h-3.5 text-gray-400" />
+                              )}
                             </span>
                             <span className="text-gray-700 truncate flex-1">
                               {mention.label}
@@ -1695,7 +1732,14 @@ export function DemoAIDrawerStandalone() {
                             )}
                           >
                             <span className="shrink-0 w-4 flex items-center justify-center">
-                              {typeof IconResult === "string" ? <SpriteIcon name={IconResult} className="w-3.5 h-3.5 text-gray-400" /> : <IconResult className="w-3.5 h-3.5 text-gray-400" />}
+                              {typeof IconResult === "string" ? (
+                                <SpriteIcon
+                                  name={IconResult}
+                                  className="w-3.5 h-3.5 text-gray-400"
+                                />
+                              ) : (
+                                <IconResult className="w-3.5 h-3.5 text-gray-400" />
+                              )}
                             </span>
                             <span className="text-gray-700 truncate flex-1">
                               {mention.label}

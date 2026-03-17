@@ -64,3 +64,4 @@ apps/landing/SEO-REVIEW-FINDINGS.md
 **/.flutter-plugins-dependencies
 **/.react-router/
 apps/landing/SEO_ACTION_PLAN.md
+.wrangler/

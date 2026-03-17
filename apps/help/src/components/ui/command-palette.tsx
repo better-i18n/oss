@@ -319,12 +319,12 @@ export function CommandPalette({
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Portal container={portalContainer ?? undefined}>
-        <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm data-[state=open]:animate-[cmd-overlay-in_150ms_ease-out] data-[state=closed]:animate-[cmd-overlay-out_100ms_ease-in]" />
         <Dialog.Content
           aria-label="Command palette"
           className={cn(
-            "fixed z-[101] inset-x-2 top-16 mx-auto w-[min(640px,100%-16px)] rounded-xl border border-mist-200 bg-white shadow-2xl shadow-mist-950/10",
-            "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95 data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
+            "fixed z-[101] inset-x-2 top-16 mx-auto w-[min(640px,100%-16px)] rounded-xl border border-mist-200 bg-[var(--color-card)] shadow-2xl shadow-mist-950/10",
+            "data-[state=open]:animate-[cmd-content-in_200ms_ease-out] data-[state=closed]:animate-[cmd-content-out_150ms_ease-in]",
             "outline-none",
           )}
         >

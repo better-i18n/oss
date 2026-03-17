@@ -31,18 +31,18 @@ export default function Header({ className }: { className?: string }) {
         <div className="mx-auto flex h-[5.25rem] max-w-7xl items-center gap-4 px-6 lg:px-10">
           <div className="flex flex-1 items-center">
             <Link
-              to="/$locale"
+              to="/$locale/"
               params={{ locale: locale || "en" }}
               className="inline-flex items-center gap-2.5"
             >
               <img
-                src="https://better-i18n.com/cdn-cgi/image/width=48,height=48,fit=contain/logo.png"
+                src="/brand/logo.svg"
                 alt="Better i18n - Translation Management Platform"
-                width={24}
-                height={24}
-                className="w-6 h-6"
+                width={28}
+                height={28}
+                className="w-8 h-7"
               />
-              <span className="font-display font-semibold text-base">
+              <span className="font-display font-semibold text-[19px]">
                 Better I18N
               </span>
             </Link>
@@ -57,14 +57,24 @@ export default function Header({ className }: { className?: string }) {
             </Link>
             {/* For Product Mega Menu */}
             <div className="relative group">
-              <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+              <button
+                aria-haspopup="true"
+                aria-expanded="false"
+                className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600"
+              >
                 {t("forProduct", { defaultValue: "Product" })}
-                <SpriteIcon name="chevron-bottom" className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180" />
+                <SpriteIcon
+                  name="chevron-bottom"
+                  className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180"
+                />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[540px] shadow-lg">
                   {/* Grid container with border */}
-                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm" role="menu">
+                  <div
+                    className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm"
+                    role="menu"
+                  >
                     <div className="grid grid-cols-2 gap-2">
                       {/* For Translators */}
                       <Link
@@ -143,7 +153,9 @@ export default function Header({ className }: { className?: string }) {
                   {/* More Solutions */}
                   <div className="px-3 py-2">
                     <p className="text-xs font-medium text-mist-600 uppercase tracking-wider mb-1.5">
-                      {t("menu.moreSolutions", { defaultValue: "More Solutions" })}
+                      {t("menu.moreSolutions", {
+                        defaultValue: "More Solutions",
+                      })}
                     </p>
                     <div className="grid grid-cols-3 gap-x-4 gap-y-1">
                       {/* Business & Industry */}
@@ -152,7 +164,9 @@ export default function Header({ className }: { className?: string }) {
                         params={{ locale: locale || "en" }}
                         className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
                       >
-                        {t("menu.solutions.enterprises", { defaultValue: "Enterprises" })}
+                        {t("menu.solutions.enterprises", {
+                          defaultValue: "Enterprises",
+                        })}
                       </Link>
                       <Link
                         to="/$locale/for-saas"
@@ -166,21 +180,27 @@ export default function Header({ className }: { className?: string }) {
                         params={{ locale: locale || "en" }}
                         className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
                       >
-                        {t("menu.solutions.ecommerce", { defaultValue: "E-Commerce" })}
+                        {t("menu.solutions.ecommerce", {
+                          defaultValue: "E-Commerce",
+                        })}
                       </Link>
                       <Link
                         to="/$locale/for-startups"
                         params={{ locale: locale || "en" }}
                         className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
                       >
-                        {t("menu.solutions.startups", { defaultValue: "Startups" })}
+                        {t("menu.solutions.startups", {
+                          defaultValue: "Startups",
+                        })}
                       </Link>
                       <Link
                         to="/$locale/for-agencies"
                         params={{ locale: locale || "en" }}
                         className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
                       >
-                        {t("menu.solutions.agencies", { defaultValue: "Agencies" })}
+                        {t("menu.solutions.agencies", {
+                          defaultValue: "Agencies",
+                        })}
                       </Link>
                     </div>
                   </div>
@@ -206,15 +226,27 @@ export default function Header({ className }: { className?: string }) {
             </div>
             {/* Developers Mega Menu */}
             <div className="relative group">
-              <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+              <button
+                aria-haspopup="true"
+                aria-expanded="false"
+                className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600"
+              >
                 {t("developers.title", { defaultValue: "Developers" })}
-                <SpriteIcon name="chevron-bottom" className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180" />
+                <SpriteIcon
+                  name="chevron-bottom"
+                  className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180"
+                />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[520px] shadow-lg">
-                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm" role="menu">
+                  <div
+                    className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm"
+                    role="menu"
+                  >
                     <p className="px-2.5 py-1.5 text-xs font-medium text-mist-700 uppercase tracking-wider">
-                      {t("developers.frameworkGuides", { defaultValue: "Framework Guides" })}
+                      {t("developers.frameworkGuides", {
+                        defaultValue: "Framework Guides",
+                      })}
                     </p>
                     <div className="grid grid-cols-3 gap-1 mt-1">
                       <Link
@@ -222,78 +254,125 @@ export default function Header({ className }: { className?: string }) {
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
-                        <span className="text-sm font-medium text-mist-950">React</span>
-                        <SpriteIcon name="arrow-right" className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                        <span className="text-sm font-medium text-mist-950">
+                          React
+                        </span>
+                        <SpriteIcon
+                          name="arrow-right"
+                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                        />
                       </Link>
                       <Link
                         to="/$locale/i18n/nextjs"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
-                        <span className="text-sm font-medium text-mist-950">Next.js</span>
-                        <SpriteIcon name="arrow-right" className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                        <span className="text-sm font-medium text-mist-950">
+                          Next.js
+                        </span>
+                        <SpriteIcon
+                          name="arrow-right"
+                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                        />
                       </Link>
                       <Link
                         to="/$locale/i18n/vue"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
-                        <span className="text-sm font-medium text-mist-950">Vue</span>
-                        <SpriteIcon name="arrow-right" className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                        <span className="text-sm font-medium text-mist-950">
+                          Vue
+                        </span>
+                        <SpriteIcon
+                          name="arrow-right"
+                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                        />
                       </Link>
                       <Link
                         to="/$locale/i18n/nuxt"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
-                        <span className="text-sm font-medium text-mist-950">Nuxt</span>
-                        <SpriteIcon name="arrow-right" className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                        <span className="text-sm font-medium text-mist-950">
+                          Nuxt
+                        </span>
+                        <SpriteIcon
+                          name="arrow-right"
+                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                        />
                       </Link>
                       <Link
                         to="/$locale/i18n/angular"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
-                        <span className="text-sm font-medium text-mist-950">Angular</span>
-                        <SpriteIcon name="arrow-right" className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                        <span className="text-sm font-medium text-mist-950">
+                          Angular
+                        </span>
+                        <SpriteIcon
+                          name="arrow-right"
+                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                        />
                       </Link>
                       <Link
                         to="/$locale/i18n/svelte"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
-                        <span className="text-sm font-medium text-mist-950">Svelte</span>
-                        <SpriteIcon name="arrow-right" className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                        <span className="text-sm font-medium text-mist-950">
+                          Svelte
+                        </span>
+                        <SpriteIcon
+                          name="arrow-right"
+                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                        />
                       </Link>
                       <Link
                         to="/$locale/i18n/expo"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
-                        <span className="text-sm font-medium text-mist-950">Expo</span>
-                        <SpriteIcon name="arrow-right" className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                        <span className="text-sm font-medium text-mist-950">
+                          Expo
+                        </span>
+                        <SpriteIcon
+                          name="arrow-right"
+                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                        />
                       </Link>
                       <Link
                         to="/$locale/i18n/tanstack-start"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
-                        <span className="text-sm font-medium text-mist-950">TanStack Start</span>
-                        <SpriteIcon name="arrow-right" className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                        <span className="text-sm font-medium text-mist-950">
+                          TanStack Start
+                        </span>
+                        <SpriteIcon
+                          name="arrow-right"
+                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                        />
                       </Link>
                       <Link
                         to="/$locale/i18n/server"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
-                        <span className="text-sm font-medium text-mist-950">Server / Hono</span>
-                        <SpriteIcon name="arrow-right" className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                        <span className="text-sm font-medium text-mist-950">
+                          Server / Hono
+                        </span>
+                        <SpriteIcon
+                          name="arrow-right"
+                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                        />
                       </Link>
                     </div>
                   </div>
                   <div className="px-3 py-2.5 flex items-center justify-between">
                     <p className="text-sm text-mist-700">
-                      {t("developers.viewDocs", { defaultValue: "View full documentation" })}
+                      {t("developers.viewDocs", {
+                        defaultValue: "View full documentation",
+                      })}
                     </p>
                     <a
                       href="https://docs.better-i18n.com/"
@@ -322,15 +401,25 @@ export default function Header({ className }: { className?: string }) {
               {t("compare", { defaultValue: "Compare" })}
             </Link>
             <div className="relative group">
-              <button aria-haspopup="true" aria-expanded="false" className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600">
+              <button
+                aria-haspopup="true"
+                aria-expanded="false"
+                className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600"
+              >
                 {t("resources.title", { defaultValue: "Resources" })}
-                <SpriteIcon name="chevron-bottom" className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180" />
+                <SpriteIcon
+                  name="chevron-bottom"
+                  className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180"
+                />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 shadow-lg min-w-[480px]">
                   <div className="flex gap-2">
                     {/* Left column - Main links with icons and descriptions */}
-                    <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm space-y-1 min-w-[260px]" role="menu">
+                    <div
+                      className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm space-y-1 min-w-[260px]"
+                      role="menu"
+                    >
                       {/* About Us */}
                       <Link
                         to="/$locale/about"
@@ -410,9 +499,14 @@ export default function Header({ className }: { className?: string }) {
                         rel="noopener noreferrer"
                         className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
                       >
-                        <SpriteIcon name="book" className="size-4 text-mist-600" />
+                        <SpriteIcon
+                          name="book"
+                          className="size-4 text-mist-600"
+                        />
                         <span className="text-sm font-medium text-mist-950">
-                          {t("documentation", { defaultValue: "Documentation" })}
+                          {t("documentation", {
+                            defaultValue: "Documentation",
+                          })}
                         </span>
                       </a>
 
@@ -422,7 +516,10 @@ export default function Header({ className }: { className?: string }) {
                         params={{ locale: locale || "en" }}
                         className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
                       >
-                        <SpriteIcon name="sparkles-soft" className="size-4 text-mist-600" />
+                        <SpriteIcon
+                          name="sparkles-soft"
+                          className="size-4 text-mist-600"
+                        />
                         <span className="text-sm font-medium text-mist-950">
                           {t("changelog", { defaultValue: "Changelog" })}
                         </span>
@@ -447,7 +544,10 @@ export default function Header({ className }: { className?: string }) {
                         rel="noopener noreferrer"
                         className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
                       >
-                        <SpriteIcon name="api-connection" className="size-4 text-mist-600" />
+                        <SpriteIcon
+                          name="api-connection"
+                          className="size-4 text-mist-600"
+                        />
                         <span className="text-sm font-medium text-mist-950">
                           {t("apiReference", { defaultValue: "API Reference" })}
                         </span>
@@ -477,9 +577,14 @@ export default function Header({ className }: { className?: string }) {
                         params={{ locale: locale || "en" }}
                         className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
                       >
-                        <SpriteIcon name="globe" className="size-4 text-mist-600" />
+                        <SpriteIcon
+                          name="globe"
+                          className="size-4 text-mist-600"
+                        />
                         <span className="text-sm font-medium text-mist-950">
-                          {t("resources.whatIsI18n", { defaultValue: "What is i18n?" })}
+                          {t("resources.whatIsI18n", {
+                            defaultValue: "What is i18n?",
+                          })}
                         </span>
                       </Link>
 
@@ -489,9 +594,14 @@ export default function Header({ className }: { className?: string }) {
                         params={{ locale: locale || "en" }}
                         className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
                       >
-                        <SpriteIcon name="code-brackets" className="size-4 text-mist-600" />
+                        <SpriteIcon
+                          name="code-brackets"
+                          className="size-4 text-mist-600"
+                        />
                         <span className="text-sm font-medium text-mist-950">
-                          {t("resources.freeTools", { defaultValue: "Free Tools" })}
+                          {t("resources.freeTools", {
+                            defaultValue: "Free Tools",
+                          })}
                         </span>
                       </Link>
                     </div>

@@ -7,7 +7,7 @@ export function HelpHeader({ locale }: { locale: string }) {
   const t = useT("common");
 
   return (
-    <header className="sticky top-0 z-10 h-14 border-b border-mist-200 bg-white/80 backdrop-blur-lg">
+    <header className="sticky top-0 z-10 h-14 border-b border-mist-200 bg-[var(--color-background)]/80 backdrop-blur-lg">
       <div className="mx-auto flex h-full max-w-7xl items-center gap-4 px-6">
         {/* Logo — "Better I18N / Help" breadcrumb style */}
         <div className="flex items-center gap-2.5">
@@ -30,7 +30,7 @@ export function HelpHeader({ locale }: { locale: string }) {
             params={{ locale }}
             className="text-sm text-mist-500 transition-colors hover:text-mist-950"
           >
-            {t("header.title", "Help")}
+            {t("header.title")}
           </Link>
         </div>
 
@@ -39,9 +39,9 @@ export function HelpHeader({ locale }: { locale: string }) {
           <LanguageSwitcher />
           <a
             href={SIGNUP_URL}
-            className="rounded-full bg-mist-950 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-mist-800"
+            className="rounded-full bg-[var(--color-foreground)] px-4 py-1.5 text-sm font-medium text-[var(--color-background)] transition-colors hover:opacity-80"
           >
-            {t("header.cta", "Start Free")}
+            {t("header.cta")}
           </a>
         </nav>
       </div>
