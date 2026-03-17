@@ -72,7 +72,9 @@
     ]
   },
   "overrides": {
-    "@tanstack/react-router": "1.149.3"
+    "@tanstack/react-router": "1.149.3",
+    "vite": "7.1.12",
+    "i18next": "^24.0.0"
   },
   "dependencies": {
     "@better-i18n/mcp-types": "workspace:*",
