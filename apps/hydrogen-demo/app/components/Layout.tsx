@@ -37,7 +37,7 @@ export function Layout({
             >
               <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-black/8 bg-white shadow-sm">
                 <img
-                  src="https://better-i18n.com/cdn-cgi/image/width=64,height=64,fit=contain/brand/logo.svg"
+                  src="https://better-i18n.com/brand/logo-light.svg"
                   alt="Better i18n"
                   className="h-8 w-8 object-contain dark:invert"
                 />
