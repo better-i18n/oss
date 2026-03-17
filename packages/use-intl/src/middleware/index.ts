@@ -32,20 +32,15 @@ export function createBetterI18nMiddleware(config: I18nMiddlewareConfig) {
         !!pathSegment && availableLocales.includes(pathSegment);
 
       // Dynamic imports for TanStack Start server functions to avoid bundling them in client
-      const {
-        getCookie,
-        setCookie,
-        getRequestHeader,
-      }: {
-        getCookie: (name: string) => string | null;
-        setCookie: (
-          name: string,
-          value: string,
-          options: { path: string; maxAge: number; sameSite: string },
-        ) => void;
-        getRequestHeader: (name: string) => string | undefined;
-        // @ts-expect-error - optional runtime dependency
-      } = await import("@tanstack/react-start/server");
+      // @ts-ignore - optional runtime dependency, types may not be available
+      const startServer = await import("@tanstack/react-start/server");
+      const getCookie = startServer.getCookie as (name: string) => string | null;
+      const setCookie = startServer.setCookie as (
+        name: string,
+        value: string,
+        options: { path: string; maxAge: number; sameSite: string },
+      ) => void;
+      const getRequestHeader = startServer.getRequestHeader as (name: string) => string | undefined;
 
       const cookieLocale = cookie ? getCookie(cookieName) : null;
       const headerLocale = browserLanguage
