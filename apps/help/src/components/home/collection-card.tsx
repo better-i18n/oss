@@ -25,7 +25,7 @@ export function CollectionCard({ collection, locale }: CollectionCardProps) {
 
   return (
     <Link
-      to="/$locale/$collection"
+      to="/$locale/$collection/"
       params={{ locale, collection: collection.slug }}
       className="group rounded-2xl border border-mist-200 bg-[var(--color-card)] p-6 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
     >

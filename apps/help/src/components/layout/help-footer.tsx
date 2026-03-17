@@ -90,7 +90,7 @@ export function HelpFooter({ locale }: { locale: string }) {
             <span className="hidden h-4 w-px bg-mist-200 sm:block" />
             <nav className="flex items-center gap-4 text-sm text-mist-500">
               <Link
-                to="/$locale"
+                to="/$locale/"
                 params={{ locale }}
                 className="transition-colors hover:text-mist-950"
               >

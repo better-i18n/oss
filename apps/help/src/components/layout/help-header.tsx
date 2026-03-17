@@ -39,7 +39,7 @@ export function HelpHeader({ locale }: { locale: string }) {
           )}
           <span className="text-mist-300">/</span>
           <Link
-            to="/$locale"
+            to="/$locale/"
             params={{ locale }}
             className="text-sm text-mist-500 transition-colors hover:text-mist-950"
           >

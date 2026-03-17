@@ -107,7 +107,7 @@ function CollectionPage() {
           {articles.map((article) => (
             <Link
               key={article.slug}
-              to="/$locale/$collection/$article"
+              to="/$locale/$collection/$article/"
               params={{
                 locale,
                 collection: collection.slug,
