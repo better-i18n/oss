@@ -69,11 +69,11 @@ export function HelpFooter({ locale }: { locale: string }) {
           >
             {t("footer.poweredBy")}
             <img
-              src="https://better-i18n.com/cdn-cgi/image/width=48,height=48,fit=contain/logo.png"
+              src="https://better-i18n.com/cdn-cgi/image/width=40,height=40,fit=contain/brand/logo.svg"
               alt="Better i18n"
               width={20}
               height={20}
-              className="rounded"
+              className="dark:invert"
             />
             <span className="font-semibold text-mist-600">better-i18n</span>
           </a>

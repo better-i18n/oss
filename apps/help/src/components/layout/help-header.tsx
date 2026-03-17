@@ -16,11 +16,11 @@ export function HelpHeader({ locale }: { locale: string }) {
             className="flex items-center gap-2 font-semibold text-mist-950 transition-colors hover:text-mist-700"
           >
             <img
-              src="https://better-i18n.com/cdn-cgi/image/width=56,height=56,fit=contain/logo.png"
+              src="https://better-i18n.com/cdn-cgi/image/width=48,height=48,fit=contain/brand/logo.svg"
               alt="Better i18n"
               width={24}
               height={24}
-              className="shrink-0 rounded"
+              className="shrink-0 dark:invert"
             />
             <span className="hidden sm:inline">Better I18N</span>
           </a>

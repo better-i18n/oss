@@ -40,7 +40,7 @@ export default function Header({ className }: { className?: string }) {
                 alt="Better i18n - Translation Management Platform"
                 width={28}
                 height={28}
-                className="w-8 h-7"
+                className="w-8 h-7 text-black dark:text-white"
               />
               <span className="font-display font-semibold text-[19px]">
                 Better I18N

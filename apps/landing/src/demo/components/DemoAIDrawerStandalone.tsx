@@ -1141,7 +1141,7 @@ export function DemoAIDrawerStandalone() {
               <div className="flex justify-center">
                 <img
                   alt="better-i18n"
-                  className="h-10 w-10"
+                  className="h-10 w-10 text-black dark:text-white"
                   src="/brand/logo.svg"
                 />
               </div>

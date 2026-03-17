@@ -31,7 +31,7 @@ export const getModelIcon = (
   return {
     BetterAI: (
       <img
-        src="https://better-i18n.com/cdn-cgi/image/width=48,height=48,fit=contain/logo.png"
+        src="/brand/logo.svg"
         alt=""
         className={cn("h-4 w-4", lightIconBook)}
       />
