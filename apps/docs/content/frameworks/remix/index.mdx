@@ -10,7 +10,7 @@ description: CDN-powered i18n for Remix & Shopify Hydrogen
 The SDK is built on top of `@better-i18n/core` and adds Remix-specific utilities:
 
 - **Server-side data loading** — Translations are fetched in `server.ts` or loaders, not on the client
-- **No provider needed** — Pass messages as loader data, use them directly in components
+- **Provider-optional** — Raw messages accessible as loader data; add `I18nextProvider` or `RemixI18nProvider` for hook-based translations
 - **TtlCache singleton** — A single module-scoped instance shares cache across all requests
 - **Accept-Language detection** — Built-in locale detection from request headers
 
@@ -62,13 +62,17 @@ export default function App() {
     <html lang={locale} translate="no">
       <head><Meta /><Links /></head>
       <body>
-        <Outlet context={{ messages }} />
+        <Outlet />
         <Scripts />
       </body>
     </html>
   );
 }
 ```
+
+<Callout type="info">
+This Quick Start loads translations in the root loader. For production apps, load translations in `server.ts` via `getLoadContext()` instead — see the [full setup guide](/frameworks/remix/setup). For hook-based translations with ICU support, wrap `<Outlet />` with a provider — see the [Setup guide](/frameworks/remix/setup).
+</Callout>
 
 ## Guide
 
@@ -96,7 +100,7 @@ export default function App() {
 |---------|-------|---------|----------------|------|
 | Rendering | SSR | SSR + ISR | SSR | CSR only |
 | Data loading | Loaders | Server Components | Server Functions | Client fetch |
-| Provider needed | No | Optional | Yes | Yes |
+| Provider needed | Optional | Optional | Yes | Yes |
 | Hydrogen support | Yes | No | No | No |
 | Middleware | Manual | Built-in | Built-in | N/A |
 

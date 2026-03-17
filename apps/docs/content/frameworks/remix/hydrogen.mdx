@@ -25,20 +25,24 @@ URL: /tr/products/hat
 <Tabs items={['npm', 'bun', 'pnpm']}>
   <Tab value="npm">
   ```bash
-  npm install @better-i18n/remix
+  npm install @better-i18n/remix i18next react-i18next
   ```
   </Tab>
   <Tab value="bun">
   ```bash
-  bun add @better-i18n/remix
+  bun add @better-i18n/remix i18next react-i18next
   ```
   </Tab>
   <Tab value="pnpm">
   ```bash
-  pnpm add @better-i18n/remix
+  pnpm add @better-i18n/remix i18next react-i18next
   ```
   </Tab>
 </Tabs>
+
+<Callout type="info">
+`remix-i18next` is **not compatible** with Hydrogen — it requires React Router v7 middleware, which Hydrogen's CF Worker `fetch()` handler does not support. Use `i18next` + `react-i18next` directly instead.
+</Callout>
 </Step>
 
 <Step>
@@ -151,7 +155,7 @@ export default {
     // 3. Load Better i18n translations from CDN
     const messages = await i18n.getMessages(locale); // [!code highlight]
 
-    // 3. Create Shopify Storefront client with locale
+    // 4. Create Shopify Storefront client with locale
     const { storefront } = createStorefrontClient({
       cache,
       waitUntil: (p: Promise<unknown>) => executionContext.waitUntil(p),
@@ -224,47 +228,123 @@ const { nonce, header, NonceProvider } = createContentSecurityPolicy({
 ```
 </Step>
 
+<Step>
+### Create the i18next client helper
+
+This helper creates a per-request i18next instance from the CDN translations already loaded in the server.
+
+```ts title="app/lib/i18n-client.ts"
+import i18next from "i18next";
+import { initReactI18next } from "react-i18next";
+import type { Messages } from "@better-i18n/remix";
+
+export function createI18nextInstance(locale: string, messages: Messages) {
+  const instance = i18next.createInstance();
+  instance.use(initReactI18next).init({
+    lng: locale,
+    resources: { [locale]: messages }, // [!code highlight]
+    initImmediate: false, // sync init — required for SSR // [!code highlight]
+    lowerCaseLng: true,
+    defaultNS: "common",
+    fallbackNS: "common",
+    interpolation: { escapeValue: false },
+  });
+  return instance;
+}
+```
+
+<Callout type="info">
+`initImmediate: false` enables synchronous initialization. Since all translations are already loaded from the CDN via the loader, no network requests are needed — the instance is ready immediately during SSR render.
+</Callout>
+</Step>
+
+<Step>
+### Wrap your app with I18nextProvider
+
+```tsx title="app/root.tsx"
+import { useMemo } from "react";
+import { I18nextProvider } from "react-i18next";
+import { createI18nextInstance } from "~/lib/i18n-client";
+
+export default function App() {
+  const { locale, messages, languages, githubStars } =
+    useLoaderData<typeof loader>();
+
+  const i18nInstance = useMemo( // [!code highlight]
+    () => createI18nextInstance(locale, messages), // [!code highlight]
+    [locale, messages], // [!code highlight]
+  ); // [!code highlight]
+
+  return (
+    <html lang={locale} dir="ltr">
+      <body>
+        <I18nextProvider i18n={i18nInstance}> {/* [!code highlight] */}
+          <Layout locale={locale} languages={languages}>
+            <Outlet />
+          </Layout>
+        </I18nextProvider> {/* [!code highlight] */}
+      </body>
+    </html>
+  );
+}
+```
+</Step>
+
 </Steps>
 
 ## Using Translations in Routes
 
-Access translations from context in any Hydrogen route:
+Use the `useTranslation()` hook from `react-i18next` in any component. Translations are pre-loaded server-side via the loader — no client-side fetching needed.
 
 ```tsx title="app/routes/($locale)._index.tsx"
 import { useLoaderData } from "react-router";
 import type { LoaderFunctionArgs } from "@shopify/remix-oxygen";
-import { msg } from "~/lib/messages";
+import { useTranslation } from "react-i18next";
 
 export async function loader({ context }: LoaderFunctionArgs) {
   const { storefront, locale, messages } = context;
-
-  // Storefront API returns content in the locale set via i18n
   const { products } = await storefront.query(PRODUCTS_QUERY);
-
   return { locale, messages, products: products.nodes };
 }
 
 export default function Homepage() {
-  const { locale, messages, products } = useLoaderData<typeof loader>();
-  const common = messages.common;
+  const { locale, products } = useLoaderData<typeof loader>();
+  const { t: tc } = useTranslation("common");
+  const { t: tp } = useTranslation("products");
 
   return (
     <div>
-      <h1>{msg(common, "welcome", "Welcome to our store")}</h1>
+      <h1>{tc("welcome")}</h1>
 
       {products.map((product) => (
         <div key={product.id}>
           {/* Product title comes from Storefront API (already localized) */}
           <h2>{product.title}</h2>
 
-          {/* UI labels come from Better i18n */}
-          <span>{msg(common, "view_details", "View Details")}</span>
+          {/* UI labels come from Better i18n via useTranslation */}
+          <span>{tc("view_details")}</span>
+          <span>{tp("from")}</span>
         </div>
       ))}
     </div>
   );
 }
 ```
+
+<Callout type="warn">
+**`meta()` functions cannot use React hooks.** Use the `msg()` helper from `@better-i18n/remix` for meta tags:
+
+```tsx
+import { msg } from "@better-i18n/remix";
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const title = msg(data?.messages?.common, "meta_title", "Fallback Title");
+  return [{ title }];
+};
+```
+
+Loaders should still return `messages` so `meta()` can access them.
+</Callout>
 
 ## Storefront API Language Support
 
@@ -283,4 +363,4 @@ Product content localization depends on translations being configured in your **
 
 ## Full Example
 
-For a complete working implementation, see the [hydrogen-demo](https://github.com/nicholasgriffintn/better-i18n-oss/tree/main/apps/hydrogen-demo) in the Better i18n repository.
+For a complete working implementation, see the [hydrogen-demo](https://github.com/better-i18n/oss/tree/main/apps/hydrogen-demo) in the Better i18n repository.

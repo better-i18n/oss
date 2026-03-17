@@ -64,7 +64,8 @@ import { i18n } from "~/i18n.server"; // [!code highlight]
 export default {
   async fetch(request: Request): Promise<Response> {
     // Detect locale from URL or Accept-Language header
-    const locale = getLocaleFromURL(request) || "en"; // [!code highlight]
+    const languages = await i18n.getLanguages(); // [!code highlight]
+    const locale = getLocaleFromURL(request, languages) || "en"; // [!code highlight]
 
     // Load translations and available locales in parallel
     const [messages, locales] = await Promise.all([ // [!code highlight]
@@ -131,43 +132,182 @@ export default function App() {
 </Step>
 
 <Step>
-### Create a message helper
+### Add a translation provider
 
-Since CDN messages are typed as `Record<string, unknown>`, create a type-safe helper to extract strings:
+Wrap your app with a translation provider to use hook-based translations with ICU formatting, plurals, and interpolation support.
 
-```ts title="app/lib/messages.ts"
-/**
- * Type-safe message accessor.
- * Safely extracts a string value from a namespace, with fallback.
- */
-export function msg(
-  ns: Record<string, unknown> | undefined,
-  key: string,
-  fallback: string,
-): string {
-  const val = ns?.[key];
-  return typeof val === "string" ? val : fallback;
+<Tabs items={['i18next (recommended)', 'use-intl']}>
+<Tab value="i18next (recommended)">
+
+Install i18next and react-i18next:
+
+```bash
+bun add i18next react-i18next
+```
+
+Create a helper that builds an i18next instance from your CDN translations:
+
+```ts title="app/lib/i18n-client.ts"
+import i18next from "i18next";
+import { initReactI18next } from "react-i18next";
+import type { Messages } from "@better-i18n/remix";
+
+export function createI18nextInstance(locale: string, messages: Messages) {
+  const instance = i18next.createInstance();
+  instance.use(initReactI18next).init({
+    lng: locale,
+    resources: { [locale]: messages }, // [!code highlight]
+    initImmediate: false, // sync init — required for SSR // [!code highlight]
+    lowerCaseLng: true,
+    defaultNS: "common",
+    fallbackNS: "common",
+    interpolation: { escapeValue: false },
+  });
+  return instance;
 }
 ```
 
-Usage in components:
+Wrap `<Outlet />` in your `root.tsx`:
 
-```tsx title="app/routes/_index.tsx"
-import { useLoaderData } from "react-router";
-import { msg } from "~/lib/messages";
+```tsx title="app/root.tsx"
+import { useMemo } from "react";
+import { I18nextProvider } from "react-i18next"; // [!code highlight]
+import { createI18nextInstance } from "~/lib/i18n-client"; // [!code highlight]
 
-export default function Home() {
-  const { messages } = useLoaderData<typeof loader>();
-  const common = messages.common; // namespace
+export default function App() {
+  const { locale, messages } = useLoaderData<typeof loader>();
+
+  const i18nInstance = useMemo( // [!code highlight]
+    () => createI18nextInstance(locale, messages), // [!code highlight]
+    [locale, messages], // [!code highlight]
+  ); // [!code highlight]
 
   return (
-    <h1>{msg(common, "welcome", "Welcome")}</h1>
+    <html lang={locale} dir="ltr">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <I18nextProvider i18n={i18nInstance}> {/* [!code highlight] */}
+          <Outlet />
+        </I18nextProvider> {/* [!code highlight] */}
+        <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
   );
 }
 ```
+
+Use `useTranslation()` in any route:
+
+```tsx title="app/routes/($locale)._index.tsx"
+import { useTranslation } from "react-i18next"; // [!code highlight]
+
+export default function Home() {
+  const { t } = useTranslation("common"); // [!code highlight]
+  return <h1>{t("welcome")}</h1>;
+}
+```
+
+</Tab>
+<Tab value="use-intl">
+
+The `@better-i18n/remix/react` entrypoint provides a `use-intl`-based provider with built-in hooks:
+
+```tsx title="app/root.tsx"
+import { RemixI18nProvider } from "@better-i18n/remix/react"; // [!code highlight]
+
+export default function App() {
+  const { locale, messages, languages } = useLoaderData<typeof loader>();
+
+  return (
+    <html lang={locale} dir="ltr">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <RemixI18nProvider locale={locale} messages={messages} languages={languages}> {/* [!code highlight] */}
+          <Outlet />
+        </RemixI18nProvider> {/* [!code highlight] */}
+        <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+```
+
+Use `useTranslations()` in any route:
+
+```tsx title="app/routes/($locale)._index.tsx"
+import { useTranslations } from "@better-i18n/remix/react"; // [!code highlight]
+
+export default function Home() {
+  const t = useTranslations("common"); // [!code highlight]
+  return <h1>{t("welcome")}</h1>;
+}
+```
+
+</Tab>
+</Tabs>
+
+<Callout type="info">
+`meta()` functions cannot use React hooks. Use the [`msg()` helper](/frameworks/remix/api-reference#msg) for meta tags and other non-hook contexts.
+</Callout>
 </Step>
 
 </Steps>
+
+## Middleware-Based i18next (remix-i18next)
+
+For full i18n support with ICU formatting, plurals, and interpolation, use `@better-i18n/remix/i18next` with [remix-i18next](https://github.com/sergiodxa/remix-i18next):
+
+```bash
+bun add i18next react-i18next remix-i18next
+```
+
+```ts title="app/middleware/i18next.ts"
+import { createRemixI18n } from "@better-i18n/remix";
+import { buildI18nextConfig } from "@better-i18n/remix/i18next";
+import { createI18nextMiddleware } from "remix-i18next/middleware";
+
+const i18n = createRemixI18n({ project: "my-company/web-app", defaultLocale: "en" });
+const config = await buildI18nextConfig({ i18n });
+
+export const [i18nextMiddleware, getLocale, getInstance] =
+  createI18nextMiddleware({
+    detection: {
+      supportedLanguages: config.supportedLanguages,
+      fallbackLanguage: config.fallbackLanguage,
+    },
+    i18next: {
+      resources: config.resources,
+      ...config.i18nextOptions,
+    },
+  });
+```
+
+Then use standard `react-i18next` hooks in your components:
+
+```tsx title="app/routes/($locale)._index.tsx"
+import { useTranslation } from "react-i18next";
+
+export default function Homepage() {
+  const { t } = useTranslation("home");
+  return <h1>{t("welcome")}</h1>; // ICU, plurals, interpolation all work
+}
+```
+
+<Callout type="info">
+`buildI18nextConfig()` fetches translations from the CDN and converts them to i18next resource format. It also returns `languages` (with `nativeName` and `isDefault` fields) for building language switchers.
+</Callout>
 
 ## Content Security Policy
 

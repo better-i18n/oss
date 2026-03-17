@@ -11,7 +11,7 @@ Complete API reference for the Remix & Hydrogen SDK.
 
 - **Request-based locale detection** via `Accept-Language` header parsing
 - **Singleton pattern** with `TtlCache` for efficient CDN fetching across requests
-- **No client-side runtime** — translations are loaded server-side and passed as loader data
+- **Server-side translation loading** — translations are loaded server-side and passed as loader data, with optional `react-i18next` integration for `useTranslation()` hooks
 
 ---
 
@@ -38,8 +38,10 @@ const i18n = createRemixI18n({
 | `project` | `string` | Required | Project identifier in `org/project` format |
 | `defaultLocale` | `string` | Required | Fallback locale when detection fails |
 | `logLevel` | `"debug" \| "info" \| "warn" \| "error" \| "silent"` | `"warn"` | Logging verbosity |
-| `cacheTtl` | `number` | `300` | Cache TTL in seconds for CDN responses |
 | `cdnBaseUrl` | `string` | `"https://cdn.better-i18n.com"` | CDN base URL (for self-hosted setups) |
+| `manifestCacheTtlMs` | `number` | `300000` | Cache TTL in milliseconds for CDN manifest (5 min) |
+| `fetchTimeout` | `number` | `10000` | CDN fetch timeout in milliseconds |
+| `retryCount` | `number` | `1` | Number of retry attempts on CDN fetch failure |
 
 </AccordionItem>
 
@@ -242,6 +244,7 @@ import type { LanguageOption } from "@better-i18n/remix";
 | `name` | `string \| undefined` | English language name |
 | `nativeName` | `string \| undefined` | Native language name |
 | `flagUrl` | `string \| null \| undefined` | URL to flag image |
+| `isDefault` | `boolean \| undefined` | Whether this is the default/source language |
 
 </AccordionItem>
 
@@ -252,7 +255,7 @@ Configuration type for `createRemixI18n()`. Alias for `I18nCoreConfig`.
 import type { RemixI18nConfig } from "@better-i18n/remix";
 ```
 
-See [Config Options](#createRemixi18n) table above.
+Extends `I18nCoreConfig` — see config options table in the `createRemixI18n` section above.
 </AccordionItem>
 
 <AccordionItem title="RemixI18n">
@@ -262,7 +265,7 @@ Instance type returned by `createRemixI18n()`.
 import type { RemixI18n } from "@better-i18n/remix";
 ```
 
-See [Return Type](#createRemixi18n) table above.
+Exposes `detectLocale()`, `getMessages()`, `getLocales()`, and `getLanguages()` — see return type table in the `createRemixI18n` section above.
 </AccordionItem>
 
 <AccordionItem title="Re-exported from @better-i18n/core">
@@ -284,22 +287,170 @@ import type {
 
 ---
 
-## msg() Helper Pattern
+## msg()
 
-While not part of the SDK, we recommend creating a `msg()` helper for type-safe message access:
+String extractor for **non-hook contexts** — `meta()` functions, loaders, and utility modules where React hooks cannot be called. For component translations, use `useTranslation()` (i18next) or `useTranslations()` (use-intl) instead.
 
-```ts title="app/lib/messages.ts"
-export function msg(
-  ns: Record<string, unknown> | undefined,
-  key: string,
-  fallback: string,
-): string {
-  const val = ns?.[key];
-  return typeof val === "string" ? val : fallback;
+```ts
+import { msg } from "@better-i18n/remix";
+
+const common = messages.common;
+msg(common, "welcome", "Welcome"); // → "Hoş geldiniz" or "Welcome"
+msg(common, "missing_key");        // → ""
+msg(undefined, "key", "fallback"); // → "fallback"
+```
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `ns` | `Record<string, unknown> \| undefined` | Required | Namespace object from `messages` |
+| `key` | `string` | Required | Translation key |
+| `fallback` | `string` | `""` | Fallback value if key is missing or not a string |
+
+**Returns:** `string` — The translation value, or `fallback`
+
+---
+
+## React Entrypoint (`@better-i18n/remix/react`)
+
+Optional entrypoint for projects that want a `use-intl`-based React provider instead of `i18next`. Provides a `RemixI18nProvider`, translation hooks, and a built-in `LanguageSwitcher` component.
+
+<Callout type="info">
+This entrypoint uses [`use-intl`](https://github.com/amannn/next-intl/tree/main/packages/use-intl) under the hood. If you're using Shopify Hydrogen, the [i18next entrypoint](#i18next-entrypoint-better-i18nremixi18next) is recommended instead.
+</Callout>
+
+<Accordion>
+<AccordionItem title="RemixI18nProvider">
+
+Wraps your app with `use-intl`'s `IntlProvider` and a context for locale/languages state.
+
+```tsx
+import { RemixI18nProvider } from "@better-i18n/remix/react";
+
+<RemixI18nProvider
+  locale={locale}
+  messages={messages}
+  languages={languages}
+  timeZone="Europe/Istanbul"
+>
+  <Outlet />
+</RemixI18nProvider>
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `locale` | `string` | Required | Current locale code |
+| `messages` | `Messages` | Required | Translation messages from CDN |
+| `languages` | `LanguageOption[]` | `[]` | Available languages for switcher |
+| `timeZone` | `string` | — | IANA timezone for date/time formatting |
+| `now` | `Date` | — | Fixed "now" for SSR consistency |
+| `onError` | `(error: Error) => void` | no-op | Error handler for missing translations |
+| `children` | `ReactNode` | Required | Child components |
+
+</AccordionItem>
+
+<AccordionItem title="Hooks">
+
+All hooks must be used within a `RemixI18nProvider`.
+
+| Hook | Return Type | Description |
+| --- | --- | --- |
+| `useTranslations(namespace?)` | `(key: string) => string` | Get a translation function (from `use-intl`) |
+| `useFormatter()` | `IntlFormatter` | Date, number, and list formatting (from `use-intl`) |
+| `useMessages()` | `Messages` | Access all messages in context |
+| `useNow()` | `Date` | Current "now" value (for SSR hydration) |
+| `useTimeZone()` | `string` | Current timezone |
+| `useLocale()` | `string` | Current locale code |
+| `useLanguages()` | `LanguageOption[]` | Available language list |
+| `useRemixI18n()` | `{ locale, languages }` | Raw context value |
+
+```tsx
+import { useTranslations, useLocale } from "@better-i18n/remix/react";
+
+export default function Header() {
+  const t = useTranslations("common");
+  const locale = useLocale();
+
+  return <h1>{t("welcome")}</h1>;
 }
 ```
 
-This pattern provides:
-- **Type safety** — No unsafe casting of `unknown` values
-- **Fallback support** — Graceful degradation when translations are missing
-- **Namespace scoping** — Access translations by namespace (e.g., `messages.common`)
+</AccordionItem>
+
+<AccordionItem title="LanguageSwitcher">
+
+Pre-built `<select>` component for switching languages. Navigates to the locale-prefixed URL automatically.
+
+```tsx
+import { LanguageSwitcher } from "@better-i18n/remix/react";
+
+<LanguageSwitcher locale={locale} defaultLocale="en" />
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `locale` | `string` | Required | Current locale code |
+| `defaultLocale` | `string` | `"en"` | Default locale (no URL prefix) |
+| `renderOption` | `(lang) => ReactNode` | — | Custom option renderer |
+
+Accepts all standard `<select>` props (`className`, `aria-label`, etc.).
+
+</AccordionItem>
+</Accordion>
+
+---
+
+## i18next Entrypoint (`@better-i18n/remix/i18next`)
+
+Optional entrypoint for projects using `i18next` / `react-i18next`. Converts CDN translations to i18next resource format.
+
+<Accordion>
+<AccordionItem title="buildI18nextConfig(options)">
+
+Builds a complete i18next-compatible configuration from CDN translations and manifest. Fetches all locales and returns resources, supported languages, and i18next init options.
+
+```ts
+import { createRemixI18n } from "@better-i18n/remix";
+import { buildI18nextConfig } from "@better-i18n/remix/i18next";
+
+const i18n = createRemixI18n({ project: "acme/store", defaultLocale: "en" });
+const config = await buildI18nextConfig({ i18n });
+
+// config.resources      — { en: { common: {...}, nav: {...} }, tr: {...} }
+// config.supportedLanguages — ["en", "tr", "es"]
+// config.fallbackLanguage   — "en"
+// config.languages          — [{ code: "en", name: "English", ... }, ...]
+// config.i18nextOptions     — { lowerCaseLng: true, defaultNS: "translation", ... }
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `options.i18n` | `RemixI18n` | Instance from `createRemixI18n()` |
+| `options.i18nextOptions` | `Record<string, unknown>` | Additional i18next init options (merged with defaults) |
+
+**Returns:** `Promise<{ resources, supportedLanguages, fallbackLanguage, languages, i18nextOptions }>`
+
+</AccordionItem>
+
+<AccordionItem title="loadResources(i18n, locales?)">
+
+Converts Better i18n CDN format to i18next resources format. Optionally accepts a locale list (defaults to all locales from CDN manifest).
+
+```ts
+import { loadResources } from "@better-i18n/remix/i18next";
+
+const resources = await loadResources(i18n);
+// { en: { common: { welcome: "Welcome" }, translation: { common: {...} } } }
+```
+
+**CDN format:** `{ "namespace": { "key": "value" } }`
+**i18next format:** `{ "locale": { "namespace": { "key": "value" } } }`
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `i18n` | `RemixI18n` | Instance from `createRemixI18n()` |
+| `locales` | `string[]` | Optional locale list (defaults to all from manifest) |
+
+**Returns:** `Promise<Record<string, Record<string, Record<string, unknown>>>>` — i18next-compatible resources
+
+</AccordionItem>
+</Accordion>

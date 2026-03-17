@@ -12,7 +12,6 @@ const LOCALE_EMOJI: Record<string, string> = {
 interface LocaleSwitcherProps {
   locale: string;
   languages: LanguageOption[];
-  label?: string;
 }
 
 function escapeRegExp(value: string) {
@@ -40,12 +39,12 @@ function FlagIcon({
     <img
       src={flagUrl}
       alt={alt}
-      className="h-4 w-6 rounded-[4px] object-cover shadow-[0_2px_10px_-6px_rgba(15,23,42,0.45)]"
+      className="h-4 w-6 rounded-[4px] object-cover"
     />
   );
 }
 
-export function LocaleSwitcher({ locale, languages, label }: LocaleSwitcherProps) {
+export function LocaleSwitcher({ locale, languages }: LocaleSwitcherProps) {
   const location = useLocation();
   const availableLocales = languages.map((language) => language.code);
 
@@ -75,76 +74,58 @@ export function LocaleSwitcher({ locale, languages, label }: LocaleSwitcherProps
 
   return (
     <details className="group relative">
-      <summary className="flex min-w-[12.75rem] list-none items-center gap-3 rounded-full border border-black/8 bg-white/78 px-4 py-2.5 text-left shadow-[0_14px_34px_-24px_rgba(15,23,42,0.65)] backdrop-blur transition duration-200 hover:border-black/14 hover:bg-white [&::-webkit-details-marker]:hidden">
+      <summary className="flex h-11 list-none items-center gap-2 rounded-full border border-black/8 bg-white px-3 py-2 text-left shadow-sm transition duration-200 hover:border-black/14 hover:bg-white [&::-webkit-details-marker]:hidden">
         <FlagIcon
           code={current.code}
           flagUrl={current.flagUrl}
           alt={`${current.nativeName || current.name || current.code} flag`}
         />
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold text-slate-800">
-            {current.nativeName || current.name || current.code}
-          </span>
+        <span className="text-sm font-semibold text-slate-800">
+          {current.code.toUpperCase()}
         </span>
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition-transform group-open:rotate-180">
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-            />
-          </svg>
-        </span>
+        <svg
+          className="h-3.5 w-3.5 text-slate-400 transition-transform group-open:rotate-180"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2.5}
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+          />
+        </svg>
       </summary>
 
-      <div className="absolute right-0 top-[calc(100%+0.7rem)] z-50 w-[18rem] overflow-hidden rounded-[28px] border border-black/8 bg-white/95 p-2 shadow-[0_34px_90px_-36px_rgba(15,23,42,0.42)] backdrop-blur-xl">
-        <div className="px-3 pb-2 pt-1">
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500">
-            {label || "Available languages"}
-          </p>
-        </div>
-
-        <div className="space-y-1">
+      <div className="absolute right-0 top-full z-50 mt-2 w-44 overflow-hidden rounded-xl border border-black/8 bg-white p-1.5 shadow-lg">
+        <div className="space-y-0.5">
           {languages.map((language) => {
             const isActive = language.code === locale;
             return (
               <a
                 key={language.code}
                 href={getLocaleHref(language.code)}
-                className={`flex items-center gap-3 rounded-[20px] px-3 py-3 text-left transition duration-200 ${
+                className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition duration-200 ${
                   isActive
                     ? "bg-slate-950 text-white"
                     : "text-slate-700 hover:bg-slate-100"
                 }`}
                 aria-current={isActive ? "true" : undefined}
               >
-                <span
-                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                    isActive ? "bg-white/10" : "bg-slate-100"
-                  }`}
-                >
-                  <FlagIcon
-                    code={language.code}
-                    flagUrl={language.flagUrl}
-                    alt={`${language.nativeName || language.name || language.code} flag`}
-                  />
-                </span>
+                <FlagIcon
+                  code={language.code}
+                  flagUrl={language.flagUrl}
+                  alt={`${language.nativeName || language.name || language.code} flag`}
+                />
 
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold">
-                    {language.nativeName || language.name || language.code}
-                  </span>
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                  {language.nativeName || language.name || language.code}
                 </span>
 
                 {isActive ? (
                   <svg
-                    className="h-4 w-4 shrink-0"
+                    className="h-3.5 w-3.5 shrink-0"
                     fill="none"
                     viewBox="0 0 24 24"
                     strokeWidth={2.5}
