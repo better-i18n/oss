@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/use-intl",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Better i18n integration for use-intl (React, TanStack Start)",
   "license": "MIT",
   "repository": {
@@ -57,7 +57,7 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@better-i18n/core": "workspace:*"
+    "@better-i18n/core": "workspace:^"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
