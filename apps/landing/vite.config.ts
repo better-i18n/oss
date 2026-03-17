@@ -48,13 +48,6 @@ export default defineConfig(async ({ mode }) => {
       ),
     },
     resolve: {
-      conditions: [
-        "worker",
-        "webworker",
-        "browser",
-        "module",
-        "development|production",
-      ],
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
