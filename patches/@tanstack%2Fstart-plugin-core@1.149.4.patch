@@ -1,0 +1,19 @@
+diff --git a/dist/esm/dev-server-plugin/plugin.js b/dist/esm/dev-server-plugin/plugin.js
+index 1f4cecc1f40b3b362370828fbc5387a5c946b0ca..aa829f7aa0043e2f9b99201773ed6bbf30109849 100644
+--- a/dist/esm/dev-server-plugin/plugin.js
++++ b/dist/esm/dev-server-plugin/plugin.js
+@@ -90,12 +90,12 @@ function devServerPlugin({
+             if (viteDevServer.config.server.middlewareMode) {
+               return;
+             }
+-            if (!isRunnableDevEnvironment(serverEnv) || // do not check via `isFetchableDevEnvironment` since nitro does implement the `FetchableDevEnvironment` interface but not via inheritance (which this helper checks)
++            if (!("runner" in serverEnv) || // do not check via `isFetchableDevEnvironment` since nitro does implement the `FetchableDevEnvironment` interface but not via inheritance (which this helper checks)
+             "dispatchFetch" in serverEnv) {
+               return;
+             }
+           }
+-          if (!isRunnableDevEnvironment(serverEnv)) {
++          if (!("runner" in serverEnv)) {
+             throw new Error(
+               "cannot install vite dev server middleware for TanStack Start since the SSR environment is not a RunnableDevEnvironment"
+             );
