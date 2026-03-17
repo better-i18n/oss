@@ -21,6 +21,16 @@
       "bun": "./src/index.ts",
       "default": "./dist/index.js"
     },
+    "./i18next": {
+      "types": "./dist/i18next.d.ts",
+      "bun": "./src/i18next.ts",
+      "default": "./dist/i18next.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "bun": "./src/react/index.ts",
+      "default": "./dist/react/index.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -38,7 +48,9 @@
     "remix",
     "hydrogen",
     "shopify",
-    "react-router"
+    "react-router",
+    "i18next",
+    "remix-i18next"
   ],
   "scripts": {
     "build": "tsc",
@@ -48,6 +60,34 @@
   },
   "dependencies": {
     "@better-i18n/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "i18next": ">=23.0.0",
+    "react": ">=18.0.0",
+    "react-i18next": ">=14.0.0",
+    "react-router": ">=7.0.0",
+    "remix-i18next": ">=7.0.0",
+    "use-intl": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "i18next": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-i18next": {
+      "optional": true
+    },
+    "react-router": {
+      "optional": true
+    },
+    "remix-i18next": {
+      "optional": true
+    },
+    "use-intl": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
