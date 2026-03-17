@@ -28,6 +28,23 @@ export function parseAcceptLanguage(header: string | null | undefined): string[]
 }
 
 /**
+ * Type-safe message accessor for CDN translation messages.
+ * Safely extracts a string value from a namespace, with fallback.
+ *
+ * @example
+ * const common = messages.common;
+ * msg(common, "welcome", "Welcome") // → "Hoş geldiniz" or "Welcome"
+ */
+export function msg(
+  ns: Record<string, unknown> | undefined,
+  key: string,
+  fallback = "",
+): string {
+  const val = ns?.[key];
+  return typeof val === "string" ? val : fallback;
+}
+
+/**
  * Find the best matching locale from a parsed Accept-Language list against available locales.
  *
  * Matching strategy (in order):

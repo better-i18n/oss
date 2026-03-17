@@ -1,5 +1,5 @@
 export { createRemixI18n } from "./remix-i18n.js";
-export { parseAcceptLanguage, matchLocale } from "./utils.js";
+export { parseAcceptLanguage, matchLocale, msg } from "./utils.js";
 
 export type { RemixI18n, RemixI18nConfig } from "./types.js";
 export type {
