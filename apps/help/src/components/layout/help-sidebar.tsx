@@ -28,7 +28,7 @@ export function HelpSidebar({ locale, collections }: HelpSidebarProps) {
           return (
             <Link
               key={collection.slug}
-              to="/$locale/$collection"
+              to="/$locale/$collection/"
               params={{ locale, collection: collection.slug }}
               className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
                 isActive

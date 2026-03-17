@@ -6,6 +6,7 @@ import {
   Link,
   redirect,
 } from "@tanstack/react-router";
+import type { RegisteredRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -84,7 +85,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
       await getMessages({ project: i18nConfig.project, locale: detectedLocale }).catch(() => {});
 
-      throw redirect({
+      throw redirect<RegisteredRouter, string>({
         href: `/${detectedLocale}${location.pathname}${search}${hash}`,
         statusCode: 301,
       });
@@ -155,7 +156,7 @@ function NotFoundPage() {
           {t("notFound.description")}
         </p>
         <Link
-          to="/$locale"
+          to="/$locale/"
           params={{ locale }}
           className="mt-6 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
         >

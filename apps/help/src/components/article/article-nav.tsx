@@ -18,7 +18,7 @@ export function ArticleNav({ prev, next, locale }: ArticleNavProps) {
     <div className="flex items-stretch gap-4">
       {prev ? (
         <Link
-          to="/$locale/$collection/$article"
+          to="/$locale/$collection/$article/"
           params={{
             locale,
             collection: prev.collectionSlug || "general",
@@ -38,7 +38,7 @@ export function ArticleNav({ prev, next, locale }: ArticleNavProps) {
 
       {next ? (
         <Link
-          to="/$locale/$collection/$article"
+          to="/$locale/$collection/$article/"
           params={{
             locale,
             collection: next.collectionSlug || "general",

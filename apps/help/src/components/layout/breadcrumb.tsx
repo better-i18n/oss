@@ -19,7 +19,7 @@ export function Breadcrumb({ items, locale }: BreadcrumbProps) {
   return (
     <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-mist-500">
       <Link
-        to="/$locale"
+        to="/$locale/"
         params={{ locale }}
         className="hover:text-mist-950 transition-colors"
       >

@@ -22,7 +22,7 @@ export function PopularArticles({ articles, locale }: PopularArticlesProps) {
         {articles.map((article) => (
           <Link
             key={article.slug}
-            to="/$locale/$collection/$article"
+            to="/$locale/$collection/$article/"
             params={{
               locale,
               collection: article.collectionSlug || "general",

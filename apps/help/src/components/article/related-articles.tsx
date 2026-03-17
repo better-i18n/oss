@@ -22,7 +22,7 @@ export function RelatedArticles({ articles, locale }: RelatedArticlesProps) {
         {articles.map((article) => (
           <li key={article.slug}>
             <Link
-              to="/$locale/$collection/$article"
+              to="/$locale/$collection/$article/"
               params={{
                 locale,
                 collection: article.collectionSlug || "general",
