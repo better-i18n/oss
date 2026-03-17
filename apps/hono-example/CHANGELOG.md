@@ -1,5 +1,11 @@
 # hono-example
 
+## 0.0.5
+
+### Patch Changes
+
+- @better-i18n/server@0.2.4
+
 ## 0.0.4
 
 ### Patch Changes

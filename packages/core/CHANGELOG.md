@@ -1,5 +1,11 @@
 # @better-i18n/core
 
+## 0.2.4
+
+### Patch Changes
+
+- fix: ensure .js extensions in ESM dist output for Node.js compatibility
+
 ## 0.2.3
 
 ### Patch Changes

@@ -217,49 +217,49 @@ export async function getArticles(
   locale: string,
   collectionSlug?: string,
 ): Promise<HelpArticleListItem[]> {
-  const cacheKey = `help-articles:${locale}:${collectionSlug || "all"}`;
-  const cached = getCached<HelpArticleListItem[]>(cacheKey);
-  if (cached) return cached;
+  const cacheKey = `help-articles:${locale}:all`;
+  let articles = getCached<HelpArticleListItem[]>(cacheKey);
 
-  try {
-    const result = await getContentClient().getEntries(ARTICLE_MODEL, {
-      language: locale,
-      status: "published",
-      limit: 100,
-      sort: "createdAt",
-      order: "asc",
-      expand: ["collection"],
-    });
+  if (!articles) {
+    try {
+      const result = await getContentClient().getEntries(ARTICLE_MODEL, {
+        language: locale,
+        status: "published",
+        limit: 100,
+        sort: "createdAt",
+        order: "asc",
+        expand: ["collection"],
+      });
 
-    const articles: HelpArticleListItem[] = result.items
-      .filter((item) => hasTranslation(item, locale))
-      .filter((item) => {
-        if (!collectionSlug) return true;
-        const raw = item as unknown as Record<string, unknown>;
-        const relations = raw.relations as Record<string, RelationValue | null | undefined> | undefined;
-        return relations?.collection?.slug === collectionSlug;
-      })
-      .map((item) => {
-        const raw = item as unknown as Record<string, unknown>;
-        const relations = raw.relations as Record<string, RelationValue | null | undefined> | undefined;
-        return {
-          slug: item.slug,
-          title: item.title,
-          excerpt: (raw.excerpt as string | null) ?? null,
-          collectionSlug: relations?.collection?.slug ?? null,
-          order: Number(raw.order) || 0,
-          readingTime: raw.reading_time ? Number(raw.reading_time) : null,
-          difficulty: (raw.difficulty as HelpArticleListItem["difficulty"]) ?? null,
-          isFeatured: String(raw.is_featured) === "true",
-        };
-      })
-      .sort((a, b) => a.order - b.order);
+      articles = result.items
+        .filter((item) => hasTranslation(item, locale))
+        .map((item) => {
+          const raw = item as unknown as Record<string, unknown>;
+          const relations = raw.relations as Record<string, RelationValue | null | undefined> | undefined;
+          return {
+            slug: item.slug,
+            title: item.title,
+            excerpt: (raw.excerpt as string | null) ?? null,
+            collectionSlug: relations?.collection?.slug ?? null,
+            order: Number(raw.order) || 0,
+            readingTime: raw.reading_time ? Number(raw.reading_time) : null,
+            difficulty: (raw.difficulty as HelpArticleListItem["difficulty"]) ?? null,
+            isFeatured: String(raw.is_featured) === "true",
+          };
+        })
+        .sort((a, b) => a.order - b.order);
 
-    return setCache(cacheKey, articles);
-  } catch (error) {
-    console.error("Help articles API error:", error);
-    return [];
+      setCache(cacheKey, articles);
+    } catch (error) {
+      console.error("Help articles API error:", error);
+      return [];
+    }
   }
+
+  if (collectionSlug) {
+    return articles.filter((a) => a.collectionSlug === collectionSlug);
+  }
+  return articles;
 }
 
 export async function getArticle(

@@ -58,7 +58,7 @@ interface RouterContext {
 const BYPASS_LOCALE_CHECK = new Set(["api"]);
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  staleTime: 0,
+  staleTime: Infinity,
   beforeLoad: async ({ location }) => {
     const locales = await fetchLocales();
     const localeConfig = {
@@ -195,7 +195,6 @@ function RootComponent() {
       <head>
         <HeadContent />
         <script
-          // eslint-disable-next-line react/no-danger -- static inline script, no user input
           dangerouslySetInnerHTML={{
             __html: `try{if(localStorage.getItem("theme")==="dark"||(!localStorage.getItem("theme")&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}catch(e){}`,
           }}

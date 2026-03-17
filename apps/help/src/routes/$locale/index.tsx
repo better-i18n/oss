@@ -5,7 +5,7 @@ import { SearchHero } from "@/components/home/search-hero";
 import { CollectionGrid } from "@/components/home/collection-grid";
 import { PopularArticles } from "@/components/home/popular-articles";
 import { CommandPalette, type CommandSource, type CommandItem } from "@/components/ui/command-palette";
-import { getCollectionsWithCounts, getFeaturedArticles, getArticles } from "@/lib/content";
+import { getCollectionsWithCounts, getArticles } from "@/lib/content";
 import { formatMetaTags, getDefaultStructuredData } from "@/lib/seo";
 import { getAlternateLinks, getCanonicalLink } from "@/lib/seo";
 import { useT } from "@/lib/i18n";
@@ -16,11 +16,11 @@ import { DynamicIcon } from "@/components/shared/dynamic-icon";
 export const Route = createFileRoute("/$locale/")({
   loader: async ({ params }) => {
     const { locale } = params;
-    const [collections, featuredArticles, allArticles] = await Promise.all([
+    const [collections, allArticles] = await Promise.all([
       getCollectionsWithCounts(locale),
-      getFeaturedArticles(locale),
       getArticles(locale),
     ]);
+    const featuredArticles = allArticles.filter((a) => a.isFeatured).slice(0, 5);
     return { collections, featuredArticles, allArticles, locale };
   },
 
