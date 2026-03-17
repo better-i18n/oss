@@ -34,7 +34,7 @@ export function FeedbackWidget({ articleSlug: _articleSlug }: FeedbackWidgetProp
           onClick={() => setFeedback("up")}
           className={cn(
             "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition-colors",
-            "border-mist-200 text-mist-600 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700",
+            "cursor-pointer border-mist-200 text-mist-600 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700",
           )}
         >
           <IconThumbsUp className="size-4" />
@@ -45,7 +45,7 @@ export function FeedbackWidget({ articleSlug: _articleSlug }: FeedbackWidgetProp
           onClick={() => setFeedback("down")}
           className={cn(
             "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition-colors",
-            "border-mist-200 text-mist-600 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700",
+            "cursor-pointer border-mist-200 text-mist-600 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700",
           )}
         >
           <IconThumbsDown className="size-4" />

@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { DynamicIcon } from "@/components/shared/dynamic-icon";
+import { useT } from "@/lib/i18n";
 import type { HelpCollection } from "@/lib/content";
 
 interface HelpSidebarProps {
@@ -8,6 +9,7 @@ interface HelpSidebarProps {
 }
 
 export function HelpSidebar({ locale, collections }: HelpSidebarProps) {
+  const t = useT("common");
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
 
@@ -17,7 +19,7 @@ export function HelpSidebar({ locale, collections }: HelpSidebarProps) {
     <aside className="hidden w-56 shrink-0 lg:block">
       <nav className="sticky top-20 space-y-1">
         <p className="mb-3 px-3 text-xs font-medium uppercase tracking-wider text-mist-400">
-          Collections
+          {t("sidebar.collectionsHeading")}
         </p>
         {collections.map((collection) => {
           const href = `/${locale}/${collection.slug}/`;

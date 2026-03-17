@@ -4,6 +4,7 @@ import { useT } from "@/lib/i18n";
 import { LANDING_URL, DASHBOARD_URL } from "@/lib/config";
 
 function ThemeToggle() {
+  const t = useT("common");
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
@@ -21,8 +22,8 @@ function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      className="flex items-center gap-1.5 text-sm text-mist-500 hover:text-mist-950 transition-colors"
-      aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+      className="flex cursor-pointer items-center gap-1.5 text-sm text-mist-500 hover:text-mist-950 transition-colors"
+      aria-label={theme === "light" ? t("footer.switchToDark") : t("footer.switchToLight")}
     >
       {theme === "light" ? (
         <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

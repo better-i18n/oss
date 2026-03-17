@@ -27,7 +27,7 @@ export const Route = createFileRoute("/$locale/$collection/")({
     const title = collection
       ? `${collection.title} | Help Center | Better i18n`
       : "Help Center | Better i18n";
-    const description = collection?.description || "Browse help articles for this category.";
+    const description = collection?.description || "Browse help articles for this category."; // i18n: collection.seo.defaultDescription
 
     return {
       meta: formatMetaTags({ title, description, locale }),
@@ -128,7 +128,7 @@ function CollectionPage() {
                   </Badge>
                 )}
                 {article.readingTime && (
-                  <span className="text-xs text-mist-400">{article.readingTime} min</span>
+                  <span className="text-xs text-mist-400">{article.readingTime} {t("minSuffix")}</span>
                 )}
                 <IconChevronRight className="size-4 text-mist-300" />
               </div>

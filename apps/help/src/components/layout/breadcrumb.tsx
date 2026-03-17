@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { IconChevronRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { useT } from "@/lib/i18n";
 
 export interface BreadcrumbItem {
   label: string;
@@ -13,6 +14,8 @@ interface BreadcrumbProps {
 }
 
 export function Breadcrumb({ items, locale }: BreadcrumbProps) {
+  const t = useT("common");
+
   return (
     <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-mist-500">
       <Link
@@ -20,7 +23,7 @@ export function Breadcrumb({ items, locale }: BreadcrumbProps) {
         params={{ locale }}
         className="hover:text-mist-950 transition-colors"
       >
-        Help Center
+        {t("breadcrumb.helpCenter")}
       </Link>
       {items.map((item, index) => (
         <span key={index} className="flex items-center gap-1">

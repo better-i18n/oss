@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
+import { useT } from "@/lib/i18n";
 import {
   IconQuickSearch,
   IconArrowUp,
@@ -60,7 +61,6 @@ export type CommandPaletteProps = {
   portalContainer?: HTMLElement | null;
 };
 
-const DEFAULT_PLACEHOLDER = "Search articles, guides, and more...";
 const DEFAULT_STORAGE_KEY = "help:cmd:recents";
 const DEFAULT_DEBOUNCE = 120;
 const DEFAULT_MAX_RECENTS = 8;
@@ -122,7 +122,7 @@ export function CommandPalette({
   open: controlledOpen,
   onOpenChange,
   sources,
-  placeholder = DEFAULT_PLACEHOLDER,
+  placeholder,
   storageKey = DEFAULT_STORAGE_KEY,
   showRecents = true,
   maxRecents = DEFAULT_MAX_RECENTS,
@@ -133,6 +133,7 @@ export function CommandPalette({
   renderItem,
   portalContainer,
 }: CommandPaletteProps) {
+  const t = useT("common");
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
   const open = controlledOpen ?? uncontrolledOpen;
 
@@ -240,7 +241,7 @@ export function CommandPalette({
     if (!debouncedQuery && showPinnedFirst && pinned.length) {
       finalGroups.push({
         id: "__pinned",
-        label: "Pinned",
+        label: t("commandPalette.groupPinned"),
         items: pinned.map(p => ({ ...p, _score: 0, _indices: [] })),
       });
     }
@@ -248,11 +249,11 @@ export function CommandPalette({
     if (!debouncedQuery && showRecents && recents.length) {
       finalGroups.push({
         id: "__recents",
-        label: "Recent",
+        label: t("commandPalette.groupRecent"),
         items: recents.map(r => ({
           id: r.id,
           label: r.label,
-          subtitle: "Recently viewed",
+          subtitle: t("commandPalette.recentlyViewed"),
           groupId: r.groupId,
           href: r.href,
           shortcut: r.shortcut,
@@ -338,7 +339,7 @@ export function CommandPalette({
               aria-expanded="true"
               aria-controls="cmd-listbox"
               aria-activedescendant={activeId ? `cmd-item-${activeId}` : undefined}
-              placeholder={placeholder}
+              placeholder={placeholder ?? t("commandPalette.placeholder")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -354,7 +355,7 @@ export function CommandPalette({
             <Dialog.Close asChild>
               <button
                 aria-label="Close"
-                className="rounded-md p-1 text-mist-400 transition-colors hover:bg-mist-100 hover:text-mist-600"
+                className="cursor-pointer rounded-md p-1 text-mist-400 transition-colors hover:bg-mist-100 hover:text-mist-600"
               >
                 <IconCrossMedium className="size-4" />
               </button>
@@ -373,7 +374,7 @@ export function CommandPalette({
             {loadingIds.size > 0 && (
               <div className="flex items-center gap-2 px-3 py-2 text-xs text-mist-400">
                 <IconLoader className="size-3 animate-spin" />
-                Searching...
+                {t("commandPalette.searching")}
               </div>
             )}
 
@@ -400,9 +401,9 @@ export function CommandPalette({
                         onFocus={() => setActiveId(item.id)}
                         onClick={() => !item.disabled && execute(item)}
                         className={cn(
-                          "group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors",
+                          "group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors",
                           active ? "bg-mist-100 text-mist-950" : "text-mist-700 hover:bg-mist-50",
-                          item.disabled && "cursor-not-allowed opacity-50",
+                          item.disabled && "!cursor-not-allowed opacity-50",
                         )}
                       >
                         {renderItem ? renderItem(item, active) : (
@@ -440,7 +441,7 @@ export function CommandPalette({
                 </div>
                 {g.items.length === 0 && debouncedQuery && (
                   <div className="px-3 py-2 text-xs text-mist-400">
-                    No matches in {g.label}.
+                    {t("commandPalette.noMatchesIn", { group: g.label })}
                   </div>
                 )}
               </div>
@@ -453,8 +454,8 @@ export function CommandPalette({
                   <IconHistory className="size-5 text-mist-400" />
                 </div>
                 {debouncedQuery
-                  ? `No results for "${debouncedQuery}"`
-                  : "Start typing to search..."}
+                  ? t("commandPalette.noResultsFor", { query: debouncedQuery })
+                  : t("commandPalette.startTyping")}
               </div>
             )}
           </div>
@@ -462,14 +463,14 @@ export function CommandPalette({
           {/* Footer */}
           <div className="flex items-center gap-4 border-t border-mist-100 px-3 py-2 text-[11px] text-mist-400">
             <span className="flex items-center gap-1">
-              <IconArrowCornerDownLeft className="size-3" /> select
+              <IconArrowCornerDownLeft className="size-3" /> {t("commandPalette.hintSelect")}
             </span>
             <span className="flex items-center gap-1">
               <IconArrowUp className="size-3" />
-              <IconArrowDown className="size-3" /> navigate
+              <IconArrowDown className="size-3" /> {t("commandPalette.hintNavigate")}
             </span>
             <span className="hidden items-center gap-1 sm:flex">
-              <kbd className="rounded border border-mist-200 bg-mist-50 px-1 py-0.5 text-[9px]">ESC</kbd> close
+              <kbd className="rounded border border-mist-200 bg-mist-50 px-1 py-0.5 text-[9px]">ESC</kbd> {t("commandPalette.hintClose")}
             </span>
           </div>
         </Dialog.Content>

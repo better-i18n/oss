@@ -29,7 +29,7 @@ export function SearchHero({ onSearchClick }: SearchHeroProps) {
           <button
             type="button"
             onClick={onSearchClick}
-            className="flex w-full items-center gap-3 rounded-2xl bg-[var(--color-card)] px-5 py-3.5 text-left shadow-lg shadow-black/10 transition-all hover:shadow-xl hover:shadow-black/15"
+            className="flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-[var(--color-card)] px-5 py-3.5 text-left shadow-lg shadow-black/10 transition-all hover:shadow-xl hover:shadow-black/15"
           >
             <IconQuickSearch className="size-5 shrink-0 text-mist-400" />
             <span className="text-mist-500">{t("searchPlaceholder")}</span>
