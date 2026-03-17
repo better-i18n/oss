@@ -1,0 +1,77 @@
+// Custom Cloudflare Worker entry point that wraps TanStack Start
+
+import tanstack from "./server/server.js";
+
+/** Paths that should never be edge-cached (API routes, etc.) */
+const NO_CACHE_PREFIXES = ["/api/"];
+
+/**
+ * Determine Cache-Control for the response.
+ * - Static assets already have cache headers from TanStack/Vite.
+ * - HTML pages get short edge cache + stale-while-revalidate.
+ * - API routes are not cached at the edge.
+ */
+function getCacheControl(
+  request: Request,
+  response: Response,
+): string | null {
+  const url = new URL(request.url);
+  if (response.headers.has("Cache-Control")) return null;
+  if (NO_CACHE_PREFIXES.some((p) => url.pathname.startsWith(p))) return null;
+  if (request.method !== "GET") return null;
+  if (response.status >= 400) return null;
+
+  const contentType = response.headers.get("Content-Type") || "";
+  if (contentType.includes("text/html")) {
+    return "public, s-maxage=300, stale-while-revalidate=3600";
+  }
+
+  return null;
+}
+
+/** ASSETS binding type from wrangler.jsonc */
+interface Env {
+  ASSETS: { fetch: (request: Request | string) => Promise<Response> };
+  [key: string]: unknown;
+}
+
+/** Security headers applied to every response. */
+const SECURITY_HEADERS: ReadonlyArray<readonly [string, string]> = [
+  ["Strict-Transport-Security", "max-age=31536000; includeSubDomains"],
+  ["X-Content-Type-Options", "nosniff"],
+  ["X-Frame-Options", "SAMEORIGIN"],
+  ["Referrer-Policy", "strict-origin-when-cross-origin"],
+  ["Permissions-Policy", "camera=(), microphone=(), geolocation=()"],
+  [
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' https://cdn.better-i18n.com data: https:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://cdn.better-i18n.com https://*.better-i18n.com; frame-src 'none';",
+  ],
+] as const;
+
+export default {
+  async fetch(
+    request: Request,
+    env: Env,
+    ctx: ExecutionContext
+  ): Promise<Response> {
+    const response = await tanstack.fetch(request, env, ctx);
+
+    const newHeaders = new Headers(response.headers);
+
+    // Apply security headers
+    for (const [key, value] of SECURITY_HEADERS) {
+      newHeaders.set(key, value);
+    }
+
+    const cacheControl = getCacheControl(request, response);
+    if (cacheControl) {
+      newHeaders.set("Cache-Control", cacheControl);
+    }
+
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: newHeaders,
+    });
+  },
+};

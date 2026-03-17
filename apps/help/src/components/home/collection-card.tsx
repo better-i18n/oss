@@ -27,7 +27,7 @@ export function CollectionCard({ collection, locale }: CollectionCardProps) {
     <Link
       to="/$locale/$collection"
       params={{ locale, collection: collection.slug }}
-      className="group rounded-2xl border border-mist-200 bg-white p-6 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+      className="group rounded-2xl border border-mist-200 bg-[var(--color-card)] p-6 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
     >
       {/* Icon */}
       <div className={`flex size-11 items-center justify-center rounded-xl border shadow-sm ${color.bg} ${color.border}`}>
@@ -48,7 +48,7 @@ export function CollectionCard({ collection, locale }: CollectionCardProps) {
 
       {/* Article count */}
       <span className="mt-3 inline-flex items-center gap-1 text-xs text-mist-500">
-        {collection.articleCount} {t("articles", "articles")}
+        {collection.articleCount} {t("articles")}
       </span>
     </Link>
   );
