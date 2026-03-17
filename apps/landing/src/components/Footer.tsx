@@ -8,55 +8,55 @@ const footerLinks = [
     category: "product",
     categoryTitle: "Product",
     links: [
-      { key: "features", label: "Features", href: "/$locale/features" },
-      { key: "pricing", label: "Pricing", href: "/$locale/pricing" },
-      { key: "integrations", label: "Integrations", href: "/$locale/integrations" },
+      { key: "features", label: "Features", href: "/$locale/features/" },
+      { key: "pricing", label: "Pricing", href: "/$locale/pricing/" },
+      { key: "integrations", label: "Integrations", href: "/$locale/integrations/" },
     ],
   },
   {
     category: "frameworks",
     categoryTitle: "Frameworks",
     links: [
-      { key: "react", label: "React", href: "/$locale/i18n/react" },
-      { key: "nextjs", label: "Next.js", href: "/$locale/i18n/nextjs" },
-      { key: "vue", label: "Vue", href: "/$locale/i18n/vue" },
-      { key: "nuxt", label: "Nuxt", href: "/$locale/i18n/nuxt" },
-      { key: "angular", label: "Angular", href: "/$locale/i18n/angular" },
-      { key: "svelte", label: "Svelte", href: "/$locale/i18n/svelte" },
+      { key: "react", label: "React", href: "/$locale/i18n/react/" },
+      { key: "nextjs", label: "Next.js", href: "/$locale/i18n/nextjs/" },
+      { key: "vue", label: "Vue", href: "/$locale/i18n/vue/" },
+      { key: "nuxt", label: "Nuxt", href: "/$locale/i18n/nuxt/" },
+      { key: "angular", label: "Angular", href: "/$locale/i18n/angular/" },
+      { key: "svelte", label: "Svelte", href: "/$locale/i18n/svelte/" },
     ],
   },
   {
     category: "solutions",
     categoryTitle: "Solutions",
     links: [
-      { key: "translators", label: "For Translators", href: "/$locale/for-translators" },
-      { key: "developers", label: "For Developers", href: "/$locale/for-developers" },
-      { key: "productTeams", label: "For Product Teams", href: "/$locale/for-product-teams" },
-      { key: "enterprises", label: "For Enterprises", href: "/$locale/for-enterprises" },
-      { key: "startups", label: "For Startups", href: "/$locale/for-startups" },
-      { key: "agencies", label: "For Agencies", href: "/$locale/for-agencies" },
-      { key: "ecommerce", label: "For E-Commerce", href: "/$locale/for-ecommerce" },
-      { key: "saas", label: "For SaaS", href: "/$locale/for-saas" },
+      { key: "translators", label: "For Translators", href: "/$locale/for-translators/" },
+      { key: "developers", label: "For Developers", href: "/$locale/for-developers/" },
+      { key: "productTeams", label: "For Product Teams", href: "/$locale/for-product-teams/" },
+      { key: "enterprises", label: "For Enterprises", href: "/$locale/for-enterprises/" },
+      { key: "startups", label: "For Startups", href: "/$locale/for-startups/" },
+      { key: "agencies", label: "For Agencies", href: "/$locale/for-agencies/" },
+      { key: "ecommerce", label: "For E-Commerce", href: "/$locale/for-ecommerce/" },
+      { key: "saas", label: "For SaaS", href: "/$locale/for-saas/" },
     ],
   },
   {
     category: "compare",
     categoryTitle: "Compare",
     links: [
-      { key: "overview", label: "All Comparisons", href: "/$locale/compare" },
-      { key: "crowdin", label: "vs Crowdin", href: "/$locale/compare/crowdin" },
-      { key: "lokalise", label: "vs Lokalise", href: "/$locale/compare/lokalise" },
-      { key: "phrase", label: "vs Phrase", href: "/$locale/compare/phrase" },
-      { key: "transifex", label: "vs Transifex", href: "/$locale/compare/transifex" },
+      { key: "overview", label: "All Comparisons", href: "/$locale/compare/" },
+      { key: "crowdin", label: "vs Crowdin", href: "/$locale/compare/crowdin/" },
+      { key: "lokalise", label: "vs Lokalise", href: "/$locale/compare/lokalise/" },
+      { key: "phrase", label: "vs Phrase", href: "/$locale/compare/phrase/" },
+      { key: "transifex", label: "vs Transifex", href: "/$locale/compare/transifex/" },
     ],
   },
   {
     category: "company",
     categoryTitle: "Company",
     links: [
-      { key: "about", label: "About", href: "/$locale/about" },
-      { key: "careers", label: "Careers", href: "/$locale/careers" },
-      { key: "blog", label: "Blog", href: "/$locale/blog" },
+      { key: "about", label: "About", href: "/$locale/about/" },
+      { key: "careers", label: "Careers", href: "/$locale/careers/" },
+      { key: "blog", label: "Blog", href: "/$locale/blog/" },
     ],
   },
   {
@@ -66,25 +66,26 @@ const footerLinks = [
       {
         key: "helpCenter",
         label: "Help Center",
-        href: "https://docs.better-i18n.com/",
+        href: "https://help.better-i18n.com",
+        localeAware: true,
       },
       {
         key: "apiDocs",
         label: "API Docs",
         href: "https://docs.better-i18n.com/",
       },
-      { key: "whatIs", label: "What is i18n?", href: "/$locale/what-is" },
-      { key: "tools", label: "Free Tools", href: "/$locale/tools" },
+      { key: "whatIs", label: "What is i18n?", href: "/$locale/what-is/" },
+      { key: "tools", label: "Free Tools", href: "/$locale/tools/" },
       { key: "status", label: "Status", href: "https://status.better-i18n.com" },
-      { key: "changelog", label: "Changelog", href: "/$locale/changelog" },
+      { key: "changelog", label: "Changelog", href: "/$locale/changelog/" },
     ],
   },
   {
     category: "legal",
     categoryTitle: "Legal",
     links: [
-      { key: "privacy", label: "Privacy", href: "/$locale/privacy" },
-      { key: "terms", label: "Terms", href: "/$locale/terms" },
+      { key: "privacy", label: "Privacy", href: "/$locale/privacy/" },
+      { key: "terms", label: "Terms", href: "/$locale/terms/" },
       { key: "security", label: "Security", href: "https://docs.better-i18n.com/security" },
     ],
   },
@@ -117,12 +118,16 @@ export default function Footer() {
                 {group.links.map((link) => {
                   const label = t(`${group.category}.${link.key}`, { defaultValue: link.label });
                   const isExternal = link.href.startsWith("http");
+                  const resolvedHref =
+                    isExternal && "localeAware" in link && link.localeAware
+                      ? `${link.href}/${currentLocale}`
+                      : link.href;
 
                   return (
                     <li key={link.key}>
                       {isExternal ? (
                         <a
-                          href={link.href}
+                          href={resolvedHref}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="group/link flex items-center gap-1.5 hover:text-mist-950"
@@ -132,7 +137,7 @@ export default function Footer() {
                         </a>
                       ) : (
                         <Link
-                          to={link.href as "/$locale" | "/$locale/features" | "/$locale/pricing" | "/$locale/integrations" | "/$locale/about" | "/$locale/careers" | "/$locale/blog" | "/$locale/changelog" | "/$locale/privacy" | "/$locale/terms" | "/$locale/what-is" | "/$locale/tools" | "/$locale/for-translators" | "/$locale/for-developers" | "/$locale/for-product-teams" | "/$locale/for-enterprises" | "/$locale/for-startups" | "/$locale/for-agencies" | "/$locale/for-ecommerce" | "/$locale/for-saas" | "/$locale/compare" | "/$locale/compare/crowdin" | "/$locale/compare/lokalise" | "/$locale/compare/phrase" | "/$locale/compare/transifex" | "/$locale/i18n/react" | "/$locale/i18n/nextjs" | "/$locale/i18n/vue" | "/$locale/i18n/nuxt" | "/$locale/i18n/angular" | "/$locale/i18n/svelte"}
+                          to={link.href}
                           params={{ locale: currentLocale }}
                           className="hover:text-mist-950"
                         >
