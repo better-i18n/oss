@@ -1,13 +1,11 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { FileText } from 'lucide-react';
-import Image from 'next/image';
-
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
       title: (
         <>
-          <Image src="/logo.png" alt="Better I18N" className="size-5" width={20} height={20} />
+          <img src="https://better-i18n.com/cdn-cgi/image/width=40,height=40,fit=contain/brand/logo.svg" alt="Better I18N" className="size-5 dark:invert" width={20} height={20} />
           <span>Better I18N</span>
         </>
       ),

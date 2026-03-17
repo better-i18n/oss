@@ -9,6 +9,27 @@ import { ViteMinifyPlugin } from "vite-plugin-minify";
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
+  const apiKey = env.BETTER_I18N_CONTENT_API_KEY;
+  const project = env.BETTER_I18N_PROJECT;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let pages: readonly any[] = [];
+  if (mode === "production" && apiKey && project) {
+    try {
+      const { fetchSeoData, generatePages } = await import("./src/seo/generate-pages");
+      const data = await fetchSeoData({ project, apiKey });
+      pages = generatePages(data);
+    } catch (error) {
+      console.error("[SEO] Build-time generation failed:", error);
+    }
+  } else if (mode === "production") {
+    const missing = [
+      !apiKey && "BETTER_I18N_CONTENT_API_KEY",
+      !project && "BETTER_I18N_PROJECT",
+    ].filter(Boolean).join(", ");
+    console.warn(`[SEO] Skipping page generation: missing env vars: ${missing}`);
+  }
+
   return {
     define: {
       "import.meta.env.BETTER_I18N_CONTENT_API_KEY": JSON.stringify(
@@ -30,7 +51,28 @@ export default defineConfig(async ({ mode }) => {
         projects: ["./tsconfig.json"],
       }),
       tanstackStart({
-        // SSG prerender will be configured in Phase 3
+        pages: pages
+          .filter((p) => !p.sitemap?.noindex)
+          .map((p) => ({
+            path: p.path,
+            sitemap: {
+              ...p.sitemap,
+              alternateRefs: [...p.sitemap.alternateRefs],
+            },
+            prerender: p.prerender,
+          })),
+        sitemap: {
+          enabled: pages.length > 0,
+          host: "https://help.better-i18n.com",
+        },
+        prerender: pages.length > 0
+          ? {
+              enabled: true,
+              crawlLinks: false,
+              concurrency: 10,
+              failOnError: false,
+            }
+          : undefined,
       }),
       viteReact(),
       ViteMinifyPlugin({
