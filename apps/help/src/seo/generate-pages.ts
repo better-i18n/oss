@@ -13,7 +13,8 @@ import type { ContentEntryListItem } from "@better-i18n/sdk";
 
 // ─── Constants ───────────────────────────────────────────────────────
 
-const SITE_URL = "https://help.better-i18n.com";
+// Build-time: read from env (falls back for backward compat)
+const SITE_URL = process.env.PUBLIC_SITE_URL || "https://help.better-i18n.com";
 
 // ─── Types ──────────────────────────────────────────────────────────
 

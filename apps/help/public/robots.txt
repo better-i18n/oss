@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://help.better-i18n.com/sitemap.xml
+# Update with your site URL after deployment
+# Sitemap: https://help.yourdomain.com/sitemap.xml

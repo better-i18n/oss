@@ -153,7 +153,7 @@ export function CommandPalette({
     try {
       const raw = localStorage.getItem(storageKey);
       if (raw) setRecents(JSON.parse(raw));
-    } catch {}
+    } catch { /* localStorage parse failure — non-critical */ }
   }, [storageKey]);
 
   function setOpen(v: boolean) {
@@ -296,7 +296,7 @@ export function CommandPalette({
       const next = [entry, ...recents.filter(r => r.id !== entry.id)].slice(0, maxRecents);
       setRecents(next);
       localStorage.setItem(storageKey, JSON.stringify(next));
-    } catch {}
+    } catch { /* recents save failure — non-critical */ }
 
     item.onAction?.();
     if (item.href) {
