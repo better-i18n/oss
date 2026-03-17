@@ -1,5 +1,11 @@
 # @better-i18n/use-intl
 
+## 0.1.18
+
+### Patch Changes
+
+- 649d15a: Fix TypeScript build error in middleware caused by type mismatch with @tanstack/react-start/server
+
 ## 0.1.17
 
 ### Patch Changes
