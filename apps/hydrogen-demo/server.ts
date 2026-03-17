@@ -35,7 +35,10 @@ export default {
     const languages = await i18n.getLanguages();
 
     // 2. Detect locale from URL path, validated against CDN language list
-    const { locale, i18n: shopifyI18n } = getLocaleFromRequest(request, languages);
+    const { locale, i18n: shopifyI18n } = getLocaleFromRequest(
+      request,
+      languages,
+    );
 
     // 3. Load Better i18n translations from CDN
     const messages = await i18n.getMessages(locale);

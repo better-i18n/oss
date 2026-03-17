@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
-import { LANDING_URL, SIGNUP_URL } from "@/lib/config";
+import { LANDING_URL, SIGNUP_URL, SITE_NAME, LOGO_URL } from "@/lib/config";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 
 export function HelpHeader({ locale }: { locale: string }) {
@@ -11,19 +11,32 @@ export function HelpHeader({ locale }: { locale: string }) {
       <div className="mx-auto flex h-full max-w-7xl items-center gap-4 px-6">
         {/* Logo — "Better I18N / Help" breadcrumb style */}
         <div className="flex items-center gap-2.5">
-          <a
-            href={LANDING_URL}
-            className="flex items-center gap-2 font-semibold text-mist-950 transition-colors hover:text-mist-700"
-          >
-            <img
-              src="https://better-i18n.com/cdn-cgi/image/width=48,height=48,fit=contain/brand/logo.svg"
-              alt="Better i18n"
-              width={24}
-              height={24}
-              className="shrink-0 dark:invert"
-            />
-            <span className="hidden sm:inline">Better I18N</span>
-          </a>
+          {LANDING_URL ? (
+            <a
+              href={LANDING_URL}
+              className="flex items-center gap-2 font-semibold text-mist-950 transition-colors hover:text-mist-700"
+            >
+              <img
+                src={LOGO_URL || "/logo.svg"}
+                alt={SITE_NAME}
+                width={24}
+                height={24}
+                className="shrink-0 dark:invert"
+              />
+              <span className="hidden sm:inline">{SITE_NAME}</span>
+            </a>
+          ) : (
+            <span className="flex items-center gap-2 font-semibold text-mist-950">
+              <img
+                src={LOGO_URL || "/logo.svg"}
+                alt={SITE_NAME}
+                width={24}
+                height={24}
+                className="shrink-0 dark:invert"
+              />
+              <span className="hidden sm:inline">{SITE_NAME}</span>
+            </span>
+          )}
           <span className="text-mist-300">/</span>
           <Link
             to="/$locale"
@@ -37,12 +50,14 @@ export function HelpHeader({ locale }: { locale: string }) {
         {/* Right side */}
         <nav className="ml-auto flex items-center gap-3">
           <LanguageSwitcher />
-          <a
-            href={SIGNUP_URL}
-            className="rounded-full bg-[var(--color-foreground)] px-4 py-1.5 text-sm font-medium text-[var(--color-background)] transition-colors hover:opacity-80"
-          >
-            {t("header.cta")}
-          </a>
+          {SIGNUP_URL && (
+            <a
+              href={SIGNUP_URL}
+              className="rounded-full bg-[var(--color-foreground)] px-4 py-1.5 text-sm font-medium text-[var(--color-background)] transition-colors hover:opacity-80"
+            >
+              {t("header.cta")}
+            </a>
+          )}
         </nav>
       </div>
     </header>

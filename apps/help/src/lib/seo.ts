@@ -2,7 +2,7 @@
  * SEO utilities for Help Center — structured data, meta tags, etc.
  */
 
-import { SITE_URL, SITE_NAME } from "./config";
+import { SITE_URL, SITE_NAME, ORG_URL, ORG_LOGO_URL, OG_BASE_URL } from "./config";
 import { getCachedLocales } from "./locales";
 
 // ─── Canonical URLs ─────────────────────────────────────────────────
@@ -59,8 +59,8 @@ export function getOrganizationSchema() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: SITE_NAME,
-    url: "https://better-i18n.com",
-    logo: { "@type": "ImageObject", url: "https://better-i18n.com/brand/logo-light.svg" },
+    url: ORG_URL,
+    logo: { "@type": "ImageObject", url: ORG_LOGO_URL },
   };
 }
 
@@ -112,7 +112,7 @@ export function getArticleSchema(options: ArticleSchemaOptions) {
     publisher: {
       "@type": "Organization",
       name: SITE_NAME,
-      logo: { "@type": "ImageObject", url: "https://better-i18n.com/brand/logo-light.svg" },
+      logo: { "@type": "ImageObject", url: ORG_LOGO_URL },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": options.url },
   };
@@ -158,9 +158,8 @@ export function getCollectionPageSchema(options: {
 
 // ─── OG Image ───────────────────────────────────────────────────────
 
-const OG_BASE_URL = "https://og.better-i18n.com";
-
 function buildOgImageUrl(options: { title: string; description?: string; site?: string }) {
+  if (!OG_BASE_URL) return undefined;
   const params = new URLSearchParams();
   params.set("title", options.title);
   if (options.description) params.set("description", options.description);
@@ -194,7 +193,7 @@ export function formatMetaTags(options: {
     site: "help",
   });
 
-  return [
+  const tags = [
     { title: options.title },
     { name: "description", content: options.description },
     { property: "og:title", content: options.title },
@@ -203,15 +202,22 @@ export function formatMetaTags(options: {
     { property: "og:url", content: canonicalUrl },
     { property: "og:site_name", content: `${SITE_NAME} Help Center` },
     { property: "og:locale", content: toOgLocale(options.locale) },
-    { property: "og:image", content: ogImageUrl },
-    { property: "og:image:width", content: "1200" },
-    { property: "og:image:height", content: "630" },
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: options.title },
     { name: "twitter:description", content: options.description },
-    { name: "twitter:image", content: ogImageUrl },
     { name: "robots", content: "index, follow" },
   ];
+
+  if (ogImageUrl) {
+    tags.push(
+      { property: "og:image", content: ogImageUrl },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:image", content: ogImageUrl },
+    );
+  }
+
+  return tags;
 }
 
 export function getDefaultStructuredData(locale?: string) {

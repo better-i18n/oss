@@ -16,6 +16,7 @@ Open-source SDK ecosystem for the **Better i18n** localization platform. These p
 - **NEVER introduce breaking changes** without explicit approval — customers depend on these packages
 - **ALWAYS run tests** after modifying any package: `bun test packages/{name}`
 - **ALWAYS use changesets** for version bumps: `bunx changeset`
+- **ALWAYS update Linear tickets after commit** — If the task has a Linear issue (BETTER-xxx), update its status to "Done" using `mcp__linear-server__save_issue` after committing. Reference the ticket ID in the commit message (e.g., `feat: add feature [BETTER-105]`). Tickets must not be left open after work is completed.
 
 ## Monorepo Structure
 
@@ -305,6 +306,18 @@ bun run release        # Publish all non-private packages
 7. **Namespace structure** — CDN returns `{ "namespace": { "key": "value" } }`
 8. **Never import storage directly in expo** — Use `storageAdapter()` with duck-typing
 9. **`mcp-types` sync** — Never edit in OSS, always edit in internal repo
+
+## Supply Chain Security — Invisible Unicode (CRITICAL)
+
+This repo publishes npm packages used by customers in production. The Glassworm threat actor has been compromising GitHub repos and npm packages using invisible Unicode characters (PUA: `U+FE00–FE0F`, `U+E0100–E01EF`) that are invisible in editors, terminals, and code review UIs.
+
+**When reviewing or adding code:**
+- Watch for empty-looking template literals or strings that might contain invisible payload characters
+- Never add code snippets from unknown sources without verification
+- Check for suspicious dynamic code execution patterns (`Buffer.from()` + decode chains)
+- To detect invisible characters in a file: `cat -v <file>` (shows non-printable chars as `M-^` sequences)
+- When adding new dependencies, verify the package's npm publish date, maintainer, and download count
+- Especially critical for: `packages/core`, `packages/mcp`, `packages/cli`, `packages/sdk` — these are direct customer-facing npm packages
 
 ## Common Mistakes to Avoid
 

@@ -1,6 +1,6 @@
 {
-  "$schema": "../../node_modules/wrangler/config-schema.json",
-  "name": "betteri18n-help",
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "help-center",
   "main": "dist/worker-entry.js",
   "compatibility_date": "2025-01-15",
   "compatibility_flags": ["nodejs_compat"],
@@ -14,15 +14,16 @@
     "logs": { "enabled": true },
     "enabled": true
   },
-  "routes": [
-    {
-      "pattern": "help.better-i18n.com/*",
-      "zone_name": "better-i18n.com"
-    }
-  ],
+  // Uncomment and configure for your domain:
+  // "routes": [
+  //   {
+  //     "pattern": "help.yourdomain.com/*",
+  //     "zone_name": "yourdomain.com"
+  //   }
+  // ],
   "vars": {
     "ENVIRONMENT": "production",
-    "APP_ORIGIN": "https://help.better-i18n.com",
+    "APP_ORIGIN": "https://help.yourdomain.com",
     "CDN_URL": "https://cdn.better-i18n.com"
   }
 }
