@@ -7,6 +7,7 @@ import {
   IconNewspaper,
   IconLiveActivity,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { LifeBuoy } from "lucide-react";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { useT } from "@/lib/i18n";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -185,7 +186,7 @@ export function MobileNav() {
           <div className="space-y-1">
             {/* Features - simple link */}
             <Link
-              to="/$locale/features"
+              to="/$locale/features/"
               params={{ locale: localeParam }}
               onClick={close}
               className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
@@ -195,7 +196,7 @@ export function MobileNav() {
 
             {/* Tools - simple link */}
             <Link
-              to="/$locale/tools"
+              to="/$locale/tools/"
               params={{ locale: localeParam }}
               onClick={close}
               className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
@@ -211,7 +212,7 @@ export function MobileNav() {
             >
               <div className="space-y-1 pb-1">
                 <Link
-                  to="/$locale/for-translators"
+                  to="/$locale/for-translators/"
                   params={{ locale: localeParam }}
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
@@ -232,7 +233,7 @@ export function MobileNav() {
                 </Link>
 
                 <Link
-                  to="/$locale/for-developers"
+                  to="/$locale/for-developers/"
                   params={{ locale: localeParam }}
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
@@ -253,7 +254,7 @@ export function MobileNav() {
                 </Link>
 
                 <Link
-                  to="/$locale/for-product-teams"
+                  to="/$locale/for-product-teams/"
                   params={{ locale: localeParam }}
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
@@ -281,11 +282,11 @@ export function MobileNav() {
                   <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                     {/* Business & Industry */}
                     {[
-                      { to: "/$locale/for-enterprises" as const, key: "enterprises", label: "Enterprises" },
-                      { to: "/$locale/for-saas" as const, key: "saas", label: "SaaS" },
-                      { to: "/$locale/for-ecommerce" as const, key: "ecommerce", label: "E-Commerce" },
-                      { to: "/$locale/for-startups" as const, key: "startups", label: "Startups" },
-                      { to: "/$locale/for-agencies" as const, key: "agencies", label: "Agencies" },
+                      { to: "/$locale/for-enterprises/" as const, key: "enterprises", label: "Enterprises" },
+                      { to: "/$locale/for-saas/" as const, key: "saas", label: "SaaS" },
+                      { to: "/$locale/for-ecommerce/" as const, key: "ecommerce", label: "E-Commerce" },
+                      { to: "/$locale/for-startups/" as const, key: "startups", label: "Startups" },
+                      { to: "/$locale/for-agencies/" as const, key: "agencies", label: "Agencies" },
                     ].map((item) => (
                       <Link
                         key={item.to}
@@ -314,12 +315,12 @@ export function MobileNav() {
                 </p>
                 <div className="grid grid-cols-2 gap-1">
                   {[
-                    { to: "/$locale/i18n/react" as const, label: "React" },
-                    { to: "/$locale/i18n/nextjs" as const, label: "Next.js" },
-                    { to: "/$locale/i18n/vue" as const, label: "Vue" },
-                    { to: "/$locale/i18n/nuxt" as const, label: "Nuxt" },
-                    { to: "/$locale/i18n/angular" as const, label: "Angular" },
-                    { to: "/$locale/i18n/svelte" as const, label: "Svelte" },
+                    { to: "/$locale/i18n/react/" as const, label: "React" },
+                    { to: "/$locale/i18n/nextjs/" as const, label: "Next.js" },
+                    { to: "/$locale/i18n/vue/" as const, label: "Vue" },
+                    { to: "/$locale/i18n/nuxt/" as const, label: "Nuxt" },
+                    { to: "/$locale/i18n/angular/" as const, label: "Angular" },
+                    { to: "/$locale/i18n/svelte/" as const, label: "Svelte" },
                   ].map((item) => (
                     <Link
                       key={item.to}
@@ -347,7 +348,7 @@ export function MobileNav() {
 
             {/* Pricing - simple link */}
             <Link
-              to="/$locale/pricing"
+              to="/$locale/pricing/"
               params={{ locale: localeParam }}
               onClick={close}
               className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
@@ -357,7 +358,7 @@ export function MobileNav() {
 
             {/* Compare - simple link */}
             <Link
-              to="/$locale/compare"
+              to="/$locale/compare/"
               params={{ locale: localeParam }}
               onClick={close}
               className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
@@ -373,7 +374,7 @@ export function MobileNav() {
             >
               <div className="space-y-1 pb-1">
                 <Link
-                  to="/$locale/about"
+                  to="/$locale/about/"
                   params={{ locale: localeParam }}
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
@@ -385,7 +386,7 @@ export function MobileNav() {
                 </Link>
 
                 <Link
-                  to="/$locale/privacy"
+                  to="/$locale/privacy/"
                   params={{ locale: localeParam }}
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
@@ -397,7 +398,7 @@ export function MobileNav() {
                 </Link>
 
                 <Link
-                  to="/$locale/terms"
+                  to="/$locale/terms/"
                   params={{ locale: localeParam }}
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
@@ -409,6 +410,18 @@ export function MobileNav() {
                 </Link>
 
                 <div className="my-1 border-t border-mist-200" />
+
+                <a
+                  href={`https://help.better-i18n.com/${localeParam}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <LifeBuoy className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("resources.helpCenter", { defaultValue: "Help Center" })}
+                  </span>
+                </a>
 
                 <a
                   href="https://docs.better-i18n.com/"
@@ -423,7 +436,7 @@ export function MobileNav() {
                 </a>
 
                 <Link
-                  to="/$locale/changelog"
+                  to="/$locale/changelog/"
                   params={{ locale: localeParam }}
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
@@ -435,7 +448,7 @@ export function MobileNav() {
                 </Link>
 
                 <Link
-                  to="/$locale/blog"
+                  to="/$locale/blog/"
                   params={{ locale: localeParam }}
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
@@ -471,7 +484,7 @@ export function MobileNav() {
                 </a>
 
                 <Link
-                  to="/$locale/what-is"
+                  to="/$locale/what-is/"
                   params={{ locale: localeParam }}
                   onClick={close}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"

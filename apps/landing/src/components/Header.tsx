@@ -7,6 +7,7 @@ import {
   IconNewspaper,
   IconLiveActivity,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { LifeBuoy } from "lucide-react";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { useT } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
@@ -49,7 +50,7 @@ export default function Header({ className }: { className?: string }) {
           </div>
           <div className="hidden lg:flex items-center gap-8">
             <Link
-              to="/$locale/features"
+              to="/$locale/features/"
               params={{ locale: locale || "en" }}
               className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
             >
@@ -78,7 +79,7 @@ export default function Header({ className }: { className?: string }) {
                     <div className="grid grid-cols-2 gap-2">
                       {/* For Translators */}
                       <Link
-                        to="/$locale/for-translators"
+                        to="/$locale/for-translators/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -102,7 +103,7 @@ export default function Header({ className }: { className?: string }) {
 
                       {/* For Developers */}
                       <Link
-                        to="/$locale/for-developers"
+                        to="/$locale/for-developers/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -126,7 +127,7 @@ export default function Header({ className }: { className?: string }) {
 
                       {/* For Product Teams */}
                       <Link
-                        to="/$locale/for-product-teams"
+                        to="/$locale/for-product-teams/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -160,7 +161,7 @@ export default function Header({ className }: { className?: string }) {
                     <div className="grid grid-cols-3 gap-x-4 gap-y-1">
                       {/* Business & Industry */}
                       <Link
-                        to="/$locale/for-enterprises"
+                        to="/$locale/for-enterprises/"
                         params={{ locale: locale || "en" }}
                         className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
                       >
@@ -169,14 +170,14 @@ export default function Header({ className }: { className?: string }) {
                         })}
                       </Link>
                       <Link
-                        to="/$locale/for-saas"
+                        to="/$locale/for-saas/"
                         params={{ locale: locale || "en" }}
                         className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
                       >
                         {t("menu.solutions.saas", { defaultValue: "SaaS" })}
                       </Link>
                       <Link
-                        to="/$locale/for-ecommerce"
+                        to="/$locale/for-ecommerce/"
                         params={{ locale: locale || "en" }}
                         className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
                       >
@@ -185,7 +186,7 @@ export default function Header({ className }: { className?: string }) {
                         })}
                       </Link>
                       <Link
-                        to="/$locale/for-startups"
+                        to="/$locale/for-startups/"
                         params={{ locale: locale || "en" }}
                         className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
                       >
@@ -194,7 +195,7 @@ export default function Header({ className }: { className?: string }) {
                         })}
                       </Link>
                       <Link
-                        to="/$locale/for-agencies"
+                        to="/$locale/for-agencies/"
                         params={{ locale: locale || "en" }}
                         className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
                       >
@@ -250,7 +251,7 @@ export default function Header({ className }: { className?: string }) {
                     </p>
                     <div className="grid grid-cols-3 gap-1 mt-1">
                       <Link
-                        to="/$locale/i18n/react"
+                        to="/$locale/i18n/react/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -263,7 +264,7 @@ export default function Header({ className }: { className?: string }) {
                         />
                       </Link>
                       <Link
-                        to="/$locale/i18n/nextjs"
+                        to="/$locale/i18n/nextjs/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -276,7 +277,7 @@ export default function Header({ className }: { className?: string }) {
                         />
                       </Link>
                       <Link
-                        to="/$locale/i18n/vue"
+                        to="/$locale/i18n/vue/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -289,7 +290,7 @@ export default function Header({ className }: { className?: string }) {
                         />
                       </Link>
                       <Link
-                        to="/$locale/i18n/nuxt"
+                        to="/$locale/i18n/nuxt/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -302,7 +303,7 @@ export default function Header({ className }: { className?: string }) {
                         />
                       </Link>
                       <Link
-                        to="/$locale/i18n/angular"
+                        to="/$locale/i18n/angular/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -315,7 +316,7 @@ export default function Header({ className }: { className?: string }) {
                         />
                       </Link>
                       <Link
-                        to="/$locale/i18n/svelte"
+                        to="/$locale/i18n/svelte/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -328,7 +329,7 @@ export default function Header({ className }: { className?: string }) {
                         />
                       </Link>
                       <Link
-                        to="/$locale/i18n/expo"
+                        to="/$locale/i18n/expo/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -341,7 +342,7 @@ export default function Header({ className }: { className?: string }) {
                         />
                       </Link>
                       <Link
-                        to="/$locale/i18n/tanstack-start"
+                        to="/$locale/i18n/tanstack-start/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -354,7 +355,7 @@ export default function Header({ className }: { className?: string }) {
                         />
                       </Link>
                       <Link
-                        to="/$locale/i18n/server"
+                        to="/$locale/i18n/server/"
                         params={{ locale: locale || "en" }}
                         className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -387,14 +388,14 @@ export default function Header({ className }: { className?: string }) {
               </div>
             </div>
             <Link
-              to="/$locale/pricing"
+              to="/$locale/pricing/"
               params={{ locale: locale || "en" }}
               className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
             >
               {t("pricing", { defaultValue: "Pricing" })}
             </Link>
             <Link
-              to="/$locale/compare"
+              to="/$locale/compare/"
               params={{ locale: locale || "en" }}
               className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
             >
@@ -422,7 +423,7 @@ export default function Header({ className }: { className?: string }) {
                     >
                       {/* About Us */}
                       <Link
-                        to="/$locale/about"
+                        to="/$locale/about/"
                         params={{ locale: locale || "en" }}
                         className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -445,7 +446,7 @@ export default function Header({ className }: { className?: string }) {
 
                       {/* Privacy Policy */}
                       <Link
-                        to="/$locale/privacy"
+                        to="/$locale/privacy/"
                         params={{ locale: locale || "en" }}
                         className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -468,7 +469,7 @@ export default function Header({ className }: { className?: string }) {
 
                       {/* Terms of Service */}
                       <Link
-                        to="/$locale/terms"
+                        to="/$locale/terms/"
                         params={{ locale: locale || "en" }}
                         className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                       >
@@ -492,6 +493,21 @@ export default function Header({ className }: { className?: string }) {
 
                     {/* Right column - Simple links with small icons */}
                     <div className="p-3 space-y-1 min-w-[180px]" role="menu">
+                      {/* Help Center */}
+                      <a
+                        href={`https://help.better-i18n.com/${locale || "en"}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
+                      >
+                        <LifeBuoy className="size-4 text-mist-600" />
+                        <span className="text-sm font-medium text-mist-950">
+                          {t("resources.helpCenter", {
+                            defaultValue: "Help Center",
+                          })}
+                        </span>
+                      </a>
+
                       {/* Documentation */}
                       <a
                         href="https://docs.better-i18n.com/"
@@ -512,7 +528,7 @@ export default function Header({ className }: { className?: string }) {
 
                       {/* Changelog */}
                       <Link
-                        to="/$locale/changelog"
+                        to="/$locale/changelog/"
                         params={{ locale: locale || "en" }}
                         className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
                       >
@@ -527,7 +543,7 @@ export default function Header({ className }: { className?: string }) {
 
                       {/* Blog */}
                       <Link
-                        to="/$locale/blog"
+                        to="/$locale/blog/"
                         params={{ locale: locale || "en" }}
                         className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
                       >
@@ -573,7 +589,7 @@ export default function Header({ className }: { className?: string }) {
 
                       {/* What is i18n? */}
                       <Link
-                        to="/$locale/what-is"
+                        to="/$locale/what-is/"
                         params={{ locale: locale || "en" }}
                         className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
                       >
@@ -590,7 +606,7 @@ export default function Header({ className }: { className?: string }) {
 
                       {/* Free Tools */}
                       <Link
-                        to="/$locale/tools"
+                        to="/$locale/tools/"
                         params={{ locale: locale || "en" }}
                         className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
                       >
