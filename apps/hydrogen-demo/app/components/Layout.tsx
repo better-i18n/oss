@@ -33,22 +33,17 @@ export function Layout({
             <LocaleLink
               to="/"
               locale={locale}
-              className="flex min-w-0 items-center gap-3"
+              className="flex min-w-0 items-center gap-2.5"
             >
-              <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-black/8 bg-white shadow-sm">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-950">
                 <img
-                  src="https://better-i18n.com/brand/logo-light.svg"
+                  src="https://better-i18n.com/brand/logo-dark.svg"
                   alt="Better i18n"
-                  className="h-8 w-8 object-contain dark:invert"
+                  className="h-5 w-5 object-contain"
                 />
               </span>
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold tracking-[-0.03em] text-slate-950">
-                  {storeName}
-                </span>
-                <span className="block truncate text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-slate-500">
-                  {tc("storefront_subtitle")}
-                </span>
+              <span className="text-sm font-semibold tracking-[-0.03em] text-slate-950">
+                {storeName}
               </span>
             </LocaleLink>
 
