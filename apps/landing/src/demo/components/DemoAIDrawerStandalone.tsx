@@ -13,6 +13,7 @@ import {
   IconArrowUp,
   IconCircleDashed,
   IconFolder1,
+  IconLoadingCircle,
   IconMagicWand,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -195,19 +196,6 @@ const DEMO_CONTENT: Record<string, DemoContent> = {
   },
 };
 
-// Status icons logic matching real app
-const StatusIcon = ({ status }: { status: "published" }) => {
-  // Always use green for completed/published state
-  console.log("StatusIcon status:", status);
-  const color = "text-[#22C55E]";
-  return (
-    <IconCircleDashed
-      className={cn("h-3 w-3 shrink-0", color)}
-      strokeWidth={3}
-    />
-  );
-};
-
 // Message structure matching real drawer
 interface Translation {
   k: string; // key
@@ -231,7 +219,7 @@ interface FileChange {
 interface ToolCall {
   id: string;
   name: string;
-  state: "pending" | "output-available" | "completed";
+  state: "pending" | "streaming" | "output-available" | "completed";
   input?: Record<string, unknown>;
   translations?: Translation[];
   syncInfo?: {
@@ -303,76 +291,110 @@ function renderMessageWithMentions(content: string, mentions: MentionItem[]) {
   });
 }
 
-interface ToolWrapperProps {
+interface DemoToolShellProps {
+  toolName: string;
+  toolCallId: string;
+  state: "pending" | "streaming" | "output-available" | "completed";
   children: React.ReactNode;
-  header: React.ReactNode;
 }
 
-const ToolWrapper = ({ children, header }: ToolWrapperProps) => {
+const DemoToolShell = ({
+  toolName,
+  toolCallId: _toolCallId,
+  state,
+  children,
+}: DemoToolShellProps) => {
   const [isOpen, setIsOpen] = useState(true);
 
+  const stateIcon =
+    state === "pending" || state === "streaming" ? (
+      <IconLoadingCircle className="h-3 w-3 animate-spin text-gray-400" />
+    ) : (
+      <IconCircleDashed
+        className="h-3 w-3 text-[#22C55E]"
+        strokeWidth={3}
+      />
+    );
+
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
+    <div className="overflow-hidden rounded-lg bg-white border border-gray-100">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
-          <button className="h-auto w-full px-3 py-1.5 bg-gray-100 text-gray-900 cursor-pointer hover:bg-gray-200 transition-colors text-left">
+          <button className="h-auto w-full px-2.5 py-1.5 text-gray-900 cursor-pointer hover:bg-gray-50 transition-colors text-left">
             <div className="flex items-center justify-between">
-              {header}
+              <div className="flex items-center gap-1.5">
+                {stateIcon}
+                <span className="text-sm font-medium">{toolName}</span>
+                {(state === "pending" || state === "streaming") && (
+                  <span className="text-xs text-gray-400">· running</span>
+                )}
+              </div>
               <SpriteIcon
                 name="chevron-bottom"
                 className={cn(
-                  "h-4 w-4 text-gray-400 transition-transform duration-200",
+                  "h-3.5 w-3.5 text-gray-400 transition-transform duration-200",
                   isOpen && "rotate-180",
                 )}
               />
             </div>
           </button>
         </CollapsibleTrigger>
-        <CollapsibleContent>{children}</CollapsibleContent>
+        <CollapsibleContent>
+          <div className="px-2.5 pb-1.5 pt-0 space-y-2">{children}</div>
+        </CollapsibleContent>
       </Collapsible>
     </div>
   );
 };
 
-// Collapsible Input Component
-function CollapsibleInput({
-  input,
-  label,
-}: {
-  input: Record<string, unknown>;
-  label: string;
-}) {
-  const [isOpen, setIsOpen] = useState(true);
-
-  if (!input) return null;
-
+function DemoStreamingSkeleton() {
   return (
-    <div className="px-3 pt-2 text-xs border-b border-gray-100 pb-2">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between mb-1.5 w-full hover:opacity-80 transition-opacity"
-      >
-        <h4 className="text-[10px] font-semibold uppercase tracking-wide text-gray-500">
-          {label}
-        </h4>
-        <SpriteIcon
-          name="chevron-bottom"
-          className={cn(
-            "h-3.5 w-3.5 text-gray-400 transition-transform",
-            isOpen && "rotate-180",
-          )}
-        />
-      </button>
-      {isOpen && (
-        <div className="rounded-lg bg-white border border-gray-200 p-2 font-mono text-gray-600 animate-in fade-in slide-in-from-top-1 duration-200">
-          {Object.entries(input).map(([key, value]) => (
-            <div key={key} className="flex items-start gap-2">
-              <span className="text-gray-400 select-none shrink-0">{key}:</span>
-              <span className="break-all">{JSON.stringify(value)}</span>
-            </div>
-          ))}
+    <div className="space-y-4 mt-4 pt-4 border-t border-gray-100">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-32 bg-gray-100 rounded animate-pulse" />
+          <div className="h-4 w-16 bg-gray-100 rounded animate-pulse" />
         </div>
-      )}
+        <div className="h-7 w-24 bg-gray-100 rounded animate-pulse" />
+      </div>
+      <div className="rounded-xl border border-gray-200 overflow-hidden bg-white">
+        <table className="w-full text-xs table-fixed">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-2 py-2 w-8">
+                <div className="h-4 w-4 mx-auto bg-gray-200 rounded animate-pulse" />
+              </th>
+              <th className="px-2 py-2 text-left w-[28%]">
+                <div className="h-4 w-12 bg-gray-200 rounded animate-pulse" />
+              </th>
+              <th className="px-2 py-2 text-left">
+                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
+              </th>
+              <th className="px-2 py-2 text-right w-20">
+                <div className="h-4 w-12 ml-auto bg-gray-200 rounded animate-pulse" />
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {[1, 2, 3].map((n) => (
+              <tr key={n}>
+                <td className="px-2 py-2">
+                  <div className="h-4 w-4 mx-auto bg-gray-100 rounded animate-pulse" />
+                </td>
+                <td className="px-2 py-2">
+                  <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
+                </td>
+                <td className="px-2 py-2">
+                  <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
+                </td>
+                <td className="px-2 py-2">
+                  <div className="h-6 w-16 ml-auto bg-gray-100 rounded animate-pulse" />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -387,7 +409,7 @@ export function DemoAIDrawerStandalone() {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [showApprovalButtons, setShowApprovalButtons] = useState(false);
+  const [_showApprovalButtons, setShowApprovalButtons] = useState(false);
   const [selectedModel, setSelectedModel] = useState<AIModelConfig>(
     AI_MODELS[0],
   );
@@ -606,59 +628,69 @@ export function DemoAIDrawerStandalone() {
     };
 
     const phase1_aiResponse = () => {
-      const aiResponse: Message = {
+      const toolCallId = generateToolCallId();
+      // First show streaming skeleton
+      const streamingResponse: Message = {
         id: `msg-${Date.now()}-ai`,
         role: "assistant",
         content: t("phase1.aiResponse"),
         timestamp: new Date(),
         toolCall: {
-          id: generateToolCallId(),
+          id: toolCallId,
           name: "proposeTranslations",
-          state: "output-available",
-          input: {
-            keys: [
-              "auth.login.title",
-              "auth.login.submit",
-              "auth.signup.title",
-            ],
-            language: "tr",
-          },
-          translations: [
-            {
-              k: "auth.login.title",
-              n: "login.title",
-              ns: "auth",
-              l: "tr",
-              ln: "Turkish",
-              cc: "tr",
-              t: "Giriş Yap",
-            },
-            {
-              k: "auth.login.submit",
-              n: "login.submit",
-              ns: "auth",
-              l: "tr",
-              ln: "Turkish",
-              cc: "tr",
-              t: "Giriş",
-            },
-            {
-              k: "auth.signup.title",
-              n: "signup.title",
-              ns: "auth",
-              l: "tr",
-              ln: "Turkish",
-              cc: "tr",
-              t: "Hesap Oluştur",
-            },
-          ],
+          state: "streaming",
         },
       };
-      messagesState = [...messagesState, aiResponse];
+      messagesState = [...messagesState, streamingResponse];
       setMessages(messagesState);
       setIsTyping(false);
-      setShowApprovalButtons(true);
-      scheduleNext(phase1_approve, 1500);
+
+      // After delay, show actual translations
+      scheduleNext(() => {
+        messagesState = messagesState.map((msg) =>
+          msg.toolCall?.id === toolCallId
+            ? {
+                ...msg,
+                toolCall: {
+                  ...msg.toolCall,
+                  state: "output-available" as const,
+                  translations: [
+                    {
+                      k: "auth.login.title",
+                      n: "login.title",
+                      ns: "auth",
+                      l: "tr",
+                      ln: "Turkish",
+                      cc: "tr",
+                      t: "Giriş Yap",
+                    },
+                    {
+                      k: "auth.login.submit",
+                      n: "login.submit",
+                      ns: "auth",
+                      l: "tr",
+                      ln: "Turkish",
+                      cc: "tr",
+                      t: "Giriş",
+                    },
+                    {
+                      k: "auth.signup.title",
+                      n: "signup.title",
+                      ns: "auth",
+                      l: "tr",
+                      ln: "Turkish",
+                      cc: "tr",
+                      t: "Hesap Oluştur",
+                    },
+                  ],
+                },
+              }
+            : msg,
+        );
+        setMessages(messagesState);
+        setShowApprovalButtons(true);
+        scheduleNext(phase1_approve, 1500);
+      }, 600);
     };
 
     const phase1_approve = () => {
@@ -706,59 +738,69 @@ export function DemoAIDrawerStandalone() {
     };
 
     const phase2_aiResponse = () => {
-      const aiResponse: Message = {
+      const toolCallId = generateToolCallId();
+      // First show streaming skeleton
+      const streamingResponse: Message = {
         id: `msg-${Date.now()}-ai`,
         role: "assistant",
         content: t("phase2.aiResponse"),
         timestamp: new Date(),
         toolCall: {
-          id: generateToolCallId(),
+          id: toolCallId,
           name: "proposeTranslations",
-          state: "output-available",
-          input: {
-            keys: [
-              "auth.login.title",
-              "auth.login.submit",
-              "auth.signup.title",
-            ],
-            language: "de",
-          },
-          translations: [
-            {
-              k: "auth.login.title",
-              n: "login.title",
-              ns: "auth",
-              l: "de",
-              ln: "German",
-              cc: "de",
-              t: "Anmelden",
-            },
-            {
-              k: "auth.login.submit",
-              n: "login.submit",
-              ns: "auth",
-              l: "de",
-              ln: "German",
-              cc: "de",
-              t: "Einloggen",
-            },
-            {
-              k: "auth.signup.title",
-              n: "signup.title",
-              ns: "auth",
-              l: "de",
-              ln: "German",
-              cc: "de",
-              t: "Konto erstellen",
-            },
-          ],
+          state: "streaming",
         },
       };
-      messagesState = [...messagesState, aiResponse];
+      messagesState = [...messagesState, streamingResponse];
       setMessages(messagesState);
       setIsTyping(false);
-      setShowApprovalButtons(true);
-      scheduleNext(phase2_approve, 1500);
+
+      // After delay, show actual translations
+      scheduleNext(() => {
+        messagesState = messagesState.map((msg) =>
+          msg.toolCall?.id === toolCallId
+            ? {
+                ...msg,
+                toolCall: {
+                  ...msg.toolCall,
+                  state: "output-available" as const,
+                  translations: [
+                    {
+                      k: "auth.login.title",
+                      n: "login.title",
+                      ns: "auth",
+                      l: "de",
+                      ln: "German",
+                      cc: "de",
+                      t: "Anmelden",
+                    },
+                    {
+                      k: "auth.login.submit",
+                      n: "login.submit",
+                      ns: "auth",
+                      l: "de",
+                      ln: "German",
+                      cc: "de",
+                      t: "Einloggen",
+                    },
+                    {
+                      k: "auth.signup.title",
+                      n: "signup.title",
+                      ns: "auth",
+                      l: "de",
+                      ln: "German",
+                      cc: "de",
+                      t: "Konto erstellen",
+                    },
+                  ],
+                },
+              }
+            : msg,
+        );
+        setMessages(messagesState);
+        setShowApprovalButtons(true);
+        scheduleNext(phase2_approve, 1500);
+      }, 600);
     };
 
     const phase2_approve = () => {
@@ -1125,8 +1167,6 @@ export function DemoAIDrawerStandalone() {
     );
   };
 
-  const inputParametersLabel = t("inputParameters");
-
   return (
     <div className="static h-full w-full bg-white border-l border-gray-200 flex flex-col overflow-hidden rounded-tl-xl">
       {/* Messages Area - Scrollable */}
@@ -1171,7 +1211,7 @@ export function DemoAIDrawerStandalone() {
                   <div
                     className={cn(
                       msg.role === "user"
-                        ? "bg-gray-200 w-full text-gray-700 text-sm rounded-2xl px-3 py-1.5 whitespace-pre-wrap"
+                        ? "bg-gray-200 w-full text-gray-700 text-sm rounded-xl px-3 py-2 whitespace-pre-wrap"
                         : "text-sm text-gray-700 whitespace-pre-wrap",
                     )}
                   >
@@ -1184,80 +1224,19 @@ export function DemoAIDrawerStandalone() {
                 {/* Sync tool */}
                 {msg.toolCall && msg.toolCall.syncInfo && (
                   <div className="w-full">
-                    <ToolWrapper
-                      header={
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className={cn(
-                              "flex h-6 w-6 shrink-0 items-center justify-center rounded-full shadow-sm border bg-white border-gray-200",
-                            )}
-                          >
-                            {msg.toolCall.state === "pending" ? (
-                              <svg
-                                className="h-4 w-4 text-blue-500 animate-spin"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <circle
-                                  className="opacity-25"
-                                  cx="12"
-                                  cy="12"
-                                  r="10"
-                                  stroke="currentColor"
-                                  strokeWidth="4"
-                                />
-                                <path
-                                  className="opacity-75"
-                                  fill="currentColor"
-                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                />
-                              </svg>
-                            ) : (
-                              <IconCircleDashed
-                                className="h-4 w-4 text-emerald-500"
-                                strokeWidth={3}
-                              />
-                            )}
-                          </div>
-                          <div className="flex flex-col text-left">
-                            <span className="text-sm font-semibold">
-                              {msg.toolCall.name}
-                            </span>
-                            <span className="text-[10px] text-gray-400 font-mono">
-                              {msg.toolCall.id}
-                            </span>
-                          </div>
-                          <span
-                            className={cn(
-                              "ml-auto inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium mr-2",
-                              msg.toolCall.state === "completed"
-                                ? "bg-emerald-100 text-emerald-700"
-                                : "bg-blue-100 text-blue-700",
-                            )}
-                          >
-                            {msg.toolCall.state === "pending"
-                              ? t("status.publishing")
-                              : t("status.published")}
-                          </span>
-                        </div>
-                      }
+                    <DemoToolShell
+                      toolName={msg.toolCall.name}
+                      toolCallId={msg.toolCall.id}
+                      state={msg.toolCall.state}
                     >
-                      {/* Input Parameters - Collapsible */}
-                      {msg.toolCall.input && (
-                        <CollapsibleInput
-                          input={msg.toolCall.input}
-                          label={inputParametersLabel}
-                        />
-                      )}
                       {/* Sync Content - File Changes */}
-                      <div className="px-3 py-1.5 space-y-2">
+                      <div className="space-y-2">
                         {msg.toolCall.syncInfo.files.map((file, idx) => (
                           <div
                             key={idx}
                             className="flex items-center justify-between px-3 py-1.5 rounded-lg border transition-all bg-white border-gray-200"
                           >
                             <div className="flex items-center gap-2.5">
-                              {/* Country flag icon */}
                               <div className="flex items-center justify-center w-6 h-6 rounded bg-gray-100 overflow-hidden">
                                 <img
                                   src={`https://flagcdn.com/w40/${file.countryCode.toLowerCase()}.png`}
@@ -1265,7 +1244,6 @@ export function DemoAIDrawerStandalone() {
                                   className="w-5 h-4 rounded-sm object-cover"
                                 />
                               </div>
-                              {/* File path */}
                               <div className="flex flex-col">
                                 <span className="text-sm font-mono text-gray-800">
                                   {file.path}
@@ -1275,7 +1253,6 @@ export function DemoAIDrawerStandalone() {
                                 </span>
                               </div>
                             </div>
-                            {/* Changes indicator */}
                             <div className="flex items-center gap-2">
                               {file.added > 0 && (
                                 <span className="text-xs font-medium text-emerald-600">
@@ -1288,251 +1265,255 @@ export function DemoAIDrawerStandalone() {
                                 </span>
                               )}
                               {msg.toolCall?.state === "pending" && (
-                                <svg
-                                  className="w-4 h-4 text-blue-500 animate-spin"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                  />
-                                  <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                  />
-                                </svg>
+                                <IconLoadingCircle className="w-4 h-4 animate-spin text-blue-500" />
                               )}
                             </div>
                           </div>
                         ))}
                       </div>
-                    </ToolWrapper>
+                    </DemoToolShell>
                   </div>
                 )}
 
                 {/* Tool call with translation table */}
-                {msg.toolCall && msg.toolCall.translations && (
-                  <div className="w-full space-y-4">
-                    {/* Tool Container */}
-                    <ToolWrapper
-                      header={
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className={cn(
-                              "flex h-6 w-6 shrink-0 items-center justify-center rounded-full shadow-sm border bg-white border-gray-200",
-                            )}
-                          >
-                            {msg.toolCall.state === "completed" ? (
-                              <div className="flex items-center gap-1.5 text-[#22C55E]">
-                                <StatusIcon status="published" />
-                              </div>
-                            ) : (
-                              <IconCircleDashed
-                                className="h-4 w-4 text-[#22C55E]"
-                                strokeWidth={3}
-                              />
-                            )}
-                          </div>
-                          <div className="flex flex-col text-left">
-                            <span className="text-sm font-semibold">
-                              {msg.toolCall.name}
-                            </span>
-                            <span className="text-[10px] text-gray-400 font-mono">
-                              {msg.toolCall.id}
-                            </span>
-                          </div>
-                          <span
-                            className={cn(
-                              "ml-auto inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium mr-2",
-                              msg.toolCall.state === "completed"
-                                ? "bg-emerald-100 text-emerald-700"
-                                : "bg-gray-100 text-gray-700",
-                            )}
-                          >
-                            {msg.toolCall.state === "completed"
-                              ? t("status.completed")
-                              : t("status.ready")}
-                          </span>
-                        </div>
-                      }
-                    >
-                      {/* Input Parameters - Collapsible */}
-                      {msg.toolCall.input && (
-                        <CollapsibleInput
-                          input={msg.toolCall.input}
-                          label={inputParametersLabel}
-                        />
-                      )}
+                {msg.toolCall &&
+                  (msg.toolCall.translations ||
+                    msg.toolCall.state === "streaming") && (
+                    <div className="w-full">
+                      <DemoToolShell
+                        toolName={msg.toolCall.name}
+                        toolCallId={msg.toolCall.id}
+                        state={msg.toolCall.state}
+                      >
+                        {/* Streaming skeleton */}
+                        {msg.toolCall.state === "streaming" && (
+                          <DemoStreamingSkeleton />
+                        )}
 
-                      {/* Tool Content */}
-                      <div className="px-4 pb-3 pt-2 space-y-4">
-                        {/* Approve Button - Top Right */}
-                        {msg.toolCall.state === "output-available" &&
-                          showApprovalButtons && (
+                        {/* Tool Content */}
+                        {msg.toolCall.translations && (
+                          <div className="space-y-4 mt-4 pt-4 border-t border-gray-100">
+                            {/* Proposal Header */}
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium text-gray-700">
-                                {t("translationProposals")} (
-                                {msg.toolCall.translations.length})
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-gray-700">
+                                  {t("translationProposals")} (
+                                  {msg.toolCall.translations.length})
+                                </span>
+                                {selectedRows.size > 0 &&
+                                  msg.toolCall.state !== "completed" && (
+                                    <Button
+                                      onClick={handleApprove}
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-7 text-xs"
+                                    >
+                                      {t("approveSelected")} (
+                                      {selectedRows.size})
+                                    </Button>
+                                  )}
+                              </div>
                               <Button
                                 onClick={handleApprove}
                                 size="sm"
-                                className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+                                className={cn(
+                                  "h-7 text-xs text-white",
+                                  msg.toolCall.state === "completed"
+                                    ? "bg-gray-400 cursor-not-allowed"
+                                    : "bg-emerald-600 hover:bg-emerald-700",
+                                )}
+                                disabled={msg.toolCall.state === "completed"}
                               >
-                                {t("approveAll")}
+                                {msg.toolCall.state === "completed"
+                                  ? t("status.allApproved")
+                                  : t("approveAll")}
                               </Button>
                             </div>
-                          )}
-                        {/* Group by language */}
-                        {(() => {
-                          const byLang: Record<string, Translation[]> = {};
-                          msg.toolCall.translations!.forEach((tr) => {
-                            if (!byLang[tr.l]) byLang[tr.l] = [];
-                            byLang[tr.l].push(tr);
-                          });
 
-                          return Object.entries(byLang).map(
-                            ([langCode, items]) => (
-                              <div key={langCode} className="space-y-2">
-                                {/* Language Header */}
-                                <div className="flex items-center gap-2 px-1">
-                                  <FlagIcon countryCode={items[0].cc} />
-                                  <span className="text-sm font-semibold text-gray-700">
-                                    {items[0].ln}
-                                  </span>
-                                  <span className="text-xs text-gray-500">
-                                    ({items.length}{" "}
-                                    {items.length === 1
-                                      ? t("translationSingular")
-                                      : t("translationPlural")}
-                                    )
-                                  </span>
-                                </div>
+                            {/* Group by language */}
+                            {(() => {
+                              const byLang: Record<string, Translation[]> = {};
+                              msg.toolCall.translations!.forEach((tr) => {
+                                if (!byLang[tr.l]) byLang[tr.l] = [];
+                                byLang[tr.l].push(tr);
+                              });
 
-                                {/* Translation Table */}
-                                <div className="rounded-xl border border-gray-200 overflow-hidden bg-white">
-                                  <table className="w-full text-xs table-fixed">
-                                    <thead className="bg-gray-50">
-                                      <tr>
-                                        <th className="px-2 py-1.5 w-8">
-                                          <div>
-                                            <Checkbox
-                                              checked={
-                                                msg.toolCall?.state ===
-                                                  "completed" ||
-                                                selectedRows.size ===
-                                                  items.length
-                                              }
-                                              disabled={
-                                                msg.toolCall?.state ===
-                                                "completed"
-                                              }
-                                              onChange={(checked) => {
-                                                if (checked) {
-                                                  setSelectedRows(
-                                                    new Set(
-                                                      items.map((i) => i.k),
-                                                    ),
-                                                  );
-                                                } else {
-                                                  setSelectedRows(new Set());
-                                                }
-                                              }}
-                                            />
-                                          </div>
-                                        </th>
-                                        <th className="px-2 py-1.5 text-left text-gray-600 font-semibold w-[30%]">
-                                          {t("table.key")}
-                                        </th>
-                                        <th className="px-2 py-1.5 text-left text-gray-600 font-semibold">
-                                          {t("table.translation")}
-                                        </th>
-                                        <th className="px-2 py-1.5 text-right text-gray-600 font-semibold w-20">
-                                          {t("table.action")}
-                                        </th>
-                                      </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-100">
-                                      {items.map((item, idx) => (
-                                        <tr
-                                          key={idx}
-                                          className={cn(
-                                            "transition-colors",
-                                            msg.toolCall?.state ===
-                                              "completed" && "bg-emerald-50",
-                                          )}
-                                        >
-                                          <td className="px-2 py-1.5">
-                                            <div>
-                                              <Checkbox
-                                                checked={
-                                                  msg.toolCall?.state ===
-                                                    "completed" ||
-                                                  selectedRows.has(item.k)
-                                                }
-                                                onChange={(
-                                                  checked: boolean,
-                                                ) => {
-                                                  if (
+                              return Object.entries(byLang).map(
+                                ([langCode, items]) => (
+                                  <div key={langCode} className="space-y-2">
+                                    {/* Language Group Header */}
+                                    <div className="flex items-center gap-2 px-1">
+                                      <FlagIcon countryCode={items[0].cc} />
+                                      <span className="text-xs text-gray-700">
+                                        {items[0].ln}
+                                      </span>
+                                      <span className="text-xs text-gray-500">
+                                        ({items.length}{" "}
+                                        {items.length === 1
+                                          ? t("translationSingular")
+                                          : t("translationPlural")}
+                                        )
+                                      </span>
+                                      {msg.toolCall?.state === "completed" && (
+                                        <span className="text-emerald-600 text-xs font-medium">
+                                          {t("status.allApproved")}
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {/* Translation Table */}
+                                    <div className="rounded-xl border border-gray-200 overflow-hidden bg-white">
+                                      <table className="w-full text-xs table-fixed">
+                                        <colgroup>
+                                          <col style={{ width: "36px" }} />
+                                          <col style={{ width: "28%" }} />
+                                          <col />
+                                          <col style={{ width: "80px" }} />
+                                        </colgroup>
+                                        <thead className="bg-gray-50">
+                                          <tr>
+                                            <th className="px-1.5 py-2">
+                                              <div>
+                                                <Checkbox
+                                                  checked={
+                                                    msg.toolCall?.state ===
+                                                      "completed" ||
+                                                    selectedRows.size ===
+                                                      items.length
+                                                  }
+                                                  disabled={
                                                     msg.toolCall?.state ===
                                                     "completed"
-                                                  )
-                                                    return; // Don't allow changes after approval
-                                                  const newSelected = new Set(
-                                                    selectedRows,
-                                                  );
-                                                  if (checked) {
-                                                    newSelected.add(item.k);
-                                                  } else {
-                                                    newSelected.delete(item.k);
                                                   }
-                                                  setSelectedRows(newSelected);
-                                                }}
-                                              />
-                                            </div>
-                                          </td>
-                                          <td className="px-2 py-1.5 font-mono text-gray-800">
-                                            <div className="truncate">
-                                              {item.ns && (
-                                                <span className="text-gray-400">
-                                                  {item.ns}.
-                                                </span>
-                                              )}
-                                              {item.n}
-                                            </div>
-                                          </td>
-                                          <td className="px-2 py-1.5 text-gray-800 font-medium">
-                                            {item.t}
-                                          </td>
-                                          <td className="px-2 py-1.5 text-right">
-                                            {msg.toolCall?.state ===
-                                            "completed" ? (
-                                              <div className="flex justify-end">
-                                                <span className="inline-flex items-center gap-1 text-emerald-600 text-[10px] font-medium">
-                                                  {t("published")}
-                                                </span>
+                                                  onChange={(checked) => {
+                                                    if (checked) {
+                                                      setSelectedRows(
+                                                        new Set(
+                                                          items.map(
+                                                            (i) => i.k,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    } else {
+                                                      setSelectedRows(
+                                                        new Set(),
+                                                      );
+                                                    }
+                                                  }}
+                                                />
                                               </div>
-                                            ) : null}
-                                          </td>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            ),
-                          );
-                        })()}
-                      </div>
-                    </ToolWrapper>
-                  </div>
-                )}
+                                            </th>
+                                            <th className="px-2 py-2 text-left text-gray-600 font-semibold">
+                                              {t("table.key")}
+                                            </th>
+                                            <th className="px-2 py-2 text-left text-gray-600 font-semibold">
+                                              {t("table.translation")}
+                                            </th>
+                                            <th className="px-2 py-2 text-right text-gray-600 font-semibold">
+                                              {t("table.action")}
+                                            </th>
+                                          </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-100">
+                                          {items.map((item, idx) => (
+                                            <tr
+                                              key={idx}
+                                              className={cn(
+                                                "transition-colors",
+                                                (msg.toolCall?.state ===
+                                                  "completed" ||
+                                                  selectedRows.has(item.k)) &&
+                                                  "bg-emerald-50",
+                                              )}
+                                            >
+                                              <td className="px-1.5 py-2">
+                                                <div>
+                                                  <Checkbox
+                                                    checked={
+                                                      msg.toolCall?.state ===
+                                                        "completed" ||
+                                                      selectedRows.has(item.k)
+                                                    }
+                                                    onChange={(
+                                                      checked: boolean,
+                                                    ) => {
+                                                      if (
+                                                        msg.toolCall?.state ===
+                                                        "completed"
+                                                      )
+                                                        return;
+                                                      const newSelected =
+                                                        new Set(selectedRows);
+                                                      if (checked) {
+                                                        newSelected.add(
+                                                          item.k,
+                                                        );
+                                                      } else {
+                                                        newSelected.delete(
+                                                          item.k,
+                                                        );
+                                                      }
+                                                      setSelectedRows(
+                                                        newSelected,
+                                                      );
+                                                    }}
+                                                  />
+                                                </div>
+                                              </td>
+                                              <td className="px-2 py-2 font-mono text-gray-800">
+                                                <div className="truncate">
+                                                  {item.ns && (
+                                                    <span className="text-gray-400">
+                                                      {item.ns}.
+                                                    </span>
+                                                  )}
+                                                  {item.n}
+                                                </div>
+                                              </td>
+                                              <td className="px-2 py-2 text-gray-800 font-medium">
+                                                {item.t}
+                                              </td>
+                                              <td className="px-2 py-2 text-right">
+                                                {msg.toolCall?.state ===
+                                                  "completed" ||
+                                                selectedRows.has(item.k) ? (
+                                                  <span className="text-emerald-600 text-[10px] font-medium">
+                                                    {t("approved")}
+                                                  </span>
+                                                ) : (
+                                                  <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    className="h-6 px-2"
+                                                    onClick={() => {
+                                                      const newSelected =
+                                                        new Set(selectedRows);
+                                                      newSelected.add(item.k);
+                                                      setSelectedRows(
+                                                        newSelected,
+                                                      );
+                                                    }}
+                                                  >
+                                                    <span className="text-[10px] font-medium">
+                                                      {t("approve")}
+                                                    </span>
+                                                  </Button>
+                                                )}
+                                              </td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                ),
+                              );
+                            })()}
+                          </div>
+                        )}
+                      </DemoToolShell>
+                    </div>
+                  )}
               </div>
             </div>
           </div>
