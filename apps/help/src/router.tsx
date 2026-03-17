@@ -11,7 +11,8 @@ export const getRouter = () => {
     },
     trailingSlash: "always",
     scrollRestoration: true,
-    defaultPreloadStaleTime: 0,
+    defaultPreload: "intent",
+    defaultPreloadStaleTime: 30_000,
     defaultStaleTime: 60_000,
   });
 

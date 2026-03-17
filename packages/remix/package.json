@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/remix",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Better i18n Remix/Hydrogen integration — CDN-powered i18n",
   "license": "MIT",
   "repository": {
