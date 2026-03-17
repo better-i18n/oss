@@ -26,6 +26,15 @@ export const metadata: Metadata = {
     default: 'Documentation - Better I18N',
   },
   description: 'Better I18N documentation - CLI, MCP Server, and Next.js SDK for translation management',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
 };
 
 // Tab icon colors (CSS variable names)
