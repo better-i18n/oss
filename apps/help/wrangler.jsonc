@@ -4,6 +4,7 @@
   "main": "dist/worker-entry.js",
   "compatibility_date": "2025-01-15",
   "compatibility_flags": ["nodejs_compat"],
+  // Local dev: uses workers.dev subdomain (no custom domain)
   "workers_dev": true,
   "assets": {
     "directory": "dist/client",
@@ -14,16 +15,24 @@
     "logs": { "enabled": true },
     "enabled": true
   },
-  // Uncomment and configure for your domain:
-  // "routes": [
-  //   {
-  //     "pattern": "help.yourdomain.com/*",
-  //     "zone_name": "yourdomain.com"
-  //   }
-  // ],
   "vars": {
-    "ENVIRONMENT": "production",
-    "APP_ORIGIN": "https://help.yourdomain.com",
+    "ENVIRONMENT": "development",
     "CDN_URL": "https://cdn.better-i18n.com"
+  },
+  "env": {
+    "production": {
+      "workers_dev": false,
+      // Configure your domain here:
+      "routes": [
+        {
+          "pattern": "help.yourdomain.com/*",
+          "zone_name": "yourdomain.com"
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "production",
+        "CDN_URL": "https://cdn.better-i18n.com"
+      }
+    }
   }
 }
