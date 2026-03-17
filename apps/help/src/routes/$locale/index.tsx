@@ -8,6 +8,7 @@ import { CommandPalette, type CommandSource, type CommandItem } from "@/componen
 import { getCollectionsWithCounts, getFeaturedArticles, getArticles } from "@/lib/content";
 import { formatMetaTags, getDefaultStructuredData } from "@/lib/seo";
 import { getAlternateLinks, getCanonicalLink } from "@/lib/seo";
+import { useT } from "@/lib/i18n";
 import type { HelpCollection, HelpArticleListItem } from "@/lib/content";
 import { IconPageTextSearch } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { DynamicIcon } from "@/components/shared/dynamic-icon";
@@ -48,11 +49,12 @@ function buildSources(
   collections: HelpCollection[],
   articles: HelpArticleListItem[],
   locale: string,
+  t: ReturnType<typeof useT>,
 ): CommandSource[] {
   return [
     {
       id: "articles",
-      label: "Articles",
+      label: t("commandPalette.sourceArticles"),
       fetch(query) {
         const q = query.trim().toLowerCase();
         const items: CommandItem[] = articles.map((a) => ({
@@ -74,7 +76,7 @@ function buildSources(
     },
     {
       id: "collections",
-      label: "Collections",
+      label: t("commandPalette.sourceCollections"),
       fetch(query) {
         const q = query.trim().toLowerCase();
         const items: CommandItem[] = collections.map((c) => ({
@@ -101,11 +103,12 @@ function buildSources(
 
 function HomePage() {
   const { collections, featuredArticles, allArticles, locale } = Route.useLoaderData();
+  const t = useT("common");
   const [cmdOpen, setCmdOpen] = React.useState(false);
 
   const sources = React.useMemo(
-    () => buildSources(collections, allArticles, locale),
-    [collections, allArticles, locale],
+    () => buildSources(collections, allArticles, locale, t),
+    [collections, allArticles, locale, t],
   );
 
   // Global ⌘K shortcut
