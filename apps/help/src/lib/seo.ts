@@ -60,7 +60,7 @@ export function getOrganizationSchema() {
     "@type": "Organization",
     name: SITE_NAME,
     url: "https://better-i18n.com",
-    logo: { "@type": "ImageObject", url: "https://better-i18n.com/logo.png" },
+    logo: { "@type": "ImageObject", url: "https://better-i18n.com/brand/logo-light.svg" },
   };
 }
 
@@ -112,7 +112,7 @@ export function getArticleSchema(options: ArticleSchemaOptions) {
     publisher: {
       "@type": "Organization",
       name: SITE_NAME,
-      logo: { "@type": "ImageObject", url: "https://better-i18n.com/logo.png" },
+      logo: { "@type": "ImageObject", url: "https://better-i18n.com/brand/logo-light.svg" },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": options.url },
   };
@@ -156,6 +156,18 @@ export function getCollectionPageSchema(options: {
   };
 }
 
+// ─── OG Image ───────────────────────────────────────────────────────
+
+const OG_BASE_URL = "https://og.better-i18n.com";
+
+function buildOgImageUrl(options: { title: string; description?: string; site?: string }) {
+  const params = new URLSearchParams();
+  params.set("title", options.title);
+  if (options.description) params.set("description", options.description);
+  if (options.site) params.set("site", options.site);
+  return `${OG_BASE_URL}/og?${params.toString()}`;
+}
+
 // ─── Meta Tags ──────────────────────────────────────────────────────
 
 const OG_LOCALE_MAP: Record<string, string> = {
@@ -173,8 +185,14 @@ export function formatMetaTags(options: {
   locale: string;
   pathname?: string;
   locales?: string[];
+  ogImage?: string;
 }) {
   const canonicalUrl = getCanonicalUrl(options.locale, options.pathname);
+  const ogImageUrl = options.ogImage ?? buildOgImageUrl({
+    title: options.title,
+    description: options.description,
+    site: "help",
+  });
 
   return [
     { title: options.title },
@@ -185,9 +203,13 @@ export function formatMetaTags(options: {
     { property: "og:url", content: canonicalUrl },
     { property: "og:site_name", content: `${SITE_NAME} Help Center` },
     { property: "og:locale", content: toOgLocale(options.locale) },
-    { name: "twitter:card", content: "summary" },
+    { property: "og:image", content: ogImageUrl },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: options.title },
     { name: "twitter:description", content: options.description },
+    { name: "twitter:image", content: ogImageUrl },
     { name: "robots", content: "index, follow" },
   ];
 }
