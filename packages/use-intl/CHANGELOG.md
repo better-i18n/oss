@@ -1,5 +1,13 @@
 # @better-i18n/use-intl
 
+## 0.1.17
+
+### Patch Changes
+
+- fix: update core dependency to use semver range instead of exact pin
+
+  Changes `workspace:*` to `workspace:^` so published versions use `^x.y.z` instead of exact `x.y.z`. This prevents downstream consumers from being locked to an old, potentially broken core version.
+
 ## 0.1.16
 
 ### Patch Changes
