@@ -5,13 +5,13 @@ export function baseOptions(): BaseLayoutProps {
     nav: {
       title: (
         <>
-          <img src="https://better-i18n.com/cdn-cgi/image/width=40,height=40,fit=contain/brand/logo.svg" alt="Better I18N" className="size-5 dark:invert" width={20} height={20} />
+          <img src="https://better-i18n.com/brand/logo-light.svg" alt="Better I18N" className="size-5 dark:invert" width={20} height={20} />
           <span>Better I18N</span>
         </>
       ),
       url: '/',
     },
-    githubUrl: 'https://github.com/aliosmandev/better-i18n',
+    githubUrl: 'https://github.com/better-i18n/oss',
     links: [
       {
         text: 'llms.txt',
