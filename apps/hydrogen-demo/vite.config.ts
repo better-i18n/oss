@@ -13,4 +13,12 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
   ],
+  resolve: {
+    dedupe: ["react", "react-dom", "react-router"],
+  },
+  ssr: {
+    optimizeDeps: {
+      include: ["void-elements"],
+    },
+  },
 });

@@ -16,22 +16,23 @@ The most common pattern for Remix apps is detecting the locale from the URL path
 ```
 
 ```ts title="app/lib/i18n.ts"
-export function getLocaleFromURL(request: Request): string | null {
+export function getLocaleFromURL(
+  request: Request,
+  languages: { code: string; isDefault: boolean }[],
+): string | null {
   const url = new URL(request.url);
   const firstSegment = url.pathname.split("/")[1]?.toLowerCase();
 
-  // Check if it matches a known locale
-  const knownLocales = ["en", "tr", "es", "fr", "de"];
-  if (firstSegment && knownLocales.includes(firstSegment) && firstSegment !== "en") {
-    return firstSegment;
-  }
-
-  return null; // Use default
+  // Match against available locales from CDN manifest
+  const match = languages.find(
+    (l) => l.code === firstSegment && !l.isDefault,
+  );
+  return match?.code ?? null; // Use default
 }
 ```
 
 <Callout type="info">
-For a dynamic approach, use `i18n.getLanguages()` to fetch available locales from the CDN manifest instead of hardcoding them. This returns `LanguageOption[]` with `code`, `nativeName`, and `isDefault` fields.
+Pass the result of `i18n.getLanguages()` as the `languages` parameter. This way, new languages are picked up automatically from the CDN manifest without a redeploy.
 </Callout>
 
 ## Accept-Language Header Detection
@@ -63,8 +64,9 @@ import { parseAcceptLanguage, matchLocale } from "@better-i18n/remix";
 const languages = parseAcceptLanguage("tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7");
 // → ["tr-TR", "tr", "en-US", "en"]
 
-// Match against your available locales
-const locale = matchLocale(languages, ["en", "tr", "es", "fr"]);
+// Match against your available locales (from CDN manifest)
+const availableLocales = await i18n.getLocales();
+const locale = matchLocale(languages, availableLocales);
 // → "tr"
 ```
 
@@ -89,16 +91,16 @@ import { i18n } from "~/i18n.server";
 
 export default {
   async fetch(request: Request): Promise<Response> {
-    // 1. Try URL path first (explicit user choice)
-    const urlLocale = getLocaleFromURL(request);
+    // 1. Fetch language list first (needed for URL detection)
+    const languages = await i18n.getLanguages();
 
-    // 2. Fall back to Accept-Language header
+    // 2. Try URL path first (explicit user choice)
+    const urlLocale = getLocaleFromURL(request, languages);
+
+    // 3. Fall back to Accept-Language header
     const locale = urlLocale || await i18n.detectLocale(request);
 
-    const [messages, languages] = await Promise.all([
-      i18n.getMessages(locale),
-      i18n.getLanguages(),
-    ]);
+    const messages = await i18n.getMessages(locale);
 
     // ... pass to loader context
   },
@@ -122,16 +124,18 @@ function getLocaleFromCookie(request: Request): string | null {
 }
 
 // Subdomain-based detection
-function getLocaleFromSubdomain(request: Request): string | null {
+function getLocaleFromSubdomain(
+  request: Request,
+  languages: { code: string }[],
+): string | null {
   const hostname = new URL(request.url).hostname;
   const subdomain = hostname.split(".")[0];
-  const knownLocales = ["en", "tr", "es", "fr", "de"];
-  return knownLocales.includes(subdomain) ? subdomain : null;
+  return languages.some((l) => l.code === subdomain) ? subdomain : null;
 }
 ```
 
 <Callout type="info">
-The hardcoded `knownLocales` list above is fine for subdomain detection, but for URL-path and switcher logic prefer `i18n.getLanguages()` — it reads from the CDN manifest so new languages are picked up automatically without a redeploy.
+Use `i18n.getLanguages()` to get the available locales dynamically — new languages are picked up automatically from the CDN manifest without a redeploy.
 </Callout>
 
 

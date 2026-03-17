@@ -115,34 +115,72 @@ The `languages` array comes from `i18n.getLanguages()` — pass it through your 
 
 ## Using in Routes
 
-Access `locale` and `messages` from loader context in any route:
+Access `locale` and `messages` from loader context in any route. Use hook-based translations for full ICU formatting support:
+
+<Tabs items={['i18next', 'use-intl']}>
+<Tab value="i18next">
 
 ```tsx title="app/routes/($locale)._index.tsx"
 import { useLoaderData } from "react-router";
+import { useTranslation } from "react-i18next";
 import { LocaleLink } from "~/components/LocaleLink";
-import { msg } from "~/lib/messages";
 
 export async function loader({ context }: LoaderFunctionArgs) {
   return {
     locale: context.locale,
-    messages: context.messages,
   };
 }
 
 export default function Homepage() {
-  const { locale, messages } = useLoaderData<typeof loader>();
-  const common = messages.common;
+  const { locale } = useLoaderData<typeof loader>();
+  const { t } = useTranslation("common"); // [!code highlight]
 
   return (
     <div>
-      <h1>{msg(common, "welcome", "Welcome")}</h1>
+      <h1>{t("welcome")}</h1>
       <LocaleLink to="/products" locale={locale}>
-        {msg(common, "shop_now", "Shop Now")}
+        {t("shop_now")}
       </LocaleLink>
     </div>
   );
 }
 ```
+
+</Tab>
+<Tab value="use-intl">
+
+```tsx title="app/routes/($locale)._index.tsx"
+import { useLoaderData } from "react-router";
+import { useTranslations } from "@better-i18n/remix/react";
+import { LocaleLink } from "~/components/LocaleLink";
+
+export async function loader({ context }: LoaderFunctionArgs) {
+  return {
+    locale: context.locale,
+  };
+}
+
+export default function Homepage() {
+  const { locale } = useLoaderData<typeof loader>();
+  const t = useTranslations("common"); // [!code highlight]
+
+  return (
+    <div>
+      <h1>{t("welcome")}</h1>
+      <LocaleLink to="/products" locale={locale}>
+        {t("shop_now")}
+      </LocaleLink>
+    </div>
+  );
+}
+```
+
+</Tab>
+</Tabs>
+
+<Callout type="warn">
+**`meta()` functions cannot use React hooks.** Use the `msg()` helper for meta tags — see [API Reference](/frameworks/remix/api-reference#msg).
+</Callout>
 
 ## SEO Considerations
 

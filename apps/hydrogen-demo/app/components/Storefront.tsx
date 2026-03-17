@@ -70,25 +70,24 @@ export function ProductCard({
       to={`/products/${product.handle}`}
       locale={locale}
       className={cx(
-        "group flex h-full flex-col rounded-[28px] border border-black/6 bg-white/88 p-3 shadow-[0_24px_80px_-48px_rgba(15,23,42,0.45)] transition duration-300 hover:-translate-y-1 hover:border-black/12 hover:shadow-[0_28px_90px_-42px_rgba(15,23,42,0.34)]",
+        "group flex h-full flex-col rounded-2xl border border-black/6 bg-white p-3 shadow-md transition duration-300 hover:-translate-y-1 hover:border-black/12 hover:shadow-lg",
         className,
       )}
     >
-      <div className="relative aspect-[4/5] overflow-hidden rounded-[22px] bg-[linear-gradient(180deg,#f4f1eb_0%,#ece7dd_100%)]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.95),transparent_42%)]" />
+      <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-slate-100">
         {product.featuredImage ? (
           <img
             src={product.featuredImage.url}
             alt={product.featuredImage.altText || product.title}
-            className="relative h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="relative flex h-full items-center justify-center px-6 text-center text-sm text-slate-500">
+          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-slate-500">
             {product.title}
           </div>
         )}
 
-        <div className="absolute left-4 top-4 rounded-full border border-white/80 bg-white/88 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-600 backdrop-blur">
+        <div className="absolute left-4 top-4 rounded-full border border-white/80 bg-white/88 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-600">
           {cardMessages?.localized_badge ?? "Localized"}
         </div>
       </div>
@@ -155,7 +154,7 @@ export function CollectionCard({
       to={`/collections/${collection.handle}`}
       locale={locale}
       className={cx(
-        "group relative overflow-hidden rounded-[30px] border border-black/6 bg-slate-950 p-6 text-white shadow-[0_28px_90px_-48px_rgba(15,23,42,0.8)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_34px_96px_-40px_rgba(15,23,42,0.88)]",
+        "group relative overflow-hidden rounded-2xl border border-black/6 bg-slate-950 p-6 text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-xl",
         className,
       )}
     >
@@ -167,7 +166,7 @@ export function CollectionCard({
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04] group-hover:opacity-90"
           />
         ) : (
-          <div className="h-full w-full bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.26),transparent_45%),linear-gradient(160deg,#0f172a_0%,#1e293b_65%,#334155_100%)]" />
+          <div className="h-full w-full bg-slate-900" />
         )}
       </div>
 
@@ -175,10 +174,10 @@ export function CollectionCard({
 
       <div className="relative flex min-h-[18rem] flex-col justify-between">
         <div className="flex items-start justify-between gap-4">
-          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-white/78 backdrop-blur">
+          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-white/78">
             {cardMessages?.badge ?? "Collection"}
           </span>
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/16 bg-white/8 backdrop-blur">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/16 bg-white/8">
             <svg
               aria-hidden="true"
               className="h-4 w-4"
@@ -214,7 +213,7 @@ interface InfoPanelProps {
 
 export function InfoPanel({ title, description, value }: InfoPanelProps) {
   return (
-    <div className="rounded-[24px] border border-black/6 bg-white/82 p-5 shadow-[0_18px_60px_-42px_rgba(15,23,42,0.4)] backdrop-blur">
+    <div className="rounded-2xl border border-black/6 bg-white p-5 shadow-sm">
       {value ? (
         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-slate-500">
           {value}

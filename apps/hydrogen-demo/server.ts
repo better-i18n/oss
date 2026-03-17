@@ -1,4 +1,9 @@
-import { createStorefrontClient } from "@shopify/hydrogen";
+import {
+  createStorefrontClient,
+  createCartHandler,
+  cartGetIdDefault,
+  cartSetIdDefault,
+} from "@shopify/hydrogen";
 import { createRequestHandler } from "@shopify/remix-oxygen";
 import { getLocaleFromRequest } from "~/lib/i18n";
 import { i18n } from "~/i18n.server";
@@ -46,6 +51,13 @@ export default {
       i18n: shopifyI18n,
     });
 
+    // 5. Create cart handler
+    const cart = createCartHandler({
+      storefront,
+      getCartId: cartGetIdDefault(request.headers),
+      setCartId: cartSetIdDefault(),
+    });
+
     const handleRequest = createRequestHandler({
       build: remixBuild,
       mode: process.env.NODE_ENV,
@@ -56,7 +68,7 @@ export default {
           locale,
           messages,
           languages,
-          cart: {} as never, // Cart not implemented in demo
+          cart,
         };
       },
     });

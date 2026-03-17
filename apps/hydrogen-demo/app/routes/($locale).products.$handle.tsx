@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLoaderData } from "react-router";
 import type { LoaderFunctionArgs, MetaFunction } from "@shopify/remix-oxygen";
+import { CartForm } from "@shopify/hydrogen";
+import { useTranslation } from "react-i18next";
 import { LocaleLink } from "~/components/LocaleLink";
-import { InfoPanel } from "~/components/Storefront";
 import { formatMoney } from "~/lib/format";
-import { msg } from "~/lib/messages";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: data?.product?.title ?? "Product" }];
@@ -30,8 +30,8 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 }
 
 export default function ProductPage() {
-  const { product, locale, messages } = useLoaderData<typeof loader>();
-  const productMessages = messages.products;
+  const { product, locale } = useLoaderData<typeof loader>();
+  const { t: tp } = useTranslation("products");
 
   const variants: VariantNode[] = product.variants.nodes;
   const options: OptionNode[] = product.options || [];
@@ -96,7 +96,7 @@ export default function ProductPage() {
     <div className="page-frame">
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <section className="glass-panel overflow-hidden p-4 sm:p-5">
-          <div className="grid gap-4 lg:grid-cols-[0.16fr_0.84fr]">
+          <div className={`grid gap-4 ${displayImages.length > 1 ? "lg:grid-cols-[0.16fr_0.84fr]" : ""}`}>
             {displayImages.length > 1 ? (
               <div className="order-2 flex gap-3 overflow-x-auto pb-2 lg:order-1 lg:flex-col lg:overflow-visible lg:pb-0">
                 {displayImages.map((img, i) => (
@@ -104,9 +104,9 @@ export default function ProductPage() {
                     key={img.url}
                     type="button"
                     onClick={() => setActiveImageIndex(i)}
-                    className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-[20px] border transition duration-200 ${
+                    className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border transition duration-200 ${
                       i === activeImageIndex
-                        ? "border-slate-950 shadow-[0_16px_40px_-26px_rgba(15,23,42,0.8)]"
+                        ? "border-slate-950 shadow-md"
                         : "border-black/6 hover:border-black/14"
                     }`}
                   >
@@ -120,17 +120,16 @@ export default function ProductPage() {
               </div>
             ) : null}
 
-            <div className="order-1 lg:order-2">
-              <div className="relative aspect-[4/4.6] overflow-hidden rounded-[30px] bg-[linear-gradient(180deg,#f4f1eb_0%,#ebe5da_100%)]">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.92),transparent_34%)]" />
+            <div className={displayImages.length > 1 ? "order-1 lg:order-2" : ""}>
+              <div className="relative aspect-[4/4.6] overflow-hidden rounded-2xl bg-slate-100">
                 {activeImage ? (
                   <img
                     src={activeImage.url}
                     alt={activeImage.altText || product.title}
-                    className="relative h-full w-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="relative flex h-full items-center justify-center text-slate-400">
+                  <div className="flex h-full items-center justify-center text-slate-400">
                     No image
                   </div>
                 )}
@@ -160,12 +159,12 @@ export default function ProductPage() {
                   d="m15 18-6-6 6-6"
                 />
               </svg>
-              {msg(productMessages, "back_to_catalog")}
+              {tp("back_to_catalog")}
             </LocaleLink>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <span className="rounded-full border border-black/7 bg-white/70 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-600">
-                Product detail
+              <span className="rounded-full border border-black/7 bg-slate-50 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-600">
+                {tp("product_detail_badge")}
               </span>
               <span
                 className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.22em] ${
@@ -180,8 +179,8 @@ export default function ProductPage() {
                   }`}
                 />
                 {isAvailable
-                  ? msg(productMessages, "in_stock")
-                  : msg(productMessages, "sold_out")}
+                  ? tp("in_stock")
+                  : tp("sold_out")}
               </span>
             </div>
 
@@ -211,8 +210,7 @@ export default function ProductPage() {
             ) : null}
 
             <p className="mt-5 text-sm leading-7 text-slate-600 sm:text-base">
-              {product.description ||
-                "A polished product detail page designed to show how localized labels, options, and merchandising can live inside a premium storefront shell."}
+              {product.description || tp("default_description")}
             </p>
 
             {options.length > 0
@@ -229,11 +227,11 @@ export default function ProductPage() {
                     <div key={option.id} className="mt-8">
                       <div className="flex items-center justify-between gap-3">
                         <h2 className="text-sm font-semibold text-slate-900">
-                          {msg(productMessages, "select_option")}{" "}
+                          {tp("select_option")}{" "}
                           {option.name}
                         </h2>
                         <span className="text-sm text-slate-500">
-                          {selectedOptions[option.name] || "Choose one"}
+                          {selectedOptions[option.name] || tp("choose_one")}
                         </span>
                       </div>
 
@@ -277,44 +275,38 @@ export default function ProductPage() {
                 })
               : null}
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <button
-                disabled={!isAvailable}
-                className={`inline-flex min-h-12 items-center justify-center rounded-full px-6 py-3 text-sm font-semibold text-white transition duration-200 ${
-                  isAvailable
-                    ? "bg-slate-950 hover:bg-slate-800"
-                    : "cursor-not-allowed bg-slate-300"
-                }`}
+            <div className="mt-8">
+              <CartForm
+                route={locale === "en" ? "/cart" : `/${locale}/cart`}
+                action={CartForm.ACTIONS.LinesAdd}
+                inputs={{
+                  lines: [
+                    {
+                      merchandiseId: selectedVariant?.id ?? "",
+                      quantity: 1,
+                    },
+                  ],
+                }}
               >
-                {isAvailable
-                  ? msg(productMessages, "add_to_cart")
-                  : msg(productMessages, "sold_out")}
-              </button>
-              <button
-                type="button"
-                className="inline-flex min-h-12 items-center justify-center rounded-full border border-black/8 bg-white/70 px-6 py-3 text-sm font-semibold text-slate-900 transition duration-200 hover:border-black/14 hover:bg-white"
-              >
-                {msg(productMessages, "save_for_later")}
-              </button>
+                {(fetcher) => (
+                  <button
+                    type="submit"
+                    disabled={!isAvailable || fetcher.state !== "idle"}
+                    className={`inline-flex min-h-12 w-full items-center justify-center rounded-full px-6 py-3 text-sm font-semibold text-white transition duration-200 sm:w-auto ${
+                      isAvailable
+                        ? "bg-slate-950 hover:bg-slate-800"
+                        : "cursor-not-allowed bg-slate-300"
+                    }`}
+                  >
+                    {fetcher.state !== "idle"
+                      ? tp("adding")
+                      : isAvailable
+                        ? tp("add_to_cart")
+                        : tp("sold_out")}
+                  </button>
+                )}
+              </CartForm>
             </div>
-          </div>
-
-          <div className="grid gap-5 sm:grid-cols-3">
-            <InfoPanel
-              value="Locale-ready"
-              title="Translated controls"
-              description="Variant labels, stock states, and description headings all map cleanly to message keys."
-            />
-            <InfoPanel
-              value="Hydrogen"
-              title="GraphQL-first data"
-              description="The page stays lean while still covering core commerce needs: images, options, price, and availability."
-            />
-            <InfoPanel
-              value="Docs example"
-              title="Simple to extend"
-              description="This shell can later absorb richer i18n UI components without redesigning the page."
-            />
           </div>
         </section>
       </div>
