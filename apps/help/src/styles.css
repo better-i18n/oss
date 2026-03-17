@@ -138,6 +138,7 @@
 
   .help-prose pre code {
     background-color: transparent !important;
+    color: var(--color-mist-900);
     padding: 0;
     border-radius: 0;
     font-weight: 400;

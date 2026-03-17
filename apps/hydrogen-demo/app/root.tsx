@@ -92,8 +92,7 @@ export default function App() {
         <Links />
       </head>
       <body className="min-h-screen bg-transparent text-slate-950 antialiased selection:bg-slate-950 selection:text-white">
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- monorepo dual i18next version workaround */}
-        <I18nextProvider i18n={i18nInstance as any}>
+        <I18nextProvider i18n={i18nInstance}>
           <Layout
             locale={locale}
             languages={languages}
