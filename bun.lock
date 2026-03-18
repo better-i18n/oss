@@ -293,6 +293,7 @@
       "version": "0.6.1",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
+        "@floating-ui/react": "^0.27.19",
       },
       "devDependencies": {
         "@types/node": "^20.0.0",
@@ -313,6 +314,7 @@
       "version": "0.4.0",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
+        "@floating-ui/react": "^0.27.19",
       },
       "devDependencies": {
         "@types/node": "^20.0.0",
