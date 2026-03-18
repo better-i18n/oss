@@ -9,6 +9,13 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
+import {
+  useFloating,
+  offset,
+  flip,
+  shift,
+  autoUpdate,
+} from "@floating-ui/react";
 import type { LanguageOption } from "@better-i18n/core";
 import {
   getLanguageLabel,
@@ -168,8 +175,6 @@ const styles = {
     cursor: "default",
   } satisfies CSSProperties,
   menu: {
-    position: "absolute",
-    right: 0,
     minWidth: 200,
     maxHeight: "70vh",
     overflowY: "auto",
@@ -330,9 +335,19 @@ export function LocaleDropdown({
 
   const [isOpen, setIsOpen] = useState(false);
   const [focusIndex, setFocusIndex] = useState(-1);
-  const [menuPlacement, setMenuPlacement] = useState<"top" | "bottom">("bottom");
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
+
+  const { refs, floatingStyles, placement: resolvedPlacement } = useFloating({
+    open: isOpen,
+    placement: placementProp === "top" ? "top-end" : "bottom-end",
+    middleware: [
+      offset(4),
+      flip({ padding: 16 }),
+      shift({ padding: 8 }),
+    ],
+    whileElementsMounted: autoUpdate,
+  });
 
   const isStyled = variant === "styled";
 
@@ -345,23 +360,6 @@ export function LocaleDropdown({
     : locale.toUpperCase();
   const currentFlag = currentLanguage ? resolveFlag(currentLanguage) : null;
   const canToggle = languages.length > 1;
-
-  // Compute menu placement based on available viewport space
-  const computePlacement = useCallback((): "top" | "bottom" => {
-    if (placementProp !== "auto") return placementProp;
-    if (!containerRef.current) return "bottom";
-    const rect = containerRef.current.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const menuHeight = Math.min(languages.length * 40 + 8, window.innerHeight * 0.7);
-    // 4px gap between trigger and menu + 16px breathing room
-    const required = menuHeight + 20;
-    return spaceBelow < required && rect.top > spaceBelow ? "top" : "bottom";
-  }, [placementProp, languages.length]);
-
-  const openMenu = useCallback(() => {
-    setMenuPlacement(computePlacement());
-    setIsOpen(true);
-  }, [computePlacement]);
 
   // Close on outside click
   useEffect(() => {
@@ -384,7 +382,7 @@ export function LocaleDropdown({
       if (!isOpen) {
         if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          openMenu();
+          setIsOpen(true);
           setFocusIndex(0);
         }
         return;
@@ -429,7 +427,7 @@ export function LocaleDropdown({
           break;
       }
     },
-    [isOpen, focusIndex, languages, navigate, openMenu],
+    [isOpen, focusIndex, languages, navigate],
   );
 
   // Scroll focused item into view
@@ -439,11 +437,6 @@ export function LocaleDropdown({
       items[focusIndex]?.scrollIntoView({ block: "nearest" });
     }
   }, [focusIndex]);
-
-  // Menu position style based on placement
-  const menuPositionStyle: CSSProperties = menuPlacement === "top"
-    ? { bottom: "calc(100% + 4px)" }
-    : { top: "calc(100% + 4px)" };
 
   // Loading skeleton
   if (!isReady || isLoading) {
@@ -478,11 +471,7 @@ export function LocaleDropdown({
 
   const handleTriggerClick = () => {
     if (!canToggle) return;
-    if (isOpen) {
-      setIsOpen(false);
-    } else {
-      openMenu();
-    }
+    setIsOpen((prev) => !prev);
   };
 
   return (
@@ -495,6 +484,7 @@ export function LocaleDropdown({
       {/* Trigger */}
       {renderTrigger ? (
         <div
+          ref={refs.setReference}
           onClick={handleTriggerClick}
           onKeyDown={handleKeyDown}
           role="button"
@@ -514,6 +504,7 @@ export function LocaleDropdown({
         </div>
       ) : (
         <button
+          ref={refs.setReference}
           type="button"
           onClick={handleTriggerClick}
           onKeyDown={handleKeyDown}
@@ -551,13 +542,16 @@ export function LocaleDropdown({
       {/* Menu */}
       {isOpen && canToggle && (
         <ul
-          ref={menuRef}
+          ref={(node: HTMLUListElement | null) => {
+            refs.setFloating(node);
+            menuRef.current = node;
+          }}
           role="listbox"
           aria-label="Available languages"
           data-better-locale-menu
-          data-placement={menuPlacement}
+          data-placement={resolvedPlacement.startsWith("top") ? "top" : "bottom"}
           className={menuClassName}
-          style={isStyled ? { ...styles.menu, ...menuPositionStyle } : undefined}
+          style={isStyled ? { ...styles.menu, ...floatingStyles } : floatingStyles}
         >
           {languages.map((language, index) => {
             const label = getLanguageLabel(language);
