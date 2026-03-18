@@ -4,6 +4,8 @@ export type { InitBetterI18nOptions, BetterI18nResult } from "./helpers.js";
 
 // React hooks
 export { useLanguages } from "./hooks.js";
+export { useLocaleSwitcher } from "./use-locale-switcher.js";
+export type { UseLocaleSwitcherReturn } from "./use-locale-switcher.js";
 
 // Locale detection
 export { getDeviceLocale, getDeviceLocales } from "./locale.js";

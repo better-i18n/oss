@@ -23,6 +23,12 @@ export type { UseLocaleRouterReturn } from "./hooks/useLocaleRouter.js";
 export { LanguageSwitcher } from "./components.js";
 export type { LanguageSwitcherProps } from "./components.js";
 
+export { LocaleDropdown } from "./components/locale-dropdown.js";
+export type {
+  LocaleDropdownProps,
+  LocaleDropdownRenderContext,
+} from "./components/locale-dropdown.js";
+
 // Types
 export type {
   Messages,

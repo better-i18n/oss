@@ -338,3 +338,11 @@ function useStandaloneSetLocale(config: I18nConfig) {
     [normalized.cookieName, router]
   );
 }
+
+// ─── LocaleDropdown ──────────────────────────────────────────────────
+
+export { LocaleDropdown } from "./components/locale-dropdown.js";
+export type {
+  LocaleDropdownProps,
+  LocaleDropdownRenderContext,
+} from "./components/locale-dropdown.js";
