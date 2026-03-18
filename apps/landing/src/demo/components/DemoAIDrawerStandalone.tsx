@@ -1221,59 +1221,91 @@ export function DemoAIDrawerStandalone() {
                   </div>
                 )}
 
-                {/* Sync tool */}
-                {msg.toolCall && msg.toolCall.syncInfo && (
-                  <div className="w-full">
-                    <DemoToolShell
-                      toolName={msg.toolCall.name}
-                      toolCallId={msg.toolCall.id}
-                      state={msg.toolCall.state}
-                    >
-                      {/* Sync Content - File Changes */}
-                      <div className="space-y-2">
-                        {msg.toolCall.syncInfo.files.map((file, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center justify-between px-3 py-1.5 rounded-lg border transition-all bg-white border-gray-200"
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <div className="flex items-center justify-center w-6 h-6 rounded bg-gray-100 overflow-hidden">
-                                <img
-                                  src={`https://flagcdn.com/w40/${file.countryCode.toLowerCase()}.png`}
-                                  alt={file.countryCode}
-                                  className="w-5 h-4 rounded-sm object-cover"
-                                />
-                              </div>
-                              <div className="flex flex-col">
-                                <span className="text-sm font-mono text-gray-800">
-                                  {file.path}
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  {file.lang}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {file.added > 0 && (
-                                <span className="text-xs font-medium text-emerald-600">
-                                  +{file.added} {t("keys")}
-                                </span>
+                {/* Sync tool — matches platform PublishApprovalUI approval mode */}
+                {msg.toolCall && msg.toolCall.syncInfo && (() => {
+                  const { syncInfo, state, name, id } = msg.toolCall!;
+                  const files = syncInfo!.files;
+                  const totalCount = files.reduce(
+                    (sum, f) => sum + f.added + f.modified,
+                    0,
+                  );
+                  const isPending = state === "pending";
+                  const isCompleted = state === "completed";
+                  return (
+                    <div className="w-full">
+                      <DemoToolShell toolName={name} toolCallId={id} state={state}>
+                        <div className="space-y-4 mt-4 pt-4 border-t border-gray-100">
+                          {/* Header with publish button (disabled — demo only) */}
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-gray-700">
+                              Publish Changes ({totalCount})
+                            </span>
+                            <Button
+                              size="sm"
+                              disabled
+                              className="h-7 text-xs text-white bg-gray-400 cursor-not-allowed"
+                            >
+                              {isPending ? (
+                                <>
+                                  <span className="h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin mr-1.5" />
+                                  Publishing...
+                                </>
+                              ) : isCompleted ? (
+                                <>Published to CDN</>
+                              ) : (
+                                <>Publish to CDN</>
                               )}
-                              {file.modified > 0 && (
-                                <span className="text-xs font-medium text-amber-600">
-                                  ~{file.modified}
-                                </span>
-                              )}
-                              {msg.toolCall?.state === "pending" && (
-                                <IconLoadingCircle className="w-4 h-4 animate-spin text-blue-500" />
-                              )}
+                            </Button>
+                          </div>
+                          {/* Scrollable file list — mirrors platform tree wrapper */}
+                          <div className="overflow-y-auto scrollbar-hide px-2 py-2 rounded-lg bg-gray-100 max-h-[220px]">
+                            <div className="space-y-2">
+                              {files.map((file, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center justify-between px-3 py-1.5 rounded-lg border transition-all bg-white border-gray-200"
+                                >
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="flex items-center justify-center w-6 h-6 rounded bg-gray-100 overflow-hidden">
+                                      <img
+                                        src={`https://flagcdn.com/w40/${file.countryCode.toLowerCase()}.png`}
+                                        alt={file.countryCode}
+                                        className="w-5 h-4 rounded-sm object-cover"
+                                      />
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="text-sm font-mono text-gray-800">
+                                        {file.path}
+                                      </span>
+                                      <span className="text-xs text-gray-500">
+                                        {file.lang}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    {file.added > 0 && (
+                                      <span className="text-xs font-medium text-emerald-600">
+                                        +{file.added} {t("keys")}
+                                      </span>
+                                    )}
+                                    {file.modified > 0 && (
+                                      <span className="text-xs font-medium text-amber-600">
+                                        ~{file.modified}
+                                      </span>
+                                    )}
+                                    {isPending && (
+                                      <IconLoadingCircle className="w-4 h-4 animate-spin text-blue-500" />
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    </DemoToolShell>
-                  </div>
-                )}
+                        </div>
+                      </DemoToolShell>
+                    </div>
+                  );
+                })()}
 
                 {/* Tool call with translation table */}
                 {msg.toolCall &&
