@@ -395,6 +395,32 @@ import { LanguageSwitcher } from "@better-i18n/remix/react";
 Accepts all standard `<select>` props (`className`, `aria-label`, etc.).
 
 </AccordionItem>
+
+<AccordionItem title="LocaleDropdown">
+
+Accessible dropdown component with flag emojis, native language names, and keyboard navigation. A more feature-rich alternative to `LanguageSwitcher`.
+
+```tsx
+import { LocaleDropdown } from "@better-i18n/remix/react";
+
+<LocaleDropdown />
+```
+
+Reads locale and languages from `RemixI18nProvider` context. Selecting a locale navigates to the locale-prefixed URL using `useNavigate()`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `defaultLocale` | `string` | `"en"` | Default locale (no URL prefix) |
+| `variant` | `"styled" \| "unstyled"` | `"styled"` | Styled or unstyled mode |
+| `showFlag` | `boolean` | `true` | Show flag emoji/image |
+| `showNativeName` | `boolean` | `true` | Show native language name |
+| `showLocaleCode` | `boolean` | `true` | Show locale code |
+| `renderTrigger` | `(ctx) => ReactNode` | — | Custom trigger renderer |
+| `renderItem` | `(ctx) => ReactNode` | — | Custom item renderer |
+
+For full props reference, CSS custom properties, and custom rendering — see [LocaleDropdown](/frameworks/locale#localedropdown).
+
+</AccordionItem>
 </Accordion>
 
 ---

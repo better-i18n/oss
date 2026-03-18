@@ -135,3 +135,98 @@ function LanguageSwitcher() {
 | `languages` | `LanguageOption[]` | Available languages from manifest |
 | `isLoading` | `boolean` | `true` while fetching |
 | `error` | `Error \| null` | Error if fetch failed |
+
+---
+
+## LocaleDropdown
+
+A fully-featured, accessible locale switcher dropdown for Next.js. Import from `@better-i18n/next/client` — the RSC-safe client entrypoint.
+
+```tsx
+'use client';
+
+import { LocaleDropdown } from '@better-i18n/next/client';
+import { useLocale } from 'next-intl';
+import { i18n } from '@/i18n.config';
+
+function Header() {
+  const locale = useLocale();
+
+  return (
+    <header>
+      <LocaleDropdown config={i18n.config} locale={locale} />
+    </header>
+  );
+}
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `config` | `I18nConfig` | Required | Config from `createI18n()` |
+| `locale` | `string` | Required | Current locale from `useLocale()` |
+| `languages` | `LanguageOption[]` | — | Pre-fetched languages (skips client CDN fetch) |
+| `variant` | `"styled" \| "unstyled"` | `"styled"` | Styled or unstyled mode |
+| `showFlag` | `boolean` | `true` | Show flag emoji/image |
+| `showNativeName` | `boolean` | `true` | Show native language name |
+| `showLocaleCode` | `boolean` | `true` | Show locale code |
+| `renderTrigger` | `(ctx) => ReactNode` | — | Custom trigger renderer |
+| `renderItem` | `(ctx) => ReactNode` | — | Custom item renderer |
+
+### Locale Switching Behavior
+
+| Context | Behavior |
+|---------|----------|
+| Inside `BetterI18nProvider` | Instant CDN fetch + client re-render — no navigation |
+| Without provider | Cookie update + `router.refresh()` — soft server re-render |
+
+### SSR-Optimized Example
+
+Pass `languages` from the server to skip the client-side CDN fetch:
+
+```tsx title="app/[locale]/layout.tsx"
+import { BetterI18nProvider } from '@better-i18n/next/client';
+import { i18n } from '@/i18n.config';
+
+export default async function LocaleLayout({ children, params }) {
+  const { locale } = await params;
+  const [messages, languages] = await Promise.all([
+    i18n.getMessages(locale),
+    i18n.getLanguages(),
+  ]);
+
+  return (
+    <BetterI18nProvider
+      config={i18n.config}
+      locale={locale}
+      messages={messages}
+    >
+      <Header locale={locale} languages={languages} />
+      {children}
+    </BetterI18nProvider>
+  );
+}
+```
+
+```tsx title="components/header.tsx"
+'use client';
+
+import { LocaleDropdown } from '@better-i18n/next/client';
+import { i18n } from '@/i18n.config';
+import type { LanguageOption } from '@better-i18n/core';
+
+function Header({ locale, languages }: { locale: string; languages: LanguageOption[] }) {
+  return (
+    <header>
+      <LocaleDropdown config={i18n.config} locale={locale} languages={languages} />
+    </header>
+  );
+}
+```
+
+<Callout type="tip">
+  No `transpilePackages` configuration needed — `@better-i18n/next` ships pre-compiled in `dist/`.
+</Callout>
+
+For full props reference, variants, CSS custom properties, and custom rendering — see [LocaleDropdown](/frameworks/locale#localedropdown).
