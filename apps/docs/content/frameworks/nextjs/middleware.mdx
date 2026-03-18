@@ -183,6 +183,120 @@ export default createBetterI18nMiddleware({
 });
 ```
 
+## Locale Prefix Modes
+
+The `localePrefix` option controls how locales appear in your URLs. Choose the mode that best fits your routing strategy.
+
+### `"always"` — Every URL Has a Locale Prefix
+
+Every page includes the locale in the URL, including the default locale.
+
+```
+/en/about    → English
+/tr/about    → Turkish
+/de/about    → German
+```
+
+Best for SEO-focused sites that want explicit locale signals in every URL.
+
+### `"as-needed"` (default) — Only Non-Default Locales Get a Prefix
+
+The default locale has no prefix. Other locales get a prefix.
+
+```
+/about       → English (default)
+/tr/about    → Turkish
+/de/about    → German
+```
+
+Recommended for most sites — clean URLs for the primary language, explicit prefixes for others.
+
+### `"never"` — No Locale in URLs
+
+All locales share the same URL. The active locale is determined by cookie and `Accept-Language` header.
+
+```
+/about       → English, Turkish, German (same URL for all)
+```
+
+Ideal for apps where locale is a user preference rather than a URL-level concern (e.g., dashboards, SaaS products).
+
+<Callout type="warn">
+  `localePrefix: "never"` requires understanding how the middleware rewrites work under the hood. Read the sections below carefully before using this mode.
+</Callout>
+
+#### Required File Structure
+
+Even with `"never"` mode, you still need the `[locale]` dynamic segment in your `app/` directory:
+
+```
+app/
+  [locale]/
+    layout.tsx     ← still required!
+    page.tsx
+    about/
+      page.tsx
+```
+
+The middleware performs an **invisible rewrite** — it detects the locale from cookie/headers and rewrites the request internally to `/{locale}/...`. The `[locale]` segment never appears in the browser URL, but Next.js file-based routing still relies on it.
+
+#### Layout Validation — Use Dynamic Locales
+
+Instead of hardcoding locales in `generateStaticParams`, fetch them dynamically from the CDN:
+
+```tsx title="app/[locale]/layout.tsx"
+import { i18n } from "@/i18n/config";
+
+export async function generateStaticParams() {
+  const locales = await i18n.getLocales(); // [!code highlight]
+  return locales.map((locale) => ({ locale }));
+}
+
+export default async function LocaleLayout({ children, params }) {
+  const { locale } = await params;
+  // ...
+}
+```
+
+<Callout type="tip">
+  Using `i18n.getLocales()` means adding a new language in the dashboard requires **zero code changes** — the next build picks it up automatically.
+</Callout>
+
+#### Routing and Navigation
+
+In `"never"` mode, `routing.locales` has no effect on URL generation — `usePathname`, `Link`, and other navigation APIs work as pass-through since there is no locale segment to manage.
+
+You can keep your `routing.ts` file for other configuration, but the locale list won't affect URL behavior. Alternatively, you can import directly from `next/navigation` — both approaches work identically in `"never"` mode.
+
+#### Cookie Behavior
+
+| Setting | Better i18n | next-intl |
+|---------|------------|-----------|
+| Default cookie name | `"locale"` | `"NEXT_LOCALE"` |
+
+If you're migrating from next-intl, set `cookieName: "NEXT_LOCALE"` to preserve existing user preferences:
+
+```ts title="i18n/config.ts"
+createI18n({
+  project: "acme/app",
+  defaultLocale: "en",
+  localePrefix: "never",
+  cookieName: "NEXT_LOCALE", // Preserve next-intl cookies during migration // [!code highlight]
+});
+```
+
+The `useSetLocale` hook updates this cookie automatically. With `BetterI18nProvider`, it triggers an instant CDN fetch + client re-render. Without the provider, it sets the cookie and calls `router.refresh()`.
+
+#### Accidental Locale Prefix Redirect
+
+If a user visits `/tr/about` while `localePrefix` is set to `"never"`, the middleware automatically redirects to `/about` and sets the locale cookie to `tr`. This prevents duplicate content and ensures URLs stay clean.
+
+<Callout type="info">
+  The middleware also guards against double-prefix bugs (e.g., `/tr/tr/about`) — any stacked prefixes are stripped and redirected.
+</Callout>
+
+---
+
 ## How It Works
 
 1. **Detection Priority:**
@@ -208,6 +322,23 @@ export default async function Page() {
   // Use locale for server-side logic
 }
 ```
+
+## Advantages over Static Middleware
+
+Better i18n's middleware architecture provides several advantages over traditional static middleware setups (like next-intl's `createMiddleware`):
+
+| Feature | `betterMiddleware` | Static middleware |
+|---------|-------------------|-------------------|
+| Locale list | Dynamic — add a language in the dashboard, no deploy needed | Hardcoded array — requires code changes and redeployment |
+| Middleware bundle size | Minimal — translations load from CDN at runtime | Messages can be bundled — risks hitting Next.js 15's 1MB edge function limit |
+| Detection granularity | `cookie` and `browserLanguage` toggle independently | Single `localeDetection` boolean for all detection |
+| Auth composition | Clerk-style callback — i18n headers always preserved | Manual middleware chaining — risk of losing headers between steps |
+
+<Callout type="tip">
+  Dynamic locale lists mean your middleware never goes stale when you add or remove languages. The CDN manifest is the single source of truth.
+</Callout>
+
+---
 
 ## Migration from composeMiddleware
 
