@@ -71,7 +71,7 @@ function CheckIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M5 12.75L10 19L19 5" />
+      <path d="M6 12l4.243 4.243L18.485 8" />
     </svg>
   );
 }
@@ -205,7 +205,7 @@ const dropdownStyles = {
     letterSpacing: "0.05em",
   } satisfies CSSProperties,
   check: {
-    color: "var(--better-locale-accent, #10b981)",
+    color: "var(--better-locale-accent, currentColor)",
     flexShrink: 0,
   } satisfies CSSProperties,
   skeleton: {
