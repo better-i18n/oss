@@ -132,16 +132,30 @@ export function createBetterI18nMiddleware(
     let response: NextResponse;
 
     if (localePrefix === "never") {
-      // 3a. "never" mode: no locale prefix in the visible URL, but we still need
-      // an internal rewrite to /{locale}/... so Next.js can match the [locale]
-      // route segment (where <html>/<body> live in a standard next-intl layout).
-      const url = request.nextUrl.clone();
-      url.pathname = `/${detectedLocale}${url.pathname}`;
-      response = NextResponse.rewrite(url);
-      response.headers.set(
-        "x-middleware-request-x-next-intl-locale",
-        detectedLocale
+      // 3a. "never" mode: replicate next-intl's exact rewrite mechanism.
+      // - new URL() instead of nextUrl.clone() — NextURL internal state breaks rewrite
+      // - Headers via { request: { headers } } — response.headers don't reach page handler
+      // - X-NEXT-INTL-LOCALE header — getRequestConfig reads this to determine locale
+
+      let pathname = request.nextUrl.pathname;
+
+      // Guard: if URL accidentally contains a locale prefix (e.g. /tr/about),
+      // strip it and redirect — prevents double-prefix rewrite bug
+      const firstSegment = pathname.split("/")[1];
+      if (firstSegment && availableLocales.includes(firstSegment)) {
+        const strippedPath = pathname.slice(firstSegment.length + 1) || "/";
+        return NextResponse.redirect(
+          new URL(`${strippedPath}${request.nextUrl.search}`, request.url)
+        );
+      }
+
+      const rewriteUrl = new URL(
+        `/${detectedLocale}${pathname}${request.nextUrl.search}`,
+        request.url
       );
+      const headers = new Headers(request.headers);
+      headers.set("X-NEXT-INTL-LOCALE", detectedLocale);
+      response = NextResponse.rewrite(rewriteUrl, { request: { headers } });
     } else {
       // 3b. URL-based modes: delegate to next-intl middleware as before
       const localesKey = availableLocales.join(",");
