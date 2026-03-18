@@ -127,11 +127,22 @@ function FlagDisplay({
   }
 
   return (
-    <span style={{ color: "var(--better-locale-code-text, #9ca3af)" }}>
+    <span style={{ color: "var(--better-locale-code-text, var(--_bl-muted))" }}>
       <GlobeIcon />
     </span>
   );
 }
+
+// ─── Theme CSS ──────────────────────────────────────────────────────
+
+/**
+ * Internal CSS custom properties (`--_bl-*`) provide dark-mode-aware
+ * defaults. Consumer-set `--better-locale-*` properties always win
+ * because the inline styles use them as the primary `var()` value.
+ *
+ * Supports: `prefers-color-scheme: dark`, `.dark` class, `[data-theme="dark"]`.
+ */
+const LOCALE_DROPDOWN_CSS = `[data-better-locale-dropdown]{--_bl-text:#374151;--_bl-menu-bg:#fff;--_bl-border:#e5e7eb;--_bl-hover:#f3f4f6;--_bl-active:#f9fafb;--_bl-muted:#9ca3af;--_bl-shadow:0 4px 24px rgba(0,0,0,.12)}@media(prefers-color-scheme:dark){[data-better-locale-dropdown]{--_bl-text:#d1d5db;--_bl-menu-bg:#1f2937;--_bl-border:#374151;--_bl-hover:#374151;--_bl-active:#374151;--_bl-muted:#6b7280;--_bl-shadow:0 4px 24px rgba(0,0,0,.4)}}.dark [data-better-locale-dropdown],[data-theme=dark] [data-better-locale-dropdown]{--_bl-text:#d1d5db;--_bl-menu-bg:#1f2937;--_bl-border:#374151;--_bl-hover:#374151;--_bl-active:#374151;--_bl-muted:#6b7280;--_bl-shadow:0 4px 24px rgba(0,0,0,.4)}@keyframes better-locale-pulse{0%,100%{opacity:1}50%{opacity:.4}}`;
 
 // ─── Styles ──────────────────────────────────────────────────────────
 
@@ -144,7 +155,7 @@ const styles = {
     borderRadius: "var(--better-locale-trigger-radius, 8px)",
     border: "var(--better-locale-trigger-border, 1px solid transparent)",
     background: "var(--better-locale-trigger-bg, transparent)",
-    color: "var(--better-locale-text, #374151)",
+    color: "var(--better-locale-text, var(--_bl-text))",
     fontSize: 14,
     fontWeight: 500,
     cursor: "pointer",
@@ -159,14 +170,13 @@ const styles = {
   menu: {
     position: "absolute",
     right: 0,
-    top: "calc(100% + 4px)",
     minWidth: 200,
     maxHeight: "70vh",
     overflowY: "auto",
     borderRadius: 12,
-    border: "1px solid var(--better-locale-border, #e5e7eb)",
-    background: "var(--better-locale-menu-bg, #ffffff)",
-    boxShadow: "0 4px 24px rgba(0, 0, 0, 0.12)",
+    border: "1px solid var(--better-locale-border, var(--_bl-border))",
+    background: "var(--better-locale-menu-bg, var(--_bl-menu-bg))",
+    boxShadow: "var(--_bl-shadow)",
     padding: 0,
     zIndex: 50,
     listStyle: "none",
@@ -180,7 +190,7 @@ const styles = {
     padding: "8px 14px",
     border: "none",
     background: "transparent",
-    color: "var(--better-locale-text, #374151)",
+    color: "var(--better-locale-text, var(--_bl-text))",
     fontSize: 14,
     cursor: "pointer",
     transition: "background 0.1s",
@@ -189,10 +199,10 @@ const styles = {
     lineHeight: 1.2,
   } satisfies CSSProperties,
   itemActive: {
-    background: "var(--better-locale-active-bg, #f9fafb)",
+    background: "var(--better-locale-active-bg, var(--_bl-active))",
   } satisfies CSSProperties,
   itemHovered: {
-    background: "var(--better-locale-hover-bg, #f3f4f6)",
+    background: "var(--better-locale-hover-bg, var(--_bl-hover))",
   } satisfies CSSProperties,
   label: {
     flex: 1,
@@ -202,7 +212,7 @@ const styles = {
     fontSize: 10,
     fontFamily: "monospace",
     textTransform: "uppercase" as const,
-    color: "var(--better-locale-code-text, #9ca3af)",
+    color: "var(--better-locale-code-text, var(--_bl-muted))",
     letterSpacing: "0.05em",
   } satisfies CSSProperties,
   check: {
@@ -222,7 +232,7 @@ const styles = {
     width: 20,
     height: 18,
     borderRadius: 3,
-    background: "var(--better-locale-border, #e5e7eb)",
+    background: "var(--better-locale-border, var(--_bl-border))",
     animation: "better-locale-pulse 1.5s ease-in-out infinite",
     flexShrink: 0,
   } satisfies CSSProperties,
@@ -230,7 +240,7 @@ const styles = {
     width: 56,
     height: 18,
     borderRadius: 4,
-    background: "var(--better-locale-border, #e5e7eb)",
+    background: "var(--better-locale-border, var(--_bl-border))",
     animation: "better-locale-pulse 1.5s ease-in-out infinite",
   } satisfies CSSProperties,
 } as const;
@@ -259,6 +269,8 @@ export interface LocaleDropdownProps {
   showNativeName?: boolean;
   /** Show locale code (e.g., "EN"). @default true */
   showLocaleCode?: boolean;
+  /** Menu placement direction. "auto" detects available viewport space. @default "auto" */
+  placement?: "auto" | "top" | "bottom";
   /** Custom render for the trigger button. */
   renderTrigger?: (ctx: {
     language: LanguageOption | undefined;
@@ -288,6 +300,9 @@ export interface LocaleDropdownProps {
  * // Headless mode for full custom styling
  * <LocaleDropdown variant="unstyled" className="my-dropdown" />
  *
+ * // Force open upward (e.g., in a footer)
+ * <LocaleDropdown placement="top" />
+ *
  * // Custom render
  * <LocaleDropdown
  *   renderItem={({ language, isActive, flag, label }) => (
@@ -306,6 +321,7 @@ export function LocaleDropdown({
   showFlag = true,
   showNativeName = true,
   showLocaleCode = true,
+  placement: placementProp = "auto",
   renderTrigger,
   renderItem,
 }: LocaleDropdownProps) {
@@ -314,6 +330,7 @@ export function LocaleDropdown({
 
   const [isOpen, setIsOpen] = useState(false);
   const [focusIndex, setFocusIndex] = useState(-1);
+  const [menuPlacement, setMenuPlacement] = useState<"top" | "bottom">("bottom");
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
 
@@ -328,6 +345,21 @@ export function LocaleDropdown({
     : locale.toUpperCase();
   const currentFlag = currentLanguage ? resolveFlag(currentLanguage) : null;
   const canToggle = languages.length > 1;
+
+  // Compute menu placement based on available viewport space
+  const computePlacement = useCallback((): "top" | "bottom" => {
+    if (placementProp !== "auto") return placementProp;
+    if (!containerRef.current) return "bottom";
+    const rect = containerRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const menuHeight = Math.min(languages.length * 40 + 8, window.innerHeight * 0.7);
+    return spaceBelow < menuHeight && rect.top > spaceBelow ? "top" : "bottom";
+  }, [placementProp, languages.length]);
+
+  const openMenu = useCallback(() => {
+    setMenuPlacement(computePlacement());
+    setIsOpen(true);
+  }, [computePlacement]);
 
   // Close on outside click
   useEffect(() => {
@@ -350,7 +382,7 @@ export function LocaleDropdown({
       if (!isOpen) {
         if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          setIsOpen(true);
+          openMenu();
           setFocusIndex(0);
         }
         return;
@@ -395,7 +427,7 @@ export function LocaleDropdown({
           break;
       }
     },
-    [isOpen, focusIndex, languages, navigate],
+    [isOpen, focusIndex, languages, navigate, openMenu],
   );
 
   // Scroll focused item into view
@@ -405,6 +437,11 @@ export function LocaleDropdown({
       items[focusIndex]?.scrollIntoView({ block: "nearest" });
     }
   }, [focusIndex]);
+
+  // Menu position style based on placement
+  const menuPositionStyle: CSSProperties = menuPlacement === "top"
+    ? { bottom: "calc(100% + 4px)" }
+    : { top: "calc(100% + 4px)" };
 
   // Loading skeleton
   if (!isReady || isLoading) {
@@ -432,12 +469,19 @@ export function LocaleDropdown({
           <span style={isStyled ? styles.skeletonFlag : undefined} />
           <span style={isStyled ? styles.skeletonText : undefined} />
         </div>
-        {isStyled && (
-          <style>{`@keyframes better-locale-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }`}</style>
-        )}
+        {isStyled && <style>{LOCALE_DROPDOWN_CSS}</style>}
       </div>
     );
   }
+
+  const handleTriggerClick = () => {
+    if (!canToggle) return;
+    if (isOpen) {
+      setIsOpen(false);
+    } else {
+      openMenu();
+    }
+  };
 
   return (
     <div
@@ -449,7 +493,7 @@ export function LocaleDropdown({
       {/* Trigger */}
       {renderTrigger ? (
         <div
-          onClick={() => canToggle && setIsOpen(!isOpen)}
+          onClick={handleTriggerClick}
           onKeyDown={handleKeyDown}
           role="button"
           tabIndex={0}
@@ -469,7 +513,7 @@ export function LocaleDropdown({
       ) : (
         <button
           type="button"
-          onClick={() => canToggle && setIsOpen(!isOpen)}
+          onClick={handleTriggerClick}
           onKeyDown={handleKeyDown}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
@@ -495,7 +539,7 @@ export function LocaleDropdown({
               style={{
                 transition: "transform 0.2s",
                 transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-                color: "var(--better-locale-code-text, #9ca3af)",
+                color: "var(--better-locale-code-text, var(--_bl-muted))",
               }}
             />
           )}
@@ -509,8 +553,9 @@ export function LocaleDropdown({
           role="listbox"
           aria-label="Available languages"
           data-better-locale-menu
+          data-placement={menuPlacement}
           className={menuClassName}
-          style={isStyled ? styles.menu : undefined}
+          style={isStyled ? { ...styles.menu, ...menuPositionStyle } : undefined}
         >
           {languages.map((language, index) => {
             const label = getLanguageLabel(language);
@@ -582,9 +627,7 @@ export function LocaleDropdown({
         </ul>
       )}
 
-      {isStyled && isOpen && (
-        <style>{`@keyframes better-locale-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
-      )}
+      {isStyled && <style>{LOCALE_DROPDOWN_CSS}</style>}
     </div>
   );
 }
