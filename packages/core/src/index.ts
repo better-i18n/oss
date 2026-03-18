@@ -19,6 +19,16 @@ export { detectLocale } from "./i18n/detection.js";
 // Cache utilities
 export { TtlCache, buildCacheKey } from "./cache.js";
 
+// Locale UI utilities (flags, labels, country codes)
+export {
+  LANGUAGE_TO_COUNTRY,
+  getCountryCodeFromLocale,
+  getFlagEmoji,
+  getLanguageLabel,
+  resolveFlag,
+  type ResolvedFlag,
+} from "./utils/locale-ui.js";
+
 // Locale utilities
 export {
   normalizeLocale,
