@@ -6,6 +6,7 @@
   "pages": [
     "---Platform---",
     "how-it-works",
+    "webhooks",
     "---Package---",
     "index",
     "api-reference",
