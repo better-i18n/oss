@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
-@source "../node_modules/@better-i18n/ui";
+@source "../../../node_modules/@better-i18n/ui";
 
 /* Self-hosted Geist fonts (variable woff2 from geist npm package) */
 @font-face {
@@ -26,7 +26,7 @@
 @source inline("{dark:,}{bg,text}-{gray,blue,orange}-{50,400}");
 
 /* Checkbox SVG utility classes — not auto-detected by Tailwind scanner */
-@source inline("{fill,stroke}-{white,gray-100,gray-200,gray-700,gray-900}");
+@source inline("{fill,stroke}-{white,gray-100,gray-200,gray-500,gray-600,gray-700,gray-900}");
 @source inline("group-hover:{fill,stroke}-{gray-100,gray-200}");
 
 @theme {
