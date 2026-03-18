@@ -97,6 +97,10 @@ function LanguageSwitcher() {
 |------|---------|--------|
 | With `BetterI18nProvider` | `setLocale('tr')` | Instant CDN fetch + client re-render |
 | Without provider | `setLocale('tr')` | Cookie update + `router.refresh()` |
+| With provider + `localePrefix: "never"` | `setLocale('tr')` | Instant CDN fetch + cookie update (URL unchanged) |
+| Without provider + `localePrefix: "never"` | `setLocale('tr')` | Cookie update + `router.refresh()` (URL unchanged) |
+
+> With `localePrefix: "never"`, the URL never changes during locale switching — only the cookie and rendered content update. This makes it ideal for dashboards and SaaS apps where the URL should remain stable across languages.
 
 ---
 

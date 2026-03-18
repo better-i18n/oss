@@ -53,16 +53,28 @@ You can also configure CLI-specific options (like linting rules and file exclusi
 <Tabs items={['Locale Prefix', 'Caching', 'Debug Mode']}>
   <Tab value="Locale Prefix">
     Control how locales appear in your URLs.
+
+    **`"as-needed"`** (default) — Only non-default locales get a prefix. Clean URLs for your primary language.
     ```ts
-    // /page for default, /tr/page for others
+    // /about (English), /tr/about (Turkish)
     createI18n({ project: "org/project", defaultLocale: "en", localePrefix: "as-needed" });
+    ```
 
-    // always includes locale: /en/page, /tr/page
+    **`"always"`** — Every URL includes the locale, including the default. Best for explicit SEO signals.
+    ```ts
+    // /en/about, /tr/about
     createI18n({ project: "org/project", defaultLocale: "en", localePrefix: "always" });
+    ```
 
-    // never includes locale in URL
+    **`"never"`** — No locale in URLs. Locale is determined by cookie and `Accept-Language` header.
+    ```ts
+    // /about for all locales
     createI18n({ project: "org/project", defaultLocale: "en", localePrefix: "never" });
     ```
+
+    <Callout type="warn">
+      `"never"` mode requires specific file structure and middleware behavior. See [Middleware — Locale Prefix Modes](/frameworks/nextjs/middleware#locale-prefix-modes) for the full setup guide.
+    </Callout>
   </Tab>
   <Tab value="Caching">
     Configure TTL for edge and runtime caching.
