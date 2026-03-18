@@ -114,3 +114,7 @@ export type {
 } from "./types.js";
 
 export type { I18nMiddlewareConfig } from "@better-i18n/core";
+
+// Webhook revalidation handler
+export { createRevalidateHandler } from "./revalidate.js";
+export type { RevalidateHandlerOptions, WebhookPayload } from "./revalidate.js";
