@@ -410,6 +410,276 @@ function RouterLanguageSwitcher() {
 }
 ```
 
+## LocaleDropdown
+
+A fully-featured, accessible dropdown component for locale switching — with flag emojis, native language names, keyboard navigation, and customizable rendering.
+
+<LocaleDropdownDemo />
+
+### Installation
+
+<Tabs items={["TanStack / Vite", "Next.js", "Remix"]}>
+<Tab value="TanStack / Vite">
+```bash
+bun add @better-i18n/use-intl
+```
+</Tab>
+<Tab value="Next.js">
+```bash
+bun add @better-i18n/next
+```
+</Tab>
+<Tab value="Remix">
+```bash
+bun add @better-i18n/remix
+```
+</Tab>
+</Tabs>
+
+### Basic Usage
+
+<Tabs items={["TanStack / Vite", "Next.js", "Remix"]}>
+<Tab value="TanStack / Vite">
+Zero-config — reads locale and languages from context automatically:
+
+```tsx
+import { LocaleDropdown } from '@better-i18n/use-intl'
+
+function Header() {
+  return (
+    <header>
+      <nav>
+        <Logo />
+        <LocaleDropdown />
+      </nav>
+    </header>
+  )
+}
+```
+
+Selecting a locale triggers `useLocaleRouter().navigate()` — a full TanStack Router navigation with loader re-execution.
+</Tab>
+<Tab value="Next.js">
+Requires `config` and `locale` props:
+
+```tsx
+'use client';
+
+import { LocaleDropdown } from '@better-i18n/next/client';
+import { useLocale } from 'next-intl';
+import { i18n } from '@/i18n.config';
+
+function Header() {
+  const locale = useLocale();
+
+  return (
+    <header>
+      <nav>
+        <Logo />
+        <LocaleDropdown config={i18n.config} locale={locale} />
+      </nav>
+    </header>
+  );
+}
+```
+
+<Callout type="info">
+  Import from `@better-i18n/next/client` — this is the RSC-safe client entrypoint. No `transpilePackages` needed.
+</Callout>
+</Tab>
+<Tab value="Remix">
+```tsx
+import { LocaleDropdown } from '@better-i18n/remix/react';
+
+function Header({ locale }: { locale: string }) {
+  return (
+    <header>
+      <nav>
+        <Logo />
+        <LocaleDropdown />
+      </nav>
+    </header>
+  );
+}
+```
+
+Selecting a locale navigates to the locale-prefixed URL using `useNavigate()` from react-router.
+</Tab>
+</Tabs>
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `variant` | `"styled" \| "unstyled"` | `"styled"` | Styled includes all inline styles + CSS custom properties. Unstyled gives full control. |
+| `className` | `string` | — | CSS class for root wrapper |
+| `triggerClassName` | `string` | — | CSS class for trigger button |
+| `menuClassName` | `string` | — | CSS class for dropdown menu |
+| `showFlag` | `boolean` | `true` | Show flag emoji/image |
+| `showNativeName` | `boolean` | `true` | Show native language name (e.g., "Türkçe") |
+| `showLocaleCode` | `boolean` | `true` | Show locale code (e.g., "TR") |
+| `renderTrigger` | `(ctx) => ReactNode` | — | Custom trigger renderer |
+| `renderItem` | `(ctx) => ReactNode` | — | Custom item renderer |
+
+**Next.js only:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `config` | `I18nConfig` | Required | Config from `createI18n()` |
+| `locale` | `string` | Required | Current locale |
+| `languages` | `LanguageOption[]` | — | Pre-fetched languages (skips client CDN fetch) |
+
+**Remix only:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `defaultLocale` | `string` | `"en"` | Default locale for URL prefix logic |
+
+### Variants
+
+<Tabs items={["Styled (default)", "Unstyled"]}>
+<Tab value="Styled (default)">
+Includes all inline styles, skeleton loading animation, and CSS custom property support. Drop-in ready:
+
+```tsx
+<LocaleDropdown />
+```
+</Tab>
+<Tab value="Unstyled">
+No styles applied — data attributes remain for targeting. Full control via className props:
+
+```tsx
+<LocaleDropdown
+  variant="unstyled"
+  className="relative inline-block"
+  triggerClassName="flex items-center gap-2 px-3 py-2 rounded-lg border"
+  menuClassName="absolute mt-1 w-full rounded-lg border bg-white shadow-lg"
+/>
+```
+</Tab>
+</Tabs>
+
+### CSS Custom Properties
+
+Override these on any parent element to theme the styled variant:
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--better-locale-trigger-padding` | `6px 10px` | Trigger padding |
+| `--better-locale-trigger-radius` | `8px` | Trigger border-radius |
+| `--better-locale-trigger-border` | `1px solid transparent` | Trigger border |
+| `--better-locale-trigger-bg` | `transparent` | Trigger background |
+| `--better-locale-text` | `#374151` | Text color |
+| `--better-locale-border` | `#e5e7eb` | Menu border + skeleton |
+| `--better-locale-menu-bg` | `#ffffff` | Menu background |
+| `--better-locale-active-bg` | `#f9fafb` | Active item background |
+| `--better-locale-hover-bg` | `#f3f4f6` | Hovered item background |
+| `--better-locale-code-text` | `#9ca3af` | Locale code + globe icon color |
+| `--better-locale-accent` | `currentColor` | Checkmark color |
+
+```css
+/* Dark theme example */
+.dark [data-better-locale-dropdown] {
+  --better-locale-text: #e5e7eb;
+  --better-locale-border: #374151;
+  --better-locale-menu-bg: #1f2937;
+  --better-locale-active-bg: #374151;
+  --better-locale-hover-bg: #2d3748;
+  --better-locale-code-text: #6b7280;
+}
+```
+
+### Data Attributes
+
+Use these for CSS targeting with the `unstyled` variant:
+
+| Attribute | Element | Description |
+|-----------|---------|-------------|
+| `data-better-locale-dropdown` | Root `<div>` | Always present |
+| `data-better-locale-trigger` | Trigger `<button>` | Always present |
+| `data-better-locale-menu` | `<ul>` | Present when open |
+| `data-better-locale-item` | Each `<li>` | Every menu item |
+| `data-active` | `<li>` | Current locale item |
+| `data-focused` | `<li>` | Keyboard-focused item |
+
+### Custom Rendering
+
+#### renderTrigger
+
+Replaces the trigger button content. The wrapper still handles click, keyboard, and ARIA:
+
+```tsx
+<LocaleDropdown
+  renderTrigger={({ language, isOpen, isLoading, flag, label }) => (
+    <div className={`my-trigger ${isOpen ? 'open' : ''}`}>
+      {isLoading ? (
+        <span>Loading...</span>
+      ) : (
+        <>
+          {flag.type === 'emoji' && <span>{flag.emoji}</span>}
+          <span>{label}</span>
+        </>
+      )}
+    </div>
+  )}
+/>
+```
+
+#### renderItem
+
+Replaces each item's content. The `<li>` still handles click, `role="option"`, and data attributes:
+
+```tsx
+<LocaleDropdown
+  renderItem={({ language, isActive, flag, label }) => (
+    <div className={`flex items-center gap-2 ${isActive ? 'font-bold' : ''}`}>
+      {flag.type === 'emoji' && <span>{flag.emoji}</span>}
+      <span>{label}</span>
+      {isActive && <span>✓</span>}
+    </div>
+  )}
+/>
+```
+
+### Expo (useLocaleSwitcher)
+
+On React Native, use the `useLocaleSwitcher` hook instead of the dropdown component:
+
+```tsx
+import { useLocaleSwitcher } from '@better-i18n/expo'
+
+function LanguagePicker() {
+  const { languages, currentLocale, switchLocale, isLoading } = useLocaleSwitcher()
+
+  return (
+    <FlatList
+      data={languages}
+      renderItem={({ item }) => (
+        <Pressable onPress={() => switchLocale(item.code)}>
+          <Text style={item.code === currentLocale ? styles.active : undefined}>
+            {item.nativeName}
+          </Text>
+        </Pressable>
+      )}
+    />
+  )
+}
+```
+
+### Keyboard Navigation
+
+The dropdown supports full keyboard navigation:
+
+| Key | Action |
+|-----|--------|
+| `↓` / `Enter` / `Space` | Open menu, focus first item |
+| `↓` / `↑` | Navigate items (wraps around) |
+| `Home` / `End` | Jump to first / last item |
+| `Enter` / `Space` | Select focused item |
+| `Escape` | Close menu |
+
+---
+
 ## Related
 
 - [Provider](/frameworks/provider) - Configure locale handling

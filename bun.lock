@@ -32,6 +32,7 @@
       "name": "docs",
       "version": "0.0.0",
       "dependencies": {
+        "@better-i18n/core": "workspace:^",
         "@orama/orama": "^3.1.18",
         "fumadocs-core": "16.4.7",
         "fumadocs-mdx": "14.2.5",
