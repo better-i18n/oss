@@ -1,10 +1,16 @@
 # @better-i18n/use-intl
 
-## 0.1.18
+## 0.2.0
+
+### Minor Changes
+
+- 1da02c8: Add LocaleDropdown component — accessible locale switcher with flag emojis, native language names, keyboard navigation, styled/unstyled variants, and CSS custom properties for theming
 
 ### Patch Changes
 
 - 649d15a: Fix TypeScript build error in middleware caused by type mismatch with @tanstack/react-start/server
+- Updated dependencies [1da02c8]
+  - @better-i18n/core@0.3.0
 
 ## 0.1.17
 

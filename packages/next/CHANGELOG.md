@@ -1,5 +1,16 @@
 # @better-i18n/next
 
+## 0.6.0
+
+### Minor Changes
+
+- 1da02c8: Add LocaleDropdown component — accessible locale switcher with flag emojis, native language names, keyboard navigation, styled/unstyled variants, and CSS custom properties for theming
+
+### Patch Changes
+
+- Updated dependencies [1da02c8]
+  - @better-i18n/core@0.3.0
+
 ## 0.5.10
 
 ### Patch Changes
