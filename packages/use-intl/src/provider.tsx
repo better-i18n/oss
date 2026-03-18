@@ -2,7 +2,7 @@
 
 import { createI18nCore } from "@better-i18n/core";
 import type { LanguageOption } from "@better-i18n/core";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { IntlProvider } from "use-intl";
 import { BetterI18nContext } from "./context.js";
 import type { BetterI18nProviderConfig, Messages } from "./types.js";
@@ -75,11 +75,19 @@ export function BetterI18nProvider({
 }: BetterI18nProviderProps) {
   // Locale is controlled by props (from URL/router)
   const locale = propLocale;
-  // clientMessages is only used in CSR mode (when propMessages is not provided).
-  // In SSG/SSR mode, propMessages comes from the loader and is used directly —
-  // synchronous derivation avoids the useEffect delay that causes white flash on hydration.
+
+  // Track the locale that propMessages was originally provided for.
+  // In SSR apps, propMessages comes from a one-time loader (script tag / SSR side-channel)
+  // and stays frozen at the initial locale. When the user SPA-navigates to a new locale,
+  // propMessages is stale — we must fetch from CDN instead of trusting it.
+  const propMessagesLocaleRef = useRef(propMessages ? locale : undefined);
+
   const [clientMessages, setClientMessages] = useState<Messages | undefined>();
-  const messages = propMessages ?? clientMessages;
+
+  // Use propMessages only when it matches the current locale (SSR hydration).
+  // After SPA navigation to a different locale, fall through to clientMessages (CDN-fetched).
+  const isPropMessagesFresh = propMessages && propMessagesLocaleRef.current === locale;
+  const messages = isPropMessagesFresh ? propMessages : (clientMessages ?? propMessages);
   const [languages, setLanguages] = useState<LanguageOption[]>(initialLanguages ?? []);
   const [isLoadingMessages, setIsLoadingMessages] = useState(propMessages === undefined);
   const [isLoadingLanguages, setIsLoadingLanguages] = useState(!initialLanguages);
@@ -130,10 +138,10 @@ export function BetterI18nProvider({
     };
   }, [i18nCore, initialLanguages]);
 
-  // Load messages when locale changes and no pre-loaded messages available
+  // Load messages when locale changes.
+  // Skip only when propMessages is fresh (provided for the current locale — SSR hydration).
   useEffect(() => {
-    // Skip if we already have messages for this render
-    if (propMessages) {
+    if (propMessages && propMessagesLocaleRef.current === locale) {
       return;
     }
 
