@@ -186,6 +186,17 @@ export default function Homepage() {
 
 For proper SEO with locale-prefixed routes, add `hreflang` alternate links in your root:
 
+<Callout type="warn">
+**If you use `shouldRevalidate`**, make sure locale changes always trigger revalidation. Returning `false` for locale-changing navigations will keep UI translations stuck in the old language:
+
+```tsx
+export function shouldRevalidate({ currentParams, nextParams }) {
+  if (currentParams.locale !== nextParams.locale) return true;
+  return false; // skip revalidation for same-locale navigations
+}
+```
+</Callout>
+
 ```tsx title="app/root.tsx"
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);

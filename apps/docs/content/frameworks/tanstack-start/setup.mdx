@@ -40,6 +40,7 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  staleTime: 0, // re-run loader when locale changes // [!code highlight]
   loader: async ({ context }) => {
     const locale = context.locale || i18nConfig.defaultLocale
 
@@ -80,6 +81,10 @@ function RootComponent() {
 
 <Callout type="warning">
   **Timezone Requirement:** `use-intl` v4+ requires a `timeZone` during SSR to prevent markup mismatches. Use `"UTC"` as a safe default.
+</Callout>
+
+<Callout type="info">
+  **Why `staleTime: 0`?** Without it, TanStack Router caches the root loader result and skips re-running it on SPA navigations. This means locale switches won't fetch new translations — UI strings stay in the old language. `staleTime: 0` ensures the loader re-runs, while `getMessages()` TtlCache (60s) keeps same-locale navigations instant.
 </Callout>
 
 ### BetterI18nProvider Props
