@@ -218,11 +218,19 @@ const styles = {
     border: "1px solid transparent",
     background: "transparent",
   } satisfies CSSProperties,
-  skeletonBar: {
-    width: 32,
-    height: 16,
+  skeletonFlag: {
+    width: 20,
+    height: 14,
+    borderRadius: 3,
+    background: "var(--better-locale-border, #e5e7eb)",
+    animation: "better-locale-pulse 1.5s ease-in-out infinite",
+    flexShrink: 0,
+  } satisfies CSSProperties,
+  skeletonText: {
+    width: 56,
+    height: 14,
     borderRadius: 4,
-    background: "#e5e7eb",
+    background: "var(--better-locale-border, #e5e7eb)",
     animation: "better-locale-pulse 1.5s ease-in-out infinite",
   } satisfies CSSProperties,
 } as const;
@@ -415,21 +423,17 @@ export function LocaleDropdown({
     }
     return (
       <div data-better-locale-dropdown className={className}>
-        <button
-          type="button"
-          disabled
+        <div
           aria-busy="true"
           data-better-locale-trigger
           className={triggerClassName}
           style={isStyled ? styles.skeleton : undefined}
         >
-          <span style={{ color: "var(--better-locale-code-text, #9ca3af)" }}>
-            <GlobeIcon />
-          </span>
-          <span style={isStyled ? styles.skeletonBar : undefined} />
-        </button>
+          <span style={isStyled ? styles.skeletonFlag : undefined} />
+          <span style={isStyled ? styles.skeletonText : undefined} />
+        </div>
         {isStyled && (
-          <style>{`@keyframes better-locale-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
+          <style>{`@keyframes better-locale-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }`}</style>
         )}
       </div>
     );
