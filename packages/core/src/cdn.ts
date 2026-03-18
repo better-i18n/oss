@@ -18,6 +18,8 @@ const STORAGE_PREFIX = "@better-i18n";
 // Global caches (shared across instances)
 const manifestCache = new TtlCache<ManifestResponse>();
 const messagesCache = new TtlCache<Messages>();
+// ETag cache — keyed same as messagesCache, stores last ETag for If-None-Match
+const messagesETagCache = new TtlCache<string>();
 
 // ─── Storage helpers ────────────────────────────────────────────────
 
@@ -215,26 +217,43 @@ const getManifestWithCache = async (
 
 // ─── Messages fetching with fallback ────────────────────────────────
 
+type MessagesFetchResult =
+  | { notModified: true }
+  | { notModified: false; messages: Messages; etag: string | null };
+
 /**
- * Fetch messages from CDN (raw, no cache)
+ * Fetch messages from CDN (raw, no cache).
+ * Passes If-None-Match when an ETag is known — returns { notModified: true } on 304.
  */
 const fetchMessagesFromCdn = async (
   config: NormalizedConfig,
   locale: string,
-  fetchFn: typeof fetch
-): Promise<Messages> => {
+  fetchFn: typeof fetch,
+  ifNoneMatch?: string
+): Promise<MessagesFetchResult> => {
   const logger = createLogger(config, "messages");
   const url = `${getProjectBaseUrl(config)}/${locale}/translations.json`;
 
   logger.debug("fetching", url);
 
+  const headers: Record<string, string> = { "Cache-Control": "no-store" };
+  if (ifNoneMatch) {
+    headers["If-None-Match"] = ifNoneMatch;
+  }
+
   const response = await fetchWithRetry(
     fetchFn,
     url,
-    { headers: { "Cache-Control": "no-store" } },
+    { headers },
     config.fetchTimeout,
     config.retryCount
   );
+
+  // 304 Not Modified — cached content is still fresh
+  if (response.status === 304) {
+    logger.debug("304 Not Modified", { locale });
+    return { notModified: true };
+  }
 
   if (!response.ok) {
     const message = `Messages fetch failed for locale "${locale}" (${response.status})`;
@@ -243,9 +262,10 @@ const fetchMessagesFromCdn = async (
   }
 
   const data = (await response.json()) as Messages;
+  const etag = response.headers?.get?.("etag") ?? null;
   logger.debug("fetched", { locale, keys: Object.keys(data).length });
 
-  return data;
+  return { notModified: false, messages: data, etag };
 };
 
 /**
@@ -270,15 +290,39 @@ const getMessagesWithFallback = async (
   const memoryCached = messagesCache.get(cacheKey);
   if (memoryCached) return memoryCached;
 
-  // 2. CDN fetch
+  // 2. CDN fetch (with ETag If-None-Match when available)
   try {
-    const messages = await fetchMessagesFromCdn(config, safeLng, fetchFn);
-    messagesCache.set(cacheKey, messages, config.manifestCacheTtlMs);
+    const cachedETag = messagesETagCache.get(cacheKey);
+    const result = await fetchMessagesFromCdn(config, safeLng, fetchFn, cachedETag);
 
-    // Write-through to storage (fire-and-forget)
-    writeToStorage(config.storage, storageKey, messages);
+    // 304 Not Modified — CDN confirmed content unchanged; refresh TTL with stored data
+    if (result.notModified) {
+      const stored = await readFromStorage<Messages>(config.storage, storageKey);
+      if (stored) {
+        logger.debug(`304: refreshing TTL for "${safeLng}" from storage`);
+        messagesCache.set(cacheKey, stored, config.manifestCacheTtlMs);
+        return stored;
+      }
+      // No storage fallback — re-fetch without ETag to get fresh data
+      const freshResult = await fetchMessagesFromCdn(config, safeLng, fetchFn);
+      if (!freshResult.notModified) {
+        messagesCache.set(cacheKey, freshResult.messages, config.manifestCacheTtlMs);
+        if (freshResult.etag) messagesETagCache.set(cacheKey, freshResult.etag, config.manifestCacheTtlMs);
+        writeToStorage(config.storage, storageKey, freshResult.messages);
+        return freshResult.messages;
+      }
+    }
 
-    return messages;
+    // 200 OK — new or changed content
+    if (!result.notModified) {
+      messagesCache.set(cacheKey, result.messages, config.manifestCacheTtlMs);
+      if (result.etag) messagesETagCache.set(cacheKey, result.etag, config.manifestCacheTtlMs);
+      writeToStorage(config.storage, storageKey, result.messages);
+      return result.messages;
+    }
+
+    // Shouldn't reach here, but satisfy TypeScript
+    throw new Error("[better-i18n] Unexpected 304 without storage fallback");
   } catch (cdnError) {
     logger.warn(`CDN fetch failed for locale "${safeLng}", trying fallback sources`, cdnError);
 

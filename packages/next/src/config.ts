@@ -30,7 +30,7 @@ export const normalizeConfig = (config: I18nConfig): NormalizedConfig => {
     localePrefix: localePrefix ?? "as-needed",
     cookieName: cookieName ?? "locale",
     manifestRevalidateSeconds: manifestRevalidateSeconds ?? 3600,
-    messagesRevalidateSeconds: messagesRevalidateSeconds ?? 30,
+    messagesRevalidateSeconds: messagesRevalidateSeconds ?? 5,
     timeZone,
   };
 };
