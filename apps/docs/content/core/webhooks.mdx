@@ -1,0 +1,376 @@
+---
+title: Webhooks
+description: Receive real-time HTTP notifications when translations are published, keys change, or languages are added
+icon: Webhook
+---
+
+## Overview
+
+Webhooks let your application react instantly to translation events — no polling required. When something changes in Better i18n (a publish, a new key, a language addition), the platform sends an HTTP `POST` to your endpoint within seconds.
+
+**Common use cases:**
+
+- **Next.js ISR revalidation** — trigger `revalidateTag("translations")` on `translations.published`
+- **Cache invalidation** — clear your Redis/Varnish/CDN cache when translations update
+- **CI/CD pipelines** — kick off a deploy when new translations are approved
+- **Slack/Discord notifications** — alert your team when a sync completes
+
+---
+
+## Setting Up an Endpoint
+
+1. Go to your project → **Integrations** → **Webhooks**
+2. Click **+ Add Webhook**
+3. Enter your endpoint URL and select the events you want to receive
+4. Copy and save the **webhook secret** — it's only shown once
+
+<Callout type="warn">
+The webhook secret is displayed **only once** at creation time. Store it immediately in your environment variables. If you lose it, you can regenerate it from the Webhooks page — but all existing integrations using the old secret will stop verifying until updated.
+</Callout>
+
+---
+
+## Payload Structure
+
+Every webhook request has the same envelope format:
+
+```json
+{
+  "webhookConfigId": "wh_01jfk2...",
+  "eventType": "translations.published",
+  "timestamp": 1734567890123,
+  "data": {
+    // event-specific fields (see Events below)
+  }
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `webhookConfigId` | `string` | ID of the webhook endpoint that fired this event |
+| `eventType` | `string` | One of the event types listed below |
+| `timestamp` | `number` | Unix milliseconds when the event was dispatched |
+| `data` | `object` | Event-specific payload |
+
+---
+
+## Request Headers
+
+```http
+POST /api/webhooks/i18n HTTP/1.1
+Content-Type: application/json
+X-Better-I18n-Signature: sha256=a1b2c3d4e5...
+X-Better-I18n-Event: translations.published
+```
+
+| Header | Description |
+|--------|-------------|
+| `X-Better-I18n-Signature` | HMAC-SHA256 signature of the raw request body, prefixed with `sha256=` |
+| `X-Better-I18n-Event` | The event type (mirrors `payload.eventType`) |
+
+---
+
+## Verifying Signatures
+
+**Always verify the signature** before processing a webhook. This proves the request came from Better i18n and hasn't been tampered with.
+
+The signature is computed as:
+
+```
+HMAC-SHA256(secret, rawRequestBody)
+```
+
+and sent as `sha256=<hex-digest>` in the `X-Better-I18n-Signature` header.
+
+<Callout type="warn">
+Use a **timing-safe comparison** (`timingSafeEqual` in Node.js, `crypto.subtle` in the browser/edge). A regular string `===` check is vulnerable to timing attacks.
+</Callout>
+
+### Next.js App Router
+
+```ts title="app/api/webhooks/i18n/route.ts"
+import { createHmac, timingSafeEqual } from "crypto";
+
+const WEBHOOK_SECRET = process.env.BETTER_I18N_WEBHOOK_SECRET!;
+
+function verifySignature(body: string, signature: string): boolean {
+  const expected = "sha256=" + createHmac("sha256", WEBHOOK_SECRET)
+    .update(body)
+    .digest("hex");
+
+  return timingSafeEqual(
+    Buffer.from(expected),
+    Buffer.from(signature),
+  );
+}
+
+export async function POST(req: Request) {
+  const body = await req.text();
+  const signature = req.headers.get("x-better-i18n-signature") ?? "";
+
+  if (!verifySignature(body, signature)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const event = JSON.parse(body);
+
+  if (event.eventType === "translations.published") {
+    // Revalidate Next.js ISR cache
+    const { revalidateTag } = await import("next/cache");
+    revalidateTag("translations");
+  }
+
+  return new Response("OK");
+}
+```
+
+### Edge Runtime (Cloudflare Workers / Vercel Edge)
+
+```ts title="webhook-handler.ts"
+async function verifySignature(
+  secret: string,
+  body: string,
+  signature: string,
+): Promise<boolean> {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["verify"],
+  );
+
+  const sigHex = signature.replace("sha256=", "");
+  const sigBytes = new Uint8Array(
+    sigHex.match(/.{2}/g)!.map((b) => parseInt(b, 16)),
+  );
+
+  return crypto.subtle.verify(
+    "HMAC",
+    key,
+    sigBytes,
+    new TextEncoder().encode(body),
+  );
+}
+
+export default {
+  async fetch(req: Request, env: Env) {
+    const body = await req.text();
+    const signature = req.headers.get("x-better-i18n-signature") ?? "";
+
+    const valid = await verifySignature(
+      env.BETTER_I18N_WEBHOOK_SECRET,
+      body,
+      signature,
+    );
+
+    if (!valid) return new Response("Unauthorized", { status: 401 });
+
+    const event = JSON.parse(body);
+    // handle event...
+    return new Response("OK");
+  },
+};
+```
+
+### Node.js / Express
+
+```ts title="webhook.ts"
+import express from "express";
+import { createHmac, timingSafeEqual } from "crypto";
+
+const app = express();
+
+// IMPORTANT: use raw body — parsed JSON loses byte-for-byte accuracy
+app.post(
+  "/webhooks/i18n",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    const body = req.body.toString();
+    const signature = req.headers["x-better-i18n-signature"] as string;
+
+    const expected = "sha256=" + createHmac("sha256", process.env.BETTER_I18N_WEBHOOK_SECRET!)
+      .update(body)
+      .digest("hex");
+
+    if (!timingSafeEqual(Buffer.from(expected), Buffer.from(signature))) {
+      return res.status(401).send("Unauthorized");
+    }
+
+    const event = JSON.parse(body);
+    // handle event...
+    res.status(200).send("OK");
+  },
+);
+```
+
+<Callout type="info">
+In Express, use `express.raw()` (not `express.json()`) before verifying signatures. `express.json()` parses the body first, which can alter whitespace and break signature verification.
+</Callout>
+
+---
+
+## Events
+
+### `translations.published`
+
+Fired after translations are published to the CDN (or committed to GitHub). This is the primary event for triggering cache revalidation.
+
+```json
+{
+  "webhookConfigId": "wh_01jfk2...",
+  "eventType": "translations.published",
+  "timestamp": 1734567890123,
+  "data": {
+    "org": "acme",
+    "project": "webapp",
+    "languages": ["tr", "de", "fr"],
+    "publishedAt": "2024-12-19T10:31:30.123Z",
+    "keysCount": 42
+  }
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `org` | Organization slug |
+| `project` | Project slug |
+| `languages` | Language codes that were published |
+| `publishedAt` | ISO 8601 timestamp |
+| `keysCount` | Number of translation keys published |
+
+### `translations.updated`
+
+Fired when a translation value is edited in the dashboard (not yet published).
+
+```json
+{
+  "eventType": "translations.updated",
+  "data": {
+    "org": "acme",
+    "project": "webapp",
+    "language": "tr",
+    "keysCount": 5
+  }
+}
+```
+
+### `keys.created`
+
+Fired when new translation keys are added to a project.
+
+```json
+{
+  "eventType": "keys.created",
+  "data": {
+    "org": "acme",
+    "project": "webapp",
+    "keys": ["auth.login.title", "auth.login.submit"],
+    "namespace": "auth"
+  }
+}
+```
+
+### `keys.deleted`
+
+Fired when translation keys are removed from a project.
+
+```json
+{
+  "eventType": "keys.deleted",
+  "data": {
+    "org": "acme",
+    "project": "webapp",
+    "keys": ["deprecated.old_key"],
+    "namespace": "deprecated"
+  }
+}
+```
+
+### `sync.completed`
+
+Fired when a GitHub sync job finishes (either success or failure).
+
+```json
+{
+  "eventType": "sync.completed",
+  "data": {
+    "org": "acme",
+    "project": "webapp",
+    "status": "completed",
+    "keysImported": 128,
+    "duration": 4200
+  }
+}
+```
+
+### `language.added`
+
+Fired when a new target language is added to a project.
+
+```json
+{
+  "eventType": "language.added",
+  "data": {
+    "org": "acme",
+    "project": "webapp",
+    "language": "ja",
+    "languageName": "Japanese"
+  }
+}
+```
+
+### `language.removed`
+
+Fired when a target language is removed from a project.
+
+```json
+{
+  "eventType": "language.removed",
+  "data": {
+    "org": "acme",
+    "project": "webapp",
+    "language": "pt"
+  }
+}
+```
+
+---
+
+## Responding to Webhooks
+
+Your endpoint must return a `2xx` status code within **10 seconds**, otherwise the delivery is marked as failed.
+
+- Return `200 OK` (or any `2xx`) to acknowledge receipt
+- Do **not** perform long-running work synchronously — offload to a queue
+- Better i18n does **not** retry failed deliveries automatically, but you can manually redeliver from the Webhooks page
+
+---
+
+## Delivery Logs
+
+Every delivery attempt is logged in the dashboard under **Integrations → Webhooks → Delivery Log**. For each entry you can see:
+
+- HTTP status code
+- Event type
+- Delivery timestamp
+- Response body (first 500 characters)
+
+You can click **Redeliver** on any past delivery to resend the exact same payload.
+
+---
+
+## Managing the Secret
+
+Your webhook secret is used to sign all outgoing payloads. Keep it in environment variables — never hardcode it.
+
+```bash
+# .env.local
+BETTER_I18N_WEBHOOK_SECRET=whsec_a1b2c3d4...
+```
+
+If you need to rotate the secret (e.g., after a potential leak), click **Regenerate Secret** in the Webhooks settings. The new secret is shown once — update your environment variables before closing the dialog.
+
+<Callout type="warn">
+After regenerating, all deliveries signed with the old secret will fail verification until you deploy the new secret to your application.
+</Callout>
