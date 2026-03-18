@@ -9,13 +9,37 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { createI18nCore } from "@better-i18n/core";
 import type { LanguageOption, Messages } from "@better-i18n/core";
 
 import { normalizeConfig } from "./config.js";
 import type { I18nConfig } from "./types.js";
+
+// ─── Helpers ─────────────────────────────────────────────────────────
+
+function buildLocalePath(
+  pathname: string,
+  currentLocale: string,
+  newLocale: string,
+  defaultLocale: string,
+  localePrefix: "always" | "as-needed",
+): string {
+  if (localePrefix === "always") {
+    const rest = pathname.replace(new RegExp(`^/${currentLocale}(/|$)`), "/");
+    return `/${newLocale}${rest === "/" ? "" : rest}`;
+  }
+  // "as-needed": default locale has no prefix, others do
+  const currentIsDefault = currentLocale === defaultLocale;
+  const newIsDefault = newLocale === defaultLocale;
+  if (currentIsDefault) {
+    return newIsDefault ? pathname : `/${newLocale}${pathname}`;
+  }
+  const rest = pathname.replace(new RegExp(`^/${currentLocale}(/|$)`), "/");
+  const clean = rest === "/" ? "" : rest;
+  return newIsDefault ? (clean || "/") : `/${newLocale}${clean}`;
+}
 
 // ─── BetterI18nProvider ──────────────────────────────────────────────
 
@@ -96,6 +120,7 @@ export function BetterI18nProvider({
     config.staticData,
     config.fetchTimeout,
     config.retryCount,
+    config.localePrefix,
   ]);
 
   // Provider-level memoized core instance — reused by setLocale
@@ -103,6 +128,9 @@ export function BetterI18nProvider({
     () => createI18nCore(normalized),
     [normalized],
   );
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   const [locale, setLocaleState] = useState(initialLocale);
   const [messages, setMessages] = useState<Messages>(initialMessages);
@@ -127,13 +155,20 @@ export function BetterI18nProvider({
         // 3. Instant client-side update — no server round-trip
         setLocaleState(newLocale);
         setMessages(newMessages);
+
+        // 4. Sync server components via navigation or refresh
+        if (normalized.localePrefix === "never") {
+          router.refresh();
+        } else {
+          const newPath = buildLocalePath(pathname, locale, newLocale, normalized.defaultLocale, normalized.localePrefix);
+          router.replace(newPath);
+        }
       } catch (err) {
-        console.error("[better-i18n] Client-side locale switch failed, falling back to refresh:", err);
-        // Fallback: let the server handle it
+        console.error("[better-i18n] Client-side locale switch failed:", err);
         window.location.reload();
       }
     },
-    [locale, normalized.cookieName, i18nCore],
+    [locale, normalized.cookieName, normalized.localePrefix, normalized.defaultLocale, i18nCore, router, pathname],
   );
 
   return (
@@ -320,22 +355,34 @@ export function useSetLocale(config?: I18nConfig): (locale: string) => void {
   return useStandaloneSetLocale(config);
 }
 
-/** Internal standalone hook — cookie + router.refresh() */
+/** Internal standalone hook — cookie + URL navigation (or refresh for "never") */
 function useStandaloneSetLocale(config: I18nConfig) {
   const normalized = useMemo(() => normalizeConfig(config), [
     config.project,
     config.defaultLocale,
     config.cookieName,
+    config.localePrefix,
   ]);
 
   const router = useRouter();
+  const pathname = usePathname();
 
   return useCallback(
-    (locale: string) => {
-      document.cookie = `${normalized.cookieName}=${locale}; path=/; max-age=31536000; samesite=lax`;
-      router.refresh();
+    (newLocale: string) => {
+      document.cookie = `${normalized.cookieName}=${newLocale}; path=/; max-age=31536000; samesite=lax`;
+
+      if (normalized.localePrefix === "never") {
+        router.refresh();
+      } else {
+        // Detect current locale from URL segment
+        const segment = pathname.split("/")[1] || "";
+        const currentLocale = /^[a-z]{2,3}(-[a-z]{2,4})?$/i.test(segment)
+          ? segment : normalized.defaultLocale;
+        const newPath = buildLocalePath(pathname, currentLocale, newLocale, normalized.defaultLocale, normalized.localePrefix);
+        router.replace(newPath);
+      }
     },
-    [normalized.cookieName, router]
+    [normalized.cookieName, normalized.localePrefix, normalized.defaultLocale, router, pathname],
   );
 }
 
