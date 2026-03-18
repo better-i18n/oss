@@ -353,7 +353,9 @@ export function LocaleDropdown({
     const rect = containerRef.current.getBoundingClientRect();
     const spaceBelow = window.innerHeight - rect.bottom;
     const menuHeight = Math.min(languages.length * 40 + 8, window.innerHeight * 0.7);
-    return spaceBelow < menuHeight && rect.top > spaceBelow ? "top" : "bottom";
+    // 4px gap between trigger and menu + 16px breathing room
+    const required = menuHeight + 20;
+    return spaceBelow < required && rect.top > spaceBelow ? "top" : "bottom";
   }, [placementProp, languages.length]);
 
   const openMenu = useCallback(() => {
