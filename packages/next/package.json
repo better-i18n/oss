@@ -65,7 +65,8 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@better-i18n/core": "workspace:*"
+    "@better-i18n/core": "workspace:*",
+    "@floating-ui/react": "^0.27.19"
   },
   "peerDependencies": {
     "next": ">=15.0.0",
