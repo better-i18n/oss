@@ -11,6 +11,16 @@ import { Button } from "@better-i18n/ui/components/button";
 import { Checkbox } from "@better-i18n/ui/components/checkbox";
 import { cn } from "@better-i18n/ui/lib/utils";
 import {
+  TreeExpander,
+  TreeIcon,
+  TreeLabel,
+  TreeNode,
+  TreeNodeContent,
+  TreeNodeTrigger,
+  TreeProvider,
+  TreeView,
+} from "@better-i18n/ui/components/tree";
+import {
   IconArrowUp,
   IconCircleDashed,
   IconFolder1,
@@ -208,13 +218,18 @@ interface Translation {
   t: string; // translation text
 }
 
-interface FileChange {
-  path: string;
-  lang: string;
-  langCode: string;
+interface DemoTranslation {
+  keyId: string;
+  key: string;
+  namespace: string | null;
+  text: string;
+}
+
+interface DemoLanguageData {
+  languageName: string;
   countryCode: string;
-  added: number;
-  modified: number;
+  count: number;
+  translations: DemoTranslation[];
 }
 
 interface ToolCall {
@@ -225,7 +240,7 @@ interface ToolCall {
   translations?: Translation[];
   syncInfo?: {
     target: "cdn" | "github";
-    files: FileChange[];
+    byLanguage: Record<string, DemoLanguageData>;
   };
 }
 
@@ -847,24 +862,28 @@ export function DemoAIDrawerStandalone() {
             },
             syncInfo: {
               target: "cdn",
-              files: [
-                {
-                  path: "locales/tr.json",
-                  lang: "Turkish",
-                  langCode: "tr",
+              byLanguage: {
+                tr: {
+                  languageName: "Turkish",
                   countryCode: "tr",
-                  added: 3,
-                  modified: 0,
+                  count: 3,
+                  translations: [
+                    { keyId: "tr-0", key: "title", namespace: "hero", text: "Merhaba Dünya" },
+                    { keyId: "tr-1", key: "subtitle", namespace: "hero", text: "Lokalizasyon kolay" },
+                    { keyId: "tr-2", key: "label", namespace: "nav", text: "Ana sayfa" },
+                  ],
                 },
-                {
-                  path: "locales/de.json",
-                  lang: "German",
-                  langCode: "de",
+                de: {
+                  languageName: "German",
                   countryCode: "de",
-                  added: 3,
-                  modified: 0,
+                  count: 3,
+                  translations: [
+                    { keyId: "de-0", key: "title", namespace: "hero", text: "Hallo Welt" },
+                    { keyId: "de-1", key: "subtitle", namespace: "hero", text: "Lokalisierung leicht" },
+                    { keyId: "de-2", key: "label", namespace: "nav", text: "Startseite" },
+                  ],
                 },
-              ],
+              },
             },
           },
         };
@@ -1225,18 +1244,19 @@ export function DemoAIDrawerStandalone() {
                 {/* Sync tool — matches platform PublishApprovalUI approval mode */}
                 {msg.toolCall && msg.toolCall.syncInfo && (() => {
                   const { syncInfo, state, name, id } = msg.toolCall!;
-                  const files = syncInfo!.files;
-                  const totalCount = files.reduce(
-                    (sum, f) => sum + f.added + f.modified,
+                  const byLanguage = syncInfo!.byLanguage;
+                  const totalCount = Object.values(byLanguage).reduce(
+                    (sum, lang) => sum + lang.count,
                     0,
                   );
                   const isPending = state === "pending";
                   const isCompleted = state === "completed";
+
                   return (
                     <div className="w-full">
                       <DemoToolShell toolName={name} toolCallId={id} state={state}>
                         <div className="space-y-4 mt-4 pt-4 border-t border-gray-100">
-                          {/* Header with publish button (disabled — demo only) */}
+                          {/* Header with publish button */}
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-gray-700">
                               Publish Changes ({totalCount})
@@ -1258,49 +1278,119 @@ export function DemoAIDrawerStandalone() {
                               )}
                             </Button>
                           </div>
-                          {/* File list — visible in both pending and completed states */}
+                          {/* Expandable tree — language → namespace → key */}
                           <div className="overflow-y-auto scrollbar-hide px-2 py-2 rounded-lg bg-gray-100 max-h-[220px]">
-                            <div className="space-y-2">
-                              {files.map((file, idx) => (
-                                <div
-                                  key={idx}
-                                  className="flex items-center justify-between px-3 py-1.5 rounded-lg border transition-all bg-white border-gray-200"
-                                >
-                                  <div className="flex items-center gap-2.5">
-                                    <div className="flex items-center justify-center w-6 h-6 rounded bg-gray-100 overflow-hidden">
-                                      <img
-                                        src={`https://flagcdn.com/w40/${file.countryCode.toLowerCase()}.png`}
-                                        alt={file.countryCode}
-                                        className="w-5 h-4 rounded-sm object-cover"
-                                      />
-                                    </div>
-                                    <div className="flex flex-col">
-                                      <span className="text-sm font-mono text-gray-800">
-                                        {file.path}
-                                      </span>
-                                      <span className="text-xs text-gray-500">
-                                        {file.lang}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    {file.added > 0 && (
-                                      <span className="text-xs font-medium text-emerald-600">
-                                        +{file.added} {t("keys")}
-                                      </span>
-                                    )}
-                                    {file.modified > 0 && (
-                                      <span className="text-xs font-medium text-amber-600">
-                                        ~{file.modified}
-                                      </span>
-                                    )}
-                                    {isPending && (
-                                      <IconLoadingCircle className="w-4 h-4 animate-spin text-blue-500" />
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+                            <TreeProvider
+                              showLines
+                              showIcons
+                              selectable={false}
+                              animateExpand
+                              defaultExpandedIds={(() => {
+                                const ids: string[] = [];
+                                Object.entries(byLanguage).slice(0, 2).forEach(([lc, ld]) => {
+                                  ids.push(`lang-${lc}`);
+                                  const firstNs = ld.translations[0]?.namespace || "(root)";
+                                  ids.push(`${lc}-${firstNs}`);
+                                });
+                                return ids;
+                              })()}
+                              indent={16}
+                              className="text-sm"
+                            >
+                              <TreeView className="p-0 space-y-1">
+                                {Object.entries(byLanguage).map(([langCode, langData], langIdx) => {
+                                  const isLastLang = langIdx === Object.keys(byLanguage).length - 1;
+                                  // Group translations by namespace
+                                  const nsMap = new Map<string, DemoTranslation[]>();
+                                  for (const tx of langData.translations) {
+                                    const ns = tx.namespace || "(root)";
+                                    if (!nsMap.has(ns)) nsMap.set(ns, []);
+                                    nsMap.get(ns)!.push(tx);
+                                  }
+                                  const namespaceGroups = Array.from(nsMap.entries()).map(([ns, keys]) => ({ ns, keys }));
+
+                                  return (
+                                    <TreeNode
+                                      key={langCode}
+                                      nodeId={`lang-${langCode}`}
+                                      level={0}
+                                      isLast={isLastLang}
+                                    >
+                                      <TreeNodeTrigger className="py-1.5 px-2 rounded hover:bg-white/50">
+                                        <TreeExpander hasChildren />
+                                        <TreeIcon
+                                          hasChildren
+                                          icon={
+                                            <img
+                                              src={`https://flagcdn.com/w40/${langData.countryCode.toLowerCase()}.png`}
+                                              alt={langCode}
+                                              className="w-5 h-3.5 rounded-sm object-cover"
+                                            />
+                                          }
+                                        />
+                                        <TreeLabel className="ml-2 font-semibold text-xs text-gray-700">
+                                          {langData.languageName}
+                                          <span className="ml-2 text-[10px] font-normal text-gray-400">
+                                            ({langData.count} translation{langData.count !== 1 ? "s" : ""})
+                                          </span>
+                                        </TreeLabel>
+                                      </TreeNodeTrigger>
+                                      <TreeNodeContent hasChildren>
+                                        {namespaceGroups.map((group, nsIdx) => (
+                                          <TreeNode
+                                            key={group.ns}
+                                            nodeId={`${langCode}-${group.ns}`}
+                                            level={1}
+                                            isLast={nsIdx === namespaceGroups.length - 1}
+                                            parentPath={[isLastLang]}
+                                          >
+                                            <TreeNodeTrigger className="py-1.5 px-2 rounded hover:bg-white/50">
+                                              <TreeExpander hasChildren={group.keys.length > 0} />
+                                              <TreeIcon hasChildren={group.keys.length > 0} />
+                                              <TreeLabel className="ml-2 text-xs font-medium text-amber-600">
+                                                {group.ns}
+                                              </TreeLabel>
+                                            </TreeNodeTrigger>
+                                            <TreeNodeContent hasChildren={group.keys.length > 0}>
+                                              {group.keys.map((keyNode, keyIdx) => (
+                                                <TreeNode
+                                                  key={keyNode.keyId}
+                                                  nodeId={keyNode.keyId}
+                                                  level={2}
+                                                  isLast={keyIdx === group.keys.length - 1}
+                                                  parentPath={[isLastLang, nsIdx === namespaceGroups.length - 1]}
+                                                >
+                                                  <TreeNodeTrigger className="py-1.5 px-2 rounded hover:bg-white/50">
+                                                    <TreeExpander hasChildren={false} />
+                                                    <TreeIcon
+                                                      hasChildren={false}
+                                                      icon={
+                                                        <span style={{ color: "#F59E0B" }} className="inline-flex">
+                                                          <IconCircleDashed className="h-3 w-3" strokeWidth={3} />
+                                                        </span>
+                                                      }
+                                                    />
+                                                    <TreeLabel className="ml-2 flex items-center gap-2 min-w-0">
+                                                      <span className="font-mono text-xs truncate">{keyNode.key}</span>
+                                                      <span className="text-[10px] text-gray-400 truncate max-w-[120px]">
+                                                        "{keyNode.text}"
+                                                      </span>
+                                                      {isPending && (
+                                                        <IconLoadingCircle className="w-3 h-3 animate-spin text-blue-500 shrink-0" />
+                                                      )}
+                                                    </TreeLabel>
+                                                  </TreeNodeTrigger>
+                                                </TreeNode>
+                                              ))}
+                                            </TreeNodeContent>
+                                          </TreeNode>
+                                        ))}
+                                      </TreeNodeContent>
+                                    </TreeNode>
+                                  );
+                                })}
+                              </TreeView>
+                            </TreeProvider>
                           </div>
                         </div>
                       </DemoToolShell>
