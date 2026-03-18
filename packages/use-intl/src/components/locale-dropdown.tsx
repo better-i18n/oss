@@ -340,6 +340,7 @@ export function LocaleDropdown({
 
   const { refs, floatingStyles, placement: resolvedPlacement } = useFloating({
     open: isOpen,
+    strategy: "fixed",
     placement: placementProp === "top" ? "top-end" : "bottom-end",
     middleware: [
       offset(4),
