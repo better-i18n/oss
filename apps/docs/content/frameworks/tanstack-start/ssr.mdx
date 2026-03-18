@@ -25,6 +25,7 @@ Use `getMessages` in your route loaders:
 import { getMessages } from "@better-i18n/use-intl/server" // [!code ++]
 
 export const Route = createRootRouteWithContext<{ locale: string }>()({
+  staleTime: 0, // re-run loader on locale switch // [!code highlight]
   loader: async ({ context }) => { // [!code highlight]
     const messages = await getMessages({ // [!code ++]
       project: "org/project", // [!code ++]
@@ -236,6 +237,24 @@ loader: async ({ context }) => {
   return { messages }  // Pass to provider
 }
 ```
+
+### Locale Switch Updates Content but Not UI Translations
+
+**Symptom:** Switching locale updates CMS content (cards, articles) but `useTranslations()` strings stay in the old language.
+
+**Solution:** Set `staleTime: 0` on the root route so the loader re-runs on every SPA navigation:
+
+```tsx
+export const Route = createRootRouteWithContext<RouterContext>()({
+  staleTime: 0, // [!code highlight]
+  loader: async ({ context }) => {
+    const messages = await getMessages({ project: "org/project", locale: context.locale })
+    return { messages, locale: context.locale }
+  },
+})
+```
+
+With `staleTime: Infinity` (or any high value), TanStack Router considers the SSR loader result "forever fresh" and skips re-running it on client-side navigations — even when the locale changes. `staleTime: 0` fixes this. Performance is unaffected because `getMessages()` uses an in-memory TtlCache (60s) — same-locale navigations hit cache instantly.
 
 ### Wrong Locale on First Load
 

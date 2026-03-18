@@ -47,6 +47,7 @@ import { getMessages, detectLocale } from "@better-i18n/use-intl/server" // [!co
 import { i18nConfig } from "../i18n.config"
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  staleTime: 0, // re-run loader on locale switch // [!code highlight]
   beforeLoad: async ({ location }) => {
     const locales = await fetchLocales()
     const firstSegment = location.pathname.split("/").filter(Boolean)[0]
@@ -84,6 +85,7 @@ import { getMessages } from "@better-i18n/use-intl/server" // [!code ++]
 import { i18nConfig } from "../i18n.config"
 
 export const Route = createRootRouteWithContext<{ locale: string }>()({
+  staleTime: 0, // re-run loader on locale switch // [!code highlight]
   loader: async ({ context, location }) => {
     // Extract locale from path: /tr/about → "tr"
     const pathParts = location.pathname.split("/")
