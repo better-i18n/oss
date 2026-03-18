@@ -1,0 +1,174 @@
+---
+title: Client-Side Features
+description: Components and hooks for locale switching in Vite + React applications
+---
+
+Client-side features in `@better-i18n/use-intl` are built for CSR apps. Locale switching happens entirely in React state — no server round-trips, no page navigation required.
+
+## useLocale
+
+Access and switch the current locale from anywhere inside `BetterI18nProvider`:
+
+```tsx
+import { useLocale } from '@better-i18n/use-intl'
+
+function LocaleToggle() {
+  const { locale, setLocale, isLoading } = useLocale()
+
+  return (
+    <button
+      onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')}
+      disabled={isLoading}
+    >
+      {isLoading ? 'Switching...' : `Current: ${locale}`}
+    </button>
+  )
+}
+```
+
+### Return Value
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `locale` | `string` | Current active locale (e.g., `"en"`, `"tr"`) |
+| `setLocale` | `(locale: string) => void` | Switch locale — triggers CDN fetch + re-render |
+| `isLoading` | `boolean` | `true` while new messages are loading |
+
+### Locale Switching Flow
+
+Calling `setLocale()` triggers:
+
+1. CDN fetch for the new locale's messages
+2. React context update with new translations
+3. Full re-render of the component tree
+4. `onLocaleChange` callback (from `BetterI18nProvider`) fired with the new locale
+
+---
+
+## LanguageSwitcher
+
+A drop-in `<select>`-based language switcher. Handles loading state and locale changes automatically.
+
+```tsx
+import { LanguageSwitcher } from '@better-i18n/use-intl'
+
+function Header() {
+  return (
+    <header className="flex justify-between items-center p-4">
+      <Logo />
+      <LanguageSwitcher className="border rounded px-3 py-2" />
+    </header>
+  )
+}
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `className` | `string` | — | CSS class for the `<select>` element |
+| `loadingLabel` | `string` | `"Loading..."` | Label shown while fetching languages |
+| `renderOption` | `(lang) => ReactNode` | — | Custom option renderer |
+
+---
+
+## LocaleDropdown
+
+A fully-featured accessible dropdown with flag icons, keyboard navigation, and CSS theming.
+
+```tsx
+import { LocaleDropdown } from '@better-i18n/use-intl'
+
+function Header() {
+  return (
+    <header>
+      <LocaleDropdown />
+    </header>
+  )
+}
+```
+
+Selecting a locale calls `setLocale()` internally — no props needed inside `BetterI18nProvider`.
+
+### Quick Theming
+
+Override CSS custom properties on any parent element:
+
+```css
+.my-header {
+  --better-locale-text: #374151;
+  --better-locale-trigger-bg: transparent;
+  --better-locale-border: #e5e7eb;
+  --better-locale-menu-bg: #ffffff;
+  --better-locale-hover-bg: #f3f4f6;
+  --better-locale-active-bg: #f9fafb;
+  --better-locale-code-text: #9ca3af;
+}
+```
+
+### Unstyled Mode
+
+Use `variant="unstyled"` with Tailwind or any CSS framework:
+
+```tsx
+<LocaleDropdown
+  variant="unstyled"
+  className="relative"
+  triggerClassName="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100"
+  menuClassName="absolute right-0 mt-1 w-52 bg-white border rounded-xl shadow-lg z-50"
+/>
+```
+
+<Callout type="info">
+  For the full API — props, CSS custom properties, data attributes, `renderTrigger`, `renderItem`, and keyboard shortcuts — see [Locale Management](/frameworks/locale#localedropdown).
+</Callout>
+
+---
+
+## Persisting the Locale
+
+Vite apps manage locale in React state. Persist to `localStorage` so it survives page refreshes:
+
+```tsx title="src/App.tsx"
+import { useState } from 'react'
+import { BetterI18nProvider } from '@better-i18n/use-intl'
+
+function App() {
+  const [locale, setLocale] = useState(
+    () =>
+      localStorage.getItem('locale') ||
+      navigator.language.split('-')[0] ||
+      'en'
+  )
+
+  const handleLocaleChange = (newLocale: string) => {
+    localStorage.setItem('locale', newLocale)
+    setLocale(newLocale)
+  }
+
+  return (
+    <BetterI18nProvider
+      project="your-org/your-project"
+      locale={locale}
+      onLocaleChange={handleLocaleChange}
+    >
+      <Router />
+    </BetterI18nProvider>
+  )
+}
+```
+
+<Callout type="tip">
+  `onLocaleChange` is called automatically by `setLocale()` — wire it to `localStorage.setItem` to persist across refreshes.
+</Callout>
+
+## Next Steps
+
+<Cards>
+  <Card title="React Router" icon="Route" href="/frameworks/vite/react-router">
+    URL-based locale routing with `/:locale/*`.
+  </Card>
+  <Card title="Locale Management" icon="Globe" href="/frameworks/locale">
+    Full API reference for hooks and components.
+  </Card>
+</Cards>
