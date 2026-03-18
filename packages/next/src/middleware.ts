@@ -132,10 +132,12 @@ export function createBetterI18nMiddleware(
     let response: NextResponse;
 
     if (localePrefix === "never") {
-      // 3a. "never" mode: bypass next-intl middleware entirely.
-      // next-intl's createMiddleware tries URL rewriting which breaks cookie-only locale.
-      // We create a plain response and set the header that next-intl's getRequestConfig reads.
-      response = NextResponse.next();
+      // 3a. "never" mode: no locale prefix in the visible URL, but we still need
+      // an internal rewrite to /{locale}/... so Next.js can match the [locale]
+      // route segment (where <html>/<body> live in a standard next-intl layout).
+      const url = request.nextUrl.clone();
+      url.pathname = `/${detectedLocale}${url.pathname}`;
+      response = NextResponse.rewrite(url);
       response.headers.set(
         "x-middleware-request-x-next-intl-locale",
         detectedLocale
