@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - 5847011: Fix LocaleDropdown auto-placement, dark mode support, and fixed positioning strategy. Replaces manual placement calculation with @floating-ui/react for reliable viewport-aware positioning. Adds CSS custom properties for dark mode theming with `.dark` class and `[data-theme="dark"]` support.
+- cc92649: Fix `localePrefix: "never"` mode middleware and client-side locale switching. Middleware now performs internal rewrites correctly bypassing next-intl delegation, and `useSetLocale` properly handles URL navigation for prefix modes vs cookie-only refresh for "never" mode.
 
 ## 0.6.1
 
