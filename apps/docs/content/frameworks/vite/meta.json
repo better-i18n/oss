@@ -5,6 +5,7 @@
   "pages": [
     "index",
     "setup",
+    "client",
     "react-router",
     "typescript"
   ]

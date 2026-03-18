@@ -178,54 +178,6 @@ function OrderSummary({ order }) {
 }
 ```
 
-## Language Switcher
-
-### Simple Select
-
-```tsx title="src/components/LanguageSwitcher.tsx"
-import { useLocale, useLanguages } from '@better-i18n/use-intl'
-
-export function LanguageSwitcher() {
-  const { locale, setLocale } = useLocale()
-  const { languages, isLoading } = useLanguages()
-
-  if (isLoading) {
-    return <select disabled><option>Loading...</option></select>
-  }
-
-  return (
-    <select
-      value={locale}
-      onChange={(e) => setLocale(e.target.value)}
-      className="px-3 py-2 border rounded"
-    >
-      {languages.map((lang) => (
-        <option key={lang.code} value={lang.code}>
-          {lang.nativeName}
-        </option>
-      ))}
-    </select>
-  )
-}
-```
-
-### Built-in Component
-
-Use the included `LanguageSwitcher` component:
-
-```tsx
-import { LanguageSwitcher } from '@better-i18n/use-intl'
-
-function Header() {
-  return (
-    <header className="flex justify-between items-center p-4">
-      <Logo />
-      <LanguageSwitcher className="border rounded px-3 py-2" />
-    </header>
-  )
-}
-```
-
 ## Performance Tips
 
 <Cards>
@@ -246,6 +198,9 @@ function Header() {
 ## Next Steps
 
 <Cards>
+  <Card title="Client-Side Features" icon="Zap" href="/frameworks/vite/client">
+    Language switcher components, `useLocale`, and locale persistence.
+  </Card>
   <Card title="React Router" icon="Route" href="/frameworks/vite/react-router">
     Integrate with React Router for URL-based locales.
   </Card>
