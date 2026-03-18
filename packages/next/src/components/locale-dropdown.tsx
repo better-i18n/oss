@@ -219,7 +219,7 @@ const dropdownStyles = {
   } satisfies CSSProperties,
   skeletonFlag: {
     width: 20,
-    height: 14,
+    height: 18,
     borderRadius: 3,
     background: "var(--better-locale-border, #e5e7eb)",
     animation: "better-locale-pulse 1.5s ease-in-out infinite",
@@ -227,7 +227,7 @@ const dropdownStyles = {
   } satisfies CSSProperties,
   skeletonText: {
     width: 56,
-    height: 14,
+    height: 18,
     borderRadius: 4,
     background: "var(--better-locale-border, #e5e7eb)",
     animation: "better-locale-pulse 1.5s ease-in-out infinite",
