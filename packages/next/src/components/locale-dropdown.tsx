@@ -29,13 +29,12 @@ function GlobeIcon() {
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      strokeLinecap="square"
       aria-hidden="true"
     >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M2 12h20" />
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z" />
+      <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" />
+      <path d="M21 12H3" />
+      <path d="M12 21C10.067 21 8.5 16.9706 8.5 12C8.5 7.02944 10.067 3 12 3C13.933 3 15.5 7.02944 15.5 12C15.5 16.9706 13.933 21 12 21Z" />
     </svg>
   );
 }
@@ -54,7 +53,7 @@ function ChevronDownIcon({ style }: { style?: CSSProperties }) {
       aria-hidden="true"
       style={style}
     >
-      <path d="M6 9l6 6 6-6" />
+      <path d="M20 9L13.4142 15.5858C12.6332 16.3668 11.3669 16.3668 10.5858 15.5858L4 9" />
     </svg>
   );
 }
@@ -72,7 +71,7 @@ function CheckIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M20 6L9 17l-5-5" />
+      <path d="M5 12.75L10 19L19 5" />
     </svg>
   );
 }
@@ -150,7 +149,7 @@ const dropdownStyles = {
     cursor: "pointer",
     transition: "background 0.15s, border-color 0.15s",
     lineHeight: 1,
-    fontFamily: "inherit",
+    fontFamily: "system-ui, -apple-system, sans-serif",
   } satisfies CSSProperties,
   triggerDisabled: {
     opacity: 0.7,
@@ -185,7 +184,7 @@ const dropdownStyles = {
     cursor: "pointer",
     transition: "background 0.1s",
     textAlign: "left" as const,
-    fontFamily: "inherit",
+    fontFamily: "system-ui, -apple-system, sans-serif",
     lineHeight: 1.2,
   } satisfies CSSProperties,
   itemActive: {
