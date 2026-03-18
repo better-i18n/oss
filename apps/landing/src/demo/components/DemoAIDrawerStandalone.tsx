@@ -168,21 +168,19 @@ const DEMO_CONTENT: Record<string, DemoContent> = {
   tr: {
     phase1: {
       segments: [
-        { type: "text", value: "Çevir " },
-        { type: "mention", value: "lang:tr" },
-        { type: "text", value: " anahtarları " },
         { type: "mention", value: "ns:auth" },
-        { type: "text", value: " içinde" },
+        { type: "text", value: " içindeki anahtarları " },
+        { type: "mention", value: "lang:tr" },
+        { type: "text", value: " diline çevir" },
       ],
-      userMessage: "Çevir @Turkish anahtarları @auth içinde",
+      userMessage: "@auth içindeki anahtarları @Turkish diline çevir",
     },
     phase2: {
       segments: [
-        { type: "text", value: "Şimdi " },
         { type: "mention", value: "lang:de" },
-        { type: "text", value: " ekle ve tümünü yayınla" },
+        { type: "text", value: " dilini de ekle ve tümünü yayınla" },
       ],
-      userMessage: "Şimdi @German ekle ve tümünü yayınla",
+      userMessage: "@German dilini de ekle ve tümünü yayınla",
     },
   },
   zh: {
@@ -1423,18 +1421,6 @@ export function DemoAIDrawerStandalone() {
                                   {t("translationProposals")} (
                                   {msg.toolCall.translations.length})
                                 </span>
-                                {selectedRows.size > 0 &&
-                                  msg.toolCall.state !== "completed" && (
-                                    <Button
-                                      onClick={handleApprove}
-                                      size="sm"
-                                      variant="outline"
-                                      className="h-7 text-xs"
-                                    >
-                                      {t("approveSelected")} (
-                                      {selectedRows.size})
-                                    </Button>
-                                  )}
                               </div>
                               <Button
                                 onClick={handleApprove}
@@ -1960,7 +1946,7 @@ export function DemoAIDrawerStandalone() {
                 </svg>
               </Button>
             </ContextTrigger>
-            <ContextContent>
+            <ContextContent className="divide-gray-100">
               <ContextContentHeader />
               {messages.length > 0 && (
                 <ContextContentBody className="space-y-2.5 bg-secondary/50">
