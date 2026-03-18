@@ -1,5 +1,11 @@
 # @better-i18n/next
 
+## 0.6.1
+
+### Patch Changes
+
+- Fix build failure caused by @types/react version mismatch in monorepo (React 18 types hoisted over React 19)
+
 ## 0.6.0
 
 ### Minor Changes
