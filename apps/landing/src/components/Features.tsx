@@ -43,8 +43,8 @@ function AIFeatureCard() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-sm">
-      <div className="h-[320px] bg-mist-50 relative overflow-hidden p-5 flex flex-col shrink-0">
+    <div className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <div className="h-[280px] bg-mist-50 relative overflow-hidden p-5 flex flex-col shrink-0">
         <div className="flex items-center gap-2 text-xs text-mist-700 mb-4 pb-3 border-b border-mist-200">
           <div className="w-2 h-2 rounded-full bg-mist-400" />
           <span className="font-bold uppercase tracking-tight text-[10px]">
@@ -199,8 +199,8 @@ function PublishFeatureCard() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-sm">
-      <div className="h-[320px] bg-mist-50 p-5 flex flex-col shrink-0">
+    <div className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <div className="h-[280px] bg-mist-50 p-5 flex flex-col shrink-0">
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-mist-200">
           <div className="flex items-center gap-2">
             <div
@@ -349,8 +349,8 @@ function AIContextCard() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-sm">
-      <div className="h-[320px] bg-mist-50 p-5 flex flex-col shrink-0 relative">
+    <div className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <div className="h-[280px] bg-mist-50 p-5 flex flex-col shrink-0 relative">
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-mist-200">
           <div className="flex items-center gap-2">
             <div className="size-1.5 rounded-full bg-mist-900 animate-pulse" />
@@ -475,17 +475,17 @@ export default function Features() {
   const { locale } = useParams({ strict: false });
 
   return (
-    <section id="features" className="py-16 bg-mist-100">
+    <section id="features" className="py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="flex flex-col gap-10 sm:gap-16">
-          <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-12">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-2xl">
-              <h2 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
+              <h2 className="font-display text-3xl/[1.08] font-medium tracking-[-0.03em] text-mist-950 sm:text-4xl/[1.04]">
                 {t("title", {
                   defaultValue: "Everything you need to ship globally",
                 })}
               </h2>
-              <p className="mt-4 text-lg/8 text-mist-700">
+              <p className="mt-4 text-lg text-mist-600">
                 {t("subtitle", {
                   defaultValue:
                     "A complete localization platform built for modern development workflows.",
@@ -495,14 +495,14 @@ export default function Features() {
             <Link
               to="/$locale/features"
               params={{ locale: locale || "en" }}
-              className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950 w-fit"
+              className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-mist-700 hover:text-mist-950 transition-colors"
             >
               {t("seeHowItWorks", { defaultValue: "See how it works" })}
               <SpriteIcon name="arrow-right" className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 items-stretch">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 items-stretch">
             <AIFeatureCard />
             <PublishFeatureCard />
             <AIContextCard />
