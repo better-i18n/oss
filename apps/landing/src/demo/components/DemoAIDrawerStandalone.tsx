@@ -2,7 +2,6 @@ import {
   Context,
   ContextContent,
   ContextContentBody,
-  ContextContentFooter,
   ContextContentHeader,
   ContextTrigger,
 } from "@better-i18n/ui/components/ai/context";
@@ -17,7 +16,6 @@ import {
   IconFolder1,
   IconLoadingCircle,
   IconMagicWand,
-  IconSquareBehindSquare6,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DemoModelSelector } from "./DemoModelSelector";
@@ -1260,59 +1258,50 @@ export function DemoAIDrawerStandalone() {
                               )}
                             </Button>
                           </div>
-                          {/* Completed: no pending changes (platform post-publish state) */}
-                          {/* Pending: file list with progress spinners */}
-                          {isCompleted ? (
-                            <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 text-center">
-                              <p className="text-sm text-gray-600">
-                                No pending changes to publish
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="overflow-y-auto scrollbar-hide px-2 py-2 rounded-lg bg-gray-100 max-h-[220px]">
-                              <div className="space-y-2">
-                                {files.map((file, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="flex items-center justify-between px-3 py-1.5 rounded-lg border transition-all bg-white border-gray-200"
-                                  >
-                                    <div className="flex items-center gap-2.5">
-                                      <div className="flex items-center justify-center w-6 h-6 rounded bg-gray-100 overflow-hidden">
-                                        <img
-                                          src={`https://flagcdn.com/w40/${file.countryCode.toLowerCase()}.png`}
-                                          alt={file.countryCode}
-                                          className="w-5 h-4 rounded-sm object-cover"
-                                        />
-                                      </div>
-                                      <div className="flex flex-col">
-                                        <span className="text-sm font-mono text-gray-800">
-                                          {file.path}
-                                        </span>
-                                        <span className="text-xs text-gray-500">
-                                          {file.lang}
-                                        </span>
-                                      </div>
+                          {/* File list — visible in both pending and completed states */}
+                          <div className="overflow-y-auto scrollbar-hide px-2 py-2 rounded-lg bg-gray-100 max-h-[220px]">
+                            <div className="space-y-2">
+                              {files.map((file, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center justify-between px-3 py-1.5 rounded-lg border transition-all bg-white border-gray-200"
+                                >
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="flex items-center justify-center w-6 h-6 rounded bg-gray-100 overflow-hidden">
+                                      <img
+                                        src={`https://flagcdn.com/w40/${file.countryCode.toLowerCase()}.png`}
+                                        alt={file.countryCode}
+                                        className="w-5 h-4 rounded-sm object-cover"
+                                      />
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                      {file.added > 0 && (
-                                        <span className="text-xs font-medium text-emerald-600">
-                                          +{file.added} {t("keys")}
-                                        </span>
-                                      )}
-                                      {file.modified > 0 && (
-                                        <span className="text-xs font-medium text-amber-600">
-                                          ~{file.modified}
-                                        </span>
-                                      )}
-                                      {isPending && (
-                                        <IconLoadingCircle className="w-4 h-4 animate-spin text-blue-500" />
-                                      )}
+                                    <div className="flex flex-col">
+                                      <span className="text-sm font-mono text-gray-800">
+                                        {file.path}
+                                      </span>
+                                      <span className="text-xs text-gray-500">
+                                        {file.lang}
+                                      </span>
                                     </div>
                                   </div>
-                                ))}
-                              </div>
+                                  <div className="flex items-center gap-2">
+                                    {file.added > 0 && (
+                                      <span className="text-xs font-medium text-emerald-600">
+                                        +{file.added} {t("keys")}
+                                      </span>
+                                    )}
+                                    {file.modified > 0 && (
+                                      <span className="text-xs font-medium text-amber-600">
+                                        ~{file.modified}
+                                      </span>
+                                    )}
+                                    {isPending && (
+                                      <IconLoadingCircle className="w-4 h-4 animate-spin text-blue-500" />
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
                             </div>
-                          )}
+                          </div>
                         </div>
                       </DemoToolShell>
                     </div>
@@ -1918,22 +1907,6 @@ export function DemoAIDrawerStandalone() {
                     </div>
                   </div>
                 </ContextContentBody>
-              )}
-              {messages.length > 0 && (
-                <ContextContentFooter>
-                  <span className="text-muted-foreground text-[11px]">
-                    Session debug
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled
-                    className="h-6 gap-1 px-2 text-xs"
-                  >
-                    <IconSquareBehindSquare6 className="h-3.5 w-3.5" />
-                    Copy
-                  </Button>
-                </ContextContentFooter>
               )}
             </ContextContent>
           </Context>
