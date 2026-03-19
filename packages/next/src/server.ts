@@ -1,5 +1,4 @@
 import { getRequestConfig } from "next-intl/server";
-import { cookies } from "next/headers";
 import { createI18nCore } from "@better-i18n/core";
 import type { I18nCore, Messages } from "@better-i18n/core";
 
@@ -151,6 +150,7 @@ export const createNextIntlRequestConfig = (config: I18nConfig) =>
     let cookieLocale: string | null = null;
     if (normalized.localePrefix === "never") {
       try {
+        const { cookies } = await import("next/headers");
         const cookieStore = await cookies();
         cookieLocale = cookieStore.get(normalized.cookieName)?.value ?? null;
       } catch {
