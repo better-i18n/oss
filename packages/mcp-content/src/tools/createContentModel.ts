@@ -60,7 +60,19 @@ export const createContentModel: Tool = {
     name: "createContentModel",
     description: `Create a new content model with optional field definitions.
 
+MODEL TYPES (kind):
+- collection (default): Multiple entries (e.g., blog posts, products).
+- single: Single entry only (e.g., homepage hero, site settings).
+
+BODY FIELD (includeBody):
+- true (default): Enables rich-text body for long-form content (articles, docs).
+- false: Only custom fields — ideal for taxonomy/lookup models (categories, tags, authors).
+
+SLUG: Must be unique within project. Used in API paths. Cannot be changed after creation.
+
 Field types: text, textarea, richtext, number, boolean, date, datetime, enum, media, relation.
+- localized=true: Field value stored per-language (requires languageCode on update).
+- required=true: Entries cannot be created without this field.
 
 EXAMPLES:
 {

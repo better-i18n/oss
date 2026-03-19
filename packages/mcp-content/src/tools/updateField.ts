@@ -47,7 +47,9 @@ const inputSchema = projectSchema.extend({
 export const updateField: Tool = {
   definition: {
     name: "updateField",
-    description: `Update a custom field's properties. Identify the field by model slug and field name.
+    description: `Update a custom field's properties. Call getContentModel first to see current type and properties.
+
+⚠️ TYPE CHANGE RISK: Changing a field's type (e.g., text→number) may corrupt existing data across all entries. Only change type on empty fields or when data is compatible.
 
 EXAMPLES:
 - Add enum values: { "fieldName": "status", "options": { "enumValues": [{ "label": "Active", "value": "active" }, { "label": "Archived", "value": "archived" }] } }

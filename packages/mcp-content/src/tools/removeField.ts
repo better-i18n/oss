@@ -22,8 +22,9 @@ const inputSchema = projectSchema.extend({
 export const removeField: Tool = {
   definition: {
     name: "removeField",
-    description:
-      "DESTRUCTIVE: Remove a custom field from a content model. Deletes all field values across ALL entries. This action is irreversible.",
+    description: `DESTRUCTIVE: Remove a custom field from a content model. Deletes ALL field values for this field across ALL entries — irreversible, NO recovery.
+
+Before removing: call listContentEntries with the model slug to see how many entries will lose data. Call getContentModel to verify the field exists.`,
     inputSchema: {
       type: "object",
       properties: {

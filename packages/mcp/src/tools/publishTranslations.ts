@@ -23,13 +23,22 @@ export const publishTranslations: Tool = {
     name: "publishTranslations",
     description: `Deploy pending changes to production (CDN or GitHub).
 
-⚠️ PRODUCTION IMPACT - deploys to live systems.
-ALWAYS call getPendingChanges first to verify what will be deployed.
+⚠️ PRODUCTION IMPACT — deploys to live systems.
+
+REQUIRED WORKFLOW (follow in order):
+1. Call getPendingChanges FIRST to see what will be deployed.
+2. Check 'cannotPublishReason' — if set, publishing is blocked (fix the issue first).
+3. Review the changes, then call publishTranslations.
+4. Use getSync(syncId) to verify completion.
+
+⚠️ COOLDOWN: 30-second per-project cooldown between publishes. Calling too frequently returns TOO_MANY_REQUESTS error. Wait and retry.
+
+⚠️ PERMANENT DELETION: Soft-deleted keys (from deleteKeys) become permanently deleted after publish. There is NO way to recover them. Verify with getPendingChanges → deletedKeys before publishing.
 
 If translations array is omitted, ALL pending changes are published.
 If translations array is provided, only those specific items are published.
 
-Returns syncJobIds - use getSync(syncId) to verify deployment completed successfully.`,
+Returns syncJobIds — use getSync(syncId) to verify deployment completed successfully.`,
     inputSchema: {
       type: "object",
       properties: {

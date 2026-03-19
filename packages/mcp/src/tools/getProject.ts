@@ -19,7 +19,8 @@ export const getProject: Tool = {
     name: "getProject",
     description:
       "Get project details including namespaces, languages, key count, and translation coverage. " +
-      "Use this after listProjects to understand a specific project's structure. " +
+      "CALL THIS BEFORE createKeys — you need the namespace list to route keys correctly. " +
+      "Using wrong namespaces silently creates duplicates in the wrong namespace. " +
       "Namespaces include rich metadata: name, keyCount, description, and context (team, domain, aiPrompt, tags). " +
       "Response includes CDN delivery metadata (cdn field): base URL, manifest URL, " +
       "URL pattern with {locale}/{namespace} placeholders, and example URLs. " +

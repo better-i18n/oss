@@ -39,14 +39,26 @@ export const createKeys: Tool = {
     name: "createKeys",
     description: `Create NEW translation keys with source text and optional translations.
 
-IMPORTANT — avoid accidental duplicates:
-- Call getProject first to see existing namespaces and key count
-- ns defaults to 'default'. Use the SAME namespace as existing keys
-- Same key name in a different namespace creates a SEPARATE key (not a duplicate)
-- To add translations to EXISTING keys, use listKeys + updateKeys instead
+REQUIRED WORKFLOW (follow in order):
+1. Call getProject FIRST to get the list of existing namespaces and languages.
+2. Use the namespace list to set 'ns' correctly for each key.
+3. Call createKeys with properly routed keys.
+4. Call getPendingChanges to verify, then publishTranslations to deploy.
 
-Response fields: 'dup' = same-namespace skips, 'warn' = cross-namespace name matches
-Don't include source language in translations — use v (source value) instead.`,
+NAMESPACE RULE (CRITICAL):
+- First dot-segment = namespace (ns), remaining segments = key name (n).
+- WRONG: { n: "terms.meta.title", ns: "default" } — namespace embedded in key name!
+- CORRECT: { n: "meta.title", ns: "terms" }
+- An unknown ns value silently creates a NEW namespace — always verify against getProject output.
+- Same key name in a different namespace creates a SEPARATE key (not a duplicate).
+
+SILENT BEHAVIORS:
+- Existing keys (same name + namespace) are silently SKIPPED. Use updateKeys instead.
+- Source language translations in 't' are silently DROPPED. Use 'v' for source text.
+- If 'n' starts with an existing namespace, server auto-corrects but returns a warning.
+
+Response fields: 'dup' = same-namespace skips, 'warn' = cross-namespace name matches.
+To add translations to EXISTING keys, use listKeys + updateKeys instead.`,
     inputSchema: {
       type: "object",
       properties: {

@@ -21,8 +21,15 @@ const inputSchema = projectSchema.extend({
 export const deleteKeys: Tool = {
   definition: {
     name: "deleteKeys",
-    description:
-      "Soft-delete translation keys by UUID. Keys are marked for deletion and removed from CDN/GitHub on next publish. Get UUIDs from listKeys.",
+    description: `Soft-delete translation keys by UUID (max 100 per call).
+
+REQUIRED WORKFLOW:
+1. Call listKeys to find and verify key IDs (UUIDs) before deleting.
+2. Call deleteKeys with verified UUIDs.
+3. Call getPendingChanges to review what will be permanently deleted.
+4. Call publishTranslations only when ready — after publish, deleted keys are PERMANENTLY removed with NO recovery.
+
+Check 'skipped' in response — lists IDs not found or already deleted.`,
     inputSchema: {
       type: "object",
       properties: {

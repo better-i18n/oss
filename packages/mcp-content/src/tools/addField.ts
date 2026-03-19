@@ -48,7 +48,11 @@ const inputSchema = projectSchema.extend({
 export const addField: Tool = {
   definition: {
     name: "addField",
-    description: `Add a custom field to a content model. Field name must be snake_case.
+    description: `Add a custom field to a content model. Call getContentModel first to see existing fields and avoid name collisions.
+
+Field name must be snake_case. KEY FLAGS:
+- localized=true: Value stored per-language. Requires languageCode when updating via updateContentEntry.
+- required=true: Entries cannot be created without this field. Adding required field to a model with existing entries may cause validation issues.
 
 EXAMPLES:
 - Enum field: { "name": "status", "displayName": "Status", "type": "enum", "options": { "enumValues": [{ "label": "Draft", "value": "draft" }, { "label": "Published", "value": "published" }] } }
