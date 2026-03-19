@@ -157,7 +157,9 @@ export function createBetterI18nMiddleware(
       headers.set("X-NEXT-INTL-LOCALE", detectedLocale);
       response = NextResponse.rewrite(rewriteUrl, { request: { headers } });
     } else {
-      // 3b. URL-based modes: delegate to next-intl middleware as before
+      // 3b. URL-based modes: delegate to next-intl middleware for routing,
+      // then inject x-better-i18n-locale as a REQUEST header so it's available
+      // via headers() in server components (getRequestConfig fallback).
       const localesKey = availableLocales.join(",");
       if (!cachedMiddleware || cachedLocalesKey !== localesKey) {
         cachedMiddleware = createMiddleware({
@@ -167,10 +169,29 @@ export function createBetterI18nMiddleware(
         });
         cachedLocalesKey = localesKey;
       }
-      response = cachedMiddleware(request);
+      const intlResponse = cachedMiddleware(request);
+
+      if (intlResponse.status >= 300) {
+        // Redirect — pass through as-is, no header injection needed
+        response = intlResponse;
+      } else {
+        // Non-redirect: wrap with request headers so server components can
+        // read the locale via headers() when requestLocale is undefined
+        const requestHeaders = new Headers(request.headers);
+        requestHeaders.set("x-better-i18n-locale", detectedLocale);
+        response = NextResponse.next({ request: { headers: requestHeaders } });
+
+        // Preserve response headers and cookies from next-intl middleware
+        intlResponse.headers.forEach((value, key) => {
+          response.headers.set(key, value);
+        });
+        intlResponse.cookies.getAll().forEach((c) => {
+          response.cookies.set(c.name, c.value);
+        });
+      }
     }
 
-    // 4. Add x-locale header for backwards compatibility
+    // 4. Add x-locale response header for backwards compatibility
     response.headers.set("x-locale", detectedLocale);
 
     // 5. Set our custom cookie if needed

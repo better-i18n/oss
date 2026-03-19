@@ -1,9 +1,17 @@
+import { cache } from "react";
 import { getRequestConfig } from "next-intl/server";
 import { createI18nCore } from "@better-i18n/core";
 import type { I18nCore, Messages } from "@better-i18n/core";
 
 import { normalizeConfig } from "./config.js";
 import type { I18nConfig, NextFetchRequestInit } from "./types.js";
+
+/**
+ * Per-request locale cache using React's `cache()`.
+ * The first getRequestConfig call resolves requestLocale (e.g. "tr" from middleware).
+ * The second call in the same request may receive undefined — this cache bridges them.
+ */
+const getRequestLocaleCache = cache(() => ({ locale: undefined as string | undefined }));
 
 /**
  * Next.js i18n core instance with ISR support
@@ -105,16 +113,27 @@ export const createNextI18nCore = (config: I18nConfig): NextI18nCore => {
 export function resolveLocaleFromRequest(
   requestLocale: string | undefined,
   cookieLocale: string | null | undefined,
+  cachedLocale: string | null | undefined,
   locales: string[],
   defaultLocale: string,
   localePrefix: "always" | "as-needed" | "never",
 ): string {
   let locale: string | undefined = requestLocale;
 
-  // Cookie fallback — ONLY in "never" mode (cookie is source of truth)
-  if (!locale && localePrefix === "never") {
-    if (cookieLocale && locales.includes(cookieLocale)) {
-      locale = cookieLocale;
+  if (!locale) {
+    if (localePrefix === "never") {
+      // "never" mode: cookie is source of truth
+      if (cookieLocale && locales.includes(cookieLocale)) {
+        locale = cookieLocale;
+      }
+    } else {
+      // URL-based modes ("always" / "as-needed"): use per-request cached locale
+      // from the first getRequestConfig call. This covers cases where requestLocale
+      // is undefined (secondary render passes) without falling back to cookie
+      // — which could differ from the URL locale.
+      if (cachedLocale && locales.includes(cachedLocale)) {
+        locale = cachedLocale;
+      }
     }
   }
 
@@ -146,9 +165,21 @@ export const createNextIntlRequestConfig = (config: I18nConfig) =>
     const normalized = normalizeConfig(config);
     const locales = await i18n.getLocales();
 
-    // Read cookie ONLY in "never" mode — avoids unnecessary I/O in URL-based modes
+    const resolvedRequestLocale = await requestLocale;
+
+    // Per-request cache: the first getRequestConfig call receives requestLocale
+    // from middleware (e.g. "tr"). The second call in the same request may
+    // receive undefined. Cache bridges them so both resolve to the same locale.
+    const localeCache = getRequestLocaleCache();
+    if (resolvedRequestLocale && locales.includes(resolvedRequestLocale)) {
+      localeCache.locale = resolvedRequestLocale;
+    }
+    const cachedLocale = localeCache.locale;
+
     let cookieLocale: string | null = null;
+
     if (normalized.localePrefix === "never") {
+      // "never" mode: cookie is the source of truth
       try {
         const { cookies } = await import("next/headers");
         const cookieStore = await cookies();
@@ -159,8 +190,9 @@ export const createNextIntlRequestConfig = (config: I18nConfig) =>
     }
 
     const locale = resolveLocaleFromRequest(
-      await requestLocale,
+      resolvedRequestLocale,
       cookieLocale,
+      cachedLocale,
       locales,
       normalized.defaultLocale,
       normalized.localePrefix,
