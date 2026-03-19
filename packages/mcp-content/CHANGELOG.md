@@ -1,5 +1,11 @@
 # @better-i18n/mcp-content
 
+## 0.8.1
+
+### Patch Changes
+
+- e92ff9d: Improve MCP tool descriptions with workflow rules, safety warnings, and silent behavior documentation for better AI agent guidance
+
 ## 0.8.0
 
 ### Minor Changes
