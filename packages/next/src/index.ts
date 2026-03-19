@@ -115,6 +115,6 @@ export type {
 
 export type { I18nMiddlewareConfig } from "@better-i18n/core";
 
-// Webhook revalidation handler
-export { createRevalidateHandler } from "./revalidate.js";
+// Webhook revalidation handler — server-only, use '@better-i18n/next/revalidate' subpath
+// NOT re-exported here to avoid pulling next/cache into client bundles
 export type { RevalidateHandlerOptions, WebhookPayload } from "./revalidate.js";
