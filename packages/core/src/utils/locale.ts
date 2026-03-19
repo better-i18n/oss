@@ -23,10 +23,22 @@ export interface LocaleConfig {
   locales: string[];
 
   /**
-   * Default locale code (will NOT have a prefix in URL)
+   * Default locale code
    * @example 'en'
    */
   defaultLocale: string;
+
+  /**
+   * URL prefix strategy for locale codes.
+   *
+   * - `"as-needed"` (default): Default locale has NO prefix (`/about`), others do (`/tr/about`).
+   *   Follows next-intl / Paraglide JS convention.
+   * - `"always"`: ALL locales get a prefix, including the default (`/en/about`, `/tr/about`).
+   *   Use with TanStack Router `$locale/` route segments.
+   *
+   * @default "as-needed"
+   */
+  localePrefix?: "always" | "as-needed";
 }
 
 /**
@@ -106,22 +118,27 @@ export function removeLocalePrefix(
 }
 
 /**
- * Add locale prefix to pathname (respects default locale convention)
+ * Add locale prefix to pathname
  *
- * Default locale does NOT get a prefix (follows next-intl/Paraglide JS pattern)
+ * Respects `localePrefix` config:
+ * - `"as-needed"` (default): default locale has no prefix
+ * - `"always"`: all locales get a prefix
  *
  * @example
+ * // as-needed (default)
  * addLocalePrefix('/about', 'tr', config) // '/tr/about'
- * addLocalePrefix('/about', 'en', config) // '/about' (en is default, no prefix)
- * addLocalePrefix('/', 'tr', config)      // '/tr'
+ * addLocalePrefix('/about', 'en', config) // '/about' (en is default)
+ *
+ * // always
+ * addLocalePrefix('/about', 'en', { ...config, localePrefix: 'always' }) // '/en/about'
  */
 export function addLocalePrefix(
   pathname: string,
   locale: string,
   config: LocaleConfig
 ): string {
-  // Don't add prefix for default locale
-  if (locale === config.defaultLocale) {
+  // Don't add prefix for default locale in "as-needed" mode
+  if (config.localePrefix !== "always" && locale === config.defaultLocale) {
     return pathname;
   }
 
@@ -134,14 +151,17 @@ export function addLocalePrefix(
 /**
  * Replace/add locale in pathname
  *
- * Handles the default locale specially (removes prefix instead of adding)
- * This is the main utility for locale switching in URLs
+ * Respects `localePrefix` config:
+ * - `"as-needed"` (default): default locale has no prefix
+ * - `"always"`: all locales always get a prefix
  *
  * @example
- * replaceLocaleInPath('/about', 'tr', config)    // '/tr/about'
+ * // as-needed (default)
  * replaceLocaleInPath('/tr/about', 'en', config) // '/about' (en is default)
  * replaceLocaleInPath('/tr/about', 'de', config) // '/de/about'
- * replaceLocaleInPath('/en/about', 'tr', config) // '/tr/about'
+ *
+ * // always
+ * replaceLocaleInPath('/tr/about', 'en', { ...config, localePrefix: 'always' }) // '/en/about'
  */
 export function replaceLocaleInPath(
   pathname: string,
@@ -151,8 +171,8 @@ export function replaceLocaleInPath(
   // Remove existing locale prefix if present
   const cleanPath = removeLocalePrefix(pathname, config);
 
-  // Don't add prefix for default locale
-  if (newLocale === config.defaultLocale) {
+  // In "as-needed" mode, don't add prefix for default locale
+  if (config.localePrefix !== "always" && newLocale === config.defaultLocale) {
     return cleanPath;
   }
 

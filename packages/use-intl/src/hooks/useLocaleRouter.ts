@@ -92,15 +92,16 @@ export interface UseLocaleRouterReturn {
 export function useLocaleRouter(): UseLocaleRouterReturn {
   const router = useRouter();
   const location = useLocation();
-  const { languages, isLoadingLanguages } = useBetterI18n();
+  const { languages, isLoadingLanguages, localePrefix } = useBetterI18n();
 
-  // Build config from CDN manifest
+  // Build config from CDN manifest — includes localePrefix for URL strategy
   const config: LocaleConfig = useMemo(
     () => ({
       locales: languages.map((lang) => lang.code),
       defaultLocale: languages.find((l) => l.isDefault)?.code || "en",
+      localePrefix,
     }),
-    [languages]
+    [languages, localePrefix]
   );
 
   // Get effective locale from URL (handles default without prefix)
