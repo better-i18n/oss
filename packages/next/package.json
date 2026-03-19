@@ -41,6 +41,11 @@
       "bun": "./src/proxy.ts",
       "default": "./dist/proxy.js"
     },
+    "./revalidate": {
+      "types": "./dist/revalidate.d.ts",
+      "bun": "./src/revalidate.ts",
+      "default": "./dist/revalidate.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
