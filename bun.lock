@@ -249,7 +249,7 @@
     },
     "packages/mcp": {
       "name": "@better-i18n/mcp",
-      "version": "0.15.4",
+      "version": "0.15.5",
       "bin": {
         "better-i18n-mcp": "./dist/index.js",
       },
@@ -266,7 +266,7 @@
     },
     "packages/mcp-content": {
       "name": "@better-i18n/mcp-content",
-      "version": "0.8.0",
+      "version": "0.8.1",
       "bin": {
         "better-i18n-mcp-content": "./dist/index.js",
       },
@@ -290,7 +290,7 @@
     },
     "packages/next": {
       "name": "@better-i18n/next",
-      "version": "0.6.3",
+      "version": "0.7.0",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
         "@floating-ui/react": "^0.27.19",
