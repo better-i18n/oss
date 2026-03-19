@@ -11,6 +11,13 @@ export interface BetterI18nProviderProps extends BetterI18nProviderConfig {
   children: ReactNode;
   /** Pre-loaded languages from SSR loader — skips loading state on first render */
   initialLanguages?: LanguageOption[];
+  /**
+   * URL prefix strategy for locale codes.
+   * - `"as-needed"` (default): default locale has no URL prefix
+   * - `"always"`: all locales get a URL prefix (e.g., TanStack Router `$locale/` routes)
+   * @default "as-needed"
+   */
+  localePrefix?: "always" | "as-needed";
   /** Custom fallback when a message key is missing */
   getMessageFallback?: (info: {
     error: Error;
@@ -71,6 +78,7 @@ export function BetterI18nProvider({
   fetchTimeout,
   retryCount,
   initialLanguages,
+  localePrefix = "as-needed",
   getMessageFallback: customGetMessageFallback,
 }: BetterI18nProviderProps) {
   // Locale is controlled by props (from URL/router)
@@ -182,8 +190,9 @@ export function BetterI18nProvider({
       isLoadingLanguages,
       isLoadingMessages,
       project,
+      localePrefix,
     }),
-    [locale, languages, isLoadingLanguages, isLoadingMessages, project]
+    [locale, languages, isLoadingLanguages, isLoadingMessages, project, localePrefix]
   );
 
   if (!messages) {

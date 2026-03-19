@@ -70,6 +70,13 @@ export interface BetterI18nContextValue {
    * Project identifier
    */
   project: string;
+
+  /**
+   * URL prefix strategy for locale codes.
+   * - `"as-needed"`: default locale has no URL prefix
+   * - `"always"`: all locales get a URL prefix (e.g., TanStack Router `$locale/`)
+   */
+  localePrefix: "always" | "as-needed";
 }
 
 /**
