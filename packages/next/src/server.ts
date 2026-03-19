@@ -94,6 +94,40 @@ export const createNextI18nCore = (config: I18nConfig): NextI18nCore => {
 };
 
 /**
+ * Resolve the active locale from request context.
+ *
+ * Pure helper — no Next.js runtime deps, easy to unit-test.
+ *
+ * Cookie fallback is ONLY used in "never" mode where cookie is the source of
+ * truth. In URL-based modes ("always" / "as-needed") requestLocale undefined
+ * (ISR revalidation, build-time static generation) must NOT fall back to cookie
+ * — otherwise a stale cookie overrides the URL locale.
+ */
+export function resolveLocaleFromRequest(
+  requestLocale: string | undefined,
+  cookieLocale: string | null | undefined,
+  locales: string[],
+  defaultLocale: string,
+  localePrefix: "always" | "as-needed" | "never",
+): string {
+  let locale: string | undefined = requestLocale;
+
+  // Cookie fallback — ONLY in "never" mode (cookie is source of truth)
+  if (!locale && localePrefix === "never") {
+    if (cookieLocale && locales.includes(cookieLocale)) {
+      locale = cookieLocale;
+    }
+  }
+
+  // Final fallback to defaultLocale
+  if (!locale || !locales.includes(locale)) {
+    locale = defaultLocale;
+  }
+
+  return locale;
+}
+
+/**
  * Create next-intl request config for App Router
  *
  * @example
@@ -113,27 +147,24 @@ export const createNextIntlRequestConfig = (config: I18nConfig) =>
     const normalized = normalizeConfig(config);
     const locales = await i18n.getLocales();
 
-    // 1. Middleware header (set by next-intl or our middleware)
-    let locale = await requestLocale;
-
-    // 2. Cookie fallback — critical for localePrefix: "never" where
-    //    requestLocale may be undefined if middleware header isn't forwarded
-    if (!locale) {
+    // Read cookie ONLY in "never" mode — avoids unnecessary I/O in URL-based modes
+    let cookieLocale: string | null = null;
+    if (normalized.localePrefix === "never") {
       try {
         const cookieStore = await cookies();
-        const cookieLocale = cookieStore.get(normalized.cookieName)?.value;
-        if (cookieLocale && locales.includes(cookieLocale)) {
-          locale = cookieLocale;
-        }
+        cookieLocale = cookieStore.get(normalized.cookieName)?.value ?? null;
       } catch {
         // cookies() throws in non-request contexts (e.g. build time)
       }
     }
 
-    // 3. Final fallback to defaultLocale
-    if (!locale || !locales.includes(locale)) {
-      locale = normalized.defaultLocale;
-    }
+    const locale = resolveLocaleFromRequest(
+      await requestLocale,
+      cookieLocale,
+      locales,
+      normalized.defaultLocale,
+      normalized.localePrefix,
+    );
 
     // Resolve timeZone: explicit config > runtime auto-detection.
     // Setting this explicitly avoids next-intl's ENVIRONMENT_FALLBACK warning
