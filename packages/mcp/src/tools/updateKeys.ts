@@ -38,7 +38,12 @@ WORKFLOW to add missing translations:
 1. listKeys({ missingLanguage: 'hr', fields: ['id'] }) → get UUIDs
 2. updateKeys({ t: [{ id: '<uuid>', l: 'hr', t: '<translation>' }] })
 
-Each entry updates ONE language for ONE key. Set s=true to update the source text.`,
+Each entry updates ONE language for ONE key. Set s=true to update the source text.
+
+IMPORTANT:
+- 'id' MUST be a UUID (from listKeys/getTranslations id field), NOT a key name.
+- Check 'notFound' in response — lists IDs that didn't match any key.
+- Human-approved translations are silently overwritten with no confirmation.`,
     inputSchema: {
       type: "object",
       properties: {

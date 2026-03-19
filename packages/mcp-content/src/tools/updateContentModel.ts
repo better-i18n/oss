@@ -26,7 +26,19 @@ const inputSchema = projectSchema.extend({
 export const updateContentModel: Tool = {
   definition: {
     name: "updateContentModel",
-    description: "Update a content model's metadata. Provide the model slug and any fields to update.",
+    description: `Update a content model's metadata (displayName, description, icon, etc.).
+
+⚠️ STRUCTURAL SAFETY RULE: DO NOT change includeBody, kind, or slug unless the user EXPLICITLY requests it.
+- Changing includeBody can hide/show body fields across all entries.
+- Changing kind (collection↔singleton) alters the model's behavior.
+- Changing slug breaks existing API references and CDN paths.
+
+REQUIRED WORKFLOW:
+1. Call getContentModel FIRST to read current settings.
+2. Only modify the specific fields requested by the user.
+3. To add fields, use addField — do NOT toggle includeBody here.
+
+For taxonomy/lookup models (categories, tags): keep includeBody=false unless user explicitly asks for body content.`,
     inputSchema: {
       type: "object",
       properties: {

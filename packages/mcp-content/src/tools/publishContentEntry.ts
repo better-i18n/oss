@@ -22,7 +22,7 @@ export const publishContentEntry: Tool = {
   definition: {
     name: "publishContentEntry",
     description:
-      "Publish a content entry. Sets entry status to 'published' and marks the source translation as 'published'. The entry becomes visible to SDK consumers.",
+      "Publish a content entry (status change only — NOT a CDN deploy). Sets entry status to 'published' and marks the source translation as 'published'. This changes the entry's internal status in the database. CDN delivery is managed separately.",
     inputSchema: {
       type: "object",
       properties: {

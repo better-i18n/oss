@@ -22,7 +22,7 @@ export const bulkPublishEntries: Tool = {
   definition: {
     name: "bulkPublishEntries",
     description:
-      "Publish multiple content entries at once. Partial success is possible — response reports published count and any failures.",
+      "Publish multiple content entries at once (status change only — NOT a CDN deploy). Partial success is possible — response reports published count and any failures. CDN delivery is managed separately.",
     inputSchema: {
       type: "object",
       properties: {
