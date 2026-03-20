@@ -180,7 +180,10 @@ function parseI18nConfig(filePath: string): ProjectContext | null {
   }
 
   // Try project: "org/slug" format (object property)
-  const projectMatch = content.match(/project:\s*['"]([^'"]+\/[^'"]+)['"]/);
+  // Also handles: project: process.env.X || "org/slug"
+  const projectMatch = content.match(
+    /project:\s*(?:[^'"]*\|\|\s*)?['"]([^'"]+\/[^'"]+)['"]/,
+  );
   if (projectMatch) {
     const [workspaceId, projectSlug] = projectMatch[1].split("/");
     const localeMatch = content.match(/defaultLocale:\s*['"]([^'"]+)['"]/);
@@ -218,8 +221,22 @@ function parseI18nConfig(filePath: string): ProjectContext | null {
 }
 
 /**
- * Parse optional lint config from file content
+ * Parse a string array from raw file content, handling inline comments.
+ * Extracts only quoted string values — ignores comments and other noise.
+ *
+ * Example input:  `"foo", "bar", // comment\n  "baz"`
+ * Returns:        ["foo", "bar", "baz"]
  */
+function parseStringArray(raw: string): string[] {
+  const results: string[] = [];
+  // Match all quoted string literals (single or double quotes)
+  for (const m of raw.matchAll(/["']([^"']*?)["']/g)) {
+    const value = m[1].trim();
+    if (value) results.push(value);
+  }
+  return results;
+}
+
 function parseLintConfig(content: string): LintConfig | undefined {
   if (!content.includes("lint:") && !content.includes("lint =")) {
     return undefined;
@@ -230,46 +247,35 @@ function parseLintConfig(content: string): LintConfig | undefined {
   // Extract include array
   const includeMatch = content.match(/include:\s*\[([^\]]+)\]/);
   if (includeMatch) {
-    config.include = includeMatch[1]
-      .split(",")
-      .map((s) => s.trim().replace(/['"]/g, ""))
-      .filter(Boolean);
+    config.include = parseStringArray(includeMatch[1]);
   }
 
   // Extract exclude array
   const excludeMatch = content.match(/exclude:\s*\[([^\]]+)\]/);
   if (excludeMatch) {
-    config.exclude = excludeMatch[1]
-      .split(",")
-      .map((s) => s.trim().replace(/['"]/g, ""))
-      .filter(Boolean);
+    config.exclude = parseStringArray(excludeMatch[1]);
   }
 
   // Extract translationFunctions array
   const tfMatch = content.match(/translationFunctions:\s*\[([^\]]+)\]/);
   if (tfMatch) {
-    config.translationFunctions = tfMatch[1]
-      .split(",")
-      .map((s) => s.trim().replace(/['"]/g, ""))
-      .filter(Boolean);
+    config.translationFunctions = parseStringArray(tfMatch[1]);
   }
 
   // Extract ignoreStrings array
   const isMatch = content.match(/ignoreStrings:\s*\[([^\]]+)\]/);
   if (isMatch) {
-    config.ignoreStrings = isMatch[1]
-      .split(",")
-      .map((s) => s.trim().replace(/['"]/g, ""))
-      .filter(Boolean);
+    config.ignoreStrings = parseStringArray(isMatch[1]);
   }
 
   // Parse ignorePatterns: [/pattern1/, /pattern2/] or ignorePatterns: ["pattern1", "pattern2"]
   const ignorePatternsMatch = content.match(/ignorePatterns:\s*\[([^\]]+)\]/);
   if (ignorePatternsMatch) {
-    const patternsRaw = ignorePatternsMatch[1];
+    // Strip inline comments (// ...) but not escaped slashes in regex (\/)
+    const patternsRaw = ignorePatternsMatch[1].replace(/(?<!\\)\/\/[^\n]*/g, "");
     const patterns: RegExp[] = [];
-    // Match regex literals like /pattern/flags
-    const regexLiterals = patternsRaw.matchAll(/\/([^/]+)\/([gimsuy]*)/g);
+    // Match regex literals like /pattern/flags, allowing escaped chars (e.g. \/)
+    const regexLiterals = patternsRaw.matchAll(/\/((?:[^/\\]|\\.)*)\/([gimsuy]*)/g);
     for (const match of regexLiterals) {
       try {
         patterns.push(new RegExp(match[1], match[2]));
