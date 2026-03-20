@@ -35,6 +35,10 @@ export default function ProductCTA() {
               </a>
               <a
                 href="mailto:sales@better-i18n.com"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = "mailto:sales@better-i18n.com";
+                }}
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-mist-700 px-8 py-3.5 text-sm font-medium text-white hover:bg-mist-900 transition-colors"
               >
                 {t("cta.secondary")}
@@ -44,18 +48,57 @@ export default function ProductCTA() {
             {/* Trust indicators */}
             <div className="mt-12 pt-8 border-t border-mist-800">
               <p className="text-xs text-mist-500 mb-4">{t("cta.trustedBy")}</p>
-              <div className="flex items-center justify-center gap-8 opacity-60">
-                {/* Placeholder logos - replace with real ones */}
-                {["Company A", "Company B", "Company C", "Company D"].map(
-                  (company, idx) => (
-                    <span
-                      key={idx}
-                      className="text-sm font-medium text-mist-400"
-                    >
-                      {company}
-                    </span>
-                  ),
-                )}
+              <div className="flex items-center justify-center gap-6 sm:gap-8 flex-wrap">
+                <a href="http://carna.ai/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
+                  <img
+                    src="/carna.webp"
+                    alt="Carna - Better i18n customer"
+                    width={112}
+                    height={28}
+                    loading="lazy"
+                    className="h-6 w-auto opacity-60 grayscale brightness-0 invert hover:opacity-80 transition-opacity"
+                  />
+                </a>
+                <a href="https://hellonomad.app/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
+                  <img
+                    src="/nomadwork.webp"
+                    alt="Nomad Work - Better i18n customer"
+                    width={112}
+                    height={28}
+                    loading="lazy"
+                    className="h-6 w-auto opacity-60 grayscale brightness-0 invert hover:opacity-80 transition-opacity"
+                  />
+                </a>
+                <a href="https://hellospace.world/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
+                  <img
+                    src="/hellospace.webp"
+                    alt="Hellospace - Better i18n customer"
+                    width={112}
+                    height={28}
+                    loading="lazy"
+                    className="h-6 w-auto opacity-60 grayscale brightness-0 invert hover:opacity-80 transition-opacity"
+                  />
+                </a>
+                <a href="https://masraff.ai" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
+                  <img
+                    src="/masraff.webp"
+                    alt="Masraff - Better i18n customer"
+                    width={28}
+                    height={28}
+                    loading="lazy"
+                    className="h-6 w-auto opacity-60 grayscale brightness-0 invert hover:opacity-80 transition-opacity"
+                  />
+                </a>
+                <a href="https://www.cloudflare.com/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
+                  <img
+                    src="/cloudflare.webp"
+                    alt="Cloudflare - Better i18n customer"
+                    width={112}
+                    height={28}
+                    loading="lazy"
+                    className="h-6 w-auto opacity-60 grayscale brightness-0 invert hover:opacity-80 transition-opacity"
+                  />
+                </a>
               </div>
             </div>
           </motion.div>
