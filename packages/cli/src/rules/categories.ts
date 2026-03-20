@@ -72,15 +72,15 @@ export const RULE_HELP_MAP: Record<string, string> = {
 
   // ── Code Rules ────────────────────────────────────────────────────
   "jsx-text":
-    "Wrap hardcoded JSX text with t() function call for translation support",
+    "Wrap with t() for translation, or add to lint.ignoreStrings for intentional hardcoded text (brand names, code identifiers)",
   "jsx-attribute":
-    "Use t() for translatable attributes like title, alt, placeholder, aria-label",
+    "Use t() for translatable attributes, or add to lint.ignoreStrings for brand names and non-translatable text",
   "ternary-locale":
     "Replace locale-based ternary (locale === 'en' ? 'Hello' : 'Merhaba') with t() function",
   "toast-message":
     "Wrap toast notification messages with t() for translation support",
   "string-variable":
-    "Extract user-facing string variables into translation keys using t()",
+    "Extract user-facing strings into translation keys, or add to lint.ignoreStrings if not translatable",
 };
 
 /**
