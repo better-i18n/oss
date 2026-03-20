@@ -255,6 +255,20 @@ export function reportEslint(report: DoctorReport, verbose = false): void {
       console.log(dim(`  ... and ${hiddenGroupCount} more rules`));
       console.log();
     }
+
+    // ── Hint: show ignoreStrings tip when code rules have issues ──
+    const CODE_RULES = new Set(["jsx-text", "jsx-attribute", "string-variable", "toast-message"]);
+    const hasCodeIssues = visibleGroups.some(([rule]) => CODE_RULES.has(rule));
+
+    if (hasCodeIssues) {
+      console.log(
+        dim("  Tip: ") +
+        dim("For brand names, code identifiers, and non-translatable text,") +
+        "\n" +
+        dim("  add them to lint.ignoreStrings in i18n.config.ts or use // i18n-ignore comments"),
+      );
+      console.log();
+    }
   }
 
 }
