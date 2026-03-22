@@ -52,22 +52,29 @@ export default defineConfig(async ({ mode }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
+    // Ensure react-dom/server CJS module is properly handled during
+    // Vite's pre-bundling. TanStack Router imports it with ESM default
+    // import syntax but the package is CJS — Vite needs to CJS-interop it.
+    optimizeDeps: {
+      include: ["react-dom/server"],
+    },
     plugins: [
       // Workaround: TanStack Start's dev-server plugin registers the
       // "tanstack-start-injected-head-scripts:v" virtual module only for
       // the server environment, but Vite's client pre-transform still
       // tries to resolve it. This shim resolves it to an empty export
-      // in the client environment. (start-server-core 1.149.3 vs
+      // in all environments. (start-server-core 1.149.3 vs
       // start-plugin-core 1.149.4 version mismatch)
+      // Remove when TanStack Start aligns package versions.
       {
         name: "tanstack-start-head-scripts-shim",
         resolveId(id) {
           if (id === "tanstack-start-injected-head-scripts:v") {
-            return "\0tanstack-start-injected-head-scripts-shim";
+            return "\0virtual:tss-head-scripts";
           }
         },
         load(id) {
-          if (id === "\0tanstack-start-injected-head-scripts-shim") {
+          if (id === "\0virtual:tss-head-scripts") {
             return "export const injectedHeadScripts = undefined;";
           }
         },
