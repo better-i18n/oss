@@ -91,28 +91,6 @@ export default defineConfig(async ({ mode }) => {
           return shims[mod] ?? "export default {}";
         },
       } satisfies Plugin,
-      // Workaround: TanStack Start's dev-server plugin registers the
-      // "tanstack-start-injected-head-scripts:v" virtual module only for
-      // the server environment, but Vite's client pre-transform still
-      // tries to resolve it during build. In DEV, TanStack Start handles
-      // this module properly (including React Refresh preamble injection),
-      // so we only shim during build. (start-server-core 1.149.3 vs
-      // start-plugin-core 1.149.4 version mismatch)
-      // Remove when TanStack Start aligns package versions.
-      {
-        name: "tanstack-start-head-scripts-shim",
-        apply: "build",
-        resolveId(id) {
-          if (id === "tanstack-start-injected-head-scripts:v") {
-            return "\0virtual:tss-head-scripts";
-          }
-        },
-        load(id) {
-          if (id === "\0virtual:tss-head-scripts") {
-            return "export const injectedHeadScripts = undefined;";
-          }
-        },
-      } satisfies Plugin,
       tailwindcss(),
       devtools(),
       viteTsConfigPaths({
@@ -144,6 +122,27 @@ export default defineConfig(async ({ mode }) => {
             }
           : undefined,
       }),
+      // Workaround: TanStack Start registers the virtual module
+      // "tanstack-start-injected-head-scripts:v" only for the server
+      // environment. The client also imports router-manifest.js which
+      // references it, causing a resolution failure. This shim MUST be
+      // placed AFTER tanstackStart() so the server resolves the real
+      // module (with React Refresh preamble), and only the client
+      // fallthrough gets this empty stub.
+      // Remove when TanStack Start aligns package versions.
+      {
+        name: "tanstack-start-head-scripts-shim",
+        resolveId(id) {
+          if (id === "tanstack-start-injected-head-scripts:v") {
+            return "\0virtual:tss-head-scripts";
+          }
+        },
+        load(id) {
+          if (id === "\0virtual:tss-head-scripts") {
+            return "export const injectedHeadScripts = undefined;";
+          }
+        },
+      } satisfies Plugin,
       viteReact(),
       ViteMinifyPlugin({
         collapseWhitespace: true,
