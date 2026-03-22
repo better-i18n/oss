@@ -55,7 +55,7 @@ const planConfig: Record<
     name: "Free",
     description: "Perfect for side projects and open source.",
     cta: "Get Started",
-    ctaHref: "https://dash.better-i18n.com",
+    ctaHref: "https://dash.better-i18n.com/login?redirect=/billing",
     price: { monthly: "$0", yearly: "$0" },
     limits: {
       projects: "5",
@@ -79,7 +79,7 @@ const planConfig: Record<
     name: "Pro",
     description: "Advanced features for scaling teams.",
     cta: "Start Free Trial",
-    ctaHref: "https://dash.better-i18n.com",
+    ctaHref: "https://dash.better-i18n.com/login?redirect=/billing",
     statusBadge: "Most popular",
     statusTone: "dark",
     price: { monthly: "$10", yearly: "$8" },
