@@ -48,7 +48,6 @@ const planConfig: Record<
     priceNote?: string;
     statusBadge?: string;
     statusTone?: "dark" | "soft";
-    subPriceNote?: string;
     features: Record<FeatureKey, boolean>;
   }
 > = {
@@ -229,9 +228,20 @@ export default function Pricing({
               const isPopular = planKey === "pro";
               const price = plan.price[billingPeriod];
               const perMonth = planKey !== "enterprise";
-              const subPriceNote =
+
+              // Resolve price from translations (allows locale-specific pricing)
+              const displayPrice = planKey === "enterprise"
+                ? t("customPrice", { defaultValue: price })
+                : t(`plans.${planKey}.price.${billingPeriod}`, {
+                    defaultValue: price,
+                  });
+
+              const billedYearlyNote =
                 billingPeriod === "yearly" && planKey === "pro"
-                  ? "Billed yearly ($182.40)"
+                  ? t("billedYearly", {
+                      total: "$182.40",
+                      defaultValue: "Billed yearly at $182.40",
+                    })
                   : null;
 
               return (
@@ -279,9 +289,7 @@ export default function Pricing({
                     <div className="mt-5 border-b border-mist-100 pb-5">
                       <div className="flex items-end gap-2">
                         <span className="text-3xl font-semibold tracking-[-0.04em] text-mist-950">
-                          {planKey === "enterprise"
-                            ? t("customPrice", { defaultValue: price })
-                            : price}
+                          {displayPrice}
                         </span>
                         {perMonth ? (
                           <span className="pb-1 text-sm text-mist-600">
@@ -289,12 +297,9 @@ export default function Pricing({
                           </span>
                         ) : null}
                       </div>
-                      {subPriceNote ? (
+                      {billedYearlyNote ? (
                         <p className="mt-2 text-xs font-medium text-mist-500">
-                          {t("billedYearly", {
-                            total: "$182.40",
-                            defaultValue: subPriceNote,
-                          })}
+                          {billedYearlyNote}
                         </p>
                       ) : null}
                     </div>
