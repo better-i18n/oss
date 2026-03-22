@@ -82,7 +82,7 @@ const planConfig: Record<
     ctaHref: "https://dash.better-i18n.com",
     statusBadge: "Most popular",
     statusTone: "dark",
-    price: { monthly: "$19", yearly: "$15.20" },
+    price: { monthly: "$10", yearly: "$8" },
     limits: {
       projects: "10",
       aiMessages: "Unlimited",
@@ -239,8 +239,8 @@ export default function Pricing({
               const billedYearlyNote =
                 billingPeriod === "yearly" && planKey === "pro"
                   ? t("billedYearly", {
-                      total: "$182.40",
-                      defaultValue: "Billed yearly at $182.40",
+                      total: "$96",
+                      defaultValue: "Billed yearly at $96",
                     })
                   : null;
 
