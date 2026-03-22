@@ -5,14 +5,13 @@ description: Client-side i18n setup for Vite and React applications
 
 ## Overview
 
-For Vite + React apps, translations are loaded on the client after the initial render. The SDK handles:
+Better i18n for Vite works in two modes:
 
-- **Automatic message fetching** - Loads translations from CDN on mount
-- **Locale switching** - Change languages without page reload
-- **Caching** - Efficient in-memory caching for repeated requests
+- **With `@better-i18n/vite` plugin (recommended)** — Translations are fetched server-side and injected into HTML before React mounts. Zero FOUC, no client-side CDN requests, SEO-friendly.
+- **Without plugin (CSR fallback)** — Translations are fetched on the client after mount. Quick to set up, but shows a brief loading state on first render.
 
-<Callout type="info">
-  Vite apps are client-side only (no SSR). For server-side rendering, see [TanStack Start](/frameworks/tanstack-start) or [Next.js](/frameworks/nextjs).
+<Callout type="tip">
+  Use the `@better-i18n/vite` plugin for production apps. It works like Next.js SSR — translations are embedded in the HTML, so the first render always has real content.
 </Callout>
 
 ## Features
@@ -33,6 +32,42 @@ For Vite + React apps, translations are loaded on the client after the initial r
 </Cards>
 
 ## Quick Start
+
+### With Vite Plugin (Recommended)
+
+```bash
+bun add @better-i18n/use-intl @better-i18n/vite use-intl
+```
+
+```ts title="vite.config.ts"
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { betterI18n } from '@better-i18n/vite' // [!code ++]
+
+export default defineConfig({
+  plugins: [
+    betterI18n({ project: 'your-org/your-project' }), // [!code ++]
+    react(),
+  ],
+})
+```
+
+```tsx title="src/App.tsx"
+import { BetterI18nProvider, LocaleDropdown } from '@better-i18n/use-intl' // [!code ++]
+
+function App() {
+  return (
+    <BetterI18nProvider> // [!code ++]
+      <LocaleDropdown />
+      <YourApp />
+    </BetterI18nProvider> // [!code ++]
+  )
+}
+```
+
+No `project`, `locale`, or `messages` props needed — the plugin handles everything.
+
+### Without Plugin (CSR)
 
 ```tsx title="src/App.tsx"
 import { BetterI18nProvider } from '@better-i18n/use-intl' // [!code ++]
@@ -75,11 +110,12 @@ export function Hello() {
 
 ## Comparison
 
-| Feature | Vite | TanStack Start | Next.js |
-|---------|------|----------------|---------|
-| Rendering | CSR only | CSR + SSR | CSR + SSR |
-| URL routing | Optional | Built-in | Built-in |
-| Middleware | ❌ | ✅ | ✅ |
-| SEO | Limited | Full | Full |
+| Feature | Vite | Vite + Plugin | TanStack Start | Next.js |
+|---------|------|---------------|----------------|---------|
+| Rendering | CSR | SSR injection | CSR + SSR | CSR + SSR |
+| FOUC | Yes | **No** | No | No |
+| URL routing | Optional | Optional | Built-in | Built-in |
+| SEO | Limited | **Embedded** | Full | Full |
+| Client CDN requests | Yes | **No** (initial) | No | No |
 
-Choose Vite for simple SPAs where SEO isn't critical. For SSR-capable apps, see [TanStack Start](/frameworks/tanstack-start) or [Next.js](/frameworks/nextjs).
+The `@better-i18n/vite` plugin brings SSR-like benefits to Vite apps without requiring a full SSR setup.

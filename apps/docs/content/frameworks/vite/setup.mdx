@@ -10,94 +10,104 @@ This guide walks you through installing Better i18n and setting up the provider 
 <Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
   <Tab value="npm">
   ```bash
-  npm install @better-i18n/use-intl use-intl
+  npm install @better-i18n/use-intl @better-i18n/vite use-intl
   ```
   </Tab>
   <Tab value="yarn">
   ```bash
-  yarn add @better-i18n/use-intl use-intl
+  yarn add @better-i18n/use-intl @better-i18n/vite use-intl
   ```
   </Tab>
   <Tab value="pnpm">
   ```bash
-  pnpm add @better-i18n/use-intl use-intl
+  pnpm add @better-i18n/use-intl @better-i18n/vite use-intl
   ```
   </Tab>
   <Tab value="bun">
   ```bash
-  bun add @better-i18n/use-intl use-intl
+  bun add @better-i18n/use-intl @better-i18n/vite use-intl
   ```
   </Tab>
 </Tabs>
 
 ## Configuration
 
-### Step 1: Create i18n Configuration
+### Step 1: Add the Vite Plugin
 
-Create a configuration file to centralize your i18n settings:
+Configure `@better-i18n/vite` in your Vite config. This is the **single source of truth** for your project — no need to repeat it in the provider.
 
-```ts title="src/i18n.config.ts"
-export const i18nConfig = { // [!code highlight]
-  project: 'your-org/your-project', // [!code highlight]
-  defaultLocale: 'en', // [!code highlight]
-} as const // [!code highlight]
+```ts title="vite.config.ts"
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { betterI18n } from '@better-i18n/vite' // [!code ++]
+
+export default defineConfig({
+  plugins: [
+    betterI18n({ project: 'your-org/your-project' }), // [!code ++]
+    react(),
+  ],
+})
 ```
+
+The plugin fetches translations **server-side** (in the Vite dev server or at build time) and injects them into your HTML as a `<script>` tag. No client-side CDN requests, no FOUC.
 
 ### Step 2: Setup Provider
 
-Wrap your app with `BetterI18nProvider`:
+Wrap your app with `BetterI18nProvider` — no props needed:
 
 ```tsx title="src/App.tsx"
-import { BetterI18nProvider } from '@better-i18n/use-intl' // [!code ++]
-import { useState } from 'react'
-import { i18nConfig } from './i18n.config' // [!code ++]
-import { Router } from './Router'
+import { BetterI18nProvider, LocaleDropdown } from '@better-i18n/use-intl' // [!code ++]
 
 function App() {
-  // Get initial locale from localStorage or browser
-  const [locale, setLocale] = useState(() => {
-    return localStorage.getItem('locale') || navigator.language.split('-')[0] || 'en'
-  })
-
-  const handleLocaleChange = (newLocale: string) => {
-    localStorage.setItem('locale', newLocale)
-    setLocale(newLocale)
-  }
-
   return (
-    <BetterI18nProvider // [!code ++]
-      project={i18nConfig.project} // [!code ++]
-      locale={locale} // [!code ++]
-      onLocaleChange={handleLocaleChange} // [!code ++]
-    > // [!code ++]
+    <BetterI18nProvider> // [!code ++]
+      <Header />
       <Router />
     </BetterI18nProvider> // [!code ++]
+  )
+}
+
+function Header() {
+  return (
+    <header>
+      <LocaleDropdown /> {/* Works out of the box */}
+    </header>
   )
 }
 
 export default App
 ```
 
-<Callout type="warning">
-  `BetterI18nProvider` renders `null` until translations are loaded. If no `messages` prop is
-  provided, the component tree is invisible while the CDN fetch is in progress. Wrap with
-  a Suspense boundary or show a loading indicator via the `onLocaleChange` state.
+The provider automatically reads `project`, `locale`, and `messages` from the plugin-injected `<script>` tag. You can still pass props explicitly — they take precedence over injected data.
+
+<Callout type="info">
+  Without the Vite plugin, `project` and `locale` props are **required**. The provider will
+  fetch translations from CDN on mount, which causes a brief flash of untranslated content
+  on the first render.
 </Callout>
 
 ### BetterI18nProvider Props
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `project` | `string` | Yes | Project identifier (`org/project`) |
-| `locale` | `string` | Yes | Current locale (from state/localStorage) |
-| `onLocaleChange` | `(locale: string) => void` | Yes | Called when user switches language |
-| `messages` | `Messages` | No | Pre-loaded translations (SSR or static) |
+| `project` | `string` | With plugin: No | Project identifier (`org/project`). Auto-read from plugin. |
+| `locale` | `string` | With plugin: No | Current locale. Auto-detected by plugin. |
+| `messages` | `Messages` | No | Pre-loaded translations (auto-injected by plugin) |
+| `onLocaleChange` | `(locale: string) => void` | No | Called when user switches language via `setLocale()` |
 | `timeZone` | `string` | No | IANA timezone |
 | `now` | `Date` | No | Pin current time (for testing or SSR consistency) |
 | `storage` | `TranslationStorage` | No | Persistent translation cache adapter |
-| `staticData` | `Record<string, Messages>` | No | Offline fallback translations |
 | `fetchTimeout` | `number` | No | CDN fetch timeout in ms (default: `10000`) |
 | `retryCount` | `number` | No | Retry attempts on CDN failure (default: `1`) |
+
+### Vite Plugin Options
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `project` | `string` | Yes | Project identifier (`org/project`) |
+| `defaultLocale` | `string` | No | Fallback locale (default: `"en"`) |
+| `localeCookie` | `string` | No | Cookie name for locale persistence (default: `"locale"`) |
+| `cdnBaseUrl` | `string` | No | CDN base URL override |
 
 ### Step 3: Add Loading State
 
@@ -181,14 +191,14 @@ function OrderSummary({ order }) {
 ## Performance Tips
 
 <Cards>
-  <Card title="Preload Default Locale" icon="Download">
-    For faster initial load, preload messages in your HTML:
-    ```html
-    <link rel="preload" href="https://cdn.better-i18n.com/org/project/en.json" as="fetch" crossorigin>
-    ```
+  <Card title="Use the Vite Plugin" icon="Zap">
+    The `@better-i18n/vite` plugin embeds translations in the HTML at build time — zero client-side CDN requests and no FOUC.
   </Card>
-  <Card title="Use Suspense" icon="Pause">
-    Wrap your app in Suspense to show a loading state while translations load.
+  <Card title="Preload Translations" icon="Download">
+    If not using the plugin, preload messages in your HTML:
+    ```html
+    <link rel="preload" href="https://cdn.better-i18n.com/org/project/en/translations.json" as="fetch" crossorigin>
+    ```
   </Card>
   <Card title="Cache in Service Worker" icon="Database">
     For offline support, cache translation files in a service worker.
