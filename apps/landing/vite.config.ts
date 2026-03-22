@@ -53,6 +53,25 @@ export default defineConfig(async ({ mode }) => {
       },
     },
     plugins: [
+      // Workaround: TanStack Start's dev-server plugin registers the
+      // "tanstack-start-injected-head-scripts:v" virtual module only for
+      // the server environment, but Vite's client pre-transform still
+      // tries to resolve it. This shim resolves it to an empty export
+      // in the client environment. (start-server-core 1.149.3 vs
+      // start-plugin-core 1.149.4 version mismatch)
+      {
+        name: "tanstack-start-head-scripts-shim",
+        resolveId(id) {
+          if (id === "tanstack-start-injected-head-scripts:v") {
+            return "\0tanstack-start-injected-head-scripts-shim";
+          }
+        },
+        load(id) {
+          if (id === "\0tanstack-start-injected-head-scripts-shim") {
+            return "export const injectedHeadScripts = undefined;";
+          }
+        },
+      } satisfies Plugin,
       tailwindcss(),
       devtools(),
       viteTsConfigPaths({
