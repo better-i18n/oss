@@ -185,7 +185,20 @@ export default {
       });
     }
 
-    const response = await tanstack.fetch(request, env, ctx);
+    // Inject CF country code as a header so SSR can detect locale from geo
+    const cfCountry = (request as unknown as { cf?: { country?: string } }).cf?.country;
+    let ssrRequest = request;
+    if (cfCountry) {
+      const headers = new Headers(request.headers);
+      headers.set("X-Country", cfCountry);
+      ssrRequest = new Request(request.url, {
+        method: request.method,
+        headers,
+        body: request.body,
+      });
+    }
+
+    const response = await tanstack.fetch(ssrRequest, env, ctx);
 
     // Try serving pre-compressed Brotli for HTML pages
     const brResponse = await tryServeBrotli(request, response, env);

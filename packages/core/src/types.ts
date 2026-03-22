@@ -124,6 +124,8 @@ export interface ManifestLanguage {
   name?: string;
   nativeName?: string;
   flagUrl?: string | null;
+  /** ISO 3166-1 alpha-2 country code (e.g. "tr", "jp", "cn") */
+  countryCode?: string | null;
   isSource?: boolean;
   lastUpdated?: string | null;
   keyCount?: number;
@@ -157,6 +159,8 @@ export interface LanguageOption {
   name?: string;
   nativeName?: string;
   flagUrl?: string | null;
+  /** ISO 3166-1 alpha-2 country code (e.g. "tr", "jp", "cn") */
+  countryCode?: string | null;
   /**
    * Whether this is the default/source language
    */
