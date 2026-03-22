@@ -58,6 +58,16 @@ export default defineConfig(async ({ mode }) => {
     optimizeDeps: {
       include: ["react-dom/server"],
     },
+    build: {
+      rollupOptions: {
+        // TanStack Router's SSR utilities (transformStreamWithRouter) import
+        // node:stream and node:stream/web. Vite externalizes these for the
+        // client bundle but Rollup can't resolve named exports from the
+        // browser-external shim. Marking all node: builtins as external
+        // prevents the "Readable is not exported" build error.
+        external: [/^node:/],
+      },
+    },
     plugins: [
       // Workaround: TanStack Start's dev-server plugin registers the
       // "tanstack-start-injected-head-scripts:v" virtual module only for
