@@ -94,12 +94,14 @@ export default defineConfig(async ({ mode }) => {
       // Workaround: TanStack Start's dev-server plugin registers the
       // "tanstack-start-injected-head-scripts:v" virtual module only for
       // the server environment, but Vite's client pre-transform still
-      // tries to resolve it. This shim resolves it to an empty export
-      // in all environments. (start-server-core 1.149.3 vs
+      // tries to resolve it during build. In DEV, TanStack Start handles
+      // this module properly (including React Refresh preamble injection),
+      // so we only shim during build. (start-server-core 1.149.3 vs
       // start-plugin-core 1.149.4 version mismatch)
       // Remove when TanStack Start aligns package versions.
       {
         name: "tanstack-start-head-scripts-shim",
+        apply: "build",
         resolveId(id) {
           if (id === "tanstack-start-injected-head-scripts:v") {
             return "\0virtual:tss-head-scripts";
