@@ -1,7 +1,7 @@
 import { useT } from "@/lib/i18n";
 import {
-  IconPageText,
-  IconCircleInfo,
+  IconBag,
+  IconPhone,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { SpriteIcon } from "@/components/SpriteIcon";
 
@@ -20,8 +20,8 @@ const features: Feature[] = [
   { key: "git", spriteName: "github", title: "Git Integration", description: "Translation updates delivered via pull requests to your repository." },
   { key: "cdn", spriteName: "globe", title: "CDN Delivery", description: "Translations served globally with edge caching for instant load times." },
   { key: "saas", spriteName: "zap", title: "SaaS Apps", description: "Multi-tenant localization with per-workspace language configurations." },
-  { key: "ecommerce", icon: IconPageText, title: "E-Commerce", description: "Localize product listings, checkout flows, and marketing content." },
-  { key: "mobile", icon: IconCircleInfo, title: "Mobile Apps", description: "Over-the-air translation updates without app store resubmissions." },
+  { key: "ecommerce", icon: IconBag, title: "E-Commerce", description: "Localize product listings, checkout flows, and marketing content." },
+  { key: "mobile", icon: IconPhone, title: "Mobile Apps", description: "Over-the-air translation updates without app store resubmissions." },
   { key: "contentPlatforms", spriteName: "api-connection", title: "Content Platforms", description: "Manage translations alongside your CMS content with full API access." },
 ];
 
