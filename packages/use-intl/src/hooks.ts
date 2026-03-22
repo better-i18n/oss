@@ -34,41 +34,30 @@ export function useLanguages() {
 }
 
 /**
- * Hook to get current locale (read-only)
- *
- * For locale switching with proper router navigation, use useLocaleRouter() instead.
+ * Hook to get current locale and switch between locales
  *
  * @example
  * ```tsx
  * function LocaleDisplay() {
- *   const { locale, isLoading } = useLocale()
+ *   const { locale, setLocale, isLoading } = useLocale()
  *
  *   if (isLoading) return <div>Loading...</div>
  *
- *   return <span>Current locale: {locale}</span>
- * }
- * ```
- *
- * @example
- * ```tsx
- * // For locale switching, use useLocaleRouter:
- * import { useLocaleRouter } from '@better-i18n/use-intl'
- *
- * function LocaleSwitcher() {
- *   const { locale, navigate } = useLocaleRouter()
  *   return (
- *     <button onClick={() => navigate(locale === 'en' ? 'tr' : 'en')}>
- *       Toggle: {locale}
- *     </button>
+ *     <div>
+ *       <span>Current: {locale}</span>
+ *       <button onClick={() => setLocale('tr')}>Switch to Turkish</button>
+ *     </div>
  *   )
  * }
  * ```
  */
 export function useLocale() {
-  const { locale, isLoadingMessages } = useBetterI18n();
+  const { locale, setLocale, isLoadingMessages } = useBetterI18n();
 
   return {
     locale,
+    setLocale,
     isLoading: isLoadingMessages,
   };
 }
