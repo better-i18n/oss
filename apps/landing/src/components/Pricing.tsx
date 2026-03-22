@@ -2,139 +2,22 @@ import { cn } from "@better-i18n/ui/lib/utils";
 import { useT } from "@/lib/i18n";
 import { useState } from "react";
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { type PricingPlan, getDisplayPrice } from "@/lib/content";
+
+// ─── Types ───────────────────────────────────────────────────────────
 
 type BillingPeriod = "monthly" | "yearly";
-type PlanKey = "free" | "pro" | "enterprise";
-type LimitKey = "projects" | "aiMessages" | "glossaryTerms" | "contentItems";
-type FeatureKey =
-  | "cdnHosting"
-  | "githubIntegration"
-  | "emailSupport"
-  | "prioritySupport"
-  | "customDomain"
-  | "analytics"
-  | "teamMembers"
-  | "contentCms"
-  | "aiTranslationAnalysisSuggestions";
 
-const plans = ["free", "pro", "enterprise"] as const satisfies readonly PlanKey[];
-const limitKeys = [
-  "projects",
-  "aiMessages",
-  "glossaryTerms",
-  "contentItems",
-] as const satisfies readonly LimitKey[];
-const featureKeys = [
-  "cdnHosting",
-  "githubIntegration",
-  "emailSupport",
-  "prioritySupport",
-  "customDomain",
-  "analytics",
-  "teamMembers",
-  "contentCms",
-  "aiTranslationAnalysisSuggestions",
-] as const satisfies readonly FeatureKey[];
+// ─── Label defaults (i18n fallbacks) ─────────────────────────────────
 
-const planConfig: Record<
-  PlanKey,
-  {
-    cta: string;
-    ctaHref: string;
-    description: string;
-    limits: Record<LimitKey, string>;
-    name: string;
-    price: Record<BillingPeriod, string>;
-    priceNote?: string;
-    statusBadge?: string;
-    statusTone?: "dark" | "soft";
-    features: Record<FeatureKey, boolean>;
-  }
-> = {
-  free: {
-    name: "Free",
-    description: "Perfect for side projects and open source.",
-    cta: "Get Started",
-    ctaHref: "https://dash.better-i18n.com/login?redirect=/billing",
-    price: { monthly: "$0", yearly: "$0" },
-    limits: {
-      projects: "5",
-      aiMessages: "100 / mo",
-      glossaryTerms: "5",
-      contentItems: "100",
-    },
-    features: {
-      cdnHosting: true,
-      githubIntegration: true,
-      emailSupport: true,
-      prioritySupport: false,
-      customDomain: false,
-      analytics: false,
-      teamMembers: false,
-      contentCms: false,
-      aiTranslationAnalysisSuggestions: false,
-    },
-  },
-  pro: {
-    name: "Pro",
-    description: "Advanced features for scaling teams.",
-    cta: "Start Free Trial",
-    ctaHref: "https://dash.better-i18n.com/login?redirect=/billing",
-    statusBadge: "Most popular",
-    statusTone: "dark",
-    price: { monthly: "$10", yearly: "$8" },
-    limits: {
-      projects: "10",
-      aiMessages: "Unlimited",
-      glossaryTerms: "50",
-      contentItems: "10,000",
-    },
-    features: {
-      cdnHosting: true,
-      githubIntegration: true,
-      emailSupport: true,
-      prioritySupport: true,
-      customDomain: true,
-      analytics: true,
-      teamMembers: true,
-      contentCms: true,
-      aiTranslationAnalysisSuggestions: true,
-    },
-  },
-  enterprise: {
-    name: "Enterprise",
-    description: "Custom solutions for large organizations.",
-    cta: "Contact Sales",
-    ctaHref: "mailto:sales@better-i18n.com",
-    price: { monthly: "Custom", yearly: "Custom" },
-    limits: {
-      projects: "Unlimited",
-      aiMessages: "Unlimited",
-      glossaryTerms: "Unlimited",
-      contentItems: "Unlimited",
-    },
-    features: {
-      cdnHosting: true,
-      githubIntegration: true,
-      emailSupport: true,
-      prioritySupport: true,
-      customDomain: true,
-      analytics: true,
-      teamMembers: true,
-      contentCms: true,
-      aiTranslationAnalysisSuggestions: true,
-    },
-  },
-};
-
-const limitLabelDefaults: Record<LimitKey, string> = {
+const limitLabelDefaults: Record<string, string> = {
   projects: "Projects",
   aiMessages: "AI messages",
   glossaryTerms: "Glossary terms",
   contentItems: "Content items",
 };
 
-const featureLabelDefaults: Record<FeatureKey, string> = {
+const featureLabelDefaults: Record<string, string> = {
   cdnHosting: "CDN hosting",
   githubIntegration: "GitHub integration",
   emailSupport: "Email support",
@@ -144,7 +27,12 @@ const featureLabelDefaults: Record<FeatureKey, string> = {
   teamMembers: "Team members",
   contentCms: "Content CMS",
   aiTranslationAnalysisSuggestions: "AI translation analysis suggestions",
+  sso: "SSO",
+  dedicatedAccountManager: "Dedicated account manager",
+  slaGuarantee: "SLA guarantee",
 };
+
+// ─── Sub-components ──────────────────────────────────────────────────
 
 function FeatureIndicator({ enabled }: { enabled: boolean }) {
   return enabled ? (
@@ -158,14 +46,29 @@ function FeatureIndicator({ enabled }: { enabled: boolean }) {
   );
 }
 
+function formatPrice(symbol: string, amount: number): string {
+  if (amount === 0) return `${symbol}0`;
+  // For whole numbers, no decimals; otherwise 2 decimals
+  return Number.isInteger(amount)
+    ? `${symbol}${amount.toLocaleString("en-US")}`
+    : `${symbol}${amount.toFixed(2)}`;
+}
+
+// ─── Main Component ──────────────────────────────────────────────────
+
 export default function Pricing({
   headingLevel = "h2",
+  plans,
 }: {
   headingLevel?: "h1" | "h2";
+  plans?: PricingPlan[];
 }) {
   const t = useT("pricing");
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
   const Heading = headingLevel;
+
+  // If no CMS plans provided, render nothing (data should come from loader)
+  if (!plans || plans.length === 0) return null;
 
   return (
     <section id="pricing" className="py-16 sm:py-20">
@@ -221,30 +124,34 @@ export default function Pricing({
           </div>
 
           <div className="grid auto-rows-fr grid-cols-1 gap-4 lg:grid-cols-3">
-            {plans.map((planKey) => {
-              const plan = planConfig[planKey];
-              const isPopular = planKey === "pro";
-              const price = plan.price[billingPeriod];
-              const perMonth = planKey !== "enterprise";
+            {plans.map((plan) => {
+              const isPopular = plan.popular;
+              const isEnterprise = plan.planId === "enterprise";
+              const priceData = getDisplayPrice(plan, billingPeriod);
 
-              // Resolve price from translations (allows locale-specific pricing)
-              const displayPrice = planKey === "enterprise"
-                ? t("customPrice", { defaultValue: price })
-                : t(`plans.${planKey}.price.${billingPeriod}`, {
-                    defaultValue: price,
-                  });
+              // Display price: CMS-driven with locale currency
+              const displayPrice = isEnterprise
+                ? t("customPrice", { defaultValue: "Custom" })
+                : priceData
+                  ? formatPrice(priceData.symbol, billingPeriod === "yearly"
+                      ? Math.round(priceData.amount / 12)
+                      : priceData.amount)
+                  : "$0";
 
-              const billedYearlyNote =
-                billingPeriod === "yearly" && planKey === "pro"
-                  ? t("billedYearly", {
-                      total: "$96",
-                      defaultValue: "Billed yearly at $96",
-                    })
-                  : null;
+              // Billed yearly note (e.g. "Billed yearly at ₺3,348")
+              const yearlyTotal = billingPeriod === "yearly" && !isEnterprise && priceData
+                ? formatPrice(priceData.symbol, priceData.amount)
+                : null;
+              const billedYearlyNote = yearlyTotal
+                ? t("billedYearly", {
+                    total: yearlyTotal,
+                    defaultValue: `Billed yearly at ${yearlyTotal}`,
+                  })
+                : null;
 
               return (
                 <div
-                  key={planKey}
+                  key={plan.planId}
                   className={cn(
                     "flex h-full flex-col rounded-[1.75rem] border border-mist-200 bg-white p-5 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] sm:p-6",
                     isPopular && "border-mist-950/20 shadow-[0_30px_90px_-60px_rgba(15,23,42,0.4)]"
@@ -254,32 +161,15 @@ export default function Pricing({
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <h3 className="text-2xl font-medium tracking-[-0.02em] text-mist-950">
-                          {t(`plans.${planKey}.name`, {
-                            defaultValue: plan.name,
-                          })}
+                          {plan.name}
                         </h3>
                         <p className="mt-2 text-sm leading-6 text-mist-600">
-                          {t(`plans.${planKey}.description`, {
-                            defaultValue: plan.description,
-                          })}
+                          {plan.description}
                         </p>
                       </div>
-                      {plan.statusBadge ? (
-                        <span
-                          className={cn(
-                            "inline-flex shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.16em]",
-                            plan.statusTone === "dark"
-                              ? "bg-mist-950 text-white"
-                              : "border border-mist-200 bg-mist-50 text-mist-700"
-                          )}
-                        >
-                          {planKey === "pro"
-                            ? t("mostPopular", {
-                                defaultValue: plan.statusBadge,
-                              })
-                            : t("current", {
-                                defaultValue: plan.statusBadge,
-                              })}
+                      {isPopular ? (
+                        <span className="inline-flex shrink-0 rounded-full bg-mist-950 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.16em] text-white">
+                          {t("mostPopular", { defaultValue: "Most popular" })}
                         </span>
                       ) : null}
                     </div>
@@ -289,7 +179,7 @@ export default function Pricing({
                         <span className="text-3xl font-semibold tracking-[-0.04em] text-mist-950">
                           {displayPrice}
                         </span>
-                        {perMonth ? (
+                        {!isEnterprise ? (
                           <span className="pb-1 text-sm text-mist-600">
                             {t("perMonth", { defaultValue: "/mo" })}
                           </span>
@@ -303,43 +193,42 @@ export default function Pricing({
                     </div>
 
                     <div className="mt-5">
+                      {/* Limits */}
                       <div className="grid grid-cols-2 gap-x-5 gap-y-3">
-                        {limitKeys.map((limitKey) => (
-                          <div
-                            key={limitKey}
-                            className="space-y-1"
-                          >
+                        {plan.limits.map((limit) => (
+                          <div key={limit.key} className="space-y-1">
                             <span className="block text-xs uppercase tracking-[0.12em] text-mist-500">
-                              {t(`labels.${limitKey}`, {
-                                defaultValue: limitLabelDefaults[limitKey],
+                              {t(`labels.${limit.key}`, {
+                                defaultValue: limitLabelDefaults[limit.key] ?? limit.key,
                               })}
                             </span>
                             <span className="block text-sm font-medium text-mist-950">
-                              {t(`plans.${planKey}.limits.${limitKey}`, {
-                                defaultValue: plan.limits[limitKey],
+                              {t(`limits.${limit.value}`, {
+                                defaultValue: limit.value,
                               })}
                             </span>
                           </div>
                         ))}
                       </div>
 
+                      {/* Features */}
                       <div className="mt-5 grid gap-x-5 gap-y-2.5 border-t border-mist-100 pt-5 sm:grid-cols-2">
-                        {featureKeys.map((featureKey) => (
+                        {plan.features.map((feature) => (
                           <div
-                            key={featureKey}
+                            key={feature.key}
                             className="flex items-center justify-between gap-3 text-[13px]"
                           >
                             <span
                               className={cn(
                                 "text-mist-700",
-                                !plan.features[featureKey] && "text-mist-400"
+                                !feature.included && "text-mist-400"
                               )}
                             >
-                              {t(`labels.${featureKey}`, {
-                                defaultValue: featureLabelDefaults[featureKey],
+                              {t(`labels.${feature.key}`, {
+                                defaultValue: featureLabelDefaults[feature.key] ?? feature.key,
                               })}
                             </span>
-                            <FeatureIndicator enabled={plan.features[featureKey]} />
+                            <FeatureIndicator enabled={feature.included} />
                           </div>
                         ))}
                       </div>
@@ -348,9 +237,7 @@ export default function Pricing({
 
                   <a
                     href={plan.ctaHref}
-                    aria-label={t(`plans.${planKey}.ctaAriaLabel`, {
-                      defaultValue: `${plan.cta} — Better i18n ${plan.name}`,
-                    })}
+                    aria-label={`${plan.ctaLabel} — Better i18n ${plan.name}`}
                     className={cn(
                       "mt-6 inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-medium transition-all duration-200",
                       isPopular
@@ -358,9 +245,7 @@ export default function Pricing({
                         : "border border-mist-200 bg-white text-mist-950 hover:bg-mist-50"
                     )}
                   >
-                    {t(`plans.${planKey}.cta`, {
-                      defaultValue: plan.cta,
-                    })}
+                    {plan.ctaLabel}
                   </a>
                 </div>
               );
