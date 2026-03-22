@@ -58,17 +58,39 @@ export default defineConfig(async ({ mode }) => {
     optimizeDeps: {
       include: ["react-dom/server"],
     },
-    build: {
-      rollupOptions: {
-        // TanStack Router's SSR utilities (transformStreamWithRouter) import
-        // node:stream and node:stream/web. Vite externalizes these for the
-        // client bundle but Rollup can't resolve named exports from the
-        // browser-external shim. Marking all node: builtins as external
-        // prevents the "Readable is not exported" build error.
-        external: [/^node:/],
-      },
-    },
     plugins: [
+      // Workaround: TanStack Router/Start SSR utilities import Node.js
+      // builtins (node:stream, node:async_hooks) with named exports.
+      // Vite's default __vite-browser-external shim is `export default {}`
+      // which has NO named exports — Rollup errors with e.g.
+      // '"Readable" is not exported'. This plugin intercepts node: imports
+      // in the CLIENT build only and provides stub modules with the
+      // expected named exports. SSR builds pass through to real modules.
+      // Safe to remove once TanStack Router properly code-splits SSR.
+      {
+        name: "node-builtins-client-shim",
+        enforce: "pre",
+        resolveId(id, _importer, options) {
+          if (options?.ssr) return null;
+          if (id.startsWith("node:")) return `\0shim:${id}`;
+        },
+        load(id) {
+          if (!id.startsWith("\0shim:node:")) return;
+          const mod = id.slice("\0shim:".length);
+          // Provide named exports that TanStack packages actually use.
+          // Any import not listed here gets a no-op default export.
+          const shims: Record<string, string> = {
+            "node:stream": [
+              "export class Readable { static fromWeb() { return new Readable(); } static toWeb() { return new ReadableStream(); } }",
+              "export class PassThrough extends Readable {}",
+              "export default {}",
+            ].join("\n"),
+            "node:stream/web": "export const ReadableStream = globalThis.ReadableStream;",
+            "node:async_hooks": "export class AsyncLocalStorage { getStore() {} run(_s, fn, ...a) { return fn(...a); } enterWith() {} }",
+          };
+          return shims[mod] ?? "export default {}";
+        },
+      } satisfies Plugin,
       // Workaround: TanStack Start's dev-server plugin registers the
       // "tanstack-start-injected-head-scripts:v" virtual module only for
       // the server environment, but Vite's client pre-transform still
