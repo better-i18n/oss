@@ -151,7 +151,7 @@ function FlagDisplay({
  * Does NOT use `prefers-color-scheme` — dark mode must be explicit via
  * site markup, so light-only sites aren't affected by OS dark mode.
  */
-const LOCALE_DROPDOWN_CSS = `[data-better-locale-dropdown]{--_bl-text:#374151;--_bl-menu-bg:#fff;--_bl-border:#e5e7eb;--_bl-hover:#f3f4f6;--_bl-active:#f9fafb;--_bl-muted:#9ca3af;--_bl-shadow:0 4px 24px rgba(0,0,0,.12)}.dark [data-better-locale-dropdown],[data-theme=dark] [data-better-locale-dropdown]{--_bl-text:#d1d5db;--_bl-menu-bg:#1f2937;--_bl-border:#374151;--_bl-hover:#374151;--_bl-active:#374151;--_bl-muted:#6b7280;--_bl-shadow:0 4px 24px rgba(0,0,0,.4)}@keyframes better-locale-pulse{0%,100%{opacity:1}50%{opacity:.4}}`;
+const LOCALE_DROPDOWN_CSS = `[data-better-locale-dropdown]{position:relative;--_bl-text:#374151;--_bl-menu-bg:#fff;--_bl-border:#e5e7eb;--_bl-hover:#f3f4f6;--_bl-active:#f9fafb;--_bl-muted:#9ca3af;--_bl-shadow:0 4px 24px rgba(0,0,0,.12)}.dark [data-better-locale-dropdown],[data-theme=dark] [data-better-locale-dropdown]{--_bl-text:#d1d5db;--_bl-menu-bg:#1f2937;--_bl-border:#374151;--_bl-hover:#374151;--_bl-active:#374151;--_bl-muted:#6b7280;--_bl-shadow:0 4px 24px rgba(0,0,0,.4)}@keyframes better-locale-pulse{0%,100%{opacity:1}50%{opacity:.4}}`;
 
 // ─── Styles ──────────────────────────────────────────────────────────
 
@@ -482,7 +482,7 @@ export function LocaleDropdown({
       ref={containerRef}
       data-better-locale-dropdown
       className={className}
-      style={{ position: "relative", display: "inline-block" }}
+      style={!className ? { position: "relative", display: "inline-block" } : { position: "relative" }}
     >
       {/* Trigger */}
       {renderTrigger ? (
