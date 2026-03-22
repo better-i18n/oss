@@ -106,8 +106,6 @@ const planConfig: Record<
     description: "Custom solutions for large organizations.",
     cta: "Contact Sales",
     ctaHref: "mailto:sales@better-i18n.com",
-    statusBadge: "Current",
-    statusTone: "soft",
     price: { monthly: "Custom", yearly: "Custom" },
     limits: {
       projects: "Unlimited",
