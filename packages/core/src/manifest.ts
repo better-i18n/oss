@@ -13,6 +13,7 @@ const normalizeLanguage = (language: ManifestLanguage): LanguageOption => ({
   nativeName:
     language.nativeName || language.name || language.code.toUpperCase(),
   flagUrl: language.flagUrl ?? null,
+  countryCode: language.countryCode ?? null,
   isDefault: language.isSource ?? false,
 });
 

@@ -14,10 +14,11 @@ import {
   useTranslations,
 } from "@better-i18n/use-intl";
 import type { Messages } from "@better-i18n/use-intl";
-import { getMessages, detectLocale } from "@better-i18n/use-intl/server";
+import { getMessages } from "@better-i18n/use-intl/server";
+import { getRequestHeader } from "@tanstack/react-start/server";
 import { i18nConfig } from "../i18n.config";
 import { filterMessagesByPath } from "../lib/page-namespaces";
-import { fetchLocales } from "../lib/locales";
+import { fetchLocales, resolveLocaleFromCountry } from "../lib/locales";
 import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
 import { SvgSprite } from "../components/SvgSprite";
@@ -96,10 +97,15 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       const search = location.searchStr || "";
       const hash = location.hash || "";
 
-      const detectedLocale = detectLocale({
-        availableLocales: locales,
-        defaultLocale: i18nConfig.defaultLocale,
-      });
+      // Geo-based locale detection: read X-Country header injected by CF Worker
+      // Falls back to default locale if no country header or no mapping found
+      const country = typeof document === "undefined"
+        ? getRequestHeader("X-Country")
+        : undefined;
+      const geoLocale = country
+        ? await resolveLocaleFromCountry(country)
+        : undefined;
+      const detectedLocale = geoLocale ?? i18nConfig.defaultLocale;
 
       // Cache ısıtma: redirect'ten önce yükle → loader anında TtlCache'e hit eder → flash yok
       await getMessages({ project: i18nConfig.project, locale: detectedLocale }).catch(() => {});
