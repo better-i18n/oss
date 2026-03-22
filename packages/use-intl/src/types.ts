@@ -42,14 +42,22 @@ export interface BetterI18nProviderConfig
 /**
  * Better i18n context value
  *
- * Note: Locale is read-only. Use useLocaleRouter().navigate() for locale changes
- * to ensure proper router integration.
+ * Use `setLocale()` for locale switching. In router-based apps,
+ * the provider's `onLocaleChange` callback handles navigation.
  */
 export interface BetterI18nContextValue {
   /**
-   * Current locale (read-only - use useLocaleRouter().navigate() to change)
+   * Current locale
    */
   locale: string;
+
+  /**
+   * Change the active locale.
+   * Updates internal state and triggers message loading.
+   * In router-based apps, also fires the `onLocaleChange` callback
+   * so the parent can handle URL navigation.
+   */
+  setLocale: (locale: string) => void;
 
   /**
    * Available languages with metadata from CDN manifest

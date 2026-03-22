@@ -30,8 +30,9 @@ export interface UseLocaleRouterReturn {
   defaultLocale: string;
 
   /**
-   * Navigate to the same page with a new locale
-   * Uses TanStack Router's navigate() for proper SPA navigation
+   * Navigate to the same page with a new locale.
+   * Uses TanStack Router navigation when available,
+   * falls back to context-based `setLocale()` otherwise.
    */
   navigate: (locale: string) => void;
 
@@ -49,16 +50,16 @@ export interface UseLocaleRouterReturn {
 }
 
 /**
- * Hook for router-integrated locale navigation
+ * Hook for locale navigation with automatic router detection.
  *
- * This hook provides a navigation-first approach to locale switching:
- * - Locale changes trigger proper router navigation
- * - Loaders re-execute with the new locale
- * - No state synchronization issues
- * - Works with TanStack Router's file-based routing
+ * When TanStack Router context is available, locale changes trigger
+ * proper SPA navigation. When no router is present (e.g., plain Vite
+ * apps), falls back to the provider's `setLocale()` for state-based
+ * locale switching.
  *
  * @example
  * ```tsx
+ * // Works in both router and non-router environments
  * function LanguageSwitcher() {
  *   const { locale, locales, navigate, isReady } = useLocaleRouter();
  *
@@ -90,9 +91,38 @@ export interface UseLocaleRouterReturn {
  * ```
  */
 export function useLocaleRouter(): UseLocaleRouterReturn {
-  const router = useRouter();
-  const location = useLocation();
-  const { languages, isLoadingLanguages, localePrefix } = useBetterI18n();
+  const {
+    languages,
+    isLoadingLanguages,
+    localePrefix,
+    locale: contextLocale,
+    setLocale,
+  } = useBetterI18n();
+
+  // Safely detect TanStack Router context.
+  // When no <RouterProvider> is in the tree, these hooks throw —
+  // we catch gracefully and fall back to context-based locale switching.
+  //
+  // This is safe because:
+  // - The router presence never changes during a component's lifecycle
+  // - React hook calls (useContext) inside useRouter/useLocation always execute
+  //   before any throw, so the hook count is consistent between renders
+  let router: ReturnType<typeof useRouter> | null = null;
+  let location: ReturnType<typeof useLocation> | null = null;
+
+  try {
+    router = useRouter();
+  } catch {
+    // No TanStack Router context — will use context-based navigation
+  }
+
+  try {
+    location = useLocation();
+  } catch {
+    // No TanStack Router context — will use context-based navigation
+  }
+
+  const hasRouter = router != null && location != null;
 
   // Build config from CDN manifest — includes localePrefix for URL strategy
   const config: LocaleConfig = useMemo(
@@ -104,8 +134,11 @@ export function useLocaleRouter(): UseLocaleRouterReturn {
     [languages, localePrefix]
   );
 
-  // Get effective locale from URL (handles default without prefix)
+  // Get effective locale: from URL when router is available, from context otherwise
   const locale = useMemo(() => {
+    if (!hasRouter || !location) {
+      return contextLocale;
+    }
     // If no languages loaded yet, extract from path manually
     if (languages.length === 0) {
       const segments = location.pathname.split("/").filter(Boolean);
@@ -117,15 +150,20 @@ export function useLocaleRouter(): UseLocaleRouterReturn {
       return "en"; // fallback
     }
     return getLocaleFromPath(location.pathname, config);
-  }, [location.pathname, config, languages]);
+  }, [hasRouter, location, config, languages, contextLocale]);
 
-  // Navigate to same page with new locale (SPA navigation!)
+  // Navigate: router-based SPA navigation or context-based state update
   const navigate = useCallback(
     (newLocale: string) => {
-      const newPath = replaceLocaleInPath(location.pathname, newLocale, config);
-      router.navigate({ to: newPath });
+      if (hasRouter && router && location) {
+        const newPath = replaceLocaleInPath(location.pathname, newLocale, config);
+        router.navigate({ to: newPath });
+      } else {
+        // No router — update locale via provider state
+        setLocale(newLocale);
+      }
     },
-    [location.pathname, config, router]
+    [hasRouter, location, config, router, setLocale]
   );
 
   // Get localized path for links

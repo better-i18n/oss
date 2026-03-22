@@ -13,35 +13,22 @@ export const BetterI18nContext = createContext<BetterI18nContextValue | null>(
 /**
  * Hook to access Better i18n context
  *
- * Note: For locale switching, use useLocaleRouter() which integrates with TanStack Router.
+ * Provides locale state, language list, and `setLocale()` for switching.
+ * For higher-level APIs, use `useLocale()` or `useLocaleRouter()`.
  *
  * @example
  * ```tsx
  * function LanguageInfo() {
- *   const { locale, languages, isLoadingLanguages } = useBetterI18n()
+ *   const { locale, setLocale, languages, isLoadingLanguages } = useBetterI18n()
  *
  *   if (isLoadingLanguages) return <div>Loading...</div>
  *
  *   return (
  *     <div>
- *       Current: {locale}
- *       Available: {languages.map(l => l.code).join(', ')}
+ *       <p>Current: {locale}</p>
+ *       <p>Available: {languages.map(l => l.code).join(', ')}</p>
+ *       <button onClick={() => setLocale('tr')}>Switch to Turkish</button>
  *     </div>
- *   )
- * }
- * ```
- *
- * @example
- * ```tsx
- * // For language switching with proper router navigation:
- * import { useLocaleRouter } from '@better-i18n/use-intl'
- *
- * function LanguageSwitcher() {
- *   const { locale, locales, navigate } = useLocaleRouter()
- *   return (
- *     <select value={locale} onChange={(e) => navigate(e.target.value)}>
- *       {locales.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
- *     </select>
  *   )
  * }
  * ```

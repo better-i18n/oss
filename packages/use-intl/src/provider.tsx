@@ -2,7 +2,7 @@
 
 import { createI18nCore } from "@better-i18n/core";
 import type { LanguageOption } from "@better-i18n/core";
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { IntlProvider } from "use-intl";
 import { BetterI18nContext } from "./context.js";
 import type { BetterI18nProviderConfig, Messages } from "./types.js";
@@ -24,23 +24,37 @@ export interface BetterI18nProviderProps extends BetterI18nProviderConfig {
     key: string;
     namespace?: string;
   }) => string;
+  /**
+   * Called when locale changes via `setLocale()` (e.g., from `LocaleDropdown`).
+   * In router-based apps, use this to trigger URL navigation:
+   *
+   * @example
+   * ```tsx
+   * <BetterI18nProvider
+   *   project="acme/web"
+   *   locale={locale}
+   *   onLocaleChange={(newLocale) => {
+   *     navigate({ to: `/${newLocale}${pathname}` })
+   *   }}
+   * >
+   * ```
+   */
+  onLocaleChange?: (locale: string) => void;
 }
 
 /**
  * Provider component that combines Better i18n CDN with use-intl
  *
- * The locale is controlled externally (from URL/router). Use useLocaleRouter()
- * for locale switching with proper router integration.
+ * Manages locale state internally, enabling locale switching via
+ * `setLocale()` from `useLocale()` or `useLocaleRouter()`.
  *
  * @example
  * ```tsx
- * // Basic usage (CSR - fetches messages on client)
+ * // Plain Vite / React app (no router)
  * function App() {
  *   return (
- *     <BetterI18nProvider
- *       project="acme/dashboard"
- *       locale="en"
- *     >
+ *     <BetterI18nProvider project="acme/dashboard" locale="en">
+ *       <LocaleDropdown />
  *       <MyComponent />
  *     </BetterI18nProvider>
  *   )
@@ -80,9 +94,27 @@ export function BetterI18nProvider({
   initialLanguages,
   localePrefix = "as-needed",
   getMessageFallback: customGetMessageFallback,
+  onLocaleChange,
 }: BetterI18nProviderProps) {
-  // Locale is controlled by props (from URL/router)
-  const locale = propLocale;
+  // Internal locale state — enables non-router apps to switch locale
+  // via setLocale() without needing URL-based navigation.
+  const [managedLocale, setManagedLocale] = useState(propLocale);
+
+  // Sync when the external prop changes (e.g., router navigation updates propLocale)
+  useEffect(() => {
+    setManagedLocale(propLocale);
+  }, [propLocale]);
+
+  const locale = managedLocale;
+
+  // setLocale: updates internal state + notifies parent via callback
+  const setLocale = useCallback(
+    (newLocale: string) => {
+      setManagedLocale(newLocale);
+      onLocaleChange?.(newLocale);
+    },
+    [onLocaleChange],
+  );
 
   // Track the locale that propMessages was originally provided for.
   // In SSR apps, propMessages comes from a one-time loader (script tag / SSR side-channel)
@@ -182,17 +214,17 @@ export function BetterI18nProvider({
     };
   }, [locale, i18nCore, propMessages]);
 
-  // Context value (read-only locale - use useLocaleRouter for navigation)
   const contextValue = useMemo(
     () => ({
       locale,
+      setLocale,
       languages,
       isLoadingLanguages,
       isLoadingMessages,
       project,
       localePrefix,
     }),
-    [locale, languages, isLoadingLanguages, isLoadingMessages, project, localePrefix]
+    [locale, setLocale, languages, isLoadingLanguages, isLoadingMessages, project, localePrefix]
   );
 
   if (!messages) {
