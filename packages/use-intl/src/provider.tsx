@@ -7,8 +7,49 @@ import { IntlProvider } from "use-intl";
 import { BetterI18nContext } from "./context.js";
 import type { BetterI18nProviderConfig, Messages } from "./types.js";
 
-export interface BetterI18nProviderProps extends BetterI18nProviderConfig {
+// ─── SSR Data Injection ──────────────────────────────────────────────
+
+/**
+ * Data injected by `@better-i18n/vite` plugin via `<script id="__better_i18n__">`.
+ */
+interface SSRData {
+  project: string;
+  locale: string;
+  messages: Messages;
+  languages: LanguageOption[];
+}
+
+/**
+ * Read SSR-injected translations from the DOM.
+ * Called once as a `useState` lazy initializer — synchronous, before first paint.
+ * This is the same pattern as helpcenter's `#__i18n_messages__` hydration.
+ */
+function readSSRData(): SSRData | null {
+  if (typeof document === "undefined") return null;
+  try {
+    const el = document.getElementById("__better_i18n__");
+    if (!el?.textContent) return null;
+    return JSON.parse(el.textContent);
+  } catch {
+    return null;
+  }
+}
+
+// ─── Provider Props ──────────────────────────────────────────────────
+
+export interface BetterI18nProviderProps
+  extends Omit<BetterI18nProviderConfig, "project" | "locale"> {
   children: ReactNode;
+  /**
+   * Project identifier in "org/project" format.
+   * Optional when using `@better-i18n/vite` plugin (auto-injected via `<script>` tag).
+   */
+  project?: string;
+  /**
+   * Current locale.
+   * Optional when using `@better-i18n/vite` plugin (auto-detected server-side).
+   */
+  locale?: string;
   /** Pre-loaded languages from SSR loader — skips loading state on first render */
   initialLanguages?: LanguageOption[];
   /**
@@ -77,7 +118,7 @@ export interface BetterI18nProviderProps extends BetterI18nProviderConfig {
  */
 export function BetterI18nProvider({
   children,
-  project,
+  project: propProject,
   locale: propLocale,
   messages: propMessages,
   timeZone,
@@ -91,18 +132,35 @@ export function BetterI18nProvider({
   staticData,
   fetchTimeout,
   retryCount,
-  initialLanguages,
+  initialLanguages: propInitialLanguages,
   localePrefix = "as-needed",
   getMessageFallback: customGetMessageFallback,
   onLocaleChange,
 }: BetterI18nProviderProps) {
-  // Internal locale state — enables non-router apps to switch locale
-  // via setLocale() without needing URL-based navigation.
-  const [managedLocale, setManagedLocale] = useState(propLocale);
+  // ─── SSR Data (from @better-i18n/vite plugin) ─────────────────────
+  // Read plugin-injected translations synchronously from DOM.
+  // Runs once as a lazy initializer — before first paint, zero FOUC.
+  const [ssrData] = useState(readSSRData);
 
-  // Sync when the external prop changes (e.g., router navigation updates propLocale)
+  // Resolve config: explicit props win over SSR-injected data
+  const project = propProject || ssrData?.project;
+  if (!project) {
+    throw new Error(
+      "[better-i18n] `project` is required. Pass it as a prop to BetterI18nProvider " +
+      "or use the @better-i18n/vite plugin.",
+    );
+  }
+
+  const initialLocale = propLocale || ssrData?.locale || "en";
+  const initialMessages = propMessages || ssrData?.messages;
+  const initialLanguages = propInitialLanguages || ssrData?.languages;
+
+  // ─── Locale State ─────────────────────────────────────────────────
+  const [managedLocale, setManagedLocale] = useState(initialLocale);
+
+  // Sync when external prop changes (e.g., router navigation updates propLocale)
   useEffect(() => {
-    setManagedLocale(propLocale);
+    if (propLocale) setManagedLocale(propLocale);
   }, [propLocale]);
 
   const locale = managedLocale;
@@ -116,20 +174,20 @@ export function BetterI18nProvider({
     [onLocaleChange],
   );
 
-  // Track the locale that propMessages was originally provided for.
-  // In SSR apps, propMessages comes from a one-time loader (script tag / SSR side-channel)
-  // and stays frozen at the initial locale. When the user SPA-navigates to a new locale,
-  // propMessages is stale — we must fetch from CDN instead of trusting it.
-  const propMessagesLocaleRef = useRef(propMessages ? locale : undefined);
+  // ─── Messages State ───────────────────────────────────────────────
+  // Track the locale that initial messages were provided for (SSR or prop).
+  // After SPA navigation to a new locale, initial messages are stale —
+  // we must fetch from CDN instead of trusting them.
+  const initialMessagesLocaleRef = useRef(initialMessages ? initialLocale : undefined);
 
   const [clientMessages, setClientMessages] = useState<Messages | undefined>();
 
-  // Use propMessages only when it matches the current locale (SSR hydration).
-  // After SPA navigation to a different locale, fall through to clientMessages (CDN-fetched).
-  const isPropMessagesFresh = propMessages && propMessagesLocaleRef.current === locale;
-  const messages = isPropMessagesFresh ? propMessages : (clientMessages ?? propMessages);
+  // Use initial messages only when they match the current locale.
+  // After locale switch, fall through to clientMessages (CDN-fetched).
+  const isInitialMessagesFresh = initialMessages && initialMessagesLocaleRef.current === locale;
+  const messages = isInitialMessagesFresh ? initialMessages : (clientMessages ?? initialMessages);
   const [languages, setLanguages] = useState<LanguageOption[]>(initialLanguages ?? []);
-  const [isLoadingMessages, setIsLoadingMessages] = useState(propMessages === undefined);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(initialMessages === undefined);
   const [isLoadingLanguages, setIsLoadingLanguages] = useState(!initialLanguages);
 
   // Create i18n core instance
@@ -179,9 +237,9 @@ export function BetterI18nProvider({
   }, [i18nCore, initialLanguages]);
 
   // Load messages when locale changes.
-  // Skip only when propMessages is fresh (provided for the current locale — SSR hydration).
+  // Skip when initial messages (prop or SSR) are still fresh for the current locale.
   useEffect(() => {
-    if (propMessages && propMessagesLocaleRef.current === locale) {
+    if (initialMessages && initialMessagesLocaleRef.current === locale) {
       return;
     }
 
@@ -212,7 +270,7 @@ export function BetterI18nProvider({
     return () => {
       cancelled = true;
     };
-  }, [locale, i18nCore, propMessages]);
+  }, [locale, i18nCore, initialMessages]);
 
   const contextValue = useMemo(
     () => ({
