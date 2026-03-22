@@ -1,0 +1,23 @@
+{
+  "name": "vite-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@better-i18n/use-intl": "workspace:^",
+    "@better-i18n/vite": "workspace:^",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "use-intl": "^4.7.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.5.2",
+    "typescript": "~5.9.2",
+    "vite": "^6.3.5"
+  }
+}
