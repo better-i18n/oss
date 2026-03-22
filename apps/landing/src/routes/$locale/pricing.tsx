@@ -2,14 +2,25 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import Pricing from "@/components/Pricing";
-import { getPageHead, getFAQSchema, formatStructuredData, createPageLoader } from "@/lib/page-seo";
+import { getPageHead, getFAQSchema, formatStructuredData } from "@/lib/page-seo";
 import { getPricingPageStructuredData } from "@/lib/structured-data";
 import { PricingComparison } from "@/components/PricingComparison";
 import { RelatedPages } from "@/components/RelatedPages";
 import { useTranslations } from "@better-i18n/use-intl";
+import { getPricingPlans } from "@/lib/content";
+import { getMessages } from "@better-i18n/use-intl/server";
+import { i18nConfig } from "@/i18n.config";
+import { filterMessages } from "@/lib/page-namespaces";
 
 export const Route = createFileRoute("/$locale/pricing")({
-  loader: createPageLoader(["pricingPage"]),
+  loader: async ({ context }) => {
+    const [allMessages, plans] = await Promise.all([
+      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      getPricingPlans(context.locale),
+    ]);
+    const messages = filterMessages(allMessages, ["meta", "breadcrumbs", "pricingPage"]);
+    return { messages, locale: context.locale, plans };
+  },
   head: ({ loaderData }) => {
     const messages = loaderData?.messages || {};
     const locale = loaderData?.locale || "en";
@@ -34,7 +45,7 @@ export const Route = createFileRoute("/$locale/pricing")({
       : [];
 
     return getPageHead({
-      messages,
+      messages: loaderData?.messages || {},
       locale,
       pageKey: "pricing",
       pathname: "/pricing",
@@ -48,6 +59,7 @@ export const Route = createFileRoute("/$locale/pricing")({
 function PricingPage() {
   const t = useTranslations("pricingPage");
   const { locale } = Route.useParams();
+  const { plans } = Route.useLoaderData();
 
   const trustBadges = [
     { key: "uptime", label: t("trust.uptime") },
@@ -61,7 +73,7 @@ function PricingPage() {
   return (
     <MarketingLayout showCTA={false}>
       {/* Pricing Section — use h1 on dedicated pricing page */}
-      <Pricing headingLevel="h1" />
+      <Pricing headingLevel="h1" plans={plans} />
 
       {/* Pricing Comparison Table */}
       <PricingComparison />

@@ -27,16 +27,25 @@ import { withTimeout } from "@/lib/fetch-utils";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 import { filterMessages } from "@/lib/page-namespaces";
+import { getPricingPlans, type PricingPlan } from "@/lib/content";
+
+type HomeLoaderData = {
+  messages: Record<string, string>;
+  locale: string;
+  recentChangelogs: ReturnType<typeof Array.prototype.slice>;
+  plans: PricingPlan[];
+};
 
 export const Route = createFileRoute("/$locale/")({
-  loader: async ({ context, params }) => {
+  loader: async ({ context, params }): Promise<HomeLoaderData> => {
     const locale = params.locale as string;
     // Use metadata-only fetch (single API call) instead of full content (N+1 calls)
     // to keep homepage load time within crawler timeout limits.
     // Wrap with 3s timeout so the page renders even if the API is slow.
-    const [allMessages, releases] = await Promise.all([
+    const [allMessages, releases, plans] = await Promise.all([
       getMessages({ project: i18nConfig.project, locale: context.locale }),
       withTimeout(getChangelogsMeta(locale), 3000, []),
+      getPricingPlans(context.locale),
     ]);
     // head() only accesses meta.home.*, hero.{title,subtitle}, homeFaq.{N}.*
     const messages = filterMessages(allMessages, [
@@ -46,9 +55,10 @@ export const Route = createFileRoute("/$locale/")({
       "homeFaq",
     ]);
     return {
-      messages,
+      messages: messages as Record<string, Record<string, string>>,
       locale: context.locale,
       recentChangelogs: releases.slice(0, 4),
+      plans,
     };
   },
   head: ({ loaderData }) => {
@@ -104,7 +114,7 @@ export const Route = createFileRoute("/$locale/")({
 });
 
 function LandingPage() {
-  const { recentChangelogs } = Route.useLoaderData();
+  const { recentChangelogs, plans } = Route.useLoaderData();
   const { locale } = Route.useParams();
   return (
     <>
@@ -125,7 +135,7 @@ function LandingPage() {
         <Testimonials />
         <IndustryStats />
         <Changelog releases={recentChangelogs} />
-        <Pricing />
+        <Pricing plans={plans} />
         <ComparisonFAQ />
         <MetricsBadges />
         <RelatedPages currentPage="home" locale={locale} variant="content" />

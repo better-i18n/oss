@@ -358,6 +358,122 @@ export async function getBlogPost(
   }
 }
 
+// ─── Pricing Plans ───────────────────────────────────────────────────
+
+export interface PricingPlanLimit {
+  key: string;
+  value: string;
+}
+
+export interface PricingPlanFeature {
+  key: string;
+  included: boolean;
+}
+
+export interface PricingPlan {
+  planId: "free" | "pro" | "enterprise";
+  name: string;
+  description: string;
+  monthlyPrices: Record<string, number> | null;
+  yearlyPrices: Record<string, number> | null;
+  currencySymbols: Record<string, string>;
+  /** Locale-aware currency code from CMS (e.g. "usd" for en, "try" for tr) */
+  currencyCode: string;
+  trialDays: number | null;
+  ctaLabel: string;
+  ctaHref: string;
+  popular: boolean;
+  sortOrder: number;
+  limits: PricingPlanLimit[];
+  features: PricingPlanFeature[];
+  stripeMonthlyPriceId: string | null;
+  stripeYearlyPriceId: string | null;
+}
+
+const PRICING_MODEL = "pricing-plans";
+
+function parsePricingEntry(item: Record<string, unknown>): PricingPlan {
+  const parseJson = <T>(val: unknown, fallback: T): T => {
+    if (!val || val === "") return fallback;
+    try {
+      return JSON.parse(val as string) as T;
+    } catch {
+      return fallback;
+    }
+  };
+
+  return {
+    planId: item.plan_id as PricingPlan["planId"],
+    name: (item.name as string) || (item.title as string) || "",
+    description: (item.description as string) || "",
+    monthlyPrices: parseJson<Record<string, number> | null>(item.monthly_prices, null),
+    yearlyPrices: parseJson<Record<string, number> | null>(item.yearly_prices, null),
+    currencySymbols: parseJson<Record<string, string>>(
+      item.currency_symbols,
+      { usd: "$", try: "₺", eur: "€" },
+    ),
+    currencyCode: typeof item.currency_code === "string" && item.currency_code
+      ? item.currency_code
+      : "usd",
+    trialDays: item.trial_days ? Number(item.trial_days) : null,
+    ctaLabel: (item.cta_label as string) || "",
+    ctaHref: (item.cta_href as string) || "",
+    popular: item.popular === "true" || item.popular === true,
+    sortOrder: item.sort_order ? Number(item.sort_order) : 0,
+    limits: parseJson<PricingPlanLimit[]>(item.limits, []),
+    features: parseJson<PricingPlanFeature[]>(item.features, []),
+    stripeMonthlyPriceId: (item.stripe_monthly_price_id as string) || null,
+    stripeYearlyPriceId: (item.stripe_yearly_price_id as string) || null,
+  };
+}
+
+/** Fetch all published pricing plans for a locale, sorted by sort_order. */
+export async function getPricingPlans(locale: string): Promise<PricingPlan[]> {
+  const cacheKey = `pricing-plans:${locale}`;
+  const cached = getCached<PricingPlan[]>(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const result = await getContentClient().getEntries(PRICING_MODEL, {
+      language: locale,
+      status: "published",
+      limit: 10,
+    });
+
+    const plans = result.items
+      .map((item) => parsePricingEntry(item as unknown as Record<string, unknown>))
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+
+    return setCache(cacheKey, plans);
+  } catch (error) {
+    console.error("Pricing plans API error:", error);
+    return [];
+  }
+}
+
+/**
+ * Get the display price for a plan using its locale-aware currency code.
+ *
+ * The plan's `currencyCode` field is already localized by the CMS
+ * (e.g. "usd" for en, "try" for tr), so no locale mapping needed.
+ *
+ * Returns { symbol, amount, currency } or null for enterprise/custom plans.
+ */
+export function getDisplayPrice(
+  plan: PricingPlan,
+  billingPeriod: "monthly" | "yearly",
+): { symbol: string; amount: number; currency: string } | null {
+  const prices = billingPeriod === "monthly" ? plan.monthlyPrices : plan.yearlyPrices;
+  if (!prices) return null;
+
+  const currency = plan.currencyCode;
+  const amount = prices[currency] ?? prices.usd;
+  if (amount === undefined) return null;
+
+  const symbol = plan.currencySymbols[currency] ?? plan.currencySymbols.usd ?? "$";
+  return { symbol, amount, currency };
+}
+
 // ─── Marketing Pages ────────────────────────────────────────────────
 
 export interface MarketingPage {
