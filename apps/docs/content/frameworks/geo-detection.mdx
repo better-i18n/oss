@@ -1,0 +1,259 @@
+---
+title: Geo-Based Locale Detection
+description: Automatically detect and serve the right language based on visitor's country using Cloudflare Workers, Vercel, or any edge platform
+icon: MapPin
+---
+
+Geo-based locale detection automatically redirects visitors to their country's language — a Turkish visitor sees `/tr/`, a Japanese visitor sees `/ja/`, without any manual selection.
+
+Unlike `Accept-Language` header detection (which depends on browser settings), geo detection uses the visitor's **IP address location** for more accurate results. Most edge platforms provide this for free.
+
+## How It Works
+
+```
+Visitor from Turkey → Edge detects country: "TR"
+  → Map "TR" to locale "tr" (from CDN manifest)
+  → 301 redirect to /tr/
+  → Page renders in Turkish with ₺ pricing
+```
+
+The mapping is **manifest-driven** — when you add a new language in the Better i18n dashboard and assign it a country code, geo detection picks it up automatically. No code changes needed.
+
+## Cloudflare Workers
+
+Cloudflare Workers provide `request.cf.country` on every request — a free, zero-latency country code.
+
+### Step 1: Inject country header in your Worker
+
+```ts title="worker-entry.ts"
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    // Read country from CF's built-in geo data (free, no API call)
+    const country = (request as any).cf?.country as string | undefined;
+
+    // Pass it to your SSR framework as a header
+    let ssrRequest = request;
+    if (country) {
+      const headers = new Headers(request.headers);
+      headers.set("X-Country", country);
+      ssrRequest = new Request(request.url, {
+        method: request.method,
+        headers,
+        body: request.body,
+      });
+    }
+
+    return app.fetch(ssrRequest, env, ctx);
+  },
+};
+```
+
+### Step 2: Build country→locale map from manifest
+
+```ts title="lib/geo.ts"
+import { getLanguages } from "@better-i18n/use-intl/server";
+
+let _countryMap: Record<string, string> | null = null;
+
+/**
+ * Build country→locale map from CDN manifest languages.
+ * Uses each language's countryCode field as the source of truth.
+ */
+export async function getCountryToLocaleMap(
+  project: string,
+): Promise<Record<string, string>> {
+  if (_countryMap) return _countryMap;
+
+  const languages = await getLanguages({ project });
+  const map: Record<string, string> = {};
+
+  // Primary: manifest countryCode → locale code
+  for (const lang of languages) {
+    if (lang.countryCode) {
+      map[lang.countryCode.toLowerCase()] = lang.code;
+    }
+  }
+
+  // Optional: multi-country overrides
+  const available = new Set(languages.map((l) => l.code));
+  const overrides: Record<string, string> = {
+    at: "de", ch: "de",          // Austria, Switzerland → German
+    be: "fr", lu: "fr",          // Belgium, Luxembourg → French
+    mx: "es", ar: "es", co: "es", // Latin America → Spanish
+    br: "pt-br",                  // Brazil → Brazilian Portuguese
+    ae: "ar", eg: "ar",          // UAE, Egypt → Arabic
+    sg: "zh-hans",               // Singapore → Chinese
+  };
+
+  for (const [country, locale] of Object.entries(overrides)) {
+    if (!map[country] && available.has(locale)) {
+      map[country] = locale;
+    }
+  }
+
+  _countryMap = map;
+  return map;
+}
+```
+
+### Step 3: Detect locale in your route
+
+```ts title="routes/__root.tsx"
+// In your root route's beforeLoad or loader:
+const country = getRequestHeader("X-Country"); // from Step 1
+if (country) {
+  const map = await getCountryToLocaleMap("my-org/my-project");
+  const locale = map[country.toLowerCase()];
+  if (locale) {
+    // Redirect to the detected locale
+    throw redirect({ to: `/${locale}${pathname}`, statusCode: 301 });
+  }
+}
+```
+
+<Callout type="tip">
+`request.cf.country` is available on all Cloudflare Workers plans, including the free tier. It returns an [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code like `"TR"`, `"DE"`, `"JP"`.
+</Callout>
+
+## Vercel Edge Middleware
+
+Vercel provides `request.geo.country` in Edge Middleware — same concept, different API.
+
+```ts title="middleware.ts"
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+// Country→locale map (or fetch from manifest at build time)
+const COUNTRY_LOCALE: Record<string, string> = {
+  TR: "tr",
+  DE: "de",
+  FR: "fr",
+  JP: "ja",
+  KR: "ko",
+  CN: "zh-hans",
+  // ... add more as needed
+};
+
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Skip if already has locale prefix
+  const locales = ["tr", "de", "fr", "ja", "ko", "zh-hans"];
+  const hasLocale = locales.some(
+    (l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`,
+  );
+  if (hasLocale) return NextResponse.next();
+
+  // Detect from geo
+  const country = request.geo?.country ?? "";
+  const locale = COUNTRY_LOCALE[country];
+
+  if (locale) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${locale}${pathname}`;
+    return NextResponse.redirect(url, 301);
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/((?!api|_next|favicon|.*\\..*).*)"],
+};
+```
+
+<Callout type="info">
+For a fully manifest-driven approach with Vercel, fetch the manifest at build time and generate the country map statically. This avoids runtime API calls in the middleware.
+</Callout>
+
+## Remix / Node.js
+
+For Node.js servers without edge geo data, you can use the `CF-IPCountry` header (if behind Cloudflare) or a geo-IP library:
+
+<Tabs items={["Behind Cloudflare", "Standalone Node.js"]}>
+<Tab value="Behind Cloudflare">
+
+```ts title="app/entry.server.tsx"
+// Cloudflare adds CF-IPCountry header to all requests
+// when your domain uses Cloudflare DNS (even free plan)
+const country = request.headers.get("CF-IPCountry");
+```
+
+</Tab>
+<Tab value="Standalone Node.js">
+
+```ts title="app/entry.server.tsx"
+// Use a lightweight geo-IP library
+import { lookup } from "geoip-lite";
+
+const ip = request.headers.get("x-forwarded-for")?.split(",")[0];
+const geo = ip ? lookup(ip) : null;
+const country = geo?.country; // "TR", "DE", etc.
+```
+
+</Tab>
+</Tabs>
+
+Then use the same `getCountryToLocaleMap()` pattern from the Cloudflare example to resolve the country to a locale.
+
+## Detection Priority
+
+We recommend this priority order for locale detection:
+
+| Priority | Source | When to use |
+|----------|--------|-------------|
+| 1 | **URL path** (`/tr/pricing`) | User explicitly chose a language |
+| 2 | **Cookie** (`locale=tr`) | User previously chose a language |
+| 3 | **Geo/Country** (IP-based) | First-time visitor, no preference |
+| 4 | **Accept-Language** header | Fallback if geo unavailable |
+| 5 | **Default locale** | Ultimate fallback |
+
+```ts
+// Recommended detection chain
+const locale =
+  getLocaleFromURL(pathname, locales) ??
+  getCookie("locale") ??
+  (country ? countryMap[country.toLowerCase()] : undefined) ??
+  detectFromAcceptLanguage(acceptLanguage, locales) ??
+  defaultLocale;
+```
+
+<Callout type="warn">
+**Don't skip URL priority.** If a user manually navigates to `/en/pricing`, they chose English — even if they're in Turkey. Geo detection should only kick in when there's no locale in the URL.
+</Callout>
+
+## Localized Pricing
+
+Geo detection pairs perfectly with [localized pricing](/frameworks/tanstack-start#localized-pricing). When you detect a visitor's country:
+
+1. **Landing page** shows prices in their local currency (e.g., ₺349 for Turkey)
+2. **Stripe Checkout** uses [Manual Currency Prices](https://docs.stripe.com/payments/checkout/localize-prices/manual-currency-prices) to charge in the same currency
+3. **No conversion fee** for the customer (unlike Adaptive Pricing)
+
+Store per-locale prices in the [Content CMS](/sdk) and fetch them based on the detected locale — the same data powers both the pricing page and the checkout flow.
+
+## Testing Geo Detection
+
+### Cloudflare Workers (local)
+
+```bash
+# wrangler dev doesn't set cf.country — use a test header instead
+curl -H "X-Country: TR" http://localhost:8787/
+# Should redirect to /tr/
+```
+
+### Vercel (local)
+
+```bash
+# Vercel CLI doesn't provide geo — test with the deployed preview
+vercel dev
+# Geo only works on deployed previews and production
+```
+
+### Stripe (test checkout)
+
+```bash
+# Test localized currency in Stripe Checkout
+# Use email format: test+location_TR@example.com
+# Stripe will show TRY prices on the checkout page
+```

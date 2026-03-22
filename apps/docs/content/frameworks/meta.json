@@ -9,6 +9,7 @@
     "provider",
     "translations",
     "locale",
+    "geo-detection",
     "formatting",
     "server",
     "---Frameworks---",
