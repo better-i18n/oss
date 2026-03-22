@@ -1,0 +1,58 @@
+{
+  "name": "@better-i18n/vite",
+  "version": "0.1.0",
+  "description": "Vite plugin for Better i18n — SSR translation injection, zero FOUC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/better-i18n/better-i18n.git",
+    "directory": "packages/vite"
+  },
+  "bugs": {
+    "url": "https://github.com/better-i18n/better-i18n/issues"
+  },
+  "homepage": "https://github.com/better-i18n/better-i18n/tree/main/packages/vite",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "i18n",
+    "localization",
+    "vite",
+    "vite-plugin",
+    "ssr",
+    "better-i18n"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "@better-i18n/core": "workspace:^"
+  },
+  "peerDependencies": {
+    "vite": ">=5.0.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5",
+    "typescript": "~5.9.2"
+  }
+}
