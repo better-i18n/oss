@@ -35,10 +35,12 @@ export interface LocaleConfig {
    *   Follows next-intl / Paraglide JS convention.
    * - `"always"`: ALL locales get a prefix, including the default (`/en/about`, `/tr/about`).
    *   Use with TanStack Router `$locale/` route segments.
+   * - `"never"`: NO locale prefix in URL for any locale. Locale is stored only in cookie.
+   *   Ideal for dashboards and apps where URL structure shouldn't change per locale.
    *
    * @default "as-needed"
    */
-  localePrefix?: "always" | "as-needed";
+  localePrefix?: "always" | "as-needed" | "never";
 }
 
 /**
@@ -123,6 +125,7 @@ export function removeLocalePrefix(
  * Respects `localePrefix` config:
  * - `"as-needed"` (default): default locale has no prefix
  * - `"always"`: all locales get a prefix
+ * - `"never"`: no locale prefix for any locale (cookie-only)
  *
  * @example
  * // as-needed (default)
@@ -131,12 +134,20 @@ export function removeLocalePrefix(
  *
  * // always
  * addLocalePrefix('/about', 'en', { ...config, localePrefix: 'always' }) // '/en/about'
+ *
+ * // never
+ * addLocalePrefix('/about', 'tr', { ...config, localePrefix: 'never' }) // '/about'
  */
 export function addLocalePrefix(
   pathname: string,
   locale: string,
   config: LocaleConfig
 ): string {
+  // Never add prefix — locale is cookie-only
+  if (config.localePrefix === "never") {
+    return pathname;
+  }
+
   // Don't add prefix for default locale in "as-needed" mode
   if (config.localePrefix !== "always" && locale === config.defaultLocale) {
     return pathname;
@@ -154,6 +165,7 @@ export function addLocalePrefix(
  * Respects `localePrefix` config:
  * - `"as-needed"` (default): default locale has no prefix
  * - `"always"`: all locales always get a prefix
+ * - `"never"`: no locale prefix for any locale (cookie-only)
  *
  * @example
  * // as-needed (default)
@@ -162,6 +174,9 @@ export function addLocalePrefix(
  *
  * // always
  * replaceLocaleInPath('/tr/about', 'en', { ...config, localePrefix: 'always' }) // '/en/about'
+ *
+ * // never
+ * replaceLocaleInPath('/tr/about', 'de', { ...config, localePrefix: 'never' }) // '/about'
  */
 export function replaceLocaleInPath(
   pathname: string,
@@ -170,6 +185,11 @@ export function replaceLocaleInPath(
 ): string {
   // Remove existing locale prefix if present
   const cleanPath = removeLocalePrefix(pathname, config);
+
+  // Never add prefix — locale is cookie-only
+  if (config.localePrefix === "never") {
+    return cleanPath;
+  }
 
   // In "as-needed" mode, don't add prefix for default locale
   if (config.localePrefix !== "always" && newLocale === config.defaultLocale) {
