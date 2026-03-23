@@ -8,7 +8,7 @@ Framework-agnostic core utilities for fetching translations from Better i18n CDN
 - **Edge-Ready** - Optimized for edge environments (Cloudflare, Vercel, etc.)
 - **Type-Safe** - Full TypeScript support
 - **Cached** - Built-in manifest caching with configurable TTL
-- **Offline Fallback** - 3-tier fallback chain: CDN → persistent storage → static data
+- **Offline Fallback** - 5-layer fallback chain: TtlCache → CDN (with ETag 304) → persistent storage → static data
 - **Resilient** - Configurable fetch timeout and retry with exponential backoff
 
 ## Installation
@@ -69,11 +69,17 @@ interface I18nCoreConfig {
 
 ## Offline Fallback
 
-When CDN is unavailable, translations are resolved through a 3-tier fallback chain:
+Translations are resolved through a 5-layer fallback chain:
 
 ```
-CDN (primary) → Storage (persistent cache) → Static Data (bundled) → throw
+TtlCache (in-memory) → CDN fetch → CDN 304 (ETag) → Storage (persistent cache) → Static Data (bundled) → throw
 ```
+
+1. **TtlCache** — In-memory cache with configurable TTL (default: 5 minutes). Instant, no I/O.
+2. **CDN fetch** — Fresh translation data from Better i18n CDN.
+3. **CDN 304 (ETag)** — If CDN returns "not modified", reuse cached version.
+4. **Storage** — Persistent cache (localStorage, AsyncStorage, etc.) survives app restarts.
+5. **Static Data** — Bundled translations as absolute last resort.
 
 ### Storage Adapter
 
