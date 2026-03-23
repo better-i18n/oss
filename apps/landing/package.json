@@ -7,6 +7,7 @@
     "build": "vite build && bun scripts/fix-sitemap.ts && bun scripts/compress-html.ts && bun run build:worker",
     "build:worker": "esbuild worker-entry.ts --outfile=dist/worker-entry.js --format=esm --platform=neutral",
     "preview": "wrangler dev --port 8990",
+    "prebuild": "bun run --filter @better-i18n/core build && bun run --filter @better-i18n/use-intl build",
     "deploy": "bun run build && wrangler deploy",
     "logs": "wrangler tail",
     "test": "vitest run"
