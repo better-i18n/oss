@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComponentProps, ReactNode } from "react";
-import { useLocaleRouter } from "./hooks/useLocaleRouter.js";
+import { useLocalePath } from "./hooks/useLocalePath.js";
 import { useLanguages } from "./hooks.js";
 
 export interface LanguageSwitcherProps
@@ -53,7 +53,7 @@ export function LanguageSwitcher({
   loadingLabel = "Loading...",
   ...props
 }: LanguageSwitcherProps) {
-  const { locale, navigate, isReady } = useLocaleRouter();
+  const { locale, navigate, isReady } = useLocalePath();
   const { languages } = useLanguages();
 
   if (!isReady) {

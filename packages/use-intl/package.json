@@ -26,6 +26,11 @@
       "bun": "./src/server.ts",
       "default": "./dist/server.js"
     },
+    "./router": {
+      "types": "./dist/router.d.ts",
+      "bun": "./src/router.ts",
+      "default": "./dist/router.js"
+    },
     "./middleware": {
       "types": "./dist/middleware/index.d.ts",
       "bun": "./src/middleware/index.ts",
