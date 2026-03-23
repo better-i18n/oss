@@ -1,5 +1,12 @@
 # @better-i18n/expo
 
+## 0.7.4
+
+### Patch Changes
+
+- Updated dependencies [faccfdd]
+  - @better-i18n/core@0.4.0
+
 ## 0.7.3
 
 ### Patch Changes

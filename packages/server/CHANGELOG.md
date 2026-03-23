@@ -1,5 +1,12 @@
 # @better-i18n/server
 
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies [faccfdd]
+  - @better-i18n/core@0.4.0
+
 ## 0.2.5
 
 ### Patch Changes
