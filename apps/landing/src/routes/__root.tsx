@@ -83,35 +83,39 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       defaultLocale: i18nConfig.defaultLocale,
     };
 
-    // Redirect non-locale first segments to /{defaultLocale}/{path}.
-    // Without this, TanStack Router's $locale param accepts any string
-    // (e.g., "blog", "compare") and renders the homepage with broken nav links.
+    // Detect locale from URL path or geo-IP.
+    // Routes without a valid locale prefix (including root /) get redirected
+    // to /{detectedLocale}/{path} using CF Worker's X-Country header.
     const segments = location.pathname.split("/").filter(Boolean);
     const firstSegment = segments[0];
+    const hasLocalePrefix = firstSegment && locales.includes(firstSegment);
+    const isBypassPath = firstSegment && BYPASS_LOCALE_CHECK.has(firstSegment);
 
-    if (
-      firstSegment &&
-      !locales.includes(firstSegment) &&
-      !BYPASS_LOCALE_CHECK.has(firstSegment)
-    ) {
+    if (!hasLocalePrefix && !isBypassPath) {
       const search = location.searchStr || "";
       const hash = location.hash || "";
 
       // Geo-based locale detection: read X-Country header injected by CF Worker
       // Falls back to default locale if no country header or no mapping found
-      const country = typeof document === "undefined"
-        ? getRequestHeader("X-Country")
-        : undefined;
-      const geoLocale = country
-        ? await resolveLocaleFromCountry(country)
-        : undefined;
-      const detectedLocale = geoLocale ?? i18nConfig.defaultLocale;
+      let detectedLocale = i18nConfig.defaultLocale;
+      if (typeof document === "undefined") {
+        try {
+          const country = getRequestHeader("X-Country");
+          if (country) {
+            const geoLocale = await resolveLocaleFromCountry(country);
+            if (geoLocale) detectedLocale = geoLocale;
+          }
+        } catch {
+          // getRequestHeader may throw outside request context (dev server)
+        }
+      }
 
-      // Cache ısıtma: redirect'ten önce yükle → loader anında TtlCache'e hit eder → flash yok
+      // Cache warming: pre-load messages before redirect so loader gets a TtlCache hit
       await getMessages({ project: i18nConfig.project, locale: detectedLocale }).catch(() => {});
 
+      const targetPath = location.pathname === "/" ? "" : location.pathname;
       throw redirect({
-        href: `/${detectedLocale}${location.pathname}${search}${hash}`,
+        href: `/${detectedLocale}${targetPath}${search}${hash}`,
         statusCode: 301,
       });
     }
