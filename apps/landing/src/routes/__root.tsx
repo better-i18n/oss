@@ -15,10 +15,11 @@ import {
 } from "@better-i18n/use-intl";
 import type { Messages } from "@better-i18n/use-intl";
 import { getMessages } from "@better-i18n/use-intl/server";
+import { detectLocale } from "@better-i18n/core";
 import { getRequestHeader } from "@tanstack/react-start/server";
 import { i18nConfig } from "../i18n.config";
 import { filterMessagesByPath } from "../lib/page-namespaces";
-import { fetchLocales, resolveLocaleFromCountry } from "../lib/locales";
+import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
 import { SvgSprite } from "../components/SvgSprite";
@@ -95,20 +96,22 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       const search = location.searchStr || "";
       const hash = location.hash || "";
 
-      // Geo-based locale detection: read X-Country header injected by CF Worker
-      // Falls back to default locale if no country header or no mapping found
-      let detectedLocale = i18nConfig.defaultLocale;
+      // Detect locale from geo (CF Worker X-Country header) or fallback to default
+      let countryCode: string | undefined;
       if (typeof document === "undefined") {
         try {
-          const country = getRequestHeader("X-Country");
-          if (country) {
-            const geoLocale = await resolveLocaleFromCountry(country);
-            if (geoLocale) detectedLocale = geoLocale;
-          }
+          countryCode = getRequestHeader("X-Country") ?? undefined;
         } catch {
           // getRequestHeader may throw outside request context (dev server)
         }
       }
+
+      const { locale: detectedLocale } = detectLocale({
+        project: i18nConfig.project,
+        defaultLocale: i18nConfig.defaultLocale,
+        availableLocales: locales,
+        countryCode,
+      });
 
       // Cache warming: pre-load messages before redirect so loader gets a TtlCache hit
       await getMessages({ project: i18nConfig.project, locale: detectedLocale }).catch(() => {});
