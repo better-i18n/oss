@@ -1,5 +1,8 @@
-import { createI18nCore } from "@better-i18n/core";
+import { createI18nCore, buildCountryLocaleMap } from "@better-i18n/core";
 import type { I18nCoreConfig, LanguageOption } from "@better-i18n/core";
+
+// Re-export for convenience — users can import from @better-i18n/use-intl/server
+export { buildCountryLocaleMap } from "@better-i18n/core";
 import { createFormatter, createTranslator } from "use-intl/core";
 import type { Messages } from "./types.js";
 
@@ -189,9 +192,37 @@ export function detectLocale(options: {
   request?: Request | null;
   /** Directly pass an Accept-Language header string (e.g. from Express/Hono req.headers) */
   acceptLanguage?: string | null;
+  /**
+   * ISO 3166-1 alpha-2 country code from geo-IP detection.
+   * - Cloudflare Workers: `request.cf?.country`
+   * - Vercel Edge: `request.geo?.country`
+   * - Node.js behind CF: `request.headers.get("CF-IPCountry")`
+   *
+   * When provided, geo detection is checked BEFORE Accept-Language header.
+   * Priority: geo (country) > Accept-Language > navigator.languages > default
+   */
+  countryCode?: string | null;
+  /**
+   * Country→locale map built from CDN manifest via `buildCountryLocaleMap()`.
+   * If not provided, falls back to built-in LANGUAGE_TO_COUNTRY reverse lookup.
+   */
+  countryLocaleMap?: Record<string, string>;
   availableLocales: string[];
   defaultLocale: string;
 }): string {
+  // 1. Try geo detection first (if countryCode provided)
+  if (options.countryCode) {
+    const normalized = options.countryCode.toLowerCase();
+    if (options.countryLocaleMap) {
+      const geoLocale = options.countryLocaleMap[normalized];
+      if (geoLocale) {
+        const match = matchLocale([geoLocale], options.availableLocales);
+        if (match) return match;
+      }
+    }
+  }
+
+  // 2. Accept-Language / navigator fallback
   const languages: string[] = [];
 
   if (options.request) {

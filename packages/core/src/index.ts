@@ -14,7 +14,7 @@ export { extractLanguages } from "./manifest.js";
 export { createLogger } from "./logger.js";
 
 // Middleware logic
-export { detectLocale } from "./i18n/detection.js";
+export { detectLocale, buildCountryLocaleMap } from "./i18n/detection.js";
 
 // Cache utilities
 export { TtlCache, buildCacheKey } from "./cache.js";
