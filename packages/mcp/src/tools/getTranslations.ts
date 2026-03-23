@@ -7,9 +7,15 @@
  * USE THIS when you need actual translation text (to translate, review, or update).
  * Use listKeys instead for browsing/exploring keys — it's faster and uses fewer tokens.
  *
- * SEARCH + FILTER:
- * - search: Text to search for (in source text or specified languages)
- * - languages: Which languages to search in AND return translations for
+ * SEARCH BEHAVIOR:
+ * - search WITHOUT languages: searches key names, source text, AND all translation texts across every language.
+ *   Use this when you don't know which language the text is in (e.g., user mentions text they saw on screen).
+ * - search WITH languages: searches key names, source text (if source language included), AND translations
+ *   only in the specified languages. Faster and more targeted.
+ * - Without search: returns all keys (filtered by other params).
+ *
+ * FILTER PARAMETERS:
+ * - languages: Languages to search in AND return translations for
  * - status: Filter by translation status ("missing", "draft", "published", "all")
  * - namespaces: Filter by namespace(s)
  * - keys: Fetch specific keys by exact name
@@ -21,9 +27,10 @@
  * - hasMore: true when total > limit — use narrower filters to get specific keys
  *
  * EXAMPLES:
+ * - Find text in ANY language: { project: "org/project", search: "Mehmet" }
  * - Find "login" in source: { project: "org/project", search: "login" }
  * - Multi-term search: { project: "org/project", search: ["login", "signup", "forgot_password"] }
- * - Find "Giriş" in Turkish: { project: "org/project", search: "Giriş", languages: ["tr"] }
+ * - Find "Giriş" in Turkish (faster): { project: "org/project", search: "Giriş", languages: ["tr"] }
  * - Get all Turkish translations: { project: "org/project", languages: ["tr"] }
  * - Get missing Turkish: { project: "org/project", languages: ["tr"], status: "missing" }
  * - Get specific keys: { project: "org/project", keys: ["auth.login.title", "auth.login.button"] }
@@ -59,8 +66,13 @@ IMPORTANT: status filter REQUIRES languages parameter.
 { status: "missing" } alone returns ALL keys (filter silently ignored).
 Always pair: { languages: ["hr"], status: "missing" }
 
-SEARCH + FILTER:
-- search: Text to search for (in source text or specified languages)
+SEARCH BEHAVIOR:
+- search WITHOUT languages: searches key names, source text, AND all translations across every language.
+  Use this when you don't know which language the text is in.
+- search WITH languages: searches only in specified languages (faster, more targeted).
+  Use this when you know the language of the text you're looking for.
+
+FILTER PARAMETERS:
 - languages: Languages to search in AND return translations for
 - status: Filter by translation status ("missing", "draft", "published", "all")
 - namespaces: Filter by namespace(s)
@@ -73,9 +85,10 @@ RESPONSE METADATA:
 - hasMore: true when total > limit — narrow your filters to get specific results
 
 EXAMPLES:
+- Find text in ANY language: { search: "Mehmet" }
 - Find "login" in source: { search: "login" }
 - Multi-term search: { search: ["login", "signup", "forgot_password"] }
-- Find "Giriş" in Turkish: { search: "Giriş", languages: ["tr"] }
+- Find "Giriş" in Turkish (faster): { search: "Giriş", languages: ["tr"] }
 - Get all Turkish translations: { languages: ["tr"] }
 - Get missing Turkish translations: { languages: ["tr"], status: "missing" }
 - Get specific keys: { keys: ["auth.login.title", "auth.login.button"] }
@@ -88,7 +101,7 @@ Response includes namespaceDetails: a map of namespace metadata (name, keyCount,
         search: {
           type: "string",
           description:
-            "Text to search for in source text or translations (case-insensitive). Single string or array of strings for multi-term search (OR matching). If languages is specified, searches in those languages; otherwise searches source text.",
+            "Text to search for (case-insensitive). Single string or array of strings for multi-term OR search. Searches key names + source text always. Without languages: also searches ALL translation texts across every language. With languages: searches only in those languages (faster).",
         },
         languages: {
           type: "array",
