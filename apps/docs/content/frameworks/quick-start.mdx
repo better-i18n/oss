@@ -94,6 +94,9 @@ Each guide covers framework-specific patterns like SSR, routing, and middleware.
   <Card title="Next.js" icon="Box" href="/frameworks/nextjs">
     Deep integration with Next.js App Router via `@better-i18n/next`.
   </Card>
+  <Card title="Remix / Hydrogen" icon="Repeat" href="/frameworks/remix">
+    CDN-powered i18n for Remix and Shopify Hydrogen with loader-based translations.
+  </Card>
   <Card title="Expo / React Native" icon="Smartphone" href="/frameworks/expo">
     iOS and Android with offline caching, device locale detection, and Expo Router integration.
   </Card>
@@ -104,19 +107,20 @@ Each guide covers framework-specific patterns like SSR, routing, and middleware.
 | Framework | Rendering | Routing | Best For |
 |-----------|-----------|---------|----------|
 | **TanStack Start** | SSR + CSR | File-based | Full-stack React, SEO |
-| **Vite + React** | CSR | Optional | SPAs, prototypes |
+| **Vite + React** | CSR | Optional | SPAs, prototypes, landing pages |
 | **Next.js** | SSR + CSR | App Router | Production apps |
+| **Remix** | SSR | Loader-based | E-commerce (Hydrogen), full-stack |
 
 ### Feature Matrix
 
-| Feature | TanStack Start | Vite | Next.js |
-|---------|----------------|------|---------|
-| Server messages | ✅ | ❌ | ✅ |
-| Path-based locale | ✅ | Manual | ✅ |
-| Middleware | ✅ | ❌ | ✅ |
-| Static generation | ❌ | ❌ | ✅ |
-| Edge runtime | ✅ | ❌ | ✅ |
-| Bundle size | ~2KB | ~2KB | ~5KB |
+| Feature | TanStack Start | Vite | Next.js | Remix |
+|---------|----------------|------|---------|-------|
+| Server messages | ✅ | ✅ (plugin) | ✅ | ✅ |
+| Path-based locale | ✅ | ✅ (plugin) | ✅ | ✅ |
+| Middleware | ✅ | ✅ (plugin) | ✅ | ❌ |
+| Static generation | ❌ | ❌ | ✅ | ❌ |
+| Edge runtime | ✅ | ❌ | ✅ | ✅ |
+| Bundle size | ~2KB | ~2KB | ~5KB | ~2KB |
 
 <Callout type="tip">
   **Not sure?** Start with [Vite + React](/frameworks/vite) for the simplest setup, then upgrade to TanStack Start or Next.js when you need SSR.

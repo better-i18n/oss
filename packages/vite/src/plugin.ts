@@ -103,14 +103,19 @@ export function betterI18n(options: BetterI18nPluginOptions): Plugin {
       handler: async (_html, ctx) => {
         // Resolve locale: middleware-detected → default
         const requestUrl = ctx.originalUrl || ctx.path;
-        const locale = requestLocales.get(requestUrl) || defaultLocale;
+        let locale = requestLocales.get(requestUrl) || defaultLocale;
         requestLocales.delete(requestUrl);
 
-        // Fetch translations + languages server-side (TtlCache makes this fast)
-        const [messages, languages] = await Promise.all([
-          i18nCore.getMessages(locale),
-          i18nCore.getLanguages(),
-        ]);
+        // Fetch languages first to validate locale against supported locales
+        const languages = await i18nCore.getLanguages();
+        const supportedLocales = languages.map((l: { code: string }) => l.code);
+
+        // Fallback to default if detected locale is not supported
+        if (!supportedLocales.includes(locale)) {
+          locale = defaultLocale;
+        }
+
+        const messages = await i18nCore.getMessages(locale);
 
         // Inject as <script> tag — provider reads this synchronously
         const payload = JSON.stringify({
@@ -118,6 +123,8 @@ export function betterI18n(options: BetterI18nPluginOptions): Plugin {
           locale,
           messages,
           languages,
+          localeCookie,
+          supportedLocales,
         });
 
         return {

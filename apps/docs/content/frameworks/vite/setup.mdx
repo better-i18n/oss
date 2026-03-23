@@ -111,7 +111,7 @@ The provider automatically reads `project`, `locale`, and `messages` from the pl
 
 ### Step 3: Add Loading State
 
-For a better UX, handle the loading state with Suspense:
+With the Vite plugin, the provider reads all config from the injected `<script>` tag — no props needed:
 
 ```tsx title="src/App.tsx"
 import { BetterI18nProvider } from '@better-i18n/use-intl' // [!code ++]
@@ -120,10 +120,7 @@ import { Suspense } from 'react' // [!code ++]
 function App() {
   return (
     <Suspense fallback={<LoadingScreen />}> // [!code ++]
-      <BetterI18nProvider // [!code ++]
-        project="your-org/your-project" // [!code ++]
-        locale="en" // [!code ++]
-      > // [!code ++]
+      <BetterI18nProvider> // [!code ++]
         <Router />
       </BetterI18nProvider> // [!code ++]
     </Suspense> // [!code ++]

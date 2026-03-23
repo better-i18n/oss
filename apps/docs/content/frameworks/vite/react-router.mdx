@@ -5,7 +5,89 @@ description: Integrate Better i18n with React Router
 
 Sync locale with URL parameters using React Router.
 
-## Setup
+<Callout type="info">
+  **Using `@better-i18n/vite` plugin?** Jump to [With Vite Plugin](#with-vite-plugin) for the recommended zero-config approach.
+</Callout>
+
+## With Vite Plugin
+
+When using [`@better-i18n/vite`](/frameworks/vite/setup), the plugin injects all translation data automatically. The provider reads it with zero props. You just need a small `LocaleSync` component to bridge locale state with React Router's navigation.
+
+### Architecture
+
+```
+BrowserRouter
+  └── BetterI18nProvider  (reads SSR data from Vite plugin — no props)
+        ├── LocaleSync     (syncs locale state → URL via react-router-dom navigate)
+        ├── Header / LocaleDropdown
+        └── Routes
+              └── /:locale/*
+```
+
+### Full Example
+
+```tsx title="src/app.tsx"
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { BetterI18nProvider, useLocale, useTranslations, LocaleDropdown } from "@better-i18n/use-intl";
+
+/**
+ * Syncs locale state → URL using react-router-dom's navigate.
+ * When setLocale("tr") is called (e.g., from LocaleDropdown),
+ * this component detects the change and navigates to /tr/...
+ */
+function LocaleSync() {
+  const { locale } = useLocale();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const segments = location.pathname.split("/").filter(Boolean);
+    const first = segments[0];
+    if (first && /^[a-z]{2}$/i.test(first) && first !== locale) {
+      segments[0] = locale;
+      navigate("/" + segments.join("/"), { replace: true });
+    }
+  }, [locale, location.pathname, navigate]);
+
+  return null;
+}
+
+function LocaleRedirect() {
+  const { locale } = useLocale();
+  return <Navigate to={`/${locale}`} replace />;
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <BetterI18nProvider>
+        <LocaleSync />
+        <nav>
+          <LocaleDropdown />
+        </nav>
+        <Routes>
+          <Route path="/" element={<LocaleRedirect />} />
+          <Route path="/:locale">
+            <Route index element={<HomePage />} />
+            <Route path="about" element={<AboutPage />} />
+          </Route>
+        </Routes>
+      </BetterI18nProvider>
+    </BrowserRouter>
+  );
+}
+```
+
+<Callout type="warn">
+  **Why LocaleSync?** The provider's built-in URL update uses `history.replaceState`, which doesn't notify React Router. `LocaleSync` bridges this gap by watching the locale state and calling `navigate()` from react-router-dom when it changes.
+</Callout>
+
+---
+
+## Without Vite Plugin
+
+If you're not using the Vite plugin, pass `project` and `locale` as props manually.
 
 ### URL Structure
 
@@ -281,5 +363,5 @@ export function LocaleHead() {
 ## Related
 
 - [Vite Setup](/frameworks/vite) - Basic Vite configuration
-- [useLocale](/react/hooks/use-locale) - Locale hook
-- [useLanguages](/react/hooks/use-languages) - Languages hook
+- [useLocale](/frameworks/locale) - Locale hook
+- [useLanguages](/frameworks/locale) - Languages hook
