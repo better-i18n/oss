@@ -15,7 +15,7 @@ MCP (Model Context Protocol) server for [Better i18n](https://better-i18n.com). 
 
 ```bash
 # With npx (no install needed)
-npx @better-i18n/mcp
+npx -y @better-i18n/mcp@latest
 
 # Or install globally
 npm install -g @better-i18n/mcp
@@ -43,7 +43,9 @@ export const i18n = createI18n({
 
 The AI assistant will read this file to get the `project` value and include it in all tool calls.
 
-### 3. Configure Cursor
+### 3. Configure Your AI Client
+
+#### Cursor
 
 Add to `~/.cursor/mcp.json`:
 
@@ -52,7 +54,43 @@ Add to `~/.cursor/mcp.json`:
   "mcpServers": {
     "better-i18n": {
       "command": "npx",
-      "args": ["@better-i18n/mcp"],
+      "args": ["-y", "@better-i18n/mcp@latest"],
+      "env": {
+        "BETTER_I18N_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+#### Claude Desktop
+
+Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "better-i18n": {
+      "command": "npx",
+      "args": ["-y", "@better-i18n/mcp@latest"],
+      "env": {
+        "BETTER_I18N_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+#### Claude Code
+
+Add to `.claude/settings.json` or `~/.claude/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "better-i18n": {
+      "command": "npx",
+      "args": ["-y", "@better-i18n/mcp@latest"],
       "env": {
         "BETTER_I18N_API_KEY": "your-api-key-here"
       }
