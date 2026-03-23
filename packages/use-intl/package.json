@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/use-intl",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Better i18n integration for use-intl (React, TanStack Start)",
   "license": "MIT",
   "repository": {
