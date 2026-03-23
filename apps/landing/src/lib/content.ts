@@ -417,7 +417,9 @@ function parsePricingEntry(item: Record<string, unknown>): PricingPlan {
       : "usd",
     trialDays: item.trial_days ? Number(item.trial_days) : null,
     ctaLabel: (item.cta_label as string) || "",
-    ctaHref: (item.cta_href as string) || "",
+    ctaHref: import.meta.env.DEV
+      ? ((item.cta_href as string) || "").replace(/https?:\/\/dash\.better-i18n\.com/, "http://localhost:5173")
+      : (item.cta_href as string) || "",
     popular: item.popular === "true" || item.popular === true,
     sortOrder: item.sort_order ? Number(item.sort_order) : 0,
     limits: parseJson<PricingPlanLimit[]>(item.limits, []),
