@@ -1,5 +1,11 @@
 # expo-native
 
+## 1.0.20
+
+### Patch Changes
+
+- @better-i18n/expo@0.7.5
+
 ## 1.0.19
 
 ### Patch Changes
