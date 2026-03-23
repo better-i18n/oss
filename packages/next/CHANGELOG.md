@@ -1,5 +1,12 @@
 # @better-i18n/next
 
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies [faccfdd]
+  - @better-i18n/core@0.4.0
+
 ## 0.7.0
 
 ### Minor Changes

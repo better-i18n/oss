@@ -1,5 +1,12 @@
 # docs
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [faccfdd]
+  - @better-i18n/core@0.4.0
+
 ## 0.0.1
 
 ### Patch Changes
