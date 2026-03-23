@@ -22,7 +22,7 @@ import {
   resolveFlag,
   type ResolvedFlag,
 } from "@better-i18n/core";
-import { useLocaleRouter } from "../hooks/useLocaleRouter.js";
+import { useLocalePath } from "../hooks/useLocalePath.js";
 import { useLanguages } from "../hooks.js";
 
 // ─── Inline SVG Icons ────────────────────────────────────────────────
@@ -332,7 +332,7 @@ export function LocaleDropdown({
   renderTrigger,
   renderItem,
 }: LocaleDropdownProps) {
-  const { locale, navigate, isReady } = useLocaleRouter();
+  const { locale, navigate, isReady } = useLocalePath();
   const { languages, isLoading } = useLanguages();
 
   const [isOpen, setIsOpen] = useState(false);

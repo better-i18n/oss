@@ -17,6 +17,8 @@ interface SSRData {
   locale: string;
   messages: Messages;
   languages: LanguageOption[];
+  localeCookie?: string;
+  supportedLocales?: string[];
 }
 
 /**
@@ -154,6 +156,7 @@ export function BetterI18nProvider({
   const initialLocale = propLocale || ssrData?.locale || "en";
   const initialMessages = propMessages || ssrData?.messages;
   const initialLanguages = propInitialLanguages || ssrData?.languages;
+  const localeCookie = ssrData?.localeCookie;
 
   // ─── Locale State ─────────────────────────────────────────────────
   const [managedLocale, setManagedLocale] = useState(initialLocale);
@@ -165,20 +168,46 @@ export function BetterI18nProvider({
 
   const locale = managedLocale;
 
-  // setLocale: updates internal state + notifies parent via callback
+  // setLocale: updates internal state, persists cookie, updates URL, notifies parent
   const setLocale = useCallback(
     (newLocale: string) => {
       setManagedLocale(newLocale);
-      onLocaleChange?.(newLocale);
+
+      // Persist locale to cookie (if plugin provided cookie name)
+      if (localeCookie && typeof document !== "undefined") {
+        document.cookie = `${localeCookie}=${newLocale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
+      }
+
+      // Update URL locale prefix — only when no external router handles it.
+      // When onLocaleChange is provided, the consumer (e.g., react-router navigate())
+      // is responsible for URL updates. Running both causes dual-write race conditions.
+      if (onLocaleChange) {
+        onLocaleChange(newLocale);
+      } else if (typeof window !== "undefined" && window.location) {
+        const path = window.location.pathname;
+        const segments = path.split("/").filter(Boolean);
+        const firstSegment = segments[0];
+        if (firstSegment && /^[a-z]{2}$/i.test(firstSegment)) {
+          segments[0] = newLocale;
+        } else {
+          segments.unshift(newLocale);
+        }
+        window.history.replaceState(null, "", "/" + segments.join("/") + window.location.search);
+      }
     },
-    [onLocaleChange],
+    [onLocaleChange, localeCookie],
   );
 
   // ─── Messages State ───────────────────────────────────────────────
-  // Track the locale that initial messages were provided for (SSR or prop).
-  // After SPA navigation to a new locale, initial messages are stale —
-  // we must fetch from CDN instead of trusting them.
-  const initialMessagesLocaleRef = useRef(initialMessages ? initialLocale : undefined);
+  // Track the locale that initial messages were **actually built for**.
+  // When messages come from SSR (vite plugin), their locale is ssrData.locale.
+  // When messages come from props, their locale matches propLocale (or initialLocale).
+  // This distinction prevents a critical bug: propLocale="tr" + ssrData.messages="en"
+  // would incorrectly mark English messages as fresh for Turkish, skipping CDN fetch.
+  const initialMessagesLocale = propMessages
+    ? initialLocale          // prop messages: trust the resolved locale
+    : ssrData?.locale;       // SSR messages: trust the SSR-injected locale
+  const initialMessagesLocaleRef = useRef(initialMessages ? initialMessagesLocale : undefined);
 
   const [clientMessages, setClientMessages] = useState<Messages | undefined>();
 

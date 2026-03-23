@@ -6,11 +6,11 @@ import {
   DropdownMenuTrigger,
 } from "@better-i18n/ui/components/dropdown-menu";
 import { cn } from "@better-i18n/ui/lib/utils";
-import { useLanguages, useLocaleRouter } from "@better-i18n/use-intl";
+import { useLanguages, useLocalePath } from "@better-i18n/use-intl";
 import { IconGlobe, IconChevronDownSmall } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export function LanguageSwitcher() {
-  const { locale, navigate, isReady } = useLocaleRouter();
+  const { locale, navigate, isReady } = useLocalePath();
   const { languages, isLoading: isLoadingLangs } = useLanguages();
 
   const handleChange = (newLocale: string) => {

@@ -5,8 +5,9 @@ import {
   Outlet,
   Link,
   redirect,
+  useRouter,
 } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   BetterI18nProvider,
@@ -249,8 +250,27 @@ function NotFoundPage() {
 
 function RootComponent() {
   const { locale, locales, requestId } = Route.useRouteContext();
+  const router = useRouter();
   // Per-mount QueryClient — prevents cross-request cache leak on CF Workers
   const [queryClient] = useState(createQueryClient);
+
+  // Locale change handler — triggers TanStack Router navigation so loaders
+  // re-execute with the new locale. Without this, setLocale() would only
+  // update history.replaceState which TanStack Router doesn't observe.
+  const handleLocaleChange = useCallback(
+    (newLocale: string) => {
+      const path = window.location.pathname;
+      const segments = path.split("/").filter(Boolean);
+      const firstSegment = segments[0];
+      if (firstSegment && /^[a-z]{2}$/i.test(firstSegment)) {
+        segments[0] = newLocale;
+      } else {
+        segments.unshift(newLocale);
+      }
+      router.navigate({ to: "/" + segments.join("/") + window.location.search });
+    },
+    [router],
+  );
 
   const loaderData = Route.useLoaderData();
 
@@ -316,6 +336,7 @@ function RootComponent() {
             locale={locale}
             messages={messages}
             timeZone="UTC"
+            onLocaleChange={handleLocaleChange}
             getMessageFallback={({ key }) => {
               const lastSegment = key.split(".").pop() || key;
               return lastSegment
