@@ -6,6 +6,24 @@ icon: Package
 
 ## Basic Usage
 
+### With Vite Plugin (zero config)
+
+When using [`@better-i18n/vite`](/frameworks/vite/setup), the provider reads everything from the injected `<script>` tag — no props needed:
+
+```tsx
+import { BetterI18nProvider } from '@better-i18n/use-intl'
+
+function App() {
+  return (
+    <BetterI18nProvider>
+      <YourApp />
+    </BetterI18nProvider>
+  )
+}
+```
+
+### Without Plugin (manual config)
+
 ```tsx
 import { BetterI18nProvider } from '@better-i18n/use-intl'
 
@@ -25,9 +43,10 @@ function App() {
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `project` | `string` | ✅ | Project identifier in `org/project` format |
-| `locale` | `string` | ✅ | Current locale code (e.g., `"en"`, `"tr"`) |
+| `project` | `string` | With plugin: auto | Project identifier in `org/project` format |
+| `locale` | `string` | With plugin: auto | Current locale code (e.g., `"en"`, `"tr"`) |
 | `messages` | `Messages` | | Pre-loaded messages (for SSR) |
+| `localePrefix` | `"always" \| "as-needed"` | | URL prefix strategy (default: `"as-needed"`) |
 | `timeZone` | `string` | | Timezone for date formatting |
 | `now` | `Date` | | Current time (for SSR hydration) |
 | `onLocaleChange` | `(locale: string) => void` | | Callback when locale changes |
@@ -35,6 +54,10 @@ function App() {
 | `cdnBaseUrl` | `string` | | Custom CDN URL |
 | `debug` | `boolean` | | Enable debug logging |
 | `logLevel` | `LogLevel` | | Logging verbosity |
+
+<Callout type="info">
+  When using the `@better-i18n/vite` plugin, `project`, `locale`, `messages`, and `languages` are all injected automatically via a `<script>` tag. You only need to pass props that you want to override.
+</Callout>
 
 ## Client-Side Rendering
 
