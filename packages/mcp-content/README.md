@@ -15,7 +15,7 @@ MCP (Model Context Protocol) server for [Better i18n](https://better-i18n.com) c
 
 ```bash
 # With npx (no install needed)
-npx @better-i18n/mcp-content
+npx -y @better-i18n/mcp-content@latest
 
 # Or install globally
 npm install -g @better-i18n/mcp-content
@@ -38,7 +38,7 @@ Add to `~/.cursor/mcp.json`:
   "mcpServers": {
     "better-i18n-content": {
       "command": "npx",
-      "args": ["@better-i18n/mcp-content"],
+      "args": ["-y", "@better-i18n/mcp-content@latest"],
       "env": {
         "BETTER_I18N_API_KEY": "your-api-key-here"
       }
@@ -56,7 +56,7 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "better-i18n-content": {
       "command": "npx",
-      "args": ["-y", "@better-i18n/mcp-content"],
+      "args": ["-y", "@better-i18n/mcp-content@latest"],
       "env": {
         "BETTER_I18N_API_KEY": "your-api-key-here"
       }
@@ -71,7 +71,7 @@ Add to `claude_desktop_config.json`:
 claude mcp add better-i18n-content \
   -s user \
   -e BETTER_I18N_API_KEY=your-api-key-here \
-  -- npx -y @better-i18n/mcp-content
+  -- npx -y @better-i18n/mcp-content@latest
 ```
 
 ## Available Tools (18)

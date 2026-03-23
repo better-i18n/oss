@@ -49,7 +49,7 @@ Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
       "mcpServers": {
         "better-i18n": {
           "command": "npx",
-          "args": ["@better-i18n/mcp"],
+          "args": ["-y", "@better-i18n/mcp@latest"],
           "env": {
             "BETTER_I18N_API_KEY": "your-api-key"
           }
@@ -61,7 +61,7 @@ Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
   <Tab value="Claude Code">
     Run this command in your terminal:
     ```bash title="Terminal"
-    claude mcp add better-i18n -s user -e BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp
+    claude mcp add better-i18n -s user -e BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp@latest
     ```
 
     Claude Code automatically manages the `.mcp.json` configuration. You can view and manage servers with `claude mcp list`.
@@ -73,7 +73,7 @@ Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
       "mcpServers": {
         "better-i18n": {
           "command": "npx",
-          "args": ["@better-i18n/mcp"],
+          "args": ["-y", "@better-i18n/mcp@latest"],
           "env": {
             "BETTER_I18N_API_KEY": "your-api-key"
           }
@@ -89,7 +89,7 @@ Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
       "mcpServers": {
         "better-i18n": {
           "command": "npx",
-          "args": ["@better-i18n/mcp"],
+          "args": ["-y", "@better-i18n/mcp@latest"],
           "env": {
             "BETTER_I18N_API_KEY": "your-api-key"
           }
@@ -106,7 +106,7 @@ Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
         "better-i18n": {
           "command": {
             "path": "npx",
-            "args": ["@better-i18n/mcp"],
+            "args": ["-y", "@better-i18n/mcp@latest"],
             "env": {
               "BETTER_I18N_API_KEY": "your-api-key"
             }
@@ -120,14 +120,14 @@ Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
   <Tab value="Codex">
     **Option 1: CLI command**
     ```bash title="Terminal"
-    codex mcp add better-i18n --env BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp
+    codex mcp add better-i18n --env BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp@latest
     ```
 
     **Option 2: Manual config** (`~/.codex/config.toml`)
     ```toml title="~/.codex/config.toml"
     [mcp_servers.better-i18n]
     command = "npx"
-    args = ["-y", "@better-i18n/mcp"]
+    args = ["-y", "@better-i18n/mcp@latest"]
 
     [mcp_servers.better-i18n.env]
     BETTER_I18N_API_KEY = "your-api-key"
@@ -137,7 +137,7 @@ Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
     Add this to your `GEMINI.md` or `.rules` file:
     ```markdown title="GEMINI.md"
     MCP Servers:
-    - better-i18n: @better-i18n/mcp (stdio)
+    - better-i18n: @better-i18n/mcp@latest (stdio)
 
     Environment Variables:
     BETTER_I18N_API_KEY: your-api-key
@@ -170,14 +170,14 @@ If you also use Better i18n's headless CMS features, add the content MCP server 
       "mcpServers": {
         "better-i18n": {
           "command": "npx",
-          "args": ["@better-i18n/mcp"],
+          "args": ["-y", "@better-i18n/mcp@latest"],
           "env": {
             "BETTER_I18N_API_KEY": "your-api-key"
           }
         },
         "better-i18n-content": {
           "command": "npx",
-          "args": ["@better-i18n/mcp-content"],
+          "args": ["-y", "@better-i18n/mcp-content@latest"],
           "env": {
             "BETTER_I18N_API_KEY": "your-api-key"
           }
@@ -189,8 +189,8 @@ If you also use Better i18n's headless CMS features, add the content MCP server 
   <Tab value="Claude Code">
     Run both commands in your terminal:
     ```bash title="Terminal"
-    claude mcp add better-i18n -s user -e BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp
-    claude mcp add better-i18n-content -s user -e BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp-content
+    claude mcp add better-i18n -s user -e BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp@latest
+    claude mcp add better-i18n-content -s user -e BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp-content@latest
     ```
   </Tab>
   <Tab value="Claude Desktop">
@@ -199,14 +199,14 @@ If you also use Better i18n's headless CMS features, add the content MCP server 
       "mcpServers": {
         "better-i18n": {
           "command": "npx",
-          "args": ["@better-i18n/mcp"],
+          "args": ["-y", "@better-i18n/mcp@latest"],
           "env": {
             "BETTER_I18N_API_KEY": "your-api-key"
           }
         },
         "better-i18n-content": {
           "command": "npx",
-          "args": ["@better-i18n/mcp-content"],
+          "args": ["-y", "@better-i18n/mcp-content@latest"],
           "env": {
             "BETTER_I18N_API_KEY": "your-api-key"
           }
@@ -221,14 +221,14 @@ If you also use Better i18n's headless CMS features, add the content MCP server 
       "mcpServers": {
         "better-i18n": {
           "command": "npx",
-          "args": ["@better-i18n/mcp"],
+          "args": ["-y", "@better-i18n/mcp@latest"],
           "env": {
             "BETTER_I18N_API_KEY": "your-api-key"
           }
         },
         "better-i18n-content": {
           "command": "npx",
-          "args": ["@better-i18n/mcp-content"],
+          "args": ["-y", "@better-i18n/mcp-content@latest"],
           "env": {
             "BETTER_I18N_API_KEY": "your-api-key"
           }
@@ -244,7 +244,7 @@ If you also use Better i18n's headless CMS features, add the content MCP server 
         "better-i18n": {
           "command": {
             "path": "npx",
-            "args": ["@better-i18n/mcp"],
+            "args": ["-y", "@better-i18n/mcp@latest"],
             "env": {
               "BETTER_I18N_API_KEY": "your-api-key"
             }
@@ -254,7 +254,7 @@ If you also use Better i18n's headless CMS features, add the content MCP server 
         "better-i18n-content": {
           "command": {
             "path": "npx",
-            "args": ["@better-i18n/mcp-content"],
+            "args": ["-y", "@better-i18n/mcp-content@latest"],
             "env": {
               "BETTER_I18N_API_KEY": "your-api-key"
             }
@@ -268,22 +268,22 @@ If you also use Better i18n's headless CMS features, add the content MCP server 
   <Tab value="Codex">
     **Option 1: CLI commands**
     ```bash title="Terminal"
-    codex mcp add better-i18n --env BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp
-    codex mcp add better-i18n-content --env BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp-content
+    codex mcp add better-i18n --env BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp@latest
+    codex mcp add better-i18n-content --env BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp-content@latest
     ```
 
     **Option 2: Manual config** (`~/.codex/config.toml`)
     ```toml title="~/.codex/config.toml"
     [mcp_servers.better-i18n]
     command = "npx"
-    args = ["-y", "@better-i18n/mcp"]
+    args = ["-y", "@better-i18n/mcp@latest"]
 
     [mcp_servers.better-i18n.env]
     BETTER_I18N_API_KEY = "your-api-key"
 
     [mcp_servers.better-i18n-content]
     command = "npx"
-    args = ["-y", "@better-i18n/mcp-content"]
+    args = ["-y", "@better-i18n/mcp-content@latest"]
 
     [mcp_servers.better-i18n-content.env]
     BETTER_I18N_API_KEY = "your-api-key"
@@ -292,8 +292,8 @@ If you also use Better i18n's headless CMS features, add the content MCP server 
   <Tab value="Antigravity">
     ```markdown title="GEMINI.md"
     MCP Servers:
-    - better-i18n: @better-i18n/mcp (stdio)
-    - better-i18n-content: @better-i18n/mcp-content (stdio)
+    - better-i18n: @better-i18n/mcp@latest (stdio)
+    - better-i18n-content: @better-i18n/mcp-content@latest (stdio)
 
     Environment Variables:
     BETTER_I18N_API_KEY: your-api-key
