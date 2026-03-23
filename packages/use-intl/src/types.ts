@@ -83,8 +83,9 @@ export interface BetterI18nContextValue {
    * URL prefix strategy for locale codes.
    * - `"as-needed"`: default locale has no URL prefix
    * - `"always"`: all locales get a URL prefix (e.g., TanStack Router `$locale/`)
+   * - `"never"`: no locale prefix in URL for any locale (cookie-only, ideal for dashboards)
    */
-  localePrefix: "always" | "as-needed";
+  localePrefix: "always" | "as-needed" | "never";
 }
 
 /**

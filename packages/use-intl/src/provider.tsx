@@ -58,9 +58,11 @@ export interface BetterI18nProviderProps
    * URL prefix strategy for locale codes.
    * - `"as-needed"` (default): default locale has no URL prefix
    * - `"always"`: all locales get a URL prefix (e.g., TanStack Router `$locale/` routes)
+   * - `"never"`: no locale prefix in URL for any locale. Locale is stored only in cookie.
+   *   Ideal for dashboards and apps where URL structure shouldn't change per locale.
    * @default "as-needed"
    */
-  localePrefix?: "always" | "as-needed";
+  localePrefix?: "always" | "as-needed" | "never";
   /** Custom fallback when a message key is missing */
   getMessageFallback?: (info: {
     error: Error;
@@ -178,12 +180,19 @@ export function BetterI18nProvider({
         document.cookie = `${localeCookie}=${newLocale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
       }
 
-      // Update URL locale prefix — only when no external router handles it.
-      // When onLocaleChange is provided, the consumer (e.g., react-router navigate())
-      // is responsible for URL updates. Running both causes dual-write race conditions.
+      // Notify consumer (e.g., router navigation)
       if (onLocaleChange) {
         onLocaleChange(newLocale);
-      } else if (typeof window !== "undefined" && window.location) {
+        return;
+      }
+
+      // "never" mode: locale is cookie-only, don't touch the URL at all
+      if (localePrefix === "never") {
+        return;
+      }
+
+      // Update URL locale prefix — fallback when no external router handles it.
+      if (typeof window !== "undefined" && window.location) {
         const path = window.location.pathname;
         const segments = path.split("/").filter(Boolean);
         const firstSegment = segments[0];
@@ -198,7 +207,7 @@ export function BetterI18nProvider({
         window.history.replaceState(null, "", "/" + segments.join("/") + window.location.search);
       }
     },
-    [onLocaleChange, localeCookie],
+    [onLocaleChange, localeCookie, localePrefix],
   );
 
   // ─── Messages State ───────────────────────────────────────────────
