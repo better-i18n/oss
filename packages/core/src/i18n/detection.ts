@@ -157,8 +157,61 @@ export function detectLocale(
 }
 
 /**
- * Resolve a country code to a locale using the provided map,
- * falling back to LANGUAGE_TO_COUNTRY reverse lookup.
+ * Built-in multi-country overrides for countries that share a language
+ * with another country already in LANGUAGE_TO_COUNTRY.
+ * This allows geo detection to work without a manifest-driven map.
+ */
+const BUILT_IN_COUNTRY_OVERRIDES: Record<string, string> = {
+  // German-speaking
+  at: "de", ch: "de", li: "de",
+  // French-speaking
+  be: "fr", lu: "fr", mc: "fr",
+  // Spanish-speaking
+  mx: "es", ar: "es", co: "es", cl: "es", pe: "es",
+  ve: "es", ec: "es", gt: "es", cu: "es", hn: "es",
+  sv: "es", ni: "es", cr: "es", pa: "es", uy: "es",
+  py: "es", bo: "es", do: "es",
+  // Portuguese-speaking
+  br: "pt", ao: "pt", mz: "pt",
+  // Arabic-speaking
+  ae: "ar", eg: "ar", ma: "ar", dz: "ar", iq: "ar",
+  kw: "ar", qa: "ar", bh: "ar", om: "ar", jo: "ar", lb: "ar",
+  // Chinese-speaking
+  sg: "zh", tw: "zh", hk: "zh", mo: "zh",
+  // Russian-speaking
+  by: "ru", kz: "ru", kg: "ru",
+  // Malay-speaking
+  bn: "ms",
+  // English-speaking
+  us: "en", au: "en", nz: "en", ca: "en", ie: "en",
+};
+
+/**
+ * Fuzzy locale match — finds a locale in available list even when the
+ * base language matches but the full code differs.
+ * e.g., lang="zh", available=["zh-hans"] → returns "zh-hans"
+ * e.g., lang="pt", available=["pt-br", "pt"] → returns "pt"
+ */
+function fuzzyFindLocale(lang: string, available: string[]): string | undefined {
+  // Exact match first
+  const exact = findLocale(lang, available);
+  if (exact) return exact;
+
+  // Base language match (zh → zh-hans, pt → pt-br)
+  const base = lang.split("-")[0].toLowerCase();
+  return available.find((a) => a.toLowerCase().startsWith(base + "-"))
+    ?? available.find((a) => a.toLowerCase() === base);
+}
+
+/**
+ * Resolve a country code to a locale.
+ *
+ * Resolution chain:
+ * 1. Explicit countryLocaleMap (manifest-driven, most accurate)
+ * 2. LANGUAGE_TO_COUNTRY reverse lookup (built-in)
+ * 3. BUILT_IN_COUNTRY_OVERRIDES (multi-country fallback)
+ *
+ * All lookups use fuzzy matching so zh→zh-hans, pt→pt-br work.
  */
 function resolveGeoLocale(
   countryCode: string | null | undefined,
@@ -169,18 +222,28 @@ function resolveGeoLocale(
 
   const normalized = countryCode.toLowerCase();
 
-  // Try explicit map first (manifest-driven)
+  // 1. Explicit map (manifest-driven)
   if (countryLocaleMap) {
     const mapped = countryLocaleMap[normalized];
-    if (mapped) return findLocale(mapped, availableLocales);
-  }
-
-  // Fallback: reverse LANGUAGE_TO_COUNTRY
-  for (const [lang, country] of Object.entries(LANGUAGE_TO_COUNTRY)) {
-    if (country === normalized) {
-      const match = findLocale(lang, availableLocales);
+    if (mapped) {
+      const match = fuzzyFindLocale(mapped, availableLocales);
       if (match) return match;
     }
+  }
+
+  // 2. Reverse LANGUAGE_TO_COUNTRY (e.g., tr→"tr", ja→"jp")
+  for (const [lang, country] of Object.entries(LANGUAGE_TO_COUNTRY)) {
+    if (country === normalized) {
+      const match = fuzzyFindLocale(lang, availableLocales);
+      if (match) return match;
+    }
+  }
+
+  // 3. Multi-country overrides (e.g., AT→de, MX→es, BR→pt)
+  const override = BUILT_IN_COUNTRY_OVERRIDES[normalized];
+  if (override) {
+    const match = fuzzyFindLocale(override, availableLocales);
+    if (match) return match;
   }
 
   return undefined;
