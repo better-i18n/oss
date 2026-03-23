@@ -19,12 +19,6 @@ export {
 export { useLocalePath } from "./hooks/useLocalePath.js";
 export type { UseLocalePathReturn } from "./hooks/useLocalePath.js";
 
-// TanStack Router Integration — separate entry point to avoid hard dependency.
-// Import from "@better-i18n/use-intl/router" instead:
-//   import { useLocaleRouter } from "@better-i18n/use-intl/router";
-// Re-export the TYPE only (no runtime import of @tanstack/react-router)
-export type { UseLocaleRouterReturn } from "./hooks/useLocaleRouter.js";
-
 // Components
 export { LanguageSwitcher } from "./components.js";
 export type { LanguageSwitcherProps } from "./components.js";

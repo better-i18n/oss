@@ -296,8 +296,8 @@ export interface LocaleDropdownProps {
  * Styled locale dropdown with flag icons, keyboard navigation, and
  * full CSS customization via custom properties or data attributes.
  *
- * Uses `useLocaleRouter()` and `useLanguages()` internally — works
- * out of the box inside `<BetterI18nProvider>` with TanStack Router.
+ * Uses `useLocalePath()` and `useLanguages()` internally — works
+ * out of the box inside `<BetterI18nProvider>` with any router.
  *
  * @example
  * ```tsx
