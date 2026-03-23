@@ -2,7 +2,7 @@
 
 import { createI18nCore } from "@better-i18n/core";
 import type { LanguageOption } from "@better-i18n/core";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { IntlProvider } from "use-intl";
 import { BetterI18nContext } from "./context.js";
 import type { BetterI18nProviderConfig, Messages } from "./types.js";
@@ -187,7 +187,10 @@ export function BetterI18nProvider({
         const path = window.location.pathname;
         const segments = path.split("/").filter(Boolean);
         const firstSegment = segments[0];
-        if (firstSegment && /^[a-z]{2}$/i.test(firstSegment)) {
+        const supportedLocales = ssrData?.supportedLocales as string[] | undefined;
+        const isLocaleSegment = firstSegment && /^[a-z]{2}$/i.test(firstSegment) &&
+          (!supportedLocales || supportedLocales.includes(firstSegment));
+        if (isLocaleSegment) {
           segments[0] = newLocale;
         } else {
           segments.unshift(newLocale);
@@ -204,16 +207,13 @@ export function BetterI18nProvider({
   // When messages come from props, their locale matches propLocale (or initialLocale).
   // This distinction prevents a critical bug: propLocale="tr" + ssrData.messages="en"
   // would incorrectly mark English messages as fresh for Turkish, skipping CDN fetch.
-  const initialMessagesLocale = propMessages
-    ? initialLocale          // prop messages: trust the resolved locale
-    : ssrData?.locale;       // SSR messages: trust the SSR-injected locale
-  const initialMessagesLocaleRef = useRef(initialMessages ? initialMessagesLocale : undefined);
+  const initialMessagesLocale = propMessages ? initialLocale : ssrData?.locale;
 
   const [clientMessages, setClientMessages] = useState<Messages | undefined>();
 
   // Use initial messages only when they match the current locale.
   // After locale switch, fall through to clientMessages (CDN-fetched).
-  const isInitialMessagesFresh = initialMessages && initialMessagesLocaleRef.current === locale;
+  const isInitialMessagesFresh = initialMessages && initialMessagesLocale === locale;
   const messages = isInitialMessagesFresh ? initialMessages : (clientMessages ?? initialMessages);
   const [languages, setLanguages] = useState<LanguageOption[]>(initialLanguages ?? []);
   const [isLoadingMessages, setIsLoadingMessages] = useState(initialMessages === undefined);
@@ -268,7 +268,7 @@ export function BetterI18nProvider({
   // Load messages when locale changes.
   // Skip when initial messages (prop or SSR) are still fresh for the current locale.
   useEffect(() => {
-    if (initialMessages && initialMessagesLocaleRef.current === locale) {
+    if (initialMessages && initialMessagesLocale === locale) {
       return;
     }
 
