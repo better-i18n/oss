@@ -110,4 +110,5 @@ export const MARKETING_PAGES = [
   // Legal pages — excluded from sitemap
   { path: "privacy", priority: 0.3, changefreq: "yearly", prerender: true, sitemap: false },
   { path: "terms", priority: 0.3, changefreq: "yearly", prerender: true, sitemap: false },
+  { path: "cookies", priority: 0.3, changefreq: "yearly", prerender: true, sitemap: false },
 ] as const satisfies readonly PageDefinition[];
