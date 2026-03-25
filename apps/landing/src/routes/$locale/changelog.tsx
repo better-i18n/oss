@@ -196,6 +196,23 @@ function parseListItem(line: string): ParsedListItem {
   };
 }
 
+/** Map section heading text to a default badge for items underneath */
+const headingBadgeMap: Record<string, StatusTone> = {
+  "new features": "new",
+  "new": "new",
+  "features": "new",
+  "improvements": "improved",
+  "improved": "improved",
+  "updates": "updated",
+  "updated": "updated",
+  "changes": "updated",
+  "bug fixes": "fixed",
+  "bug fixes & improvements": "fixed",
+  "fixes": "fixed",
+  "fixed": "fixed",
+  "security": "security",
+};
+
 function parseSections(body: string | null): ParsedSection[] {
   if (!body) return [];
 
@@ -204,6 +221,7 @@ function parseSections(body: string | null): ParsedSection[] {
 
   let currentSection: ParsedSection | null = null;
   let listBuffer: ParsedListItem[] = [];
+  let sectionDefaultBadge: StatusTone | null = null;
 
   function ensureSection() {
     if (!currentSection) {
@@ -217,6 +235,12 @@ function parseSections(body: string | null): ParsedSection[] {
 
   function flushList() {
     if (!currentSection || listBuffer.length === 0) return;
+    // Apply section default badge to items that don't have their own
+    for (const item of listBuffer) {
+      if (!item.badge && sectionDefaultBadge) {
+        item.badge = sectionDefaultBadge;
+      }
+    }
     currentSection.items.push(...listBuffer);
     listBuffer = [];
   }
@@ -234,6 +258,7 @@ function parseSections(body: string | null): ParsedSection[] {
     }
 
     currentSection = null;
+    sectionDefaultBadge = null;
   }
 
   for (const rawLine of lines) {
@@ -250,8 +275,10 @@ function parseSections(body: string | null): ParsedSection[] {
 
     if (/^##\s+/.test(line)) {
       pushSection();
+      const headingText = line.replace(/^##\s+/, "").trim();
+      sectionDefaultBadge = headingBadgeMap[headingText.toLowerCase()] ?? null;
       currentSection = {
-        title: line.replace(/^##\s+/, "").trim(),
+        title: headingText,
         items: [],
         paragraphs: [],
       };
