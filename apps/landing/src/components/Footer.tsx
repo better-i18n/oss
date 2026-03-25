@@ -128,7 +128,7 @@ const footerLinks = [
       { key: "terms", label: "Terms", href: "/$locale/terms/" },
       { key: "cookies", label: "Cookie Policy", href: "/$locale/cookies/" },
       { key: "cookiePreferences", label: "Cookie Preferences", action: "cookie-preferences" },
-      { key: "doNotSell", label: "Do Not Sell My Personal Information", action: "cookie-preferences" },
+      { key: "doNotSell", label: "Do Not Sell My Info", action: "cookie-preferences" },
       { key: "security", label: "Security", href: "https://docs.better-i18n.com/security" },
     ],
   },
@@ -211,44 +211,7 @@ export default function Footer() {
             </div>
           ))}
         </div>
-        {/* Compliance Badges */}
-        <div className="pt-8 border-t border-mist-200 mb-8">
-          <div className="flex flex-wrap items-center gap-3">
-            <ComplianceBadge
-              label="GDPR"
-              icon={<GdprIcon className="w-5 h-3.5 shrink-0 rounded-[2px]" />}
-              href={`/${currentLocale}/privacy/#gdpr`}
-            />
-            <ComplianceBadge
-              label="CCPA"
-              icon={<CcpaIcon className="w-3.5 h-3.5 shrink-0" />}
-              href={`/${currentLocale}/privacy/#ccpa`}
-            />
-            <ComplianceBadge
-              label="LGPD"
-              icon={<LgpdIcon className="w-5 h-3.5 shrink-0 rounded-[2px]" />}
-              href={`/${currentLocale}/privacy/#brazil`}
-            />
-            <ComplianceBadge
-              label={t("badges.consentMode", { defaultValue: "Google Consent Mode v2" })}
-              icon={<GoogleIcon className="w-3.5 h-3.5 shrink-0" />}
-              href={`/${currentLocale}/cookies/#consentMode`}
-            />
-            <ComplianceBadge
-              label={t("badges.usStateLaws", { defaultValue: "US State Privacy Laws" })}
-              icon={<UsPrivacyIcon className="w-3.5 h-3.5 shrink-0" />}
-              href={`/${currentLocale}/privacy/#us-state-laws`}
-            />
-            <ComplianceBadge
-              label={t("badges.encryption", { defaultValue: "TLS 1.3 Encrypted" })}
-              icon={<TlsLockIcon className="w-3.5 h-3.5 shrink-0" />}
-              href="https://docs.better-i18n.com/security"
-              external
-            />
-          </div>
-        </div>
-
-        <div className="pt-6 border-t border-mist-200 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="pt-8 border-t border-mist-200 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <span className="text-sm text-mist-700">
             {t("copyright", { defaultValue: "© 2026 Better i18n, Inc." })}
           </span>
@@ -263,6 +226,40 @@ export default function Footer() {
             </a>
             <LanguageSwitcher />
           </div>
+        </div>
+        {/* Compliance Badges — below copyright, left-aligned */}
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <ComplianceBadge
+            label="GDPR"
+            icon={<GdprIcon className="w-5 h-3.5 shrink-0 rounded-[2px]" />}
+            href={`/${currentLocale}/privacy/#gdpr`}
+          />
+          <ComplianceBadge
+            label="CCPA"
+            icon={<CcpaIcon className="w-3.5 h-3.5 shrink-0" />}
+            href={`/${currentLocale}/privacy/#ccpa`}
+          />
+          <ComplianceBadge
+            label="LGPD"
+            icon={<LgpdIcon className="w-5 h-3.5 shrink-0 rounded-[2px]" />}
+            href={`/${currentLocale}/privacy/#brazil`}
+          />
+          <ComplianceBadge
+            label={t("badges.consentMode", { defaultValue: "Google Consent Mode v2" })}
+            icon={<GoogleIcon className="w-3.5 h-3.5 shrink-0" />}
+            href={`/${currentLocale}/cookies/#consentMode`}
+          />
+          <ComplianceBadge
+            label={t("badges.usStateLaws", { defaultValue: "US State Privacy Laws" })}
+            icon={<UsPrivacyIcon className="w-3.5 h-3.5 shrink-0" />}
+            href={`/${currentLocale}/privacy/#us-state-laws`}
+          />
+          <ComplianceBadge
+            label={t("badges.encryption", { defaultValue: "TLS 1.3 Encrypted" })}
+            icon={<TlsLockIcon className="w-3.5 h-3.5 shrink-0" />}
+            href="https://docs.better-i18n.com/security"
+            external
+          />
         </div>
       </div>
     </footer>
