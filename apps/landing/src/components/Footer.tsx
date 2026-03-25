@@ -216,32 +216,32 @@ export default function Footer() {
           <div className="flex flex-wrap items-center gap-3">
             <ComplianceBadge
               label="GDPR"
-              icon={<GdprIcon className="w-4 h-4 shrink-0" />}
+              icon={<GdprIcon className="w-5 h-3.5 shrink-0 rounded-[2px]" />}
               href={`/${currentLocale}/privacy/#gdpr`}
             />
             <ComplianceBadge
               label="CCPA"
-              icon={<CcpaIcon className="w-4 h-4 shrink-0" />}
+              icon={<CcpaIcon className="w-3.5 h-3.5 shrink-0" />}
               href={`/${currentLocale}/privacy/#ccpa`}
             />
             <ComplianceBadge
               label="LGPD"
-              icon={<LgpdIcon className="w-4 h-4 shrink-0" />}
+              icon={<LgpdIcon className="w-5 h-3.5 shrink-0 rounded-[2px]" />}
               href={`/${currentLocale}/privacy/#brazil`}
             />
             <ComplianceBadge
               label={t("badges.consentMode", { defaultValue: "Google Consent Mode v2" })}
-              icon={<GoogleIcon className="w-4 h-4 shrink-0" />}
+              icon={<GoogleIcon className="w-3.5 h-3.5 shrink-0" />}
               href={`/${currentLocale}/cookies/#consentMode`}
             />
             <ComplianceBadge
               label={t("badges.usStateLaws", { defaultValue: "US State Privacy Laws" })}
-              icon={<UsPrivacyIcon className="w-4 h-4 shrink-0" />}
+              icon={<UsPrivacyIcon className="w-3.5 h-3.5 shrink-0" />}
               href={`/${currentLocale}/privacy/#us-state-laws`}
             />
             <ComplianceBadge
               label={t("badges.encryption", { defaultValue: "TLS 1.3 Encrypted" })}
-              icon={<TlsLockIcon className="w-4 h-4 shrink-0" />}
+              icon={<TlsLockIcon className="w-3.5 h-3.5 shrink-0" />}
               href="https://docs.better-i18n.com/security"
               external
             />
