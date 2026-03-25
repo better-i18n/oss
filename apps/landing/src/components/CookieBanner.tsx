@@ -2,13 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "@tanstack/react-router";
 import { cn } from "@better-i18n/ui/lib/utils";
 import { useT } from "@/lib/i18n";
-import {
-  getConsent,
-  hasConsent,
-  acceptAll,
-  rejectAll,
-  setConsent,
-} from "@/lib/cookie-consent";
+import { getConsent, hasConsent, setConsent } from "@/lib/cookie-consent";
 import { loadAnalyticsScripts, updateConsentState } from "@/lib/analytics";
 
 type ConsentView = "banner" | "customize";
@@ -44,31 +38,22 @@ export function CookieBanner() {
     return () => window.removeEventListener("bi18n:show-cookie-banner", handleShow);
   }, []);
 
-  const handleAcceptAll = useCallback(() => {
-    acceptAll();
-    const consent = getConsent()!;
-    updateConsentState(consent);
-    loadAnalyticsScripts();
-    setVisible(false);
-  }, []);
-
-  const handleRejectAll = useCallback(() => {
-    rejectAll();
-    const consent = getConsent()!;
-    updateConsentState(consent);
-    setVisible(false);
-  }, []);
-
-  const handleSaveCustom = useCallback(() => {
-    const prefs = { analytics: analyticsEnabled, marketing: marketingEnabled };
-    setConsent(prefs);
+  const applyConsent = useCallback((analytics: boolean, marketing: boolean) => {
+    setConsent({ analytics, marketing });
     const consent = getConsent()!;
     updateConsentState(consent);
     if (consent.analytics || consent.marketing) {
       loadAnalyticsScripts();
     }
     setVisible(false);
-  }, [analyticsEnabled, marketingEnabled]);
+  }, []);
+
+  const handleAcceptAll = useCallback(() => applyConsent(true, true), [applyConsent]);
+  const handleRejectAll = useCallback(() => applyConsent(false, false), [applyConsent]);
+  const handleSaveCustom = useCallback(
+    () => applyConsent(analyticsEnabled, marketingEnabled),
+    [applyConsent, analyticsEnabled, marketingEnabled],
+  );
 
   if (!visible) return null;
 

@@ -12,17 +12,14 @@ import {
 } from "./icons/ComplianceIcons";
 import { useT } from "@/lib/i18n";
 
-function ComplianceBadge({
-  label,
-  icon,
-  href,
-  external,
-}: {
+interface ComplianceBadgeProps {
   label: string;
   icon: ReactNode;
   href: string;
   external?: boolean;
-}) {
+}
+
+function ComplianceBadge({ label, icon, href, external }: ComplianceBadgeProps) {
   const className =
     "inline-flex items-center gap-1.5 rounded-full border border-mist-200 bg-white px-3 py-1.5 text-xs font-medium text-mist-600 hover:border-mist-300 hover:text-mist-800 transition-colors";
 
@@ -43,7 +40,17 @@ function ComplianceBadge({
   );
 }
 
-const footerLinks = [
+type FooterLink =
+  | { key: string; label: string; href: string; localeAware?: boolean }
+  | { key: string; label: string; action: string };
+
+interface FooterLinkGroup {
+  category: string;
+  categoryTitle: string;
+  links: FooterLink[];
+}
+
+const footerLinks: FooterLinkGroup[] = [
   {
     category: "product",
     categoryTitle: "Product",
@@ -161,8 +168,7 @@ export default function Footer() {
                 {group.links.map((link) => {
                   const label = t(`${group.category}.${link.key}`, { defaultValue: link.label });
 
-                  // Action-based link (e.g. cookie preferences button)
-                  if ("action" in link && link.action === "cookie-preferences") {
+                  if ("action" in link) {
                     return (
                       <li key={link.key}>
                         <button
@@ -176,12 +182,9 @@ export default function Footer() {
                     );
                   }
 
-                  const href = link.href!;
+                  const { href, localeAware } = link;
                   const isExternal = href.startsWith("http");
-                  const resolvedHref =
-                    isExternal && "localeAware" in link && link.localeAware
-                      ? `${href}/${currentLocale}`
-                      : href;
+                  const resolvedHref = isExternal && localeAware ? `${href}/${currentLocale}` : href;
 
                   return (
                     <li key={link.key}>
