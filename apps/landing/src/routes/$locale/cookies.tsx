@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { LegalLayout } from "../../components/LegalLayout";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import {
   getLocalizedMeta,
   formatMetaTags,
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/$locale/cookies")({
 });
 
 function CookiePolicyPage() {
-  const t = useTranslations("cookies");
+  const t = useT("cookies");
 
   return (
     <>
