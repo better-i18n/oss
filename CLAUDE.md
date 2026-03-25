@@ -295,6 +295,13 @@ bunx changeset version # Apply changesets, bump versions
 bun run release        # Publish all non-private packages
 ```
 
+**CRITICAL changeset rules:**
+- Only bump packages that have **actual source code changes** — don't bump a package just because its dependency changed internally
+- `core` changes do NOT require downstream packages (use-intl, next, etc.) to be bumped unless their own code changed
+- If only `core` changed → changeset for `core` only. The downstream lockfiles update automatically on `bun install`
+- If `use-intl` code also changed → include `use-intl` in the changeset too
+- **Never create unnecessary minor/major bumps** — patch for fixes, minor for new features, major for breaking changes
+
 ## Key Patterns and Conventions
 
 1. **Singleton server instances** — `createServerI18n`, `createRemixI18n`, `createI18n` must be instantiated once at module scope (TtlCache is shared)

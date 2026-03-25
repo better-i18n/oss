@@ -15,6 +15,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as IntegrationsRouteImport } from './routes/integrations'
 import { Route as FeaturesRouteImport } from './routes/features'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as AboutRouteImport } from './routes/about'
@@ -40,6 +41,7 @@ import { Route as LocaleForEcommerceRouteImport } from './routes/$locale/for-eco
 import { Route as LocaleForDevelopersRouteImport } from './routes/$locale/for-developers'
 import { Route as LocaleForAgenciesRouteImport } from './routes/$locale/for-agencies'
 import { Route as LocaleFeaturesRouteImport } from './routes/$locale/features'
+import { Route as LocaleCookiesRouteImport } from './routes/$locale/cookies'
 import { Route as LocaleChangelogRouteImport } from './routes/$locale/changelog'
 import { Route as LocaleCareersRouteImport } from './routes/$locale/careers'
 import { Route as LocaleAboutRouteImport } from './routes/$locale/about'
@@ -130,6 +132,11 @@ const IntegrationsRoute = IntegrationsRouteImport.update({
 const FeaturesRoute = FeaturesRouteImport.update({
   id: '/features',
   path: '/features',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChangelogRoute = ChangelogRouteImport.update({
@@ -257,6 +264,11 @@ const LocaleForAgenciesRoute = LocaleForAgenciesRouteImport.update({
 const LocaleFeaturesRoute = LocaleFeaturesRouteImport.update({
   id: '/$locale/features',
   path: '/$locale/features',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleCookiesRoute = LocaleCookiesRouteImport.update({
+  id: '/$locale/cookies',
+  path: '/$locale/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleChangelogRoute = LocaleChangelogRouteImport.update({
@@ -591,6 +603,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/careers': typeof CareersRoute
   '/changelog': typeof ChangelogRoute
+  '/cookies': typeof CookiesRoute
   '/features': typeof FeaturesRoute
   '/integrations': typeof IntegrationsRoute
   '/pricing': typeof PricingRoute
@@ -600,6 +613,7 @@ export interface FileRoutesByFullPath {
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/careers': typeof LocaleCareersRoute
   '/$locale/changelog': typeof LocaleChangelogRoute
+  '/$locale/cookies': typeof LocaleCookiesRoute
   '/$locale/features': typeof LocaleFeaturesRouteWithChildren
   '/$locale/for-agencies': typeof LocaleForAgenciesRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
@@ -685,6 +699,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/careers': typeof CareersRoute
   '/changelog': typeof ChangelogRoute
+  '/cookies': typeof CookiesRoute
   '/features': typeof FeaturesRoute
   '/integrations': typeof IntegrationsRoute
   '/pricing': typeof PricingRoute
@@ -694,6 +709,7 @@ export interface FileRoutesByTo {
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/careers': typeof LocaleCareersRoute
   '/$locale/changelog': typeof LocaleChangelogRoute
+  '/$locale/cookies': typeof LocaleCookiesRoute
   '/$locale/for-agencies': typeof LocaleForAgenciesRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
   '/$locale/for-ecommerce': typeof LocaleForEcommerceRoute
@@ -779,6 +795,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/careers': typeof CareersRoute
   '/changelog': typeof ChangelogRoute
+  '/cookies': typeof CookiesRoute
   '/features': typeof FeaturesRoute
   '/integrations': typeof IntegrationsRoute
   '/pricing': typeof PricingRoute
@@ -788,6 +805,7 @@ export interface FileRoutesById {
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/careers': typeof LocaleCareersRoute
   '/$locale/changelog': typeof LocaleChangelogRoute
+  '/$locale/cookies': typeof LocaleCookiesRoute
   '/$locale/features': typeof LocaleFeaturesRouteWithChildren
   '/$locale/for-agencies': typeof LocaleForAgenciesRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
@@ -875,6 +893,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/careers'
     | '/changelog'
+    | '/cookies'
     | '/features'
     | '/integrations'
     | '/pricing'
@@ -884,6 +903,7 @@ export interface FileRouteTypes {
     | '/$locale/about'
     | '/$locale/careers'
     | '/$locale/changelog'
+    | '/$locale/cookies'
     | '/$locale/features'
     | '/$locale/for-agencies'
     | '/$locale/for-developers'
@@ -969,6 +989,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/careers'
     | '/changelog'
+    | '/cookies'
     | '/features'
     | '/integrations'
     | '/pricing'
@@ -978,6 +999,7 @@ export interface FileRouteTypes {
     | '/$locale/about'
     | '/$locale/careers'
     | '/$locale/changelog'
+    | '/$locale/cookies'
     | '/$locale/for-agencies'
     | '/$locale/for-developers'
     | '/$locale/for-ecommerce'
@@ -1062,6 +1084,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/careers'
     | '/changelog'
+    | '/cookies'
     | '/features'
     | '/integrations'
     | '/pricing'
@@ -1071,6 +1094,7 @@ export interface FileRouteTypes {
     | '/$locale/about'
     | '/$locale/careers'
     | '/$locale/changelog'
+    | '/$locale/cookies'
     | '/$locale/features'
     | '/$locale/for-agencies'
     | '/$locale/for-developers'
@@ -1157,6 +1181,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CareersRoute: typeof CareersRoute
   ChangelogRoute: typeof ChangelogRoute
+  CookiesRoute: typeof CookiesRoute
   FeaturesRoute: typeof FeaturesRoute
   IntegrationsRoute: typeof IntegrationsRoute
   PricingRoute: typeof PricingRoute
@@ -1166,6 +1191,7 @@ export interface RootRouteChildren {
   LocaleAboutRoute: typeof LocaleAboutRoute
   LocaleCareersRoute: typeof LocaleCareersRoute
   LocaleChangelogRoute: typeof LocaleChangelogRoute
+  LocaleCookiesRoute: typeof LocaleCookiesRoute
   LocaleFeaturesRoute: typeof LocaleFeaturesRouteWithChildren
   LocaleForAgenciesRoute: typeof LocaleForAgenciesRoute
   LocaleForDevelopersRoute: typeof LocaleForDevelopersRoute
@@ -1285,6 +1311,13 @@ declare module '@tanstack/react-router' {
       path: '/features'
       fullPath: '/features'
       preLoaderRoute: typeof FeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/changelog': {
@@ -1460,6 +1493,13 @@ declare module '@tanstack/react-router' {
       path: '/$locale/features'
       fullPath: '/$locale/features'
       preLoaderRoute: typeof LocaleFeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/cookies': {
+      id: '/$locale/cookies'
+      path: '/$locale/cookies'
+      fullPath: '/$locale/cookies'
+      preLoaderRoute: typeof LocaleCookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/changelog': {
@@ -1941,6 +1981,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   CareersRoute: CareersRoute,
   ChangelogRoute: ChangelogRoute,
+  CookiesRoute: CookiesRoute,
   FeaturesRoute: FeaturesRoute,
   IntegrationsRoute: IntegrationsRoute,
   PricingRoute: PricingRoute,
@@ -1950,6 +1991,7 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleAboutRoute: LocaleAboutRoute,
   LocaleCareersRoute: LocaleCareersRoute,
   LocaleChangelogRoute: LocaleChangelogRoute,
+  LocaleCookiesRoute: LocaleCookiesRoute,
   LocaleFeaturesRoute: LocaleFeaturesRouteWithChildren,
   LocaleForAgenciesRoute: LocaleForAgenciesRoute,
   LocaleForDevelopersRoute: LocaleForDevelopersRoute,
