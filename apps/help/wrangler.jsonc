@@ -25,8 +25,8 @@
       // Configure your domain here:
       "routes": [
         {
-          "pattern": "help.yourdomain.com/*",
-          "zone_name": "yourdomain.com"
+          "pattern": "help.better-i18n.com/*",
+          "zone_name": "better-i18n.com"
         }
       ],
       "vars": {
