@@ -1,7 +1,37 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { IconSquareArrowTopRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconSquareArrowTopRight, IconShieldCheck } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { useT } from "@/lib/i18n";
+
+function ComplianceBadge({
+  label,
+  href,
+  external,
+}: {
+  label: string;
+  href: string;
+  external?: boolean;
+}) {
+  const className =
+    "inline-flex items-center gap-1.5 rounded-full border border-mist-200 bg-white px-3 py-1.5 text-xs font-medium text-mist-600 hover:border-mist-300 hover:text-mist-800 transition-colors";
+  const icon = <IconShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />;
+
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+        {icon}
+        {label}
+      </a>
+    );
+  }
+
+  return (
+    <Link to={href} className={className}>
+      {icon}
+      {label}
+    </Link>
+  );
+}
 
 const footerLinks = [
   {
@@ -171,7 +201,38 @@ export default function Footer() {
             </div>
           ))}
         </div>
-        <div className="pt-8 border-t border-mist-200 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        {/* Compliance Badges */}
+        <div className="pt-8 border-t border-mist-200 mb-8">
+          <div className="flex flex-wrap items-center gap-3">
+            <ComplianceBadge
+              label="GDPR"
+              href={`/${currentLocale}/privacy/#gdpr`}
+            />
+            <ComplianceBadge
+              label="CCPA"
+              href={`/${currentLocale}/privacy/#ccpa`}
+            />
+            <ComplianceBadge
+              label="LGPD"
+              href={`/${currentLocale}/privacy/#brazil`}
+            />
+            <ComplianceBadge
+              label={t("badges.consentMode", { defaultValue: "Google Consent Mode v2" })}
+              href={`/${currentLocale}/cookies/#consentMode`}
+            />
+            <ComplianceBadge
+              label={t("badges.usStateLaws", { defaultValue: "US State Privacy Laws" })}
+              href={`/${currentLocale}/privacy/#us-state-laws`}
+            />
+            <ComplianceBadge
+              label={t("badges.encryption", { defaultValue: "TLS 1.3 Encrypted" })}
+              href="https://docs.better-i18n.com/security"
+              external
+            />
+          </div>
+        </div>
+
+        <div className="pt-6 border-t border-mist-200 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <span className="text-sm text-mist-700">
             {t("copyright", { defaultValue: "© 2026 Better i18n, Inc." })}
           </span>
