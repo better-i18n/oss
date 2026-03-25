@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 import { LegalLayout } from "../../components/LegalLayout";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
@@ -248,6 +249,7 @@ function CookiePolicyPage() {
           </p>
         </section>
       </LegalLayout>
+      <Footer />
     </>
   );
 }
