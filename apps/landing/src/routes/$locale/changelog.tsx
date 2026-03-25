@@ -199,6 +199,7 @@ function parseListItem(line: string): ParsedListItem {
 /** Map section heading text to a default badge for items underneath */
 const headingBadgeMap: Record<string, StatusTone> = {
   "new features": "new",
+  "what's new": "new",
   "new": "new",
   "features": "new",
   "improvements": "improved",
@@ -211,6 +212,52 @@ const headingBadgeMap: Record<string, StatusTone> = {
   "fixes": "fixed",
   "fixed": "fixed",
   "security": "security",
+  // Turkish headings
+  "yeni özellikler": "new",
+  "yenilikler": "new",
+  "yeni": "new",
+  "iyileştirmeler": "improved",
+  "güncellemeler": "updated",
+  "hata düzeltmeleri": "fixed",
+  "düzeltmeler": "fixed",
+  // German
+  "neue funktionen": "new",
+  "neuigkeiten": "new",
+  "verbesserungen": "improved",
+  "fehlerbehebungen": "fixed",
+  "bugfixes": "fixed",
+  // Spanish
+  "nuevas funciones": "new",
+  "novedades": "new",
+  "mejoras": "improved",
+  "correcciones de errores": "fixed",
+  // French
+  "nouvelles fonctionnalités": "new",
+  "nouveautés": "new",
+  "améliorations": "improved",
+  "corrections de bugs": "fixed",
+  // Portuguese
+  "novas funcionalidades": "new",
+  "novidades": "new",
+  "melhorias": "improved",
+  "correções de erros": "fixed",
+  // Russian
+  "новые функции": "new",
+  "новое": "new",
+  "улучшения": "improved",
+  "исправления ошибок": "fixed",
+  // Chinese
+  "新功能": "new",
+  "改进": "improved",
+  "错误修复": "fixed",
+  // Japanese
+  "新機能": "new",
+  "改善点": "improved",
+  "バグ修正": "fixed",
+  // Korean
+  "새로운 기능": "new",
+  "개선 사항": "improved",
+  "버그 수정": "fixed",
 };
 
 function parseSections(body: string | null): ParsedSection[] {
