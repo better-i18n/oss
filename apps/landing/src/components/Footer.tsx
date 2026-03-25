@@ -1,20 +1,30 @@
 import { Link, useParams } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { IconSquareArrowTopRight, IconShieldCheck } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { IconSquareArrowTopRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import {
+  GdprIcon,
+  CcpaIcon,
+  LgpdIcon,
+  GoogleIcon,
+  UsPrivacyIcon,
+  TlsLockIcon,
+} from "./icons/ComplianceIcons";
 import { useT } from "@/lib/i18n";
 
 function ComplianceBadge({
   label,
+  icon,
   href,
   external,
 }: {
   label: string;
+  icon: ReactNode;
   href: string;
   external?: boolean;
 }) {
   const className =
     "inline-flex items-center gap-1.5 rounded-full border border-mist-200 bg-white px-3 py-1.5 text-xs font-medium text-mist-600 hover:border-mist-300 hover:text-mist-800 transition-colors";
-  const icon = <IconShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />;
 
   if (external) {
     return (
@@ -206,26 +216,32 @@ export default function Footer() {
           <div className="flex flex-wrap items-center gap-3">
             <ComplianceBadge
               label="GDPR"
+              icon={<GdprIcon className="w-4 h-4 shrink-0" />}
               href={`/${currentLocale}/privacy/#gdpr`}
             />
             <ComplianceBadge
               label="CCPA"
+              icon={<CcpaIcon className="w-4 h-4 shrink-0" />}
               href={`/${currentLocale}/privacy/#ccpa`}
             />
             <ComplianceBadge
               label="LGPD"
+              icon={<LgpdIcon className="w-4 h-4 shrink-0" />}
               href={`/${currentLocale}/privacy/#brazil`}
             />
             <ComplianceBadge
               label={t("badges.consentMode", { defaultValue: "Google Consent Mode v2" })}
+              icon={<GoogleIcon className="w-4 h-4 shrink-0" />}
               href={`/${currentLocale}/cookies/#consentMode`}
             />
             <ComplianceBadge
               label={t("badges.usStateLaws", { defaultValue: "US State Privacy Laws" })}
+              icon={<UsPrivacyIcon className="w-4 h-4 shrink-0" />}
               href={`/${currentLocale}/privacy/#us-state-laws`}
             />
             <ComplianceBadge
               label={t("badges.encryption", { defaultValue: "TLS 1.3 Encrypted" })}
+              icon={<TlsLockIcon className="w-4 h-4 shrink-0" />}
               href="https://docs.better-i18n.com/security"
               external
             />
