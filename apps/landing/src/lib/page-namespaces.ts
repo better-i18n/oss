@@ -22,6 +22,7 @@ const SHARED_NAMESPACES = [
   "header",
   "footer",
   "breadcrumbs",
+  "cookieBanner",
 ] as const;
 
 // ─── Types ──────────────────────────────────────────────────────────
@@ -90,6 +91,7 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   // ─── Legal ──────────────────────────────────────────────────
   ["privacy", { namespaces: ["legal", "privacy"] }],
   ["terms", { namespaces: ["legal", "terms"] }],
+  ["cookies", { namespaces: ["legal", "cookies"] }],
 
   // ─── Persona pages (hardcoded routes) ─────────────────────────
   ["for-developers", { namespaces: ["developers", "relatedPages", "cta"] }],
@@ -354,6 +356,7 @@ const PAGE_KEY_MAP: ReadonlyMap<string, string> = new Map([
   ["changelog", "changelog"],
   ["privacy", "privacy"],
   ["terms", "terms"],
+  ["cookies", "cookies"],
   ["for-developers", "forDevelopers"],
   ["for-translators", "forTranslators"],
   ["for-product-teams", "forProductTeams"],
