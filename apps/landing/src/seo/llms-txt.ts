@@ -192,7 +192,7 @@ const ENGLISH_PAGE_TITLES: Readonly<Record<string, string>> = {
   "tools/translation-file-converter": "Translation File Format Converter",
   "tools/cost-calculator": "Localization Cost Calculator",
   "tools/hreflang-generator": "Hreflang Tag Generator & Validator",
-  privacy: "Privacy Policy", terms: "Terms of Service", status: "System Status",
+  privacy: "Privacy Policy", terms: "Terms of Service", cookies: "Cookie Policy", status: "System Status",
 };
 
 /**

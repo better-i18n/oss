@@ -24,6 +24,7 @@ import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
 import { SvgSprite } from "../components/SvgSprite";
+import { CookieBanner } from "../components/CookieBanner";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 /**
@@ -195,17 +196,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         },
       ],
       scripts: [
-        // Google Tag Manager — deferred 3s to improve Core Web Vitals (TBT/INP)
+        // Google Consent Mode v2 — must load BEFORE any GTM/GA4 scripts.
+        // Sets default denied state; analytics.ts updates after user consent.
         {
-          children: `setTimeout(function(){(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-K2JQTFM3')},3000)`,
-        },
-        // Google Analytics (gtag.js) — deferred 3s to match GTM timing
-        {
-          children: `setTimeout(function(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-1QZTX3QHPX';document.head.appendChild(s);s.onload=function(){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-1QZTX3QHPX')}},3000)`,
+          children: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});`,
         },
       ],
     };
@@ -294,6 +288,8 @@ function RootComponent() {
         scan({ enabled: true });
       });
     }
+    // Initialize consent-gated analytics (loads scripts only if consent exists)
+    import("../lib/analytics").then(({ initAnalytics }) => initAnalytics());
   }, []);
 
   return (
@@ -322,15 +318,6 @@ function RootComponent() {
           {JSON.stringify(messages)}
         </script>
         <SvgSprite />
-        {/* Google Tag Manager (noscript) */}
-        <noscript>
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-K2JQTFM3"
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-          />
-        </noscript>
         <QueryClientProvider client={queryClient}>
           <BetterI18nProvider
             project={i18nConfig.project}
@@ -347,6 +334,7 @@ function RootComponent() {
             }}
           >
             <Outlet />
+            <CookieBanner />
           </BetterI18nProvider>
         </QueryClientProvider>
         <Scripts />

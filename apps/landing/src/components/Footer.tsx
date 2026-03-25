@@ -86,6 +86,8 @@ const footerLinks = [
     links: [
       { key: "privacy", label: "Privacy", href: "/$locale/privacy/" },
       { key: "terms", label: "Terms", href: "/$locale/terms/" },
+      { key: "cookies", label: "Cookie Policy", href: "/$locale/cookies/" },
+      { key: "cookiePreferences", label: "Cookie Preferences", action: "cookie-preferences" },
       { key: "security", label: "Security", href: "https://docs.better-i18n.com/security" },
     ],
   },
@@ -117,11 +119,28 @@ export default function Footer() {
               <ul className="space-y-3 text-sm text-mist-700">
                 {group.links.map((link) => {
                   const label = t(`${group.category}.${link.key}`, { defaultValue: link.label });
-                  const isExternal = link.href.startsWith("http");
+
+                  // Action-based link (e.g. cookie preferences button)
+                  if ("action" in link && link.action === "cookie-preferences") {
+                    return (
+                      <li key={link.key}>
+                        <button
+                          type="button"
+                          onClick={() => window.dispatchEvent(new Event("bi18n:show-cookie-banner"))}
+                          className="hover:text-mist-950 cursor-pointer"
+                        >
+                          {label}
+                        </button>
+                      </li>
+                    );
+                  }
+
+                  const href = link.href!;
+                  const isExternal = href.startsWith("http");
                   const resolvedHref =
                     isExternal && "localeAware" in link && link.localeAware
-                      ? `${link.href}/${currentLocale}`
-                      : link.href;
+                      ? `${href}/${currentLocale}`
+                      : href;
 
                   return (
                     <li key={link.key}>
@@ -137,7 +156,7 @@ export default function Footer() {
                         </a>
                       ) : (
                         <Link
-                          to={link.href}
+                          to={href}
                           params={{ locale: currentLocale }}
                           className="hover:text-mist-950"
                         >
