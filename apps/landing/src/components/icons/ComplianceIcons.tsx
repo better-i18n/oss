@@ -1,75 +1,89 @@
 // Compliance badge icons for footer trust signals.
-// EU stars: custom, CCPA: based on CA state outline, Lock: standard padlock,
-// Google: simpleicons.org slug "google", Shield: custom, US flag: custom.
+// Sources: flag-icons (EU, Brazil), Bootstrap Icons (shield-check, lock-fill), Google brand.
 
-/** EU flag-inspired circle of stars — represents GDPR compliance */
+/** EU flag — 12 gold stars on blue. Source: flag-icons/eu.svg */
 export function GdprIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="11" stroke="currentColor" strokeWidth="1.5" />
-      {/* 12 stars in a circle */}
-      {Array.from({ length: 12 }).map((_, i) => {
-        const angle = (i * 30 - 90) * (Math.PI / 180);
-        const cx = 12 + 7.5 * Math.cos(angle);
-        const cy = 12 + 7.5 * Math.sin(angle);
-        return <circle key={i} cx={cx} cy={cy} r="1.2" fill="currentColor" />;
-      })}
+    <svg className={className} viewBox="0 0 640 480">
+      <defs>
+        <g id="gdpr-d">
+          <g id="gdpr-b">
+            <path id="gdpr-a" d="m0-1-.3 1 .5.1z" fill="#fc0" />
+            <use href="#gdpr-a" transform="scale(-1 1)" />
+          </g>
+          <g id="gdpr-c">
+            <use href="#gdpr-b" transform="rotate(72)" />
+            <use href="#gdpr-b" transform="rotate(144)" />
+          </g>
+          <use href="#gdpr-c" transform="scale(-1 1)" />
+        </g>
+      </defs>
+      <path fill="#039" d="M0 0h640v480H0z" />
+      <g fill="#fc0" transform="translate(320 242.3)scale(23.7037)">
+        <use href="#gdpr-d" y="-6" />
+        <use href="#gdpr-d" y="6" />
+        <g id="gdpr-e">
+          <use href="#gdpr-d" x="-6" />
+          <use href="#gdpr-d" transform="rotate(-144 -2.3 -2.1)" />
+          <use href="#gdpr-d" transform="rotate(144 -2.1 -2.3)" />
+          <use href="#gdpr-d" transform="rotate(72 -4.7 -2)" />
+          <use href="#gdpr-d" transform="rotate(72 -5 .5)" />
+        </g>
+        <use href="#gdpr-e" transform="scale(-1 1)" />
+      </g>
     </svg>
   );
 }
 
-/** California outline silhouette — represents CCPA/CPRA */
+/** Shield with checkmark — CCPA/CPRA compliance. Source: Bootstrap Icons shield-check */
 export function CcpaIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12.5 2C11.2 2 9 2.8 8 3.5C7 4.2 6.2 5 5.5 6C4.8 7 4.5 8 4.2 9C3.9 10 3.8 11 4 12C4.2 13 4.5 14 5 15C5.5 16 6.2 17 7 17.8C7.8 18.6 8 19 8.5 19.5C9 20 9.5 20.5 10 21C10.5 21.5 11 21.8 11.5 22C12 22.2 12.5 22 13 21.5C13.5 21 14 20.5 14.5 20C15 19.5 15.5 18.8 16 18C16.5 17.2 17 16.5 17.5 15.5C18 14.5 18.3 13.5 18.5 12.5C18.7 11.5 18.8 10.5 18.7 9.5C18.6 8.5 18.2 7.5 17.5 6.5C16.8 5.5 16 4.8 15 4C14 3.2 13.2 2.5 12.5 2Z" />
+    <svg className={className} viewBox="0 0 16 16" fill="currentColor">
+      <path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56" />
+      <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0" />
     </svg>
   );
 }
 
-/** Brazil flag diamond shape — represents LGPD */
+/** Brazil flag — green, yellow diamond, blue circle. Source: flag-icons/br.svg (simplified) */
 export function LgpdIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none">
-      {/* Diamond shape like Brazilian flag */}
-      <path
-        d="M12 3L22 12L12 21L2 12Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      {/* Inner circle */}
-      <circle cx="12" cy="12" r="4.5" stroke="currentColor" strokeWidth="1.5" />
+    <svg className={className} viewBox="0 0 640 480">
+      <path fill="#229e45" fillRule="evenodd" d="M0 0h640v480H0z" />
+      <path fill="#f8e509" fillRule="evenodd" d="m321.4 436 301.5-195.7L319.6 44 17.1 240.7z" />
+      <path fill="#2b49a3" fillRule="evenodd" d="M452.8 240c0 70.3-57.1 127.3-127.6 127.3A127.4 127.4 0 1 1 452.8 240" />
+      <path fill="#fff" fillRule="evenodd" d="M444.4 285.8a125 125 0 0 0 5.8-19.8c-67.8-59.5-143.3-90-238.7-83.7a125 125 0 0 0-8.5 20.9c113-10.8 196 39.2 241.4 82.6" />
     </svg>
   );
 }
 
-/** Google "G" logomark — simpleicons.org slug "google" */
+/** Google 4-color "G" logomark — Google Consent Mode. Source: Google brand guidelines */
 export function GoogleIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+    <svg className={className} viewBox="-0.5 0 48 48" fill="none">
+      <path fill="#FBBC05" d="M9.827 24c0-1.524.253-2.986.705-4.356L2.623 13.604C1.082 16.734.214 20.26.214 24c0 3.736.867 7.261 2.406 10.388l7.904-6.05C10.077 26.973 9.827 25.517 9.827 24" />
+      <path fill="#EB4335" d="M23.714 10.133c3.311 0 6.302 1.173 8.652 3.093L39.202 6.4C35.036 2.773 29.695.533 23.714.533 14.427.533 6.445 5.844 2.623 13.604l7.91 6.04c1.822-5.532 7.016-9.511 13.18-9.511" />
+      <path fill="#34A853" d="M23.714 37.867c-6.165 0-11.359-3.979-13.182-9.511l-7.909 6.039C6.445 42.156 14.427 47.467 23.714 47.467c5.732 0 11.204-2.035 15.311-5.849l-7.507-5.804c-2.118 1.334-4.785 2.053-7.804 2.053" />
+      <path fill="#4285F4" d="M46.145 24c0-1.387-.186-2.877-.506-4.267H23.714v9.067h12.604c-.63 3.091-2.346 5.468-4.8 7.014l7.507 5.805C43.339 37.614 46.145 31.649 46.145 24" />
     </svg>
   );
 }
 
-/** Shield with checkmark — represents US State Privacy Laws */
+/** Shield with checkmark — US State Privacy Laws. Source: Bootstrap Icons shield-check */
 export function UsPrivacyIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" />
-      <path d="M9 12l2 2 4-4" />
+    <svg className={className} viewBox="0 0 16 16" fill="currentColor">
+      <path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56" />
+      <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0" />
     </svg>
   );
 }
 
-/** Padlock — represents TLS/encryption */
+/** Filled padlock — TLS/encryption. Source: Bootstrap Icons lock-fill */
 export function TlsLockIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="5" y="11" width="14" height="10" rx="2" />
-      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-      <circle cx="12" cy="16" r="1" fill="currentColor" />
+    <svg className={className} viewBox="0 0 16 16" fill="currentColor">
+      <path fillRule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3" />
     </svg>
   );
 }
