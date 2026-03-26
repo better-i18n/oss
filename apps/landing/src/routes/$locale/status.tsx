@@ -98,7 +98,7 @@ function StatusPage() {
               <div
                 key={i}
                 className="flex-1 h-8 bg-emerald-500 rounded-sm first:rounded-l last:rounded-r"
-                title={`Day ${90 - i}: 100% uptime`}
+                title={t("uptimeGraph.dayLabel", { day: String(90 - i), defaultValue: "Day {day}: 100% uptime" })}
               />
             ))}
           </div>
