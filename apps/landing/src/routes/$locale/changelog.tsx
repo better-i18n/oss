@@ -74,21 +74,12 @@ interface ParsedSection {
 
 // ─── Badge Config ────────────────────────────────────────────────────
 
-const statusLabels: Record<Locale, Record<StatusTone, string>> = {
-  en: {
-    new: "NEW",
-    updated: "UPDATED",
-    improved: "IMPROVED",
-    fixed: "FIXED",
-    security: "SECURITY",
-  },
-  tr: {
-    new: "YENİ",
-    updated: "GÜNCELLEME",
-    improved: "İYİLEŞTİRME",
-    fixed: "DÜZELTİLDİ",
-    security: "GÜVENLİK",
-  },
+const statusDefaults: Record<StatusTone, string> = {
+  new: "NEW",
+  updated: "UPDATED",
+  improved: "IMPROVED",
+  fixed: "FIXED",
+  security: "SECURITY",
 };
 
 const statusClasses: Record<StatusTone, string> = {
@@ -349,16 +340,16 @@ function formatReleaseDate(date: string | null | undefined, locale: Locale) {
 
 function StatusBadge({
   tone,
-  locale,
+  t,
 }: {
   tone: StatusTone;
-  locale: Locale;
+  t: ReturnType<typeof useTranslations>;
 }) {
   return (
     <span
       className={`mr-1.5 mb-[3px] inline-flex h-4 items-center rounded border px-1 align-middle font-mono text-[9px] font-medium uppercase ${statusClasses[tone]}`}
     >
-      {statusLabels[locale][tone]}
+      {t(`badge.${tone}`, { defaultValue: statusDefaults[tone] })}
     </span>
   );
 }
@@ -515,7 +506,7 @@ function ChangelogPage() {
                               >
                                 <span className="text-mist-600">
                                   {item.badge ? (
-                                    <StatusBadge tone={item.badge} locale={typedLocale} />
+                                    <StatusBadge tone={item.badge} t={t} />
                                   ) : null}
                                   {item.label ? (
                                     <>
@@ -547,9 +538,7 @@ function ChangelogPage() {
 
           {(!releases || releases.length === 0) && (
             <div className="py-20 text-center text-mist-400">
-              {typedLocale === "tr"
-                ? "Henüz changelog girişi yok."
-                : "No changelog entries yet."}
+              {t("noEntries", { defaultValue: "No changelog entries yet." })}
             </div>
           )}
         </div>
