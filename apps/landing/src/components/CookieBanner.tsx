@@ -122,21 +122,21 @@ function BannerView({ t, locale, onAccept, onReject, onCustomize }: BannerViewPr
         <button
           type="button"
           onClick={onAccept}
-          className="rounded-lg bg-mist-950 px-4 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
+          className="rounded-lg bg-mist-950 px-4 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors cursor-pointer"
         >
           {t("acceptAll", { defaultValue: "Accept All" })}
         </button>
         <button
           type="button"
           onClick={onReject}
-          className="rounded-lg bg-mist-950 px-4 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
+          className="rounded-lg bg-mist-950 px-4 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors cursor-pointer"
         >
           {t("rejectAll", { defaultValue: "Reject All" })}
         </button>
         <button
           type="button"
           onClick={onCustomize}
-          className="rounded-lg border border-mist-300 px-4 py-2.5 text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors"
+          className="rounded-lg border border-mist-300 px-4 py-2.5 text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors cursor-pointer"
         >
           {t("customize", { defaultValue: "Customize" })}
         </button>
@@ -214,14 +214,14 @@ function CustomizeView({
           <button
             type="button"
             onClick={onBack}
-            className="rounded-lg border border-mist-300 px-4 py-2 text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors"
+            className="rounded-lg border border-mist-300 px-4 py-2 text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors cursor-pointer"
           >
             {t("back", { defaultValue: "Back" })}
           </button>
           <button
             type="button"
             onClick={onSave}
-            className="rounded-lg bg-mist-950 px-4 py-2 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
+            className="rounded-lg bg-mist-950 px-4 py-2 text-sm font-medium text-white hover:bg-mist-800 transition-colors cursor-pointer"
           >
             {t("savePreferences", { defaultValue: "Save Preferences" })}
           </button>
@@ -264,7 +264,7 @@ function CookieCategory({ label, description, checked, disabled, onChange }: Coo
           className={cn(
             "relative inline-flex h-5 w-9 items-center rounded-full transition-colors",
             checked ? "bg-mist-950" : "bg-mist-300",
-            disabled && "opacity-60 cursor-not-allowed",
+            disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
           )}
         >
           <span
