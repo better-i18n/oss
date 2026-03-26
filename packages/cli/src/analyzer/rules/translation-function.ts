@@ -32,37 +32,24 @@ export function checkTranslationFunction(
   if (!bindingId) return null;
 
   // Check if this identifier is bound to a translation namespace
-  // Use let instead of const so we can create a synthetic binding if pattern matches
   let binding = ctx.namespaceMap?.[bindingId];
 
-  // If not bound and not a known global/default translation function, check if it looks like a translator
+  // Fast path: if not a known translation function, not bound, and doesn't
+  // look like a translator variable — skip entirely without counting as unbound.
+  // This prevents every React hook / utility call from inflating the unbound count.
+  if (!binding && !TRANSLATION_FUNCTIONS.has(bindingId) && !looksLikeTranslator(bindingId)) {
+    return null;
+  }
 
   if (!binding && !TRANSLATION_FUNCTIONS.has(bindingId)) {
-    // Fallback: if it looks like a translator variable (tUser, tAuth, etc.), assume it's valid
-    // This helps catch cases where binding detection failed but the pattern is clear
-    if (looksLikeTranslator(bindingId)) {
-      if (ctx.verbose) {
-        const pos = ctx.sourceFile.getLineAndCharacterOfPosition(node.getStart());
-        console.log(
-          `[VERBOSE] Accepting translator by pattern: ${bindingId} at ${ctx.filePath}:${pos.line + 1}`,
-        );
-      }
-      // Create a synthetic "unknown-scoped" binding for this translator
-      // We don't know the namespace, so mark it as unknown-scoped for fuzzy matching later
-      binding = { type: "unknown-scoped", dynamic: false };
-    } else {
-      if (ctx.stats) ctx.stats.unboundTranslators++;
-
-      // Log unbound translator in verbose mode for debugging
-      if (ctx.verbose) {
-        const pos = ctx.sourceFile.getLineAndCharacterOfPosition(node.getStart());
-        console.log(
-          `[VERBOSE] Unbound translator (not a recognized pattern): ${bindingId} at ${ctx.filePath}:${pos.line + 1}`,
-        );
-      }
-
-      return null;
+    // looksLikeTranslator matched — create a synthetic binding
+    if (ctx.verbose) {
+      const pos = ctx.sourceFile.getLineAndCharacterOfPosition(node.getStart());
+      console.log(
+        `[VERBOSE] Accepting translator by pattern: ${bindingId} at ${ctx.filePath}:${pos.line + 1}`,
+      );
     }
+    binding = { type: "unknown-scoped", dynamic: false };
   }
 
   // Get the first argument (translation key)

@@ -10,7 +10,7 @@ import type { Issue, RuleContext } from "../../analyzer/types.js";
 /**
  * Translation function names to detect
  */
-const TRANSLATION_FUNCTIONS = new Set(["t", "useTranslation"]);
+const TRANSLATION_FUNCTIONS = new Set(["t", "useTranslation", "useTranslations", "useT", "useScopedT"]);
 
 /**
  * Check if identifier looks like a translator variable
@@ -34,27 +34,20 @@ export function checkTranslationFunction(
   // Check if this identifier is bound to a translation namespace
   let binding = ctx.namespaceMap?.[bindingId];
 
+  // Fast path: skip non-translation calls entirely (useState, useEffect, etc.)
+  if (!binding && !TRANSLATION_FUNCTIONS.has(bindingId) && !looksLikeTranslator(bindingId)) {
+    return null;
+  }
+
   if (!binding && !TRANSLATION_FUNCTIONS.has(bindingId)) {
-    if (looksLikeTranslator(bindingId)) {
-      if (ctx.verbose) {
-        const pos = ctx.sourceFile.getLineAndCharacterOfPosition(node.getStart());
-        console.log(
-          `[VERBOSE] Accepting translator by pattern: ${bindingId} at ${ctx.filePath}:${pos.line + 1}`,
-        );
-      }
-      binding = { type: "unknown-scoped", dynamic: false };
-    } else {
-      if (ctx.stats) ctx.stats.unboundTranslators++;
-
-      if (ctx.verbose) {
-        const pos = ctx.sourceFile.getLineAndCharacterOfPosition(node.getStart());
-        console.log(
-          `[VERBOSE] Unbound translator (not a recognized pattern): ${bindingId} at ${ctx.filePath}:${pos.line + 1}`,
-        );
-      }
-
-      return null;
+    // looksLikeTranslator matched — create a synthetic binding
+    if (ctx.verbose) {
+      const pos = ctx.sourceFile.getLineAndCharacterOfPosition(node.getStart());
+      console.log(
+        `[VERBOSE] Accepting translator by pattern: ${bindingId} at ${ctx.filePath}:${pos.line + 1}`,
+      );
     }
+    binding = { type: "unknown-scoped", dynamic: false };
   }
 
   // Get the first argument (translation key)
