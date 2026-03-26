@@ -10,19 +10,11 @@ const categoryColors: Record<string, string> = {
   security: "bg-red-500/10 text-red-700",
 };
 
-const categoryLabels: Record<string, Record<string, string>> = {
-  en: {
-    feature: "New Feature",
-    improvement: "Improvement",
-    fix: "Bug Fix",
-    security: "Security",
-  },
-  tr: {
-    feature: "Yeni Özellik",
-    improvement: "İyileştirme",
-    fix: "Hata Düzeltme",
-    security: "Güvenlik",
-  },
+const categoryDefaults: Record<string, string> = {
+  feature: "New Feature",
+  improvement: "Improvement",
+  fix: "Bug Fix",
+  security: "Security",
 };
 
 interface ChangelogProps {
@@ -63,11 +55,9 @@ export default function Changelog({ releases }: ChangelogProps) {
             const category = entry.category ?? "";
             const badgeColor =
               categoryColors[category] ?? "bg-mist-500/10 text-mist-700";
-            const badgeText =
-              categoryLabels[lang]?.[category] ??
-              (entry.version
-                ? `v${entry.version}`
-                : category);
+            const badgeText = categoryDefaults[category]
+              ? t(`category.${category}`, { defaultValue: categoryDefaults[category] })
+              : (entry.version ? `v${entry.version}` : category);
             const dateStr = entry.publishedAt
               ? new Date(entry.publishedAt).toLocaleDateString(
                   lang === "tr" ? "tr-TR" : "en-US",

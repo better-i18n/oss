@@ -46,7 +46,7 @@ export default function ComparisonFAQ() {
                         onClick={() => handleToggle(index)}
                       >
                         <span className="text-base font-medium text-mist-950">
-                          {t(`${key}.question`)}
+                          {t(`${key}.question`, { defaultValue: "" })}
                         </span>
                         <span
                           className="ml-4 flex-shrink-0 text-mist-400 transition-transform duration-200"
@@ -67,7 +67,7 @@ export default function ComparisonFAQ() {
                     </dt>
                     {isOpen && (
                       <dd className="px-6 pb-5 text-sm/6 text-mist-600 faq-answer">
-                        {t(`${key}.answer`)}
+                        {t(`${key}.answer`, { defaultValue: "" })}
                       </dd>
                     )}
                   </div>

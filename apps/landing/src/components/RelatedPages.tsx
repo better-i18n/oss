@@ -103,15 +103,15 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="mb-8 max-w-2xl">
           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-mist-500">
-            {t.has("eyebrow") ? t("eyebrow") : "Discover"}
+            {t("eyebrow", { defaultValue: "Discover" })}
           </p>
           <h2 className="mt-2 font-display text-2xl/[1.08] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.04]">
-            {t.has("title") ? t("title") : "Explore More"}
+            {t("title", { defaultValue: "Explore More" })}
           </h2>
           <p className="mt-3 text-sm leading-6 text-mist-600">
-            {t.has("subtitle")
-              ? t("subtitle")
-              : "Keep moving through product pages, framework guides, and high-intent localization content."}
+            {t("subtitle", {
+              defaultValue: "Keep moving through product pages, framework guides, and high-intent localization content.",
+            })}
           </p>
         </div>
 
@@ -125,14 +125,14 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
             >
               <div>
                 <h3 className="text-sm font-medium text-mist-950">
-                  {t.has(page.titleKey) ? t(page.titleKey) : page.titleFallback}
+                  {t(page.titleKey, { defaultValue: page.titleFallback })}
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-mist-500">
-                  {t.has(page.descKey) ? t(page.descKey) : page.descFallback}
+                  {t(page.descKey, { defaultValue: page.descFallback })}
                 </p>
               </div>
               <div className="mt-5 flex items-center text-sm font-medium text-mist-700">
-                <span>{t.has("openPage") ? t("openPage") : "Open page"}</span>
+                <span>{t("openPage", { defaultValue: "Open page" })}</span>
                 <SpriteIcon name="arrow-right" className="ml-2 h-4 w-4 text-mist-400 transition-all group-hover:translate-x-1 group-hover:text-mist-600" aria-hidden="true" />
               </div>
             </Link>
