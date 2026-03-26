@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { RelatedPages } from "@/components/RelatedPages";
@@ -370,6 +371,9 @@ function ChangelogPage() {
   const { locale } = Route.useParams();
   const typedLocale = (locale === "tr" ? "tr" : "en") as Locale;
 
+  const [highlightedSlug, setHighlightedSlug] = useState<string | null>(null);
+  const hasScrolled = useRef(false);
+
   const { data: releases = loaderData?.releases ?? [] } = useQuery({
     queryKey: ["changelogs", locale],
     queryFn: async () => {
@@ -383,6 +387,29 @@ function ChangelogPage() {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
+
+  // Scroll to hash target and highlight it
+  useEffect(() => {
+    if (hasScrolled.current || !releases?.length) return;
+
+    const hash = window.location.hash.replace("#", "");
+    if (!hash) return;
+
+    // Small delay to ensure DOM is rendered
+    const timer = setTimeout(() => {
+      const el = document.getElementById(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        setHighlightedSlug(hash);
+        hasScrolled.current = true;
+
+        // Remove highlight after animation
+        setTimeout(() => setHighlightedSlug(null), 2500);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [releases]);
 
   return (
     <div>
@@ -408,7 +435,15 @@ function ChangelogPage() {
             );
 
             return (
-              <article key={entry.slug} id={entry.slug} className="relative py-12 first:pt-0">
+              <article
+                key={entry.slug}
+                id={entry.slug}
+                className={`relative py-12 first:pt-0 scroll-mt-24 transition-colors duration-700 ${
+                  highlightedSlug === entry.slug
+                    ? "-mx-4 rounded-2xl bg-mist-50/80 px-4 ring-1 ring-mist-200"
+                    : ""
+                }`}
+              >
                 {/* Separator */}
                 {index > 0 && (
                   <div className="absolute inset-x-0 top-0">
