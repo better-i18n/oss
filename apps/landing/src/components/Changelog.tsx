@@ -3,18 +3,18 @@ import { SpriteIcon } from "@/components/SpriteIcon";
 import { useT } from "@/lib/i18n";
 import type { ChangelogEntry, ChangelogListItem } from "@/lib/changelog";
 
-const categoryColors: Record<string, string> = {
-  feature: "bg-blue-500/10 text-blue-700",
-  improvement: "bg-emerald-500/10 text-emerald-700",
-  fix: "bg-amber-500/10 text-amber-700",
-  security: "bg-red-500/10 text-red-700",
+const releaseTypeColors: Record<string, string> = {
+  major: "bg-blue-500/10 text-blue-700",
+  minor: "bg-emerald-500/10 text-emerald-700",
+  patch: "bg-amber-500/10 text-amber-700",
+  hotfix: "bg-red-500/10 text-red-700",
 };
 
-const categoryDefaults: Record<string, string> = {
-  feature: "New Feature",
-  improvement: "Improvement",
-  fix: "Bug Fix",
-  security: "Security",
+const releaseTypeDefaults: Record<string, string> = {
+  major: "Major",
+  minor: "Minor",
+  patch: "Patch",
+  hotfix: "Hotfix",
 };
 
 interface ChangelogProps {
@@ -52,12 +52,12 @@ export default function Changelog({ releases }: ChangelogProps) {
 
         <div className="grid auto-rows-fr grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {releases.map((entry) => {
-            const category = entry.category ?? "";
+            const releaseType = (entry.release_type ?? "").toLowerCase();
             const badgeColor =
-              categoryColors[category] ?? "bg-mist-500/10 text-mist-700";
-            const badgeText = categoryDefaults[category]
-              ? t(`category.${category}`, { defaultValue: categoryDefaults[category] })
-              : (entry.version ? `v${entry.version}` : category);
+              releaseTypeColors[releaseType] ?? "bg-mist-500/10 text-mist-700";
+            const badgeText = releaseTypeDefaults[releaseType]
+              ? t(`releaseType.${releaseType}`, { defaultValue: releaseTypeDefaults[releaseType] })
+              : (entry.version ? `v${entry.version}` : releaseType);
             const dateStr = entry.publishedAt
               ? new Date(entry.publishedAt).toLocaleDateString(
                   lang === "tr" ? "tr-TR" : "en-US",

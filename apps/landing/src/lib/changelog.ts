@@ -19,7 +19,9 @@ export type { ContentEntry, ContentEntryListItem };
 export interface ChangelogCustomFields extends Record<string, string | null> {
   version: string | null;
   release_date: string | null;
+  release_type: string | null;
   summary: string | null;
+  title: string | null;
 }
 
 export type ChangelogEntry = ContentEntry<ChangelogCustomFields>;
@@ -64,7 +66,7 @@ function setCache<T>(key: string, data: T): T {
 
 // ─── Public API ──────────────────────────────────────────────────────
 
-const CHANGELOG_MODEL = "changelog-beta";
+const CHANGELOG_MODEL = "changelog";
 
 /**
  * Get all changelog entries for a locale, sorted by date (newest first)
