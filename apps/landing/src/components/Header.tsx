@@ -630,7 +630,7 @@ export default function Header({ className }: { className?: string }) {
             <LanguageSwitcher />
             <div className="flex shrink-0 items-center gap-5">
               <a
-                href="https://dash.better-i18n.com"
+                href="https://better-i18n.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-full bg-mist-950 px-4 py-1.5 text-sm/7 font-medium text-white hover:bg-mist-800"
