@@ -1,16 +1,24 @@
 /**
- * ESLint-style terminal reporter
+ * ESLint-style terminal reporter for scan command
  *
- * VS Code terminal auto-detects "path:line:column" format and makes it Cmd+clickable
+ * Modern, clean output inspired by biome, oxlint, and react-doctor.
+ * VS Code terminal auto-detects "path:line:column" format → Cmd+clickable.
  */
 
 import { relative } from "node:path";
 import type { Issue } from "../analyzer/types.js";
-import { bold, cyan, dim, red, yellow } from "../utils/colors.js";
+import { bold, cyan, dim, green, red, yellow } from "../utils/colors.js";
 
-/**
- * Report issues in ESLint-style format
- */
+// ── Success Banner ──────────────────────────────────────────────────
+
+export function reportSuccess(filesScanned: number, durationMs: number): void {
+  console.log();
+  console.log(green(bold("  ✓ No hardcoded strings found")));
+  console.log(dim(`  Scanned ${filesScanned} files in ${(durationMs / 1000).toFixed(2)}s`));
+}
+
+// ── Issue Reporter ──────────────────────────────────────────────────
+
 export function reportEslintStyle(
   issues: Issue[],
   rootDir: string,
@@ -30,72 +38,57 @@ export function reportEslintStyle(
     byFile.set(issue.file, existing);
   }
 
-  let _errorCount = 0;
-  let _missingCount = 0;
-
-  // Print each file's issues grouped by file
+  // Print each file's issues
   for (const [file, fileIssues] of byFile.entries()) {
     const relPath = relative(rootDir, file);
-
     console.log();
-    // File header: blue filename + issue count
-    const count = dim(`(${fileIssues.length})`);
-    console.log(`${cyan(relPath)} ${count}`);
+    console.log(`${cyan(relPath)} ${dim(`(${fileIssues.length})`)}`);
 
     for (const issue of fileIssues) {
-      // Format: "  line:col  severity  message  rule"
-      // Full path clickable: relPath:line:col
       const loc = dim(`${issue.line}:${issue.column}`);
-      const severity =
-        issue.severity === "error" ? red("error") : yellow("missing");
+      const severity = yellow("missing");
       const text = truncateForDisplay(issue.text, 40);
       const rule = dim(`i18n/${issue.type}`);
-
       console.log(`  ${loc}  ${severity}  ${text}  ${rule}`);
-
-      if (issue.severity === "error") {
-        _errorCount++;
-      } else {
-        _missingCount++;
-      }
     }
   }
 
-  // Show "and X more" message if truncated
+  // Truncation notice
   if (hasMore) {
     const remaining = totalIssues - maxIssues;
     console.log();
-    console.log(
-      dim(`... and ${remaining} more problem${remaining > 1 ? "s" : ""}`),
-    );
+    console.log(dim(`  ... and ${remaining} more problem${remaining > 1 ? "s" : ""}`));
   }
 
-  // Summary - use total counts, not just displayed
-  const totalErrorCount = issues.filter((i) => i.severity === "error").length;
-  const totalMissingCount = issues.filter(
-    (i) => i.severity === "warning",
-  ).length;
-  const total = totalErrorCount + totalMissingCount;
-  const summary = [];
-  if (totalErrorCount > 0)
-    summary.push(
-      red(`${totalErrorCount} error${totalErrorCount > 1 ? "s" : ""}`),
-    );
-  if (totalMissingCount > 0)
-    summary.push(
-      yellow(
-        `${totalMissingCount} missing translation${totalMissingCount > 1 ? "s" : ""}`,
-      ),
-    );
+  // ── Summary Footer ──────────────────────────────────────────────
+  const missingCount = issues.filter((i) => i.severity !== "error").length;
+  const errorCount = issues.filter((i) => i.severity === "error").length;
+  const parts: string[] = [];
+  if (errorCount > 0) parts.push(red(`${errorCount} error${errorCount > 1 ? "s" : ""}`));
+  if (missingCount > 0) parts.push(yellow(`${missingCount} missing translation${missingCount > 1 ? "s" : ""}`));
 
-  console.log(
-    bold(`✖ ${total} problem${total > 1 ? "s" : ""} (${summary.join(", ")})`),
-  );
+  console.log(bold(`✖ ${totalIssues} problem${totalIssues > 1 ? "s" : ""} (${parts.join(", ")})`));
 }
 
-/**
- * Truncate text for display, cleaning up whitespace
- */
+// ── Verbose Stats ───────────────────────────────────────────────────
+
+interface ScanStats {
+  rootScopedTranslators: number;
+  unboundTranslators: number;
+  dynamicNamespaces: number;
+  dynamicKeys: number;
+}
+
+export function reportVerboseStats(stats: ScanStats, filesScanned: number, durationMs: number): void {
+  console.log(dim(`\n🔍 Scan Details:`));
+  console.log(dim(`  - Root-scoped translators: ${stats.rootScopedTranslators}`));
+  console.log(dim(`  - Unbound translators: ${stats.unboundTranslators}`));
+  console.log(dim(`  - Dynamic namespaces skipped: ${stats.dynamicNamespaces}`));
+  console.log(dim(`  - Dynamic keys skipped: ${stats.dynamicKeys}`));
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────
+
 function truncateForDisplay(str: string, maxLen: number): string {
   const cleaned = str.replace(/\s+/g, " ").trim();
   if (cleaned.length <= maxLen) return `"${cleaned}"`;
