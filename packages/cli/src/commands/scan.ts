@@ -8,20 +8,16 @@ import { collectFiles } from "../analyzer/file-collector.js";
 import { analyzeFile } from "../analyzer/index.js";
 import type { Issue, ScanOptions } from "../analyzer/types.js";
 import { detectProjectContext } from "../context/detector.js";
-import { reportEslintStyle } from "../reporters/eslint-style.js";
+import { reportEslintStyle, reportSuccess, reportVerboseStats } from "../reporters/eslint-style.js";
 import { reportJson } from "../reporters/json.js";
-import { bold, dim, green } from "../utils/colors.js";
+import { bold, dim } from "../utils/colors.js";
 
 export async function scanCommand(options: ScanOptions): Promise<void> {
   const startTime = Date.now();
   const spinner = ora({ text: "Detecting project...", color: "cyan" }).start();
 
   // Step 1: Detect project context
-  // Resolve relative paths to absolute for consistency
   const rootDir = resolve(options.dir || process.cwd());
-
-  // Always search only in the specified directory, never search parent tree
-  // This prevents confusing behavior where CLI picks up config from parent workspaces
   const context = await detectProjectContext(rootDir, false);
 
   if (context) {
@@ -60,7 +56,6 @@ export async function scanCommand(options: ScanOptions): Promise<void> {
   for (const file of files) {
     try {
       const { issues, stats } = await analyzeFile(file, context?.lint);
-      // Filter out info-severity issues (translation keys) - scan only shows hardcoded strings
       const hardcodedIssues = issues.filter((issue) => issue.severity !== "info");
       allIssues.push(...hardcodedIssues);
 
@@ -88,25 +83,18 @@ export async function scanCommand(options: ScanOptions): Promise<void> {
       duration,
     });
   } else {
-    // Default max issues to 100 if not specified
     const maxIssues = options.maxIssues ?? 100;
-    reportEslintStyle(allIssues, rootDir, maxIssues);
 
-    // Summary
-    console.log();
     if (allIssues.length === 0) {
-      console.log(green(bold("✓ No hardcoded strings found")));
+      reportSuccess(files.length, duration);
+    } else {
+      reportEslintStyle(allIssues, rootDir, maxIssues);
+      console.log();
+      console.log(dim(`Scanned ${files.length} files in ${(duration / 1000).toFixed(2)}s`));
     }
-    console.log(
-      dim(`Scanned ${files.length} files in ${(duration / 1000).toFixed(2)}s`),
-    );
 
     if (options.verbose) {
-      console.log(dim("\n🔍 Scan Details:"));
-      console.log(`  - Root-scoped translators: ${aggregatedStats.rootScopedTranslators}`);
-      console.log(`  - Unbound translators: ${aggregatedStats.unboundTranslators}`);
-      console.log(`  - Dynamic namespaces skipped: ${aggregatedStats.dynamicNamespaces}`);
-      console.log(`  - Dynamic keys skipped: ${aggregatedStats.dynamicKeys}`);
+      reportVerboseStats(aggregatedStats, files.length, duration);
     }
   }
 
