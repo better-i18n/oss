@@ -227,6 +227,60 @@ function parseI18nConfig(filePath: string): ProjectContext | null {
  * Example input:  `"foo", "bar", // comment\n  "baz"`
  * Returns:        ["foo", "bar", "baz"]
  */
+/**
+ * Extract the content of a `key: [...]` array from config text using balanced
+ * bracket matching. Handles nested brackets inside regex character classes
+ * (e.g., `/[Bb]etter/`) that would break a simple `[^\]]+` regex.
+ */
+function extractBalancedArray(content: string, key: string): string | null {
+  const keyIdx = content.indexOf(`${key}:`);
+  if (keyIdx === -1) return null;
+
+  // Find the opening bracket after the key
+  const bracketIdx = content.indexOf("[", keyIdx + key.length);
+  if (bracketIdx === -1) return null;
+
+  let depth = 1;
+  const start = bracketIdx + 1;
+  let inString: string | null = null;
+  let escaped = false;
+
+  for (let i = start; i < content.length; i++) {
+    const ch = content[i];
+
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+
+    if (ch === "\\") {
+      escaped = true;
+      continue;
+    }
+
+    // Track string boundaries (don't count brackets inside strings)
+    if (inString) {
+      if (ch === inString) inString = null;
+      continue;
+    }
+
+    if (ch === '"' || ch === "'" || ch === "`") {
+      inString = ch;
+      continue;
+    }
+
+    if (ch === "[") depth++;
+    else if (ch === "]") {
+      depth--;
+      if (depth === 0) {
+        return content.slice(start, i);
+      }
+    }
+  }
+
+  return null;
+}
+
 function parseStringArray(raw: string): string[] {
   const results: string[] = [];
   // Match all quoted string literals (single or double quotes)
@@ -245,49 +299,54 @@ function parseLintConfig(content: string): LintConfig | undefined {
   const config: LintConfig = {};
 
   // Extract include array
-  const includeMatch = content.match(/include:\s*\[([^\]]+)\]/);
+  const includeMatch = extractBalancedArray(content, "include");
   if (includeMatch) {
-    config.include = parseStringArray(includeMatch[1]);
+    config.include = parseStringArray(includeMatch);
   }
 
   // Extract exclude array
-  const excludeMatch = content.match(/exclude:\s*\[([^\]]+)\]/);
+  const excludeMatch = extractBalancedArray(content, "exclude");
   if (excludeMatch) {
-    config.exclude = parseStringArray(excludeMatch[1]);
+    config.exclude = parseStringArray(excludeMatch);
   }
 
   // Extract translationFunctions array
-  const tfMatch = content.match(/translationFunctions:\s*\[([^\]]+)\]/);
+  const tfMatch = extractBalancedArray(content, "translationFunctions");
   if (tfMatch) {
-    config.translationFunctions = parseStringArray(tfMatch[1]);
+    config.translationFunctions = parseStringArray(tfMatch);
   }
 
   // Extract ignoreStrings array
-  const isMatch = content.match(/ignoreStrings:\s*\[([^\]]+)\]/);
+  const isMatch = extractBalancedArray(content, "ignoreStrings");
   if (isMatch) {
-    config.ignoreStrings = parseStringArray(isMatch[1]);
+    config.ignoreStrings = parseStringArray(isMatch);
   }
 
   // Parse ignorePatterns: [/pattern1/, /pattern2/] or ignorePatterns: ["pattern1", "pattern2"]
-  const ignorePatternsMatch = content.match(/ignorePatterns:\s*\[([^\]]+)\]/);
+  const ignorePatternsMatch = extractBalancedArray(content, "ignorePatterns");
   if (ignorePatternsMatch) {
-    // Strip inline comments (// ...) but not escaped slashes in regex (\/)
-    const patternsRaw = ignorePatternsMatch[1].replace(/(?<!\\)\/\/[^\n]*/g, "");
+    const patternsRaw = ignorePatternsMatch;
     const patterns: RegExp[] = [];
-    // Match regex literals like /pattern/flags, allowing escaped chars (e.g. \/)
-    const regexLiterals = patternsRaw.matchAll(/\/((?:[^/\\]|\\.)*)\/([gimsuy]*)/g);
+
+    // First pass: extract regex literals like /pattern/flags
+    // Uses a state machine approach to avoid confusing // inside regex with comments
+    const regexLiterals = patternsRaw.matchAll(
+      /(?:^|,|\s)\s*\/((?:[^/\\]|\\.)*)\/([gimsuy]*)/g,
+    );
     for (const match of regexLiterals) {
       try {
         patterns.push(new RegExp(match[1], match[2]));
       } catch {}
     }
-    // Match string literals like "pattern" or 'pattern'
+
+    // Second pass: extract string literals like "pattern" or 'pattern'
     const stringLiterals = patternsRaw.matchAll(/["']([^"']+)["']/g);
     for (const match of stringLiterals) {
       try {
         patterns.push(new RegExp(match[1]));
       } catch {}
     }
+
     if (patterns.length > 0) {
       config.ignorePatterns = patterns;
     }
