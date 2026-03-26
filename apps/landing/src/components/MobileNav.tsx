@@ -114,7 +114,7 @@ export function MobileNav() {
         onClick={toggle}
         aria-expanded={isOpen}
         aria-controls={MENU_ID}
-        aria-label={isOpen ? "Close menu" : "Open menu"}
+        aria-label={isOpen ? t("aria.closeMenu", { defaultValue: "Close menu" }) : t("aria.openMenu", { defaultValue: "Open menu" })}
         className="relative z-50 flex size-10 items-center justify-center rounded-lg text-mist-950 hover:bg-mist-200 transition-colors"
       >
         <svg
@@ -175,7 +175,7 @@ export function MobileNav() {
               id={MENU_ID}
               role="dialog"
               aria-modal="true"
-              aria-label="Mobile navigation"
+              aria-label={t("aria.mobileNav", { defaultValue: "Mobile navigation" })}
               className={cn(
                 "fixed inset-0 z-[9999] flex w-full flex-col shadow-xl transition-transform duration-300 ease-in-out",
                 isOpen ? "translate-x-0" : "translate-x-full",
@@ -201,7 +201,7 @@ export function MobileNav() {
                 <button
                   type="button"
                   onClick={close}
-                  aria-label="Close menu"
+                  aria-label={t("aria.closeMenu", { defaultValue: "Close menu" })}
                   className="flex size-10 items-center justify-center rounded-lg text-mist-950 hover:bg-mist-200 transition-colors"
                 >
                   <svg
@@ -222,7 +222,7 @@ export function MobileNav() {
 
               {/* Scrollable content */}
               <nav
-                aria-label="Mobile navigation"
+                aria-label={t("aria.mobileNav", { defaultValue: "Mobile navigation" })}
                 className="flex-1 overflow-y-auto overscroll-contain px-6 pb-6"
               >
                 <div className="space-y-1">

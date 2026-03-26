@@ -7,13 +7,13 @@ const COMPETITORS = [
   { name: "Phrase", price: "$2,100/mo" },
 ] as const;
 
-function getDifference(competitorPrice: string): string {
+function getDifference(competitorPrice: string, lessLabel: string): string {
   const betterI18nPrice = 79;
   const match = competitorPrice.match(/\$(\d[\d,]*)/);
   if (!match) return "\u2014";
   const lowest = parseInt(match[1].replace(",", ""), 10);
   const pct = Math.round(((lowest - betterI18nPrice) / lowest) * 100);
-  return `${pct}% less`;
+  return lessLabel.replace("{pct}", String(pct));
 }
 
 export function PricingComparison() {
@@ -38,28 +38,29 @@ export function PricingComparison() {
               role="columnheader"
               className="p-4 text-sm font-medium text-mist-600"
             >
-              Competitor
+              {t("comparison.competitor", { defaultValue: "Competitor" })}
             </div>
             <div
               role="columnheader"
               className="p-4 text-sm font-medium text-mist-600 text-center border-l border-mist-200"
             >
-              10-Person Team Cost
+              {t("comparison.teamCost", { defaultValue: "10-Person Team Cost" })}
             </div>
             <div
               role="columnheader"
               className="p-4 text-sm font-medium text-mist-600 text-center border-l border-mist-200"
             >
-              Difference
+              {t("comparison.difference", { defaultValue: "Difference" })}
             </div>
           </div>
 
           {/* Rows */}
           {COMPETITORS.map((competitor) => {
             const isHighlight = "highlight" in competitor && competitor.highlight;
+            const lessLabel = t("comparison.less", { defaultValue: "{pct}% less" });
             const difference = isHighlight
               ? "\u2014"
-              : getDifference(competitor.price);
+              : getDifference(competitor.price, lessLabel);
 
             return (
               <div
