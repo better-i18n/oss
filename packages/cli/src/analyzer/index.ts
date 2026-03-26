@@ -17,6 +17,17 @@ import {
 } from "./rules/index.js";
 import type { Issue, LintConfig, RuleContext } from "./types.js";
 
+/**
+ * Built-in translator hook names recognized without config.
+ * Covers: better-i18n (useT), next-intl (useTranslations), react-i18next (useTranslation)
+ */
+const BUILTIN_TRANSLATOR_HOOKS = new Set([
+  "useTranslations", // next-intl, @better-i18n/use-intl
+  "useTranslation",  // react-i18next
+  "useT",            // @better-i18n custom wrapper
+  "useScopedT",      // scoped translation pattern
+]);
+
 // Type for analysis statistics
 interface AnalyzerStats {
   dynamicKeys: number;
@@ -140,7 +151,7 @@ export function analyzeSourceText(
 
     const funcName = getIdentifierName(call.expression);
 
-    if (funcName === "useTranslations" || funcName === "useTranslation") {
+    if (BUILTIN_TRANSLATOR_HOOKS.has(funcName!)) {
       if (call.arguments.length === 0) {
         stats.rootScopedTranslators++;
         return { type: "root-scoped" };
@@ -230,7 +241,7 @@ export function analyzeSourceText(
     const funcName = getIdentifierName(call.expression);
 
     // Handle useTranslations/useTranslation
-    if (funcName === "useTranslations" || funcName === "useTranslation") {
+    if (BUILTIN_TRANSLATOR_HOOKS.has(funcName!)) {
       if (call.arguments.length > 0 && ts.isStringLiteral(call.arguments[0])) {
         return call.arguments[0].text;
       }

@@ -10,7 +10,7 @@ import type { Issue, RuleContext } from "../types.js";
 /**
  * Translation function names to detect
  */
-const TRANSLATION_FUNCTIONS = new Set(["t", "useTranslation"]);
+const TRANSLATION_FUNCTIONS = new Set(["t", "useTranslation", "useTranslations", "useT", "useScopedT"]);
 
 /**
  * Check if identifier looks like a translator variable
