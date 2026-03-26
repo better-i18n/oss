@@ -1,5 +1,6 @@
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { Link } from "@tanstack/react-router";
+import { useT } from "@/lib/i18n";
 
 export interface ComparisonFeature {
   name: string;
@@ -15,11 +16,13 @@ interface ComparisonTableProps {
 }
 
 export function ComparisonTable({ competitorName, features, featureLabel }: ComparisonTableProps) {
+  const t = useT("compare");
+  const defaultFeatureLabel = t("featureColumn", { defaultValue: "Feature" });
   return (
     <div role="table" aria-label={`Feature comparison: Better i18n vs ${competitorName}`} className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
       {/* Header */}
       <div role="row" className="grid grid-cols-3 bg-mist-50 border-b border-mist-200">
-        <div role="columnheader" className="p-4 text-sm font-medium text-mist-600">{featureLabel ?? "Feature"}</div>
+        <div role="columnheader" className="p-4 text-sm font-medium text-mist-600">{featureLabel ?? defaultFeatureLabel}</div>
         <div role="columnheader" className="p-4 text-sm font-medium text-mist-950 text-center border-l border-mist-200 bg-mist-100">
           Better i18n
         </div>
@@ -78,7 +81,8 @@ interface MultiComparisonTableProps {
 }
 
 export function MultiComparisonTable({ competitors, features, featureLabel }: MultiComparisonTableProps) {
-  const colCount = competitors.length + 1; // feature label + competitors
+  const t = useT("compare");
+  const defaultFeatureLabel = t("featureColumn", { defaultValue: "Feature" });
   return (
     <div className="overflow-x-auto -mx-6 px-6">
       <div
@@ -93,7 +97,7 @@ export function MultiComparisonTable({ competitors, features, featureLabel }: Mu
           style={{ gridTemplateColumns: `minmax(180px, 2fr) repeat(${competitors.length}, minmax(100px, 1fr))` }}
         >
           <div role="columnheader" className="p-4 text-sm font-medium text-mist-600">
-            {featureLabel ?? "Feature"}
+            {featureLabel ?? defaultFeatureLabel}
           </div>
           {competitors.map((name, i) => (
             <div
@@ -459,6 +463,7 @@ interface OtherComparisonsProps {
 }
 
 export function OtherComparisons({ currentSlug, locale, title }: OtherComparisonsProps) {
+  const t = useT("compare");
   const others = allComparisons.filter((c) => c.slug !== currentSlug);
 
   return (
@@ -476,7 +481,7 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
               className="group flex items-center justify-between rounded-xl border border-mist-200 bg-white p-4 hover:border-mist-300 hover:shadow-md transition-all"
             >
               <span className="text-sm font-medium text-mist-950">
-                Better i18n vs {competitor.name}
+                {t("vsLabel", { name: competitor.name, defaultValue: "Better i18n vs {name}" })}
               </span>
               <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" aria-hidden="true" />
             </Link>
