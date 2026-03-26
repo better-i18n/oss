@@ -287,20 +287,63 @@ bun test packages/server      # Server adapter
 
 **After ANY package change:** Run tests, fix failures before considering done.
 
-## Changesets & Releases
+## Changesets & Releases (CI/CD)
 
-```bash
-bunx changeset         # Create changeset (describe what changed)
-bunx changeset version # Apply changesets, bump versions
-bun run release        # Publish all non-private packages
+Publishing is fully automated via GitHub Actions. **NEVER run `npm publish` or `bun run release` manually.**
+
+### Release Flow
+
+```
+1. Create changeset file     →  .changeset/descriptive-name.md
+2. Commit & push to main     →  CI detects pending changeset
+3. CI opens "Version Packages" PR  →  bumps versions, updates CHANGELOGs
+4. Merge that PR              →  CI runs `bun run release` → npm publish
 ```
 
-**CRITICAL changeset rules:**
-- Only bump packages that have **actual source code changes** — don't bump a package just because its dependency changed internally
-- `core` changes do NOT require downstream packages (use-intl, next, etc.) to be bumped unless their own code changed
-- If only `core` changed → changeset for `core` only. The downstream lockfiles update automatically on `bun install`
+### What YOU do (steps 1-2 only)
+
+```bash
+# Option A: Interactive (won't work in non-TTY like Claude Code)
+bunx changeset
+
+# Option B: Write the file directly (preferred in Claude Code)
+# File: .changeset/<descriptive-name>.md
+```
+
+**Changeset file format:**
+```markdown
+---
+"@better-i18n/cli": minor
+---
+
+Short description of what changed and why
+```
+
+**Bump types:** `patch` for fixes, `minor` for new features, `major` for breaking changes.
+
+Then commit the `.changeset/*.md` file and push. That's it — CI handles the rest.
+
+### What you must NOT do
+
+- **NEVER run `bunx changeset version`** — CI does this in the "Version Packages" PR
+- **NEVER run `bun run release` or `npm publish`** — CI does this after the version PR is merged
+- **NEVER manually edit `package.json` version** — changesets manage this
+- **NEVER bump packages without source changes** — don't bump `use-intl` just because `core` changed internally
+
+### Changeset rules
+
+- Only include packages with **actual source code changes**
+- `core` changes do NOT require downstream packages to be bumped unless their own code changed
+- If only `core` changed → changeset for `core` only
 - If `use-intl` code also changed → include `use-intl` in the changeset too
-- **Never create unnecessary minor/major bumps** — patch for fixes, minor for new features, major for breaking changes
+- One changeset per logical change — don't batch unrelated changes
+
+### CI Workflow (`.github/workflows/publish.yml`)
+
+- Triggers on push to `main`
+- Uses `changesets/action@v1` which:
+  - If pending `.changeset/*.md` files exist → opens/updates "Version Packages" PR
+  - If no pending changesets but version was bumped → runs `bun run release` (npm publish)
 
 ## Key Patterns and Conventions
 
