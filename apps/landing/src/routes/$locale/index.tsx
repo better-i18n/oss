@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useT } from "@/lib/i18n";
 import Header from "../../components/Header";
 import Hero from "../../components/Hero";
 import Features from "../../components/Features";
@@ -116,13 +117,14 @@ export const Route = createFileRoute("/$locale/")({
 function LandingPage() {
   const { recentChangelogs, plans } = Route.useLoaderData();
   const { locale } = Route.useParams();
+  const t = useT("common");
   return (
     <>
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-mist-950 focus:text-sm focus:font-medium"
       >
-        Skip to content
+        {t("skipToContent", { defaultValue: "Skip to content" })}
       </a>
       <Header />
       <main id="main-content">
