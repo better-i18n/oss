@@ -66,7 +66,7 @@ function setCache<T>(key: string, data: T): T {
 
 // ─── Public API ──────────────────────────────────────────────────────
 
-const CHANGELOG_MODEL = "changelog";
+const CHANGELOG_MODEL = "changelog-beta";
 
 /**
  * Get all changelog entries for a locale, sorted by date (newest first)
