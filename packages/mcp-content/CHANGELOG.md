@@ -1,5 +1,11 @@
 # @better-i18n/mcp-content
 
+## 0.8.2
+
+### Patch Changes
+
+- d2bdbe7: fix: ensure mcp-types stays in devDependencies only
+
 ## 0.8.1
 
 ### Patch Changes
