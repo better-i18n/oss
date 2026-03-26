@@ -385,7 +385,7 @@ function ChangelogPage() {
   });
 
   return (
-    <div className="bg-white">
+    <div>
       <Header />
       <main className="mx-auto max-w-3xl px-6 pt-24 pb-16 sm:pt-32 lg:px-8">
         {/* Page Header */}
