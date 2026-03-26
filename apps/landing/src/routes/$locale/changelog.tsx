@@ -19,17 +19,17 @@ import { i18nConfig } from "@/i18n.config";
 export const Route = createFileRoute("/$locale/changelog")({
   loader: async ({ context, params }) => {
     const locale = params.locale as "en" | "tr";
-    // Wrap with 4s timeout so the page renders even if the content API is slow.
-    // Client-side useQuery will retry on navigation.
     const { filterMessages } = await import("@/lib/page-namespaces");
     const [allMessages, releases] = await Promise.all([
       getMessages({ project: i18nConfig.project, locale: context.locale }),
       withTimeout(getChangelogs(locale), 4000, []),
     ]);
-    const messages = filterMessages(allMessages, ["meta", "breadcrumbs"]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const messages = filterMessages(allMessages as any, ["meta", "breadcrumbs"]);
 
     return {
-      messages,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      messages: messages as any,
       locale: context.locale,
       releases,
     };
@@ -37,7 +37,8 @@ export const Route = createFileRoute("/$locale/changelog")({
   head: ({ loaderData }) => {
     const locale = loaderData?.locale || "en";
     const pathname = "/changelog";
-    const meta = getLocalizedMeta(loaderData?.messages || {}, "changelog", {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const meta = getLocalizedMeta((loaderData?.messages || {}) as any, "changelog", {
       locale,
       pathname,
     });
@@ -52,6 +53,8 @@ export const Route = createFileRoute("/$locale/changelog")({
   },
   component: ChangelogPage,
 });
+
+// ─── Types ───────────────────────────────────────────────────────────
 
 type Locale = "en" | "tr";
 type StatusTone = "new" | "updated" | "improved" | "fixed" | "security";
@@ -68,30 +71,7 @@ interface ParsedSection {
   paragraphs: string[];
 }
 
-const categoryColors: Record<string, string> = {
-  feature:
-    "border border-sky-200 bg-sky-50 text-sky-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]",
-  improvement:
-    "border border-emerald-200 bg-emerald-50 text-emerald-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]",
-  fix: "border border-amber-200 bg-amber-50 text-amber-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]",
-  security:
-    "border border-rose-200 bg-rose-50 text-rose-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]",
-};
-
-const categoryLabels: Record<Locale, Record<string, string>> = {
-  en: {
-    feature: "New Feature",
-    improvement: "Improvement",
-    fix: "Bug Fix",
-    security: "Security",
-  },
-  tr: {
-    feature: "Yeni Ozellik",
-    improvement: "Iyilestirme",
-    fix: "Hata Duzeltme",
-    security: "Guvenlik",
-  },
-};
+// ─── Badge Config ────────────────────────────────────────────────────
 
 const statusLabels: Record<Locale, Record<StatusTone, string>> = {
   en: {
@@ -102,20 +82,20 @@ const statusLabels: Record<Locale, Record<StatusTone, string>> = {
     security: "SECURITY",
   },
   tr: {
-    new: "YENI",
-    updated: "GUNCEL",
-    improved: "IYILESTI",
-    fixed: "DUZELTILDI",
-    security: "GUVENLIK",
+    new: "YENİ",
+    updated: "GÜNCELLEME",
+    improved: "İYİLEŞTİRME",
+    fixed: "DÜZELTİLDİ",
+    security: "GÜVENLİK",
   },
 };
 
 const statusClasses: Record<StatusTone, string> = {
-  new: "border border-emerald-200 bg-emerald-50 text-emerald-700",
-  updated: "border border-slate-200 bg-slate-100 text-slate-700",
-  improved: "border border-blue-200 bg-blue-50 text-blue-700",
-  fixed: "border border-amber-200 bg-amber-50 text-amber-700",
-  security: "border border-rose-200 bg-rose-50 text-rose-700",
+  new: "border-emerald-300/50 bg-emerald-50 text-emerald-700",
+  updated: "border-sky-300/50 bg-sky-50 text-sky-700",
+  improved: "border-blue-300/50 bg-blue-50 text-blue-700",
+  fixed: "border-amber-300/50 bg-amber-50 text-amber-700",
+  security: "border-rose-300/50 bg-rose-50 text-rose-700",
 };
 
 const statusAliases: Record<string, StatusTone> = {
@@ -132,6 +112,73 @@ const statusAliases: Record<string, StatusTone> = {
   security: "security",
 };
 
+// ─── Heading → Default Badge Map ────────────────────────────────────
+
+const headingBadgeMap: Record<string, StatusTone> = {
+  "new features": "new",
+  "what's new": "new",
+  new: "new",
+  features: "new",
+  improvements: "improved",
+  improved: "improved",
+  updates: "updated",
+  updated: "updated",
+  changes: "updated",
+  "bug fixes": "fixed",
+  "bug fixes & improvements": "fixed",
+  fixes: "fixed",
+  fixed: "fixed",
+  security: "security",
+  // Turkish
+  "yeni özellikler": "new",
+  yenilikler: "new",
+  yeni: "new",
+  "iyileştirmeler": "improved",
+  güncellemeler: "updated",
+  "hata düzeltmeleri": "fixed",
+  düzeltmeler: "fixed",
+  // German
+  "neue funktionen": "new",
+  neuigkeiten: "new",
+  verbesserungen: "improved",
+  fehlerbehebungen: "fixed",
+  bugfixes: "fixed",
+  // Spanish
+  "nuevas funciones": "new",
+  novedades: "new",
+  mejoras: "improved",
+  "correcciones de errores": "fixed",
+  // French
+  "nouvelles fonctionnalités": "new",
+  "nouveautés": "new",
+  "améliorations": "improved",
+  "corrections de bugs": "fixed",
+  // Portuguese
+  "novas funcionalidades": "new",
+  novidades: "new",
+  melhorias: "improved",
+  "correções de erros": "fixed",
+  // Russian
+  "новые функции": "new",
+  новое: "new",
+  улучшения: "improved",
+  "исправления ошибок": "fixed",
+  // Chinese
+  "新功能": "new",
+  "改进": "improved",
+  "错误修复": "fixed",
+  // Japanese
+  "新機能": "new",
+  "改善点": "improved",
+  "バグ修正": "fixed",
+  // Korean
+  "새로운 기능": "new",
+  "개선 사항": "improved",
+  "버그 수정": "fixed",
+};
+
+// ─── Inline Renderer ─────────────────────────────────────────────────
+
 function renderInline(text: string) {
   return text
     .split(/(\*\*.+?\*\*)/g)
@@ -139,15 +186,16 @@ function renderInline(text: string) {
     .map((segment, index) => {
       if (segment.startsWith("**") && segment.endsWith("**")) {
         return (
-          <strong key={`${segment}-${index}`} className="font-semibold text-mist-950">
+          <strong key={`${segment}-${index}`} className="font-medium text-mist-950">
             {segment.slice(2, -2)}
           </strong>
         );
       }
-
       return <span key={`${segment}-${index}`}>{segment}</span>;
     });
 }
+
+// ─── List Item Parser ────────────────────────────────────────────────
 
 function parseListItem(line: string): ParsedListItem {
   let text = line.trim().replace(/^-+\s*/, "");
@@ -162,9 +210,8 @@ function parseListItem(line: string): ParsedListItem {
     }
   } else {
     const prefixMatch = text.match(
-      /^(new|added|feature|updated|update|improvement|improved|fix|fixed|bugfix|security):\s*/i
+      /^(new|added|feature|updated|update|improvement|improved|fix|fixed|bugfix|security):\s*/i,
     );
-
     if (prefixMatch) {
       badge = statusAliases[prefixMatch[1].toLowerCase()];
       text = text.slice(prefixMatch[0].length).trim();
@@ -189,76 +236,10 @@ function parseListItem(line: string): ParsedListItem {
     };
   }
 
-  return {
-    badge,
-    label: null,
-    description: text,
-  };
+  return { badge, label: null, description: text };
 }
 
-/** Map section heading text to a default badge for items underneath */
-const headingBadgeMap: Record<string, StatusTone> = {
-  "new features": "new",
-  "what's new": "new",
-  "new": "new",
-  "features": "new",
-  "improvements": "improved",
-  "improved": "improved",
-  "updates": "updated",
-  "updated": "updated",
-  "changes": "updated",
-  "bug fixes": "fixed",
-  "bug fixes & improvements": "fixed",
-  "fixes": "fixed",
-  "fixed": "fixed",
-  "security": "security",
-  // Turkish headings
-  "yeni özellikler": "new",
-  "yenilikler": "new",
-  "yeni": "new",
-  "iyileştirmeler": "improved",
-  "güncellemeler": "updated",
-  "hata düzeltmeleri": "fixed",
-  "düzeltmeler": "fixed",
-  // German
-  "neue funktionen": "new",
-  "neuigkeiten": "new",
-  "verbesserungen": "improved",
-  "fehlerbehebungen": "fixed",
-  "bugfixes": "fixed",
-  // Spanish
-  "nuevas funciones": "new",
-  "novedades": "new",
-  "mejoras": "improved",
-  "correcciones de errores": "fixed",
-  // French
-  "nouvelles fonctionnalités": "new",
-  "nouveautés": "new",
-  "améliorations": "improved",
-  "corrections de bugs": "fixed",
-  // Portuguese
-  "novas funcionalidades": "new",
-  "novidades": "new",
-  "melhorias": "improved",
-  "correções de erros": "fixed",
-  // Russian
-  "новые функции": "new",
-  "новое": "new",
-  "улучшения": "improved",
-  "исправления ошибок": "fixed",
-  // Chinese
-  "新功能": "new",
-  "改进": "improved",
-  "错误修复": "fixed",
-  // Japanese
-  "新機能": "new",
-  "改善点": "improved",
-  "バグ修正": "fixed",
-  // Korean
-  "새로운 기능": "new",
-  "개선 사항": "improved",
-  "버그 수정": "fixed",
-};
+// ─── Section Parser ──────────────────────────────────────────────────
 
 function parseSections(body: string | null): ParsedSection[] {
   if (!body) return [];
@@ -272,17 +253,12 @@ function parseSections(body: string | null): ParsedSection[] {
 
   function ensureSection() {
     if (!currentSection) {
-      currentSection = {
-        title: "",
-        items: [],
-        paragraphs: [],
-      };
+      currentSection = { title: "", items: [], paragraphs: [] };
     }
   }
 
   function flushList() {
     if (!currentSection || listBuffer.length === 0) return;
-    // Apply section default badge to items that don't have their own
     for (const item of listBuffer) {
       if (!item.badge && sectionDefaultBadge) {
         item.badge = sectionDefaultBadge;
@@ -295,7 +271,6 @@ function parseSections(body: string | null): ParsedSection[] {
   function pushSection() {
     if (!currentSection) return;
     flushList();
-
     if (
       currentSection.title ||
       currentSection.items.length > 0 ||
@@ -303,7 +278,6 @@ function parseSections(body: string | null): ParsedSection[] {
     ) {
       sections.push(currentSection);
     }
-
     currentSection = null;
     sectionDefaultBadge = null;
   }
@@ -316,29 +290,20 @@ function parseSections(body: string | null): ParsedSection[] {
       continue;
     }
 
-    if (/^#\s+/.test(line)) {
-      continue;
-    }
+    if (/^#\s+/.test(line)) continue;
 
     if (/^##\s+/.test(line)) {
       pushSection();
       const headingText = line.replace(/^##\s+/, "").trim();
       sectionDefaultBadge = headingBadgeMap[headingText.toLowerCase()] ?? null;
-      currentSection = {
-        title: headingText,
-        items: [],
-        paragraphs: [],
-      };
+      currentSection = { title: headingText, items: [], paragraphs: [] };
       continue;
     }
 
     if (/^###\s+/.test(line)) {
       flushList();
       ensureSection();
-      const section = currentSection;
-      if (section) {
-        section.paragraphs.push(line.replace(/^###\s+/, "").trim());
-      }
+      currentSection?.paragraphs.push(line.replace(/^###\s+/, "").trim());
       continue;
     }
 
@@ -350,25 +315,43 @@ function parseSections(body: string | null): ParsedSection[] {
 
     ensureSection();
     flushList();
-    const section = currentSection;
-    if (section) {
-      section.paragraphs.push(line);
-    }
+    currentSection?.paragraphs.push(line);
   }
 
   pushSection();
   return sections;
 }
 
+// ─── Date Formatter ──────────────────────────────────────────────────
+
 function formatReleaseDate(date: string | null | undefined, locale: Locale) {
   if (!date) return null;
-
   return new Date(date).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-US", {
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
   });
 }
+
+// ─── Badge Component ─────────────────────────────────────────────────
+
+function StatusBadge({
+  tone,
+  locale,
+}: {
+  tone: StatusTone;
+  locale: Locale;
+}) {
+  return (
+    <span
+      className={`mr-1.5 mb-[3px] inline-flex h-4 items-center rounded border px-1 align-middle font-mono text-[9px] font-medium uppercase ${statusClasses[tone]}`}
+    >
+      {statusLabels[locale][tone]}
+    </span>
+  );
+}
+
+// ─── Page Component ──────────────────────────────────────────────────
 
 function ChangelogPage() {
   const t = useTranslations("changelogPage");
@@ -376,10 +359,7 @@ function ChangelogPage() {
   const { locale } = Route.useParams();
   const typedLocale = (locale === "tr" ? "tr" : "en") as Locale;
 
-  // Hybrid approach:
-  // - SSR: loader provides initial data (no API call visible to client)
-  // - Client navigation: useQuery calls API endpoint
-  const { data: releases = loaderData.releases } = useQuery({
+  const { data: releases = loaderData?.releases ?? [] } = useQuery({
     queryKey: ["changelogs", locale],
     queryFn: async () => {
       const response = await fetch(`/api/changelog?locale=${locale}`);
@@ -387,154 +367,145 @@ function ChangelogPage() {
       const json = (await response.json()) as { releases: ChangelogEntry[] };
       return json.releases;
     },
-    initialData: loaderData.releases,
+    initialData: loaderData?.releases,
     staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
 
   return (
-    <div className="bg-mist-100">
-      <Header className="bg-mist-100/90 backdrop-blur-sm" />
-      <main className="relative overflow-hidden py-20 sm:py-28">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.55),_transparent_36%),linear-gradient(180deg,_rgba(247,248,248,0.88),_rgba(238,240,241,0.96)_24%,_rgba(223,228,230,0.88)_100%)]" />
-        <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(109,125,133,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(109,125,133,0.07)_1px,transparent_1px)] [background-size:32px_32px]" />
-        <div className="absolute inset-x-0 top-24 mx-auto h-72 max-w-5xl rounded-full bg-white/20 blur-3xl" />
+    <div className="bg-white">
+      <Header />
+      <main className="mx-auto max-w-3xl px-6 pt-24 pb-16 sm:pt-32 lg:px-8">
+        {/* Page Header */}
+        <div className="mb-16">
+          <h1 className="font-display text-4xl font-medium tracking-tight text-balance text-mist-950 sm:text-5xl">
+            {t("title")}
+          </h1>
+          <p className="mt-4 text-lg text-mist-500">
+            {t("subtitle")}
+          </p>
+        </div>
 
-        <div className="relative mx-auto max-w-5xl px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex items-center rounded-full border border-mist-300 bg-white/75 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-mist-600 uppercase shadow-[0_10px_30px_-18px_rgba(24,28,30,0.55)] backdrop-blur-sm">
-              {typedLocale === "tr" ? "Urun Guncellemeleri" : "Product Updates"}
-            </span>
-            <h1 className="mt-6 font-display text-4xl font-medium tracking-tight text-balance text-mist-950 sm:text-5xl">
-              {t("title")}
-            </h1>
-            <p className="mt-4 text-lg text-pretty text-mist-600">
-              {t("subtitle")}
-            </p>
-          </div>
+        {/* Timeline */}
+        <div className="flex flex-col">
+          {releases?.map((entry: ChangelogEntry, index: number) => {
+            const sections = parseSections(entry.body);
+            const releaseDate = formatReleaseDate(
+              entry.release_date || entry.publishedAt,
+              typedLocale,
+            );
 
-          <div className="mt-14 flex flex-col gap-8">
-            {releases?.map((entry: ChangelogEntry, index: number) => {
-              const sections = parseSections(entry.body);
-              const isLatest = index === 0;
-              const releaseDate = formatReleaseDate(entry.publishedAt, typedLocale);
+            return (
+              <article key={entry.slug} id={entry.slug} className="relative py-12 first:pt-0">
+                {/* Separator */}
+                {index > 0 && (
+                  <div className="absolute inset-x-0 top-0">
+                    <div className="border-t border-dashed border-mist-200" />
+                  </div>
+                )}
 
-              return (
-                <article
-                  key={entry.slug}
-                  id={entry.slug}
-                  className="relative overflow-hidden rounded-[28px] border border-mist-300/80 bg-[linear-gradient(180deg,rgba(247,248,248,0.88),rgba(238,240,241,0.82))] px-6 py-6 shadow-[0_24px_60px_-42px_rgba(24,28,30,0.35)] backdrop-blur-[2px] sm:px-8 sm:py-8"
-                >
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
-
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-mist-500">
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-mist-200 bg-mist-50 text-xs font-semibold uppercase text-mist-700">
-                      v
+                {/* Version + Date */}
+                <div className="mb-5 flex items-center gap-3">
+                  {entry.version ? (
+                    <span className="inline-flex items-center border border-dashed border-mist-300 bg-mist-50 px-2.5 py-1 font-mono text-sm text-mist-700">
+                      {entry.version}
                     </span>
-                    {entry.version ? (
-                      <span className="font-mono text-xs text-mist-500">v{entry.version}</span>
-                    ) : null}
-                    {releaseDate ? <time>{releaseDate}</time> : null}
-                    {isLatest ? (
-                      <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">
-                        {typedLocale === "tr" ? "Son Surum" : "Latest"}
-                      </span>
-                    ) : null}
-                    {entry.category ? (
-                      <span
-                        className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] ${categoryColors[entry.category] || categoryColors.feature}`}
+                  ) : null}
+                  {releaseDate ? (
+                    <time className="font-mono text-sm text-mist-400">
+                      {releaseDate}
+                    </time>
+                  ) : null}
+                </div>
+
+                {/* Title */}
+                <h2 className="mb-6 text-balance text-3xl font-medium leading-snug text-mist-950">
+                  {entry.title}
+                </h2>
+
+                {/* Summary */}
+                {entry.summary ? (
+                  <p className="mb-8 text-base leading-relaxed text-mist-500">
+                    {entry.summary}
+                  </p>
+                ) : null}
+
+                {/* Sections */}
+                {sections.length > 0 ? (
+                  <div className="space-y-0">
+                    {sections.map((section, sectionIndex) => (
+                      <div
+                        key={`${entry.slug}-section-${sectionIndex}`}
                       >
-                        {categoryLabels[typedLocale][entry.category] || entry.category}
-                      </span>
-                    ) : null}
-                  </div>
+                        {/* Section Heading */}
+                        {section.title ? (
+                          <h3 className="mt-8 scroll-m-28 text-xl font-semibold tracking-tight text-mist-950">
+                            {section.title}
+                          </h3>
+                        ) : null}
 
-                  <div className="mt-5 max-w-3xl">
-                    <h2 className="font-display text-3xl font-medium tracking-tight text-mist-950 sm:text-[2rem]">
-                      {entry.title}
-                    </h2>
-                    {entry.summary ? (
-                      <p className="mt-3 text-lg leading-8 text-mist-600">
-                        {entry.summary}
-                      </p>
-                    ) : null}
-                  </div>
+                        {/* Paragraphs (from ### headings) */}
+                        {section.paragraphs.length > 0 ? (
+                          <div className={section.title ? "mt-3 space-y-2" : "space-y-2"}>
+                            {section.paragraphs.map((paragraph, pIdx) => (
+                              <p
+                                key={`${entry.slug}-p-${sectionIndex}-${pIdx}`}
+                                className="text-[15px] leading-7 text-mist-600"
+                              >
+                                {renderInline(paragraph)}
+                              </p>
+                            ))}
+                          </div>
+                        ) : null}
 
-                  {sections.length > 0 ? (
-                    <div className="mt-8 space-y-7">
-                      {sections.map((section, sectionIndex) => (
-                        <section
-                          key={`${entry.slug}-${section.title || "section"}-${sectionIndex}`}
-                          className="border-l-2 border-mist-300/80 pl-5 sm:pl-6"
-                        >
-                          {section.title ? (
-                            <h3 className="text-2xl font-semibold tracking-tight text-mist-950">
-                              {section.title}
-                            </h3>
-                          ) : null}
-
-                          {section.paragraphs.length > 0 ? (
-                            <div className={section.title ? "mt-3 space-y-2.5" : "space-y-2.5"}>
-                              {section.paragraphs.map((paragraph, paragraphIndex) => (
-                                <p
-                                  key={`${entry.slug}-paragraph-${sectionIndex}-${paragraphIndex}`}
-                                  className="text-[15px] leading-7 text-mist-600"
-                                >
-                                  {renderInline(paragraph)}
-                                </p>
-                              ))}
-                            </div>
-                          ) : null}
-
-                          {section.items.length > 0 ? (
-                            <ul className={section.title || section.paragraphs.length > 0 ? "mt-4 space-y-3.5" : "space-y-3.5"}>
-                              {section.items.map((item, itemIndex) => (
-                                <li
-                                  key={`${entry.slug}-item-${sectionIndex}-${itemIndex}`}
-                                  className="flex gap-3 text-mist-700"
-                                >
-                                  <span className="mt-[0.7rem] h-1.5 w-1.5 shrink-0 rounded-full bg-mist-400" />
-                                  <div className="min-w-0 flex-1 leading-8">
-                                    <div className="inline-flex flex-wrap items-center gap-2">
-                                      {item.badge ? (
-                                        <span
-                                          className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] ${statusClasses[item.badge]}`}
-                                        >
-                                          {statusLabels[typedLocale][item.badge]}
-                                        </span>
-                                      ) : null}
-                                      {item.label ? (
-                                        <span className="text-lg font-semibold text-mist-950">
-                                          {renderInline(item.label)}
-                                        </span>
-                                      ) : null}
-                                      <span className="text-base text-mist-600">
-                                        {item.label ? ": " : ""}
+                        {/* List Items */}
+                        {section.items.length > 0 ? (
+                          <ul className="my-5 ml-6 list-disc space-y-2">
+                            {section.items.map((item, itemIndex) => (
+                              <li
+                                key={`${entry.slug}-item-${sectionIndex}-${itemIndex}`}
+                                className="text-mist-600/80 marker:text-mist-300"
+                              >
+                                <span className="text-mist-600">
+                                  {item.badge ? (
+                                    <StatusBadge tone={item.badge} locale={typedLocale} />
+                                  ) : null}
+                                  {item.label ? (
+                                    <>
+                                      <strong className="font-medium text-mist-900">
+                                        {item.label}
+                                      </strong>
+                                      <span className="text-mist-600">
+                                        {": "}
                                         {renderInline(item.description)}
                                       </span>
-                                    </div>
-                                  </div>
-                                </li>
-                              ))}
-                            </ul>
-                          ) : null}
-                        </section>
-                      ))}
-                    </div>
-                  ) : null}
-                </article>
-              );
-            })}
+                                    </>
+                                  ) : (
+                                    <span className="text-mist-600">
+                                      {renderInline(item.description)}
+                                    </span>
+                                  )}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </article>
+            );
+          })}
 
-            {(!releases || releases.length === 0) && (
-              <div className="rounded-[28px] border border-mist-200 bg-white px-8 py-12 text-center text-mist-500 shadow-[0_24px_80px_-40px_rgba(24,28,30,0.42)]">
-                {typedLocale === "tr"
-                  ? "Henuz changelog girdisi yok."
-                  : "No changelog entries yet."}
-              </div>
-            )}
-          </div>
+          {(!releases || releases.length === 0) && (
+            <div className="py-20 text-center text-mist-400">
+              {typedLocale === "tr"
+                ? "Henüz changelog girişi yok."
+                : "No changelog entries yet."}
+            </div>
+          )}
         </div>
       </main>
       <RelatedPages currentPage="changelog" locale={locale} variant="resources" />
