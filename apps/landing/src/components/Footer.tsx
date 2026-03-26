@@ -135,7 +135,6 @@ const footerLinks: FooterLinkGroup[] = [
       { key: "terms", label: "Terms", href: "/$locale/terms/" },
       { key: "cookies", label: "Cookie Policy", href: "/$locale/cookies/" },
       { key: "cookiePreferences", label: "Cookie Preferences", action: "cookie-preferences" },
-      { key: "doNotSell", label: "Do Not Sell My Info", action: "cookie-preferences" },
       { key: "security", label: "Security", href: "https://docs.better-i18n.com/security" },
     ],
   },
