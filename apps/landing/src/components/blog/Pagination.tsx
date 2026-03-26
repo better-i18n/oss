@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useT } from "@/lib/i18n";
 
 interface PaginationProps {
   readonly currentPage: number;
@@ -56,6 +57,8 @@ export default function Pagination({
   totalPages,
   locale,
 }: PaginationProps) {
+  const t = useT("blog");
+
   if (totalPages <= 1) return null;
 
   const pageNumbers = getPageNumbers(currentPage, totalPages);
@@ -74,12 +77,12 @@ export default function Pagination({
           className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors"
         >
           <span aria-hidden="true">&larr;</span>
-          <span>Previous</span>
+          <span>{t("pagination.previous", { defaultValue: "Previous" })}</span>
         </Link>
       ) : (
         <span className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-mist-300 cursor-not-allowed">
           <span aria-hidden="true">&larr;</span>
-          <span>Previous</span>
+          <span>{t("pagination.previous", { defaultValue: "Previous" })}</span>
         </span>
       )}
 
@@ -120,12 +123,12 @@ export default function Pagination({
           to={getPageUrl(locale, currentPage + 1)}
           className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors"
         >
-          <span>Next</span>
+          <span>{t("pagination.next", { defaultValue: "Next" })}</span>
           <span aria-hidden="true">&rarr;</span>
         </Link>
       ) : (
         <span className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-mist-300 cursor-not-allowed">
-          <span>Next</span>
+          <span>{t("pagination.next", { defaultValue: "Next" })}</span>
           <span aria-hidden="true">&rarr;</span>
         </span>
       )}
