@@ -218,12 +218,23 @@ function parseListItem(line: string): ParsedListItem {
     }
   }
 
-  const emphasizedLabelMatch = text.match(/^\*\*(.+?)\*\*:\s*(.+)$/);
-  if (emphasizedLabelMatch) {
+  // Pattern 1: **label**: description (colon outside bold)
+  const emphOutside = text.match(/^\*\*(.+?)\*\*:\s*(.+)$/);
+  if (emphOutside) {
     return {
       badge,
-      label: emphasizedLabelMatch[1].trim(),
-      description: emphasizedLabelMatch[2].trim(),
+      label: emphOutside[1].trim(),
+      description: emphOutside[2].trim(),
+    };
+  }
+
+  // Pattern 2: **label:** description (colon inside bold — common markdown style)
+  const emphInside = text.match(/^\*\*(.+?):\*\*\s*(.+)$/);
+  if (emphInside) {
+    return {
+      badge,
+      label: emphInside[1].trim(),
+      description: emphInside[2].trim(),
     };
   }
 
