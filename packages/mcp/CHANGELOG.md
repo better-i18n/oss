@@ -1,5 +1,11 @@
 # @better-i18n/mcp
 
+## 0.15.6
+
+### Patch Changes
+
+- d2bdbe7: fix: resolve mcp-types dependency error (0.0.0 not found on npm)
+
 ## 0.15.5
 
 ### Patch Changes
