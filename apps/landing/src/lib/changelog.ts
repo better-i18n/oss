@@ -2,6 +2,7 @@
  * Better i18n Content SDK Client - Changelog
  *
  * Fetches changelog entries from Better i18n Content API.
+ * Uses the new query builder API (client.from()) instead of deprecated getEntries/getEntry.
  */
 
 import {
@@ -81,25 +82,29 @@ export async function getChangelogs(
   if (cached) return cached;
 
   try {
-    const result = await getChangelogClient().getEntries(CHANGELOG_MODEL, {
-      language: locale,
-      status: "published",
-      sort: "publishedAt",
-      order: "desc",
-      limit: 100,
-    });
+    const client = getChangelogClient();
+
+    const { data: items } = await client
+      .from(CHANGELOG_MODEL)
+      .language(locale)
+      .eq("status", "published")
+      .order("publishedAt", { ascending: false })
+      .limit(100);
+
+    if (!items || items.length === 0) return [];
 
     // Fetch full entries with content for each item
-    const fullEntries = await Promise.all(
-      result.items.map((item) =>
-        getChangelogClient().getEntry<ChangelogCustomFields>(
-          CHANGELOG_MODEL,
-          item.slug,
-          { language: locale }
-        )
-      )
+    const results = await Promise.all(
+      items.map(async (item: ContentEntryListItem) => {
+        const { data } = await client
+          .from(CHANGELOG_MODEL)
+          .language(locale)
+          .single<ChangelogCustomFields>(item.slug);
+        return data;
+      })
     );
 
+    const fullEntries = results.filter((e): e is ChangelogEntry => e !== null);
     return setCache(cacheKey, fullEntries);
   } catch (error) {
     console.error("Changelog API error:", error);
@@ -115,15 +120,14 @@ export async function getChangelogsMeta(
   locale: string
 ): Promise<ChangelogListItem[]> {
   try {
-    const result = await getChangelogClient().getEntries(CHANGELOG_MODEL, {
-      language: locale,
-      status: "published",
-      sort: "publishedAt",
-      order: "desc",
-      limit: 100,
-    });
+    const { data } = await getChangelogClient()
+      .from(CHANGELOG_MODEL)
+      .language(locale)
+      .eq("status", "published")
+      .order("publishedAt", { ascending: false })
+      .limit(100);
 
-    return result.items as ChangelogListItem[];
+    return (data ?? []) as ChangelogListItem[];
   } catch (error) {
     console.error("Changelog API error:", error);
     return [];
@@ -135,23 +139,21 @@ export async function getChangelogsMeta(
  */
 export async function getLatestVersion(locale: string): Promise<string | null> {
   try {
-    const result = await getChangelogClient().getEntries(CHANGELOG_MODEL, {
-      language: locale,
-      status: "published",
-      sort: "publishedAt",
-      order: "desc",
-      limit: 1,
-    });
+    const { data } = await getChangelogClient()
+      .from(CHANGELOG_MODEL)
+      .language(locale)
+      .eq("status", "published")
+      .order("publishedAt", { ascending: false })
+      .limit(1);
 
-    if (result.items.length === 0) return null;
+    if (!data || data.length === 0) return null;
 
-    const entry = await getChangelogClient().getEntry<ChangelogCustomFields>(
-      CHANGELOG_MODEL,
-      result.items[0].slug,
-      { language: locale }
-    );
+    const { data: entry } = await getChangelogClient()
+      .from(CHANGELOG_MODEL)
+      .language(locale)
+      .single<ChangelogCustomFields>(data[0].slug);
 
-    return entry.version || null;
+    return entry?.version || null;
   } catch (error) {
     console.error("Changelog API error:", error);
     return null;
