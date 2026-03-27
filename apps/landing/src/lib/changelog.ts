@@ -135,6 +135,33 @@ export async function getChangelogsMeta(
 }
 
 /**
+ * Get a single changelog entry by slug.
+ * Results are cached for 5 minutes.
+ */
+export async function getChangelogBySlug(
+  locale: string,
+  slug: string
+): Promise<ChangelogEntry | null> {
+  const cacheKey = `changelog:${locale}:${slug}`;
+  const cached = getCached<ChangelogEntry>(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const client = getChangelogClient();
+    const { data } = await client
+      .from(CHANGELOG_MODEL)
+      .language(locale)
+      .single<ChangelogCustomFields>(slug);
+
+    if (!data) return null;
+    return setCache(cacheKey, data);
+  } catch (error) {
+    console.error("Changelog entry fetch error:", error);
+    return null;
+  }
+}
+
+/**
  * Get the latest changelog version
  */
 export async function getLatestVersion(locale: string): Promise<string | null> {

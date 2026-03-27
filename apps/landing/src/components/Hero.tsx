@@ -18,7 +18,7 @@ export default function Hero() {
             <div className="flex shrink-0 flex-col items-start justify-center gap-4 pt-16 pb-8 min-[900px]:py-0 max-w-full lg:max-w-[calc(100%-620px)] xl:max-w-[calc(100%-750px)]">
               {/* Announcement Badge */}
               <Link
-                to="/$locale/changelog"
+                to="/$locale/changelog/"
                 params={{ locale: locale || "en" }}
                 className="inline-flex items-center gap-x-3 rounded-full bg-white/10 px-3 py-1.5 text-sm text-white/80 hover:bg-white/15 transition-colors"
               >
