@@ -115,10 +115,17 @@ export async function getChangelogs(
 /**
  * Get changelog metadata only (without full content).
  * Uses a single API call — much faster than getChangelogs which does N+1 calls.
+ * Results are cached for 5 minutes (same as getChangelogs) so repeated SSR
+ * requests within the same Worker isolate hit the in-memory cache instead of
+ * making a subrequest to content.better-i18n.com on every page load.
  */
 export async function getChangelogsMeta(
   locale: string
 ): Promise<ChangelogListItem[]> {
+  const cacheKey = `changelogs-meta:${locale}`;
+  const cached = getCached<ChangelogListItem[]>(cacheKey);
+  if (cached) return cached;
+
   try {
     const { data } = await getChangelogClient()
       .from(CHANGELOG_MODEL)
@@ -127,7 +134,7 @@ export async function getChangelogsMeta(
       .order("publishedAt", { ascending: false })
       .limit(100);
 
-    return (data ?? []) as ChangelogListItem[];
+    return setCache(cacheKey, (data ?? []) as ChangelogListItem[]);
   } catch (error) {
     console.error("Changelog API error:", error);
     return [];
