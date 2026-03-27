@@ -303,9 +303,9 @@ const LocaleCompareIndexRoute = LocaleCompareIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleChangelogIndexRoute = LocaleChangelogIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => LocaleChangelogRoute,
+  id: '/$locale/changelog/',
+  path: '/$locale/changelog/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleBlogIndexRoute = LocaleBlogIndexRouteImport.update({
   id: '/$locale/blog/',
@@ -572,9 +572,9 @@ const LocaleCompareCrowdinRoute = LocaleCompareCrowdinRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleChangelogSlugRoute = LocaleChangelogSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => LocaleChangelogRoute,
+  id: '/$locale/changelog/$slug',
+  path: '/$locale/changelog/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleBlogSlugRoute = LocaleBlogSlugRouteImport.update({
   id: '/$locale/blog/$slug',
@@ -691,7 +691,7 @@ export interface FileRoutesByFullPath {
   '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
   '/$locale/tools/translation-file-converter': typeof LocaleToolsTranslationFileConverterRouteWithChildren
   '/$locale/blog': typeof LocaleBlogIndexRoute
-  '/$locale/changelog/': typeof LocaleChangelogIndexRoute
+  '/$locale/changelog': typeof LocaleChangelogIndexRoute
   '/$locale/compare': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
@@ -984,7 +984,7 @@ export interface FileRouteTypes {
     | '/$locale/tools/locale-explorer'
     | '/$locale/tools/translation-file-converter'
     | '/$locale/blog'
-    | '/$locale/changelog/'
+    | '/$locale/changelog'
     | '/$locale/compare'
     | '/$locale/features/'
     | '/$locale/i18n'
@@ -1225,6 +1225,7 @@ export interface RootRouteChildren {
   ApiStatusRoute: typeof ApiStatusRoute
   LocaleIndexRoute: typeof LocaleIndexRoute
   LocaleBlogSlugRoute: typeof LocaleBlogSlugRoute
+  LocaleChangelogSlugRoute: typeof LocaleChangelogSlugRoute
   LocaleCompareCrowdinRoute: typeof LocaleCompareCrowdinRoute
   LocaleCompareCrowdinVsLokaliseRoute: typeof LocaleCompareCrowdinVsLokaliseRoute
   LocaleCompareLokaliseRoute: typeof LocaleCompareLokaliseRoute
@@ -1273,6 +1274,7 @@ export interface RootRouteChildren {
   LocaleToolsLocaleExplorerRoute: typeof LocaleToolsLocaleExplorerRouteWithChildren
   LocaleToolsTranslationFileConverterRoute: typeof LocaleToolsTranslationFileConverterRouteWithChildren
   LocaleBlogIndexRoute: typeof LocaleBlogIndexRoute
+  LocaleChangelogIndexRoute: typeof LocaleChangelogIndexRoute
   LocaleCompareIndexRoute: typeof LocaleCompareIndexRoute
   LocaleI18nIndexRoute: typeof LocaleI18nIndexRoute
   LocaleToolsIndexRoute: typeof LocaleToolsIndexRoute
@@ -1557,10 +1559,10 @@ declare module '@tanstack/react-router' {
     }
     '/$locale/changelog/': {
       id: '/$locale/changelog/'
-      path: '/'
-      fullPath: '/$locale/changelog/'
+      path: '/$locale/changelog'
+      fullPath: '/$locale/changelog'
       preLoaderRoute: typeof LocaleChangelogIndexRouteImport
-      parentRoute: typeof LocaleChangelogRoute
+      parentRoute: typeof rootRouteImport
     }
     '/$locale/blog/': {
       id: '/$locale/blog/'
@@ -1907,10 +1909,10 @@ declare module '@tanstack/react-router' {
     }
     '/$locale/changelog/$slug': {
       id: '/$locale/changelog/$slug'
-      path: '/$slug'
+      path: '/$locale/changelog/$slug'
       fullPath: '/$locale/changelog/$slug'
       preLoaderRoute: typeof LocaleChangelogSlugRouteImport
-      parentRoute: typeof LocaleChangelogRoute
+      parentRoute: typeof rootRouteImport
     }
     '/$locale/blog/$slug': {
       id: '/$locale/blog/$slug'
@@ -2031,6 +2033,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiStatusRoute: ApiStatusRoute,
   LocaleIndexRoute: LocaleIndexRoute,
   LocaleBlogSlugRoute: LocaleBlogSlugRoute,
+  LocaleChangelogSlugRoute: LocaleChangelogSlugRoute,
   LocaleCompareCrowdinRoute: LocaleCompareCrowdinRoute,
   LocaleCompareCrowdinVsLokaliseRoute: LocaleCompareCrowdinVsLokaliseRoute,
   LocaleCompareLokaliseRoute: LocaleCompareLokaliseRoute,
@@ -2083,6 +2086,7 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleToolsTranslationFileConverterRoute:
     LocaleToolsTranslationFileConverterRouteWithChildren,
   LocaleBlogIndexRoute: LocaleBlogIndexRoute,
+  LocaleChangelogIndexRoute: LocaleChangelogIndexRoute,
   LocaleCompareIndexRoute: LocaleCompareIndexRoute,
   LocaleI18nIndexRoute: LocaleI18nIndexRoute,
   LocaleToolsIndexRoute: LocaleToolsIndexRoute,
