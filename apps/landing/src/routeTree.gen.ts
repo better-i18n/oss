@@ -42,13 +42,13 @@ import { Route as LocaleForDevelopersRouteImport } from './routes/$locale/for-de
 import { Route as LocaleForAgenciesRouteImport } from './routes/$locale/for-agencies'
 import { Route as LocaleFeaturesRouteImport } from './routes/$locale/features'
 import { Route as LocaleCookiesRouteImport } from './routes/$locale/cookies'
-import { Route as LocaleChangelogRouteImport } from './routes/$locale/changelog'
 import { Route as LocaleCareersRouteImport } from './routes/$locale/careers'
 import { Route as LocaleAboutRouteImport } from './routes/$locale/about'
 import { Route as LocaleToolsIndexRouteImport } from './routes/$locale/tools/index'
 import { Route as LocaleI18nIndexRouteImport } from './routes/$locale/i18n/index'
 import { Route as LocaleFeaturesIndexRouteImport } from './routes/$locale/features/index'
 import { Route as LocaleCompareIndexRouteImport } from './routes/$locale/compare/index'
+import { Route as LocaleChangelogIndexRouteImport } from './routes/$locale/changelog/index'
 import { Route as LocaleBlogIndexRouteImport } from './routes/$locale/blog/index'
 import { Route as LocaleToolsTranslationFileConverterRouteImport } from './routes/$locale/tools/translation-file-converter'
 import { Route as LocaleToolsLocaleExplorerRouteImport } from './routes/$locale/tools/locale-explorer'
@@ -98,6 +98,7 @@ import { Route as LocaleComparePhraseRouteImport } from './routes/$locale/compar
 import { Route as LocaleCompareLokaliseRouteImport } from './routes/$locale/compare/lokalise'
 import { Route as LocaleCompareCrowdinVsLokaliseRouteImport } from './routes/$locale/compare/crowdin-vs-lokalise'
 import { Route as LocaleCompareCrowdinRouteImport } from './routes/$locale/compare/crowdin'
+import { Route as LocaleChangelogSlugRouteImport } from './routes/$locale/changelog/$slug'
 import { Route as LocaleBlogSlugRouteImport } from './routes/$locale/blog/$slug'
 import { Route as LocaleBlogPageIndexRouteImport } from './routes/$locale/blog/page/index'
 import { Route as LocaleToolsTranslationFileConverterPairRouteImport } from './routes/$locale/tools/translation-file-converter.$pair'
@@ -271,11 +272,6 @@ const LocaleCookiesRoute = LocaleCookiesRouteImport.update({
   path: '/$locale/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LocaleChangelogRoute = LocaleChangelogRouteImport.update({
-  id: '/$locale/changelog',
-  path: '/$locale/changelog',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LocaleCareersRoute = LocaleCareersRouteImport.update({
   id: '/$locale/careers',
   path: '/$locale/careers',
@@ -305,6 +301,11 @@ const LocaleCompareIndexRoute = LocaleCompareIndexRouteImport.update({
   id: '/$locale/compare/',
   path: '/$locale/compare/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleChangelogIndexRoute = LocaleChangelogIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LocaleChangelogRoute,
 } as any)
 const LocaleBlogIndexRoute = LocaleBlogIndexRouteImport.update({
   id: '/$locale/blog/',
@@ -570,6 +571,11 @@ const LocaleCompareCrowdinRoute = LocaleCompareCrowdinRouteImport.update({
   path: '/$locale/compare/crowdin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleChangelogSlugRoute = LocaleChangelogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => LocaleChangelogRoute,
+} as any)
 const LocaleBlogSlugRoute = LocaleBlogSlugRouteImport.update({
   id: '/$locale/blog/$slug',
   path: '/$locale/blog/$slug',
@@ -612,7 +618,6 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/careers': typeof LocaleCareersRoute
-  '/$locale/changelog': typeof LocaleChangelogRoute
   '/$locale/cookies': typeof LocaleCookiesRoute
   '/$locale/features': typeof LocaleFeaturesRouteWithChildren
   '/$locale/for-agencies': typeof LocaleForAgenciesRoute
@@ -636,6 +641,7 @@ export interface FileRoutesByFullPath {
   '/api/status': typeof ApiStatusRoute
   '/$locale': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
+  '/$locale/changelog/$slug': typeof LocaleChangelogSlugRoute
   '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
   '/$locale/compare/crowdin-vs-lokalise': typeof LocaleCompareCrowdinVsLokaliseRoute
   '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
@@ -685,6 +691,7 @@ export interface FileRoutesByFullPath {
   '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
   '/$locale/tools/translation-file-converter': typeof LocaleToolsTranslationFileConverterRouteWithChildren
   '/$locale/blog': typeof LocaleBlogIndexRoute
+  '/$locale/changelog/': typeof LocaleChangelogIndexRoute
   '/$locale/compare': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
@@ -708,7 +715,6 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/careers': typeof LocaleCareersRoute
-  '/$locale/changelog': typeof LocaleChangelogRoute
   '/$locale/cookies': typeof LocaleCookiesRoute
   '/$locale/for-agencies': typeof LocaleForAgenciesRoute
   '/$locale/for-developers': typeof LocaleForDevelopersRoute
@@ -731,6 +737,7 @@ export interface FileRoutesByTo {
   '/api/status': typeof ApiStatusRoute
   '/$locale': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
+  '/$locale/changelog/$slug': typeof LocaleChangelogSlugRoute
   '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
   '/$locale/compare/crowdin-vs-lokalise': typeof LocaleCompareCrowdinVsLokaliseRoute
   '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
@@ -780,6 +787,7 @@ export interface FileRoutesByTo {
   '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
   '/$locale/tools/translation-file-converter': typeof LocaleToolsTranslationFileConverterRouteWithChildren
   '/$locale/blog': typeof LocaleBlogIndexRoute
+  '/$locale/changelog': typeof LocaleChangelogIndexRoute
   '/$locale/compare': typeof LocaleCompareIndexRoute
   '/$locale/features': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n': typeof LocaleI18nIndexRoute
@@ -804,7 +812,6 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/careers': typeof LocaleCareersRoute
-  '/$locale/changelog': typeof LocaleChangelogRoute
   '/$locale/cookies': typeof LocaleCookiesRoute
   '/$locale/features': typeof LocaleFeaturesRouteWithChildren
   '/$locale/for-agencies': typeof LocaleForAgenciesRoute
@@ -828,6 +835,7 @@ export interface FileRoutesById {
   '/api/status': typeof ApiStatusRoute
   '/$locale/': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
+  '/$locale/changelog/$slug': typeof LocaleChangelogSlugRoute
   '/$locale/compare/crowdin': typeof LocaleCompareCrowdinRoute
   '/$locale/compare/crowdin-vs-lokalise': typeof LocaleCompareCrowdinVsLokaliseRoute
   '/$locale/compare/lokalise': typeof LocaleCompareLokaliseRoute
@@ -877,6 +885,7 @@ export interface FileRoutesById {
   '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
   '/$locale/tools/translation-file-converter': typeof LocaleToolsTranslationFileConverterRouteWithChildren
   '/$locale/blog/': typeof LocaleBlogIndexRoute
+  '/$locale/changelog/': typeof LocaleChangelogIndexRoute
   '/$locale/compare/': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
   '/$locale/i18n/': typeof LocaleI18nIndexRoute
@@ -902,7 +911,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/$locale/about'
     | '/$locale/careers'
-    | '/$locale/changelog'
     | '/$locale/cookies'
     | '/$locale/features'
     | '/$locale/for-agencies'
@@ -926,6 +934,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/$locale'
     | '/$locale/blog/$slug'
+    | '/$locale/changelog/$slug'
     | '/$locale/compare/crowdin'
     | '/$locale/compare/crowdin-vs-lokalise'
     | '/$locale/compare/lokalise'
@@ -975,6 +984,7 @@ export interface FileRouteTypes {
     | '/$locale/tools/locale-explorer'
     | '/$locale/tools/translation-file-converter'
     | '/$locale/blog'
+    | '/$locale/changelog/'
     | '/$locale/compare'
     | '/$locale/features/'
     | '/$locale/i18n'
@@ -998,7 +1008,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/$locale/about'
     | '/$locale/careers'
-    | '/$locale/changelog'
     | '/$locale/cookies'
     | '/$locale/for-agencies'
     | '/$locale/for-developers'
@@ -1021,6 +1030,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/$locale'
     | '/$locale/blog/$slug'
+    | '/$locale/changelog/$slug'
     | '/$locale/compare/crowdin'
     | '/$locale/compare/crowdin-vs-lokalise'
     | '/$locale/compare/lokalise'
@@ -1070,6 +1080,7 @@ export interface FileRouteTypes {
     | '/$locale/tools/locale-explorer'
     | '/$locale/tools/translation-file-converter'
     | '/$locale/blog'
+    | '/$locale/changelog'
     | '/$locale/compare'
     | '/$locale/features'
     | '/$locale/i18n'
@@ -1093,7 +1104,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/$locale/about'
     | '/$locale/careers'
-    | '/$locale/changelog'
     | '/$locale/cookies'
     | '/$locale/features'
     | '/$locale/for-agencies'
@@ -1117,6 +1127,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/$locale/'
     | '/$locale/blog/$slug'
+    | '/$locale/changelog/$slug'
     | '/$locale/compare/crowdin'
     | '/$locale/compare/crowdin-vs-lokalise'
     | '/$locale/compare/lokalise'
@@ -1166,6 +1177,7 @@ export interface FileRouteTypes {
     | '/$locale/tools/locale-explorer'
     | '/$locale/tools/translation-file-converter'
     | '/$locale/blog/'
+    | '/$locale/changelog/'
     | '/$locale/compare/'
     | '/$locale/features/'
     | '/$locale/i18n/'
@@ -1190,7 +1202,6 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   LocaleAboutRoute: typeof LocaleAboutRoute
   LocaleCareersRoute: typeof LocaleCareersRoute
-  LocaleChangelogRoute: typeof LocaleChangelogRoute
   LocaleCookiesRoute: typeof LocaleCookiesRoute
   LocaleFeaturesRoute: typeof LocaleFeaturesRouteWithChildren
   LocaleForAgenciesRoute: typeof LocaleForAgenciesRoute
@@ -1502,13 +1513,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleCookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$locale/changelog': {
-      id: '/$locale/changelog'
-      path: '/$locale/changelog'
-      fullPath: '/$locale/changelog'
-      preLoaderRoute: typeof LocaleChangelogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/$locale/careers': {
       id: '/$locale/careers'
       path: '/$locale/careers'
@@ -1550,6 +1554,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/$locale/compare'
       preLoaderRoute: typeof LocaleCompareIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/$locale/changelog/': {
+      id: '/$locale/changelog/'
+      path: '/'
+      fullPath: '/$locale/changelog/'
+      preLoaderRoute: typeof LocaleChangelogIndexRouteImport
+      parentRoute: typeof LocaleChangelogRoute
     }
     '/$locale/blog/': {
       id: '/$locale/blog/'
@@ -1894,6 +1905,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleCompareCrowdinRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/changelog/$slug': {
+      id: '/$locale/changelog/$slug'
+      path: '/$slug'
+      fullPath: '/$locale/changelog/$slug'
+      preLoaderRoute: typeof LocaleChangelogSlugRouteImport
+      parentRoute: typeof LocaleChangelogRoute
+    }
     '/$locale/blog/$slug': {
       id: '/$locale/blog/$slug'
       path: '/$locale/blog/$slug'
@@ -1990,7 +2008,6 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   LocaleAboutRoute: LocaleAboutRoute,
   LocaleCareersRoute: LocaleCareersRoute,
-  LocaleChangelogRoute: LocaleChangelogRoute,
   LocaleCookiesRoute: LocaleCookiesRoute,
   LocaleFeaturesRoute: LocaleFeaturesRouteWithChildren,
   LocaleForAgenciesRoute: LocaleForAgenciesRoute,
