@@ -41,6 +41,8 @@ Partial success is possible — response reports created count and any failures.
 
 Each entry supports the same fields as createContentEntry: title, slug, bodyMarkdown, status, customFields, and translations.
 
+IMPORTANT: bodyMarkdown must NOT start with a # H1 heading — the entry title is rendered separately as the page H1. Starting with # Title creates a duplicate visible heading. Begin each body with an introductory paragraph or ## H2 section.
+
 EXAMPLE:
 {
   "modelSlug": "blog-posts",
@@ -65,7 +67,7 @@ EXAMPLE:
             properties: {
               title: { type: "string", description: "Entry title" },
               slug: { type: "string", description: "URL slug" },
-              bodyMarkdown: { type: "string", description: "Content body in Markdown" },
+              bodyMarkdown: { type: "string", description: "Content body in Markdown. WARNING: Do NOT start with a # H1 heading — the title is rendered separately as the page H1. Begin with a paragraph or ## H2 section." },
               status: { type: "string", enum: ["draft", "published"], description: "Initial status (default: draft)" },
               customFields: { type: "object", description: "Custom field values as { fieldName: value }" },
               translations: { type: "object", description: "Target language translations — { langCode: { title, bodyMarkdown, customFields } }" },
