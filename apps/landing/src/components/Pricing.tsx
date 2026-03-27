@@ -96,7 +96,7 @@ export default function Pricing({
                 aria-pressed={billingPeriod === "monthly"}
                 onClick={() => setBillingPeriod("monthly")}
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
+                  "cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
                   billingPeriod === "monthly"
                     ? "bg-mist-950 text-white"
                     : "text-mist-700 hover:text-mist-950"
@@ -109,7 +109,7 @@ export default function Pricing({
                 aria-pressed={billingPeriod === "yearly"}
                 onClick={() => setBillingPeriod("yearly")}
                 className={cn(
-                  "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
+                  "cursor-pointer flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
                   billingPeriod === "yearly"
                     ? "bg-mist-950 text-white"
                     : "text-mist-700 hover:text-mist-950"
