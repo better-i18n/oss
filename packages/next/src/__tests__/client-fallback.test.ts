@@ -107,7 +107,7 @@ describe("normalizeConfig — fallback fields passthrough", () => {
     expect(config.localePrefix).toBe("as-needed");
     expect(config.cookieName).toBe("locale");
     expect(config.manifestRevalidateSeconds).toBe(3600);
-    expect(config.messagesRevalidateSeconds).toBe(30);
+    expect(config.messagesRevalidateSeconds).toBe(5);
 
     // Fallback field should be present
     expect(config.storage).toBe(mockStorage);

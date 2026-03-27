@@ -5,6 +5,21 @@ import {
 } from "@better-i18n/core";
 import type { I18nConfig, NormalizedConfig } from "./types.js";
 
+/**
+ * Detect development mode from NODE_ENV.
+ * In dev, ISR revalidation is set to 0 so translations always fetch fresh.
+ */
+const isDevMode = (): boolean => {
+  try {
+    return (
+      typeof process !== "undefined" &&
+      process.env?.NODE_ENV === "development"
+    );
+  } catch {
+    return false;
+  }
+};
+
 // Re-export parseProject from core
 export { parseProject };
 
@@ -29,8 +44,8 @@ export const normalizeConfig = (config: I18nConfig): NormalizedConfig => {
     ...coreConfig,
     localePrefix: localePrefix ?? "as-needed",
     cookieName: cookieName ?? "locale",
-    manifestRevalidateSeconds: manifestRevalidateSeconds ?? 3600,
-    messagesRevalidateSeconds: messagesRevalidateSeconds ?? 5,
+    manifestRevalidateSeconds: manifestRevalidateSeconds ?? (isDevMode() ? 0 : 3600),
+    messagesRevalidateSeconds: messagesRevalidateSeconds ?? (isDevMode() ? 0 : 5),
     timeZone,
   };
 };
