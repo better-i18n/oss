@@ -50,6 +50,8 @@ export const normalizeConfig = (config: I18nCoreConfig): NormalizedConfig => {
 
   const { workspaceId, projectSlug } = parseProject(config.project);
 
+  const devMode = isDevMode();
+
   return {
     ...config,
     workspaceId,
@@ -57,9 +59,10 @@ export const normalizeConfig = (config: I18nCoreConfig): NormalizedConfig => {
     cdnBaseUrl: config.cdnBaseUrl?.replace(/\/$/, "") || DEFAULT_CDN_BASE_URL,
     manifestCacheTtlMs:
       config.manifestCacheTtlMs ??
-      (isDevMode() ? DEFAULT_CACHE_TTL_MS_DEV : DEFAULT_CACHE_TTL_MS_PROD),
+      (devMode ? DEFAULT_CACHE_TTL_MS_DEV : DEFAULT_CACHE_TTL_MS_PROD),
     fetchTimeout: config.fetchTimeout ?? DEFAULT_FETCH_TIMEOUT_MS,
     retryCount: config.retryCount ?? DEFAULT_RETRY_COUNT,
+    devMode,
   };
 };
 

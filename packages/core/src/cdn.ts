@@ -141,10 +141,18 @@ const fetchManifestFromCdn = async (
 
   logger.debug("fetching", url);
 
+  // In dev mode: bypass CF's outer HTTP cache so published translations are
+  // immediately visible. In production: omit no-store so CF's shared edge cache
+  // (caches.default) can serve cached responses without invoking the CDN Worker,
+  // dramatically reducing CDN hits on globally-distributed deployments (e.g. Hydrogen).
+  const manifestHeaders: Record<string, string> = config.devMode
+    ? { "Cache-Control": "no-store" }
+    : {};
+
   const response = await fetchWithRetry(
     fetchFn,
     url,
-    { headers: { "Cache-Control": "no-store" } },
+    { headers: manifestHeaders },
     config.fetchTimeout,
     config.retryCount
   );
@@ -236,7 +244,12 @@ const fetchMessagesFromCdn = async (
 
   logger.debug("fetching", url);
 
-  const headers: Record<string, string> = { "Cache-Control": "no-store" };
+  // In dev mode: bypass CF's outer HTTP cache for immediate freshness.
+  // In production: omit no-store so CF's shared edge cache absorbs cold starts
+  // on globally-distributed CF Workers (e.g. Shopify Hydrogen on Oxygen).
+  const headers: Record<string, string> = config.devMode
+    ? { "Cache-Control": "no-store" }
+    : {  };
   if (ifNoneMatch) {
     headers["If-None-Match"] = ifNoneMatch;
   }
