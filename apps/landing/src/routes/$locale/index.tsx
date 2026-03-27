@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useT } from "@/lib/i18n";
 import Header from "../../components/Header";
 import Hero from "../../components/Hero";
@@ -120,19 +120,23 @@ function LandingPage() {
   const { locale } = Route.useParams();
   const t = useT("common");
 
-  const [recentChangelogs, setRecentChangelogs] = useState(initialChangelogs);
-
-  // Client-side fallback: pre-rendered HTML may have empty changelogs when
-  // getChangelogsMeta timed out during build. Re-fetch on mount if needed.
-  useEffect(() => {
-    if (initialChangelogs.length === 0) {
-      getChangelogsMeta(locale)
-        .then((releases) => {
-          if (releases.length > 0) setRecentChangelogs(releases.slice(0, 4));
-        })
-        .catch(() => {});
-    }
-  }, [initialChangelogs.length, locale]);
+  // Client-side fallback via /api/changelog.
+  // Pre-rendered HTML may have empty changelogs if the API timed out during
+  // build. When initialChangelogs is empty, useQuery fetches fresh with the
+  // correct locale — same pattern as the changelog index page.
+  const { data: recentChangelogs = initialChangelogs } = useQuery({
+    queryKey: ["changelogs-home", locale],
+    queryFn: async () => {
+      const response = await fetch(`/api/changelog?locale=${locale}`);
+      if (!response.ok) return [];
+      const json = (await response.json()) as { releases: typeof initialChangelogs };
+      return (json.releases ?? []).slice(0, 4);
+    },
+    // Only pass initialData when SSR loaded changelogs — if empty, let react-query fetch.
+    initialData: initialChangelogs.length > 0 ? initialChangelogs : undefined,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
   return (
     <>
       <a
