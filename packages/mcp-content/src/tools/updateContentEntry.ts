@@ -46,6 +46,11 @@ export const updateContentEntry: Tool = {
     name: "updateContentEntry",
     description: `Update a content entry's translation and/or metadata.
 
+WHEN TO USE THIS vs. bulkUpdateEntries:
+- Updating 1 entry → use this tool
+- Updating 2+ entries → use bulkUpdateEntries instead (single API call, up to 20 entries at once)
+Never call this tool in a loop — always batch with bulkUpdateEntries.
+
 Three modes:
 1. Single language: provide languageCode + top-level fields (title, bodyMarkdown, etc.)
 2. Multi-language: provide translations map — { langCode: { title, bodyMarkdown, ... } }

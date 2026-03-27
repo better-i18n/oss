@@ -37,18 +37,30 @@ export const bulkCreateEntries: Tool = {
   definition: {
     name: "bulkCreateEntries",
     description: `Create multiple content entries in a single model at once (max 20).
-Partial success is possible — response reports created count and any failures.
 
+ALWAYS prefer this over calling createContentEntry multiple times.
+Rule: if you need to create 2 or more entries → use this tool, not a loop of createContentEntry calls.
+
+Partial success is possible — response reports created count and any failures.
 Each entry supports the same fields as createContentEntry: title, slug, bodyMarkdown, status, customFields, and translations.
 
-IMPORTANT: bodyMarkdown must NOT start with a # H1 heading — the entry title is rendered separately as the page H1. Starting with # Title creates a duplicate visible heading. Begin each body with an introductory paragraph or ## H2 section.
+IMPORTANT — bodyMarkdown: Do NOT start with a # H1 heading. The entry title is rendered separately as the page H1. Starting with # Title creates a duplicate visible heading. Begin each body with an introductory paragraph or ## H2 section.
 
 EXAMPLE:
 {
   "modelSlug": "blog-posts",
   "entries": [
-    { "title": "First Post", "slug": "first-post", "status": "draft" },
-    { "title": "Second Post", "slug": "second-post", "customFields": { "category": "tech" } }
+    {
+      "title": "First Post",
+      "slug": "first-post",
+      "status": "draft",
+      "bodyMarkdown": "Opening paragraph here...\n\n## First Section\n..."
+    },
+    {
+      "title": "Second Post",
+      "slug": "second-post",
+      "customFields": { "category": "tech" }
+    }
   ]
 }`,
     inputSchema: {
