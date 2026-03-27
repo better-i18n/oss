@@ -1,5 +1,15 @@
 # @better-i18n/mcp-content
 
+## 0.8.3
+
+### Patch Changes
+
+- 05e8054: Improve tool descriptions to guide AI agents toward more effective usage patterns:
+  - All bodyMarkdown fields now warn against starting with # H1 (duplicate heading with page title)
+  - createContentEntry, updateContentEntry, publishContentEntry now explicitly route agents to bulk equivalents when working with 2+ entries
+  - bulkCreateEntries, bulkUpdateEntries, bulkPublishEntries now marked as the preferred tools with explicit "never loop single-entry tools" rules
+  - bulkUpdateEntries gains bodyMarkdown H1 warning and expanded workflow examples
+
 ## 0.8.2
 
 ### Patch Changes
