@@ -1,19 +1,42 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { trackBlogReadProgress } from "@/lib/analytics-events";
 
-export default function ReadingProgress() {
+const READ_THRESHOLDS = [25, 50, 75, 100] as const;
+
+interface ReadingProgressProps {
+  slug?: string;
+}
+
+export default function ReadingProgress({ slug }: ReadingProgressProps) {
   const [progress, setProgress] = useState(0);
+  const firedRef = useRef(new Set<number>());
+
+  useEffect(() => {
+    firedRef.current = new Set<number>();
+  }, [slug]);
 
   useEffect(() => {
     function handleScroll() {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const scrolled = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      setProgress(Math.min(100, Math.max(0, scrolled)));
+      const clamped = Math.min(100, Math.max(0, scrolled));
+      setProgress(clamped);
+
+      // Fire read progress events at thresholds
+      if (slug) {
+        for (const t of READ_THRESHOLDS) {
+          if (clamped >= t && !firedRef.current.has(t)) {
+            firedRef.current.add(t);
+            trackBlogReadProgress({ slug, percent: t });
+          }
+        }
+      }
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [slug]);
 
   return (
     <div
