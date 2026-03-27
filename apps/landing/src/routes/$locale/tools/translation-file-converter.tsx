@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { createPageLoader, getPageHead, getBreadcrumbItems } from "@/lib/page-seo";
 import { ToolLayout } from "@/components/tools/ToolLayout";
-import { MarketingBreadcrumb } from "@/components/MarketingBreadcrumb";
 import { FORMATS } from "@/lib/tools/formats";
 
 export const Route = createFileRoute("/$locale/tools/translation-file-converter")({
