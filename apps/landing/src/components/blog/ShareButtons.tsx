@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { Twitter, Linkedin, Link2, Check } from "lucide-react";
 import { useT } from "@/lib/i18n";
+import { trackBlogShare } from "@/lib/analytics-events";
 
 interface ShareButtonsProps {
   url: string;
   title: string;
+  slug?: string;
 }
 
-export default function ShareButtons({ url, title }: ShareButtonsProps) {
+export default function ShareButtons({ url, title, slug }: ShareButtonsProps) {
   const t = useT("blog");
   const [copied, setCopied] = useState(false);
 
   function shareOnTwitter() {
+    if (slug) trackBlogShare({ slug, method: "twitter" });
     const text = encodeURIComponent(title);
     const shareUrl = encodeURIComponent(url);
     window.open(
@@ -22,6 +25,7 @@ export default function ShareButtons({ url, title }: ShareButtonsProps) {
   }
 
   function shareOnLinkedIn() {
+    if (slug) trackBlogShare({ slug, method: "linkedin" });
     const shareUrl = encodeURIComponent(url);
     window.open(
       `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`,
@@ -31,6 +35,7 @@ export default function ShareButtons({ url, title }: ShareButtonsProps) {
   }
 
   function copyLink() {
+    if (slug) trackBlogShare({ slug, method: "clipboard" });
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);

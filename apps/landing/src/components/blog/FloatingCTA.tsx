@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { IconCrossMedium } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { trackCtaClick } from "@/lib/analytics-events";
 
 interface FloatingCTAProps {
   readonly ctaText: string;
   readonly ctaUrl: string;
+  readonly slug?: string;
 }
 
 const SCROLL_THRESHOLD = 0.4;
@@ -15,7 +17,7 @@ const SCROLL_THRESHOLD = 0.4;
  * - Desktop: bottom-right floating card (max 400px wide).
  * - Dismiss button hides it for the current page view (no persistence).
  */
-export default function FloatingCTA({ ctaText, ctaUrl }: FloatingCTAProps) {
+export default function FloatingCTA({ ctaText, ctaUrl, slug }: FloatingCTAProps) {
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -49,6 +51,14 @@ export default function FloatingCTA({ ctaText, ctaUrl }: FloatingCTAProps) {
       <div className="pointer-events-auto flex w-full items-center justify-between gap-3 border-t border-mist-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur-sm md:w-auto md:max-w-[400px] md:rounded-xl md:border md:border-mist-200">
         <a
           href={ctaUrl}
+          onClick={() =>
+            trackCtaClick({
+              cta_id: "blog_floating_cta",
+              cta_text: ctaText,
+              page_type: "blog",
+              content_id: slug,
+            })
+          }
           className="inline-flex items-center justify-center rounded-full bg-mist-950 px-4 py-1.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
         >
           {ctaText}

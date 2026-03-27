@@ -13,6 +13,11 @@ import {
 } from "@/lib/meta";
 import { getChangelogs, type ChangelogEntry } from "@/lib/changelog";
 import { getDefaultStructuredData } from "@/lib/structured-data";
+import {
+  trackChangelogView,
+  trackChangelogEntryExpand,
+} from "@/lib/analytics-events";
+import { useEngagedTime } from "@/hooks/use-engaged-time";
 import { withTimeout } from "@/lib/fetch-utils";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
@@ -72,6 +77,13 @@ function ChangelogPage() {
 
   const [highlightedSlug, setHighlightedSlug] = useState<string | null>(null);
   const hasScrolled = useRef(false);
+  const observedEntries = useRef(new Set<string>());
+
+  // Analytics: page view + engaged time
+  useEffect(() => {
+    trackChangelogView({ locale: locale || "en" });
+  }, [locale]);
+  useEngagedTime("changelog");
 
   const { data: releases = loaderData?.releases ?? [] } = useQuery({
     queryKey: ["changelogs", locale],
@@ -110,6 +122,35 @@ function ChangelogPage() {
     return () => clearTimeout(timer);
   }, [releases]);
 
+  // Analytics: track changelog entry visibility via IntersectionObserver
+  useEffect(() => {
+    if (!releases?.length) return;
+    observedEntries.current = new Set<string>();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const slug = entry.target.id;
+          if (!slug || observedEntries.current.has(slug)) continue;
+          observedEntries.current.add(slug);
+
+          const release = releases.find((r: ChangelogEntry) => r.slug === slug);
+          trackChangelogEntryExpand({
+            slug,
+            version: release?.version ?? undefined,
+          });
+        }
+      },
+      { threshold: 0.3 },
+    );
+
+    // Observe all changelog article elements
+    const articles = document.querySelectorAll("article[id]");
+    for (const el of articles) observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [releases]);
 
   return (
     <div>
