@@ -54,10 +54,17 @@ export interface BlogPostMeta {
  */
 export type FlatMessages = Readonly<Record<string, string>>;
 
+export interface ChangelogMeta {
+  readonly slug: string;
+  readonly title: string;
+  readonly publishedAt: string | null;
+}
+
 export interface SeoData {
   readonly locales: readonly string[];
   readonly blogPosts: readonly BlogPostMeta[];
   readonly featurePages: readonly FeaturePageMeta[];
+  readonly changelogEntries: readonly ChangelogMeta[];
   /** Per-locale i18n messages fetched from CDN (locale → flat key-value map) */
   readonly i18nMessages: ReadonlyMap<string, FlatMessages>;
   /** Per-locale translation coverage ratio (0–1) relative to English key count */
@@ -518,7 +525,7 @@ export async function fetchSeoData(options: {
   const i18n = createI18nCore({ project, defaultLocale: "en" });
   const client = createClient({ project, apiKey });
 
-  const [localesResult, blogResult, featureResult] = await Promise.allSettled([
+  const [localesResult, blogResult, featureResult, changelogResult] = await Promise.allSettled([
     i18n.getLocales(),
     fetchAllEntries(client, "blog-posts", {
       status: "published",
@@ -526,6 +533,12 @@ export async function fetchSeoData(options: {
       order: "desc",
     }),
     client.getEntries("marketing-pages", { status: "published", limit: 100 }),
+    client.getEntries("changelog-beta", {
+      status: "published",
+      sort: "publishedAt",
+      order: "desc",
+      limit: 100,
+    }),
   ]);
 
   const locales =
@@ -546,6 +559,15 @@ export async function fetchSeoData(options: {
             (item as unknown as Record<string, unknown>).page_type === "feature",
         )
         .map(toFeaturePageMeta)
+      : [];
+
+  const changelogEntries: ChangelogMeta[] =
+    changelogResult.status === "fulfilled"
+      ? changelogResult.value.items.map((item): ChangelogMeta => ({
+          slug: item.slug,
+          title: item.title,
+          publishedAt: item.publishedAt,
+        }))
       : [];
 
   // Fetch i18n messages for all locales (used by llms-txt and structured-data).
@@ -591,7 +613,7 @@ export async function fetchSeoData(options: {
     (l) => (localeCoverage.get(l) ?? 0) < THIN_CONTENT_THRESHOLD,
   );
   console.log(
-    `[SEO] Fetched: ${locales.length} locales, ${blogPosts.length} posts, ${featurePages.length} features, ${i18nMessages.size} message bundles`,
+    `[SEO] Fetched: ${locales.length} locales, ${blogPosts.length} posts, ${featurePages.length} features, ${changelogEntries.length} changelog entries, ${i18nMessages.size} message bundles`,
   );
   if (thinLocales.length > 0) {
     console.log(
@@ -599,7 +621,7 @@ export async function fetchSeoData(options: {
     );
   }
 
-  return { locales, blogPosts, featurePages, i18nMessages, localeCoverage };
+  return { locales, blogPosts, featurePages, changelogEntries, i18nMessages, localeCoverage };
 }
 
 // ─── Generator: Locale Explorer Detail Pages ─────────────────────────
@@ -694,12 +716,51 @@ function generateConverterPairPages(
   });
 }
 
+// ─── Generator: Changelog Detail Pages ────────────────────────────────
+
+/**
+ * Generates individual changelog entry pages for sitemap indexing.
+ * Each changelog entry gets a page at /{locale}/changelog/{slug}.
+ */
+function generateChangelogDetailPages(
+  entries: readonly ChangelogMeta[],
+  allLocales: readonly string[],
+  buildDate?: string,
+): readonly PageEntry[] {
+  const lastmod = buildDate || new Date().toISOString().split("T")[0];
+  const sitemapLocales = allLocales.filter(
+    (l) => getLocaleTier(l) !== "tier3",
+  );
+
+  return entries.flatMap((entry) => {
+    const alternateRefs = buildAlternateRefs(sitemapLocales, (locale) =>
+      buildPageUrl(locale, `changelog/${entry.slug}`),
+    );
+
+    return sitemapLocales.map((locale): PageEntry => {
+      const tier = getLocaleTier(locale);
+      const shouldPrerender = tier === "tier1" || tier === "tier2";
+
+      return {
+        path: buildPagePath(locale, `changelog/${entry.slug}`),
+        sitemap: {
+          priority: 0.5,
+          changefreq: "monthly",
+          lastmod: entry.publishedAt ?? lastmod,
+          alternateRefs,
+        },
+        prerender: shouldPrerender ? { enabled: true } : undefined,
+      };
+    });
+  });
+}
+
 /**
  * Generates all page entries from pre-fetched SEO data.
  * Pure function — no I/O.
  */
 export function generatePages(data: SeoData, buildDate?: string): readonly PageEntry[] {
-  const { locales, blogPosts, featurePages, localeCoverage } = data;
+  const { locales, blogPosts, featurePages, changelogEntries, localeCoverage } = data;
   const marketingPages = generateMarketingPages(locales, buildDate, localeCoverage);
   const blogPages = generateBlogPages(blogPosts, locales);
   const featureDetailPages = generateFeatureDetailPages(featurePages, locales);
@@ -708,8 +769,9 @@ export function generatePages(data: SeoData, buildDate?: string): readonly PageE
   // remains in sitemap (via marketingPages). Detail pages are still accessible
   // and discoverable via internal links from the listing page.
   const converterPairPages = generateConverterPairPages(locales);
+  const changelogPages = generateChangelogDetailPages(changelogEntries, locales, buildDate);
   const allPages = [...marketingPages, ...blogPages, ...featureDetailPages,
-                     ...converterPairPages];
+                     ...converterPairPages, ...changelogPages];
 
   const noindexCount = allPages.filter((p) => p.sitemap.noindex).length;
   console.log(`[SEO] Generated ${allPages.length} pages (${noindexCount} noindex)`);

@@ -310,6 +310,51 @@ export function getHomePageStructuredData(options?: {
   ]);
 }
 
+/**
+ * Changelog Entry Schema — Article type for individual release pages.
+ * Helps search engines understand changelog entries as structured content.
+ */
+export function getChangelogEntrySchema(options: {
+  title: string;
+  description: string;
+  url: string;
+  version?: string;
+  datePublished?: string;
+  locale?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: options.title,
+    description: options.description,
+    url: options.url,
+    ...(options.datePublished && {
+      datePublished: options.datePublished,
+      dateModified: options.datePublished,
+    }),
+    ...(options.locale && { inLanguage: options.locale }),
+    author: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
+    },
+    ...(options.version && {
+      about: {
+        "@type": "SoftwareApplication",
+        name: SITE_NAME,
+        softwareVersion: options.version,
+      },
+    }),
+    mainEntityOfPage: { "@type": "WebPage", "@id": options.url },
+  };
+}
+
 interface ComparisonItem {
   name: string;
   description: string;
