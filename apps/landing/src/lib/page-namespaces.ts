@@ -118,7 +118,7 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   // ─── Compare hub (only index-level keys) ────────────────────────
   [
     "compare",
-    { namespaces: ["marketing.compare.index", "alternatives", "relatedPages"] },
+    { namespaces: ["marketing.compare.index", "alternatives", "relatedPages", "cta"] },
   ],
 
   // ─── Tools hub (no custom namespaces — UI is hardcoded English) ──
