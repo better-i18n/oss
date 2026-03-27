@@ -1,4 +1,5 @@
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { trackCtaClick } from "@/lib/analytics-events";
 
 interface InlineCTAProps {
   readonly title: string;
@@ -6,6 +7,7 @@ interface InlineCTAProps {
   readonly ctaText: string;
   readonly ctaUrl: string;
   readonly variant?: "default" | "subtle";
+  readonly slug?: string;
 }
 
 /**
@@ -22,7 +24,16 @@ export default function InlineCTA({
   ctaText,
   ctaUrl,
   variant = "default",
+  slug,
 }: InlineCTAProps) {
+  const handleCtaClick = () => {
+    trackCtaClick({
+      cta_id: variant === "subtle" ? "blog_inline_cta_subtle" : "blog_inline_cta",
+      cta_text: ctaText,
+      page_type: "blog",
+      content_id: slug,
+    });
+  };
   if (variant === "subtle") {
     return (
       <aside
@@ -36,6 +47,7 @@ export default function InlineCTA({
         </span>
         <a
           href={ctaUrl}
+          onClick={handleCtaClick}
           className="inline-flex shrink-0 items-center gap-0.5 text-sm font-medium text-mist-950 hover:text-mist-700 transition-colors"
         >
           {ctaText}
@@ -60,6 +72,7 @@ export default function InlineCTA({
       </div>
       <a
         href={ctaUrl}
+        onClick={handleCtaClick}
         className="inline-flex shrink-0 items-center justify-center rounded-full bg-mist-950 px-4 py-2 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
       >
         {ctaText}
