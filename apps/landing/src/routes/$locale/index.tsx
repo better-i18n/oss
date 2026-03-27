@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import { useT } from "@/lib/i18n";
 import Header from "../../components/Header";
 import Hero from "../../components/Hero";
@@ -115,9 +116,23 @@ export const Route = createFileRoute("/$locale/")({
 });
 
 function LandingPage() {
-  const { recentChangelogs, plans } = Route.useLoaderData();
+  const { recentChangelogs: initialChangelogs, plans } = Route.useLoaderData();
   const { locale } = Route.useParams();
   const t = useT("common");
+
+  const [recentChangelogs, setRecentChangelogs] = useState(initialChangelogs);
+
+  // Client-side fallback: pre-rendered HTML may have empty changelogs when
+  // getChangelogsMeta timed out during build. Re-fetch on mount if needed.
+  useEffect(() => {
+    if (initialChangelogs.length === 0) {
+      getChangelogsMeta(locale)
+        .then((releases) => {
+          if (releases.length > 0) setRecentChangelogs(releases.slice(0, 4));
+        })
+        .catch(() => {});
+    }
+  }, [initialChangelogs.length, locale]);
   return (
     <>
       <a
