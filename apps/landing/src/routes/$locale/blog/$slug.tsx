@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { createServerFn } from "@tanstack/react-start";
@@ -18,6 +19,8 @@ import ReadingProgress from "@/components/blog/ReadingProgress";
 import InlineCTA from "@/components/blog/InlineCTA";
 import FloatingCTA from "@/components/blog/FloatingCTA";
 import { getBlogCTA } from "@/lib/blog-ctas";
+import { trackBlogView } from "@/lib/analytics-events";
+import { useEngagedTime } from "@/hooks/use-engaged-time";
 import { getRelatedPages } from "@/seo/internal-links";
 import Breadcrumb from "@/components/blog/Breadcrumb";
 import ShareButtons from "@/components/blog/ShareButtons";
@@ -199,6 +202,18 @@ function BlogPostPage() {
 
   const canonicalUrl = `${SITE_URL}/${locale}/blog/${post.slug}`;
 
+  // Analytics: blog view + engaged time
+  useEffect(() => {
+    trackBlogView({
+      slug: post.slug,
+      title: post.title,
+      category: post.category ?? undefined,
+      author: post.authorName ?? undefined,
+      locale,
+    });
+  }, [post.slug]);
+  useEngagedTime("blog", post.slug);
+
   const heroBannerUrl = buildOgImageUrl("og/blog", {
     title: post.title,
     author: post.authorName ?? undefined,
@@ -215,7 +230,7 @@ function BlogPostPage() {
 
   return (
     <div className="bg-white">
-      <ReadingProgress />
+      <ReadingProgress slug={post.slug} />
       <Header className="bg-white" />
       <main>
         {/* Article header - centered, generous spacing */}
@@ -275,7 +290,7 @@ function BlogPostPage() {
                 </div>
               </div>
             </div>
-            <ShareButtons url={canonicalUrl} title={post.title} />
+            <ShareButtons url={canonicalUrl} title={post.title} slug={post.slug} />
           </div>
 
           {/* Hero banner image */}
@@ -335,6 +350,7 @@ function BlogPostPage() {
                   description={cta.description}
                   ctaText={cta.ctaText}
                   ctaUrl={cta.ctaUrl.startsWith("http") ? cta.ctaUrl : `/${locale}${cta.ctaUrl}/`}
+                  slug={post.slug}
                 />
 
                 {/* Internal links — topical cluster connections */}
@@ -384,6 +400,7 @@ function BlogPostPage() {
       <FloatingCTA
         ctaText={cta.ctaText}
         ctaUrl={cta.ctaUrl.startsWith("http") ? cta.ctaUrl : `/${locale}${cta.ctaUrl}/`}
+        slug={post.slug}
       />
     </div>
   );
