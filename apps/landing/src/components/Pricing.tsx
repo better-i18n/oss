@@ -46,12 +46,19 @@ function FeatureIndicator({ enabled }: { enabled: boolean }) {
   );
 }
 
-function formatPrice(symbol: string, amount: number): string {
-  if (amount === 0) return `${symbol}0`;
+/**
+ * Format a price for display.
+ * - USD ($) and EUR (€): use symbol prefix — "$19", "€9"
+ * - All other currencies (e.g. TRY): use ISO code prefix — "TRY 349"
+ */
+function formatPrice(symbol: string, amount: number, currency: string): string {
+  const useSymbol = symbol === "$" || symbol === "€";
+  const prefix = useSymbol ? symbol : `${currency.toUpperCase()} `;
+  if (amount === 0) return `${prefix}0`;
   // For whole numbers, no decimals; otherwise 2 decimals
   return Number.isInteger(amount)
-    ? `${symbol}${amount.toLocaleString("en-US")}`
-    : `${symbol}${amount.toFixed(2)}`;
+    ? `${prefix}${amount.toLocaleString("en-US")}`
+    : `${prefix}${amount.toFixed(2)}`;
 }
 
 // ─── Main Component ──────────────────────────────────────────────────
@@ -135,12 +142,12 @@ export default function Pricing({
                 : priceData
                   ? formatPrice(priceData.symbol, billingPeriod === "yearly"
                       ? Math.round(priceData.amount / 12)
-                      : priceData.amount)
+                      : priceData.amount, priceData.currency)
                   : "$0";
 
-              // Billed yearly note (e.g. "Billed yearly at ₺3,348")
+              // Billed yearly note (e.g. "Billed yearly at TRY 3,588")
               const yearlyTotal = billingPeriod === "yearly" && !isEnterprise && priceData
-                ? formatPrice(priceData.symbol, priceData.amount)
+                ? formatPrice(priceData.symbol, priceData.amount, priceData.currency)
                 : null;
               const billedYearlyNote = yearlyTotal
                 ? t("billedYearly", {
