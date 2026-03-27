@@ -84,7 +84,7 @@ EXAMPLE (project sl='tr'):
         },
         bodyMarkdown: {
           type: "string",
-          description: "Content body in Markdown format (supports GFM: tables, strikethrough, task lists)",
+          description: "Content body in Markdown format (supports GFM: tables, strikethrough, task lists). WARNING: Do NOT start with a # H1 heading — the entry title is already rendered as the page H1 by the platform. Starting with # Title creates a duplicate visible heading. Begin with an introductory paragraph or ## H2 section instead.",
         },
         featuredImage: {
           type: "string",
