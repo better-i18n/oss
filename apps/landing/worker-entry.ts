@@ -7,6 +7,13 @@ import tanstack from "./server/server.js";
 const NO_CACHE_PREFIXES = ["/api/"];
 
 /**
+ * Static file extensions that should be served directly from ASSETS.
+ * If not found in ASSETS, return 404 immediately — never let TanStack's
+ * locale-redirect logic catch these paths (e.g. /favicon.png → /tr/favicon.png).
+ */
+const STATIC_FILE_RE = /\.(?:png|ico|svg|webp|jpg|jpeg|gif|webmanifest|txt|xml|woff2?|ttf|otf|map)$/i;
+
+/**
  * SEO redirect map — consolidated/removed pages → pillar pages.
  * Source of truth: src/seo/redirects.ts (keep in sync).
  * Inline here because worker-entry.ts is bundled separately from the app.
@@ -183,6 +190,18 @@ export default {
         status: 301,
         headers: { Location: `${url.origin}${redirectTarget}` },
       });
+    }
+
+    // Static files: serve directly from ASSETS, never fall through to SSR.
+    // This prevents locale-redirect logic from catching paths like /favicon.png.
+    if (STATIC_FILE_RE.test(url.pathname)) {
+      try {
+        const assetResponse = await env.ASSETS.fetch(request);
+        if (assetResponse.ok) return assetResponse;
+      } catch {
+        // ASSETS.fetch failure — fall through to 404
+      }
+      return new Response("Not found", { status: 404 });
     }
 
     // Inject CF country code as a header so SSR can detect locale from geo
