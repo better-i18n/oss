@@ -22,7 +22,7 @@ export const bulkPublishEntries: Tool = {
   definition: {
     name: "bulkPublishEntries",
     description:
-      "Publish multiple content entries at once (status change only — NOT a CDN deploy). Partial success is possible — response reports published count and any failures. CDN delivery is managed separately.",
+      "Publish multiple content entries at once (status change only — NOT a CDN deploy). ALWAYS prefer this over calling publishContentEntry multiple times. Rule: publishing 2+ entries → use this tool, not a loop (max 50 entries per call). Typical workflow after bulkCreateEntries: collect the returned entry IDs → bulkPublishEntries to make them live. Partial success is possible — response reports published count and any failures. CDN delivery is managed separately.",
     inputSchema: {
       type: "object",
       properties: {

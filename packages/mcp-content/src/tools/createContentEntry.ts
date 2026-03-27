@@ -44,6 +44,11 @@ export const createContentEntry: Tool = {
 Top-level title/bodyMarkdown/excerpt and customFields are stored as the project's SOURCE LANGUAGE text.
 Check getProject response's 'sl' field to know which language to write.
 
+WHEN TO USE THIS vs. bulkCreateEntries:
+- Creating 1 entry → use this tool
+- Creating 2+ entries → use bulkCreateEntries instead (single API call, up to 20 entries at once)
+Never call this tool in a loop — always batch with bulkCreateEntries.
+
 IMPORTANT: Source language may not be English. If sl='tr', write Turkish for title/customFields.
 
 Use translations to add target language translations in the same request.

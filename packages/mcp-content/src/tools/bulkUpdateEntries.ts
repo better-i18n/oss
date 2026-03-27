@@ -39,7 +39,14 @@ export const bulkUpdateEntries: Tool = {
   definition: {
     name: "bulkUpdateEntries",
     description: `Update multiple content entries in a single call (max 20).
-Ideal workflow: listContentEntries({ missingLanguage: "tr" }) → bulkUpdateEntries to batch-translate missing entries.
+
+ALWAYS prefer this over calling updateContentEntry multiple times.
+Rule: if you need to update 2 or more entries → use this tool, not a loop of updateContentEntry calls.
+
+Common workflows:
+1. Batch-translate: listContentEntries({ missingLanguage: "tr" }) → bulkUpdateEntries with translations
+2. Batch body fix (e.g. remove duplicate H1): collect entry IDs → bulkUpdateEntries with corrected bodyMarkdown
+3. Batch status change: set status: "published" or "archived" across multiple entries at once
 
 Each entry supports the same modes as updateContentEntry:
 - Single-language: provide languageCode + title/bodyMarkdown/customFields
@@ -47,8 +54,9 @@ Each entry supports the same modes as updateContentEntry:
 - Both modes can be combined per entry
 
 status field: "draft" saves without publishing (default: published when omitted).
-
 Partial success is possible — check the failed array in the response.
+
+IMPORTANT — bodyMarkdown: Do NOT start with a # H1 heading. The entry title is rendered separately as the page H1. Begin with a paragraph or ## H2 section.
 
 EXAMPLE (batch-translate to Turkish):
 {
@@ -57,7 +65,7 @@ EXAMPLE (batch-translate to Turkish):
       "entryId": "uuid-1",
       "languageCode": "tr",
       "title": "Merhaba Dünya",
-      "bodyMarkdown": "# İçerik"
+      "bodyMarkdown": "Giriş paragrafı...\n\n## İlk Bölüm\n..."
     },
     {
       "entryId": "uuid-2",

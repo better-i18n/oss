@@ -22,7 +22,7 @@ export const publishContentEntry: Tool = {
   definition: {
     name: "publishContentEntry",
     description:
-      "Publish a content entry (status change only — NOT a CDN deploy). Sets entry status to 'published' and marks the source translation as 'published'. This changes the entry's internal status in the database. CDN delivery is managed separately.",
+      "Publish a single content entry (status change only — NOT a CDN deploy). Sets entry status to 'published' and marks the source translation as 'published'. CDN delivery is managed separately. WHEN TO USE THIS vs. bulkPublishEntries: publishing 1 entry → use this tool. Publishing 2+ entries → use bulkPublishEntries instead (single API call, up to 50 entries). Never call this tool in a loop.",
     inputSchema: {
       type: "object",
       properties: {
