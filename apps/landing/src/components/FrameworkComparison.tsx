@@ -354,3 +354,36 @@ export function OtherFrameworks({
     </section>
   );
 }
+
+interface FAQItemProps {
+  question: string;
+  answer: string;
+}
+
+interface FrameworkFAQProps {
+  title?: string;
+  items: FAQItemProps[];
+}
+
+export function FrameworkFAQ({
+  title = "Frequently Asked Questions",
+  items,
+}: FrameworkFAQProps) {
+  return (
+    <section className="py-16 border-t border-mist-200">
+      <div className="mx-auto max-w-3xl px-6 lg:px-10">
+        <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-10">
+          {title}
+        </h2>
+        <div className="space-y-8">
+          {items.map((item, i) => (
+            <div key={i} className="border-b border-mist-100 pb-8 last:border-0 last:pb-0">
+              <h3 className="text-base font-medium text-mist-950 mb-3">{item.question}</h3>
+              <p className="text-sm/6 text-mist-600">{item.answer}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

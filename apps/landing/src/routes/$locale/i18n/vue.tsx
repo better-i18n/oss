@@ -6,6 +6,7 @@ import {
   FeatureList,
   CodeExample,
   FrameworkCTA,
+  FrameworkFAQ,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
 import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
@@ -84,6 +85,36 @@ const { t } = useI18n();
       />
 
       <ComparisonRelatedTopics heading={t("i18n.vue.relatedTitle")} links={relatedLinks} locale={locale} />
+
+      <FrameworkFAQ
+        title="Vue i18n — Frequently Asked Questions"
+        items={[
+          {
+            question: "What is the best i18n library for Vue.js?",
+            answer: "vue-i18n is the official internationalization plugin for Vue.js, maintained by the Vue core team. It supports Vue 2 and Vue 3, the Composition API, and integrates natively with Nuxt via @nuxtjs/i18n. For teams that also need a translation management platform, Better i18n connects directly to vue-i18n projects via CDN delivery and CLI sync.",
+          },
+          {
+            question: "How does Vue i18n work with the Composition API?",
+            answer: "In Vue 3 with the Composition API, you call useI18n() inside setup() to get the t() translation function, d() for date formatting, and n() for number formatting. The composable is reactive — changing the locale automatically re-renders all components that reference translated strings. With Better i18n, translations are fetched from the CDN on first load and cached in-memory for subsequent route changes.",
+          },
+          {
+            question: "Can I use Better i18n with Nuxt?",
+            answer: "Yes. Better i18n works with Nuxt through the @better-i18n/core package or via direct CDN integration. You add the CDN loader in your Nuxt plugin, point it to your Better i18n project, and translations are available server-side and client-side. The @nuxtjs/i18n module handles routing and locale switching while Better i18n handles translation delivery and management.",
+          },
+          {
+            question: "How do I handle pluralization in Vue i18n?",
+            answer: "vue-i18n supports ICU message format and its own pipe-based pluralization syntax. For ICU (recommended for complex rules), you define messages like '{count, plural, one {# item} other {# items}}'. For simple cases, vue-i18n's pipe syntax '{0} item | {0} items' works well. Better i18n's dashboard preserves ICU syntax and ensures translators see the correct plural forms for each target language.",
+          },
+          {
+            question: "What is lazy loading in Vue i18n and why does it matter?",
+            answer: "Lazy loading means translation files are only fetched when a user switches to that locale — reducing initial bundle size. Better i18n implements lazy loading automatically via CDN: your app only downloads the active locale's translations, and the CDN serves them from the edge closest to your user. This keeps Time-to-Interactive fast regardless of how many languages you support.",
+          },
+          {
+            question: "How do I extract and sync Vue i18n keys to Better i18n?",
+            answer: "The Better i18n CLI (`@better-i18n/cli`) scans your Vue files for t() calls, extracts all translation keys, and pushes them to your Better i18n project. Running `better-i18n sync` in CI keeps your dashboard in sync with your codebase automatically. New keys appear in the dashboard ready for translation, and published translations are served via CDN within seconds.",
+          },
+        ]}
+      />
 
       <OtherFrameworks
         title={t("i18n.vue.otherFrameworks")}

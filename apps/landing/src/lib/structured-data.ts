@@ -136,6 +136,8 @@ interface ArticleSchemaOptions {
   author: {
     name: string;
     url?: string;
+    /** Social profile URLs for the author — helps Google resolve author identity */
+    sameAs?: string[];
   };
   wordCount?: number;
   timeRequired?: string; // ISO 8601 duration, e.g. "PT5M"
@@ -165,6 +167,7 @@ export function getArticleSchema(options: ArticleSchemaOptions) {
       "@type": "Person",
       name: options.author.name,
       ...(options.author.url && { url: options.author.url }),
+      ...(options.author.sameAs?.length && { sameAs: options.author.sameAs }),
     },
     publisher: {
       "@type": "Organization",

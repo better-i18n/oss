@@ -7,6 +7,7 @@ import {
   CodeExample,
   SetupGuide,
   FrameworkCTA,
+  FrameworkFAQ,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
 import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
@@ -195,6 +196,36 @@ class ProductPage extends StatelessWidget {
         heading={t("i18n.flutter.relatedTitle")}
         links={relatedLinks}
         locale={locale}
+      />
+
+      <FrameworkFAQ
+        title="Flutter i18n — Frequently Asked Questions"
+        items={[
+          {
+            question: "What are ARB files and why does Flutter use them?",
+            answer: "ARB (Application Resource Bundle) files are JSON-based localization files used by Flutter's official gen_l10n tool. Each ARB file contains translation key-value pairs plus metadata (placeholders, descriptions, plural rules) in @-prefixed entries. Flutter's build system generates type-safe Dart code from ARB files, so accessing translations via AppLocalizations.of(context).myKey is fully typed and IDE-autocompleted. Better i18n stores and exports translations in ARB format natively.",
+          },
+          {
+            question: "How does Better i18n integrate with Flutter's localization workflow?",
+            answer: "Better i18n connects to Flutter projects via the CLI. Run `better-i18n push` to upload your template ARB file (app_en.arb), have translators or AI complete translations in the dashboard, then run `better-i18n pull` to download all localized ARB files into your lib/l10n/ directory. The Flutter build system then regenerates the type-safe AppLocalizations class. This replaces manual file exchange with translators and keeps all languages in sync.",
+          },
+          {
+            question: "Does Flutter support ICU message format for plurals?",
+            answer: "Yes. Flutter's gen_l10n tool uses ICU MessageFormat syntax for plural and select messages in ARB files. For example: '{count, plural, =0{No items} =1{1 item} other{{count} items}}'. The generated Dart code handles the correct plural form selection based on the active locale's CLDR plural rules. Better i18n's translation editor supports ICU syntax and validates plural forms for each target language.",
+          },
+          {
+            question: "What is the better_i18n Flutter package?",
+            answer: "better_i18n is Better i18n's official Flutter/Dart SDK on pub.dev. It fetches translations from the Better i18n CDN at runtime, supporting over-the-air translation updates without requiring an app store release. The SDK implements a two-phase load pattern: it reads from local SharedPreferences storage first for instant display, then fetches fresh translations from the CDN in the background. Storage keys are compatible with the JavaScript SDKs.",
+          },
+          {
+            question: "How do I add a new language to a Flutter app?",
+            answer: "Add the locale to your MaterialApp's supportedLocales list, create a corresponding ARB file (app_fr.arb for French) in your l10n directory, then run `flutter gen-l10n` to regenerate the AppLocalizations class. With Better i18n, you add the language in the dashboard, AI pre-translates all existing keys, your team reviews them, and you pull the ARB file with `better-i18n pull`. The entire process — from adding a language to having production-ready translations — takes hours instead of weeks.",
+          },
+          {
+            question: "Does Flutter i18n work on all platforms — iOS, Android, web, and desktop?",
+            answer: "Yes. Flutter's localization system is cross-platform by design. The same ARB files and AppLocalizations class work identically on iOS, Android, web, macOS, Windows, and Linux. Platform-specific behaviors like date formats, number separators, and RTL text direction are handled by the flutter_localizations package and the intl library, which implements Unicode CLDR rules for each locale.",
+          },
+        ]}
       />
 
       <OtherFrameworks

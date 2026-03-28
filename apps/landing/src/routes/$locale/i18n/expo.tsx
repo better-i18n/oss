@@ -6,6 +6,7 @@ import {
   FeatureList,
   SetupGuide,
   FrameworkCTA,
+  FrameworkFAQ,
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
@@ -111,6 +112,36 @@ function HomeScreen() {
       <SetupGuide title="Get started in 4 steps" steps={setupSteps} />
 
       <FeatureList title="Why use Better i18n with Expo?" features={features} />
+
+      <FrameworkFAQ
+        title="Expo i18n — Frequently Asked Questions"
+        items={[
+          {
+            question: "What is the recommended i18n approach for Expo apps?",
+            answer: "The recommended stack is react-i18next + expo-localization + @better-i18n/expo. expo-localization reads the device's language setting, react-i18next provides the t() hook and pluralization engine, and @better-i18n/expo fetches translations from the CDN with offline caching. This combination works in Expo Go without ejecting, supports over-the-air translation updates, and is compatible with both Expo Router and bare React Native projects.",
+          },
+          {
+            question: "How does Better i18n work with Expo Router?",
+            answer: "With Expo Router, you wrap your root _layout.tsx with the i18n initialization. Import your i18n.ts file at the top of the root layout — this ensures translations are loaded before any screen renders. Expo Router's file-based routing doesn't require URL-based locale prefixes; locale state is managed globally via i18next and the device locale from expo-localization. The Better i18n CDN delivers translations per locale on demand.",
+          },
+          {
+            question: "Can I push translation updates without an app store release?",
+            answer: "Yes. Better i18n's Expo adapter fetches translations from the CDN at runtime. When you publish new or corrected translations in the Better i18n dashboard, the next app launch downloads the updated strings — no new app build required. Translations are cached in AsyncStorage or MMKV so users see the last known translations even when offline. This makes translation hotfixes fast without waiting for App Store or Google Play review.",
+          },
+          {
+            question: "How do I detect and use the device language in Expo?",
+            answer: "expo-localization's getLocales() returns an array of the user's preferred locales in priority order. @better-i18n/expo reads this automatically via the useDeviceLocale option in initBetterI18n(). If the top locale is supported by your project, it's used; otherwise it falls back to your defaultLocale. The override chain is: user's explicit language selection → device language → default locale.",
+          },
+          {
+            question: "Does @better-i18n/expo work with MMKV for storage?",
+            answer: "Yes. @better-i18n/expo uses a duck-typed storage adapter — you pass any storage object that implements getItem, setItem, and removeItem. For MMKV, use the storageAdapter() helper from @better-i18n/expo and pass your MMKV instance. MMKV is significantly faster than AsyncStorage for large translation files, reducing cold-start time for apps with many languages.",
+          },
+          {
+            question: "How do I handle locale switching without a reload in Expo?",
+            answer: "@better-i18n/expo overrides i18next's changeLanguage() method to pre-load the target locale's translations before switching. This prevents the English flash that happens when i18next switches locale before the new translations are ready. The result is a smooth transition — users see the fully translated UI immediately, not a flash of the source language.",
+          },
+        ]}
+      />
 
       <OtherFrameworks
         title="Other frameworks"
