@@ -91,7 +91,7 @@ EXAMPLE (project sl='tr', with localized custom field):
         },
         slug: {
           type: "string",
-          description: "URL slug for the entry",
+          description: "URL slug for the entry — this is the UNIVERSAL identifier shared across all languages (used in the CMS, not language-specific). For per-language URL slugs, use a localized custom field (e.g., 'localized_slug' with localized=true) and set it via translations.{lang}.customFields.",
         },
         excerpt: {
           type: "string",

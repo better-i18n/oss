@@ -118,7 +118,7 @@ EXAMPLE metadata-only:
         },
         slug: {
           type: "string",
-          description: "Updated URL slug",
+          description: "Updated URL slug — UNIVERSAL identifier shared across all languages. For per-language URL slugs, use a localized custom field via translations.{lang}.customFields instead.",
         },
         excerpt: {
           type: "string",
