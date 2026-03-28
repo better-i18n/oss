@@ -1,7 +1,8 @@
+import { useState, useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { createServerFn } from "@tanstack/react-start";
-import { getBlogPosts, POSTS_PER_PAGE, type BlogPostListItem } from "@/lib/content";
+import { getAllBlogPostsForLocale, POSTS_PER_PAGE, type BlogPostListItem } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/blog/BlogCard";
@@ -31,14 +32,14 @@ import { getLocaleTier } from "@/seo/locale-tiers";
 const loadBlogPosts = createServerFn({ method: "GET" })
   .inputValidator((data: { locale: string }) => data)
   .handler(async ({ data }) => {
-    const result = await getBlogPosts(data.locale, {
-      limit: POSTS_PER_PAGE,
-      page: 1,
-    });
+    const allPosts = await getAllBlogPostsForLocale(data.locale);
+    const categories = [...new Set(
+      allPosts.flatMap((p) => (p.category ? [p.category] : []))
+    )].sort();
     return {
-      posts: result.posts,
-      totalPages: Math.ceil(result.total / POSTS_PER_PAGE),
-      currentPage: 1,
+      allPosts,
+      categories,
+      totalPages: Math.ceil(allPosts.length / POSTS_PER_PAGE),
     };
   });
 
@@ -89,7 +90,7 @@ export const Route = createFileRoute("/$locale/blog/")({
         breadcrumbSchema,
         getCollectionPageSchema({
           name: "Better i18n Blog",
-          description: "Latest updates, tutorials, and insights about internationalization and localization.",
+          description: "Tutorials, guides, and best practices for internationalization, localization, and translation management.",
           url: `${SITE_URL}/${locale}/blog/`,
           inLanguage: locale,
         }),
@@ -100,16 +101,35 @@ export const Route = createFileRoute("/$locale/blog/")({
 });
 
 function BlogPage() {
-  const { posts, locale, totalPages } = Route.useLoaderData();
+  const { allPosts, categories, locale, totalPages } = Route.useLoaderData();
   const t = useT("blog");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const filteredPosts = useMemo(() => {
+    if (!selectedCategory) return allPosts ?? [];
+    return (allPosts ?? []).filter((p: BlogPostListItem) => p.category === selectedCategory);
+  }, [allPosts, selectedCategory]);
+
+  const paginatedPosts = useMemo(() => {
+    const start = (currentPage - 1) * POSTS_PER_PAGE;
+    return filteredPosts.slice(start, start + POSTS_PER_PAGE);
+  }, [filteredPosts, currentPage]);
+
+  const filteredTotalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
+
+  function handleCategoryClick(category: string | null) {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+  }
 
   return (
     <div className="bg-white">
       <Header className="bg-white" />
       <main className="py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          {/* Header - matching Features/Changelog section style */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-16">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-12">
             <div className="max-w-2xl">
               <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
                 {t("title", { defaultValue: "Blog" })}
@@ -117,12 +137,12 @@ function BlogPage() {
               <p className="mt-4 text-lg/8 text-mist-700">
                 {t("subtitle", {
                   defaultValue:
-                    "Latest updates, tutorials, and insights about internationalization.",
+                    "Tutorials, guides, and best practices for internationalization.",
                 })}
               </p>
             </div>
             <Link
-              to="/$locale"
+              to="/$locale/"
               params={{ locale }}
               className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950 shrink-0"
             >
@@ -131,10 +151,48 @@ function BlogPage() {
             </Link>
           </div>
 
+          {/* Category Filter Pills */}
+          {categories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-10">
+              <button
+                onClick={() => handleCategoryClick(null)}
+                className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  selectedCategory === null
+                    ? "bg-mist-950 text-white"
+                    : "bg-mist-100 text-mist-700 hover:bg-mist-200"
+                }`}
+              >
+                {t("allPosts", { defaultValue: "All" })}
+                <span className={`ml-1.5 text-xs ${selectedCategory === null ? "text-mist-300" : "text-mist-500"}`}>
+                  {allPosts.length}
+                </span>
+              </button>
+              {categories.map((category) => {
+                const count = (allPosts ?? []).filter((p: BlogPostListItem) => p.category === category).length;
+                return (
+                  <button
+                    key={category}
+                    onClick={() => handleCategoryClick(category)}
+                    className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      selectedCategory === category
+                        ? "bg-mist-950 text-white"
+                        : "bg-mist-100 text-mist-700 hover:bg-mist-200"
+                    }`}
+                  >
+                    {category}
+                    <span className={`ml-1.5 text-xs ${selectedCategory === category ? "text-mist-300" : "text-mist-500"}`}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           {/* Posts Grid */}
-          {posts?.length > 0 ? (
+          {paginatedPosts?.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {posts.map((post: BlogPostListItem, index: number) => (
+              {paginatedPosts.map((post: BlogPostListItem, index: number) => (
                 <BlogCard key={post.slug} post={post} locale={locale} priority={index === 0} />
               ))}
             </div>
@@ -156,13 +214,37 @@ function BlogPage() {
             </div>
           )}
 
-          {/* Pagination */}
-          {posts?.length > 0 && (
-            <Pagination
-              currentPage={1}
-              totalPages={totalPages}
-              locale={locale}
-            />
+          {/* Pagination — client-side when filtering, server-side otherwise */}
+          {paginatedPosts?.length > 0 && (
+            selectedCategory ? (
+              filteredTotalPages > 1 && (
+                <div className="mt-12 flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 rounded-lg border border-mist-200 text-sm text-mist-700 disabled:opacity-40 hover:bg-mist-50 transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm text-mist-600">
+                    {currentPage} / {filteredTotalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(filteredTotalPages, p + 1))}
+                    disabled={currentPage === filteredTotalPages}
+                    className="px-4 py-2 rounded-lg border border-mist-200 text-sm text-mist-700 disabled:opacity-40 hover:bg-mist-50 transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              )
+            ) : (
+              <Pagination
+                currentPage={1}
+                totalPages={totalPages}
+                locale={locale}
+              />
+            )
           )}
         </div>
       </main>

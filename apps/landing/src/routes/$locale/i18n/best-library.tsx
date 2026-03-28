@@ -201,6 +201,86 @@ function BestLibraryPage() {
         </div>
       </section>
 
+      {/* How to Choose */}
+      <section className="py-16 border-t border-mist-200">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
+            How to choose the right i18n library
+          </h2>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                criterion: "Framework fit",
+                description: "Use the library built for your framework. react-i18next for React, next-intl for Next.js App Router, vue-i18n for Vue, ngx-translate for Angular. Framework-native libraries integrate best with server components, SSR, and hydration patterns.",
+              },
+              {
+                criterion: "Type safety",
+                description: "For TypeScript projects, prefer libraries with first-class type support. next-intl and @better-i18n/use-intl generate types from your translation files, giving you autocomplete and compile-time safety for translation keys.",
+              },
+              {
+                criterion: "Bundle size",
+                description: "Lightweight matters for client-side apps. svelte-i18n and basic i18next configurations are small. next-intl with RSC only loads translations for the current locale. Better i18n CDN delivery means zero translation data in your JS bundle.",
+              },
+              {
+                criterion: "Pluralization needs",
+                description: "If you target languages with complex plural rules (Arabic, Polish, Russian), use a library with full ICU MessageFormat support: i18next with the ICU plugin, next-intl, or @better-i18n/use-intl. All support CLDR-compliant plural forms.",
+              },
+              {
+                criterion: "Translation management",
+                description: "Libraries only handle runtime rendering. For managing translations at scale — AI translation, team review, CDN delivery — you need a TMS alongside the library. Better i18n integrates with all major i18n libraries via the CLI.",
+              },
+              {
+                criterion: "OTA updates",
+                description: "If you need to push translation corrections without a new deployment, choose a library with runtime loading support. Better i18n delivers translations via CDN with 60-second cache max-age, enabling near-instant updates for web and mobile apps.",
+              },
+            ].map((item) => (
+              <div key={item.criterion} className="p-6 rounded-2xl border border-mist-100 bg-white">
+                <h3 className="text-sm font-semibold text-mist-950 mb-2">{item.criterion}</h3>
+                <p className="text-sm/6 text-mist-600">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-16 border-t border-mist-200">
+        <div className="mx-auto max-w-3xl px-6 lg:px-10">
+          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-10">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-8">
+            {[
+              {
+                question: "What is the most popular i18n library for React?",
+                answer: "react-i18next is the most widely used React i18n library, with over 9 million weekly npm downloads. It's built on i18next and supports namespaces, pluralization, interpolation, and lazy loading. For Next.js specifically, next-intl has become the leading choice due to its first-class App Router and Server Components support.",
+              },
+              {
+                question: "Should I use an i18n library or build my own?",
+                answer: "Almost always use an established library. Building your own i18n solution seems simple but quickly becomes complex: you need pluralization rules for every language (Arabic has 6 plural forms), ICU message parsing, number and date formatting, RTL support, and SSR hydration. Established libraries like i18next have millions of hours of testing across edge cases you haven't thought of yet.",
+              },
+              {
+                question: "What is the difference between i18n libraries and a TMS?",
+                answer: "An i18n library handles runtime translation — it takes a key like 'welcome.title' and returns the translated string for the active locale. A Translation Management System (TMS) like Better i18n handles the workflow: storing translations, AI-assisted translation, team review, CDN delivery, and CI/CD sync. You need both: the library for rendering and the TMS for managing translation content.",
+              },
+              {
+                question: "Does Better i18n work with react-i18next?",
+                answer: "Yes. Better i18n integrates with react-i18next via the @better-i18n/expo package for React Native, or by configuring react-i18next's backend to load from the Better i18n CDN. The Better i18n CLI syncs your i18next JSON translation files with the dashboard. This gives you react-i18next's mature runtime with Better i18n's managed translation workflow.",
+              },
+              {
+                question: "How do i18n libraries handle missing translations?",
+                answer: "Most libraries fall back to a specified fallback locale (usually the source language) when a translation is missing. react-i18next and i18next log missing keys in development mode. next-intl throws errors for missing keys in development and silently falls back in production. Better i18n's dashboard shows translation coverage per language, so you can ensure 100% coverage before deploying.",
+              },
+            ].map((item, i) => (
+              <div key={i} className="border-b border-mist-100 pb-8 last:border-0 last:pb-0">
+                <h3 className="text-base font-medium text-mist-950 mb-3">{item.question}</h3>
+                <p className="text-sm/6 text-mist-600">{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
         <div className="mx-auto max-w-2xl text-center px-6">

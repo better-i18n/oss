@@ -58,6 +58,53 @@ function ComparePage() {
         </div>
       </section>
 
+      {/* Feature Matrix */}
+      <section className="pb-16">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
+            {t("featureMatrix.title", { defaultValue: "Feature comparison" })}
+          </h2>
+          <div className="overflow-x-auto rounded-2xl border border-mist-200">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-mist-200 bg-mist-50">
+                  <th className="text-left px-5 py-3 font-medium text-mist-700 w-48">Feature</th>
+                  <th className="text-center px-4 py-3 font-semibold text-emerald-700 bg-emerald-50/60">Better i18n</th>
+                  <th className="text-center px-4 py-3 font-medium text-mist-600">Crowdin</th>
+                  <th className="text-center px-4 py-3 font-medium text-mist-600">Lokalise</th>
+                  <th className="text-center px-4 py-3 font-medium text-mist-600">Phrase</th>
+                  <th className="text-center px-4 py-3 font-medium text-mist-600">Transifex</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { feature: "Free tier", better: "✓", crowdin: "✓", lokalise: "✗", phrase: "✗", transifex: "✗" },
+                  { feature: "CDN delivery", better: "✓", crowdin: "✗", lokalise: "✗", phrase: "✗", transifex: "✗" },
+                  { feature: "MCP support", better: "✓", crowdin: "✗", lokalise: "✗", phrase: "✗", transifex: "✗" },
+                  { feature: "AI translation", better: "✓", crowdin: "✓", lokalise: "✓", phrase: "✓", transifex: "✓" },
+                  { feature: "Git sync", better: "✓", crowdin: "✓", lokalise: "✓", phrase: "✓", transifex: "~" },
+                  { feature: "CLI tool", better: "✓", crowdin: "✓", lokalise: "✓", phrase: "✓", transifex: "~" },
+                  { feature: "OTA updates", better: "✓", crowdin: "✗", lokalise: "✗", phrase: "✗", transifex: "✗" },
+                  { feature: "Type-safe SDKs", better: "✓", crowdin: "✗", lokalise: "✗", phrase: "✗", transifex: "✗" },
+                  { feature: "Mobile SDKs", better: "✓", crowdin: "✓", lokalise: "✓", phrase: "✓", transifex: "~" },
+                  { feature: "Starting price", better: "$0/mo", crowdin: "$40/mo", lokalise: "$140/mo", phrase: "$385/mo", transifex: "$150/mo" },
+                ].map((row, i) => (
+                  <tr key={row.feature} className={`border-b border-mist-100 last:border-0 ${i % 2 === 0 ? "bg-white" : "bg-mist-50/30"}`}>
+                    <td className="px-5 py-3 font-medium text-mist-800">{row.feature}</td>
+                    <td className={`text-center px-4 py-3 font-medium bg-emerald-50/40 ${row.better === "✓" ? "text-emerald-700" : row.better.startsWith("$") ? "text-mist-950" : "text-mist-400"}`}>{row.better}</td>
+                    <td className={`text-center px-4 py-3 ${row.crowdin === "✓" ? "text-emerald-600" : row.crowdin === "✗" ? "text-mist-300" : row.crowdin.startsWith("$") ? "text-mist-700" : "text-mist-500"}`}>{row.crowdin}</td>
+                    <td className={`text-center px-4 py-3 ${row.lokalise === "✓" ? "text-emerald-600" : row.lokalise === "✗" ? "text-mist-300" : row.lokalise.startsWith("$") ? "text-mist-700" : "text-mist-500"}`}>{row.lokalise}</td>
+                    <td className={`text-center px-4 py-3 ${row.phrase === "✓" ? "text-emerald-600" : row.phrase === "✗" ? "text-mist-300" : row.phrase.startsWith("$") ? "text-mist-700" : "text-mist-500"}`}>{row.phrase}</td>
+                    <td className={`text-center px-4 py-3 ${row.transifex === "✓" ? "text-emerald-600" : row.transifex === "✗" ? "text-mist-300" : row.transifex.startsWith("$") ? "text-mist-700" : "text-mist-500"}`}>{row.transifex}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-xs text-mist-500">~ = partial support. Pricing as of 2026, subject to change.</p>
+        </div>
+      </section>
+
       {/* Competitors Grid */}
       <section className="pb-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">

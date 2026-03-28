@@ -198,7 +198,7 @@ function hasTranslation(
  * is missing instead of excluding the entry, so we must fetch everything,
  * filter client-side, and handle pagination ourselves.
  */
-async function getAllBlogPostsForLocale(
+export async function getAllBlogPostsForLocale(
   locale: string,
 ): Promise<BlogPostListItem[]> {
   const cacheKey = `blog-posts-all:${locale}`;
