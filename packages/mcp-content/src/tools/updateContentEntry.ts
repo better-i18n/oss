@@ -55,8 +55,20 @@ Three modes:
 1. Single language: provide languageCode + top-level fields (title, bodyMarkdown, etc.)
 2. Multi-language: provide translations map — { langCode: { title, bodyMarkdown, ... } }
 3. Metadata-only: omit both languageCode and translations to update only metadata (slug, status, customFields).
-   For customFields: localized fields are updated using the entry's source language automatically.
-   To update localized fields for a target language, use mode 1 or 2 with explicit languageCode.
+
+⚠️ LOCALIZED CUSTOM FIELDS — If a field has localized=true, setting it via top-level customFields (mode 3) only updates the SOURCE LANGUAGE value. To update a localized field for a specific language, you MUST use mode 1 or 2.
+
+WRONG (sets localized field only for source language):
+{ "entryId": "...", "customFields": { "localized_slug": "my-slug" } }
+
+CORRECT — single language (mode 1):
+{ "entryId": "...", "languageCode": "en", "customFields": { "localized_slug": "my-slug-en" } }
+
+CORRECT — multiple languages at once (mode 2):
+{ "entryId": "...", "translations": {
+  "en": { "customFields": { "localized_slug": "my-slug-en" } },
+  "id": { "customFields": { "localized_slug": "my-slug-id" } }
+} }
 
 Modes 1 & 2 can be combined. All fields are optional — send only what changed.
 Language codes (languageCode and translation keys) are normalized to lowercase automatically (e.g., "EN" → "en").

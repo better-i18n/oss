@@ -46,7 +46,9 @@ Each entry supports the same fields as createContentEntry: title, slug, bodyMark
 
 IMPORTANT — bodyMarkdown: Do NOT start with a # H1 heading. The entry title is rendered separately as the page H1. Starting with # Title creates a duplicate visible heading. Begin each body with an introductory paragraph or ## H2 section.
 
-EXAMPLE:
+⚠️ MULTI-LANGUAGE EFFICIENCY — If entries need multiple language translations, include all translations inside each entry object via translations map. Do NOT create entries first and then loop updateContentEntry per language — that wastes N×entries API calls.
+
+EXAMPLE (single language):
 {
   "modelSlug": "blog-posts",
   "entries": [
@@ -60,6 +62,22 @@ EXAMPLE:
       "title": "Second Post",
       "slug": "second-post",
       "customFields": { "category": "tech" }
+    }
+  ]
+}
+
+EXAMPLE (multi-language — all translations in one call):
+{
+  "modelSlug": "blog-posts",
+  "entries": [
+    {
+      "title": "Halo Dunia",
+      "slug": "halo-dunia",
+      "status": "published",
+      "translations": {
+        "en": { "title": "Hello World", "customFields": { "localized_slug": "hello-world" } },
+        "tr": { "title": "Merhaba Dünya", "customFields": { "localized_slug": "merhaba-dunya" } }
+      }
     }
   ]
 }`,

@@ -60,6 +60,8 @@ export const createContentModel: Tool = {
     name: "createContentModel",
     description: `Create a new content model with optional field definitions.
 
+⚠️ CHECK FIRST — Before creating a model, call listContentModels to verify the slug doesn't already exist. Creating a duplicate slug fails with an error and wastes a round-trip. If the model already exists, use getContentModel + addField / updateField instead.
+
 MODEL TYPES (kind):
 - collection (default): Multiple entries (e.g., blog posts, products).
 - single: Single entry only (e.g., homepage hero, site settings).

@@ -49,8 +49,13 @@ FILTER OPTIONS:
 - searchLanguages: Limit search scope to specific language codes (e.g., ["tr", "de"]). Default: all languages.
 - searchInBody: Also search body markdown content. Only effective when modelSlug is provided and the model has a body field. Default: false.
 - status: Filter by status ("draft", "published", "archived")
-- language: Filter entries that have this language translation
-- missingLanguage: Filter entries MISSING a translation for this language
+- language: Filter entries that HAVE this language translation. Example: language="fr" returns entries already translated into French.
+- missingLanguage: Filter entries MISSING a translation for this language. Use this to find untranslated content.
+
+⚠️ CRITICAL — language vs missingLanguage:
+- language="fr"        → returns entries that ALREADY HAVE French
+- missingLanguage="fr" → returns entries that NEED French (untranslated)
+Never use language= when looking for content that needs translating — always use missingLanguage=.
 
 RESPONSE MODES:
 - compact: When true, returns minimal fields (id, sl, st, t, langs only) — drops dates, model ref, and custom fields. ~65% token reduction. Use when you only need to browse entry titles/statuses.
