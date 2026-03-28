@@ -53,7 +53,7 @@ const loadRelatedPosts = createServerFn({ method: "GET" })
     (data: { slug: string; category: string | null; locale: string }) => data,
   )
   .handler(async ({ data }) => {
-    return getRelatedPosts(data.slug, data.category, data.locale);
+    return getRelatedPosts(data.slug, data.category, data.locale, 5);
   });
 
 export const Route = createFileRoute("/$locale/blog/$slug")({
@@ -364,13 +364,12 @@ function BlogPostPage() {
                     <ul className="flex flex-wrap gap-2">
                       {internalLinks.map((link) => (
                         <li key={link.path}>
-                          <Link
-                            to={`/$locale/${link.path}`}
-                            params={{ locale }}
+                          <a
+                            href={`/${locale}/${link.path}/`}
                             className="inline-flex items-center gap-1 rounded-lg border border-mist-200 bg-mist-50/50 px-3 py-1.5 text-sm text-mist-700 hover:bg-mist-100 hover:text-mist-900 transition-colors"
                           >
                             {link.anchor}
-                          </Link>
+                          </a>
                         </li>
                       ))}
                     </ul>
@@ -390,7 +389,7 @@ function BlogPostPage() {
 
         {/* Related posts */}
         {relatedPosts.length > 0 && (
-          <div className="mx-auto max-w-5xl px-6 lg:px-10 pb-16">
+          <div className="mx-auto max-w-7xl px-6 lg:px-10 pb-16">
             <RelatedPosts posts={relatedPosts} locale={locale} />
           </div>
         )}
@@ -432,7 +431,7 @@ function BlogPostNotFound() {
             })}
           </p>
           <Link
-            to="/$locale/blog"
+            to="/$locale/blog/"
             params={{ locale }}
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
           >

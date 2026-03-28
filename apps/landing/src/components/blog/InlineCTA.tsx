@@ -10,14 +10,6 @@ interface InlineCTAProps {
   readonly slug?: string;
 }
 
-/**
- * A contextual CTA component designed to sit within blog body content.
- *
- * - "default" variant: light background card with border and a button.
- * - "subtle" variant: minimal inline text with an arrow link.
- *
- * Both variants are capped at ~80px height on mobile to stay non-intrusive.
- */
 export default function InlineCTA({
   title,
   description,
@@ -34,6 +26,7 @@ export default function InlineCTA({
       content_id: slug,
     });
   };
+
   if (variant === "subtle") {
     return (
       <aside
@@ -59,24 +52,39 @@ export default function InlineCTA({
 
   return (
     <aside
-      className="my-8 flex flex-col gap-2 rounded-xl border border-mist-150 bg-mist-50/60 px-5 py-4 not-prose sm:flex-row sm:items-center sm:justify-between"
+      className="my-10 not-prose overflow-hidden rounded-2xl bg-mist-950"
       aria-label={title}
     >
-      <div className="min-w-0">
-        <p className="text-sm font-medium text-mist-900 leading-snug">
-          {title}
-        </p>
-        <p className="mt-0.5 text-sm text-mist-600 leading-snug truncate">
-          {description}
-        </p>
+      <div className="relative px-7 py-7 sm:px-8 sm:py-8">
+        {/* Decorative radial glow */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-30"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 80% at 100% 110%, rgba(255,255,255,0.12) 0%, transparent 70%)",
+          }}
+        />
+
+        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-[15px] font-semibold leading-snug text-white">
+              {title}
+            </p>
+            <p className="mt-1.5 text-sm leading-relaxed text-white/60">
+              {description}
+            </p>
+          </div>
+          <a
+            href={ctaUrl}
+            onClick={handleCtaClick}
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-mist-950 transition-all hover:bg-white/90 hover:shadow-lg"
+          >
+            {ctaText}
+            <SpriteIcon name="arrow-right" className="w-4 h-4" />
+          </a>
+        </div>
       </div>
-      <a
-        href={ctaUrl}
-        onClick={handleCtaClick}
-        className="inline-flex shrink-0 items-center justify-center rounded-full bg-mist-950 px-4 py-2 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-      >
-        {ctaText}
-      </a>
     </aside>
   );
 }
