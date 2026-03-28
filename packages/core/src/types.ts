@@ -114,14 +114,6 @@ export interface NormalizedConfig extends I18nCoreConfig, ParsedProject {
   manifestCacheTtlMs: number;
   fetchTimeout: number;
   retryCount: number;
-  /**
-   * True when NODE_ENV=development.
-   * In dev mode: Cache-Control: no-store is sent on every CDN fetch to bypass
-   * CF's outer HTTP cache and always get fresh translations immediately after publish.
-   * In production: no-store is omitted so CF's shared edge cache can serve
-   * cached responses without invoking the CDN Worker on every request.
-   */
-  devMode: boolean;
 }
 
 /**

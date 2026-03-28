@@ -62,7 +62,6 @@ export const normalizeConfig = (config: I18nCoreConfig): NormalizedConfig => {
       (devMode ? DEFAULT_CACHE_TTL_MS_DEV : DEFAULT_CACHE_TTL_MS_PROD),
     fetchTimeout: config.fetchTimeout ?? DEFAULT_FETCH_TIMEOUT_MS,
     retryCount: config.retryCount ?? DEFAULT_RETRY_COUNT,
-    devMode,
   };
 };
 
