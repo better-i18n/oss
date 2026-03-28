@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { trackCtaClick } from "@/lib/analytics-events";
 
@@ -10,14 +13,56 @@ interface InlineCTAProps {
   readonly slug?: string;
 }
 
+const ROTATING_MESSAGES = [
+  {
+    title: "Ship multilingual products faster",
+    description:
+      "Better i18n automates translation workflows so you can focus on building.",
+  },
+  {
+    title: "Translate with AI. Ship with confidence.",
+    description:
+      "Context-aware AI translations, Git-native sync, and instant CDN delivery.",
+  },
+  {
+    title: "Free to get started — no credit card required",
+    description:
+      "Add localization to your app in minutes and go global from day one.",
+  },
+  {
+    title: "Already trusted by 66+ teams worldwide",
+    description:
+      "Join growing teams who ship faster and reach more users with Better i18n.",
+  },
+  {
+    title: "From code to global in under 5 minutes",
+    description:
+      "One SDK, instant CDN delivery, zero build step — localization that scales.",
+  },
+] as const;
+
 export default function InlineCTA({
-  title,
-  description,
-  ctaText,
   ctaUrl,
   variant = "default",
   slug,
 }: InlineCTAProps) {
+  const [index, setIndex] = useState(0);
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFading(true);
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % ROTATING_MESSAGES.length);
+        setFading(false);
+      }, 300);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const { title, description } = ROTATING_MESSAGES[index];
+  const ctaText = "Get started free";
+
   const handleCtaClick = () => {
     trackCtaClick({
       cta_id: variant === "subtle" ? "blog_inline_cta_subtle" : "blog_inline_cta",
@@ -67,7 +112,11 @@ export default function InlineCTA({
         />
 
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
+          {/* Rotating text */}
+          <div
+            className="min-w-0 transition-opacity duration-300"
+            style={{ opacity: fading ? 0 : 1 }}
+          >
             <p className="text-[15px] font-semibold leading-snug text-white">
               {title}
             </p>
@@ -75,13 +124,26 @@ export default function InlineCTA({
               {description}
             </p>
           </div>
+
+          {/* Shimmer CTA button */}
           <a
             href={ctaUrl}
             onClick={handleCtaClick}
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-mist-950 transition-all hover:bg-white/90 hover:shadow-lg"
+            className="relative inline-flex shrink-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-mist-950 transition-all hover:bg-white/90 hover:shadow-lg"
           >
-            {ctaText}
-            <SpriteIcon name="arrow-right" className="w-4 h-4" />
+            {/* Shimmer sweep */}
+            <span
+              className="pointer-events-none absolute inset-0 -translate-x-full"
+              aria-hidden="true"
+              style={{
+                background:
+                  "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.6) 50%, transparent 60%)",
+                animation: "shimmer-sweep 2.5s ease-in-out infinite",
+                animationDelay: "1s",
+              }}
+            />
+            <span className="relative">{ctaText}</span>
+            <SpriteIcon name="arrow-right" className="relative w-4 h-4" />
           </a>
         </div>
       </div>
