@@ -8,6 +8,7 @@ interface Metric {
   descKey: string;
   defaultDesc: string;
   icon: ReactNode;
+  href?: string;
 }
 
 const SVG_PROPS: SVGProps<SVGSVGElement> = {
@@ -90,6 +91,7 @@ const METRICS: Metric[] = [
     defaultLabel: "Uptime",
     descKey: "uptimeDesc",
     defaultDesc: "Enterprise-grade reliability & SLA",
+    href: "https://status.better-i18n.com/",
     icon: (
       <svg {...SVG_PROPS}>
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -138,6 +140,19 @@ export default function MetricsBadges() {
                 <p className="mt-1 text-sm text-mist-500">
                   {t(metric.descKey, { defaultValue: metric.defaultDesc })}
                 </p>
+                {metric.href && (
+                  <a
+                    href={metric.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 text-xs text-mist-400 hover:text-mist-600 transition-colors"
+                  >
+                    {t("statusPage", { defaultValue: "Status page" })}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-3">
+                      <path d="M7 17L17 7M17 7H7M17 7v10" />
+                    </svg>
+                  </a>
+                )}
               </div>
             </div>
           ))}
