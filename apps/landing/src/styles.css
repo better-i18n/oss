@@ -19,6 +19,12 @@
   font-display: swap;
 }
 
+/* Button shimmer sweep animation */
+@keyframes shimmer-sweep {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(250%) skewX(-15deg); }
+}
+
 /* Dark mode'u komple devre dışı bırak - landing sadece light tema */
 /* Asla eşleşmeyecek selector ile dark stilleri tamamen devre dışı */
 @custom-variant dark (&:where(.force-dark));

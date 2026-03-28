@@ -49,7 +49,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
               params={{ locale, slug: post.slug }}
               className="group flex flex-col rounded-2xl border border-mist-200 bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-mist-300 hover:shadow-md"
             >
-              <div className="aspect-[1200/630] overflow-hidden bg-mist-100">
+              <div className="aspect-[16/7] overflow-hidden bg-mist-100">
                 <img
                   src={bannerUrl}
                   alt={post.title}
@@ -58,7 +58,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
                 />
               </div>
 
-              <div className="flex flex-col flex-1 justify-between p-5">
+              <div className="flex flex-col flex-1 justify-between p-4">
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     {post.category && (
