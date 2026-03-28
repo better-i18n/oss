@@ -93,6 +93,39 @@ export function createConfiguredServer(
         tools: {},
         logging: {},
       },
+      instructions: `Better i18n Content MCP — manages multilingual content entries and content models.
+
+## Workflow rules (follow strictly)
+
+### Before creating a model
+Always call listContentModels first. If the slug already exists, use getContentModel + addField/updateField instead of createContentModel.
+
+### Creating entries in multiple languages
+Include ALL language translations in the INITIAL createContentEntry call via the translations map.
+Do NOT create first, then loop updateContentEntry per language — that wastes N extra API calls.
+
+### Updating entries in bulk
+If you need to update 2+ entries → use bulkUpdateEntries, not a loop of updateContentEntry calls.
+If you need to create 2+ entries → use bulkCreateEntries, not a loop of createContentEntry calls.
+
+### Localized custom fields
+Custom fields with localized=true store a separate value per language.
+- Setting top-level customFields (metadata-only mode) → updates SOURCE LANGUAGE only
+- To update for a specific language → use languageCode or translations.{lang}.customFields
+
+### Slug vs localized slug
+- top-level slug: universal CMS identifier, shared across all languages. Do NOT use for per-language URLs.
+- per-language URL slugs must be a separate custom field with localized=true (e.g., "localized_slug"), set via translations.{lang}.customFields
+
+### Finding untranslated content
+- language="fr"        → entries that ALREADY HAVE French (do not use for finding missing translations)
+- missingLanguage="fr" → entries that NEED French (use this when looking for untranslated content)
+Never use language= when you want to find content that needs translating — always use missingLanguage=.
+
+### Typical batch-translate workflow
+1. listContentEntries({ missingLanguage: "X" })  — find untranslated entries
+2. bulkUpdateEntries with translations map        — update all at once (max 20 per call)
+3. bulkPublishEntries                             — publish if needed`,
     },
   );
 

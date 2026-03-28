@@ -53,6 +53,14 @@ Each entry supports the same modes as updateContentEntry:
 - Multi-language: provide translations map — { langCode: { title, bodyMarkdown, customFields } }
 - Both modes can be combined per entry
 
+⚠️ LOCALIZED CUSTOM FIELDS — If a custom field has localized=true, setting it via top-level customFields only updates the SOURCE LANGUAGE. To update a localized field for a specific language, use languageCode (single-language mode) or translations map (multi-language mode).
+
+WRONG (only sets source language for localized field):
+{ "entryId": "...", "customFields": { "localized_slug": "my-slug" } }
+
+CORRECT — via translations map:
+{ "entryId": "...", "translations": { "en": { "customFields": { "localized_slug": "my-slug" } } } }
+
 status field: "draft" saves without publishing (default: published when omitted).
 Partial success is possible — check the failed array in the response.
 
