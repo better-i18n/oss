@@ -1,5 +1,5 @@
 import { useT } from "@/lib/i18n";
-import type { ReactNode } from "react";
+import type { ReactNode, SVGProps } from "react";
 
 interface Metric {
   value: string;
@@ -10,6 +10,16 @@ interface Metric {
   icon: ReactNode;
 }
 
+const SVG_PROPS: SVGProps<SVGSVGElement> = {
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.75,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  className: "size-5",
+};
+
 const METRICS: Metric[] = [
   {
     value: "1M+",
@@ -18,44 +28,44 @@ const METRICS: Metric[] = [
     descKey: "dailyRequestsDesc",
     defaultDesc: "Translation requests served from the edge daily",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="size-5">
+      <svg {...SVG_PROPS}>
         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
       </svg>
     ),
   },
   {
-    value: "370K+",
+    value: "10M+",
     labelKey: "translationsManaged",
     defaultLabel: "Translations Managed",
     descKey: "translationsManagedDesc",
     defaultDesc: "Translation keys managed across all projects",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="size-5">
+      <svg {...SVG_PROPS}>
         <path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6" />
       </svg>
     ),
   },
   {
-    value: "47",
+    value: "25",
     labelKey: "languages",
     defaultLabel: "Languages",
     descKey: "languagesDesc",
     defaultDesc: "Covering 95%+ of internet users",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="size-5">
+      <svg {...SVG_PROPS}>
         <circle cx="12" cy="12" r="10" />
         <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
       </svg>
     ),
   },
   {
-    value: "6",
+    value: "10+",
     labelKey: "sdks",
-    defaultLabel: "SDKs",
+    defaultLabel: "Integrations",
     descKey: "sdksDesc",
-    defaultDesc: "React, Next.js, Expo, Flutter & more",
+    defaultDesc: "React, Next.js, Expo, Flutter, Swift & more",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="size-5">
+      <svg {...SVG_PROPS}>
         <rect x="2" y="7" width="20" height="14" rx="2" />
         <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2M12 12v5M9.5 14.5h5" />
       </svg>
@@ -68,7 +78,7 @@ const METRICS: Metric[] = [
     descKey: "cdnLatencyDesc",
     defaultDesc: "Global edge delivery, no build step",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="size-5">
+      <svg {...SVG_PROPS}>
         <circle cx="12" cy="12" r="10" />
         <polyline points="12 6 12 12 16 14" />
       </svg>
@@ -81,7 +91,7 @@ const METRICS: Metric[] = [
     descKey: "uptimeDesc",
     defaultDesc: "Enterprise-grade reliability & SLA",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="size-5">
+      <svg {...SVG_PROPS}>
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
         <path d="M9 12l2 2 4-4" />
       </svg>
@@ -95,7 +105,6 @@ export default function MetricsBadges() {
   return (
     <section aria-label="Platform metrics" className="py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-
         <div className="mb-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="inline-flex items-center rounded-full border border-mist-200 bg-white px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-mist-600">
@@ -133,7 +142,6 @@ export default function MetricsBadges() {
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );
