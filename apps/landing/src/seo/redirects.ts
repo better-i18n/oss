@@ -34,8 +34,7 @@ export const AUDIENCE_REDIRECTS: readonly RedirectEntry[] = [
  * Cannibalized pages redirect to their cluster's pillar page.
  */
 export const SEO_CONTENT_REDIRECTS: readonly RedirectEntry[] = [
-  // Cluster A: International SEO (8 pages → i18n/international-seo)
-  { from: "i18n/multilingual-seo", to: "i18n/international-seo", status: 301 },
+  // Cluster A: International SEO (8 archived pages → i18n/international-seo)
   { from: "i18n/multilingual-website-seo", to: "i18n/international-seo", status: 301 },
   { from: "i18n/technical-multilingual-seo", to: "i18n/international-seo", status: 301 },
   { from: "i18n/technical-international-seo", to: "i18n/international-seo", status: 301 },
