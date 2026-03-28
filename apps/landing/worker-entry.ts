@@ -30,8 +30,7 @@ const SEO_REDIRECTS = new Map<string, string>([
   ["for-gaming", "for-developers"],
   ["for-education", "for-enterprises"],
   ["for-healthcare", "for-enterprises"],
-  // Cluster A: International SEO (9 → 1)
-  ["i18n/multilingual-seo", "i18n/international-seo"],
+  // Cluster A: International SEO (8 archived pages → 1)
   ["i18n/multilingual-website-seo", "i18n/international-seo"],
   ["i18n/technical-multilingual-seo", "i18n/international-seo"],
   ["i18n/technical-international-seo", "i18n/international-seo"],
