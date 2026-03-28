@@ -12,29 +12,26 @@ interface Metric {
 
 const METRICS: Metric[] = [
   {
-    value: "200+",
-    labelKey: "apiEndpoints",
-    defaultLabel: "API Endpoints",
-    descKey: "apiEndpointsDesc",
-    defaultDesc: "Full REST & webhook coverage",
+    value: "1M+",
+    labelKey: "dailyRequests",
+    defaultLabel: "Daily CDN Requests",
+    descKey: "dailyRequestsDesc",
+    defaultDesc: "Translation requests served from the edge daily",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="size-5">
-        <path d="M7 8l-4 4 4 4M17 8l4 4-4 4M14 4l-4 16" />
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
       </svg>
     ),
   },
   {
-    value: "22",
-    labelKey: "aiTools",
-    defaultLabel: "AI Tools",
-    descKey: "aiToolsDesc",
-    defaultDesc: "MCP-native for IDE integration",
+    value: "370K+",
+    labelKey: "translationsManaged",
+    defaultLabel: "Translations Managed",
+    descKey: "translationsManagedDesc",
+    defaultDesc: "Translation keys managed across all projects",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="size-5">
-        <path d="M12 2a4 4 0 014 4v1h1a3 3 0 010 6h-1v1a4 4 0 01-8 0v-1H7a3 3 0 010-6h1V6a4 4 0 014-4z" />
-        <circle cx="9" cy="9" r="0.5" fill="currentColor" stroke="none" />
-        <circle cx="15" cy="9" r="0.5" fill="currentColor" stroke="none" />
-        <path d="M9.5 13.5a3 3 0 005 0" />
+        <path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6" />
       </svg>
     ),
   },
@@ -112,7 +109,7 @@ export default function MetricsBadges() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {METRICS.map((metric) => (
             <div
               key={metric.labelKey}
