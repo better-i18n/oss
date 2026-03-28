@@ -51,20 +51,30 @@ Never call this tool in a loop — always batch with bulkCreateEntries.
 
 IMPORTANT: Source language may not be English. If sl='tr', write Turkish for title/customFields.
 
-Use translations to add target language translations in the same request.
+⚠️ MULTI-LANGUAGE EFFICIENCY — If you need this entry in multiple languages, pass ALL translations in THIS call via the translations map. Do NOT create the entry first, then call updateContentEntry separately for each language — that wastes N extra API calls.
+
+⚠️ LOCALIZED CUSTOM FIELDS — Custom fields with localized=true must be set per-language via translations.{lang}.customFields. Setting them at top-level customFields only applies to the source language.
+
 Translation language codes are normalized to lowercase automatically (e.g., "EN" → "en").
 
 STATUS:
 - status controls the entry's publish state (default: "draft")
 - All translations saved via this tool are set to "published" status by default (save = publish for content workflow)
 
-EXAMPLE (project sl='tr'):
+EXAMPLE (project sl='tr', with localized custom field):
 {
   "title": "Merhaba Dünya",
+  "slug": "merhaba-dunya",
   "customFields": { "subtitle": "Alt başlık" },
   "translations": {
-    "en": { "title": "Hello World", "customFields": { "subtitle": "Subtitle" } },
-    "de": { "title": "Hallo Welt" }
+    "en": {
+      "title": "Hello World",
+      "customFields": { "subtitle": "Subtitle", "localized_slug": "hello-world" }
+    },
+    "id": {
+      "title": "Halo Dunia",
+      "customFields": { "subtitle": "Subjudul", "localized_slug": "halo-dunia" }
+    }
   }
 }`,
     inputSchema: {
