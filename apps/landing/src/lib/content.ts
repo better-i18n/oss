@@ -14,6 +14,8 @@ export interface BlogPost {
   slug: string;
   status: string;
   publishedAt: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
   title: string;
   body: string | null;
   bodyHtml: string | null;
@@ -345,6 +347,8 @@ export async function getBlogPost(
       slug: entry.slug,
       status: entry.status,
       publishedAt: entry.publishedAt,
+      createdAt: (raw.c_at as string | null) ?? (raw.createdAt as string | null) ?? null,
+      updatedAt: (raw.u_at as string | null) ?? (raw.updatedAt as string | null) ?? null,
       title: entry.title,
       body: entry.body,
       bodyHtml,

@@ -123,8 +123,8 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     const baseTags = formatMetaTags(blogMeta, {
       locale,
       locales: availableLanguages.length > 0 ? [...availableLanguages] : undefined,
-      publishedTime: post?.publishedAt || "",
-      modifiedTime: post?.publishedAt || "",
+      publishedTime: post?.publishedAt || post?.createdAt || "",
+      modifiedTime: post?.updatedAt || post?.publishedAt || post?.createdAt || "",
       author: authorName,
       noindex: getLocaleTier(locale) === "tier3",
     });
@@ -153,8 +153,8 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       description: excerpt,
       url: canonicalUrl,
       image: dynamicOgImage,
-      publishedTime: post.publishedAt || "",
-      modifiedTime: post.publishedAt || "",
+      publishedTime: post.publishedAt || post.createdAt || "",
+      modifiedTime: post.updatedAt || post.publishedAt || post.createdAt || "",
       author: {
         name: authorName,
       },
