@@ -69,7 +69,8 @@ const METRICS: Metric[] = [
     defaultDesc: "Global edge delivery, no build step",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="size-5">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
       </svg>
     ),
   },
@@ -109,7 +110,7 @@ export default function MetricsBadges() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {METRICS.map((metric) => (
             <div
               key={metric.labelKey}
