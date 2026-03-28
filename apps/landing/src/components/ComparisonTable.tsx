@@ -465,6 +465,7 @@ interface OtherComparisonsProps {
 export function OtherComparisons({ currentSlug, locale, title }: OtherComparisonsProps) {
   const t = useT("compare");
   const others = allComparisons.filter((c) => c.slug !== currentSlug);
+  const vsLabelTemplate = t("vsLabel", { defaultValue: "Better i18n vs {name}" });
 
   return (
     <section className="py-16 border-t border-mist-200">
@@ -481,7 +482,7 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
               className="group flex items-center justify-between rounded-xl border border-mist-200 bg-white p-4 hover:border-mist-300 hover:shadow-md transition-all"
             >
               <span className="text-sm font-medium text-mist-950">
-                {t("vsLabel", { name: competitor.name, defaultValue: "Better i18n vs {name}" })}
+                {vsLabelTemplate.replace("{name}", competitor.name)}
               </span>
               <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" aria-hidden="true" />
             </Link>

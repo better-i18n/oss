@@ -17,7 +17,7 @@ const forPages: PageLink[] = [
 ];
 
 const resourcePages: PageLink[] = [
-  { href: "/$locale/features", titleKey: "features", descKey: "featuresDesc", titleFallback: "Features", descFallback: "Everything you need to ship globally" },
+  { href: "/$locale/features/", titleKey: "features", descKey: "featuresDesc", titleFallback: "Features", descFallback: "Everything you need to ship globally" },
   { href: "/$locale/pricing", titleKey: "pricing", descKey: "pricingDesc", titleFallback: "Pricing", descFallback: "Simple, transparent pricing for every team" },
   { href: "/$locale/i18n/best-tms", titleKey: "bestTms", descKey: "bestTmsDesc", titleFallback: "Best TMS", descFallback: "Compare translation management systems" },
 ];
@@ -51,7 +51,7 @@ type AllowedRoute =
   | "/$locale/for-developers"
   | "/$locale/for-translators"
   | "/$locale/for-product-teams"
-  | "/$locale/features"
+  | "/$locale/features/"
   | "/$locale/pricing"
   | "/$locale/i18n/best-tms"
   | "/$locale/i18n/react"
