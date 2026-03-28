@@ -493,7 +493,7 @@ export default function Features() {
               </p>
             </div>
             <Link
-              to="/$locale/features"
+              to="/$locale/features/"
               params={{ locale: locale || "en" }}
               className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-mist-700 hover:text-mist-950 transition-colors"
             >
