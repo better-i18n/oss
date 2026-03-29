@@ -114,7 +114,7 @@ function IntegrationDetailPage() {
                 {t("detail.nextStep.eyebrow", { defaultValue: "Next step" })}
               </div>
               <h2 className="mt-3 font-display text-xl/[1.1] font-medium text-mist-950">
-                {t("detail.nextStep.title", { defaultValue: "Put {name} into a real workflow" }).replace("{name}", integration.name)}
+                {t("detail.nextStep.title", { name: integration.name, defaultValue: "Connect {name} to your workflow" })}
               </h2>
               <p className="mt-3 text-sm/7 text-mist-700">
                 {t("detail.nextStep.body", { defaultValue: "Start in the dashboard, then connect guides and rollout steps when your team is ready." })}
@@ -163,21 +163,21 @@ function IntegrationDetailPage() {
                 {t("detail.workflowFit.eyebrow", { defaultValue: "Workflow fit" })}
               </div>
               <h2 className="mt-4 font-display text-2xl/[1.08] font-medium tracking-[-0.02em] text-mist-950">
-                {t("detail.workflowFit.title", { defaultValue: "How {name} fits into Better" }).replace("{name}", integration.name)}
+                {t("detail.workflowFit.title", { name: integration.name, defaultValue: "How {name} works inside Better" })}
               </h2>
             </div>
             <div className="mt-8 grid gap-6 lg:grid-cols-3">
               <WorkflowRow
-                title={t("detail.workflowFit.discovery.title", { defaultValue: "Discovery" })}
-                body={t("detail.workflowFit.discovery.body", { defaultValue: "Use {name} inside a clearer localization workflow instead of relying on one-off scripts or scattered locale files." }).replace("{name}", integration.name)}
+                title={t("detail.workflowFit.discovery.title", { defaultValue: "Detect" })}
+                body={t("detail.workflowFit.discovery.body", { name: integration.name, defaultValue: "Pull source strings from your codebase or connect your {name} repository. Keys arrive in Better with structure and context intact." })}
               />
               <WorkflowRow
                 title={t("detail.workflowFit.review.title", { defaultValue: "Review" })}
-                body={t("detail.workflowFit.review.body", { defaultValue: "Keep approval and rollout steps visible so engineers, product teams, and reviewers are looking at the same system." })}
+                body={t("detail.workflowFit.review.body", { defaultValue: "Run AI translation, assign human reviewers, and gate approval before any change reaches production. Everything auditable in one place." })}
               />
               <WorkflowRow
-                title={t("detail.workflowFit.delivery.title", { defaultValue: "Delivery" })}
-                body={t("detail.workflowFit.delivery.body", { defaultValue: "Ship through the CDN or connect guide-based implementation paths when your stack needs a deeper runtime integration." })}
+                title={t("detail.workflowFit.delivery.title", { defaultValue: "Ship" })}
+                body={t("detail.workflowFit.delivery.body", { name: integration.name, defaultValue: "Publish to the CDN edge or push translations back to {name}. Copy changes go live without triggering a new app deploy." })}
               />
             </div>
           </div>
@@ -238,7 +238,7 @@ function IntegrationBrandMark({ item }: { item: IntegrationItem }) {
   return null;
 }
 
-function getFitPoints(slug: string, t: (key: string, opts?: { defaultValue?: string }) => string) {
+function getFitPoints(slug: string, t: (key: string, opts?: Record<string, unknown>) => string) {
   const shared = [
     {
       title: t("detail.fitPoints.shared.operationalDrift.title", { defaultValue: "Less operational drift" }),
