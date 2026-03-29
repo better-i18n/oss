@@ -11,7 +11,7 @@ import './global.css';
 
 function SidebarFooter() {
   return (
-    <div className="border-t border-fd-border pt-3 mt-2 flex flex-col gap-1">
+    <div className="border-t border-fd-border pt-3 mt-2">
       <a
         href="https://help.better-i18n.com/"
         target="_blank"
@@ -22,17 +22,6 @@ function SidebarFooter() {
           <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>
         </svg>
         Help Center
-      </a>
-      <a
-        href="https://x.com/betteri18n"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-fd-muted-foreground hover:text-fd-foreground hover:bg-fd-accent transition-colors"
-      >
-        <svg className="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-        </svg>
-        @betteri18n
       </a>
     </div>
   );
