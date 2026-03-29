@@ -14,11 +14,6 @@ export function baseOptions(): BaseLayoutProps {
     githubUrl: 'https://github.com/better-i18n/oss',
     links: [
       {
-        text: 'Agent Skill',
-        url: '/mcp/agent-skill',
-        icon: <Sparkles className="size-4" />,
-      },
-      {
         text: 'llms.txt',
         url: '/llms.txt',
         external: true,
@@ -29,6 +24,11 @@ export function baseOptions(): BaseLayoutProps {
         url: '/llms-full.txt',
         external: true,
         icon: <FileText className="size-4" />,
+      },
+      {
+        text: 'Agent Skill',
+        url: '/mcp/agent-skill',
+        icon: <Sparkles className="size-4" />,
       },
     ],
   };
