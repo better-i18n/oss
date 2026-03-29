@@ -23,43 +23,43 @@ import { MobileNav } from "./MobileNav";
 const NAV_INTEGRATIONS: Array<{
   slug: string;
   name: string;
-  description: string;
+  defaultDescription: string;
   Icon: React.ComponentType<{ className?: string }>;
 }> = [
   {
     slug: "github",
     name: "GitHub",
-    description: "Review translation PRs in your Git workflow",
+    defaultDescription: "Review translation PRs in your Git workflow",
     Icon: IconGithub,
   },
   {
     slug: "mcp-server",
     name: "MCP Server",
-    description: "AI agents manage translations via Claude, Cursor",
+    defaultDescription: "AI agents manage translations via Claude, Cursor",
     Icon: IconModelcontextprotocol,
   },
   {
     slug: "global-cdn",
     name: "Global CDN",
-    description: "Serve translations from 300+ edge locations",
+    defaultDescription: "Serve translations from 300+ edge locations",
     Icon: IconCloudySparkle,
   },
   {
     slug: "nextjs",
     name: "Next.js",
-    description: "App Router native with CDN-first delivery",
+    defaultDescription: "App Router native with CDN-first delivery",
     Icon: NextjsIcon,
   },
   {
     slug: "cli",
     name: "CLI",
-    description: "Scan, sync, and automate from the terminal",
+    defaultDescription: "Scan, sync, and automate from the terminal",
     Icon: IconConsoleSimple,
   },
   {
     slug: "ai-translation",
     name: "AI Translation",
-    description: "Generate drafts, review before shipping",
+    defaultDescription: "Generate drafts, review before shipping",
     Icon: IconAiTranslate,
   },
 ];
@@ -468,7 +468,7 @@ export default function Header({ className }: { className?: string }) {
                           </span>
                           <span className="min-w-0">
                             <span className="block text-sm font-medium text-mist-950 leading-snug">{item.name}</span>
-                            <span className="block text-xs text-mist-500 leading-relaxed mt-0.5">{item.description}</span>
+                            <span className="block text-xs text-mist-500 leading-relaxed mt-0.5">{t(`integrations.featured.${item.slug}.description`, { defaultValue: item.defaultDescription })}</span>
                           </span>
                         </Link>
                       ))}
