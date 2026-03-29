@@ -152,6 +152,16 @@ npm install @better-i18n/mcp
 
 Connect AI assistants like [Claude](https://claude.ai), [Cursor](https://cursor.com), or [Windsurf](https://windsurf.com) to your translation workflow through the [Model Context Protocol](https://modelcontextprotocol.io/).
 
+### Agent Skill
+
+Give your AI agent permanent better-i18n knowledge — SDK setup, key naming, CDN behavior, GitHub sync, and MCP tool usage — without pasting prompts each session.
+
+```bash
+npx skills add better-i18n/skills
+```
+
+Works with Claude Code, Cursor, Windsurf, and any agent that supports custom instructions. See [github.com/better-i18n/skills](https://github.com/better-i18n/skills).
+
 ## Documentation
 
 Visit [docs.better-i18n.com](https://docs.better-i18n.com) for full documentation:
