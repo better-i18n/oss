@@ -11,7 +11,12 @@
  */
 
 import type { ComponentType } from "react";
-import { IconRobot } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import {
+  IconModelcontextprotocol,
+  IconConsoleSimple,
+  IconCloudySparkle,
+  IconAiTranslate,
+} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import {
   NextjsIcon,
   TanStackIcon,
@@ -46,6 +51,7 @@ export type IntegrationItem = IntegrationCmsItem & {
 // ─── Icon component map (icon_name → React component) ────────────────
 
 const COMPONENT_ICON_MAP: Record<string, ComponentType<{ className?: string }>> = {
+  // Framework icons
   NextjsIcon,
   TanStackIcon,
   ViteIcon,
@@ -57,7 +63,11 @@ const COMPONENT_ICON_MAP: Record<string, ComponentType<{ className?: string }>> 
   SvelteIcon,
   NuxtIcon,
   AstroIcon,
-  IconRobot,
+  // Central icons (developer tools + AI)
+  IconModelcontextprotocol,
+  IconConsoleSimple,
+  IconCloudySparkle,
+  IconAiTranslate,
 };
 
 // ─── Icon resolution ─────────────────────────────────────────────────
