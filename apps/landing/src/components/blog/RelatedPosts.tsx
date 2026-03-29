@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { BlogPostListItem } from "@/lib/content";
-import { formatPostDate, getTagColor } from "@/lib/content";
+import { getTagColor } from "@/lib/content";
 import { buildOgImageUrl } from "@/lib/meta";
 import { useT } from "@/lib/i18n";
 import { SpriteIcon } from "@/components/SpriteIcon";
