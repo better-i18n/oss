@@ -451,7 +451,6 @@ export function LocaleDropdownBase({
   const [menuState, setMenuState] = useState<"closed" | "open" | "closing">("closed");
   const [focusIndex, setFocusIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
-  const menuRef = useRef<HTMLUListElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isOpen = menuState === "open";
@@ -478,11 +477,12 @@ export function LocaleDropdownBase({
     };
   }, []);
 
-  // open: true always — both elements are always in the DOM, so floating-ui
-  // keeps position pre-calculated. No flash when menu becomes visible via CSS.
+  // strategy: "absolute" — positions relative to container (position:relative).
+  // "fixed" breaks when any ancestor has transform/will-change (creates new
+  // containing block). open:true always so position is pre-calculated.
   const { refs, floatingStyles, placement: resolvedPlacement } = useFloating({
     open: true,
-    strategy: "fixed",
+    strategy: "absolute",
     placement: placementProp === "top" ? "top-end" : "bottom-end",
     middleware: [offset(4), flip({ padding: 16 }), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
@@ -556,11 +556,12 @@ export function LocaleDropdownBase({
 
   // Scroll focused item into view
   useEffect(() => {
-    if (focusIndex >= 0 && menuRef.current) {
-      const items = menuRef.current.querySelectorAll("[data-better-locale-item]");
+    const menu = refs.floating.current;
+    if (focusIndex >= 0 && menu) {
+      const items = menu.querySelectorAll("[data-better-locale-item]");
       items[focusIndex]?.scrollIntoView({ block: "nearest" });
     }
-  }, [focusIndex]);
+  }, [focusIndex, refs.floating]);
 
   // Loading skeleton
   if (isLoading) {
@@ -649,10 +650,7 @@ export function LocaleDropdownBase({
 
       {/* Menu — always in DOM, visibility controlled by data-state + CSS */}
       <ul
-        ref={(node: HTMLUListElement | null) => {
-          refs.setFloating(node);
-          menuRef.current = node;
-        }}
+        ref={refs.setFloating}
         role="listbox"
         aria-label="Available languages"
         aria-hidden={menuState === "closed"}
