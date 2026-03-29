@@ -23,8 +23,6 @@ export const i18nConfig = {
       "better-i18n.com",
       "hydrogen.shopify.dev",
       "github.com/better-i18n/oss",
-      // Breadcrumb "Home" — universal nav element, not translated
-      "Home",
       // Error boundary title fallback (non-404 route errors — dynamic statusText)
       "Error",
       // SEO / aria labels

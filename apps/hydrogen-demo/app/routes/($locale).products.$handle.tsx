@@ -88,7 +88,7 @@ export default function ProductPage() {
       <div className="border-b border-stone-200 bg-white">
         <div className="page-frame flex items-center gap-2 py-3 text-[12px] text-stone-400">
           <LocaleLink to="/" locale={locale} className="hover:text-stone-700">
-            Home
+            {tp("home", { ns: "common" })}
           </LocaleLink>
           <span>/</span>
           <LocaleLink

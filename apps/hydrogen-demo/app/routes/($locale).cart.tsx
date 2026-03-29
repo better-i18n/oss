@@ -95,7 +95,7 @@ export default function CartPage() {
       <div className="border-b border-stone-200 bg-white">
         <div className="page-frame flex items-center gap-2 py-3 text-[12px] text-stone-400">
           <LocaleLink to="/" locale={locale} className="hover:text-stone-700">
-            Home
+            {tc("home", { ns: "common" })}
           </LocaleLink>
           <span>/</span>
           <span className="text-stone-700">{tc("title")}</span>
