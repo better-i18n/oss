@@ -13,7 +13,22 @@ description: >-
 ---
 
 **better-i18n** — Localization infrastructure for modern apps. CMS + TMS + CDN + AI + MCP.
-Dashboard: https://better-i18n.com · Docs: https://docs.better-i18n.com · CDN: https://cdn.better-i18n.com
+Dashboard: https://better-i18n.com · Docs: https://docs.better-i18n.com · CDN: https://cdn.better-i18n.com · Skills: https://github.com/better-i18n/skills
+
+## Package versions
+
+| Package | Version | Install |
+|---|---|---|
+| `@better-i18n/next` | 0.7.2 | `npm install @better-i18n/next@0.7.2` |
+| `@better-i18n/use-intl` | 0.5.0 | `npm install @better-i18n/use-intl@0.5.0` |
+| `@better-i18n/core` | 0.5.0 | `npm install @better-i18n/core@0.5.0` |
+| `@better-i18n/expo` | 0.7.5 | `npm install @better-i18n/expo@0.7.5` |
+| `@better-i18n/sdk` | 3.2.0 | `npm install @better-i18n/sdk@3.2.0` |
+| `@better-i18n/cli` | 0.2.6 | `npx @better-i18n/cli@0.2.6` |
+| `@better-i18n/mcp` | 0.15.5 | `npx -y @better-i18n/mcp@0.15.5` |
+| `@better-i18n/mcp-content` | 0.8.1 | `npx -y @better-i18n/mcp-content@0.8.1` |
+
+Always check [npm](https://www.npmjs.com/search?q=%40better-i18n) for the latest version before installing.
 
 ## SDK selection
 

@@ -2,6 +2,10 @@
 title: React / Core / Server SDKs
 ---
 
+> **Core docs:** https://docs.better-i18n.com/core.mdx · [API Reference](https://docs.better-i18n.com/core/api-reference.mdx) · [Locale Utilities](https://docs.better-i18n.com/core/locale-utilities.mdx)
+> **use-intl (TanStack Start):** https://docs.better-i18n.com/frameworks/tanstack-start.mdx · [SSR](https://docs.better-i18n.com/frameworks/tanstack-start/ssr.mdx) · [Routing](https://docs.better-i18n.com/frameworks/tanstack-start/routing.mdx)
+> **Vite / React:** https://docs.better-i18n.com/frameworks/vite.mdx · **Hono:** https://docs.better-i18n.com/frameworks/server-sdk/hono.mdx · **Remix:** https://docs.better-i18n.com/frameworks/remix.mdx
+
 # React, Core, and Server SDKs
 
 ## @better-i18n/core — Headless foundation

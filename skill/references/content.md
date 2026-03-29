@@ -2,6 +2,8 @@
 title: Content CMS — Localized Models, SDK, and MCP
 ---
 
+> **Docs:** https://docs.better-i18n.com/sdk.mdx · [Getting Started](https://docs.better-i18n.com/sdk/getting-started.mdx) · [Models & Entries](https://docs.better-i18n.com/sdk/models-and-entries.mdx) · [API Reference](https://docs.better-i18n.com/sdk/api-reference.mdx) · [TypeScript](https://docs.better-i18n.com/sdk/typescript.mdx)
+
 # Content CMS
 
 Better i18n's Content CMS stores structured, multilingual content — blog posts, landing pages, changelogs, product descriptions, legal docs. It's separate from translation keys (which are UI strings).
