@@ -1,3 +1,4 @@
 .shopify
 .dev.vars
 test-cdn.mjs
+.env
