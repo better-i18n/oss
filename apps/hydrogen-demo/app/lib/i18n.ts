@@ -28,11 +28,18 @@ function deriveShopifyLocale(code: string, isDefault: boolean): I18nLocale {
   };
 }
 
+/** BCP 47 locale segment: "tr", "de", "zh-cn", "pt-br" etc. */
+const LOCALE_SEGMENT = /^[a-z]{2}(-[a-z]{2})?$/;
+
 /**
- * Extract locale from URL path prefix, validated against CDN language list.
+ * Extract locale from URL path prefix.
+ *
+ * Validates the segment against the CDN language list when available.
+ * Falls back to a BCP 47 pattern check when the list is empty (cold start /
+ * CDN miss) so the locale is never silently dropped to the default.
  *
  * /tr/products/hat → "tr"
- * /products/hat    → defaultLocale (default)
+ * /products/hat    → defaultLocale
  */
 export function getLocaleFromRequest(
   request: Request,
@@ -42,15 +49,18 @@ export function getLocaleFromRequest(
   const url = new URL(request.url);
   const firstSegment = url.pathname.split("/")[1]?.toLowerCase();
 
-  if (
-    firstSegment &&
-    firstSegment !== defaultLocale &&
-    languages.some((l) => l.code === firstSegment)
-  ) {
-    return {
-      locale: firstSegment,
-      i18n: deriveShopifyLocale(firstSegment, false),
-    };
+  if (firstSegment && firstSegment !== defaultLocale) {
+    const inList =
+      languages.length > 0
+        ? languages.some((l) => l.code === firstSegment)
+        : LOCALE_SEGMENT.test(firstSegment); // CDN unavailable — accept any BCP 47 code
+
+    if (inList) {
+      return {
+        locale: firstSegment,
+        i18n: deriveShopifyLocale(firstSegment, false),
+      };
+    }
   }
 
   return {

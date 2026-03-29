@@ -8,11 +8,12 @@ import {
   type LinksFunction,
   useLoaderData,
   useRouteError,
+  useRouteLoaderData,
   isRouteErrorResponse,
 } from "react-router";
 import type { LoaderFunctionArgs } from "@shopify/remix-oxygen";
 import { useNonce } from "@shopify/hydrogen";
-import { I18nextProvider } from "react-i18next";
+import { I18nextProvider, useTranslation } from "react-i18next";
 import { Layout } from "~/components/Layout";
 import { createI18nextInstance } from "~/lib/i18n-client";
 
@@ -100,7 +101,7 @@ export default function App() {
         <Links />
       </head>
       <body className="min-h-screen bg-transparent text-slate-950 antialiased selection:bg-slate-950 selection:text-white">
-        <I18nextProvider i18n={i18nInstance}>
+        <I18nextProvider key={locale} i18n={i18nInstance}>
           <Layout
             locale={locale}
             languages={languages}
@@ -117,12 +118,12 @@ export default function App() {
   );
 }
 
-export function ErrorBoundary() {
+function ErrorContent() {
   const error = useRouteError();
-  const nonce = useNonce();
+  const { t: tc } = useTranslation("common");
 
   let title = "Error";
-  let message = "An unexpected error occurred.";
+  let message = tc("error_desc");
 
   if (isRouteErrorResponse(error)) {
     title = `${error.status}`;
@@ -132,24 +133,42 @@ export function ErrorBoundary() {
   }
 
   return (
-    <html lang="en" dir="ltr">
+    <div className="flex min-h-screen flex-col items-center justify-center text-center px-4">
+      <p className="text-7xl font-semibold tracking-tight text-slate-300">
+        {title}
+      </p>
+      <p className="mt-4 text-lg text-slate-600">{message}</p>
+      <a
+        href="/"
+        className="mt-8 inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+      >
+        {tc("back_home")}
+      </a>
+    </div>
+  );
+}
+
+export function ErrorBoundary() {
+  const nonce = useNonce();
+  const rootData = useRouteLoaderData<typeof loader>("root");
+
+  const i18nInstance = useMemo(
+    () => createI18nextInstance(rootData?.locale ?? "en", rootData?.messages ?? {}),
+    [rootData?.locale, rootData?.messages],
+  );
+
+  return (
+    <html lang={rootData?.locale ?? "en"} dir="ltr">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>{title}</title>
         <Meta />
         <Links />
       </head>
       <body className="min-h-screen bg-slate-50 text-slate-950 antialiased">
-        <div className="flex min-h-screen flex-col items-center justify-center text-center px-4">
-          <p className="text-7xl font-semibold tracking-tight text-slate-300">
-            {title}
-          </p>
-          <p className="mt-4 text-lg text-slate-600">{message}</p>
-          <a href="/" className="mt-8 inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800">
-            Go Home
-          </a>
-        </div>
+        <I18nextProvider i18n={i18nInstance}>
+          <ErrorContent />
+        </I18nextProvider>
         <Scripts nonce={nonce} />
       </body>
     </html>
