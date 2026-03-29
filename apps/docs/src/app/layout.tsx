@@ -49,6 +49,15 @@ const tabColors: Record<string, string> = {
   'root:cli': 'var(--color-cli)',
 };
 
+// Tab descriptions shown in the sidebar dropdown
+const tabDescriptions: Record<string, string> = {
+  'root:core': 'Platform architecture, CDN delivery, and core utilities',
+  'root:frameworks': 'React SDKs for Next.js, Vite, TanStack, Remix & Expo',
+  'root:sdk': 'Headless CMS client for fetching content',
+  'root:mcp': 'AI-powered translation tools',
+  'root:cli': 'Detect and sync translation keys',
+};
+
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} font-sans`} suppressHydrationWarning>
@@ -61,16 +70,20 @@ export default function Layout({ children }: LayoutProps<'/'>) {
             sidebar={{
               tabs: {
                 transform: (option, node) => {
-                  const color = tabColors[node.$id || ''];
-                  if (!color || !option.icon) return option;
+                  const id = node.$id || '';
+                  const color = tabColors[id];
+                  const description = tabDescriptions[id];
 
                   return {
                     ...option,
-                    icon: React.isValidElement(option.icon)
-                      ? React.cloneElement(option.icon, {
-                          style: { color, width: 20, height: 20 },
-                        } as React.HTMLAttributes<HTMLElement>)
-                      : option.icon,
+                    ...(description && { description }),
+                    ...(color && option.icon && {
+                      icon: React.isValidElement(option.icon)
+                        ? React.cloneElement(option.icon, {
+                            style: { color, width: 20, height: 20 },
+                          } as React.HTMLAttributes<HTMLElement>)
+                        : option.icon,
+                    }),
                   };
                 },
               },
