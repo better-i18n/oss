@@ -22,6 +22,11 @@
       "react-native": "./dist/index.js",
       "default": "./dist/index.js"
     },
+    "./react": {
+      "types": "./src/react/index.tsx",
+      "bun": "./src/react/index.tsx",
+      "default": "./dist/react/index.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -45,8 +50,21 @@
     "clean": "rm -rf dist",
     "prepublishOnly": "bun run build"
   },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "@floating-ui/react": ">=0.26.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "@floating-ui/react": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/react": "^19.2.10",
     "typescript": "~5.9.2"
   }
 }
