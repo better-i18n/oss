@@ -2,6 +2,8 @@
 title: MCP — AI Translation & Key Management
 ---
 
+> **Docs:** https://docs.better-i18n.com/mcp.mdx · [Getting Started (agents)](https://docs.better-i18n.com/mcp/getting-started.mdx) · [AI Assistants](https://docs.better-i18n.com/mcp/ai-assistants.mdx) · [Tool Reference](https://docs.better-i18n.com/mcp/tool-reference.mdx)
+
 # MCP Servers
 
 Better i18n ships two MCP servers — one for translation key management, one for CMS content. Install both or just the one you need.

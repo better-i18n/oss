@@ -2,6 +2,8 @@
 title: CLI — @better-i18n/cli
 ---
 
+> **Docs:** https://docs.better-i18n.com/cli.mdx · [scan](https://docs.better-i18n.com/cli/scan.mdx) · [check](https://docs.better-i18n.com/cli/check.mdx) · [sync](https://docs.better-i18n.com/cli/sync.mdx) · [doctor](https://docs.better-i18n.com/cli/doctor.mdx) · [Configuration](https://docs.better-i18n.com/cli/configuration.mdx)
+
 # CLI
 
 ```bash

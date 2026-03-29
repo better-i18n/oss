@@ -2,6 +2,8 @@
 title: Next.js SDK — @better-i18n/next
 ---
 
+> **Docs:** https://docs.better-i18n.com/frameworks/nextjs.mdx · [Configuration](https://docs.better-i18n.com/frameworks/nextjs/configuration.mdx) · [Middleware](https://docs.better-i18n.com/frameworks/nextjs/middleware.mdx) · [Client](https://docs.better-i18n.com/frameworks/nextjs/client.mdx) · [API Reference](https://docs.better-i18n.com/frameworks/nextjs/api-reference.mdx)
+
 # Next.js SDK
 
 Package: `@better-i18n/next` · Wraps **next-intl** and adds a CDN-backed translation layer with ISR support.

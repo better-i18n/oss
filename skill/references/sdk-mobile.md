@@ -2,6 +2,10 @@
 title: Mobile SDKs — Expo, Swift, Flutter
 ---
 
+> **Expo docs:** https://docs.better-i18n.com/frameworks/expo.mdx · [Offline/Caching](https://docs.better-i18n.com/frameworks/expo/offline-caching.mdx) · [API Reference](https://docs.better-i18n.com/frameworks/expo/api-reference.mdx)
+> **Swift (iOS) docs:** https://docs.better-i18n.com/frameworks/ios.mdx · [Setup](https://docs.better-i18n.com/frameworks/ios/setup.mdx) · [API Reference](https://docs.better-i18n.com/frameworks/ios/api-reference.mdx)
+> **Flutter docs:** https://docs.better-i18n.com/frameworks/flutter.mdx · [Setup](https://docs.better-i18n.com/frameworks/flutter/setup.mdx) · [Offline/Caching](https://docs.better-i18n.com/frameworks/flutter/offline-caching.mdx)
+
 # Mobile SDKs
 
 ## @better-i18n/expo — React Native / Expo
