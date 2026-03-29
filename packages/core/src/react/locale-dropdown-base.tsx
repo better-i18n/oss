@@ -220,7 +220,89 @@ const styles = {
   } satisfies CSSProperties,
 } as const;
 
+// ─── Public API Constants ────────────────────────────────────────────
+
+/**
+ * Data attribute names used by `LocaleDropdownBase`.
+ *
+ * Use these when building custom styled components on top of `variant="unstyled"`,
+ * or when writing CSS selectors targeting the dropdown's DOM structure.
+ *
+ * @example
+ * ```css
+ * [data-better-locale-trigger] { ... }
+ * [data-better-locale-item][data-active] { font-weight: 600; }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <LocaleDropdownBase variant="unstyled" />
+ * // then target with DATA_ATTRS.trigger, DATA_ATTRS.item, etc.
+ * ```
+ */
+export const DATA_ATTRS = {
+  /** Root wrapper element. */
+  root: "data-better-locale-dropdown",
+  /** Trigger button (or custom trigger wrapper). */
+  trigger: "data-better-locale-trigger",
+  /** Floating menu list. */
+  menu: "data-better-locale-menu",
+  /** Each language option `<li>`. */
+  item: "data-better-locale-item",
+  /** Present on the active (selected) item. */
+  active: "data-active",
+  /** Present on the keyboard-focused item. */
+  focused: "data-focused",
+  /** `"top"` or `"bottom"` — resolved placement direction on the menu. */
+  placement: "data-placement",
+} as const;
+
+/**
+ * CSS custom property names consumed by `LocaleDropdownBase` in styled mode.
+ *
+ * Set these on any ancestor element to theme the dropdown without touching its markup.
+ *
+ * @example
+ * ```tsx
+ * <div style={{ [CSS_VARS.hoverBg]: "oklch(0.95 0 0)", [CSS_VARS.accent]: "#7c3aed" }}>
+ *   <LocaleDropdown />
+ * </div>
+ * ```
+ */
+export const CSS_VARS = {
+  /** Text color for trigger and menu items. */
+  text: "--better-locale-text",
+  /** Menu panel background. */
+  menuBg: "--better-locale-menu-bg",
+  /** Menu panel border color. */
+  border: "--better-locale-border",
+  /** Item hover background. */
+  hoverBg: "--better-locale-hover-bg",
+  /** Active (selected) item background. */
+  activeBg: "--better-locale-active-bg",
+  /** Muted text color (locale code badge, chevron). */
+  codeText: "--better-locale-code-text",
+  /** Checkmark / accent color. */
+  accent: "--better-locale-accent",
+  /** Trigger button padding. */
+  triggerPadding: "--better-locale-trigger-padding",
+  /** Trigger button border-radius. */
+  triggerRadius: "--better-locale-trigger-radius",
+  /** Trigger button border. */
+  triggerBorder: "--better-locale-trigger-border",
+  /** Trigger button background. */
+  triggerBg: "--better-locale-trigger-bg",
+} as const;
+
 // ─── Types ───────────────────────────────────────────────────────────
+
+export interface LocaleDropdownTriggerContext {
+  language: LanguageOption | undefined;
+  isOpen: boolean;
+  isLoading: boolean;
+  flag: ResolvedFlag | null;
+  label: string;
+}
 
 export interface LocaleDropdownRenderContext {
   language: LanguageOption;
@@ -255,13 +337,7 @@ export interface LocaleDropdownBaseProps {
   /** Menu placement. "auto" detects available viewport space. @default "auto" */
   placement?: "auto" | "top" | "bottom";
   /** Custom render for the trigger button. */
-  renderTrigger?: (ctx: {
-    language: LanguageOption | undefined;
-    isOpen: boolean;
-    isLoading: boolean;
-    flag: ResolvedFlag | null;
-    label: string;
-  }) => ReactNode;
+  renderTrigger?: (ctx: LocaleDropdownTriggerContext) => ReactNode;
   /** Custom render for each menu item. */
   renderItem?: (ctx: LocaleDropdownRenderContext) => ReactNode;
 }
