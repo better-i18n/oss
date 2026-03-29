@@ -284,6 +284,63 @@ Configure the webhook in Project → Settings → Webhooks → `translation.publ
 
 ---
 
+## Geo-based locale detection
+
+> **Docs:** https://docs.better-i18n.com/frameworks/geo-detection.mdx
+
+Detect the user's locale from their country using Cloudflare Workers or Vercel Edge:
+
+### Cloudflare Workers
+
+```typescript
+// middleware.ts (or CF Worker)
+export default {
+  async fetch(request: Request) {
+    const country = request.cf?.country ?? "US";    // CF adds this header
+
+    const countryToLocale: Record<string, string> = {
+      TR: "tr", DE: "de", FR: "fr", BR: "pt-br",
+    };
+
+    const locale = countryToLocale[country] ?? "en";
+    // Pass locale to your app via cookie or redirect
+    return redirect(`/${locale}${new URL(request.url).pathname}`);
+  }
+};
+```
+
+### Vercel Edge Middleware
+
+```typescript
+// middleware.ts
+import { NextRequest, NextResponse } from "next/server";
+import { normalizeLocale } from "@better-i18n/core";
+
+export function middleware(request: NextRequest) {
+  const country = request.geo?.country ?? "US";
+
+  const countryToLocale: Record<string, string> = {
+    TR: "tr", DE: "de", FR: "fr", BR: "pt-br",
+  };
+
+  const locale = normalizeLocale(countryToLocale[country] ?? "en");
+  return NextResponse.redirect(new URL(`/${locale}${request.nextUrl.pathname}`, request.url));
+}
+```
+
+### Accept-Language fallback (no edge required)
+
+```typescript
+import { getServerLocale } from "@better-i18n/use-intl/server";
+
+const locale = getServerLocale(request.headers.get("accept-language"), {
+  supportedLocales: ["en", "tr", "de"],
+  defaultLocale: "en",
+});
+```
+
+---
+
 ## Self-hosted CDN
 
 If you're deploying on your own infrastructure, override the CDN base URL:

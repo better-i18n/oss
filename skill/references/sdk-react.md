@@ -308,3 +308,162 @@ export async function loader({ request }: LoaderArgs) {
   return json({ locale, messages });
 }
 ```
+
+---
+
+## Vite + standalone React (no SSR)
+
+> **Docs:** https://docs.better-i18n.com/frameworks/vite.mdx · [React Router](https://docs.better-i18n.com/frameworks/vite/react-router.mdx) · [TypeScript](https://docs.better-i18n.com/frameworks/vite/typescript.mdx)
+
+```bash
+npm install @better-i18n/use-intl use-intl
+```
+
+Client-side only — locale stored in URL path (`/tr/...`) or `localStorage`.
+
+```typescript
+// src/i18n.ts — singleton
+import { createI18nCore } from "@better-i18n/core";
+
+export const i18n = createI18nCore({
+  project: "acme/app",
+  defaultLocale: "en",
+});
+```
+
+```typescript
+// src/App.tsx — detect locale from URL, load messages, render provider
+import { BetterI18nProvider } from "@better-i18n/use-intl";
+import { getLocaleFromPath, normalizeLocale } from "@better-i18n/core";
+import { useEffect, useState } from "react";
+import { i18n } from "./i18n";
+
+export default function App() {
+  const locale = normalizeLocale(getLocaleFromPath(window.location.pathname) ?? "en");
+  const [messages, setMessages] = useState<Record<string, unknown> | undefined>();
+
+  useEffect(() => {
+    i18n.getMessages(locale).then(setMessages);
+  }, [locale]);
+
+  return (
+    <BetterI18nProvider project="acme/app" locale={locale} messages={messages}>
+      <Router />
+    </BetterI18nProvider>
+  );
+}
+```
+
+### React Router v6 — locale-prefixed routes
+
+```typescript
+// src/router.tsx
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { removeLocalePrefix } from "@better-i18n/core";
+
+const router = createBrowserRouter([
+  {
+    path: "/:locale?",
+    element: <LocaleLayout />,     // loads messages for :locale
+    children: [
+      { path: "", element: <Home /> },
+      { path: "about", element: <About /> },
+    ],
+  },
+]);
+```
+
+> **Full React Router guide:** https://docs.better-i18n.com/frameworks/vite/react-router.mdx
+
+---
+
+## Formatting — dates, numbers, relative time
+
+Available through `useFormatter` from `@better-i18n/use-intl` (wraps `use-intl` formatters):
+
+> **Docs:** https://docs.better-i18n.com/frameworks/formatting.mdx
+
+```typescript
+import { useFormatter } from "@better-i18n/use-intl";
+
+function Dashboard() {
+  const format = useFormatter();
+
+  // Date formatting
+  format.dateTime(new Date("2025-03-01"), { dateStyle: "long" });
+  // → "March 1, 2025" (en) or "1 Mart 2025" (tr)
+
+  // Number / currency
+  format.number(1234.56, { style: "currency", currency: "USD" });
+  // → "$1,234.56" (en) or "1.234,56 $" (tr)
+
+  // Relative time
+  format.relativeTime(-3, "days");
+  // → "3 days ago" (en) or "3 gün önce" (tr)
+
+  // List
+  format.list(["apples", "oranges", "bananas"], { type: "conjunction" });
+  // → "apples, oranges, and bananas"
+}
+```
+
+---
+
+## TypeScript — type-safe translation keys
+
+> **Docs:** https://docs.better-i18n.com/frameworks/tanstack-start/typescript.mdx · [Next.js](https://docs.better-i18n.com/frameworks/nextjs/api-reference.mdx) · [Vite](https://docs.better-i18n.com/frameworks/vite/typescript.mdx)
+
+Enable autocomplete and compile-time checking for `t("key.path")`:
+
+```typescript
+// src/types/i18n.d.ts
+import en from "./locales/en.json";
+
+declare module "use-intl" {
+  interface IntlMessages extends typeof en {}
+  interface AppConfig {
+    Messages: typeof en;
+  }
+}
+```
+
+With this in place:
+- `t("auth.login")` → autocompletes
+- `t("auth.typo")` → TypeScript error
+- Works in Next.js (`next-intl`), `use-intl`, and TanStack Start
+
+For namespaced usage in Next.js:
+```typescript
+const t = useTranslations("auth");
+t("login");     // ✓ — autocompletes within "auth" namespace
+t("unknown");   // ✗ — TypeScript error
+```
+
+---
+
+## Server utilities — pre-load on server
+
+> **Docs:** https://docs.better-i18n.com/frameworks/server.mdx
+
+For SSR frameworks, pre-load messages on the server to avoid client-side loading flash:
+
+```typescript
+import { getServerTranslations, getServerLocale } from "@better-i18n/use-intl/server";
+
+// Node.js / Edge function
+export async function getServerSideProps({ req }) {
+  const locale = getServerLocale(req.headers["accept-language"], {
+    supportedLocales: ["en", "tr", "de"],
+    defaultLocale: "en",
+  });
+
+  const messages = await getServerTranslations({
+    project: "acme/dashboard",
+    locale,
+  });
+
+  return { props: { locale, messages } };
+}
+```
+
+Pass `messages` to `BetterI18nProvider` to skip the client-side CDN fetch entirely.

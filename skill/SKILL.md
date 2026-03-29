@@ -43,6 +43,23 @@ Always check [npm](https://www.npmjs.com/search?q=%40better-i18n) for the latest
 | Flutter / Dart | `better_i18n` pub.dev | <references/sdk-mobile.md> |
 | Headless / Vanilla JS | `@better-i18n/core` | <references/sdk-react.md> |
 
+## Framework quick-start
+
+| Framework | Docs page |
+|---|---|
+| Next.js App Router | https://docs.better-i18n.com/frameworks/nextjs.mdx |
+| TanStack Start (SSR) | https://docs.better-i18n.com/frameworks/tanstack-start.mdx |
+| Vite + React | https://docs.better-i18n.com/frameworks/vite.mdx |
+| Vite + React Router | https://docs.better-i18n.com/frameworks/vite/react-router.mdx |
+| Remix / Hydrogen | https://docs.better-i18n.com/frameworks/remix.mdx |
+| Expo / React Native | https://docs.better-i18n.com/frameworks/expo.mdx |
+| iOS / Swift | https://docs.better-i18n.com/frameworks/ios.mdx |
+| Flutter / Dart | https://docs.better-i18n.com/frameworks/flutter.mdx |
+| Hono / Node.js | https://docs.better-i18n.com/frameworks/server-sdk/hono.mdx |
+| Express / Fastify | https://docs.better-i18n.com/frameworks/server-sdk/node.mdx |
+| tRPC | https://docs.better-i18n.com/frameworks/server-sdk/trpc.mdx |
+| Supabase Edge | https://docs.better-i18n.com/frameworks/server-sdk/supabase.mdx |
+
 ## Workflow selection
 
 | Task | Approach | Reference |
@@ -58,6 +75,10 @@ Always check [npm](https://www.npmjs.com/search?q=%40better-i18n) for the latest
 | Choose JSON file format | File formats | <references/file-formats.md> |
 | Publish translations to CDN or GitHub | Publish flows | <references/publish-and-analytics.md> |
 | Track coverage, health trends, CDN usage | Analytics | <references/publish-and-analytics.md> |
+| Format dates, numbers, currencies, relative time | Formatting | <references/sdk-react.md> |
+| Detect locale from country / Accept-Language | Geo detection | <references/cdn.md> |
+| Type-safe `t("key")` autocomplete | TypeScript | <references/sdk-react.md> |
+| Webhooks on publish / key change events | Outgoing webhooks | <references/publish-and-analytics.md> |
 
 ## Read the relevant reference before writing any code.
 
