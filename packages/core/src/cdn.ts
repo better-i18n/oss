@@ -246,7 +246,9 @@ const fetchMessagesFromCdn = async (
   const response = await fetchWithRetry(
     fetchFn,
     url,
-    { headers },
+    // cache: "no-store" bypasses browser disk cache (fetch API option).
+    // The header alone is not enough — browser ignores it for disk cache reads.
+    { headers, cache: "no-store" },
     config.fetchTimeout,
     config.retryCount
   );
