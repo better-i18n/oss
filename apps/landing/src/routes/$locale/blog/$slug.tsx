@@ -53,7 +53,7 @@ const loadRelatedPosts = createServerFn({ method: "GET" })
     (data: { slug: string; category: string | null; locale: string }) => data,
   )
   .handler(async ({ data }) => {
-    return getRelatedPosts(data.slug, data.category, data.locale, 5);
+    return getRelatedPosts(data.slug, data.category, data.locale, 4);
   });
 
 export const Route = createFileRoute("/$locale/blog/$slug")({

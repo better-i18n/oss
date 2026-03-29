@@ -26,7 +26,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
         </h2>
       </div>
 
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         {posts.map((post) => {
           const bannerUrl = buildOgImageUrl("og/blog", {
             title: post.title,
@@ -49,7 +49,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
               params={{ locale, slug: post.slug }}
               className="group flex flex-col rounded-xl border border-mist-200 bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-mist-300 hover:shadow-md"
             >
-              <div className="aspect-[3/2] overflow-hidden bg-mist-100">
+              <div className="aspect-[16/9] overflow-hidden bg-mist-100">
                 <img
                   src={bannerUrl}
                   alt={post.title}
@@ -72,7 +72,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
                       </span>
                     )}
                   </div>
-                  <h3 className="text-xs/[1.4] font-medium text-mist-950 group-hover:text-mist-700 transition-colors line-clamp-3">
+                  <h3 className="text-[13px]/[1.4] font-medium text-mist-950 group-hover:text-mist-700 transition-colors line-clamp-2">
                     {post.title}
                   </h3>
                 </div>
