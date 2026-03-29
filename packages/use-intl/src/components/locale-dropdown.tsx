@@ -103,7 +103,7 @@ function FlagDisplay({
       <img
         src={flag.url}
         alt={label}
-        style={{ width: 20, height: 16, borderRadius: 2, objectFit: "cover" }}
+        style={{ width: 18, height: 18, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
         loading="lazy"
         onError={() => setHasError(true)}
       />
@@ -120,10 +120,11 @@ function FlagDisplay({
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            width: 20,
-            height: 16,
+            width: 18,
+            height: 18,
             fontSize: 14,
             lineHeight: 1,
+            flexShrink: 0,
           }}
           aria-hidden="true"
         >
@@ -151,7 +152,7 @@ function FlagDisplay({
  * Does NOT use `prefers-color-scheme` — dark mode must be explicit via
  * site markup, so light-only sites aren't affected by OS dark mode.
  */
-const LOCALE_DROPDOWN_CSS = `[data-better-locale-dropdown]{position:relative;--_bl-text:#374151;--_bl-menu-bg:#fff;--_bl-border:#e5e7eb;--_bl-hover:#f3f4f6;--_bl-active:#f9fafb;--_bl-muted:#9ca3af;--_bl-shadow:0 4px 24px rgba(0,0,0,.12)}.dark [data-better-locale-dropdown],[data-theme=dark] [data-better-locale-dropdown]{--_bl-text:#d1d5db;--_bl-menu-bg:#1f2937;--_bl-border:#374151;--_bl-hover:#374151;--_bl-active:#374151;--_bl-muted:#6b7280;--_bl-shadow:0 4px 24px rgba(0,0,0,.4)}@keyframes better-locale-pulse{0%,100%{opacity:1}50%{opacity:.4}}`;
+const LOCALE_DROPDOWN_CSS = `[data-better-locale-dropdown]{position:relative;--_bl-text:#374151;--_bl-menu-bg:#fff;--_bl-border:#e5e7eb;--_bl-hover:#f3f4f6;--_bl-active:#eff0f1;--_bl-muted:#9ca3af;--_bl-shadow:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06)}.dark [data-better-locale-dropdown],[data-theme=dark] [data-better-locale-dropdown]{--_bl-text:#d1d5db;--_bl-menu-bg:#1a1a1a;--_bl-border:rgba(255,255,255,.08);--_bl-hover:rgba(255,255,255,.06);--_bl-active:rgba(255,255,255,.09);--_bl-muted:#6b7280;--_bl-shadow:0 8px 32px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.3)}@keyframes better-locale-pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes better-locale-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}[data-better-locale-menu]{animation:better-locale-in .15s cubic-bezier(.16,1,.3,1);transform-origin:top right}[data-better-locale-menu][data-placement=top]{transform-origin:bottom right}[data-better-locale-item]{position:relative}[data-better-locale-item]>*{position:relative;z-index:1}[data-better-locale-item]::before{content:'';position:absolute;inset:0;border-radius:8px;background:var(--better-locale-hover-bg,var(--_bl-hover));opacity:0;transform:scale(.97);transition:opacity .12s ease-out,transform .12s ease-out;z-index:0}[data-better-locale-item]:hover::before,[data-better-locale-item][data-focused]::before{opacity:1;transform:scale(1)}[data-better-locale-item][data-active]::before{opacity:1;transform:scale(1);background:var(--better-locale-active-bg,var(--_bl-active))}[data-better-locale-trigger]{position:relative}[data-better-locale-trigger]:not([disabled])::before{content:'';position:absolute;inset:0;border-radius:var(--better-locale-trigger-radius,8px);background:var(--better-locale-hover-bg,var(--_bl-hover));opacity:0;transform:scale(.97);transition:opacity .12s ease-out,transform .12s ease-out}[data-better-locale-trigger]:not([disabled]):hover::before{opacity:1;transform:scale(1)}[data-better-locale-trigger]>*{position:relative;z-index:1}`;
 
 // ─── Styles ──────────────────────────────────────────────────────────
 
@@ -168,7 +169,6 @@ const styles = {
     fontSize: 14,
     fontWeight: 500,
     cursor: "pointer",
-    transition: "background 0.15s, border-color 0.15s",
     lineHeight: 1,
     fontFamily: "inherit",
   } satisfies CSSProperties,
@@ -177,14 +177,14 @@ const styles = {
     cursor: "default",
   } satisfies CSSProperties,
   menu: {
-    minWidth: 200,
+    minWidth: 210,
     maxHeight: "70vh",
     overflowY: "auto",
-    borderRadius: 12,
+    borderRadius: 14,
     border: "1px solid var(--better-locale-border, var(--_bl-border))",
     background: "var(--better-locale-menu-bg, var(--_bl-menu-bg))",
     boxShadow: "var(--_bl-shadow)",
-    padding: 0,
+    padding: "6px",
     zIndex: 50,
     listStyle: "none",
     margin: 0,
@@ -192,25 +192,25 @@ const styles = {
   item: {
     display: "flex",
     alignItems: "center",
-    gap: 12,
+    gap: 10,
     width: "100%",
-    padding: "8px 14px",
+    padding: "7px 10px",
     border: "none",
     background: "transparent",
     color: "var(--better-locale-text, var(--_bl-text))",
     fontSize: 14,
     cursor: "pointer",
-    transition: "background 0.1s",
     textAlign: "left" as const,
     fontFamily: "inherit",
     lineHeight: 1.2,
+    borderRadius: 8,
+    boxSizing: "border-box" as const,
   } satisfies CSSProperties,
+  // CSS pseudo-element handles hover/active backgrounds — these are intentionally empty
   itemActive: {
-    background: "var(--better-locale-active-bg, var(--_bl-active))",
+    fontWeight: 500,
   } satisfies CSSProperties,
-  itemHovered: {
-    background: "var(--better-locale-hover-bg, var(--_bl-hover))",
-  } satisfies CSSProperties,
+  itemHovered: {} satisfies CSSProperties,
   label: {
     flex: 1,
     textAlign: "left" as const,
@@ -236,16 +236,16 @@ const styles = {
     background: "transparent",
   } satisfies CSSProperties,
   skeletonFlag: {
-    width: 20,
+    width: 18,
     height: 18,
-    borderRadius: 3,
+    borderRadius: "50%",
     background: "var(--better-locale-border, var(--_bl-border))",
     animation: "better-locale-pulse 1.5s ease-in-out infinite",
     flexShrink: 0,
   } satisfies CSSProperties,
   skeletonText: {
     width: 56,
-    height: 18,
+    height: 14,
     borderRadius: 4,
     background: "var(--better-locale-border, var(--_bl-border))",
     animation: "better-locale-pulse 1.5s ease-in-out infinite",
