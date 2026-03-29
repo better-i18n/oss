@@ -39,10 +39,10 @@ export function RouteErrorBoundary({ locale = "en" }: RouteErrorBoundaryProps) {
         500
       </p>
       <h1 className="mt-4 text-2xl font-semibold tracking-tight text-slate-950">
-        Unexpected Error
+        {tc("error_title")}
       </h1>
       <p className="mt-3 max-w-md text-sm leading-7 text-slate-600">
-        {error instanceof Error ? error.message : "Something went wrong."}
+        {error instanceof Error ? error.message : tc("error_desc")}
       </p>
       <LocaleLink to="/" locale={locale} className="button-primary mt-8">
         {tc("back_home")}

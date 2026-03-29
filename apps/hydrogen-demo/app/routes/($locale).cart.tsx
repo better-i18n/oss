@@ -110,7 +110,7 @@ export default function CartPage() {
               <h1 className="text-[15px] font-semibold text-stone-900">
                 {tc("title")}
               </h1>
-              <span className="label">{lines.length} items</span>
+              <span className="label">{tc("items_count", { count: lines.length })}</span>
             </div>
 
             {lines.map((line) => (
@@ -231,7 +231,7 @@ export default function CartPage() {
                 </p>
               ) : null}
               <p className="mt-1 text-[12px] text-stone-400">
-                Taxes and shipping at checkout
+                {tc("taxes_shipping")}
               </p>
             </div>
 
