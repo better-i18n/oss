@@ -72,6 +72,53 @@ import {
 } from "@better-i18n/core";
 ```
 
+### CDN → SDK fallback chain (connected)
+
+The CDN has a 4-layer infrastructure chain, and the SDK has a 5-layer fetch chain. They connect at layer 2:
+
+```
+CDN infrastructure (server-side):        SDK fetch chain (client/server-side):
+─────────────────────────────────        ─────────────────────────────────────
+1. CF Cache (60s TTL)                    1. TtlCache (in-memory, 60s)
+2. R2 Bucket (source of truth)     →     2. CDN fetch ─────────────────────→ CDN response
+3. Stale Cache (resilience)              3. Persistent storage (localStorage/MMKV)
+4. {} or { fallback: true }             4. staticData (bundled JSON)
+                                         5. {} (no throw)
+```
+
+When CDN returns `{ fallback: true }` (layer 4 of CDN), the SDK treats it as `{}` and falls through to layers 3-5. **This means `staticData` is the last defense against blank UI.**
+
+If CDN is unreachable AND storage is empty AND no `staticData` is configured → all `t()` calls return `""`.
+
+### `staticData` shape requirement
+
+`staticData` must match **exactly** the structure the CDN returns — top-level keys are namespaces:
+
+```typescript
+// CDN returns:
+// { "auth": { "login": "Sign in" }, "translations": { "title": "Dashboard" } }
+
+// staticData must mirror this structure exactly:
+import { createI18nCore } from "@better-i18n/core";
+
+export const i18n = createI18nCore({
+  project: "acme/dashboard",
+  defaultLocale: "en",
+  staticData: {
+    en: {
+      auth: { login: "Sign in" },
+      translations: { title: "Dashboard" },  // "default" namespace → "translations" in CDN
+    },
+    tr: {
+      auth: { login: "Giriş Yap" },
+      translations: { title: "Kontrol Paneli" },
+    },
+  },
+});
+```
+
+**Common mistake:** Using flat keys (`{ "auth.login": "Sign in" }`) in `staticData` when CDN uses nested structure. Keys won't match and translations stay empty even with staticData configured.
+
 ### Static data (offline / build-time fallback)
 
 ```typescript

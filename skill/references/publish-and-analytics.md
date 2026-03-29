@@ -64,6 +64,22 @@ await mcp.getSyncs({ project: "acme/dashboard", status: "completed", limit: 1 })
 - **30-second cooldown** between publishes (prevents race conditions in CF Cache)
 - **`cannotPublishReason`** — checked by `getPendingChanges`. Reasons include: no pending changes, active publish in progress, GitHub installation suspended.
 - Soft-deleted keys become **permanently deleted** after publish — review with `getPendingChanges` before confirming.
+- **Quality checks do NOT block publish** — placeholder errors and low coverage are surfaced as warnings, but you can publish with 0% coverage. Empty translations will overwrite previously published content on CDN.
+
+### Publishing with incomplete translations
+
+```typescript
+const pending = await mcp.getPendingChanges({ project: "acme/dashboard" });
+// Check before confirming publish:
+// pending.count         — number of approved translations to publish
+// pending.languages     — which languages have pending changes
+// pending.deletedKeys   — keys that will be permanently removed after publish
+// pending.cannotPublishReason — string if publish is blocked (null if allowed)
+```
+
+**0% coverage language:** If a language has been added but has no approved translations, publishing will write an empty `{}` JSON to CDN. The SDK will receive `{}` and fall through the fallback chain — returning `staticData` or empty strings. **This silently breaks that language.** Always check coverage before publishing a new language for the first time.
+
+**Draft translations:** Only `approved` translations are included in the publish. `draft` translations are excluded — they don't appear on CDN even if they exist in the dashboard. To publish a draft, approve it first or use the AI Drawer bulk-approve flow.
 
 ---
 

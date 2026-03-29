@@ -136,8 +136,36 @@ function LocaleSwitcher() {
 }
 ```
 
+## ISR + CDN cache stale — timing
+
+After publishing translations, clients see stale content for up to:
+
+```
+CDN max-age (60s) + Next.js ISR messagesRevalidate (60s) = up to 120s max stale
+```
+
+For on-demand revalidation tied to publish webhooks:
+
+```typescript
+// app/api/revalidate/route.ts
+import { revalidatePath } from "next/cache";
+
+export async function POST(request: Request) {
+  const { secret } = await request.json();
+  if (secret !== process.env.REVALIDATE_SECRET) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+  revalidatePath("/", "layout");          // revalidate all pages
+  return Response.json({ revalidated: true });
+}
+```
+
+Set up in dashboard: Project → Settings → Webhooks → event `translation.published` → your `/api/revalidate` URL.
+
 ## Traps to avoid
 
 - **Never instantiate `createI18n` inside a component or route handler** — it creates a new TtlCache instance on every call, breaking memory caching.
 - **Don't use `next-intl`'s `getMessages()` directly** — it bypasses the CDN layer. Always use `i18n.requestConfig(locale)`.
 - **Don't add locales to `next.config.ts` i18n block** — let `betterMiddleware()` handle routing.
+- **ISR + CDN cache compounds** — after publish, total stale window is `CDN max-age + messagesRevalidate`. Set `messagesRevalidate: 30` (not lower — avoids hammering CDN) and use webhook-based revalidation for instant updates.
+- **`{ fallback: true }` from CDN** — if CDN returns `{ fallback: true }`, all translations are empty. Check that the language is `active: true` in Project → Languages and that you've published at least once.

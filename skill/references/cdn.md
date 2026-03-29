@@ -167,6 +167,98 @@ Configure fallback locale in: Project → Settings → CDN Fallback.
 
 ---
 
+## Debugging `{ fallback: true }` — silent empty strings
+
+The CDN always returns HTTP 200. When translations are unavailable (project not published yet, wrong locale code, R2 unavailable), the response body is:
+
+```json
+{ "fallback": true }
+```
+
+The SDK treats this as an empty message set — **no keys resolve**, components render empty strings. This is the most common "everything works but strings are blank" scenario.
+
+**Diagnosis checklist:**
+
+```typescript
+// 1. Check CDN response directly
+const res = await fetch("https://cdn.better-i18n.com/acme/dashboard/tr/translations.json");
+const body = await res.json();
+
+if (body.fallback === true) {
+  // Not published yet, wrong locale code, or R2 unavailable
+}
+
+// 2. Check locale code normalization
+import { normalizeLocale } from "@better-i18n/core";
+normalizeLocale("pt-BR"); // → "pt-br"
+// CDN path must use lowercase: /acme/dashboard/pt-br/translations.json
+
+// 3. Check manifest — is the language active?
+const manifest = await fetch("https://cdn.better-i18n.com/acme/dashboard/manifest.json").then(r => r.json());
+manifest.languages.find(l => l.code === "tr")?.active;  // must be true
+```
+
+**Common causes:**
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `{ fallback: true }` for all locales | Project never published | Click Publish in dashboard |
+| `{ fallback: true }` for one locale | Locale inactive (`active: false`) | Activate language in Project → Languages |
+| `{ fallback: true }` for one locale | Wrong locale code case (`pt-BR` vs `pt-br`) | Use `normalizeLocale()` |
+| Keys exist in dashboard, not on CDN | Translations in `draft` state, not `approved` | Approve translations, then publish |
+| Some keys missing, others present | Namespace path wrong | Check `"default"` → stored as `"translations"` in CDN JSON |
+
+**`{ fallback: true }` propagation through the SDK fallback chain:**
+
+```
+CDN returns { fallback: true }
+       ↓
+SDK treats response as {} (empty messages)
+       ↓
+Falls through to persistent storage (if configured)
+       ↓
+Falls through to staticData (if configured)
+       ↓
+Returns {} — no error thrown, components render empty strings
+```
+
+If you have `staticData` configured, `{ fallback: true }` from CDN will silently fall back to your bundled data — which may be outdated but is better than empty strings.
+
+---
+
+## ISR + CDN cache compounding (Next.js)
+
+Next.js ISR and the CDN have independent cache TTLs. After publishing:
+
+```
+Publish triggers CDN purge
+       ↓
+CDN fresh within 60s (max-age=60)
+       ↓
+Next.js ISR still serving cached page (messagesRevalidate: 60)
+       ↓
+Max total stale: CDN (60s) + ISR (60s) = up to 120s
+```
+
+For on-demand revalidation after publish (webhook-based):
+
+```typescript
+// app/api/revalidate/route.ts
+import { revalidatePath } from "next/cache";
+
+export async function POST(request: Request) {
+  const { secret } = await request.json();
+  if (secret !== process.env.REVALIDATE_SECRET) return new Response("Unauthorized", { status: 401 });
+
+  revalidatePath("/", "layout");  // revalidate all pages
+  return Response.json({ revalidated: true });
+}
+```
+
+Configure the webhook in Project → Settings → Webhooks → `translation.published` → your `/api/revalidate` endpoint.
+
+---
+
 ## Self-hosted CDN
 
 If you're deploying on your own infrastructure, override the CDN base URL:

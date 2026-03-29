@@ -164,3 +164,61 @@ better-i18n/translations-{timestamp}
 ```
 
 These can be filtered in branch protection rules or auto-merge policies.
+
+---
+
+## Failure scenarios and recovery
+
+### PR-already-exists (422)
+
+When publishing in PR mode, the sync-worker creates a new branch `better-i18n/translations-{timestamp}` and opens a PR. If a PR for that branch already exists (422 Unprocessable Entity from GitHub), the worker returns the existing PR URL rather than creating a duplicate.
+
+**Why this matters:** Stale open PRs from previous publishes don't block future publishes — each publish creates a new branch+PR. If you see multiple open translation PRs, you can safely close the older ones.
+
+**Recovery if publish is stuck:**
+1. Check Project → Settings → GitHub → "Open PRs" — close stale ones manually
+2. Re-trigger publish from the dashboard
+
+### Invalid file pattern
+
+If the configured file pattern (`locales/{{lang}}.json`) doesn't match any files in the repo, `source_sync` returns zero keys — **it does not throw**. The sync completes successfully with an empty diff.
+
+**Symptoms:** No keys are imported after initial connection, or all keys disappear after a push event.
+
+**Diagnosis:**
+```bash
+# Check what files exist in your repo:
+find . -name "*.json" | grep -E "(locale|i18n|messages|translations)"
+
+# Verify the pattern configured in dashboard:
+# Project → Settings → GitHub → "File pattern"
+```
+
+**Common patterns:**
+| Pattern | Matches |
+|---|---|
+| `locales/{{lang}}.json` | `locales/en.json` |
+| `src/locales/{{lang}}/{{ns}}.json` | `src/locales/en/common.json` |
+| `public/locales/{{lang}}/{{ns}}.json` | `public/locales/en/common.json` |
+| `messages/{{lang}}.json` | `messages/en.json` |
+
+If the pattern doesn't match, the sync silently succeeds with 0 keys. Update the pattern in Project → Settings → GitHub → "File pattern" and re-run initial import.
+
+### Source text changed after translation
+
+When `source_sync` detects that a key's source text has changed (English value differs from stored), it:
+1. Updates the stored source text
+2. **Resets all existing target translations to `draft` status** (they are no longer approved for the new source)
+3. Does NOT delete the translations — they remain as starting points for re-translation
+
+**Effect on publish:** Translations reverted to `draft` are excluded from the next publish. Use the AI Drawer to re-review and approve.
+
+### Deleted keys during sync
+
+When `source_sync` finds keys in the database that no longer exist in the repo's translation files, it marks them as **soft-deleted** (not immediately removed). They appear in `getPendingChanges` before the next publish. After publish, they are permanently deleted from CDN.
+
+**To review before publish:**
+```typescript
+const pending = await mcp.getPendingChanges({ project: "acme/dashboard" });
+// pending.deletedKeys — list of keys to be permanently removed
+```
