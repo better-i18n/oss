@@ -522,25 +522,27 @@ function ArchSection() {
 
   return (
     <section className="border-b border-stone-200">
-      <div className="page-frame border-b border-stone-200 py-4">
-        <p className="label">{th("arch_eyebrow")}</p>
-      </div>
       <div className="page-frame">
-        <div className="grid grid-cols-1 divide-y divide-stone-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-          {panels.map((p) => (
-            <div key={p.source} className="px-0 py-8 sm:px-8 sm:first:pl-0 sm:last:pr-0">
-              <div className="flex items-center gap-2">
-                <span className={`h-1.5 w-1.5 rounded-full ${p.dot}`} />
-                <p className={`text-[11px] font-semibold uppercase tracking-[0.25em] ${p.color}`}>
-                  {p.source}
-                </p>
+        <div className="border-x border-stone-200">
+          <div className="border-b border-stone-200 px-6 py-4">
+            <p className="label">{th("arch_eyebrow")}</p>
+          </div>
+          <div className="grid grid-cols-1 divide-y divide-stone-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            {panels.map((p) => (
+              <div key={p.source} className="px-6 py-8">
+                <div className="flex items-center gap-2">
+                  <span className={`h-1.5 w-1.5 rounded-full ${p.dot}`} />
+                  <p className={`text-[11px] font-semibold uppercase tracking-[0.25em] ${p.color}`}>
+                    {p.source}
+                  </p>
+                </div>
+                <h3 className="mt-4 text-[1.1rem] font-semibold leading-snug tracking-tight text-stone-900">
+                  {p.title}
+                </h3>
+                <p className="mt-2 text-[13px] leading-6 text-stone-500">{p.body}</p>
               </div>
-              <h3 className="mt-4 text-[1.1rem] font-semibold leading-snug tracking-tight text-stone-900">
-                {p.title}
-              </h3>
-              <p className="mt-2 text-[13px] leading-6 text-stone-500">{p.body}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -579,34 +581,36 @@ export default function Homepage() {
       <ArchSection />
 
       {/* Bottom CTA */}
-      <section className="border-b border-stone-200">
-        <div className="page-frame grid grid-cols-1 gap-0 divide-y divide-stone-200 py-0 lg:grid-cols-[1fr_auto] lg:divide-x lg:divide-y-0">
-          <div className="py-12 lg:pr-12">
-            <p className="label">{th("cta_eyebrow")}</p>
-            <h2 className="mt-4 text-[2rem] font-semibold leading-tight tracking-tight text-stone-900 sm:text-[2.5rem]">
-              {th("cta_title")}
-            </h2>
-            <p className="mt-3 max-w-sm text-[14px] leading-6 text-stone-500">
-              {th("cta_desc")}
-            </p>
-          </div>
-          <div className="flex flex-col justify-center gap-3 py-12 lg:pl-12">
-            <a
-              href="https://better-i18n.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-dark whitespace-nowrap"
-            >
-              {th("cta_primary")}
-            </a>
-            <a
-              href="https://docs.better-i18n.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-outline whitespace-nowrap"
-            >
-              {th("cta_secondary")}
-            </a>
+      <section>
+        <div className="page-frame">
+          <div className="grid grid-cols-1 divide-y divide-stone-200 border-x border-stone-200 lg:grid-cols-[1fr_auto] lg:divide-x lg:divide-y-0">
+            <div className="px-6 py-12">
+              <p className="label">{th("cta_eyebrow")}</p>
+              <h2 className="mt-4 text-[2rem] font-semibold leading-tight tracking-tight text-stone-900 sm:text-[2.5rem]">
+                {th("cta_title")}
+              </h2>
+              <p className="mt-3 max-w-sm text-[14px] leading-6 text-stone-500">
+                {th("cta_desc")}
+              </p>
+            </div>
+            <div className="flex flex-col justify-center gap-3 px-6 py-12">
+              <a
+                href="https://better-i18n.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-dark whitespace-nowrap"
+              >
+                {th("cta_primary")}
+              </a>
+              <a
+                href="https://docs.better-i18n.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-outline whitespace-nowrap"
+              >
+                {th("cta_secondary")}
+              </a>
+            </div>
           </div>
         </div>
       </section>

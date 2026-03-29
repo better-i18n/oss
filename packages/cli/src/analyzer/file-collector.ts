@@ -26,7 +26,7 @@ const DEFAULT_EXCLUDE = [
   "__tests__",
   "__mocks__",
 ];
-const DEFAULT_EXTENSIONS = [".tsx", ".jsx"];
+const DEFAULT_EXTENSIONS = [".tsx", ".jsx", ".ts", ".js"];
 
 /**
  * Collect files to analyze
