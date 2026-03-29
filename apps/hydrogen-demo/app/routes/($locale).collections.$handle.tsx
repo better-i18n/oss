@@ -9,14 +9,14 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export async function loader({ params, context }: LoaderFunctionArgs) {
-  const { storefront, locale, messages } = context;
+  const { storefront, locale, messages, shopifyI18n } = context;
   const { handle } = params;
 
   if (!handle)
     throw new Response("Collection handle required", { status: 400 });
 
   const { collection } = await storefront.query(COLLECTION_QUERY, {
-    variables: { handle, count: 24 },
+    variables: { handle, count: 24, language: shopifyI18n.language, country: shopifyI18n.country },
   });
 
   if (!collection) throw new Response("Collection not found", { status: 404 });
@@ -73,7 +73,7 @@ export default function CollectionPage() {
           </div>
 
           <div className="flex flex-col justify-center gap-1 py-10 lg:pl-12">
-            <p className="label">Products</p>
+            <p className="label">{tco("products_label")}</p>
             <p className="text-[2rem] font-semibold tracking-tight text-stone-900">
               {products.length}
             </p>
@@ -170,7 +170,8 @@ interface ProductNode {
 }
 
 const COLLECTION_QUERY = `#graphql
-  query Collection($handle: String!, $count: Int!) {
+  query Collection($handle: String!, $count: Int!, $language: LanguageCode, $country: CountryCode)
+  @inContext(language: $language, country: $country) {
     collection(handle: $handle) {
       id
       title

@@ -30,11 +30,15 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export async function loader({ context }: LoaderFunctionArgs) {
-  const { storefront, locale, messages, languages } = context;
+  const { storefront, locale, messages, languages, shopifyI18n } = context;
 
   const [{ collections }, { products }] = await Promise.all([
-    storefront.query(FEATURED_COLLECTIONS_QUERY, { variables: { count: 4 } }),
-    storefront.query(FEATURED_PRODUCTS_QUERY, { variables: { count: 8 } }),
+    storefront.query(FEATURED_COLLECTIONS_QUERY, {
+      variables: { count: 4, language: shopifyI18n.language, country: shopifyI18n.country },
+    }),
+    storefront.query(FEATURED_PRODUCTS_QUERY, {
+      variables: { count: 8, language: shopifyI18n.language, country: shopifyI18n.country },
+    }),
   ]);
 
   return {
@@ -159,21 +163,21 @@ function HeroSection({
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                   Shopify Storefront API
                 </span>
-                <span className="text-[11px] text-stone-400">→ Products & pricing</span>
+                <span className="text-[11px] text-stone-400">{th("source_shopify_desc")}</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="source-pill border-blue-100 bg-blue-50 text-blue-600">
                   <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
                   Better i18n CDN
                 </span>
-                <span className="text-[11px] text-stone-400">→ UI translations</span>
+                <span className="text-[11px] text-stone-400">{th("source_cdn_desc")}</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="source-pill border-violet-100 bg-violet-50 text-violet-600">
                   <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
                   Better i18n CMS
                 </span>
-                <span className="text-[11px] text-stone-400">→ Marketing copy</span>
+                <span className="text-[11px] text-stone-400">{th("source_cms_desc")}</span>
               </div>
             </div>
 
@@ -200,10 +204,10 @@ function HeroSection({
             {/* Locale cycling table */}
             <div>
               <div className="flex items-center justify-between border-b border-stone-200 px-4 py-2.5">
-                <p className="label">Live translations · {LOCALE_ROWS.length} locales</p>
+                <p className="label">{th("live_translations_label", { count: LOCALE_ROWS.length })}</p>
                 <span className="flex items-center gap-1.5 text-[11px] text-stone-400">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-                  active
+                  {th("live_active")}
                 </span>
               </div>
               <LocaleTable activeIndex={activeLocale} />
@@ -226,7 +230,7 @@ function HeroSection({
                   ) : null}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="label">Featured product</p>
+                  <p className="label">{th("featured_product_label")}</p>
                   <p className="mt-1 truncate text-[13px] font-medium text-stone-900">
                     {heroProduct.title}
                   </p>
@@ -256,10 +260,10 @@ function HeroSection({
         {/* Stats strip — inside the outer border container */}
         <div className="grid grid-cols-2 divide-x divide-y divide-stone-200 border-t border-stone-200 sm:grid-cols-4 sm:divide-y-0">
           {[
-            { n: "50+", label: "Languages" },
-            { n: "CDN-first", label: "Zero-latency delivery" },
-            { n: "5-min", label: "Smart cache TTL" },
-            { n: "AI-powered", label: "Auto-translate & review" },
+            { n: "50+", label: th("stats_languages") },
+            { n: "CDN-first", label: th("stats_cdn") },
+            { n: "5-min", label: th("stats_cache") },
+            { n: "AI-powered", label: th("stats_ai") },
           ].map((s) => (
             <div key={s.n} className="px-4 py-5 sm:px-6">
               <p className="text-lg font-semibold tracking-tight text-stone-900 sm:text-xl">
@@ -466,7 +470,7 @@ function CollectionsGrid({
                     {col.title}
                   </h3>
                   <p className="mt-1 text-[12px] text-white/50">
-                    View collection →
+                    {th("view_collection")}
                   </p>
                 </div>
               </div>
@@ -514,7 +518,7 @@ function ArchSection() {
   return (
     <section className="border-b border-stone-200">
       <div className="page-frame border-b border-stone-200 py-4">
-        <p className="label">How it's built</p>
+        <p className="label">{th("arch_eyebrow")}</p>
       </div>
       <div className="page-frame">
         <div className="grid grid-cols-1 divide-y divide-stone-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
@@ -544,6 +548,7 @@ export default function Homepage() {
   const { locale, collections, products } = useLoaderData<typeof loader>();
   const { t: tp } = useTranslation("products");
   const { t: tco } = useTranslation("collection");
+  const { t: th } = useTranslation("home");
 
   return (
     <div>
@@ -572,13 +577,12 @@ export default function Homepage() {
       <section className="border-b border-stone-200">
         <div className="page-frame grid grid-cols-1 gap-0 divide-y divide-stone-200 py-0 lg:grid-cols-[1fr_auto] lg:divide-x lg:divide-y-0">
           <div className="py-12 lg:pr-12">
-            <p className="label">Open source</p>
+            <p className="label">{th("cta_eyebrow")}</p>
             <h2 className="mt-4 text-[2rem] font-semibold leading-tight tracking-tight text-stone-900 sm:text-[2.5rem]">
-              Add localization to your<br />Hydrogen store in minutes.
+              {th("cta_title")}
             </h2>
             <p className="mt-3 max-w-sm text-[14px] leading-6 text-stone-500">
-              Free to get started. AI-powered translations, CDN delivery, and a
-              full CMS — all in one platform.
+              {th("cta_desc")}
             </p>
           </div>
           <div className="flex flex-col justify-center gap-3 py-12 lg:pl-12">
@@ -588,7 +592,7 @@ export default function Homepage() {
               rel="noopener noreferrer"
               className="btn-dark whitespace-nowrap"
             >
-              Get started free →
+              {th("cta_primary")}
             </a>
             <a
               href="https://docs.better-i18n.com"
@@ -596,7 +600,7 @@ export default function Homepage() {
               rel="noopener noreferrer"
               className="btn-outline whitespace-nowrap"
             >
-              Read the docs
+              {th("cta_secondary")}
             </a>
           </div>
         </div>
@@ -608,7 +612,8 @@ export default function Homepage() {
 // ─── GraphQL queries ────────────────────────────────────────────────────────
 
 const FEATURED_COLLECTIONS_QUERY = `#graphql
-  query FeaturedCollections($count: Int!) {
+  query FeaturedCollections($count: Int!, $language: LanguageCode, $country: CountryCode)
+  @inContext(language: $language, country: $country) {
     collections(first: $count, sortKey: UPDATED_AT) {
       nodes {
         id
@@ -624,7 +629,8 @@ const FEATURED_COLLECTIONS_QUERY = `#graphql
 ` as const;
 
 const FEATURED_PRODUCTS_QUERY = `#graphql
-  query FeaturedProducts($count: Int!) {
+  query FeaturedProducts($count: Int!, $language: LanguageCode, $country: CountryCode)
+  @inContext(language: $language, country: $country) {
     products(first: $count, sortKey: BEST_SELLING) {
       nodes {
         id
