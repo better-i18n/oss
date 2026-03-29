@@ -55,6 +55,7 @@ import { Route as LocaleToolsLocaleExplorerRouteImport } from './routes/$locale/
 import { Route as LocaleToolsIcuPlaygroundRouteImport } from './routes/$locale/tools/icu-playground'
 import { Route as LocaleToolsHreflangGeneratorRouteImport } from './routes/$locale/tools/hreflang-generator'
 import { Route as LocaleToolsCostCalculatorRouteImport } from './routes/$locale/tools/cost-calculator'
+import { Route as LocaleIntegrationsSlugRouteImport } from './routes/$locale/integrations/$slug'
 import { Route as LocaleI18nWebsiteTranslationRouteImport } from './routes/$locale/i18n/website-translation'
 import { Route as LocaleI18nWebsiteLocalizationRouteImport } from './routes/$locale/i18n/website-localization'
 import { Route as LocaleI18nVueRouteImport } from './routes/$locale/i18n/vue'
@@ -342,6 +343,11 @@ const LocaleToolsCostCalculatorRoute =
     path: '/$locale/tools/cost-calculator',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LocaleIntegrationsSlugRoute = LocaleIntegrationsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => LocaleIntegrationsRoute,
+} as any)
 const LocaleI18nWebsiteTranslationRoute =
   LocaleI18nWebsiteTranslationRouteImport.update({
     id: '/$locale/i18n/website-translation',
@@ -628,7 +634,7 @@ export interface FileRoutesByFullPath {
   '/$locale/for-saas': typeof LocaleForSaasRoute
   '/$locale/for-startups': typeof LocaleForStartupsRoute
   '/$locale/for-translators': typeof LocaleForTranslatorsRoute
-  '/$locale/integrations': typeof LocaleIntegrationsRoute
+  '/$locale/integrations': typeof LocaleIntegrationsRouteWithChildren
   '/$locale/pricing': typeof LocalePricingRoute
   '/$locale/privacy': typeof LocalePrivacyRoute
   '/$locale/signup': typeof LocaleSignupRoute
@@ -685,6 +691,7 @@ export interface FileRoutesByFullPath {
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
+  '/$locale/integrations/$slug': typeof LocaleIntegrationsSlugRoute
   '/$locale/tools/cost-calculator': typeof LocaleToolsCostCalculatorRoute
   '/$locale/tools/hreflang-generator': typeof LocaleToolsHreflangGeneratorRoute
   '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
@@ -724,7 +731,7 @@ export interface FileRoutesByTo {
   '/$locale/for-saas': typeof LocaleForSaasRoute
   '/$locale/for-startups': typeof LocaleForStartupsRoute
   '/$locale/for-translators': typeof LocaleForTranslatorsRoute
-  '/$locale/integrations': typeof LocaleIntegrationsRoute
+  '/$locale/integrations': typeof LocaleIntegrationsRouteWithChildren
   '/$locale/pricing': typeof LocalePricingRoute
   '/$locale/privacy': typeof LocalePrivacyRoute
   '/$locale/signup': typeof LocaleSignupRoute
@@ -781,6 +788,7 @@ export interface FileRoutesByTo {
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
+  '/$locale/integrations/$slug': typeof LocaleIntegrationsSlugRoute
   '/$locale/tools/cost-calculator': typeof LocaleToolsCostCalculatorRoute
   '/$locale/tools/hreflang-generator': typeof LocaleToolsHreflangGeneratorRoute
   '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
@@ -822,7 +830,7 @@ export interface FileRoutesById {
   '/$locale/for-saas': typeof LocaleForSaasRoute
   '/$locale/for-startups': typeof LocaleForStartupsRoute
   '/$locale/for-translators': typeof LocaleForTranslatorsRoute
-  '/$locale/integrations': typeof LocaleIntegrationsRoute
+  '/$locale/integrations': typeof LocaleIntegrationsRouteWithChildren
   '/$locale/pricing': typeof LocalePricingRoute
   '/$locale/privacy': typeof LocalePrivacyRoute
   '/$locale/signup': typeof LocaleSignupRoute
@@ -879,6 +887,7 @@ export interface FileRoutesById {
   '/$locale/i18n/vue': typeof LocaleI18nVueRoute
   '/$locale/i18n/website-localization': typeof LocaleI18nWebsiteLocalizationRoute
   '/$locale/i18n/website-translation': typeof LocaleI18nWebsiteTranslationRoute
+  '/$locale/integrations/$slug': typeof LocaleIntegrationsSlugRoute
   '/$locale/tools/cost-calculator': typeof LocaleToolsCostCalculatorRoute
   '/$locale/tools/hreflang-generator': typeof LocaleToolsHreflangGeneratorRoute
   '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
@@ -978,6 +987,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
+    | '/$locale/integrations/$slug'
     | '/$locale/tools/cost-calculator'
     | '/$locale/tools/hreflang-generator'
     | '/$locale/tools/icu-playground'
@@ -1074,6 +1084,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
+    | '/$locale/integrations/$slug'
     | '/$locale/tools/cost-calculator'
     | '/$locale/tools/hreflang-generator'
     | '/$locale/tools/icu-playground'
@@ -1171,6 +1182,7 @@ export interface FileRouteTypes {
     | '/$locale/i18n/vue'
     | '/$locale/i18n/website-localization'
     | '/$locale/i18n/website-translation'
+    | '/$locale/integrations/$slug'
     | '/$locale/tools/cost-calculator'
     | '/$locale/tools/hreflang-generator'
     | '/$locale/tools/icu-playground'
@@ -1212,7 +1224,7 @@ export interface RootRouteChildren {
   LocaleForSaasRoute: typeof LocaleForSaasRoute
   LocaleForStartupsRoute: typeof LocaleForStartupsRoute
   LocaleForTranslatorsRoute: typeof LocaleForTranslatorsRoute
-  LocaleIntegrationsRoute: typeof LocaleIntegrationsRoute
+  LocaleIntegrationsRoute: typeof LocaleIntegrationsRouteWithChildren
   LocalePricingRoute: typeof LocalePricingRoute
   LocalePrivacyRoute: typeof LocalePrivacyRoute
   LocaleSignupRoute: typeof LocaleSignupRoute
@@ -1606,6 +1618,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleToolsCostCalculatorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/integrations/$slug': {
+      id: '/$locale/integrations/$slug'
+      path: '/$slug'
+      fullPath: '/$locale/integrations/$slug'
+      preLoaderRoute: typeof LocaleIntegrationsSlugRouteImport
+      parentRoute: typeof LocaleIntegrationsRoute
+    }
     '/$locale/i18n/website-translation': {
       id: '/$locale/i18n/website-translation'
       path: '/$locale/i18n/website-translation'
@@ -1966,6 +1985,17 @@ const LocaleFeaturesRouteWithChildren = LocaleFeaturesRoute._addFileChildren(
   LocaleFeaturesRouteChildren,
 )
 
+interface LocaleIntegrationsRouteChildren {
+  LocaleIntegrationsSlugRoute: typeof LocaleIntegrationsSlugRoute
+}
+
+const LocaleIntegrationsRouteChildren: LocaleIntegrationsRouteChildren = {
+  LocaleIntegrationsSlugRoute: LocaleIntegrationsSlugRoute,
+}
+
+const LocaleIntegrationsRouteWithChildren =
+  LocaleIntegrationsRoute._addFileChildren(LocaleIntegrationsRouteChildren)
+
 interface LocaleToolsLocaleExplorerRouteChildren {
   LocaleToolsLocaleExplorerLocaleCodeRoute: typeof LocaleToolsLocaleExplorerLocaleCodeRoute
 }
@@ -2020,7 +2050,7 @@ const rootRouteChildren: RootRouteChildren = {
   LocaleForSaasRoute: LocaleForSaasRoute,
   LocaleForStartupsRoute: LocaleForStartupsRoute,
   LocaleForTranslatorsRoute: LocaleForTranslatorsRoute,
-  LocaleIntegrationsRoute: LocaleIntegrationsRoute,
+  LocaleIntegrationsRoute: LocaleIntegrationsRouteWithChildren,
   LocalePricingRoute: LocalePricingRoute,
   LocalePrivacyRoute: LocalePrivacyRoute,
   LocaleSignupRoute: LocaleSignupRoute,
