@@ -145,13 +145,13 @@ export const LOCALE_DROPDOWN_CSS = [
   `@keyframes bl-out{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-6px) scale(.97)}}`,
   `@keyframes bl-in-top{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}`,
   `@keyframes bl-out-top{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(6px) scale(.97)}}`,
-  `@keyframes bl-item-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}`,
+  `@keyframes bl-item-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`,
 
   /* Menu — always in DOM, hidden by default */
   `[data-better-locale-menu]{visibility:hidden;pointer-events:none;opacity:0}`,
 
   /* Menu — open state */
-  `[data-better-locale-menu][data-state=open]{visibility:visible;pointer-events:auto;opacity:1;animation:bl-in .22s cubic-bezier(.16,1,.3,1) both;transform-origin:top center}`,
+  `[data-better-locale-menu][data-state=open]{visibility:visible;pointer-events:auto;opacity:1;animation:bl-in .26s cubic-bezier(.16,1,.3,1) both;transform-origin:top center}`,
   `[data-better-locale-menu][data-state=open][data-placement=top]{animation-name:bl-in-top;transform-origin:bottom center}`,
 
   /* Menu — closing state */
@@ -164,16 +164,18 @@ export const LOCALE_DROPDOWN_CSS = [
   `[data-better-locale-menu]::-webkit-scrollbar-thumb{background:var(--better-locale-border,var(--_bl-border));border-radius:2px}`,
 
   /* Item — staggered entrance (only in open state) */
-  `[data-better-locale-menu][data-state=open] [data-better-locale-item]{animation:bl-item-in .2s cubic-bezier(.16,1,.3,1) both}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]{animation:bl-item-in .28s cubic-bezier(.16,1,.3,1) both}`,
   `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(1){animation-delay:0ms}`,
-  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(2){animation-delay:20ms}`,
-  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(3){animation-delay:35ms}`,
-  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(4){animation-delay:48ms}`,
-  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(5){animation-delay:58ms}`,
-  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(6){animation-delay:66ms}`,
-  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(7){animation-delay:73ms}`,
-  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(8){animation-delay:79ms}`,
-  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(n+9){animation-delay:84ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(2){animation-delay:25ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(3){animation-delay:45ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(4){animation-delay:60ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(5){animation-delay:72ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(6){animation-delay:82ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(7){animation-delay:90ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(8){animation-delay:96ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(9){animation-delay:100ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(10){animation-delay:103ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(n+11){animation-delay:105ms}`,
 
   /* Item — hover / focus pseudo-element */
   `[data-better-locale-item]{position:relative}`,
