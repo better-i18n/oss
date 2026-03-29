@@ -164,6 +164,43 @@ export async function POST(request: Request) {
 
 Set up in dashboard: Project → Settings → Webhooks → event `translation.published` → your `/api/revalidate` URL.
 
+## TypeScript — type-safe keys
+
+```typescript
+// types/i18n.d.ts
+import en from "../messages/en.json";
+
+declare module "next-intl" {
+  interface AppConfig {
+    Messages: typeof en;
+  }
+}
+```
+
+With this declaration:
+- `useTranslations("auth")` → `t("login")` autocompletes within the `auth` namespace
+- Missing keys → TypeScript compile error
+- Works in both App Router (`useTranslations`) and Server Components (`getTranslations`)
+
+> **Full reference:** https://docs.better-i18n.com/frameworks/nextjs/api-reference.mdx
+
+---
+
+## Pages Router
+
+`@better-i18n/next` supports both App Router and Pages Router. For Pages Router, use `getStaticProps` / `getServerSideProps`:
+
+```typescript
+// pages/[locale]/index.tsx
+export async function getStaticProps({ params }) {
+  return await i18n.requestConfig(params.locale);
+}
+```
+
+> **Docs:** https://docs.better-i18n.com/frameworks/nextjs/configuration.mdx
+
+---
+
 ## Traps to avoid
 
 - **Never instantiate `createI18n` inside a component or route handler** — it creates a new TtlCache instance on every call, breaking memory caching.
