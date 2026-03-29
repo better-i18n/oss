@@ -19,6 +19,14 @@
   font-display: swap;
 }
 
+/* Global cursor fix — Tailwind preflight resets button cursor to default */
+button:not([disabled]) {
+  cursor: pointer;
+}
+label:has(input:not([disabled]), button:not([disabled])) {
+  cursor: pointer;
+}
+
 /* Button shimmer sweep animation */
 @keyframes shimmer-sweep {
   0% { transform: translateX(-100%) skewX(-15deg); }
