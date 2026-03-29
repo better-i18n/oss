@@ -1,5 +1,50 @@
 # @better-i18n/remix
 
+## 0.5.0
+
+### Minor Changes
+
+- 3ea1cae: Add `localePrefix` config + `getLocaleFromRequest` / `buildLocalePath` / `replaceLocaleInPath`
+
+  `createRemixI18n` now accepts a `localePrefix` option (mirrors `@better-i18n/next` and `use-intl`) to control URL-based locale routing:
+  - `"as-needed"` (default): only non-default locales get a prefix (`/tr/about`, `/about`)
+  - `"always"`: every locale gets a prefix including the default (`/en/about`, `/tr/about`)
+  - `"never"`: no URL prefix; detection falls back to cookie → Accept-Language → default
+
+  New methods on the returned instance:
+  - `getLocaleFromRequest(request)` — replaces custom locale-detection helpers; CDN-independent
+    (validates URL segment against CDN list with BCP 47 regex fallback on cold start / miss)
+  - `buildLocalePath(path, locale)` — builds locale-prefixed path respecting config
+  - `replaceLocaleInPath(path, newLocale)` — swaps locale prefix in an existing path
+
+  `detectLocale(request)` is now `@deprecated`; use `getLocaleFromRequest` instead.
+
+### Patch Changes
+
+- 3a5b2b6: Single UI source for LocaleDropdown across all adapters
+
+  Introduces `@better-i18n/core/react` — a new optional React export containing
+  `LocaleDropdownBase`, a pure presentational component with no routing hooks.
+
+  **New exports from `@better-i18n/core/react`:**
+  - `LocaleDropdownBase` — props-driven UI, no hooks, works with any router
+  - `LOCALE_DROPDOWN_CSS` — injectable CSS string for custom rendering pipelines
+  - `DATA_ATTRS` — typed constants for all `data-better-locale-*` attributes
+  - `CSS_VARS` — typed constants for all `--better-locale-*` custom properties
+  - `LocaleDropdownBaseProps`, `LocaleDropdownRenderContext`, `LocaleDropdownTriggerContext` — full type surface
+
+  **Adapter changes (all backwards compatible):**
+  - `@better-i18n/use-intl`: `LocaleDropdown` → thin wrapper (TanStack Router hooks)
+  - `@better-i18n/remix`: `LocaleDropdown` → thin wrapper (React Router hooks)
+  - `@better-i18n/next`: `LocaleDropdown` → thin wrapper (cookie + router.refresh)
+  - Eliminates ~1200 lines of duplicated UI code across the three adapters
+  - Bundle size: `@better-i18n/core` main entry remains zero-dep; React UI loads only via `./react`
+
+- Updated dependencies [3a5b2b6]
+- Updated dependencies [6bf6952]
+- Updated dependencies [11c3426]
+  - @better-i18n/core@0.6.0
+
 ## 0.4.3
 
 ### Patch Changes

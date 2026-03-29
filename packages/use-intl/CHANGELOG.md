@@ -1,5 +1,43 @@
 # @better-i18n/use-intl
 
+## 0.5.1
+
+### Patch Changes
+
+- a4fe0ff: Animated locale dropdown with ElevenLabs-style hover effects
+  - Round flags (18×18, border-radius 50%) instead of rectangular
+  - Dropdown menu entrance animation (scale + fade, 150ms cubic-bezier spring)
+  - Item hover: CSS ::before pseudo-element with scale(0.97→1) + opacity animation
+  - Trigger button: same spring hover effect via CSS pseudo-element
+  - Deeper shadow and 14px border-radius for a more modern menu
+  - Menu padding 6px for proper item breathing room
+  - Active item: bold weight, persistent background via [data-active] CSS selector
+  - All animations handled via CSS — zero JS overhead, respects prefers-reduced-motion if added by consumer
+
+- 3a5b2b6: Single UI source for LocaleDropdown across all adapters
+
+  Introduces `@better-i18n/core/react` — a new optional React export containing
+  `LocaleDropdownBase`, a pure presentational component with no routing hooks.
+
+  **New exports from `@better-i18n/core/react`:**
+  - `LocaleDropdownBase` — props-driven UI, no hooks, works with any router
+  - `LOCALE_DROPDOWN_CSS` — injectable CSS string for custom rendering pipelines
+  - `DATA_ATTRS` — typed constants for all `data-better-locale-*` attributes
+  - `CSS_VARS` — typed constants for all `--better-locale-*` custom properties
+  - `LocaleDropdownBaseProps`, `LocaleDropdownRenderContext`, `LocaleDropdownTriggerContext` — full type surface
+
+  **Adapter changes (all backwards compatible):**
+  - `@better-i18n/use-intl`: `LocaleDropdown` → thin wrapper (TanStack Router hooks)
+  - `@better-i18n/remix`: `LocaleDropdown` → thin wrapper (React Router hooks)
+  - `@better-i18n/next`: `LocaleDropdown` → thin wrapper (cookie + router.refresh)
+  - Eliminates ~1200 lines of duplicated UI code across the three adapters
+  - Bundle size: `@better-i18n/core` main entry remains zero-dep; React UI loads only via `./react`
+
+- Updated dependencies [3a5b2b6]
+- Updated dependencies [6bf6952]
+- Updated dependencies [11c3426]
+  - @better-i18n/core@0.6.0
+
 ## 0.5.0
 
 ### Minor Changes

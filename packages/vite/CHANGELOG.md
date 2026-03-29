@@ -1,5 +1,14 @@
 # @better-i18n/vite
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [3a5b2b6]
+- Updated dependencies [6bf6952]
+- Updated dependencies [11c3426]
+  - @better-i18n/core@0.6.0
+
 ## 0.2.3
 
 ### Patch Changes
