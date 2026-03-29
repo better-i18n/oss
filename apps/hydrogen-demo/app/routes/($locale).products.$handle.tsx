@@ -11,13 +11,17 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export async function loader({ params, context }: LoaderFunctionArgs) {
-  const { storefront, locale, messages } = context;
+  const { storefront, locale, messages, shopifyI18n } = context;
   const { handle } = params;
 
   if (!handle) throw new Response("Product handle required", { status: 400 });
 
   const { product } = await storefront.query(PRODUCT_QUERY, {
-    variables: { handle },
+    variables: {
+      handle,
+      language: shopifyI18n.language,
+      country: shopifyI18n.country,
+    },
   });
 
   if (!product) throw new Response("Product not found", { status: 404 });
@@ -28,6 +32,15 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 export default function ProductPage() {
   const { product, locale } = useLoaderData<typeof loader>();
   const { t: tp } = useTranslation("products");
+  const { t: tc } = useTranslation("product_content");
+
+  const handleKey = product.handle.replace(/-/g, "_");
+  const localizedTitle = tc(`${handleKey}.title`, {
+    defaultValue: product.title,
+  });
+  const localizedDescription = tc(`${handleKey}.description`, {
+    defaultValue: product.description,
+  });
 
   const variants: VariantNode[] = product.variants.nodes;
   const options: OptionNode[] = product.options || [];
@@ -209,7 +222,7 @@ export default function ProductPage() {
             {/* Description */}
             {product.description ? (
               <div className="p-6 lg:p-8">
-                <p className="label mb-3">Description</p>
+                <p className="label mb-3">{tp("description")}</p>
                 <p className="text-[14px] leading-6 text-stone-600">
                   {product.description}
                 </p>
@@ -354,7 +367,8 @@ interface VariantNode {
 }
 
 const PRODUCT_QUERY = `#graphql
-  query Product($handle: String!) {
+  query Product($handle: String!, $language: LanguageCode, $country: CountryCode)
+  @inContext(language: $language, country: $country) {
     product(handle: $handle) {
       id
       title

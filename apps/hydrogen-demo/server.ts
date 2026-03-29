@@ -69,6 +69,7 @@ export default {
           storefront,
           env,
           locale,
+          shopifyI18n,
           messages,
           languages,
           cart,
