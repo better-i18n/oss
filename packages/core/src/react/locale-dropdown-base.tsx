@@ -129,7 +129,7 @@ function FlagDisplay({ flag, label }: { flag: ResolvedFlag; label: string }) {
  * Does NOT use `prefers-color-scheme` — dark mode must be explicit via
  * site markup, so light-only sites aren't affected by OS dark mode.
  */
-export const LOCALE_DROPDOWN_CSS = `[data-better-locale-dropdown]{position:relative;--_bl-text:#374151;--_bl-menu-bg:#fff;--_bl-border:#e5e7eb;--_bl-hover:#f3f4f6;--_bl-active:#eff0f1;--_bl-muted:#9ca3af;--_bl-shadow:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06)}.dark [data-better-locale-dropdown],[data-theme=dark] [data-better-locale-dropdown]{--_bl-text:#d1d5db;--_bl-menu-bg:#1a1a1a;--_bl-border:rgba(255,255,255,.08);--_bl-hover:rgba(255,255,255,.06);--_bl-active:rgba(255,255,255,.09);--_bl-muted:#6b7280;--_bl-shadow:0 8px 32px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.3)}@keyframes better-locale-pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes better-locale-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}[data-better-locale-menu]{animation:better-locale-in .15s cubic-bezier(.16,1,.3,1);transform-origin:top right}[data-better-locale-menu][data-placement=top]{transform-origin:bottom right}[data-better-locale-item]{position:relative}[data-better-locale-item]>*{position:relative;z-index:1}[data-better-locale-item]::before{content:'';position:absolute;inset:0;border-radius:8px;background:var(--better-locale-hover-bg,var(--_bl-hover));opacity:0;transform:scale(.97);transition:opacity .12s ease-out,transform .12s ease-out;z-index:0}[data-better-locale-item]:hover::before,[data-better-locale-item][data-focused]::before{opacity:1;transform:scale(1)}[data-better-locale-item][data-active]::before{opacity:1;transform:scale(1);background:var(--better-locale-active-bg,var(--_bl-active))}[data-better-locale-trigger]{position:relative}[data-better-locale-trigger]:not([disabled])::before{content:'';position:absolute;inset:0;border-radius:var(--better-locale-trigger-radius,8px);background:var(--better-locale-hover-bg,var(--_bl-hover));opacity:0;transform:scale(.97);transition:opacity .12s ease-out,transform .12s ease-out}[data-better-locale-trigger]:not([disabled]):hover::before{opacity:1;transform:scale(1)}[data-better-locale-trigger]>*{position:relative;z-index:1}`;
+export const LOCALE_DROPDOWN_CSS = `[data-better-locale-dropdown]{position:relative;--_bl-text:#374151;--_bl-menu-bg:#fff;--_bl-border:#e5e7eb;--_bl-hover:#f3f4f6;--_bl-active:#eff0f1;--_bl-muted:#9ca3af;--_bl-shadow:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06)}.dark [data-better-locale-dropdown],[data-theme=dark] [data-better-locale-dropdown]{--_bl-text:#d1d5db;--_bl-menu-bg:#1a1a1a;--_bl-border:rgba(255,255,255,.08);--_bl-hover:rgba(255,255,255,.06);--_bl-active:rgba(255,255,255,.09);--_bl-muted:#6b7280;--_bl-shadow:0 8px 32px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.3)}@keyframes better-locale-pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes better-locale-in{from{opacity:0;transform:translateY(-6px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes better-locale-out{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-6px) scale(.97)}}@keyframes better-locale-in-top{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes better-locale-out-top{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(6px) scale(.97)}}[data-better-locale-menu]{animation:better-locale-in .18s cubic-bezier(.16,1,.3,1);transform-origin:top center}[data-better-locale-menu][data-placement=top]{animation-name:better-locale-in-top;transform-origin:bottom center}[data-better-locale-menu][data-closing]{animation:better-locale-out .14s ease-in forwards}[data-better-locale-menu][data-placement=top][data-closing]{animation-name:better-locale-out-top}[data-better-locale-menu]::-webkit-scrollbar{width:4px}[data-better-locale-menu]::-webkit-scrollbar-track{background:transparent}[data-better-locale-menu]::-webkit-scrollbar-thumb{background:var(--better-locale-border,var(--_bl-border));border-radius:2px}[data-better-locale-item]{position:relative}[data-better-locale-item]>*{position:relative;z-index:1}[data-better-locale-item]::before{content:'';position:absolute;inset:0;border-radius:8px;background:var(--better-locale-hover-bg,var(--_bl-hover));opacity:0;transform:scale(.97);transition:opacity .12s ease-out,transform .12s ease-out;z-index:0}[data-better-locale-item]:hover::before,[data-better-locale-item][data-focused]::before{opacity:1;transform:scale(1)}[data-better-locale-item][data-active]::before{opacity:1;transform:scale(1);background:var(--better-locale-active-bg,var(--_bl-active))}[data-better-locale-trigger]{position:relative}[data-better-locale-trigger]:not([disabled])::before{content:'';position:absolute;inset:0;border-radius:var(--better-locale-trigger-radius,8px);background:var(--better-locale-hover-bg,var(--_bl-hover));opacity:0;transform:scale(.97);transition:opacity .12s ease-out,transform .12s ease-out}[data-better-locale-trigger]:not([disabled]):hover::before{opacity:1;transform:scale(1)}[data-better-locale-trigger]>*{position:relative;z-index:1}`;
 
 // ─── Styles ──────────────────────────────────────────────────────────
 
@@ -155,7 +155,7 @@ const styles = {
   } satisfies CSSProperties,
   menu: {
     minWidth: 210,
-    maxHeight: "70vh",
+    maxHeight: "min(340px, 70vh)",
     overflowY: "auto",
     borderRadius: 14,
     border: "1px solid var(--better-locale-border, var(--_bl-border))",
@@ -388,9 +388,26 @@ export function LocaleDropdownBase({
   renderItem,
 }: LocaleDropdownBaseProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [focusIndex, setFocusIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const closeMenu = useCallback(() => {
+    setIsClosing(true);
+    closeTimerRef.current = setTimeout(() => {
+      setIsOpen(false);
+      setIsClosing(false);
+    }, 140);
+  }, []);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
 
   const { refs, floatingStyles, placement: resolvedPlacement } = useFloating({
     open: isOpen,
@@ -414,12 +431,12 @@ export function LocaleDropdownBase({
     if (!isOpen) return;
     function handleClick(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
+        closeMenu();
       }
     }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, [isOpen]);
+  }, [isOpen, closeMenu]);
 
   // Keyboard navigation
   const handleKeyDown = useCallback(
@@ -435,7 +452,7 @@ export function LocaleDropdownBase({
       switch (e.key) {
         case "Escape":
           e.preventDefault();
-          setIsOpen(false);
+          closeMenu();
           setFocusIndex(-1);
           break;
         case "ArrowDown":
@@ -450,7 +467,7 @@ export function LocaleDropdownBase({
         case " ": {
           e.preventDefault();
           const lang = languages[focusIndex];
-          if (lang) { onLocaleChange(lang.code); setIsOpen(false); setFocusIndex(-1); }
+          if (lang) { onLocaleChange(lang.code); closeMenu(); setFocusIndex(-1); }
           break;
         }
         case "Home":
@@ -502,7 +519,12 @@ export function LocaleDropdownBase({
 
   const handleTriggerClick = () => {
     if (!canToggle) return;
-    setIsOpen((prev) => !prev);
+    if (isOpen) {
+      closeMenu();
+    } else {
+      if (closeTimerRef.current) { clearTimeout(closeTimerRef.current); setIsClosing(false); }
+      setIsOpen(true);
+    }
   };
 
   return (
@@ -552,7 +574,7 @@ export function LocaleDropdownBase({
       )}
 
       {/* Menu */}
-      {isOpen && canToggle && (
+      {(isOpen || isClosing) && canToggle && (
         <ul
           ref={(node: HTMLUListElement | null) => {
             refs.setFloating(node);
@@ -562,6 +584,7 @@ export function LocaleDropdownBase({
           aria-label="Available languages"
           data-better-locale-menu
           data-placement={resolvedPlacement.startsWith("top") ? "top" : "bottom"}
+          data-closing={isClosing || undefined}
           className={menuClassName}
           style={isStyled ? { ...styles.menu, ...floatingStyles } : floatingStyles}
         >
@@ -580,7 +603,7 @@ export function LocaleDropdownBase({
                   data-better-locale-item
                   data-active={isActive || undefined}
                   data-focused={isFocused || undefined}
-                  onClick={() => { onLocaleChange(language.code); setIsOpen(false); }}
+                  onClick={() => { onLocaleChange(language.code); closeMenu(); }}
                   onMouseEnter={() => setFocusIndex(index)}
                   style={{ cursor: "pointer" }}
                 >
@@ -597,7 +620,7 @@ export function LocaleDropdownBase({
                 data-better-locale-item
                 data-active={isActive || undefined}
                 data-focused={isFocused || undefined}
-                onClick={() => { onLocaleChange(language.code); setIsOpen(false); }}
+                onClick={() => { onLocaleChange(language.code); closeMenu(); }}
                 onMouseEnter={() => setFocusIndex(index)}
                 style={
                   isStyled
