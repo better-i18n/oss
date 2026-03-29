@@ -6,6 +6,7 @@ import {
   IconPeople,
   IconNewspaper,
   IconLiveActivity,
+  IconRobot,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { LifeBuoy } from "lucide-react";
 import { SpriteIcon } from "@/components/SpriteIcon";
@@ -13,6 +14,17 @@ import { useT } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MobileNav } from "./MobileNav";
+
+// Featured integrations shown in the nav dropdown
+// icon: sprite name | "mcp" (renders IconRobot)
+const NAV_INTEGRATIONS: Array<{ slug: string; name: string; spriteIcon?: import("@/components/SpriteIcon").SpriteIconName; robotIcon?: true }> = [
+  { slug: "github",         name: "GitHub",          spriteIcon: "github" },
+  { slug: "mcp-server",     name: "MCP Server",      robotIcon: true },
+  { slug: "global-cdn",     name: "Global CDN",      spriteIcon: "globe" },
+  { slug: "nextjs",         name: "Next.js",          spriteIcon: "code" },
+  { slug: "cli",            name: "CLI",              spriteIcon: "script" },
+  { slug: "ai-translation", name: "AI Translation",  spriteIcon: "sparkles-soft" },
+];
 
 export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
@@ -387,6 +399,59 @@ export default function Header({ className }: { className?: string }) {
                 </div>
               </div>
             </div>
+            {/* Integrations Mega Menu */}
+            <div className="relative group">
+              <button
+                aria-haspopup="true"
+                aria-expanded="false"
+                className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600"
+              >
+                {t("integrations.title", { defaultValue: "Integrations" })}
+                <SpriteIcon
+                  name="chevron-bottom"
+                  className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180"
+                />
+              </button>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[340px] shadow-lg">
+                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm" role="menu">
+                    <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500">
+                      {t("integrations.featured", { defaultValue: "Featured" })}
+                    </p>
+                    <div className="grid grid-cols-2 gap-0.5">
+                      {NAV_INTEGRATIONS.map((item) => (
+                        <Link
+                          key={item.slug}
+                          to="/$locale/integrations/$slug/"
+                          params={{ locale: locale || "en", slug: item.slug }}
+                          className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-mist-50 transition-colors"
+                        >
+                          <span className="flex size-6 shrink-0 items-center justify-center rounded-md border border-mist-200 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)]">
+                            {item.robotIcon ? (
+                              <IconRobot className="size-3.5 text-mist-700" />
+                            ) : item.spriteIcon ? (
+                              <SpriteIcon name={item.spriteIcon} className="size-3.5 text-mist-700" />
+                            ) : null}
+                          </span>
+                          <span className="text-sm font-medium text-mist-950">{item.name}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="px-3 py-2.5">
+                    <Link
+                      to="/$locale/integrations/"
+                      params={{ locale: locale || "en" }}
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-mist-950 hover:text-mist-600"
+                    >
+                      {t("integrations.exploreAll", { defaultValue: "Explore all integrations" })}
+                      <SpriteIcon name="arrow-right" className="size-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <Link
               to="/$locale/pricing/"
               params={{ locale: locale || "en" }}
