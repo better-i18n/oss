@@ -4,11 +4,12 @@ import {
   LocaleDropdownBase,
   type LocaleDropdownBaseProps,
   type LocaleDropdownRenderContext,
+  type LocaleDropdownTriggerContext,
 } from "@better-i18n/core/react";
 import { useLocalePath } from "../hooks/useLocalePath.js";
 import { useLanguages } from "../hooks.js";
 
-export type { LocaleDropdownRenderContext };
+export type { LocaleDropdownRenderContext, LocaleDropdownTriggerContext };
 
 export type LocaleDropdownProps = Omit<
   LocaleDropdownBaseProps,

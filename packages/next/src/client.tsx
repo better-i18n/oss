@@ -392,4 +392,5 @@ export { LocaleDropdown } from "./components/locale-dropdown.js";
 export type {
   LocaleDropdownProps,
   LocaleDropdownRenderContext,
+  LocaleDropdownTriggerContext,
 } from "./components/locale-dropdown.js";
