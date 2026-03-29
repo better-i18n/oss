@@ -128,8 +128,66 @@ function FlagDisplay({ flag, label }: { flag: ResolvedFlag; label: string }) {
  * Supports: `.dark` class (Tailwind), `[data-theme="dark"]` attribute.
  * Does NOT use `prefers-color-scheme` — dark mode must be explicit via
  * site markup, so light-only sites aren't affected by OS dark mode.
+ *
+ * Menu uses `data-state` attribute for animation:
+ *  - no attribute → hidden (visibility:hidden, pointer-events:none)
+ *  - `data-state="open"` → entrance animation
+ *  - `data-state="closing"` → exit animation
  */
-export const LOCALE_DROPDOWN_CSS = `[data-better-locale-dropdown]{position:relative;--_bl-text:#374151;--_bl-menu-bg:#fff;--_bl-border:#e5e7eb;--_bl-hover:#f3f4f6;--_bl-active:#eff0f1;--_bl-muted:#9ca3af;--_bl-shadow:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06)}.dark [data-better-locale-dropdown],[data-theme=dark] [data-better-locale-dropdown]{--_bl-text:#d1d5db;--_bl-menu-bg:#1a1a1a;--_bl-border:rgba(255,255,255,.08);--_bl-hover:rgba(255,255,255,.06);--_bl-active:rgba(255,255,255,.09);--_bl-muted:#6b7280;--_bl-shadow:0 8px 32px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.3)}@keyframes better-locale-pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes better-locale-in{from{opacity:0;transform:translateY(-8px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes better-locale-out{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-6px) scale(.97)}}@keyframes better-locale-in-top{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes better-locale-out-top{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(6px) scale(.97)}}@keyframes better-locale-item-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}[data-better-locale-menu]{animation:better-locale-in .22s cubic-bezier(.16,1,.3,1);transform-origin:top center}[data-better-locale-menu][data-placement=top]{animation-name:better-locale-in-top;transform-origin:bottom center}[data-better-locale-menu][data-closing]{animation:better-locale-out .14s ease-in forwards}[data-better-locale-menu][data-placement=top][data-closing]{animation-name:better-locale-out-top}[data-better-locale-menu]::-webkit-scrollbar{width:4px}[data-better-locale-menu]::-webkit-scrollbar-track{background:transparent}[data-better-locale-menu]::-webkit-scrollbar-thumb{background:var(--better-locale-border,var(--_bl-border));border-radius:2px}[data-better-locale-item]{position:relative;animation:better-locale-item-in .2s cubic-bezier(.16,1,.3,1) both}[data-better-locale-item]:nth-child(1){animation-delay:0ms}[data-better-locale-item]:nth-child(2){animation-delay:20ms}[data-better-locale-item]:nth-child(3){animation-delay:35ms}[data-better-locale-item]:nth-child(4){animation-delay:48ms}[data-better-locale-item]:nth-child(5){animation-delay:58ms}[data-better-locale-item]:nth-child(6){animation-delay:66ms}[data-better-locale-item]:nth-child(7){animation-delay:73ms}[data-better-locale-item]:nth-child(8){animation-delay:79ms}[data-better-locale-item]:nth-child(n+9){animation-delay:84ms}[data-better-locale-menu][data-closing] [data-better-locale-item]{animation:none}[data-better-locale-item]>*{position:relative;z-index:1}[data-better-locale-item]::before{content:'';position:absolute;inset:0;border-radius:8px;background:var(--better-locale-hover-bg,var(--_bl-hover));opacity:0;transform:scale(.97);transition:opacity .12s ease-out,transform .12s ease-out;z-index:0}[data-better-locale-item]:hover::before,[data-better-locale-item][data-focused]::before{opacity:1;transform:scale(1)}[data-better-locale-item][data-active]::before{opacity:1;transform:scale(1);background:var(--better-locale-active-bg,var(--_bl-active))}[data-better-locale-trigger]{position:relative}[data-better-locale-trigger]:not([disabled])::before{content:'';position:absolute;inset:0;border-radius:var(--better-locale-trigger-radius,8px);background:var(--better-locale-hover-bg,var(--_bl-hover));opacity:0;transform:scale(.97);transition:opacity .12s ease-out,transform .12s ease-out}[data-better-locale-trigger]:not([disabled]):hover::before{opacity:1;transform:scale(1)}[data-better-locale-trigger]>*{position:relative;z-index:1}`;
+export const LOCALE_DROPDOWN_CSS = [
+  /* Base tokens */
+  `[data-better-locale-dropdown]{position:relative;--_bl-text:#374151;--_bl-menu-bg:#fff;--_bl-border:#e5e7eb;--_bl-hover:#f3f4f6;--_bl-active:#eff0f1;--_bl-muted:#9ca3af;--_bl-shadow:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06)}`,
+  `.dark [data-better-locale-dropdown],[data-theme=dark] [data-better-locale-dropdown]{--_bl-text:#d1d5db;--_bl-menu-bg:#1a1a1a;--_bl-border:rgba(255,255,255,.08);--_bl-hover:rgba(255,255,255,.06);--_bl-active:rgba(255,255,255,.09);--_bl-muted:#6b7280;--_bl-shadow:0 8px 32px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.3)}`,
+
+  /* Keyframes */
+  `@keyframes better-locale-pulse{0%,100%{opacity:1}50%{opacity:.4}}`,
+  `@keyframes bl-in{from{opacity:0;transform:translateY(-8px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}`,
+  `@keyframes bl-out{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-6px) scale(.97)}}`,
+  `@keyframes bl-in-top{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}`,
+  `@keyframes bl-out-top{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(6px) scale(.97)}}`,
+  `@keyframes bl-item-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}`,
+
+  /* Menu — always in DOM, hidden by default */
+  `[data-better-locale-menu]{visibility:hidden;pointer-events:none;opacity:0}`,
+
+  /* Menu — open state */
+  `[data-better-locale-menu][data-state=open]{visibility:visible;pointer-events:auto;opacity:1;animation:bl-in .22s cubic-bezier(.16,1,.3,1) both;transform-origin:top center}`,
+  `[data-better-locale-menu][data-state=open][data-placement=top]{animation-name:bl-in-top;transform-origin:bottom center}`,
+
+  /* Menu — closing state */
+  `[data-better-locale-menu][data-state=closing]{visibility:visible;pointer-events:none;animation:bl-out .14s ease-in forwards}`,
+  `[data-better-locale-menu][data-state=closing][data-placement=top]{animation-name:bl-out-top}`,
+
+  /* Scrollbar */
+  `[data-better-locale-menu]::-webkit-scrollbar{width:4px}`,
+  `[data-better-locale-menu]::-webkit-scrollbar-track{background:transparent}`,
+  `[data-better-locale-menu]::-webkit-scrollbar-thumb{background:var(--better-locale-border,var(--_bl-border));border-radius:2px}`,
+
+  /* Item — staggered entrance (only in open state) */
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]{animation:bl-item-in .2s cubic-bezier(.16,1,.3,1) both}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(1){animation-delay:0ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(2){animation-delay:20ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(3){animation-delay:35ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(4){animation-delay:48ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(5){animation-delay:58ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(6){animation-delay:66ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(7){animation-delay:73ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(8){animation-delay:79ms}`,
+  `[data-better-locale-menu][data-state=open] [data-better-locale-item]:nth-child(n+9){animation-delay:84ms}`,
+
+  /* Item — hover / focus pseudo-element */
+  `[data-better-locale-item]{position:relative}`,
+  `[data-better-locale-item]>*{position:relative;z-index:1}`,
+  `[data-better-locale-item]::before{content:'';position:absolute;inset:0;border-radius:8px;background:var(--better-locale-hover-bg,var(--_bl-hover));opacity:0;transform:scale(.97);transition:opacity .12s ease-out,transform .12s ease-out;z-index:0}`,
+  `[data-better-locale-item]:hover::before,[data-better-locale-item][data-focused]::before{opacity:1;transform:scale(1)}`,
+  `[data-better-locale-item][data-active]::before{opacity:1;transform:scale(1);background:var(--better-locale-active-bg,var(--_bl-active))}`,
+
+  /* Trigger hover pseudo-element */
+  `[data-better-locale-trigger]{position:relative}`,
+  `[data-better-locale-trigger]:not([disabled])::before{content:'';position:absolute;inset:0;border-radius:var(--better-locale-trigger-radius,8px);background:var(--better-locale-hover-bg,var(--_bl-hover));opacity:0;transform:scale(.97);transition:opacity .12s ease-out,transform .12s ease-out}`,
+  `[data-better-locale-trigger]:not([disabled]):hover::before{opacity:1;transform:scale(1)}`,
+  `[data-better-locale-trigger]>*{position:relative;z-index:1}`,
+].join("");
 
 // ─── Styles ──────────────────────────────────────────────────────────
 
@@ -350,7 +408,9 @@ export interface LocaleDropdownBaseProps {
  * Pure presentational component — no routing hooks, no framework assumptions.
  * Pass `locale`, `languages`, and `onLocaleChange` from your adapter.
  *
- * Full CSS customization via `--better-locale-*` custom properties.
+ * The menu element is **always in the DOM** so floating-ui can pre-calculate
+ * position. Visibility is controlled via CSS `data-state` attribute — this
+ * eliminates the positioning flash that occurs with conditional rendering.
  *
  * @example
  * ```tsx
@@ -387,30 +447,39 @@ export function LocaleDropdownBase({
   renderTrigger,
   renderItem,
 }: LocaleDropdownBaseProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  // "closed" → hidden | "open" → visible + entrance animation | "closing" → exit animation
+  const [menuState, setMenuState] = useState<"closed" | "open" | "closing">("closed");
   const [focusIndex, setFocusIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const closeMenu = useCallback(() => {
-    setIsClosing(true);
-    closeTimerRef.current = setTimeout(() => {
-      setIsOpen(false);
-      setIsClosing(false);
-    }, 140);
+  const isOpen = menuState === "open";
+
+  const openMenu = useCallback(() => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setMenuState("open");
   }, []);
 
-  // Cleanup timer on unmount
+  const closeMenu = useCallback(() => {
+    setMenuState("closing");
+    closeTimerRef.current = setTimeout(() => {
+      setMenuState("closed");
+      closeTimerRef.current = null;
+    }, 150);
+  }, []);
+
   useEffect(() => {
     return () => {
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
     };
   }, []);
 
-  const { refs, floatingStyles, placement: resolvedPlacement, isPositioned } = useFloating({
-    open: isOpen,
+  const { refs, floatingStyles, placement: resolvedPlacement } = useFloating({
+    open: menuState !== "closed",
     strategy: "fixed",
     placement: placementProp === "top" ? "top-end" : "bottom-end",
     middleware: [offset(4), flip({ padding: 16 }), shift({ padding: 8 })],
@@ -428,7 +497,7 @@ export function LocaleDropdownBase({
 
   // Close on outside click
   useEffect(() => {
-    if (!isOpen) return;
+    if (menuState === "closed") return;
     function handleClick(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         closeMenu();
@@ -436,7 +505,7 @@ export function LocaleDropdownBase({
     }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, [isOpen, closeMenu]);
+  }, [menuState, closeMenu]);
 
   // Keyboard navigation
   const handleKeyDown = useCallback(
@@ -444,7 +513,7 @@ export function LocaleDropdownBase({
       if (!isOpen) {
         if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          setIsOpen(true);
+          openMenu();
           setFocusIndex(0);
         }
         return;
@@ -480,7 +549,7 @@ export function LocaleDropdownBase({
           break;
       }
     },
-    [isOpen, focusIndex, languages, onLocaleChange],
+    [isOpen, focusIndex, languages, onLocaleChange, openMenu, closeMenu],
   );
 
   // Scroll focused item into view
@@ -522,10 +591,13 @@ export function LocaleDropdownBase({
     if (isOpen) {
       closeMenu();
     } else {
-      if (closeTimerRef.current) { clearTimeout(closeTimerRef.current); setIsClosing(false); }
-      setIsOpen(true);
+      openMenu();
     }
   };
+
+  // data-state: "open" | "closing" | undefined (closed → hidden via CSS)
+  const dataState = menuState === "closed" ? undefined : menuState;
+  const placementDir = resolvedPlacement.startsWith("top") ? "top" : "bottom";
 
   return (
     <div
@@ -573,48 +645,28 @@ export function LocaleDropdownBase({
         </button>
       )}
 
-      {/* Menu */}
-      {(isOpen || isClosing) && canToggle && (
-        <ul
-          ref={(node: HTMLUListElement | null) => {
-            refs.setFloating(node);
-            menuRef.current = node;
-          }}
-          role="listbox"
-          aria-label="Available languages"
-          data-better-locale-menu
-          data-placement={resolvedPlacement.startsWith("top") ? "top" : "bottom"}
-          data-closing={isClosing || undefined}
-          className={menuClassName}
-          style={isStyled
-            ? { ...styles.menu, ...floatingStyles, visibility: isPositioned ? "visible" : "hidden" }
-            : { ...floatingStyles, visibility: isPositioned ? "visible" : "hidden" }
-          }
-        >
-          {languages.map((language, index) => {
-            const label = getLanguageLabel(language);
-            const isActive = language.code === locale;
-            const isFocused = index === focusIndex;
-            const flag = resolveFlag(language);
+      {/* Menu — always in DOM, visibility controlled by data-state + CSS */}
+      <ul
+        ref={(node: HTMLUListElement | null) => {
+          refs.setFloating(node);
+          menuRef.current = node;
+        }}
+        role="listbox"
+        aria-label="Available languages"
+        aria-hidden={menuState === "closed"}
+        data-better-locale-menu
+        data-state={dataState}
+        data-placement={placementDir}
+        className={menuClassName}
+        style={isStyled ? { ...styles.menu, ...floatingStyles } : floatingStyles}
+      >
+        {languages.map((language, index) => {
+          const label = getLanguageLabel(language);
+          const isActive = language.code === locale;
+          const isFocused = index === focusIndex;
+          const flag = resolveFlag(language);
 
-            if (renderItem) {
-              return (
-                <li
-                  key={language.code}
-                  role="option"
-                  aria-selected={isActive}
-                  data-better-locale-item
-                  data-active={isActive || undefined}
-                  data-focused={isFocused || undefined}
-                  onClick={() => { onLocaleChange(language.code); closeMenu(); }}
-                  onMouseEnter={() => setFocusIndex(index)}
-                  style={{ cursor: "pointer" }}
-                >
-                  {renderItem({ language, isActive, flag, label })}
-                </li>
-              );
-            }
-
+          if (renderItem) {
             return (
               <li
                 key={language.code}
@@ -625,27 +677,43 @@ export function LocaleDropdownBase({
                 data-focused={isFocused || undefined}
                 onClick={() => { onLocaleChange(language.code); closeMenu(); }}
                 onMouseEnter={() => setFocusIndex(index)}
-                style={
-                  isStyled
-                    ? { ...styles.item, ...(isActive ? styles.itemActive : {}), ...(isFocused ? styles.itemHovered : {}) }
-                    : undefined
-                }
+                style={{ cursor: "pointer" }}
               >
-                {showFlag && <FlagDisplay flag={flag} label={label} />}
-                <span style={isStyled ? styles.label : undefined}>
-                  {showNativeName ? label : language.code.toUpperCase()}
-                </span>
-                {showLocaleCode && (
-                  <span style={isStyled ? styles.code : undefined}>{language.code}</span>
-                )}
-                {isActive && (
-                  <span style={isStyled ? styles.check : undefined}><CheckIcon /></span>
-                )}
+                {renderItem({ language, isActive, flag, label })}
               </li>
             );
-          })}
-        </ul>
-      )}
+          }
+
+          return (
+            <li
+              key={language.code}
+              role="option"
+              aria-selected={isActive}
+              data-better-locale-item
+              data-active={isActive || undefined}
+              data-focused={isFocused || undefined}
+              onClick={() => { onLocaleChange(language.code); closeMenu(); }}
+              onMouseEnter={() => setFocusIndex(index)}
+              style={
+                isStyled
+                  ? { ...styles.item, ...(isActive ? styles.itemActive : {}), ...(isFocused ? styles.itemHovered : {}) }
+                  : undefined
+              }
+            >
+              {showFlag && <FlagDisplay flag={flag} label={label} />}
+              <span style={isStyled ? styles.label : undefined}>
+                {showNativeName ? label : language.code.toUpperCase()}
+              </span>
+              {showLocaleCode && (
+                <span style={isStyled ? styles.code : undefined}>{language.code}</span>
+              )}
+              {isActive && (
+                <span style={isStyled ? styles.check : undefined}><CheckIcon /></span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
 
       {isStyled && <style>{LOCALE_DROPDOWN_CSS}</style>}
     </div>
