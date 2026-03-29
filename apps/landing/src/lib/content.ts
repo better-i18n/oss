@@ -480,6 +480,116 @@ export function getDisplayPrice(
   return { symbol, amount, currency };
 }
 
+// ─── Integrations ────────────────────────────────────────────────────
+
+export type IntegrationCategory =
+  | "featured"
+  | "frameworks"
+  | "developerTools"
+  | "delivery"
+  | "aiAutomation";
+
+export type IntegrationStatus = "available" | "builtIn" | "popular" | "guide";
+
+export interface IntegrationCmsItem {
+  slug: string;
+  name: string;
+  category: IntegrationCategory;
+  status: IntegrationStatus;
+  summary: string;
+  detail: string | null;
+  badgeLabel: string | null;
+  /** URL from Better i18n Content media field — takes priority over logDomain */
+  logoUrl: string | null;
+  /** Brandfetch domain fallback (only used when logoUrl is null) */
+  logDomain: string | null;
+  markLabel: string | null;
+  guideHref: string | null;
+  iconType: "sprite" | "component";
+  iconName: string;
+  sortOrder: number;
+}
+
+const INTEGRATIONS_MODEL = "integrations";
+
+function parseIntegrationEntry(item: Record<string, unknown>): IntegrationCmsItem {
+  return {
+    slug: item.slug as string,
+    name: (item.title as string) || "",
+    category: (item.category as IntegrationCategory) || "featured",
+    status: (item.status as IntegrationStatus) || "available",
+    summary: (item.summary as string) || "",
+    detail: (item.detail as string | null) ?? null,
+    badgeLabel: (item.badge_label as string | null) ?? null,
+    logoUrl: (item.logo as string | null) ?? null,
+    logDomain: (item.log_domain as string | null) ?? null,
+    markLabel: (item.mark_label as string | null) ?? null,
+    guideHref: (item.guide_href as string | null) ?? null,
+    iconType: ((item.icon_type as string) === "component" ? "component" : "sprite") as "sprite" | "component",
+    iconName: (item.icon_name as string) || "",
+    sortOrder: item.sort_order ? Number(item.sort_order) : 0,
+  };
+}
+
+/** Fetch all published integrations for a locale, sorted by sort_order. */
+export async function getIntegrations(locale: string): Promise<IntegrationCmsItem[]> {
+  const cacheKey = `integrations:${locale}`;
+  const cached = getCached<IntegrationCmsItem[]>(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const { data, error } = await getContentClient()
+      .from(INTEGRATIONS_MODEL)
+      .language(locale)
+      .eq("status", "published")
+      .limit(50);
+
+    if (error || !data) {
+      console.error("Integrations API error:", error);
+      return [];
+    }
+
+    const items = data
+      .map((item) => parseIntegrationEntry(item as unknown as Record<string, unknown>))
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+
+    return setCache(cacheKey, items);
+  } catch (error) {
+    console.error("Integrations API error:", error);
+    return [];
+  }
+}
+
+/** Fetch a single integration by slug. Uses the all-integrations cache when warm. */
+export async function getIntegration(
+  locale: string,
+  slug: string,
+): Promise<IntegrationCmsItem | null> {
+  // Use warm all-integrations cache if available
+  const allCached = getCached<IntegrationCmsItem[]>(`integrations:${locale}`);
+  if (allCached) {
+    return allCached.find((i) => i.slug === slug) ?? null;
+  }
+
+  const cacheKey = `integration:${locale}:${slug}`;
+  const cached = getCached<IntegrationCmsItem | null>(cacheKey);
+  if (cached !== undefined) return cached;
+
+  try {
+    const { data, error } = await getContentClient()
+      .from(INTEGRATIONS_MODEL)
+      .language(locale)
+      .single<Record<string, string | null>>(slug);
+
+    if (error || !data) return setCache(cacheKey, null);
+
+    const item = parseIntegrationEntry(data as unknown as Record<string, unknown>);
+    return setCache(cacheKey, item);
+  } catch {
+    return setCache(cacheKey, null);
+  }
+}
+
 // ─── Marketing Pages ────────────────────────────────────────────────
 
 export interface MarketingPage {

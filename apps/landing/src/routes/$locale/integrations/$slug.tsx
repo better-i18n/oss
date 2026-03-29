@@ -3,29 +3,39 @@ import { RelatedPages } from "@/components/RelatedPages";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { getIntegrationBySlug } from "@/lib/integrations-catalog";
+import { getIntegration } from "@/lib/content";
+import { toIntegrationItem, type IntegrationItem } from "@/lib/integrations-catalog";
 import { useTranslations } from "@better-i18n/use-intl";
-import { useState, type ComponentType } from "react";
+import { useState } from "react";
 
 const BRANDFETCH_CLIENT_ID = import.meta.env.VITE_BRANDFETCH_CLIENT_ID;
 
+const baseLoader = createPageLoader();
+
 export const Route = createFileRoute("/$locale/integrations/$slug")({
-  loader: createPageLoader(),
+  loader: async (args: Parameters<typeof baseLoader>[0] & { params: { slug?: string } }) => {
+    const slug = (args.params as { slug: string }).slug ?? "";
+    const [base, cmsItem] = await Promise.all([
+      baseLoader(args),
+      getIntegration(args.context.locale, slug),
+    ]);
+    // Return raw CmsItem (no ComponentType) — icon resolved in component
+    return { ...base, cmsItem };
+  },
   head: ({ loaderData, params }) => {
-    const integration = getIntegrationBySlug(params?.locale || "en", params?.slug || "");
+    const cmsItem = loaderData?.cmsItem;
 
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: params?.locale || "en",
       pageKey: "integrations",
-      pathname: `/integrations/${integration?.slug || ""}`,
+      pathname: `/integrations/${cmsItem?.slug || ""}`,
       pageType: "educational",
       structuredDataOptions: {
-        title: `${integration?.name || "Integration"} integration`,
-        description:
-          integration?.copyKey
-            ? `Explore how ${integration.name} fits into Better i18n workflows for developer-led localization.`
-            : "Explore Better i18n integrations.",
+        title: `${cmsItem?.name || "Integration"} integration`,
+        description: cmsItem
+          ? `Explore how ${cmsItem.name} fits into Better i18n workflows for developer-led localization.`
+          : "Explore Better i18n integrations.",
       },
     });
   },
@@ -35,8 +45,9 @@ export const Route = createFileRoute("/$locale/integrations/$slug")({
 
 function IntegrationDetailPage() {
   const t = useTranslations("integrationsPage");
-  const { locale, slug } = Route.useParams();
-  const integration = getIntegrationBySlug(locale, slug);
+  const { locale } = Route.useParams();
+  const { cmsItem } = Route.useLoaderData();
+  const integration: IntegrationItem | null = cmsItem ? toIntegrationItem(cmsItem) : null;
 
   if (!integration) {
     return <IntegrationNotFound />;
@@ -55,7 +66,7 @@ function IntegrationDetailPage() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
             <div className="max-w-3xl">
               <Link
-                to="/$locale/integrations"
+                to="/$locale/integrations/"
                 params={{ locale }}
                 className="inline-flex items-center gap-2 text-sm text-mist-500 transition-colors hover:text-mist-900"
               >
@@ -67,21 +78,18 @@ function IntegrationDetailPage() {
 
               <div className="mt-7 flex items-start gap-4">
                 <div className="flex size-14 shrink-0 items-center justify-center rounded-xl border border-mist-200 bg-white shadow-[0_1px_0_rgba(15,23,42,0.03)]">
-                  <IntegrationBrandMark
-                    name={integration.name}
-                    logoDomain={integration.logoDomain}
-                    markLabel={integration.markLabel}
-                    icon={integration.icon}
-                  />
+                  <IntegrationBrandMark item={integration} />
                 </div>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-full bg-mist-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-mist-600">
                       {t(`categories.${integration.category}`)}
                     </span>
-                    <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-mist-500 ring-1 ring-mist-200">
-                      {t(`${integration.copyKey}.badge`)}
-                    </span>
+                    {integration.badgeLabel && (
+                      <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-mist-500 ring-1 ring-mist-200">
+                        {integration.badgeLabel}
+                      </span>
+                    )}
                     <span className="rounded-full bg-mist-950 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white">
                       {t(`status.${integration.status}`)}
                     </span>
@@ -90,11 +98,13 @@ function IntegrationDetailPage() {
                     {integration.name}
                   </h1>
                   <p className="mt-5 max-w-2xl text-lg/8 text-mist-600">
-                    {t(`${integration.copyKey}.summary`)}
+                    {integration.summary}
                   </p>
-                  <p className="mt-4 max-w-xl text-sm/7 text-mist-700">
-                    {t(`${integration.copyKey}.detail`)}
-                  </p>
+                  {integration.detail && (
+                    <p className="mt-4 max-w-xl text-sm/7 text-mist-700">
+                      {integration.detail}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -188,55 +198,41 @@ function WorkflowRow({ title, body }: { title: string; body: string }) {
   );
 }
 
-function IntegrationBrandMark({
-  name,
-  logoDomain,
-  markLabel,
-  icon,
-}: {
-  name: string;
-  logoDomain?: string;
-  markLabel?: string;
-  icon: {
-    type: "sprite" | "component";
-    name?: import("@/components/SpriteIcon").SpriteIconName;
-    component?: ComponentType<{ className?: string }>;
-  };
-}) {
+function IntegrationBrandMark({ item }: { item: IntegrationItem }) {
   const [imageFailed, setImageFailed] = useState(false);
-  const logoUrl = getLogoUrl(logoDomain);
+  const brandUrl = item.logoUrl ?? getLogoUrl(item.logDomain ?? undefined);
 
-  if (logoUrl && !imageFailed) {
+  if (brandUrl && !imageFailed) {
     return (
       <img
-        src={logoUrl}
-        alt={`${name} logo`}
-        className="size-7 rounded-sm object-contain"
+        src={brandUrl}
+        alt={`${item.name} logo`}
+        className="size-8 rounded-sm object-contain"
         loading="lazy"
         decoding="async"
         referrerPolicy="strict-origin-when-cross-origin"
-        width={28}
-        height={28}
+        width={32}
+        height={32}
         onError={() => setImageFailed(true)}
       />
     );
   }
 
-  if (markLabel) {
+  if (item.markLabel) {
     return (
       <span className="text-xs font-semibold uppercase tracking-[0.16em] text-mist-950">
-        {markLabel}
+        {item.markLabel}
       </span>
     );
   }
 
-  if (icon.type === "sprite" && icon.name) {
-    return <SpriteIcon name={icon.name} className="size-7 text-mist-950" />;
+  if (item.icon.type === "sprite" && item.icon.name) {
+    return <SpriteIcon name={item.icon.name} className="size-8 text-mist-950" />;
   }
 
-  if (icon.type === "component" && icon.component) {
-    const Component = icon.component;
-    return <Component className="size-7 text-mist-950" />;
+  if (item.icon.type === "component") {
+    const Component = item.icon.component;
+    return <Component className="size-8 text-mist-950" />;
   }
 
   return null;

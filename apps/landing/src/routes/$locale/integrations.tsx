@@ -4,10 +4,11 @@ import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { getIntegrations } from "@/lib/content";
 import {
   type IntegrationCategory,
   type IntegrationItem,
-  getIntegrationsCatalog,
+  toIntegrationItem,
 } from "@/lib/integrations-catalog";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
@@ -15,8 +16,16 @@ import {
   IconArrowRight,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
+const baseLoader = createPageLoader();
+
 export const Route = createFileRoute("/$locale/integrations")({
-  loader: createPageLoader(),
+  loader: async (args: Parameters<typeof baseLoader>[0]) => {
+    const [base, cmsIntegrations] = await Promise.all([
+      baseLoader(args),
+      getIntegrations(args.context.locale),
+    ]);
+    return { ...base, cmsIntegrations };
+  },
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},
@@ -54,7 +63,8 @@ function IntegrationsIndex({ locale }: { locale: string }) {
   const [activeCategory, setActiveCategory] = useState<"all" | IntegrationCategory>("all");
   const deferredQuery = useDeferredValue(query);
 
-  const integrations = getIntegrationsCatalog(locale);
+  const { cmsIntegrations } = Route.useLoaderData();
+  const integrations: IntegrationItem[] = cmsIntegrations.map(toIntegrationItem);
 
   const categories: Array<{ id: "all" | IntegrationCategory; label: string }> = [
     { id: "all", label: t("filters.categories.all", { defaultValue: "All" }) },
@@ -85,7 +95,7 @@ function IntegrationsIndex({ locale }: { locale: string }) {
     const categoryMatch = activeCategory === "all" || item.category === activeCategory;
     const textMatch =
       normalizedQuery.length === 0 ||
-      `${item.name} ${t(`${item.copyKey}.summary`)} ${t(`${item.copyKey}.detail`)} ${t(`${item.copyKey}.badge`)} ${t(`categories.${item.category}`)}`.toLowerCase().includes(normalizedQuery);
+      `${item.name} ${item.summary} ${item.detail ?? ""} ${item.badgeLabel ?? ""} ${t(`categories.${item.category}`)}`.toLowerCase().includes(normalizedQuery);
     return categoryMatch && textMatch;
   });
 
@@ -357,12 +367,12 @@ function IntegrationIcon({ icon }: { icon: IntegrationItem["icon"] }) {
 
 function IntegrationBrandMark({ item }: { item: IntegrationItem }) {
   const [imageFailed, setImageFailed] = useState(false);
-  const logoUrl = getLogoUrl(item.logoDomain);
+  const brandUrl = item.logoUrl ?? getLogoUrl(item.logDomain ?? undefined);
 
-  if (logoUrl && !imageFailed) {
+  if (brandUrl && !imageFailed) {
     return (
       <img
-        src={logoUrl}
+        src={brandUrl}
         alt={`${item.name} logo`}
         className="size-6 rounded-sm object-contain"
         loading="lazy"
@@ -403,9 +413,11 @@ function IntegrationCard({
           <IntegrationBrandMark item={item} />
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <span className="rounded-full bg-mist-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500">
-            {t(`${item.copyKey}.badge`)}
-          </span>
+          {item.badgeLabel && (
+            <span className="rounded-full bg-mist-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500">
+              {item.badgeLabel}
+            </span>
+          )}
           <span className="rounded-full bg-mist-950 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
             {t(`status.${item.status}`)}
           </span>
@@ -417,8 +429,8 @@ function IntegrationCard({
           <h3 className={`${compact ? "text-base" : "text-lg"} font-medium text-mist-950`}>{item.name}</h3>
           <span className="text-xs text-mist-400">/ {t(`categories.${item.category}`)}</span>
         </div>
-        <p className="mt-2 text-sm/6 text-mist-700">{t(`${item.copyKey}.summary`)}</p>
-        {!compact && <p className="mt-4 text-sm/6 text-mist-500">{t(`${item.copyKey}.detail`)}</p>}
+        <p className="mt-2 text-sm/6 text-mist-700">{item.summary}</p>
+        {!compact && item.detail && <p className="mt-4 text-sm/6 text-mist-500">{item.detail}</p>}
       </div>
 
       <div className={`${compact ? "mt-5" : "mt-6"} inline-flex items-center gap-2 text-sm font-medium text-mist-900`}>
@@ -430,7 +442,7 @@ function IntegrationCard({
 
   return (
     <Link
-      to="/$locale/integrations/$slug"
+      to="/$locale/integrations/$slug/"
       params={{ locale, slug: item.slug }}
       className={`group flex h-full flex-col rounded-lg border border-mist-200 bg-white ${compact ? "p-5" : "p-6"} transition-colors hover:border-mist-300`}
     >
