@@ -1,5 +1,5 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
-import { FileText } from 'lucide-react';
+import { Bot, FileText, Sparkles } from 'lucide-react';
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
@@ -13,6 +13,16 @@ export function baseOptions(): BaseLayoutProps {
     },
     githubUrl: 'https://github.com/better-i18n/oss',
     links: [
+      {
+        text: 'MCP Server',
+        url: '/mcp/getting-started',
+        icon: <Bot className="size-4" />,
+      },
+      {
+        text: 'Agent Skill',
+        url: '/mcp/agent-skill',
+        icon: <Sparkles className="size-4" />,
+      },
       {
         text: 'llms.txt',
         url: '/llms.txt',
