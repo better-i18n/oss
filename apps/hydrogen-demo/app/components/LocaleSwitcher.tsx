@@ -29,43 +29,38 @@ function FlagIcon({
 }) {
   if (!flagUrl) {
     return (
-      <span className="text-base leading-none" aria-hidden="true">
-        {LOCALE_EMOJI[code] || "\u{1F310}"}
+      <span className="text-sm leading-none" aria-hidden="true">
+        {LOCALE_EMOJI[code] ?? "\u{1F310}"}
       </span>
     );
   }
-
-  return (
-    <img
-      src={flagUrl}
-      alt={alt}
-      className="h-4 w-6 rounded-[4px] object-cover"
-    />
-  );
+  return <img src={flagUrl} alt={alt} className="h-3.5 w-5 object-cover" />;
 }
 
 export function LocaleSwitcher({ locale, languages }: LocaleSwitcherProps) {
   const location = useLocation();
-  const availableLocales = languages.map((language) => language.code);
+  const availableLocales = languages.map((l) => l.code);
 
   function getLocaleHref(newLocale: string) {
     const currentPath = location.pathname;
     const allLocales = new Set([...availableLocales, locale, "en"]);
     const localePattern = [...allLocales].map(escapeRegExp).join("|");
     const pathWithoutLocale = localePattern
-      ? currentPath.replace(new RegExp(`^/(${localePattern})(?=/|$)`), "") || "/"
+      ? currentPath.replace(
+          new RegExp(`^/(${localePattern})(?=/|$)`),
+          "",
+        ) || "/"
       : currentPath || "/";
     const newPath =
       newLocale === "en"
         ? pathWithoutLocale
         : `/${newLocale}${pathWithoutLocale}`;
-
     return newPath + location.search + location.hash;
   }
 
   const current =
-    languages.find((language) => language.code === locale) ||
-    languages[0] || {
+    languages.find((l) => l.code === locale) ??
+    languages[0] ?? {
       code: locale,
       name: locale,
       nativeName: locale,
@@ -74,17 +69,15 @@ export function LocaleSwitcher({ locale, languages }: LocaleSwitcherProps) {
 
   return (
     <details className="group relative">
-      <summary className="flex h-11 list-none items-center gap-2 rounded-full border border-black/8 bg-white px-3 py-2 text-left shadow-sm transition duration-200 hover:border-black/14 hover:bg-white [&::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-center gap-2 border border-stone-200 bg-white px-3 py-1.5 text-left text-[13px] text-stone-600 transition-colors hover:bg-stone-50 [&::-webkit-details-marker]:hidden">
         <FlagIcon
           code={current.code}
           flagUrl={current.flagUrl}
-          alt={`${current.nativeName || current.name || current.code} flag`}
+          alt={`${current.nativeName ?? current.name ?? current.code} flag`}
         />
-        <span className="text-sm font-semibold text-slate-800">
-          {current.code.toUpperCase()}
-        </span>
+        <span className="font-medium">{current.code.toUpperCase()}</span>
         <svg
-          className="h-3.5 w-3.5 text-slate-400 transition-transform group-open:rotate-180"
+          className="h-3 w-3 text-stone-400 transition-transform group-open:rotate-180"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={2.5}
@@ -98,50 +91,46 @@ export function LocaleSwitcher({ locale, languages }: LocaleSwitcherProps) {
         </svg>
       </summary>
 
-      <div className="absolute right-0 top-full z-50 mt-2 w-44 overflow-hidden rounded-xl border border-black/8 bg-white p-1.5 shadow-lg">
-        <div className="space-y-0.5">
-          {languages.map((language) => {
-            const isActive = language.code === locale;
-            return (
-              <a
-                key={language.code}
-                href={getLocaleHref(language.code)}
-                className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition duration-200 ${
-                  isActive
-                    ? "bg-slate-950 text-white"
-                    : "text-slate-700 hover:bg-slate-100"
-                }`}
-                aria-current={isActive ? "true" : undefined}
-              >
-                <FlagIcon
-                  code={language.code}
-                  flagUrl={language.flagUrl}
-                  alt={`${language.nativeName || language.name || language.code} flag`}
-                />
-
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                  {language.nativeName || language.name || language.code}
-                </span>
-
-                {isActive ? (
-                  <svg
-                    className="h-3.5 w-3.5 shrink-0"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2.5}
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M4.5 12.75l6 6 9-13.5"
-                    />
-                  </svg>
-                ) : null}
-              </a>
-            );
-          })}
-        </div>
+      <div className="absolute right-0 top-full z-50 mt-1 w-44 overflow-hidden border border-stone-200 bg-white shadow-lg">
+        {languages.map((lang) => {
+          const isActive = lang.code === locale;
+          return (
+            <a
+              key={lang.code}
+              href={getLocaleHref(lang.code)}
+              className={`flex items-center gap-2.5 px-3 py-2.5 text-[13px] transition-colors ${
+                isActive
+                  ? "bg-stone-900 text-white"
+                  : "text-stone-600 hover:bg-stone-50"
+              }`}
+              aria-current={isActive ? "true" : undefined}
+            >
+              <FlagIcon
+                code={lang.code}
+                flagUrl={lang.flagUrl}
+                alt={`${lang.nativeName ?? lang.name ?? lang.code} flag`}
+              />
+              <span className="flex-1 truncate">
+                {lang.nativeName ?? lang.name ?? lang.code}
+              </span>
+              {isActive ? (
+                <svg
+                  className="h-3.5 w-3.5 shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4.5 12.75l6 6 9-13.5"
+                  />
+                </svg>
+              ) : null}
+            </a>
+          );
+        })}
       </div>
     </details>
   );

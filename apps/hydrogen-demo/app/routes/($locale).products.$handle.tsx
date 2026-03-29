@@ -14,17 +14,13 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
   const { storefront, locale, messages } = context;
   const { handle } = params;
 
-  if (!handle) {
-    throw new Response("Product handle required", { status: 400 });
-  }
+  if (!handle) throw new Response("Product handle required", { status: 400 });
 
   const { product } = await storefront.query(PRODUCT_QUERY, {
     variables: { handle },
   });
 
-  if (!product) {
-    throw new Response("Product not found", { status: 404 });
-  }
+  if (!product) throw new Response("Product not found", { status: 404 });
 
   return { product, locale, messages };
 }
@@ -37,205 +33,209 @@ export default function ProductPage() {
   const options: OptionNode[] = product.options || [];
   const images: ImageNode[] = product.images?.nodes || [];
 
-  // Initialize selected options from first variant
   const [selectedOptions, setSelectedOptions] = useState<
     Record<string, string>
   >(() => {
     const first = variants[0];
     if (!first) return {};
     const opts: Record<string, string> = {};
-    for (const opt of first.selectedOptions) {
-      opts[opt.name] = opt.value;
-    }
+    for (const opt of first.selectedOptions) opts[opt.name] = opt.value;
     return opts;
   });
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  // Find matching variant
   const selectedVariant =
     variants.find((v) =>
       v.selectedOptions.every(
         (opt) => selectedOptions[opt.name] === opt.value,
       ),
-    ) || variants[0];
+    ) ?? variants[0];
 
   const isAvailable = selectedVariant?.availableForSale ?? false;
   const price = selectedVariant?.price;
   const compareAtPrice = selectedVariant?.compareAtPrice;
   const hasDiscount =
-    compareAtPrice && parseFloat(compareAtPrice.amount) > 0 &&
-    parseFloat(compareAtPrice.amount) > parseFloat(price?.amount || "0");
+    compareAtPrice &&
+    parseFloat(compareAtPrice.amount) > parseFloat(price?.amount ?? "0");
 
-  // Use variant image if available, otherwise use gallery
   const displayImages =
     images.length > 0
       ? images
       : product.featuredImage
         ? [product.featuredImage]
         : [];
-  const activeImage = displayImages[activeImageIndex] || null;
-
-  function handleOptionChange(optionName: string, value: string) {
-    setSelectedOptions((prev) => ({ ...prev, [optionName]: value }));
-  }
+  const activeImage = displayImages[activeImageIndex] ?? null;
 
   useEffect(() => {
     if (!selectedVariant?.image) return;
-
-    const nextIndex = displayImages.findIndex(
-      (image) => image.url === selectedVariant.image?.url,
+    const idx = displayImages.findIndex(
+      (img) => img.url === selectedVariant.image?.url,
     );
-
-    if (nextIndex >= 0) {
-      setActiveImageIndex(nextIndex);
-    }
+    if (idx >= 0) setActiveImageIndex(idx);
   }, [displayImages, selectedVariant]);
 
   return (
-    <div className="page-frame">
-      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <section className="glass-panel overflow-hidden p-4 sm:p-5">
-          <div className={`grid gap-4 ${displayImages.length > 1 ? "lg:grid-cols-[0.16fr_0.84fr]" : ""}`}>
-            {displayImages.length > 1 ? (
-              <div className="order-2 flex gap-3 overflow-x-auto pb-2 lg:order-1 lg:flex-col lg:overflow-visible lg:pb-0">
+    <div>
+      {/* Breadcrumb */}
+      <div className="border-b border-stone-200 bg-white">
+        <div className="page-frame flex items-center gap-2 py-3 text-[12px] text-stone-400">
+          <LocaleLink to="/" locale={locale} className="hover:text-stone-700">
+            Home
+          </LocaleLink>
+          <span>/</span>
+          <LocaleLink
+            to="/collections/all"
+            locale={locale}
+            className="hover:text-stone-700"
+          >
+            {tp("back_to_catalog")}
+          </LocaleLink>
+          <span>/</span>
+          <span className="text-stone-700">{product.title}</span>
+        </div>
+      </div>
+
+      {/* Main grid */}
+      <div className="page-frame">
+        <div className="grid grid-cols-1 divide-y divide-stone-200 border-x border-b border-stone-200 lg:grid-cols-[1fr_420px] lg:divide-x lg:divide-y-0">
+          {/* Left: images */}
+          <div className="flex flex-col divide-y divide-stone-200">
+            {/* Main image */}
+            <div className="relative bg-stone-50">
+              {activeImage ? (
+                <img
+                  src={activeImage.url}
+                  alt={activeImage.altText ?? product.title}
+                  className="mx-auto block aspect-square w-full max-w-2xl object-contain p-8 lg:p-16"
+                />
+              ) : (
+                <div className="flex aspect-square items-center justify-center text-stone-300">
+                  <svg
+                    className="h-12 w-12"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1}
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Z"
+                    />
+                  </svg>
+                </div>
+              )}
+              <div className="absolute left-4 top-4">
+                <span className="source-pill border-emerald-100 bg-white/90 text-emerald-700 backdrop-blur-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  Shopify
+                </span>
+              </div>
+            </div>
+
+            {/* Thumbnails */}
+            {displayImages.length > 1 && (
+              <div className="flex divide-x divide-stone-200 overflow-x-auto">
                 {displayImages.map((img, i) => (
                   <button
                     key={img.url}
                     type="button"
                     onClick={() => setActiveImageIndex(i)}
-                    className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border transition duration-200 ${
+                    className={`relative aspect-square w-20 shrink-0 bg-stone-50 transition-colors hover:bg-stone-100 ${
                       i === activeImageIndex
-                        ? "border-slate-950 shadow-md"
-                        : "border-black/6 hover:border-black/14"
+                        ? "outline outline-2 -outline-offset-2 outline-stone-900"
+                        : ""
                     }`}
                   >
                     <img
                       src={img.url}
-                      alt={img.altText || `${product.title} ${i + 1}`}
-                      className="h-full w-full object-cover"
+                      alt={img.altText ?? `${product.title} ${i + 1}`}
+                      className="h-full w-full object-contain p-2"
                     />
                   </button>
                 ))}
               </div>
-            ) : null}
-
-            <div className={displayImages.length > 1 ? "order-1 lg:order-2" : ""}>
-              <div className="relative aspect-[4/4.6] overflow-hidden rounded-2xl bg-slate-100">
-                {activeImage ? (
-                  <img
-                    src={activeImage.url}
-                    alt={activeImage.altText || product.title}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-slate-400">
-                    No image
-                  </div>
-                )}
-              </div>
-            </div>
+            )}
           </div>
-        </section>
 
-        <section className="space-y-5">
-          <div className="glass-panel p-6 sm:p-7">
-            <LocaleLink
-              to="/collections/all"
-              locale={locale}
-              className="inline-flex items-center gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-slate-500 transition-colors hover:text-slate-900"
-            >
-              <svg
-                aria-hidden="true"
-                className="h-3.5 w-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="1.8"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m15 18-6-6 6-6"
-                />
-              </svg>
-              {tp("back_to_catalog")}
-            </LocaleLink>
-
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <span className="rounded-full border border-black/7 bg-slate-50 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-600">
-                {tp("product_detail_badge")}
-              </span>
-              <span
-                className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.22em] ${
-                  isAvailable
-                    ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-700"
-                    : "border border-rose-500/16 bg-rose-500/10 text-rose-700"
-                }`}
-              >
+          {/* Right: info panel */}
+          <div className="flex flex-col divide-y divide-stone-200 bg-white">
+            {/* Title + price */}
+            <div className="p-6 lg:p-8">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="source-pill border-stone-200 bg-stone-50 text-stone-500">
+                  {tp("product_detail_badge")}
+                </span>
                 <span
-                  className={`h-2 w-2 rounded-full ${
-                    isAvailable ? "bg-emerald-500" : "bg-rose-500"
-                  }`}
-                />
-                {isAvailable
-                  ? tp("in_stock")
-                  : tp("sold_out")}
-              </span>
-            </div>
-
-            <h1 className="mt-5 text-4xl font-semibold tracking-[-0.06em] text-slate-950 sm:text-5xl">
-              {product.title}
-            </h1>
-
-            {price ? (
-              <div className="mt-6 flex flex-wrap items-end gap-3">
-                <p
-                  className={`text-3xl font-semibold tracking-[-0.04em] ${
-                    hasDiscount ? "text-rose-600" : "text-slate-950"
+                  className={`source-pill ${
+                    isAvailable
+                      ? "border-emerald-100 bg-emerald-50 text-emerald-700"
+                      : "border-rose-100 bg-rose-50 text-rose-600"
                   }`}
                 >
-                  {formatMoney(price.amount, price.currencyCode, locale)}
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${isAvailable ? "bg-emerald-500" : "bg-rose-500"}`}
+                  />
+                  {isAvailable ? tp("in_stock") : tp("sold_out")}
+                </span>
+              </div>
+
+              <h1 className="mt-4 text-[1.75rem] font-semibold leading-tight tracking-tight text-stone-900 sm:text-[2.25rem]">
+                {product.title}
+              </h1>
+
+              {price ? (
+                <div className="mt-3 flex items-baseline gap-3">
+                  <span
+                    className={`text-2xl font-semibold tracking-tight ${hasDiscount ? "text-rose-600" : "text-stone-900"}`}
+                  >
+                    {formatMoney(price.amount, price.currencyCode, locale)}
+                  </span>
+                  {hasDiscount && compareAtPrice ? (
+                    <del className="text-sm text-stone-400">
+                      {formatMoney(
+                        compareAtPrice.amount,
+                        compareAtPrice.currencyCode,
+                        locale,
+                      )}
+                    </del>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+
+            {/* Description */}
+            {product.description ? (
+              <div className="p-6 lg:p-8">
+                <p className="label mb-3">Description</p>
+                <p className="text-[14px] leading-6 text-stone-600">
+                  {product.description}
                 </p>
-                {hasDiscount && compareAtPrice ? (
-                  <del className="pb-1 text-base text-slate-400">
-                    {formatMoney(
-                      compareAtPrice.amount,
-                      compareAtPrice.currencyCode,
-                      locale,
-                    )}
-                  </del>
-                ) : null}
               </div>
             ) : null}
 
-            <p className="mt-5 text-sm leading-7 text-slate-600 sm:text-base">
-              {product.description || tp("default_description")}
-            </p>
-
-            {options.length > 0
-              ? options.map((option) => {
+            {/* Options */}
+            {options.length > 0 ? (
+              <div className="p-6 lg:p-8">
+                {options.map((option) => {
                   if (
                     option.name === "Title" &&
                     option.optionValues.length === 1 &&
-                    option.optionValues[0].name === "Default Title"
-                  ) {
+                    option.optionValues[0]?.name === "Default Title"
+                  )
                     return null;
-                  }
 
                   return (
-                    <div key={option.id} className="mt-8">
-                      <div className="flex items-center justify-between gap-3">
-                        <h2 className="text-sm font-semibold text-slate-900">
-                          {tp("select_option")}{" "}
-                          {option.name}
-                        </h2>
-                        <span className="text-sm text-slate-500">
-                          {selectedOptions[option.name] || tp("choose_one")}
+                    <div key={option.id} className="mb-6 last:mb-0">
+                      <div className="mb-3 flex items-center justify-between gap-2">
+                        <p className="label">{option.name}</p>
+                        <span className="text-[12px] text-stone-500">
+                          {selectedOptions[option.name] ?? tp("choose_one")}
                         </span>
                       </div>
-
-                      <div className="mt-3 flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {option.optionValues.map((val) => {
                           const isSelected =
                             selectedOptions[option.name] === val.name;
@@ -248,21 +248,23 @@ export default function ProductPage() {
                                   so.value === val.name,
                               ),
                           );
-
                           return (
                             <button
                               key={val.name}
                               type="button"
                               onClick={() =>
-                                handleOptionChange(option.name, val.name)
+                                setSelectedOptions((prev) => ({
+                                  ...prev,
+                                  [option.name]: val.name,
+                                }))
                               }
                               disabled={!isOptionAvailable}
-                              className={`rounded-full border px-4 py-2.5 text-sm font-medium transition duration-200 ${
+                              className={`border px-4 py-2 text-[13px] font-medium transition-colors ${
                                 isSelected
-                                  ? "border-slate-950 bg-slate-950 text-white"
+                                  ? "border-stone-900 bg-stone-900 text-white"
                                   : isOptionAvailable
-                                    ? "border-black/8 bg-white/70 text-slate-700 hover:border-black/14 hover:bg-white"
-                                    : "cursor-not-allowed border-black/6 bg-slate-100 text-slate-300 line-through"
+                                    ? "border-stone-200 bg-white text-stone-700 hover:border-stone-400"
+                                    : "cursor-not-allowed border-stone-100 bg-stone-50 text-stone-300 line-through"
                               }`}
                             >
                               {val.name}
@@ -272,10 +274,12 @@ export default function ProductPage() {
                       </div>
                     </div>
                   );
-                })
-              : null}
+                })}
+              </div>
+            ) : null}
 
-            <div className="mt-8">
+            {/* Add to cart — pinned to bottom */}
+            <div className="mt-auto p-6 lg:p-8">
               <CartForm
                 route={locale === "en" ? "/cart" : `/${locale}/cart`}
                 action={CartForm.ACTIONS.LinesAdd}
@@ -292,10 +296,10 @@ export default function ProductPage() {
                   <button
                     type="submit"
                     disabled={!isAvailable || fetcher.state !== "idle"}
-                    className={`inline-flex min-h-12 w-full items-center justify-center rounded-full px-6 py-3 text-sm font-semibold text-white transition duration-200 sm:w-auto ${
+                    className={`w-full border py-3.5 text-[13px] font-semibold tracking-wide transition-colors ${
                       isAvailable
-                        ? "bg-slate-950 hover:bg-slate-800"
-                        : "cursor-not-allowed bg-slate-300"
+                        ? "border-stone-900 bg-stone-900 text-white hover:bg-stone-700"
+                        : "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400"
                     }`}
                   >
                     {fetcher.state !== "idle"
@@ -306,9 +310,20 @@ export default function ProductPage() {
                   </button>
                 )}
               </CartForm>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <span className="source-pill border-emerald-100 bg-emerald-50 text-[10px] text-emerald-700">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  Product via Shopify
+                </span>
+                <span className="source-pill border-blue-100 bg-blue-50 text-[10px] text-blue-600">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                  Text via Better i18n
+                </span>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </div>
   );
@@ -345,26 +360,14 @@ const PRODUCT_QUERY = `#graphql
       title
       handle
       description
-      featuredImage {
-        url
-        altText
-        width
-        height
-      }
-      images(first: 5) {
-        nodes {
-          url
-          altText
-          width
-          height
-        }
+      featuredImage { url altText width height }
+      images(first: 8) {
+        nodes { url altText width height }
       }
       options {
         id
         name
-        optionValues {
-          name
-        }
+        optionValues { name }
       }
       variants(first: 50) {
         nodes {
@@ -372,24 +375,10 @@ const PRODUCT_QUERY = `#graphql
           title
           availableForSale
           quantityAvailable
-          selectedOptions {
-            name
-            value
-          }
-          price {
-            amount
-            currencyCode
-          }
-          compareAtPrice {
-            amount
-            currencyCode
-          }
-          image {
-            url
-            altText
-            width
-            height
-          }
+          selectedOptions { name value }
+          price { amount currencyCode }
+          compareAtPrice { amount currencyCode }
+          image { url altText width height }
         }
       }
     }

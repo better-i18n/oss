@@ -1,32 +1,32 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Manrope", ui-sans-serif, sans-serif;
+  --font-sans: "Geist", ui-sans-serif, sans-serif;
 }
 
 :root {
   color-scheme: light;
-  --page-bg: #f8fafc;
-  --page-bg-soft: #ffffff;
-  --page-ink: #0f172a;
-  --page-muted: #475569;
-  --page-border: rgba(15, 23, 42, 0.08);
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
-  min-height: 100vh;
-  background: var(--page-bg);
-  color: var(--page-ink);
+  min-height: 100dvh;
+  background: #fafaf9;
+  color: #1c1917;
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: #0f172a;
+  background: #1c1917;
   color: white;
 }
 
@@ -42,23 +42,32 @@ body {
 }
 
 @layer components {
+  /* Layout */
   .page-frame {
-    @apply relative mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+    @apply relative mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-10;
   }
 
-  .glass-panel {
-    @apply rounded-2xl border border-black/7 bg-white shadow-sm;
+  /* Buttons — base styles inline in each variant (Tailwind v4 doesn't allow @apply on custom classes) */
+  .btn-dark {
+    @apply inline-flex items-center justify-center gap-2 rounded-none bg-stone-900 px-5 py-2.5 text-[13px] font-medium text-white transition-colors duration-150 hover:bg-stone-700;
   }
 
-  .soft-divider {
-    @apply border-t border-black/6;
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-none border border-stone-300 bg-transparent px-5 py-2.5 text-[13px] font-medium text-stone-700 transition-colors duration-150 hover:border-stone-400 hover:bg-stone-50;
   }
 
-  .button-primary {
-    @apply inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-slate-800;
+  /* Tiny uppercase label */
+  .label {
+    @apply text-[10px] font-semibold uppercase tracking-[0.3em] text-stone-400;
   }
 
-  .button-secondary {
-    @apply inline-flex items-center justify-center rounded-full border border-black/8 bg-white/72 px-5 py-3 text-sm font-semibold text-slate-900 transition duration-200 hover:border-black/14 hover:bg-white;
+  /* Display headline */
+  .display {
+    @apply text-[clamp(2.5rem,6vw,5.5rem)] font-semibold leading-[1.0] tracking-[-0.045em] text-stone-900;
+  }
+
+  /* Source attribution pill */
+  .source-pill {
+    @apply inline-flex items-center gap-1.5 border px-2.5 py-1 text-[11px] font-medium;
   }
 }
