@@ -167,6 +167,31 @@ Configure fallback locale in: Project → Settings → CDN Fallback.
 
 ---
 
+## Locale code mismatch — region variants
+
+The manifest lists exact locale codes. If your app requests `"en-US"` but the manifest only has `"en"`, the CDN fetch goes to `/acme/dashboard/en-us/translations.json` — a path that doesn't exist — and returns `{ fallback: true }`.
+
+**Always match locale codes exactly to what's in the manifest:**
+
+```typescript
+// manifest.languages: [{ code: "en" }, { code: "pt-br" }, { code: "tr" }]
+
+// WRONG — en-US not in manifest
+i18n.getMessages("en-US");
+
+// CORRECT — normalize to match manifest
+import { normalizeLocale } from "@better-i18n/core";
+const locale = normalizeLocale(userLocale);     // "en-US" → "en-us"
+// Then use the manifest to find the closest match if exact match isn't found:
+const manifest = await i18n.getManifest();
+const available = manifest.languages.map(l => l.code);  // ["en", "pt-br", "tr"]
+const resolved = available.find(c => c === locale) ??
+                 available.find(c => c.startsWith(locale.split("-")[0])) ??
+                 "en";  // default
+```
+
+---
+
 ## Debugging `{ fallback: true }` — silent empty strings
 
 The CDN always returns HTTP 200. When translations are unavailable (project not published yet, wrong locale code, R2 unavailable), the response body is:

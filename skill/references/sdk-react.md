@@ -205,6 +205,42 @@ function Button() {
 }
 ```
 
+### TtlCache in CF Workers — cross-request contamination
+
+TtlCache is a **module-level global** shared across all requests in a CF Worker. This is intentional (avoids refetching on every request), but has a side effect:
+
+```
+Request A (user locale: tr) → populates TtlCache["acme/dashboard|tr"]
+Request B (user locale: de) → TtlCache miss → fetches de → correct
+```
+
+This is safe. **However**, if you create a new `createI18nCore()` instance inside a request handler (not at module scope), each request gets a separate TtlCache with no sharing:
+
+```typescript
+// WRONG — new TtlCache per request, no caching benefit
+app.get("/", (c) => {
+  const i18n = createI18nCore({ project: "acme/dashboard", defaultLocale: "en" }); // ← inside handler
+  const messages = await i18n.getMessages(locale);
+});
+
+// CORRECT — singleton, TtlCache shared
+const i18n = createI18nCore({ project: "acme/dashboard", defaultLocale: "en" });
+app.get("/", (c) => {
+  const messages = await i18n.getMessages(locale);
+});
+```
+
+### `createAutoStorage()` on SSR environments
+
+`createAutoStorage()` detects the environment and picks the best storage:
+- **Browser**: `localStorage`
+- **React Native**: `AsyncStorage` (if available)
+- **CF Worker / Node.js**: in-memory only (no persistent storage)
+
+On SSR, `createAutoStorage()` is safe to call — it silently falls back to memory. No `localStorage is not defined` errors. However, persistent caching across SSR requests does not occur (each Worker instance has its own memory).
+
+For Next.js App Router with ISR, the ISR cache itself acts as the persistent layer — `storage` configuration is typically not needed.
+
 ---
 
 ## @better-i18n/server — Hono / Node.js

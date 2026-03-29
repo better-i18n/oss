@@ -162,6 +162,72 @@ await mcp.publishTranslations({ project: "acme/dashboard" });
 
 ---
 
+## Edge cases and failure scenarios
+
+### Pagination — projects with >200 keys
+
+`getTranslations` returns at most `limit: 200` keys per call. For projects with hundreds of keys, paginate using `offset`:
+
+```typescript
+// Page through all missing translations
+let offset = 0;
+const allKeys = [];
+
+while (true) {
+  const { data } = await mcp.getTranslations({
+    project: "acme/dashboard",
+    status: "missing",
+    languages: ["tr"],
+    limit: 200,
+    offset,
+  });
+
+  allKeys.push(...data.keys);
+  if (data.keys.length < 200) break;  // last page
+  offset += 200;
+}
+```
+
+`listKeys` also supports pagination for browsing keys without translation text.
+
+### API key scope errors
+
+If `publishTranslations` returns a 403, the API key lacks `publish` scope. Key scope requirements:
+
+| Operation | Minimum scope |
+|---|---|
+| `listProjects`, `getProject`, `getTranslations` | `read` |
+| `createKeys`, `updateKeys`, `proposeLanguages` | `write` |
+| `publishTranslations` | `publish` |
+| `deleteKeys` | `admin` |
+
+Generate scoped keys at https://better-i18n.com → Settings → API Keys. For CI pipelines that only publish, use `publish` scope (not `admin`).
+
+### `updateKeys` with a deleted key UUID
+
+If a key was soft-deleted but not yet published, its UUID is still valid in `updateKeys`. After `publishTranslations`, the UUID is permanently invalid. If you receive a 404 on `updateKeys`, the key was already deleted and published — call `createKeys` to recreate it.
+
+### `createKeys` namespace validation
+
+`createKeys` silently creates keys in any namespace string you provide — including non-existent ones. This creates phantom namespaces in the dashboard.
+
+**Before calling `createKeys`:**
+```typescript
+const { data } = await mcp.getProject({ project: "acme/dashboard" });
+const validNamespaces = data.namespaces; // ["auth", "common", "home"]
+
+// Verify your namespace exists before creating
+if (!validNamespaces.includes(targetNamespace)) {
+  throw new Error(`Namespace "${targetNamespace}" does not exist. Valid: ${validNamespaces.join(", ")}`);
+}
+```
+
+### `proposeLanguages` with invalid locale codes
+
+`proposeLanguages` validates BCP 47 codes. Invalid codes (e.g., `"turkish"`, `"TR"`) are rejected. Always use lowercase ISO 639-1 (`"tr"`) or lowercase BCP 47 (`"pt-br"`). Region codes must be uppercase in BCP 47 format (`"pt-BR"`) but are normalized by the API.
+
+---
+
 ## API key scopes
 
 | Scope | Access |
