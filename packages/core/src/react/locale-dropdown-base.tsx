@@ -222,6 +222,9 @@ const styles = {
     background: "var(--better-locale-menu-bg, var(--_bl-menu-bg))",
     boxShadow: "var(--_bl-shadow)",
     padding: "6px",
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
     zIndex: 50,
     listStyle: "none",
     margin: 0,
@@ -231,7 +234,7 @@ const styles = {
     alignItems: "center",
     gap: 10,
     width: "100%",
-    padding: "7px 10px",
+    padding: "8px 10px",
     border: "none",
     background: "transparent",
     color: "var(--better-locale-text, var(--_bl-text))",
@@ -451,6 +454,7 @@ export function LocaleDropdownBase({
 }: LocaleDropdownBaseProps) {
   // "closed" → hidden | "open" → visible + entrance animation | "closing" → exit animation
   const [menuState, setMenuState] = useState<"closed" | "open" | "closing">("closed");
+  const [openCount, setOpenCount] = useState(0); // increments on each open → forces item re-mount → CSS animation replays
   const [focusIndex, setFocusIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -462,6 +466,7 @@ export function LocaleDropdownBase({
       clearTimeout(closeTimerRef.current);
       closeTimerRef.current = null;
     }
+    setOpenCount((c) => c + 1);
     setMenuState("open");
   }, []);
 
@@ -676,7 +681,7 @@ export function LocaleDropdownBase({
           if (renderItem) {
             return (
               <li
-                key={language.code}
+                key={`${language.code}-${openCount}`}
                 role="option"
                 aria-selected={isActive}
                 data-better-locale-item
