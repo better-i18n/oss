@@ -61,10 +61,12 @@ function IntegrationDetailPage() {
 
   return (
     <MarketingLayout showCTA={true}>
-      <section className="py-8 lg:py-10">
+      {/* ── Hero ────────────────────────────────────── */}
+      <section className="py-8 lg:py-12">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-            <div className="max-w-3xl">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
+            {/* Left */}
+            <div className="max-w-2xl">
               <Link
                 to="/$locale/integrations/"
                 params={{ locale }}
@@ -76,106 +78,114 @@ function IntegrationDetailPage() {
                 {t("detail.backToIntegrations", { defaultValue: "Back to integrations" })}
               </Link>
 
-              <div className="mt-7 flex items-start gap-4">
-                <div className="flex size-14 shrink-0 items-center justify-center rounded-xl border border-mist-200 bg-white shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+              <div className="mt-6 flex items-center gap-3">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-mist-200 bg-white shadow-[0_1px_0_rgba(15,23,42,0.03)]">
                   <IntegrationBrandMark item={integration} />
                 </div>
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full bg-mist-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-mist-600">
-                      {t(`categories.${integration.category}`)}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-mist-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-mist-600">
+                    {t(`categories.${integration.category}`)}
+                  </span>
+                  {integration.badgeLabel && (
+                    <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-mist-500 ring-1 ring-mist-200">
+                      {integration.badgeLabel}
                     </span>
-                    {integration.badgeLabel && (
-                      <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-mist-500 ring-1 ring-mist-200">
-                        {integration.badgeLabel}
-                      </span>
-                    )}
-                    <span className="rounded-full bg-mist-950 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white">
-                      {t(`status.${integration.status}`)}
-                    </span>
-                  </div>
-                  <h1 className="mt-4 font-display text-3xl/[1.04] font-medium tracking-[-0.03em] text-mist-950 sm:text-[2.6rem]/[1.02]">
-                    {integration.name}
-                  </h1>
-                  <p className="mt-5 max-w-2xl text-lg/8 text-mist-600">
-                    {integration.summary}
-                  </p>
-                  {integration.detail && (
-                    <p className="mt-4 max-w-xl text-sm/7 text-mist-700">
-                      {integration.detail}
-                    </p>
+                  )}
+                  <span className="rounded-full bg-mist-950 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white">
+                    {t(`status.${integration.status}`)}
+                  </span>
+                </div>
+              </div>
+
+              <h1 className="mt-4 font-display text-3xl/[1.04] font-medium tracking-[-0.03em] text-mist-950 sm:text-[2.4rem]/[1.06]">
+                {integration.name}
+              </h1>
+              <p className="mt-4 text-lg/8 text-mist-600">
+                {integration.summary}
+              </p>
+              {integration.detail && (
+                <p className="mt-3 text-sm/7 text-mist-500">
+                  {integration.detail}
+                </p>
+              )}
+            </div>
+
+            {/* Right — sticky card */}
+            <div className="lg:sticky lg:top-24">
+              <div className="rounded-2xl border border-mist-200 bg-white p-6 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-mist-400">
+                  {t("detail.nextStep.eyebrow", { defaultValue: "Get started" })}
+                </div>
+                <h2 className="mt-2.5 font-display text-lg/[1.2] font-medium text-mist-950">
+                  {t("detail.nextStep.title", { name: integration.name, defaultValue: "Connect {name} to your workflow" })}
+                </h2>
+                <p className="mt-2.5 text-sm/6 text-mist-600">
+                  {t("detail.nextStep.body", { defaultValue: "Install from the dashboard in seconds. Follow the guide for environment setup, SDK configuration, and a first publish." })}
+                </p>
+                <div className="mt-5 space-y-2.5">
+                  <a
+                    href={installHref}
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-mist-950 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-mist-800"
+                  >
+                    {t("detail.nextStep.install", { defaultValue: "Install integration" })}
+                    <SpriteIcon name="arrow-right" className="h-3.5 w-3.5" />
+                  </a>
+                  {integration.guideHref && (
+                    <a
+                      href={integration.guideHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-mist-200 bg-white px-4 py-2.5 text-sm font-medium text-mist-700 transition-colors hover:text-mist-950"
+                    >
+                      {t("detail.nextStep.readGuide", { defaultValue: "Read the guide" })}
+                      <SpriteIcon name="arrow-right" className="h-3.5 w-3.5" />
+                    </a>
                   )}
                 </div>
               </div>
             </div>
-
-            <div className="rounded-2xl border border-mist-200 bg-white p-6 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-mist-500">
-                {t("detail.nextStep.eyebrow", { defaultValue: "Next step" })}
-              </div>
-              <h2 className="mt-3 font-display text-xl/[1.1] font-medium text-mist-950">
-                {t("detail.nextStep.title", { name: integration.name, defaultValue: "Connect {name} to your workflow" })}
-              </h2>
-              <p className="mt-3 text-sm/7 text-mist-700">
-                {t("detail.nextStep.body", { defaultValue: "Start in the dashboard, then connect guides and rollout steps when your team is ready." })}
-              </p>
-              <div className="mt-6 space-y-3">
-                <a
-                  href={installHref}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-mist-950 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-mist-900"
-                >
-                  {t("detail.nextStep.install", { defaultValue: "Install integration" })}
-                  <SpriteIcon name="arrow-right" className="h-4 w-4" />
-                </a>
-                {integration.guideHref && (
-                  <a
-                    href={integration.guideHref}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-mist-200 bg-white px-4 py-3 text-sm font-medium text-mist-700 transition-colors hover:text-mist-950"
-                  >
-                    {t("detail.nextStep.readGuide", { defaultValue: "Read integration guide" })}
-                    <SpriteIcon name="arrow-right" className="h-4 w-4" />
-                  </a>
-                )}
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      {/* ── Fit points + Workflow (no gap between) ── */}
+      <section className="pb-16">
+        <div className="mx-auto max-w-7xl space-y-6 px-6 lg:px-10">
+          {/* Fit points */}
           <div className="grid gap-4 lg:grid-cols-3">
             {fitPoints.map((point) => (
-              <div key={point.title} className="rounded-lg border border-mist-200 bg-white p-6">
-                <h2 className="font-display text-lg font-medium text-mist-950">{point.title}</h2>
-                <p className="mt-3 text-sm/7 text-mist-700">{point.body}</p>
+              <div key={point.title} className="rounded-xl border border-mist-200 bg-white p-5">
+                <h2 className="font-display text-base font-semibold text-mist-950">{point.title}</h2>
+                <p className="mt-2 text-sm/6 text-mist-600">{point.body}</p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="rounded-2xl border border-mist-200 bg-white p-8">
-            <div className="max-w-2xl">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-mist-500">
-                {t("detail.workflowFit.eyebrow", { defaultValue: "Workflow fit" })}
+          {/* Workflow */}
+          <div className="rounded-xl border border-mist-200 bg-white p-6 lg:p-8">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-mist-400">
+                  {t("detail.workflowFit.eyebrow", { defaultValue: "Where it fits" })}
+                </div>
+                <h2 className="mt-2 font-display text-xl/[1.1] font-medium tracking-[-0.02em] text-mist-950">
+                  {t("detail.workflowFit.title", { name: integration.name, defaultValue: "How {name} works inside Better" })}
+                </h2>
               </div>
-              <h2 className="mt-4 font-display text-2xl/[1.08] font-medium tracking-[-0.02em] text-mist-950">
-                {t("detail.workflowFit.title", { name: integration.name, defaultValue: "How {name} works inside Better" })}
-              </h2>
             </div>
-            <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            <div className="mt-6 grid gap-6 lg:grid-cols-3">
               <WorkflowRow
+                step="1"
                 title={t("detail.workflowFit.discovery.title", { defaultValue: "Detect" })}
                 body={t("detail.workflowFit.discovery.body", { name: integration.name, defaultValue: "Pull source strings from your codebase or connect your {name} repository. Keys arrive in Better with structure and context intact." })}
               />
               <WorkflowRow
+                step="2"
                 title={t("detail.workflowFit.review.title", { defaultValue: "Review" })}
                 body={t("detail.workflowFit.review.body", { defaultValue: "Run AI translation, assign human reviewers, and gate approval before any change reaches production. Everything auditable in one place." })}
               />
               <WorkflowRow
+                step="3"
                 title={t("detail.workflowFit.delivery.title", { defaultValue: "Ship" })}
                 body={t("detail.workflowFit.delivery.body", { name: integration.name, defaultValue: "Publish to the CDN edge or push translations back to {name}. Copy changes go live without triggering a new app deploy." })}
               />
@@ -189,11 +199,14 @@ function IntegrationDetailPage() {
   );
 }
 
-function WorkflowRow({ title, body }: { title: string; body: string }) {
+function WorkflowRow({ step, title, body }: { step: string; title: string; body: string }) {
   return (
-    <div className="border-t border-mist-200 pt-4 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0 first:border-t-0 first:pt-0 first:lg:border-l-0 first:lg:pl-0">
-      <h3 className="text-sm font-medium text-mist-950">{title}</h3>
-      <p className="mt-2 text-sm/7 text-mist-700">{body}</p>
+    <div className="border-t border-mist-200 pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0 first:border-t-0 first:pt-0 first:lg:border-l-0 first:lg:pl-0">
+      <div className="flex size-6 items-center justify-center rounded-full bg-mist-100 text-[11px] font-semibold text-mist-500">
+        {step}
+      </div>
+      <h3 className="mt-3 text-sm font-semibold text-mist-950">{title}</h3>
+      <p className="mt-1.5 text-sm/6 text-mist-600">{body}</p>
     </div>
   );
 }
@@ -202,37 +215,41 @@ function IntegrationBrandMark({ item }: { item: IntegrationItem }) {
   const [imageFailed, setImageFailed] = useState(false);
   const brandUrl = item.logoUrl ?? getLogoUrl(item.logDomain ?? undefined);
 
+  // 1. External logo (Brandfetch or uploaded)
   if (brandUrl && !imageFailed) {
     return (
       <img
         src={brandUrl}
         alt={`${item.name} logo`}
-        className="size-8 rounded-sm object-contain"
+        className="size-7 rounded-sm object-contain"
         loading="lazy"
         decoding="async"
         referrerPolicy="strict-origin-when-cross-origin"
-        width={32}
-        height={32}
+        width={28}
+        height={28}
         onError={() => setImageFailed(true)}
       />
     );
   }
 
+  // 2. Sprite icon
+  if (item.icon.type === "sprite" && item.icon.name) {
+    return <SpriteIcon name={item.icon.name} className="size-6 text-mist-800" />;
+  }
+
+  // 3. React component icon (NextjsIcon, ReactIcon, etc.)
+  if (item.icon.type === "component") {
+    const Component = item.icon.component;
+    return <Component className="size-6 text-mist-800" />;
+  }
+
+  // 4. Short text label — last resort
   if (item.markLabel) {
     return (
-      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-mist-950">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-mist-600">
         {item.markLabel}
       </span>
     );
-  }
-
-  if (item.icon.type === "sprite" && item.icon.name) {
-    return <SpriteIcon name={item.icon.name} className="size-8 text-mist-950" />;
-  }
-
-  if (item.icon.type === "component") {
-    const Component = item.icon.component;
-    return <Component className="size-8 text-mist-950" />;
   }
 
   return null;

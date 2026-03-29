@@ -356,19 +356,11 @@ export default withBetterI18n({
   );
 }
 
-function IntegrationIcon({ icon }: { icon: IntegrationItem["icon"] }) {
-  if (icon.type === "sprite") {
-    return <SpriteIcon name={icon.name} className="size-6" />;
-  }
-
-  const Component = icon.component;
-  return <Component className="size-6" />;
-}
-
 function IntegrationBrandMark({ item }: { item: IntegrationItem }) {
   const [imageFailed, setImageFailed] = useState(false);
   const brandUrl = item.logoUrl ?? getLogoUrl(item.logDomain ?? undefined);
 
+  // 1. External logo
   if (brandUrl && !imageFailed) {
     return (
       <img
@@ -385,6 +377,16 @@ function IntegrationBrandMark({ item }: { item: IntegrationItem }) {
     );
   }
 
+  // 2. Sprite or component icon
+  if (item.icon.type === "sprite" && item.icon.name) {
+    return <SpriteIcon name={item.icon.name} className="size-5" />;
+  }
+  if (item.icon.type === "component") {
+    const Component = item.icon.component;
+    return <Component className="size-5" />;
+  }
+
+  // 3. Text label — last resort
   if (item.markLabel) {
     return (
       <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mist-950">
@@ -393,7 +395,7 @@ function IntegrationBrandMark({ item }: { item: IntegrationItem }) {
     );
   }
 
-  return <IntegrationIcon icon={item.icon} />;
+  return null;
 }
 
 function IntegrationCard({
