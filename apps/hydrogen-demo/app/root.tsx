@@ -12,6 +12,7 @@ import {
   isRouteErrorResponse,
 } from "react-router";
 import type { LoaderFunctionArgs } from "@shopify/remix-oxygen";
+import { i18n as remixI18n } from "~/i18n.server";
 import { useNonce } from "@shopify/hydrogen";
 import { I18nextProvider, useTranslation } from "react-i18next";
 import { Layout } from "~/components/Layout";
@@ -31,7 +32,17 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
-export async function loader({ context }: LoaderFunctionArgs) {
+export async function loader({ params, context }: LoaderFunctionArgs) {
+  // Derive locale from React Router's URL params — this is CDN-independent and
+  // always matches whatever prefix is in the URL (/tr → "tr", / → "en").
+  const locale = (params.locale as string | undefined) ?? "en";
+
+  // Fetch translations for the URL-derived locale (TtlCache'd — fast after first req).
+  const [messages, cartData] = await Promise.all([
+    remixI18n.getMessages(locale),
+    context.cart.get(),
+  ]);
+
   let githubStars = 0;
   try {
     const ghHeaders: HeadersInit = {
@@ -55,11 +66,9 @@ export async function loader({ context }: LoaderFunctionArgs) {
     console.error("GitHub API fetch failed:", e);
   }
 
-  const cartData = await context.cart.get();
-
   return {
-    locale: context.locale,
-    messages: context.messages,
+    locale,
+    messages,
     languages: context.languages,
     githubStars,
     totalQuantity: cartData?.totalQuantity ?? 0,
