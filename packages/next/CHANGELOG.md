@@ -1,5 +1,47 @@
 # @better-i18n/next
 
+## 0.7.3
+
+### Patch Changes
+
+- 3a5b2b6: Single UI source for LocaleDropdown across all adapters
+
+  Introduces `@better-i18n/core/react` — a new optional React export containing
+  `LocaleDropdownBase`, a pure presentational component with no routing hooks.
+
+  **New exports from `@better-i18n/core/react`:**
+  - `LocaleDropdownBase` — props-driven UI, no hooks, works with any router
+  - `LOCALE_DROPDOWN_CSS` — injectable CSS string for custom rendering pipelines
+  - `DATA_ATTRS` — typed constants for all `data-better-locale-*` attributes
+  - `CSS_VARS` — typed constants for all `--better-locale-*` custom properties
+  - `LocaleDropdownBaseProps`, `LocaleDropdownRenderContext`, `LocaleDropdownTriggerContext` — full type surface
+
+  **Adapter changes (all backwards compatible):**
+  - `@better-i18n/use-intl`: `LocaleDropdown` → thin wrapper (TanStack Router hooks)
+  - `@better-i18n/remix`: `LocaleDropdown` → thin wrapper (React Router hooks)
+  - `@better-i18n/next`: `LocaleDropdown` → thin wrapper (cookie + router.refresh)
+  - Eliminates ~1200 lines of duplicated UI code across the three adapters
+  - Bundle size: `@better-i18n/core` main entry remains zero-dep; React UI loads only via `./react`
+
+- 6bf6952: Fix: auto-disable cache in dev mode, raise default prod TTL to 5 minutes
+
+  In development (`NODE_ENV=development`), the SDK now bypasses all caching so published translations are visible immediately on the next page refresh.
+
+  In production, the default `manifestCacheTtlMs` is raised from 60s to 5 minutes. This significantly reduces CDN requests for globally-distributed deployments like Shopify Hydrogen on Oxygen, where traffic is spread across many Cloudflare edge nodes (each with an independent in-memory cache).
+
+  For Next.js, ISR `revalidate` values are also set to `0` in dev mode, bypassing Next.js Data Cache entirely during development.
+
+- 11c3426: Fix manifest and translations being served from browser disk cache.
+
+  The CDN sends `Cache-Control: public, max-age=14400` for manifest and `max-age=60` for translations. The existing `Cache-Control: no-store` **request header** only affects Cloudflare/proxy caches — it does not bypass the browser's own disk cache. Adding `cache: "no-store"` to the fetch options fixes this for both manifest and translations.
+
+  For the Next.js adapter, `createIsrFetch` now strips the `cache` property from init before adding `next: { revalidate }` — Next.js 14+ throws if both are present simultaneously.
+
+- Updated dependencies [3a5b2b6]
+- Updated dependencies [6bf6952]
+- Updated dependencies [11c3426]
+  - @better-i18n/core@0.6.0
+
 ## 0.7.2
 
 ### Patch Changes
