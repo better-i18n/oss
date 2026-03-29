@@ -5,7 +5,7 @@ import { SpriteIcon } from "@/components/SpriteIcon";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { getIntegration } from "@/lib/content";
 import { toIntegrationItem, type IntegrationItem } from "@/lib/integrations-catalog";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { useState } from "react";
 
 const BRANDFETCH_CLIENT_ID = import.meta.env.VITE_BRANDFETCH_CLIENT_ID;
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/$locale/integrations/$slug")({
 });
 
 function IntegrationDetailPage() {
-  const t = useTranslations("integrationsPage");
+  const t = useT("integrationsPage");
   const { locale } = Route.useParams();
   const { cmsItem } = Route.useLoaderData();
   const integration: IntegrationItem | null = cmsItem ? toIntegrationItem(cmsItem) : null;
@@ -298,7 +298,7 @@ function getDashboardInstallHref({
 
 function IntegrationNotFound() {
   const { locale } = Route.useParams();
-  const t = useTranslations("integrationsPage");
+  const t = useT("integrationsPage");
 
   return (
     <MarketingLayout showCTA={false}>

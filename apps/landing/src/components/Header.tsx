@@ -61,13 +61,6 @@ export default function Header({ className }: { className?: string }) {
             </Link>
           </div>
           <div className="hidden lg:flex items-center gap-8">
-            <Link
-              to="/$locale/features/"
-              params={{ locale: locale || "en" }}
-              className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
-            >
-              {t("features", { defaultValue: "Features" })}
-            </Link>
             {/* For Product Mega Menu */}
             <div className="relative group">
               <button
@@ -219,9 +212,15 @@ export default function Header({ className }: { className?: string }) {
                   </div>
 
                   {/* Footer CTA */}
-                  <div className="px-3 py-2.5 border-t border-mist-100">
+                  <div className="px-3 py-2.5 border-t border-mist-100 flex items-center justify-between">
+                    <Link
+                      to="/$locale/features/"
+                      params={{ locale: locale || "en" }}
+                      className="text-sm font-medium text-mist-950 hover:underline"
+                    >
+                      {t("features", { defaultValue: "All features" })} →
+                    </Link>
                     <p className="text-sm text-mist-700">
-                      {t("menu.interested", { defaultValue: "Interested?" })}{" "}
                       <a
                         href="https://cal.com/better-i18n/30min?overlayCalendar=true"
                         target="_blank"
@@ -459,13 +458,6 @@ export default function Header({ className }: { className?: string }) {
             >
               {t("pricing", { defaultValue: "Pricing" })}
             </Link>
-            <Link
-              to="/$locale/compare/"
-              params={{ locale: locale || "en" }}
-              className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
-            >
-              {t("compare", { defaultValue: "Compare" })}
-            </Link>
             <div className="relative group">
               <button
                 aria-haspopup="true"
@@ -683,6 +675,20 @@ export default function Header({ className }: { className?: string }) {
                           {t("resources.freeTools", {
                             defaultValue: "Free Tools",
                           })}
+                        </span>
+                      </Link>
+                      {/* Compare */}
+                      <Link
+                        to="/$locale/compare/"
+                        params={{ locale: locale || "en" }}
+                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
+                      >
+                        <SpriteIcon
+                          name="sparkles-soft"
+                          className="size-4 text-mist-600"
+                        />
+                        <span className="text-sm font-medium text-mist-950">
+                          {t("compare", { defaultValue: "Compare" })}
                         </span>
                       </Link>
                     </div>
