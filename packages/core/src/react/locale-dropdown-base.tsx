@@ -478,8 +478,10 @@ export function LocaleDropdownBase({
     };
   }, []);
 
+  // open: true always — both elements are always in the DOM, so floating-ui
+  // keeps position pre-calculated. No flash when menu becomes visible via CSS.
   const { refs, floatingStyles, placement: resolvedPlacement } = useFloating({
-    open: menuState !== "closed",
+    open: true,
     strategy: "fixed",
     placement: placementProp === "top" ? "top-end" : "bottom-end",
     middleware: [offset(4), flip({ padding: 16 }), shift({ padding: 8 })],
