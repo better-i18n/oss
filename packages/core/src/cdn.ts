@@ -141,12 +141,12 @@ const fetchManifestFromCdn = async (
 
   logger.debug("fetching", url);
 
-  const manifestHeaders: Record<string, string> = { "Cache-Control": "no-store" };
-
   const response = await fetchWithRetry(
     fetchFn,
     url,
-    { headers: manifestHeaders },
+    // cache: "no-store" bypasses browser disk cache (fetch API option).
+    // The header alone is not enough — browser ignores it for disk cache reads.
+    { headers: { "Cache-Control": "no-store" }, cache: "no-store" },
     config.fetchTimeout,
     config.retryCount
   );
