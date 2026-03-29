@@ -5,7 +5,7 @@ import {
   cartSetIdDefault,
 } from "@shopify/hydrogen";
 import { createRequestHandler } from "@shopify/remix-oxygen";
-import { getLocaleFromRequest } from "~/lib/i18n";
+import { deriveShopifyLocale } from "~/lib/i18n";
 import { i18n } from "~/i18n.server";
 
 // @ts-expect-error - virtual module provided by React Router/Vite build
@@ -31,19 +31,16 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
 
-    // 1. Fetch CDN language list (TtlCache'd — instant after first request)
-    const languages = await i18n.getLanguages();
+    // 1. Detect locale via @better-i18n/remix — respects localePrefix config,
+    //    validates against CDN language list (BCP 47 fallback on CDN miss).
+    const [locale, languages] = await Promise.all([
+      i18n.getLocaleFromRequest(request),
+      i18n.getLanguages(),
+    ]);
 
-    // 2. Detect locale from URL path, validated against CDN language list
-    const { locale, i18n: shopifyI18n } = getLocaleFromRequest(
-      request,
-      languages,
-    );
+    const shopifyI18n = deriveShopifyLocale(locale, locale === i18n.config.defaultLocale);
 
-    // 3. Load Better i18n translations from CDN
-    const messages = await i18n.getMessages(locale);
-
-    // 4. Create Shopify Storefront client with locale
+    // 2. Create Shopify Storefront client
     const { storefront } = createStorefrontClient({
       cache,
       waitUntil: (p: Promise<unknown>) => executionContext.waitUntil(p),
@@ -54,7 +51,7 @@ export default {
       i18n: shopifyI18n,
     });
 
-    // 5. Create cart handler
+    // 3. Create cart handler
     const cart = createCartHandler({
       storefront,
       getCartId: cartGetIdDefault(request.headers),
@@ -70,7 +67,6 @@ export default {
           env,
           locale,
           shopifyI18n,
-          messages,
           languages,
           cart,
         };
