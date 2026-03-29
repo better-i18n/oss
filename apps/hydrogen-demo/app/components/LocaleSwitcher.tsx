@@ -75,7 +75,7 @@ export function LocaleSwitcher({ locale, languages }: LocaleSwitcherProps) {
           flagUrl={current.flagUrl}
           alt={`${current.nativeName ?? current.name ?? current.code} flag`}
         />
-        <span className="font-medium">{current.code.toUpperCase()}</span>
+        <span className="font-medium">{current.nativeName ?? current.name ?? current.code.toUpperCase()}</span>
         <svg
           className="h-3 w-3 text-stone-400 transition-transform group-open:rotate-180"
           fill="none"
