@@ -1,0 +1,68 @@
+---
+title: Agent Skill
+description: Give your AI agent permanent better-i18n knowledge — no prompt needed on every session
+icon: Sparkles
+---
+
+Install the better-i18n skill to give your AI agent built-in knowledge of the platform — SDK setup, key naming conventions, CDN behavior, GitHub sync, MCP tools, and common failure patterns. No need to paste prompts or documentation links each session.
+
+<Callout type="info">
+  **Skill vs MCP:** The skill teaches your AI agent *how* better-i18n works. The [MCP server](/mcp/getting-started) lets your AI agent *act* on your translations. Both can be installed together.
+</Callout>
+
+## Install
+
+<Tabs items={['Claude Code', 'Cursor', 'Windsurf', 'Other']}>
+  <Tab value="Claude Code">
+    Run in your terminal or any Claude Code session:
+    ```bash
+    npx skills add better-i18n/skills
+    ```
+    The skill is loaded automatically in every future Claude Code session.
+  </Tab>
+  <Tab value="Cursor">
+    ```bash
+    npx skills add better-i18n/skills -a cursor
+    ```
+    Or add it via **Cursor Settings → Rules** and paste the skill content from [github.com/better-i18n/skills](https://github.com/better-i18n/skills).
+  </Tab>
+  <Tab value="Windsurf">
+    ```bash
+    npx skills add better-i18n/skills -a windsurf
+    ```
+  </Tab>
+  <Tab value="Other">
+    For any AI assistant that supports custom instructions or system prompts, copy the skill content directly from [github.com/better-i18n/skills](https://github.com/better-i18n/skills) and paste it into the system instructions field.
+  </Tab>
+</Tabs>
+
+## What the skill covers
+
+Once installed, your AI agent knows:
+
+<Cards>
+  <Card title="SDK Setup" description="Next.js, React, TanStack Start, Expo, Remix, Swift, Flutter — correct singleton patterns, ISR config, SSR hydration" />
+  <Card title="Key Naming" description="Namespace structure, flat vs nested keys, naming conventions, ICU MessageFormat patterns" />
+  <Card title="CDN Behavior" description="5-layer fallback chain, { fallback: true } handling, ISR + CDN stale timing, staticData shape requirements" />
+  <Card title="GitHub Sync" description="PR workflows, 422 handling, invalid file patterns, source text changes → draft reset" />
+  <Card title="MCP Tools" description="Tool reference, pagination, API key scopes, createKeys vs updateKeys, common agent mistakes" />
+  <Card title="Publish Pipeline" description="Quality checks, 0% coverage danger, CDN + GitHub dual publish, draft exclusions" />
+</Cards>
+
+## Combine with MCP
+
+For the full AI-powered workflow, install both:
+
+```bash
+# 1. Install the skill (permanent knowledge)
+npx skills add better-i18n/skills
+
+# 2. Configure the MCP server (tool execution)
+# See: /mcp/getting-started
+```
+
+With both active, your AI agent can discuss your i18n setup *and* execute operations like translating keys, checking coverage, and publishing — all without leaving your editor.
+
+## Skill repository
+
+The skill is open-source and maintained in the [better-i18n/skills](https://github.com/better-i18n/skills) repository. Updates are published automatically — re-run `npx skills add better-i18n/skills` to get the latest version.
