@@ -477,16 +477,21 @@ export function LocaleDropdownBase({
     };
   }, []);
 
-  // strategy: "absolute" — positions relative to container (position:relative).
-  // "fixed" breaks when any ancestor has transform/will-change (creates new
-  // containing block). open:true always so position is pre-calculated.
-  const { refs, floatingStyles, placement: resolvedPlacement } = useFloating({
+  // Use top/left instead of floatingStyles (which uses transform: translate).
+  // Our CSS animations also use transform — they'd override the positioning.
+  const { refs, x, y, placement: resolvedPlacement } = useFloating({
     open: true,
     strategy: "absolute",
     placement: placementProp === "top" ? "top-end" : "bottom-end",
     middleware: [offset(4), flip({ padding: 16 }), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
   });
+
+  const menuPositionStyle: CSSProperties = {
+    position: "absolute",
+    top: y ?? 0,
+    left: x ?? 0,
+  };
 
   const isStyled = variant === "styled";
   const currentLanguage = useMemo(
@@ -658,7 +663,7 @@ export function LocaleDropdownBase({
         data-state={dataState}
         data-placement={placementDir}
         className={menuClassName}
-        style={isStyled ? { ...styles.menu, ...floatingStyles } : floatingStyles}
+        style={isStyled ? { ...styles.menu, ...menuPositionStyle } : menuPositionStyle}
       >
         {languages.map((language, index) => {
           const label = getLanguageLabel(language);
