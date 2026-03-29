@@ -77,9 +77,18 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
                   </h3>
                 </div>
 
-                <div className="mt-2.5 flex items-center justify-between">
+                <div className="mt-2.5 flex items-center justify-between gap-2">
                   {post.authorName && (
-                    <span className="text-[10px] font-medium text-mist-500 truncate">{post.authorName}</span>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {post.authorAvatar && (
+                        <img
+                          src={post.authorAvatar}
+                          alt={post.authorName}
+                          className="h-4 w-4 rounded-full object-cover shrink-0"
+                        />
+                      )}
+                      <span className="text-[10px] font-medium text-mist-500 truncate">{post.authorName}</span>
+                    </div>
                   )}
                   <SpriteIcon
                     name="arrow-right"
