@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { LocaleLink } from "~/components/LocaleLink";
 import { formatMoney } from "~/lib/format";
 import { msg } from "@better-i18n/remix";
+import { deriveShopifyLocale } from "~/lib/i18n";
+import { i18n as remixI18n } from "~/i18n.server";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const title = msg(
@@ -29,16 +31,19 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   ];
 };
 
-export async function loader({ context }: LoaderFunctionArgs) {
-  const { storefront, locale, messages, languages, shopifyI18n } = context;
+export async function loader({ params, context }: LoaderFunctionArgs) {
+  const { storefront, languages } = context;
+  const locale = (params.locale as string | undefined) ?? "en";
+  const shopifyI18n = deriveShopifyLocale(locale, locale === "en");
 
-  const [{ collections }, { products }] = await Promise.all([
+  const [{ collections }, { products }, messages] = await Promise.all([
     storefront.query(FEATURED_COLLECTIONS_QUERY, {
       variables: { count: 4, language: shopifyI18n.language, country: shopifyI18n.country },
     }),
     storefront.query(FEATURED_PRODUCTS_QUERY, {
       variables: { count: 8, language: shopifyI18n.language, country: shopifyI18n.country },
     }),
+    remixI18n.getMessages(locale),
   ]);
 
   return {

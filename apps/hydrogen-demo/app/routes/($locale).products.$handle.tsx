@@ -5,13 +5,16 @@ import { CartForm } from "@shopify/hydrogen";
 import { useTranslation } from "react-i18next";
 import { LocaleLink } from "~/components/LocaleLink";
 import { formatMoney } from "~/lib/format";
+import { deriveShopifyLocale } from "~/lib/i18n";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: data?.product?.title ?? "Product" }];
 };
 
 export async function loader({ params, context }: LoaderFunctionArgs) {
-  const { storefront, locale, messages, shopifyI18n } = context;
+  const { storefront } = context;
+  const locale = (params.locale as string | undefined) ?? "en";
+  const shopifyI18n = deriveShopifyLocale(locale, locale === "en");
   const { handle } = params;
 
   if (!handle) throw new Response("Product handle required", { status: 400 });
@@ -26,21 +29,12 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
   if (!product) throw new Response("Product not found", { status: 404 });
 
-  return { product, locale, messages };
+  return { product, locale };
 }
 
 export default function ProductPage() {
   const { product, locale } = useLoaderData<typeof loader>();
   const { t: tp } = useTranslation("products");
-  const { t: tc } = useTranslation("product_content");
-
-  const handleKey = product.handle.replace(/-/g, "_");
-  const localizedTitle = tc(`${handleKey}.title`, {
-    defaultValue: product.title,
-  });
-  const localizedDescription = tc(`${handleKey}.description`, {
-    defaultValue: product.description,
-  });
 
   const variants: VariantNode[] = product.variants.nodes;
   const options: OptionNode[] = product.options || [];

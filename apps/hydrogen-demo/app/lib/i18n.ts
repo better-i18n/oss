@@ -14,10 +14,13 @@ export interface I18nLocale {
  * Derives Shopify Storefront API locale enums from a Better i18n locale code.
  * Better i18n uses lowercase ("en", "tr"), Shopify uses uppercase enums (EN, TR).
  *
+ * Exported so route loaders can derive shopifyI18n directly from params.locale,
+ * independent of context.shopifyI18n (which depends on CDN language list).
+ *
  * Supports both simple ("tr") and compound ("en-gb") locale formats.
  * "en" without a region defaults to country "US" (most common Shopify use case).
  */
-function deriveShopifyLocale(code: string, isDefault: boolean): I18nLocale {
+export function deriveShopifyLocale(code: string, isDefault: boolean): I18nLocale {
   const [lang, country] = code.toLowerCase().split("-");
   return {
     language: lang.toUpperCase() as LanguageCode,

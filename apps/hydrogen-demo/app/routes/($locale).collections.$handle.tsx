@@ -3,13 +3,16 @@ import type { LoaderFunctionArgs, MetaFunction } from "@shopify/remix-oxygen";
 import { useTranslation } from "react-i18next";
 import { LocaleLink } from "~/components/LocaleLink";
 import { formatMoney } from "~/lib/format";
+import { deriveShopifyLocale } from "~/lib/i18n";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: data?.collection?.title ?? "Collection" }];
 };
 
 export async function loader({ params, context }: LoaderFunctionArgs) {
-  const { storefront, locale, messages, shopifyI18n } = context;
+  const { storefront } = context;
+  const locale = (params.locale as string | undefined) ?? "en";
+  const shopifyI18n = deriveShopifyLocale(locale, locale === "en");
   const { handle } = params;
 
   if (!handle)
@@ -21,7 +24,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
   if (!collection) throw new Response("Collection not found", { status: 404 });
 
-  return { collection, locale, messages };
+  return { collection, locale };
 }
 
 export default function CollectionPage() {
