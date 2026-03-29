@@ -354,6 +354,31 @@ export default function App() {
 }
 ```
 
+**Dynamic languages from manifest** — instead of hard-coding `supportedLocales`, fetch the manifest once and derive the list:
+
+```typescript
+// src/i18n.ts
+import { createI18nCore } from "@better-i18n/core";
+
+export const i18n = createI18nCore({
+  project: "acme/app",
+  defaultLocale: "en",
+});
+
+// Returns only active languages (active: true in manifest)
+export async function getSupportedLocales(): Promise<string[]> {
+  const manifest = await i18n.getManifest();
+  return manifest.languages
+    .filter((l) => l.active)
+    .map((l) => l.code);      // already lowercase BCP 47
+}
+
+// Usage: locale switcher, route validation, <html lang> attribute
+const locales = await getSupportedLocales();
+// → ["en", "tr", "de"]  — updates automatically when you add languages in dashboard
+```
+```
+
 ### React Router v6 — locale-prefixed routes
 
 ```typescript
