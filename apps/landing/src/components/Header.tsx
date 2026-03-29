@@ -6,8 +6,12 @@ import {
   IconPeople,
   IconNewspaper,
   IconLiveActivity,
-  IconRobot,
+  IconGithub,
+  IconModelcontextprotocol,
+  IconCloudySparkle,
+  IconConsoleSimple,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { NextjsIcon } from "@/components/icons/FrameworkIcons";
 import { LifeBuoy } from "lucide-react";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { useT } from "@/lib/i18n";
@@ -16,14 +20,48 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MobileNav } from "./MobileNav";
 
 // Featured integrations shown in the nav dropdown
-// icon: sprite name | "mcp" (renders IconRobot)
-const NAV_INTEGRATIONS: Array<{ slug: string; name: string; spriteIcon?: import("@/components/SpriteIcon").SpriteIconName; robotIcon?: true }> = [
-  { slug: "github",         name: "GitHub",          spriteIcon: "github" },
-  { slug: "mcp-server",     name: "MCP Server",      robotIcon: true },
-  { slug: "global-cdn",     name: "Global CDN",      spriteIcon: "globe" },
-  { slug: "nextjs",         name: "Next.js",          spriteIcon: "code" },
-  { slug: "cli",            name: "CLI",              spriteIcon: "script" },
-  { slug: "ai-translation", name: "AI Translation",  spriteIcon: "sparkles-soft" },
+const NAV_INTEGRATIONS: Array<{
+  slug: string;
+  name: string;
+  description: string;
+  Icon: React.ComponentType<{ className?: string }>;
+}> = [
+  {
+    slug: "github",
+    name: "GitHub",
+    description: "Review translation PRs in your Git workflow",
+    Icon: IconGithub,
+  },
+  {
+    slug: "mcp-server",
+    name: "MCP Server",
+    description: "AI agents manage translations via Claude, Cursor",
+    Icon: IconModelcontextprotocol,
+  },
+  {
+    slug: "global-cdn",
+    name: "Global CDN",
+    description: "Serve translations from 300+ edge locations",
+    Icon: IconCloudySparkle,
+  },
+  {
+    slug: "nextjs",
+    name: "Next.js",
+    description: "App Router native with CDN-first delivery",
+    Icon: NextjsIcon,
+  },
+  {
+    slug: "cli",
+    name: "CLI",
+    description: "Scan, sync, and automate from the terminal",
+    Icon: IconConsoleSimple,
+  },
+  {
+    slug: "ai-translation",
+    name: "AI Translation",
+    description: "Generate drafts, review before shipping",
+    Icon: IconAiTranslate,
+  },
 ];
 
 export default function Header({ className }: { className?: string }) {
@@ -412,32 +450,31 @@ export default function Header({ className }: { className?: string }) {
                 />
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[340px] shadow-lg">
+                <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[480px] shadow-lg">
                   <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm" role="menu">
-                    <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500">
+                    <p className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500">
                       {t("integrations.featured", { defaultValue: "Featured" })}
                     </p>
-                    <div className="grid grid-cols-2 gap-0.5">
+                    <div className="grid grid-cols-2 gap-0.5 mt-0.5">
                       {NAV_INTEGRATIONS.map((item) => (
                         <Link
                           key={item.slug}
                           to="/$locale/integrations/$slug/"
                           params={{ locale: locale || "en", slug: item.slug }}
-                          className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-mist-50 transition-colors"
+                          className="group/item flex items-start gap-3 px-2.5 py-2.5 rounded-lg hover:bg-mist-50 transition-colors"
                         >
-                          <span className="flex size-6 shrink-0 items-center justify-center rounded-md border border-mist-200 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)]">
-                            {item.robotIcon ? (
-                              <IconRobot className="size-3.5 text-mist-700" />
-                            ) : item.spriteIcon ? (
-                              <SpriteIcon name={item.spriteIcon} className="size-3.5 text-mist-700" />
-                            ) : null}
+                          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-mist-200 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)] mt-0.5">
+                            <item.Icon className="size-4 text-mist-800" />
                           </span>
-                          <span className="text-sm font-medium text-mist-950">{item.name}</span>
+                          <span className="min-w-0">
+                            <span className="block text-sm font-medium text-mist-950 leading-snug">{item.name}</span>
+                            <span className="block text-xs text-mist-500 leading-relaxed mt-0.5">{item.description}</span>
+                          </span>
                         </Link>
                       ))}
                     </div>
                   </div>
-                  <div className="px-3 py-2.5">
+                  <div className="px-3 py-2.5 flex items-center justify-between">
                     <Link
                       to="/$locale/integrations/"
                       params={{ locale: locale || "en" }}
@@ -446,6 +483,7 @@ export default function Header({ className }: { className?: string }) {
                       {t("integrations.exploreAll", { defaultValue: "Explore all integrations" })}
                       <SpriteIcon name="arrow-right" className="size-3.5" />
                     </Link>
+                    <span className="text-xs text-mist-500">{t("integrations.count", { defaultValue: "20 integrations" })}</span>
                   </div>
                 </div>
               </div>
