@@ -26,7 +26,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
         </h2>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
         {posts.map((post) => {
           const bannerUrl = buildOgImageUrl("og/blog", {
             title: post.title,
@@ -47,58 +47,43 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
               key={post.slug}
               to="/$locale/blog/$slug/"
               params={{ locale, slug: post.slug }}
-              className="group flex flex-col rounded-2xl border border-mist-200 bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-mist-300 hover:shadow-md"
+              className="group flex flex-col rounded-xl border border-mist-200 bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-mist-300 hover:shadow-md"
             >
-              <div className="aspect-[16/7] overflow-hidden bg-mist-100">
+              <div className="aspect-[3/2] overflow-hidden bg-mist-100">
                 <img
                   src={bannerUrl}
                   alt={post.title}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                   loading="lazy"
                 />
               </div>
 
-              <div className="flex flex-col flex-1 justify-between p-4">
+              <div className="flex flex-col flex-1 justify-between p-3">
                 <div>
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-1.5 mb-2">
                     {post.category && (
-                      <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${getTagColor(post.category)}`}>
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getTagColor(post.category)}`}>
                         {post.category}
                       </span>
                     )}
                     {post.readTime && (
-                      <span className="text-xs text-mist-400">
-                        {t("minRead", { defaultValue: "{count} min read", count: post.readTime })}
+                      <span className="text-[10px] text-mist-400">
+                        {post.readTime}m
                       </span>
                     )}
                   </div>
-                  <h3 className="font-display text-[15px]/[1.4] font-medium text-mist-950 group-hover:text-mist-700 transition-colors line-clamp-2">
+                  <h3 className="text-xs/[1.4] font-medium text-mist-950 group-hover:text-mist-700 transition-colors line-clamp-3">
                     {post.title}
                   </h3>
-                  {post.excerpt && (
-                    <p className="mt-2 text-sm text-mist-500 line-clamp-2 leading-relaxed">
-                      {post.excerpt}
-                    </p>
-                  )}
                 </div>
 
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs text-mist-400">
-                    {post.authorName && (
-                      <span className="font-medium text-mist-600">{post.authorName}</span>
-                    )}
-                    {post.authorName && post.publishedAt && (
-                      <span className="text-mist-300">&middot;</span>
-                    )}
-                    {post.publishedAt && (
-                      <time dateTime={post.publishedAt}>
-                        {formatPostDate(post.publishedAt, locale)}
-                      </time>
-                    )}
-                  </div>
+                <div className="mt-2.5 flex items-center justify-between">
+                  {post.authorName && (
+                    <span className="text-[10px] font-medium text-mist-500 truncate">{post.authorName}</span>
+                  )}
                   <SpriteIcon
                     name="arrow-right"
-                    className="h-4 w-4 text-mist-300 transition-all group-hover:translate-x-0.5 group-hover:text-mist-500"
+                    className="h-3 w-3 shrink-0 text-mist-300 transition-all group-hover:translate-x-0.5 group-hover:text-mist-500"
                     aria-hidden="true"
                   />
                 </div>
