@@ -28,8 +28,11 @@ export interface NextI18nCore extends I18nCore {
  */
 const createIsrFetch = (revalidateSeconds: number): typeof fetch => {
   return (input: RequestInfo | URL, init?: RequestInit) => {
+    // Strip `cache` from init — Next.js throws if both `cache` and
+    // `next.revalidate` are set. ISR revalidation takes ownership of caching.
+    const { cache: _cache, ...restInit } = init ?? {};
     const nextInit: NextFetchRequestInit = {
-      ...init,
+      ...restInit,
       next: { revalidate: revalidateSeconds },
     };
     return fetch(input, nextInit);
