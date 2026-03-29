@@ -4,7 +4,7 @@
 /// <reference types="@react-router/dev/vite-plugin" />
 
 import type { HydrogenCart, Storefront } from "@shopify/hydrogen";
-import type { Messages, LanguageOption } from "@better-i18n/remix";
+import type { LanguageOption } from "@better-i18n/remix";
 import type { I18nLocale } from "~/lib/i18n";
 
 declare global {
@@ -33,7 +33,6 @@ declare module "@shopify/remix-oxygen" {
     env: Env;
     locale: string;
     shopifyI18n: I18nLocale;
-    messages: Messages;
     languages: LanguageOption[];
   }
 }
