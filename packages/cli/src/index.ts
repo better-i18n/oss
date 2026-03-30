@@ -7,7 +7,11 @@
  */
 
 import { program } from "commander";
+import { loadEnvFiles } from "./utils/load-env.js";
 import { scanCommand } from "./commands/scan.js";
+
+// Auto-load .env.local and .env (shell vars take precedence)
+loadEnvFiles();
 import { syncCommand } from "./commands/sync.js";
 import {
   checkCommand,
