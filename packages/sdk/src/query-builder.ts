@@ -107,8 +107,11 @@ export class ContentQueryBuilder<T = ContentEntryListItem> {
   ) {}
 
   /** @internal */
-  static create(http: HttpClient, model: string): ContentQueryBuilder {
-    return new ContentQueryBuilder(http, model, emptyParams());
+  static create<CF extends Record<string, string | null> = Record<string, string | null>>(
+    http: HttpClient,
+    model: string,
+  ): ContentQueryBuilder<ContentEntryListItem<CF>> {
+    return new ContentQueryBuilder<ContentEntryListItem<CF>>(http, model, emptyParams());
   }
 
   // ─── Private helpers ────────────────────────────────────────────

@@ -16,10 +16,10 @@ export interface HttpClient {
   /** List content models. */
   getModels(): Promise<ContentModel[]>;
   /** List entries with legacy options. */
-  getEntries(
+  getEntries<CF extends Record<string, string | null> = Record<string, string | null>>(
     model: string,
     opts?: ListEntriesOptions,
-  ): Promise<PaginatedResponse<ContentEntryListItem>>;
+  ): Promise<PaginatedResponse<ContentEntryListItem<CF>>>;
   /** Fetch a single entry by slug. */
   getEntry<CF extends Record<string, string | null> = Record<string, string | null>>(
     model: string,
@@ -86,10 +86,10 @@ export function createHttpClient(
       return rawRequest<ContentModel[]>(`${base}/models`, "getModels");
     },
 
-    async getEntries(
+    async getEntries<CF extends Record<string, string | null> = Record<string, string | null>>(
       modelSlug: string,
       options?: ListEntriesOptions,
-    ): Promise<PaginatedResponse<ContentEntryListItem>> {
+    ): Promise<PaginatedResponse<ContentEntryListItem<CF>>> {
       const params = new URLSearchParams();
       if (options?.language) params.set("language", options.language);
       if (options?.status) params.set("status", options.status);
@@ -102,7 +102,7 @@ export function createHttpClient(
       const qs = params.toString() ? `?${params}` : "";
 
       const data = await rawRequest<{
-        items: ContentEntryListItem[];
+        items: ContentEntryListItem<CF>[];
         total: number;
         hasMore: boolean;
       }>(`${base}/models/${modelSlug}/entries${qs}`, `getEntries(${modelSlug})`);

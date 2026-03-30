@@ -7,6 +7,7 @@ export type {
   ClientConfig,
   ContentClient,
   ContentEntry,
+  ContentEntryLanguage,
   ContentEntryListItem,
   ContentEntryStatus,
   ContentEntrySortField,

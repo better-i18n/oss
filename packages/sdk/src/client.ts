@@ -57,8 +57,8 @@ export function createClient(config: ClientConfig): ContentClient {
   const http = createHttpClient(apiBase, org, project, config.apiKey, config.debug);
 
   return {
-    from(modelSlug: string) {
-      return ContentQueryBuilder.create(http, modelSlug);
+    from<CF extends Record<string, string | null> = Record<string, string | null>>(modelSlug: string) {
+      return ContentQueryBuilder.create<CF>(http, modelSlug);
     },
     getModels: () => http.getModels(),
     getEntries: (model, opts) => http.getEntries(model, opts),
