@@ -84,22 +84,41 @@ export const listContentEntriesInput = projectIdentifierSchema.extend({
     .optional()
     .describe('Exact entry slug(s). Single or array: "github" or ["github","nextjs"]. Prefer over search when slugs are known.'),
 
-  /** Filter by entry status. */
+  /**
+   * Filter by entry status. Single value or array.
+   * Example: "published" or ["draft","published"]
+   */
   status: z
-    .enum(["draft", "published", "archived"])
+    .union([
+      z.enum(["draft", "published", "archived"]),
+      z.array(z.enum(["draft", "published", "archived"])),
+    ])
     .optional()
-    .describe("Filter by status: draft | published | archived"),
+    .describe('Filter by status. Single or array: "published" or ["draft","published"].'),
 
   /**
    * Entries that HAVE a translation in these locale(s).
-   * Single string or array — OR logic (entry must have at least one of the listed locales).
+   * Single string or array.
+   * Behavior controlled by languageMode (default: "any" = OR logic).
    *
    * ⚠️ Use missingLanguage (not language) when looking for untranslated content.
    */
   language: z
     .union([z.string(), z.array(z.string())])
     .optional()
-    .describe('Entries that HAVE a translation in these locale(s). OR logic: "tr" or ["en","tr"]. NOT for finding untranslated content — use missingLanguage for that.'),
+    .describe('Entries that HAVE a translation in these locale(s). Combine with languageMode to control OR vs AND. NOT for finding untranslated content — use missingLanguage.'),
+
+  /**
+   * Controls how the language filter is applied when multiple locales are given.
+   * "any" (default) = OR logic — entry has at least one of the locales.
+   * "all" = AND logic — entry has ALL listed locales.
+   * Example: language: ["en","tr"], languageMode: "all" → fully translated into both.
+   */
+  languageMode: z
+    .enum(["any", "all"])
+    .optional()
+    .default("any")
+    .describe('"any" (default) = OR — entry has at least one locale. "all" = AND — entry has every listed locale. Example: language:["en","tr"] + languageMode:"all" → translated in both.'),
 
   /**
    * Entries MISSING a translation in these locale(s).
@@ -146,6 +165,21 @@ export const listContentEntriesInput = projectIdentifierSchema.extend({
     .optional()
     .default(false)
     .describe("true = minimal response (id, slug, status, title, languages only). ~65% token reduction. Use for browsing."),
+
+  /**
+   * Field to sort results by. Default: updatedAt.
+   * Use publishedAt desc to get "most recently published" entries.
+   */
+  sort: z
+    .enum(["publishedAt", "createdAt", "updatedAt", "title"])
+    .optional()
+    .describe('Sort field: publishedAt | createdAt | updatedAt | title. Default: updatedAt. Example: sort:"publishedAt", order:"desc" → latest published first.'),
+
+  /** Sort direction. Default: desc. */
+  order: z
+    .enum(["asc", "desc"])
+    .optional()
+    .describe('Sort direction: asc | desc. Default: desc.'),
 
   /** Page number (1-indexed, default: 1) */
   page: z.number().min(1).default(1).describe("Page number (1-indexed)"),
