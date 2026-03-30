@@ -145,7 +145,7 @@ export function parseListItem(line: string): ParsedListItem {
   let text = line.trim().replace(/^-+\s*/, "");
   let badge: StatusTone | null = null;
 
-  const bracketMatch = text.match(/^\[([a-z-]+)\]\s*/i);
+  const bracketMatch = text.match(/^\\?\[([a-z-]+)\]\s*/i);
   if (bracketMatch) {
     const normalized = statusAliases[bracketMatch[1].toLowerCase()];
     if (normalized) {
