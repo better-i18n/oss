@@ -76,6 +76,17 @@ export const listContentEntriesInput = projectIdentifierSchema.extend({
     .record(z.string(), z.string())
     .optional()
     .describe("Filter by custom field values (e.g., { accounttype: 'teacher' })"),
+  /**
+   * Fetch specific entries by exact slug — single request for known slugs.
+   * Example: slugs: ["github", "nextjs", "mcp-server"]
+   * Combines with other filters (e.g., modelSlug) for further narrowing.
+   */
+  slugs: z
+    .array(z.string())
+    .optional()
+    .describe(
+      'Fetch specific entries by exact slug match. Example: ["github", "nextjs", "mcp-server"]. More efficient than search for known slugs. Combines with other filters.',
+    ),
   /** Relation field names to expand with referenced entry data */
   expand: z
     .array(z.string())
@@ -167,6 +178,8 @@ export const createContentEntryInput = projectIdentifierSchema.extend({
   title: z.string().describe("Entry title"),
   /** URL slug for the entry */
   slug: z.string().describe("URL slug"),
+  /** Source language code — the language of the top-level title/bodyMarkdown. Defaults to project's source language if omitted. */
+  sourceLanguageCode: z.string().optional().describe("Source language code (defaults to project source language)"),
   /** Content body in Markdown format (supports GFM: tables, strikethrough, task lists) */
   bodyMarkdown: z.string().optional().describe("Content body in Markdown format (supports GFM: tables, strikethrough, task lists)"),
   /** Initial status */
@@ -484,6 +497,7 @@ export const bulkCreateEntriesInput = projectIdentifierSchema.extend({
         status: z.enum(["draft", "published"]).default("draft").describe("Initial status"),
         customFields: z.record(z.string(), coercibleFieldValue).optional().default({}).describe("Custom field values"),
         translations: z.record(z.string(), translationValue).optional().describe("Target language translations"),
+        sourceLanguageCode: z.string().optional().describe("Source language code (defaults to project source language)"),
       }),
     )
     .min(1)
