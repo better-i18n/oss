@@ -1,0 +1,329 @@
+import { describe, expect, it } from "bun:test";
+import {
+  fieldToTypeScript,
+  generateTypeScript,
+  slugToPascal,
+} from "../content-types.js";
+
+// ── slugToPascal ────────────────────────────────────────────────────
+
+describe("slugToPascal", () => {
+  it("converts kebab-case to PascalCase", () => {
+    expect(slugToPascal("blog-posts")).toBe("BlogPosts");
+    expect(slugToPascal("changelog-beta")).toBe("ChangelogBeta");
+  });
+
+  it("converts snake_case to PascalCase", () => {
+    expect(slugToPascal("my_content")).toBe("MyContent");
+  });
+
+  it("handles single word", () => {
+    expect(slugToPascal("faq")).toBe("Faq");
+  });
+
+  it("handles mixed separators", () => {
+    expect(slugToPascal("my-cool_model")).toBe("MyCoolModel");
+  });
+});
+
+// ── fieldToTypeScript ───────────────────────────────────────────────
+
+describe("fieldToTypeScript", () => {
+  it("maps text field to string | null", () => {
+    expect(
+      fieldToTypeScript({
+        name: "title",
+        displayName: "Title",
+        type: "text",
+        required: false,
+        localized: false,
+      }),
+    ).toBe("string | null");
+  });
+
+  it("maps required text to string (no null)", () => {
+    expect(
+      fieldToTypeScript({
+        name: "title",
+        displayName: "Title",
+        type: "text",
+        required: true,
+        localized: false,
+      }),
+    ).toBe("string");
+  });
+
+  it("maps enum to literal union", () => {
+    expect(
+      fieldToTypeScript({
+        name: "category",
+        displayName: "Category",
+        type: "enum",
+        required: false,
+        localized: false,
+        enumValues: [
+          { label: "Tech", value: "tech" },
+          { label: "Design", value: "design" },
+        ],
+      }),
+    ).toBe('"tech" | "design" | null');
+  });
+
+  it("maps required enum to union without null", () => {
+    expect(
+      fieldToTypeScript({
+        name: "status",
+        displayName: "Status",
+        type: "enum",
+        required: true,
+        localized: false,
+        enumValues: [
+          { label: "Active", value: "active" },
+          { label: "Draft", value: "draft" },
+        ],
+      }),
+    ).toBe('"active" | "draft"');
+  });
+
+  it("maps enum with no values to string", () => {
+    expect(
+      fieldToTypeScript({
+        name: "tag",
+        displayName: "Tag",
+        type: "enum",
+        required: false,
+        localized: false,
+        enumValues: [],
+      }),
+    ).toBe("string | null");
+  });
+
+  it("maps relation to RelationValue", () => {
+    expect(
+      fieldToTypeScript({
+        name: "author",
+        displayName: "Author",
+        type: "relation",
+        required: false,
+        localized: false,
+      }),
+    ).toBe("RelationValue | null");
+  });
+
+  it("maps required relation to RelationValue (no null)", () => {
+    expect(
+      fieldToTypeScript({
+        name: "author",
+        displayName: "Author",
+        type: "relation",
+        required: true,
+        localized: false,
+      }),
+    ).toBe("RelationValue");
+  });
+
+  it("maps all other types to string | null", () => {
+    for (const type of [
+      "textarea",
+      "richtext",
+      "number",
+      "boolean",
+      "date",
+      "datetime",
+      "media",
+      "user_select",
+    ]) {
+      expect(
+        fieldToTypeScript({
+          name: "field",
+          displayName: "Field",
+          type,
+          required: false,
+          localized: false,
+        }),
+      ).toBe("string | null");
+    }
+  });
+});
+
+// ── generateTypeScript ──────────────────────────────────────────────
+
+describe("generateTypeScript", () => {
+  const sampleModels = [
+    {
+      slug: "blog-posts",
+      displayName: "Blog Posts",
+      description: "Company blog articles",
+      kind: "collection",
+      includeBody: true,
+      fields: [
+        {
+          name: "author",
+          displayName: "Author",
+          type: "text",
+          required: false,
+          localized: false,
+        },
+        {
+          name: "category",
+          displayName: "Category",
+          type: "enum",
+          required: false,
+          localized: false,
+          enumValues: [
+            { label: "Tech", value: "tech" },
+            { label: "Design", value: "design" },
+          ],
+        },
+      ],
+    },
+    {
+      slug: "faq",
+      displayName: "FAQ",
+      description: null,
+      kind: "collection",
+      includeBody: false,
+      fields: [],
+    },
+  ];
+
+  it("generates valid TypeScript with imports", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain(
+      'import type { ContentEntry, ContentEntryListItem } from "@better-i18n/sdk"',
+    );
+  });
+
+  it("generates auto-generated header", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain("Auto-generated by @better-i18n/cli");
+    expect(output).toContain("Models: 2");
+  });
+
+  it("generates interface for model with fields", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain("export interface BlogPostsFields");
+    expect(output).toContain("author: string | null;");
+    expect(output).toContain('category: "tech" | "design" | null;');
+  });
+
+  it("generates convenience type aliases", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain(
+      "export type BlogPosts = ContentEntry<BlogPostsFields>",
+    );
+    expect(output).toContain(
+      "export type BlogPostsListItem = ContentEntryListItem<BlogPostsFields>",
+    );
+  });
+
+  it("generates Record type for model with no custom fields", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain(
+      "export type FaqFields = Record<string, string | null>",
+    );
+  });
+
+  it("generates model slug union type", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain(
+      'export type ContentModelSlug = "blog-posts" | "faq"',
+    );
+  });
+
+  it("generates ContentTypeMap interface", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain("export interface ContentTypeMap");
+    expect(output).toContain('"blog-posts": BlogPostsFields');
+    expect(output).toContain('"faq": FaqFields');
+  });
+
+  it("includes RelationValue import when relation fields exist", () => {
+    const modelsWithRelation = [
+      {
+        slug: "articles",
+        displayName: "Articles",
+        description: null,
+        kind: "collection",
+        includeBody: true,
+        fields: [
+          {
+            name: "author",
+            displayName: "Author",
+            type: "relation",
+            required: false,
+            localized: false,
+          },
+        ],
+      },
+    ];
+    const output = generateTypeScript(modelsWithRelation);
+    expect(output).toContain("RelationValue");
+    expect(output).toContain(
+      "import type { ContentEntry, ContentEntryListItem, RelationValue }",
+    );
+  });
+
+  it("does not import RelationValue when no relation fields", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).not.toContain("RelationValue");
+  });
+
+  it("uses description in JSDoc when available", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain("Blog Posts — Company blog articles");
+  });
+
+  it("uses slug in JSDoc when no description", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain("Content model: faq");
+  });
+
+  it("skips built-in fields (title, body, slug)", () => {
+    const modelWithBuiltins = [
+      {
+        slug: "pages",
+        displayName: "Pages",
+        description: null,
+        kind: "collection",
+        includeBody: true,
+        fields: [
+          {
+            name: "title",
+            displayName: "Title",
+            type: "text",
+            required: true,
+            localized: true,
+          },
+          {
+            name: "body",
+            displayName: "Body",
+            type: "richtext",
+            required: false,
+            localized: true,
+          },
+          {
+            name: "slug",
+            displayName: "Slug",
+            type: "text",
+            required: true,
+            localized: false,
+          },
+          {
+            name: "seo_title",
+            displayName: "SEO Title",
+            type: "text",
+            required: false,
+            localized: true,
+          },
+        ],
+      },
+    ];
+    const output = generateTypeScript(modelWithBuiltins);
+    // Only seo_title should appear as a custom field
+    expect(output).toContain("seo_title: string | null;");
+    expect(output).not.toMatch(/^\s+title:/m);
+    expect(output).not.toMatch(/^\s+body:/m);
+    expect(output).not.toMatch(/^\s+slug:/m);
+  });
+});
