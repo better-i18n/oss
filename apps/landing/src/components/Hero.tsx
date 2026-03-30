@@ -43,14 +43,14 @@ export default function Hero() {
               </p>
 
               {/* Email Signup Form */}
-              <div className="relative w-full max-w-sm">
+              <div className="flex w-full max-w-sm items-center rounded-full border border-white/20 bg-white/10 focus-within:border-white/40 transition-colors">
                 <input
                   type="email"
                   aria-label={t("inputPlaceholder", { defaultValue: "Enter your work email" })}
                   placeholder={t("inputPlaceholder", { defaultValue: "Enter your work email" })}
-                  className="w-full text-sm pl-5 pr-36 py-3 bg-white/10 border border-white/20 rounded-full text-white placeholder:text-white/50 focus:outline-none focus:border-white/40"
+                  className="min-w-0 flex-1 text-sm pl-5 py-3 bg-transparent text-white placeholder:text-white/50 focus:outline-none"
                 />
-                <button className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-white/90 transition-colors">
+                <button className="shrink-0 m-1 inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-white/90 transition-colors whitespace-nowrap">
                   {t("cta", { defaultValue: "Get Started" })}
                   <SpriteIcon name="arrow-right" className="w-4 h-4" />
                 </button>

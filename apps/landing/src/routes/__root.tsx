@@ -98,11 +98,17 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       const search = location.searchStr || "";
       const hash = location.hash || "";
 
-      // Detect locale from geo (CF Worker X-Country header) or fallback to default
+      // Detect locale: cookie (manual user choice) > geo (CF X-Country) > default
       let countryCode: string | undefined;
+      let cookieLocale: string | undefined;
       if (typeof document === "undefined") {
         try {
           countryCode = getRequestHeader("X-Country") ?? undefined;
+          const cookieHeader = getRequestHeader("Cookie") ?? "";
+          const cookieMatch = /preferred-locale=([^;]+)/.exec(cookieHeader);
+          if (cookieMatch?.[1] && locales.includes(cookieMatch[1])) {
+            cookieLocale = cookieMatch[1];
+          }
         } catch {
           // getRequestHeader may throw outside request context (dev server)
         }
@@ -112,6 +118,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         project: i18nConfig.project,
         defaultLocale: i18nConfig.defaultLocale,
         availableLocales: locales,
+        cookieLocale,
         countryCode,
       });
 
@@ -262,6 +269,9 @@ function RootComponent() {
   // update history.replaceState which TanStack Router doesn't observe.
   const handleLocaleChange = useCallback(
     (newLocale: string) => {
+      // Persist user's manual choice so the geo-redirect respects it on future visits
+      document.cookie = `preferred-locale=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+
       const path = window.location.pathname;
       const segments = path.split("/").filter(Boolean);
       const firstSegment = segments[0];
