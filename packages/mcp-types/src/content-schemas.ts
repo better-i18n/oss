@@ -35,11 +35,22 @@ export type GetContentModelInput = z.input<typeof getContentModelInput>;
  * Paginated listing of content entries with filtering.
  */
 export const listContentEntriesInput = projectIdentifierSchema.extend({
-  /** Filter by content model slug */
+  /** Filter by content model slug (single) */
   modelSlug: z
     .string()
     .optional()
-    .describe("Filter by content model slug"),
+    .describe("Filter by a single content model slug"),
+  /**
+   * Filter by multiple model slugs — fetch entries across several models in one request.
+   * Example: modelSlugs: ["blog-posts", "integrations", "changelog"]
+   * Combines with modelSlug (both are OR'd together).
+   */
+  modelSlugs: z
+    .array(z.string())
+    .optional()
+    .describe(
+      'Fetch entries from multiple models at once. Example: ["blog-posts", "integrations"]. Combined with modelSlug if both provided.',
+    ),
   /** Search terms (string or array — OR logic). Searches title, slug, and text custom fields. */
   search: z
     .union([z.string(), z.array(z.string())])
