@@ -110,11 +110,17 @@ export type ContentEntryStatus = "draft" | "published" | "archived";
 
 /** A summary item for content entry lists. Custom fields are spread directly on the object. */
 export type ContentEntryListItem<CF extends Record<string, string | null> = Record<string, string | null>> = {
+  id: string;
   slug: string;
   title: string;
+  status: ContentEntryStatus;
   publishedAt: string | null;
   /** Markdown body — only present when `fields` includes `"body"`. */
   body?: string | null;
+  /** Source language code of the project (e.g. `"en"`). Only present on list responses when included. */
+  sourceLanguage?: string;
+  /** Language codes that have translations for this entry. Only present on list responses when included. */
+  availableLanguages?: string[];
   /** Expanded relation fields (only present when expand is used) */
   relations?: Record<string, RelationValue | null>;
 } & CF;
@@ -138,8 +144,8 @@ export interface ContentModelField {
   name: string;
   /** Human-readable field name. */
   displayName: string;
-  /** Field type (text, textarea, richtext, number, boolean, date, datetime, enum, media, relation, user_select). */
-  type: string;
+  /** Field type. */
+  type: "text" | "textarea" | "richtext" | "number" | "boolean" | "date" | "datetime" | "enum" | "media" | "relation" | "user_select";
   /** Whether this field is required. */
   required: boolean;
   /** Whether this field is localized per language. */
@@ -234,7 +240,7 @@ export interface ContentClient {
    *   .limit(10);
    * ```
    */
-  from(modelSlug: string): ContentQueryBuilder;
+  from<CF extends Record<string, string | null> = Record<string, string | null>>(modelSlug: string): ContentQueryBuilder<ContentEntryListItem<CF>>;
 
   /** List all content models in the project. */
   getModels(): Promise<ContentModel[]>;
@@ -242,10 +248,10 @@ export interface ContentClient {
    * List entries for a content model with pagination.
    * @deprecated Use `client.from(modelSlug)` for a chainable, composable API.
    */
-  getEntries(
+  getEntries<CF extends Record<string, string | null> = Record<string, string | null>>(
     modelSlug: string,
     options?: ListEntriesOptions,
-  ): Promise<PaginatedResponse<ContentEntryListItem>>;
+  ): Promise<PaginatedResponse<ContentEntryListItem<CF>>>;
   /**
    * Fetch a single content entry by slug.
    * @deprecated Use `client.from(modelSlug).single(slug)` for error-safe API.
