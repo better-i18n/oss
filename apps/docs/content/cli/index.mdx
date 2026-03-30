@@ -100,6 +100,26 @@ better-i18n sync
 
 ---
 
+### `content:types` — Generate TypeScript from content models
+
+Generate typed interfaces from your Content CMS models — like `supabase gen types typescript`. Auto-loads API key from `.env`.
+
+```bash
+better-i18n content:types
+```
+
+```text
+✓ Project: acme/landing
+✓ Found 3 content model(s)
+✓ Content types generated
+  Output: src/content-types.ts
+  Models: blog-posts, changelog, pricing-plans
+```
+
+[View full `content:types` documentation →](/cli/content-types)
+
+---
+
 ## When to use which command
 
 | I want to… | Command |
@@ -110,6 +130,7 @@ better-i18n sync
 | Quickly check if new keys are uploaded | `check:missing` |
 | Clean up unused translations | `check:unused` |
 | See full missing + unused comparison | `sync` |
+| Generate types for Content CMS models | `content:types` |
 
 ## Installation
 
