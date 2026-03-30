@@ -32,88 +32,124 @@ export type GetContentModelInput = z.input<typeof getContentModelInput>;
 
 /**
  * Input schema for listContentEntries endpoint.
- * Paginated listing of content entries with filtering.
+ *
+ * ## Quick reference
+ *
+ * | Field           | Type                  | Purpose                                          |
+ * |-----------------|-----------------------|--------------------------------------------------|
+ * | models          | string \| string[]    | Filter by one or more content model slugs        |
+ * | slugs           | string \| string[]    | Fetch specific entries by exact entry slug(s)    |
+ * | status          | enum                  | draft / published / archived                     |
+ * | language        | string \| string[]    | Entries that HAVE translations in these locales  |
+ * | missingLanguage | string \| string[]    | Entries MISSING translations in these locales    |
+ * | search          | string \| string[]    | Full-text search (title, slug, text fields)      |
+ * | where           | Record<string,string> | Exact custom-field value filter                  |
+ * | compact         | boolean               | true = minimal response (~65% fewer tokens)      |
+ * | expand          | string[]              | Expand relation fields (skipped when compact)    |
+ * | page / limit    | number                | Pagination                                       |
+ *
+ * ## Common patterns
+ *
+ * ```
+ * // All published integrations
+ * { models: "integrations", status: "published" }
+ *
+ * // Specific entries across multiple models
+ * { models: ["integrations", "frameworks"], slugs: ["github", "nextjs"] }
+ *
+ * // Entries missing French across all models
+ * { missingLanguage: "fr" }
+ *
+ * // Entries available in both EN and TR
+ * { language: ["en", "tr"] }
+ * ```
  */
 export const listContentEntriesInput = projectIdentifierSchema.extend({
-  /** Filter by content model slug (single) */
-  modelSlug: z
-    .string()
-    .optional()
-    .describe("Filter by a single content model slug"),
   /**
-   * Filter by multiple model slugs — fetch entries across several models in one request.
-   * Example: modelSlugs: ["blog-posts", "integrations", "changelog"]
-   * Combines with modelSlug (both are OR'd together).
+   * Filter by content model slug(s).
+   * Single string or array — fetches across all listed models in one request.
+   * Omit to search across all models in the project.
    */
-  modelSlugs: z
-    .array(z.string())
-    .optional()
-    .describe(
-      'Fetch entries from multiple models at once. Example: ["blog-posts", "integrations"]. Combined with modelSlug if both provided.',
-    ),
-  /** Search terms (string or array — OR logic). Searches title, slug, and text custom fields. */
-  search: z
+  models: z
     .union([z.string(), z.array(z.string())])
     .optional()
-    .describe("Search terms (string or array — OR logic). Searches title, slug, and text custom fields."),
-  /** Limit search to these language codes. Default: all languages. */
-  searchLanguages: z
-    .array(z.string())
+    .describe('Filter by model slug(s). Single or array: "blog-posts" or ["integrations","changelog"].'),
+
+  /**
+   * Fetch specific entries by exact entry slug(s).
+   * Use when you already know which entries you need — more precise than search.
+   */
+  slugs: z
+    .union([z.string(), z.array(z.string())])
     .optional()
-    .describe("Limit search to these language codes. Default: all languages."),
-  /** Also search body_markdown. Only effective when modelSlug is provided and model has body. */
-  searchInBody: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe("Also search body_markdown. Only effective when modelSlug is provided and model has body."),
-  /** Filter by entry status */
+    .describe('Exact entry slug(s). Single or array: "github" or ["github","nextjs"]. Prefer over search when slugs are known.'),
+
+  /** Filter by entry status. */
   status: z
     .enum(["draft", "published", "archived"])
     .optional()
-    .describe("Filter by entry status"),
-  /** Filter by language code */
+    .describe("Filter by status: draft | published | archived"),
+
+  /**
+   * Entries that HAVE a translation in these locale(s).
+   * Single string or array — OR logic (entry must have at least one of the listed locales).
+   *
+   * ⚠️ Use missingLanguage (not language) when looking for untranslated content.
+   */
   language: z
-    .string()
+    .union([z.string(), z.array(z.string())])
     .optional()
-    .describe("Filter by language code (entries with this translation)"),
-  /** Filter to entries MISSING a translation for this language */
+    .describe('Entries that HAVE a translation in these locale(s). OR logic: "tr" or ["en","tr"]. NOT for finding untranslated content — use missingLanguage for that.'),
+
+  /**
+   * Entries MISSING a translation in these locale(s).
+   * Single string or array — AND logic (entry must be missing ALL listed locales).
+   * Use this for batch-translate workflows: listContentEntries({ missingLanguage: "fr" }) → bulkUpdateEntries.
+   */
   missingLanguage: z
-    .string()
+    .union([z.string(), z.array(z.string())])
     .optional()
-    .describe("Filter to entries missing a translation for this language code"),
-  /** Filter by custom field values (key = field name, value = exact match) */
-  filter: z
+    .describe('Entries MISSING translations in these locale(s). AND logic: ["fr","de"] = missing both FR and DE. Use for batch-translate workflows.'),
+
+  /**
+   * Full-text search across entry title, slug, and text custom fields.
+   * Single string or array (OR logic — any match returns the entry).
+   */
+  search: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .describe('Text search across title, slug, and text fields. Array = OR logic: any match returns entry.'),
+
+  /**
+   * Exact custom-field value filter.
+   * Key = field name as defined in the model, value = exact match string.
+   * Example: { category: "frameworks", status: "guide" }
+   */
+  where: z
     .record(z.string(), z.string())
     .optional()
-    .describe("Filter by custom field values (e.g., { accounttype: 'teacher' })"),
-  /**
-   * Fetch specific entries by exact slug — single request for known slugs.
-   * Example: slugs: ["github", "nextjs", "mcp-server"]
-   * Combines with other filters (e.g., modelSlug) for further narrowing.
-   */
-  slugs: z
-    .array(z.string())
-    .optional()
-    .describe(
-      'Fetch specific entries by exact slug match. Example: ["github", "nextjs", "mcp-server"]. More efficient than search for known slugs. Combines with other filters.',
-    ),
-  /** Relation field names to expand with referenced entry data */
+    .describe('Exact custom-field filter. Example: { category: "frameworks", badge_label: "SDK" }. All conditions are AND-combined.'),
+
+  /** Relation field names to expand with referenced entry data. Ignored when compact=true. */
   expand: z
     .array(z.string())
     .optional()
-    .describe('Relation field names to expand (e.g., ["author", "category"]). Note: ignored when compact=true since compact mode does not return relation data.'),
-  /** When true, returns minimal: id, sl, st, t, langs only. Drops dates, model ref, custom fields. ~65% token reduction. */
+    .describe('Expand relation fields with referenced entry data. Example: ["author","category"]. Ignored when compact=true.'),
+
+  /**
+   * When true, returns minimal fields: id, slug, status, title, languages only.
+   * Drops dates, model ref, and custom fields. ~65% token reduction.
+   * Use for browsing / listing. Fetch full entry with getContentEntry when needed.
+   */
   compact: z
     .boolean()
     .optional()
     .default(false)
-    .describe(
-      "When true, returns minimal: id, sl, st, t, langs only. Drops dates, model ref, custom fields. ~65% token reduction.",
-    ),
-  /** Page number (1-indexed) */
+    .describe("true = minimal response (id, slug, status, title, languages only). ~65% token reduction. Use for browsing."),
+
+  /** Page number (1-indexed, default: 1) */
   page: z.number().min(1).default(1).describe("Page number (1-indexed)"),
-  /** Results per page */
+  /** Results per page (max 50, default: 20) */
   limit: z.number().min(1).max(50).default(20).describe("Results per page (max 50)"),
 });
 export type ListContentEntriesInput = z.input<typeof listContentEntriesInput>;
