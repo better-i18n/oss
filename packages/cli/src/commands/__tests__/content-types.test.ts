@@ -189,9 +189,8 @@ describe("generateTypeScript", () => {
 
   it("generates valid TypeScript with imports", () => {
     const output = generateTypeScript(sampleModels);
-    expect(output).toContain(
-      'import type { ContentEntry, ContentEntryListItem } from "@better-i18n/sdk"',
-    );
+    expect(output).toContain('import { createClient');
+    expect(output).toContain("ContentEntry, ContentEntryListItem");
   });
 
   it("generates auto-generated header", () => {
@@ -259,9 +258,6 @@ describe("generateTypeScript", () => {
     ];
     const output = generateTypeScript(modelsWithRelation);
     expect(output).toContain("RelationValue");
-    expect(output).toContain(
-      "import type { ContentEntry, ContentEntryListItem, RelationValue }",
-    );
   });
 
   it("does not import RelationValue when no relation fields", () => {
@@ -325,5 +321,55 @@ describe("generateTypeScript", () => {
     expect(output).not.toMatch(/^\s+title:/m);
     expect(output).not.toMatch(/^\s+body:/m);
     expect(output).not.toMatch(/^\s+slug:/m);
+  });
+
+  // ── Typed Client Generation ─────────────────────────────────────
+
+  it("generates TypedContentClient interface with from() overloads", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain("export interface TypedContentClient");
+    expect(output).toContain(
+      'from(model: "blog-posts"): ContentQueryBuilder<ContentEntryListItem<BlogPostsFields>>',
+    );
+    expect(output).toContain(
+      'from(model: "faq"): ContentQueryBuilder<ContentEntryListItem<FaqFields>>',
+    );
+    // Fallback for unknown models
+    expect(output).toContain("from(model: string): ContentQueryBuilder;");
+  });
+
+  it("generates getEntries() overloads per model", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain(
+      'getEntries(model: "blog-posts", opts?: ListEntriesOptions): Promise<PaginatedResponse<BlogPostsListItem>>',
+    );
+    expect(output).toContain(
+      'getEntries(model: "faq", opts?: ListEntriesOptions): Promise<PaginatedResponse<FaqListItem>>',
+    );
+  });
+
+  it("generates getEntry() overloads per model", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain(
+      'getEntry(model: "blog-posts", slug: string',
+    );
+    expect(output).toContain("Promise<BlogPosts>");
+    expect(output).toContain("Promise<Faq>");
+  });
+
+  it("generates createContentClient factory function", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain(
+      "export function createContentClient(config: ClientConfig): TypedContentClient",
+    );
+    expect(output).toContain(
+      "return createClient(config) as unknown as TypedContentClient",
+    );
+  });
+
+  it("includes usage example in JSDoc", () => {
+    const output = generateTypeScript(sampleModels);
+    expect(output).toContain('client.getEntries("blog-posts")');
+    expect(output).toContain("BlogPostsListItem");
   });
 });

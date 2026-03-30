@@ -101,11 +101,20 @@ export function generateTypeScript(models: ContentModel[]): string {
   lines.push(" */");
   lines.push("");
 
-  // Imports
-  const imports = ["ContentEntry", "ContentEntryListItem"];
-  if (hasRelations) imports.push("RelationValue");
+  // Imports — runtime createClient + all types for the typed factory
+  const typeImports = [
+    "ContentEntry",
+    "ContentEntryListItem",
+    "ClientConfig",
+    "PaginatedResponse",
+    "ListEntriesOptions",
+  ];
+  if (hasRelations) typeImports.push("RelationValue");
   lines.push(
-    `import type { ${imports.join(", ")} } from "@better-i18n/sdk";`,
+    `import { createClient, type ContentQueryBuilder } from "@better-i18n/sdk";`,
+  );
+  lines.push(
+    `import type { ${typeImports.join(", ")} } from "@better-i18n/sdk";`,
   );
   lines.push("");
 
@@ -164,6 +173,76 @@ export function generateTypeScript(models: ContentModel[]): string {
     const pascal = slugToPascal(model.slug);
     lines.push(`  "${model.slug}": ${pascal}Fields;`);
   }
+  lines.push("}");
+  lines.push("");
+
+  // ── Typed Client Interface ──────────────────────────────────────
+  lines.push("// ── Typed Client ─────────────────────────────────────────────────");
+  lines.push("");
+  lines.push("/** Typed content client — model slugs auto-resolve to their field types. */");
+  lines.push("export interface TypedContentClient {");
+
+  // from() overloads per model
+  for (const model of models) {
+    const pascal = slugToPascal(model.slug);
+    lines.push(
+      `  from(model: "${model.slug}"): ContentQueryBuilder<ContentEntryListItem<${pascal}Fields>>;`,
+    );
+  }
+  lines.push(
+    "  from(model: string): ContentQueryBuilder;",
+  );
+  lines.push("");
+
+  // getEntries() overloads per model
+  for (const model of models) {
+    const pascal = slugToPascal(model.slug);
+    lines.push(
+      `  getEntries(model: "${model.slug}", opts?: ListEntriesOptions): Promise<PaginatedResponse<${pascal}ListItem>>;`,
+    );
+  }
+  lines.push(
+    "  getEntries(model: string, opts?: ListEntriesOptions): Promise<PaginatedResponse<ContentEntryListItem>>;",
+  );
+  lines.push("");
+
+  // getEntry() overloads per model
+  for (const model of models) {
+    const pascal = slugToPascal(model.slug);
+    lines.push(
+      `  getEntry(model: "${model.slug}", slug: string, opts?: { language?: string }): Promise<${pascal}>;`,
+    );
+  }
+  lines.push(
+    "  getEntry(model: string, slug: string, opts?: { language?: string }): Promise<ContentEntry>;",
+  );
+
+  lines.push("}");
+  lines.push("");
+
+  // createContentClient factory
+  lines.push("/**");
+  lines.push(" * Create a typed content client.");
+  lines.push(" * All model methods are pre-typed — no generics needed.");
+  lines.push(" *");
+  lines.push(" * @example");
+  lines.push(" * ```typescript");
+  lines.push(` * const client = createContentClient({ project: "acme/landing", apiKey: "..." });`);
+  if (models.length > 0) {
+    const first = models[0];
+    lines.push(
+      ` * const { items } = await client.getEntries("${first.slug}");`,
+    );
+    lines.push(
+      ` * // items[0] is fully typed as ${slugToPascal(first.slug)}ListItem`,
+    );
+  }
+  lines.push(" * ```");
+  lines.push(" */");
+  lines.push(
+    "export function createContentClient(config: ClientConfig): TypedContentClient {",
+  );
+  lines.push("  return createClient(config) as unknown as TypedContentClient;");
   lines.push("}");
   lines.push("");
 
