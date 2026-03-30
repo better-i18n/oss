@@ -15,6 +15,7 @@ import {
   checkUnusedCommand,
 } from "./commands/check.js";
 import { doctorCommand } from "./commands/doctor.js";
+import { contentTypesCommand } from "./commands/content-types.js";
 
 program
   .name("better-i18n")
@@ -88,6 +89,15 @@ program
   .option("--skip-sync", "Skip remote CDN comparison")
   .option("--verbose", "Show detailed output")
   .action(doctorCommand);
+
+program
+  .command("content:types")
+  .description("Generate TypeScript types from content models (like supabase gen types)")
+  .option("-p, --project <org/name>", "Project identifier (default: from i18n.config.ts)")
+  .option("--api-key <key>", "Content API key (default: BETTER_I18N_API_KEY env var)")
+  .option("-o, --output <path>", "Output file path (default: src/content-types.ts)")
+  .option("-d, --dir <path>", "Directory to scan for config (default: current directory)")
+  .action(contentTypesCommand);
 
 program.parse();
 
