@@ -136,7 +136,7 @@ EXAMPLES:
       const result = await client.mcpContent.listContentEntries.query({
         orgSlug: workspaceId,
         projectSlug,
-        modelSlug: input.modelSlug,
+        models: input.modelSlug,
         search: input.search,
         searchLanguages: input.searchLanguages,
         searchInBody: input.searchInBody,
