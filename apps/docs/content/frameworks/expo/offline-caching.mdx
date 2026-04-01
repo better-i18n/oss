@@ -214,5 +214,45 @@ The SDK automatically detects common misconfigurations and logs warnings:
 | Neither `storage` nor `staticData` | **CRITICAL:** "Zero offline fallback — will cause App Store rejection" |
 | `staticData` has empty objects | "Bundled fallback will not work for these locales" |
 | `staticData` missing namespaces vs CDN | "Missing N namespaces — won't be available offline" |
+| `useDeviceLocale: true` without `localeKey` | "User's in-app language choice will be lost on every restart" |
 
 These warnings appear in your development console to help you catch issues before submitting to the App Store.
+
+## Locale Detection Patterns
+
+There are two ways to handle initial locale detection. Choose one:
+
+### Pattern 1: SDK-managed (recommended)
+
+The SDK detects the device language on first launch, then persists the user's choice via `localeKey`.
+
+```ts
+await initBetterI18n({
+  project: 'acme/app',
+  i18n,
+  useDeviceLocale: true, // [!code highlight]
+  storage: storageAdapter(mmkv, { localeKey: '@app:locale' }), // [!code highlight]
+});
+```
+
+On first launch: device language is used. After the user changes language in-app, that choice is saved and used on subsequent launches.
+
+### Pattern 2: App-managed
+
+Your app handles locale detection and persistence. Pass the resolved locale as `defaultLocale`.
+
+```ts
+const locale = myStorage.getLanguage() || getDeviceLanguage() || 'en';
+
+await initBetterI18n({
+  project: 'acme/app',
+  i18n,
+  useDeviceLocale: false, // [!code highlight]
+  defaultLocale: locale, // [!code highlight]
+  storage: storageAdapter(mmkv),
+});
+```
+
+<Callout type="warn">
+  Do not use `useDeviceLocale: true` without `localeKey`. Without locale persistence, the device language overrides the user's in-app choice on every app restart.
+</Callout>
