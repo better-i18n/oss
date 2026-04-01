@@ -379,6 +379,34 @@ export interface CompactGetPendingChangesResponse {
   pub_dst: "github" | "cdn" | "none";
   /** Reason if cannot publish */
   no_pub_rsn?: string;
+  /** Recent sync/publish activity (last 3 jobs) */
+  recent?: CompactRecentActivityItem[];
+}
+
+/**
+ * Compact recent activity item.
+ *
+ * Field Mappings:
+ * - tp: type
+ * - st: status
+ * - at: completedAt
+ * - nk: stats.newKeys
+ * - uk: stats.updatedKeys
+ * - tf: stats.totalFiles
+ */
+export interface CompactRecentActivityItem {
+  /** Job type: publish | sync | import */
+  tp: string;
+  /** Job status */
+  st: string;
+  /** Completed at (ISO) */
+  at: string | null;
+  /** New keys */
+  nk: number;
+  /** Updated keys */
+  uk: number;
+  /** Total files */
+  tf: number;
 }
 
 // ============================================================================
