@@ -540,6 +540,29 @@ export interface GetPendingChangesResponse {
   publishDestination: "github" | "cdn" | "none";
   /** Reason if cannot publish */
   cannotPublishReason?: string;
+  /** Recent sync/publish activity for context (last 3 jobs) */
+  recentActivity?: RecentActivityItem[];
+}
+
+/**
+ * A recent sync or publish job for contextual information.
+ */
+export interface RecentActivityItem {
+  /** Job type */
+  type: "publish" | "sync" | "import";
+  /** Job status */
+  status: string;
+  /** When the job completed */
+  completedAt: string | null;
+  /** Job stats */
+  stats: {
+    /** New keys imported */
+    newKeys: number;
+    /** Updated keys */
+    updatedKeys: number;
+    /** Total files processed */
+    totalFiles: number;
+  };
 }
 
 /**
