@@ -13,6 +13,9 @@ let mockMessages: Record<string, Record<string, string>> = {
   common: { welcome: "Welcome", goodbye: "Goodbye" },
 };
 
+/** Per-locale messages override. When set, getMessages returns locale-specific data. */
+let mockMessagesByLocale: Record<string, Record<string, Record<string, string>> | null> = {};
+
 let mockLanguages: { code: string }[] = [{ code: "en" }, { code: "tr" }];
 
 // ---------------------------------------------------------------------------
@@ -22,7 +25,15 @@ let mockLanguages: { code: string }[] = [{ code: "en" }, { code: "tr" }];
 
 mock.module("@better-i18n/core", () => ({
   createI18nCore: (_config: unknown) => ({
-    getMessages: async (_locale: string) => mockMessages,
+    getMessages: async (locale: string) => {
+      // If per-locale override exists, use it (null = throw like CDN 404)
+      if (locale in mockMessagesByLocale) {
+        const data = mockMessagesByLocale[locale];
+        if (data === null) throw new Error(`CDN: locale "${locale}" not found`);
+        return data;
+      }
+      return mockMessages;
+    },
     getLanguages: async () => mockLanguages,
   }),
   normalizeLocale: (l: string) => l.toLowerCase(),
@@ -94,6 +105,7 @@ describe("initBetterI18n", () => {
       auth: { login: "Sign In", logout: "Sign Out" },
       common: { welcome: "Welcome", goodbye: "Goodbye" },
     };
+    mockMessagesByLocale = {};
     mockLanguages = [{ code: "en" }, { code: "tr" }];
   });
 
@@ -497,6 +509,99 @@ describe("initBetterI18n", () => {
       });
 
       expect(listener).not.toHaveBeenCalled();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Unsupported locale fallback
+  // -------------------------------------------------------------------------
+
+  describe("unsupported locale fallback", () => {
+    it("falls back to defaultLocale when device locale is not in supported languages", async () => {
+      const { i18n, mocks } = createMockI18n();
+
+      // Project only has en and tr
+      mockLanguages = [{ code: "en" }, { code: "tr" }];
+      // Spanish returns empty (unsupported locale)
+      mockMessagesByLocale["es"] = {};
+      // English has real translations
+      mockMessagesByLocale["en"] = {
+        auth: { login: "Sign In" },
+        common: { welcome: "Welcome" },
+      };
+
+      await initBetterI18n({
+        project: PROJECT,
+        i18n,
+        storage: createMemoryStorage(),
+        defaultLocale: "en",
+        useDeviceLocale: false,
+        i18nextOptions: {
+          lng: "es", // simulate device locale override
+        },
+      });
+
+      const initOpts = mocks.init.mock.calls[0]![0] as Record<string, unknown>;
+      // Should have fallen back to "en", not "es"
+      expect(initOpts["lng"]).toBe("en");
+
+      // Resources should contain English translations
+      const resources = initOpts["resources"] as Record<string, Record<string, unknown>>;
+      expect(resources["en"]).toBeDefined();
+      expect(resources["en"]!["translation"]).toEqual(
+        mockMessagesByLocale["en"]
+      );
+    });
+
+    it("loads defaultLocale as fallback when effective locale differs", async () => {
+      const { i18n, mocks } = createMockI18n();
+
+      mockLanguages = [{ code: "en" }, { code: "tr" }, { code: "de" }];
+      const trMessages = { common: { welcome: "Hoşgeldiniz" } };
+      const enMessages = { common: { welcome: "Welcome" } };
+      mockMessagesByLocale["tr"] = trMessages;
+      mockMessagesByLocale["en"] = enMessages;
+
+      await initBetterI18n({
+        project: PROJECT,
+        i18n,
+        storage: createMemoryStorage(),
+        defaultLocale: "en",
+        useDeviceLocale: false,
+        i18nextOptions: { lng: "tr" },
+      });
+
+      const initOpts = mocks.init.mock.calls[0]![0] as Record<string, unknown>;
+      const resources = initOpts["resources"] as Record<string, Record<string, unknown>>;
+
+      // Both tr (effective) and en (fallback) should be in resources
+      expect(resources["tr"]).toBeDefined();
+      expect(resources["en"]).toBeDefined();
+      expect(resources["tr"]!["translation"]).toEqual(trMessages);
+      expect(resources["en"]!["translation"]).toEqual(enMessages);
+    });
+
+    it("strips lng from i18nextOptions to prevent override of SDK-computed locale", async () => {
+      const { i18n, mocks } = createMockI18n();
+
+      mockLanguages = [{ code: "en" }, { code: "tr" }];
+
+      await initBetterI18n({
+        project: PROJECT,
+        i18n,
+        storage: createMemoryStorage(),
+        defaultLocale: "en",
+        i18nextOptions: {
+          lng: "es", // unsupported — should be stripped
+          compatibilityJSON: "v4", // should be preserved
+        },
+      });
+
+      const initOpts = mocks.init.mock.calls[0]![0] as Record<string, unknown>;
+      // lng should be "en" (fallback), not "es"
+      expect(initOpts["lng"]).toBe("en");
+      // compatibilityJSON should be preserved
+      expect(initOpts["compatibilityJSON"]).toBe("v4");
     });
   });
 });
