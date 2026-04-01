@@ -12,8 +12,9 @@ import {
   getAlternateLinks,
   getCanonicalLink,
   buildOgImageUrl,
+  formatMetaTags,
+  truncateTitle,
 } from "@/lib/meta";
-import { getCachedLocales } from "@/lib/locales";
 import { getLocaleTier } from "@/seo/locale-tiers";
 import {
   getEducationalPageStructuredData,
@@ -21,6 +22,8 @@ import {
   formatStructuredData,
 } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import { getMessages } from "@better-i18n/use-intl/server";
+import { i18nConfig } from "@/i18n.config";
 
 const loadFeaturePage = createServerFn({ method: "GET" })
   .inputValidator((data: { slug: string; locale: string }) => data)
@@ -37,18 +40,21 @@ const loadRelatedFeatures = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/$locale/features/$slug")({
   loader: async ({ params, context }) => {
-    const [page, relatedFeatures] = await Promise.all([
+    const [page, relatedFeatures, allMessages] = await Promise.all([
       loadFeaturePage({
         data: { slug: params.slug, locale: params.locale },
       }),
       loadRelatedFeatures({
         data: { slug: params.slug, locale: params.locale },
       }),
+      getMessages({ project: i18nConfig.project, locale: context.locale }),
     ]);
     if (!page) {
       throw notFound();
     }
-    return { page, locale: params.locale, relatedFeatures };
+    const { filterMessages } = await import("@/lib/page-namespaces");
+    const messages = filterMessages(allMessages, ["breadcrumbs"]);
+    return { page, locale: params.locale, relatedFeatures, messages };
   },
   head: ({ loaderData }) => {
     const page = loaderData?.page;
@@ -68,56 +74,36 @@ export const Route = createFileRoute("/$locale/features/$slug")({
       url: canonicalUrl,
     });
 
+    const msgs = (loaderData?.messages ?? {}) as Record<string, string>;
     const breadcrumbScripts = formatStructuredData(
       getBreadcrumbSchema([
-        { name: "Home", url: `${SITE_URL}/${locale}/` },
-        { name: "Features", url: `${SITE_URL}/${locale}/features/` },
+        { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },
+        { name: msgs["breadcrumbs.features"] ?? "Features", url: `${SITE_URL}/${locale}/features/` },
         { name: page?.title || "Feature", url: canonicalUrl },
       ]),
     );
 
+    const meta = {
+      title: truncateTitle(`${page?.title || "Feature"} | Better i18n`),
+      description: excerpt,
+      ogTitle: page?.title || "Feature",
+      ogDescription: excerpt,
+      ogImage: dynamicOgImage,
+      ogType: "website" as const,
+      canonicalUrl,
+    };
+
+    const metaTags = formatMetaTags(meta, {
+      locale,
+      noindex: getLocaleTier(locale) === "tier3",
+    });
+
+    const keywordTags = page?.targetKeywords
+      ? [{ name: "keywords", content: page.targetKeywords }]
+      : [];
+
     return {
-      meta: [
-        { title: `${page?.title || "Feature"} - Better i18n` },
-        { name: "description", content: excerpt },
-        { property: "og:title", content: page?.title || "" },
-        { property: "og:description", content: excerpt },
-        { property: "og:image", content: dynamicOgImage },
-        {
-          property: "og:image:alt",
-          content: page?.title || "Feature",
-        },
-        { property: "og:image:width", content: "1200" },
-        { property: "og:image:height", content: "630" },
-        { property: "og:type", content: "website" },
-        { property: "og:url", content: canonicalUrl },
-        { property: "og:site_name", content: "Better i18n" },
-        { property: "og:locale", content: locale },
-        ...getCachedLocales()
-          .filter((loc) => loc !== locale)
-          .map((loc) => ({
-            property: "og:locale:alternate",
-            content: loc,
-          })),
-        { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:site", content: "@betteri18n" },
-        { name: "twitter:title", content: page?.title || "" },
-        { name: "twitter:description", content: excerpt },
-        { name: "twitter:image", content: dynamicOgImage },
-        {
-          name: "twitter:image:alt",
-          content: page?.title || "Feature",
-        },
-        {
-          name: "robots",
-          content: getLocaleTier(locale) === "tier3"
-            ? "noindex, follow"
-            : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
-        },
-        ...(page?.targetKeywords
-          ? [{ name: "keywords", content: page.targetKeywords }]
-          : []),
-      ],
+      meta: [...metaTags, ...keywordTags],
       links: [
         ...getAlternateLinks(pathname),
         getCanonicalLink(locale, pathname),
