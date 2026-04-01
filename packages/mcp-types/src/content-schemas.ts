@@ -140,6 +140,26 @@ export const listContentEntriesInput = projectIdentifierSchema.extend({
     .describe('Text search across title, slug, and text fields. Array = OR logic: any match returns entry.'),
 
   /**
+   * Limit search scope to specific language codes.
+   * Default: searches across all languages.
+   * Example: ["tr", "de"] → only search in Turkish and German translations.
+   */
+  searchLocales: z
+    .array(z.string())
+    .optional()
+    .describe('Limit search to these locales. Default: all languages. Example: ["tr","de"] → search only Turkish and German.'),
+
+  /**
+   * Also search in body markdown content.
+   * Default: false (only title, slug, and text custom fields are searched).
+   * Requires modelSlug to be set — body search across all models is not supported.
+   */
+  includeBody: z
+    .boolean()
+    .optional()
+    .describe('Also search body markdown content. Default: false. Only effective when modelSlug is provided.'),
+
+  /**
    * Exact custom-field value filter.
    * Key = field name as defined in the model, value = exact match string.
    * Example: { category: "frameworks", status: "guide" }

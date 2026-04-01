@@ -17,10 +17,7 @@ import type { Tool } from "../types/index.js";
 
 const translationValue = z.object({
   title: z.string(),
-  excerpt: z.string().optional(),
   bodyMarkdown: z.string().optional(),
-  metaTitle: z.string().optional(),
-  metaDescription: z.string().optional(),
   customFields: customFieldsSchema,
 });
 
@@ -28,10 +25,7 @@ const inputSchema = projectSchema.extend({
   modelSlug: z.string().min(1),
   title: z.string().min(1),
   slug: z.string().min(1),
-  excerpt: z.string().optional(),
   bodyMarkdown: z.string().optional(),
-  featuredImage: z.string().url().optional().nullable(),
-  tags: z.array(z.string()).optional(),
   status: z.enum(["draft", "published"]).optional(),
   customFields: customFieldsSchema,
   translations: z.record(z.string(), translationValue).optional(),
@@ -41,7 +35,7 @@ export const createContentEntry: Tool = {
   definition: {
     name: "createContentEntry",
     description: `Create a new content entry with source language translation.
-Top-level title/bodyMarkdown/excerpt and customFields are stored as the project's SOURCE LANGUAGE text.
+Top-level title/bodyMarkdown and customFields are stored as the project's SOURCE LANGUAGE text.
 Check getProject response's 'sl' field to know which language to write.
 
 WHEN TO USE THIS vs. bulkCreateEntries:
@@ -93,22 +87,9 @@ EXAMPLE (project sl='tr', with localized custom field):
           type: "string",
           description: "URL slug for the entry — this is the UNIVERSAL identifier shared across all languages (used in the CMS, not language-specific). For per-language URL slugs, use a localized custom field (e.g., 'localized_slug' with localized=true) and set it via translations.{lang}.customFields.",
         },
-        excerpt: {
-          type: "string",
-          description: "Short excerpt or summary",
-        },
         bodyMarkdown: {
           type: "string",
           description: "Content body in Markdown format (supports GFM: tables, strikethrough, task lists). WARNING: Do NOT start with a # H1 heading — the entry title is already rendered as the page H1 by the platform. Starting with # Title creates a duplicate visible heading. Begin with an introductory paragraph or ## H2 section instead.",
-        },
-        featuredImage: {
-          type: "string",
-          description: "Featured image URL",
-        },
-        tags: {
-          type: "array",
-          items: { type: "string" },
-          description: "Tags for categorization",
         },
         status: {
           type: "string",
@@ -121,7 +102,7 @@ EXAMPLE (project sl='tr', with localized custom field):
         },
         translations: {
           type: "object",
-          description: "Target language translations — { langCode: { title, bodyMarkdown, excerpt, metaTitle, metaDescription, customFields } }",
+          description: "Target language translations — { langCode: { title, bodyMarkdown, customFields } }",
         },
       },
       required: ["project", "modelSlug", "title", "slug"],

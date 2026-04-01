@@ -17,10 +17,7 @@ import type { Tool } from "../types/index.js";
 
 const translationValue = z.object({
   title: z.string().optional(),
-  excerpt: z.string().optional(),
   bodyMarkdown: z.string().optional(),
-  metaTitle: z.string().optional(),
-  metaDescription: z.string().optional(),
   customFields: customFieldsSchema,
 });
 
@@ -29,14 +26,8 @@ const inputSchema = projectSchema.extend({
   languageCode: z.string().optional(),
   title: z.string().optional(),
   slug: z.string().optional(),
-  excerpt: z.string().optional(),
   bodyMarkdown: z.string().optional(),
-  metaTitle: z.string().optional(),
-  metaDescription: z.string().optional(),
-  featuredImage: z.string().url().optional().nullable(),
-  tags: z.array(z.string()).optional(),
   status: z.enum(["draft", "published", "archived"]).optional(),
-  translationStatus: z.enum(["draft", "published"]).optional(),
   customFields: customFieldsSchema,
   translations: z.record(z.string(), translationValue).optional(),
 });
@@ -73,10 +64,6 @@ CORRECT — multiple languages at once (mode 2):
 Modes 1 & 2 can be combined. All fields are optional — send only what changed.
 Language codes (languageCode and translation keys) are normalized to lowercase automatically (e.g., "EN" → "en").
 
-TRANSLATION STATUS:
-- By default, translations saved via this tool are set to "published" (save = publish for content workflow).
-- Use translationStatus: "draft" to save a translation without publishing it immediately.
-
 EXAMPLE multi-language:
 {
   "entryId": "...",
@@ -84,14 +71,6 @@ EXAMPLE multi-language:
     "tr": { "title": "Merhaba Dünya", "bodyMarkdown": "# Merhaba" },
     "de": { "title": "Hallo Welt" }
   }
-}
-
-EXAMPLE save as draft (do not publish yet):
-{
-  "entryId": "...",
-  "languageCode": "tr",
-  "title": "Taslak Başlık",
-  "translationStatus": "draft"
 }
 
 EXAMPLE metadata-only:
@@ -120,40 +99,14 @@ EXAMPLE metadata-only:
           type: "string",
           description: "Updated URL slug — UNIVERSAL identifier shared across all languages. For per-language URL slugs, use a localized custom field via translations.{lang}.customFields instead.",
         },
-        excerpt: {
-          type: "string",
-          description: "Updated excerpt",
-        },
         bodyMarkdown: {
           type: "string",
           description: "Updated content body in Markdown format (supports GFM: tables, strikethrough, task lists). WARNING: Do NOT start with a # H1 heading — the entry title is already rendered as the page H1 by the platform. Starting with # Title creates a duplicate visible heading. Begin with an introductory paragraph or ## H2 section instead.",
-        },
-        metaTitle: {
-          type: "string",
-          description: "SEO meta title",
-        },
-        metaDescription: {
-          type: "string",
-          description: "SEO meta description",
-        },
-        featuredImage: {
-          type: "string",
-          description: "Updated featured image URL",
-        },
-        tags: {
-          type: "array",
-          items: { type: "string" },
-          description: "Updated tags",
         },
         status: {
           type: "string",
           enum: ["draft", "published", "archived"],
           description: "Updated entry status",
-        },
-        translationStatus: {
-          type: "string",
-          enum: ["draft", "published"],
-          description: "Translation status override. Default: \"published\" (save = publish). Set to \"draft\" to save without publishing.",
         },
         customFields: {
           type: "object",
@@ -161,7 +114,7 @@ EXAMPLE metadata-only:
         },
         translations: {
           type: "object",
-          description: "Multiple language translations — { langCode: { title, bodyMarkdown, excerpt, metaTitle, metaDescription, customFields } }",
+          description: "Multiple language translations — { langCode: { title, bodyMarkdown, customFields } }",
         },
       },
       required: ["project", "entryId"],
