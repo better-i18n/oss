@@ -1,0 +1,119 @@
+---
+title: pull
+description: Download translations from CDN to local JSON files for offline fallback
+icon: Download
+---
+
+Download translations from the Better i18n CDN to local JSON files. Essential for mobile apps where bundled translations serve as the offline safety net.
+
+## Why `pull`?
+
+Mobile apps (Expo, React Native, Swift, Flutter) depend on CDN translations at runtime. If the CDN is unreachable — airplane mode, slow network, or App Store Review environment — the app needs a fallback. `pull` downloads translations so you can bundle them as `staticData`.
+
+```
+CDN available    → Fresh translations (best case)
+CDN unavailable  → Persistent cache (MMKV/AsyncStorage)
+First launch, no cache, no network → staticData from pull ✅
+```
+
+<Callout type="warn">
+  **App Store Review risk:** Apple reviewers may test your app in environments where external CDN calls timeout. Without bundled translations, your app shows raw keys like `common.button.save` — and gets rejected as "incomplete" under Guideline 2.1.
+</Callout>
+
+## Usage
+
+```bash
+# Auto-detect project from i18n.config.ts or initBetterI18n() call
+better-i18n pull
+
+# Explicit project (no config file needed)
+better-i18n pull -p acme/my-app
+
+# Custom output directory
+better-i18n pull -o ./src/locales
+
+# Download specific locales only
+better-i18n pull -l en,tr,de
+```
+
+### Example output
+
+```text
+✔ Project: acme/my-app
+✔ Manifest: 3 languages (en, de, tr)
+✔ Downloaded 3 locale(s) to locales/
+
+  ✓ en      1867 keys  145.8 KB
+  ✓ de      1742 keys  146.3 KB
+  ✓ tr      1741 keys  131.0 KB
+
+  Use as offline fallback in your app:
+    staticData: { en: require('./locales/en.json'), de: require('./locales/de.json'), tr: require('./locales/tr.json') }
+```
+
+## Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-p, --project <org/name>` | Project identifier | From `i18n.config.ts` |
+| `-o, --output <path>` | Output directory for JSON files | `./locales` (or config `pull.output`) |
+| `-l, --locales <codes>` | Comma-separated locale codes | All languages from manifest |
+| `-d, --dir <path>` | Directory to scan for config | Current directory |
+| `--verbose` | Show per-locale download details | Off |
+
+## Configuration
+
+Add a `pull` section to your `i18n.config.ts` to set defaults:
+
+```ts title="i18n.config.ts"
+export const i18nConfig = {
+  project: "acme/my-app",
+  defaultLocale: "en",
+  pull: { // [!code highlight]
+    output: "./locales", // [!code highlight]
+    locales: ["en", "tr", "de"], // [!code highlight]
+  }, // [!code highlight]
+};
+```
+
+CLI flags always override config values.
+
+## Mobile Workflow
+
+### Expo / React Native
+
+After pulling, import the JSON files as `staticData`:
+
+```ts title="lib/i18n.ts"
+import en from './locales/en.json';
+import tr from './locales/tr.json';
+
+await initBetterI18n({
+  project: 'acme/my-app',
+  i18n,
+  storage: storageAdapter(new MMKV()),
+  staticData: { en, tr }, // [!code highlight]
+});
+```
+
+### CI/CD Integration
+
+Add `pull` to your build pipeline so bundled translations stay in sync:
+
+```bash title="eas-build-pre-install.sh or CI script"
+npx @better-i18n/cli pull
+```
+
+<Callout type="tip">
+  Run `pull` before every build to ensure your bundled translations match what's on CDN. This is especially important if your team updates translations frequently through the dashboard.
+</Callout>
+
+## Project Detection
+
+The `pull` command finds your project in this order:
+
+1. `-p` flag (highest priority)
+2. `i18n.config.ts` in the target directory
+3. Source file scan for `initBetterI18n()` or `createI18n()` calls
+
+This means Expo projects work without a config file — the CLI finds `project: 'acme/my-app'` from your `initBetterI18n()` call automatically.

@@ -7,7 +7,7 @@
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
-import type { LintConfig, ProjectContext } from "../analyzer/types.js";
+import type { LintConfig, ProjectContext, PullConfig } from "../analyzer/types.js";
 
 /**
  * Find and parse i18n configuration in workspace
@@ -133,16 +133,27 @@ function findConfigFile(searchRoot: string): string | null {
     return foundConfig;
   }
 
-  // Search for createI18n import as fallback
+  // Search for createI18n or initBetterI18n import as fallback
   for (const file of files) {
     try {
       const content = readFileSync(file, "utf-8");
 
+      // Match: import { createI18n } from '@better-i18n/next' or '@better-i18n/core'
       if (
         /import\s+.*createI18n.*from\s+['"]@better-i18n\/(next|core)['"]/.test(
           content,
         ) &&
         /createI18n\s*\(/.test(content)
+      ) {
+        return file;
+      }
+
+      // Match: import { initBetterI18n } from '@better-i18n/expo'
+      if (
+        /import\s+.*initBetterI18n.*from\s+['"]@better-i18n\/expo['"]/.test(
+          content,
+        ) &&
+        /initBetterI18n\s*\(/.test(content)
       ) {
         return file;
       }
@@ -169,6 +180,7 @@ function parseI18nConfig(filePath: string): ProjectContext | null {
     const localeMatch = content.match(/defaultLocale[:\s=]*['"]([^'"]+)['"]/);
     const cdnMatch = content.match(/cdnBaseUrl[:\s=]*['"]([^'"]+)['"]/);
     const lint = parseLintConfig(content);
+    const pull = parsePullConfig(content);
 
     return {
       workspaceId,
@@ -176,6 +188,7 @@ function parseI18nConfig(filePath: string): ProjectContext | null {
       defaultLocale: localeMatch?.[1] || "en",
       cdnBaseUrl: cdnMatch?.[1],
       lint,
+      pull,
     };
   }
 
@@ -189,6 +202,7 @@ function parseI18nConfig(filePath: string): ProjectContext | null {
     const localeMatch = content.match(/defaultLocale:\s*['"]([^'"]+)['"]/);
     const cdnMatch = content.match(/cdnBaseUrl:\s*['"]([^'"]+)['"]/);
     const lint = parseLintConfig(content);
+    const pull = parsePullConfig(content);
 
     return {
       workspaceId,
@@ -196,6 +210,7 @@ function parseI18nConfig(filePath: string): ProjectContext | null {
       defaultLocale: localeMatch?.[1] || "en",
       cdnBaseUrl: cdnMatch?.[1],
       lint,
+      pull,
     };
   }
 
@@ -207,6 +222,7 @@ function parseI18nConfig(filePath: string): ProjectContext | null {
 
   if (workspaceMatch && projectSlugMatch) {
     const lint = parseLintConfig(content);
+    const pull = parsePullConfig(content);
 
     return {
       workspaceId: workspaceMatch[1],
@@ -214,6 +230,7 @@ function parseI18nConfig(filePath: string): ProjectContext | null {
       defaultLocale: localeMatch?.[1] || "en",
       cdnBaseUrl: cdnMatch?.[1],
       lint,
+      pull,
     };
   }
 
@@ -363,6 +380,44 @@ function parseLintConfig(content: string): LintConfig | undefined {
     }
     if (Object.keys(rules).length > 0) {
       config.rules = rules as Record<string, "error" | "warning" | "off">;
+    }
+  }
+
+  return Object.keys(config).length > 0 ? config : undefined;
+}
+
+/**
+ * Parse pull configuration from config file content.
+ *
+ * Supports:
+ * ```ts
+ * pull: {
+ *   output: "./locales",
+ *   locales: ["en", "tr"],
+ * }
+ * ```
+ */
+function parsePullConfig(content: string): PullConfig | undefined {
+  if (!content.includes("pull:") && !content.includes("pull =")) {
+    return undefined;
+  }
+
+  const config: PullConfig = {};
+
+  // Extract output path: pull: { output: "./locales" }
+  // Look for output inside a pull block
+  const pullBlockMatch = content.match(/pull:\s*\{([^}]+)\}/s);
+  if (pullBlockMatch) {
+    const pullBlock = pullBlockMatch[1];
+
+    const outputMatch = pullBlock.match(/output:\s*['"]([^'"]+)['"]/);
+    if (outputMatch) {
+      config.output = outputMatch[1];
+    }
+
+    const localesMatch = extractBalancedArray(pullBlock, "locales");
+    if (localesMatch) {
+      config.locales = parseStringArray(localesMatch);
     }
   }
 

@@ -6,6 +6,7 @@
   "pages": [
     "index",
     "---Commands---",
+    "pull",
     "scan",
     "check",
     "sync",
