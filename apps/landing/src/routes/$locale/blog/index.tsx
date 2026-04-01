@@ -70,9 +70,10 @@ export const Route = createFileRoute("/$locale/blog/")({
       }),
     });
 
+    const msgs = (loaderData?.messages ?? {}) as Record<string, string>;
     const breadcrumbSchema = getBreadcrumbSchema([
-      { name: "Home", url: `${SITE_URL}/${locale}/` },
-      { name: "Blog", url: `${SITE_URL}/${locale}/blog/` },
+      { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },
+      { name: msgs["breadcrumbs.blog"] ?? "Blog", url: `${SITE_URL}/${locale}/blog/` },
     ]);
 
     return {
@@ -89,8 +90,8 @@ export const Route = createFileRoute("/$locale/blog/")({
         getWebSiteSchema(locale),
         breadcrumbSchema,
         getCollectionPageSchema({
-          name: "Better i18n Blog",
-          description: "Tutorials, guides, and best practices for internationalization, localization, and translation management.",
+          name: `${msgs["breadcrumbs.blog"] ?? "Blog"} | Better i18n`,
+          description: meta.description || "Tutorials, guides, and best practices for internationalization, localization, and translation management.",
           url: `${SITE_URL}/${locale}/blog/`,
           inLanguage: locale,
         }),

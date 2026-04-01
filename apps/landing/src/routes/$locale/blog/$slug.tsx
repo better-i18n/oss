@@ -41,6 +41,8 @@ import {
   getBreadcrumbSchema,
 } from "@/lib/structured-data";
 import { getLocaleTier } from "@/seo/locale-tiers";
+import { getMessages } from "@better-i18n/use-intl/server";
+import { i18nConfig } from "@/i18n.config";
 
 const loadBlogPost = createServerFn({ method: "GET" })
   .inputValidator((data: { slug: string; locale: string }) => data)
@@ -57,13 +59,16 @@ const loadRelatedPosts = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/$locale/blog/$slug")({
-  loader: async ({ params }) => {
-    const post = await loadBlogPost({
-      data: { slug: params.slug, locale: params.locale },
-    });
+  loader: async ({ params, context }) => {
+    const [post, allMessages] = await Promise.all([
+      loadBlogPost({ data: { slug: params.slug, locale: params.locale } }),
+      getMessages({ project: i18nConfig.project, locale: context.locale }),
+    ]);
     if (!post) {
       throw notFound();
     }
+    const { filterMessages } = await import("@/lib/page-namespaces");
+    const messages = filterMessages(allMessages, ["breadcrumbs"]);
     const relatedPosts = await loadRelatedPosts({
       data: {
         slug: params.slug,
@@ -71,7 +76,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         locale: params.locale,
       },
     });
-    return { post, locale: params.locale, relatedPosts };
+    return { post, locale: params.locale, relatedPosts, messages };
   },
   head: ({ loaderData }) => {
     const post = loaderData?.post;
@@ -112,7 +117,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     // Override with blog-specific values (immutable spread)
     const blogMeta = {
       ...meta,
-      title: truncateTitle(`${postTitle} - Better i18n Blog`),
+      title: truncateTitle(`${postTitle} | Better i18n`),
       description: excerpt,
       ogTitle: postTitle,
       ogDescription: excerpt,
@@ -167,9 +172,10 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       inLanguage: locale,
     }) : null;
 
+    const msgs = (loaderData?.messages ?? {}) as Record<string, string>;
     const breadcrumbSchema = getBreadcrumbSchema([
-      { name: "Home", url: `${SITE_URL}/${locale}/` },
-      { name: "Blog", url: `${SITE_URL}/${locale}/blog/` },
+      { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },
+      { name: msgs["breadcrumbs.blog"] ?? "Blog", url: `${SITE_URL}/${locale}/blog/` },
       { name: postTitle, url: canonicalUrl },
     ]);
 

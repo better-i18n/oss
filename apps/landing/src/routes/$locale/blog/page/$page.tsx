@@ -93,10 +93,11 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
       }),
     });
 
+    const msgs = (loaderData?.messages ?? {}) as Record<string, string>;
     const breadcrumbSchema = getBreadcrumbSchema([
-      { name: "Home", url: `${SITE_URL}/${locale}/` },
-      { name: "Blog", url: `${SITE_URL}/${locale}/blog/` },
-      { name: `Page ${currentPage}`, url: `${SITE_URL}/${locale}/blog/page/${currentPage}/` },
+      { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },
+      { name: msgs["breadcrumbs.blog"] ?? "Blog", url: `${SITE_URL}/${locale}/blog/` },
+      { name: (msgs["breadcrumbs.page"] ?? "Page {page}").replace("{page}", String(currentPage)), url: `${SITE_URL}/${locale}/blog/page/${currentPage}/` },
     ]);
 
     // Pagination rel links
@@ -127,8 +128,8 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
         getWebSiteSchema(locale),
         breadcrumbSchema,
         getCollectionPageSchema({
-          name: `Better i18n Blog — Page ${currentPage}`,
-          description: "Latest updates, tutorials, and insights about internationalization and localization.",
+          name: `${msgs["breadcrumbs.blog"] ?? "Blog"} — ${(msgs["breadcrumbs.page"] ?? "Page {page}").replace("{page}", String(currentPage))} | Better i18n`,
+          description: meta.description || "Latest updates, tutorials, and insights about internationalization and localization.",
           url: `${SITE_URL}/${locale}/blog/page/${currentPage}/`,
           inLanguage: locale,
         }),
