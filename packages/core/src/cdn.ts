@@ -267,6 +267,19 @@ const fetchMessagesFromCdn = async (
 
   const data = (await response.json()) as Messages;
   const etag = response.headers?.get?.("etag") ?? null;
+
+  // CDN always returns HTTP 200 — even for non-existent locales it returns {}
+  // or { fallback: true }. Treat empty/fallback responses as failures so the
+  // fallback chain (storage → staticData) can provide real translations.
+  const isFallbackMarker = "fallback" in data && Object.keys(data).length === 1;
+  const isEmpty = !data || Object.keys(data).length === 0;
+
+  if (isEmpty || isFallbackMarker) {
+    const reason = isEmpty ? "empty" : "fallback marker";
+    logger.warn(`CDN returned ${reason} response for locale "${locale}" — locale may not exist`);
+    throw new Error(`[better-i18n] No translations available for locale "${locale}" (${reason})`);
+  }
+
   logger.debug("fetched", { locale, keys: Object.keys(data).length });
 
   return { notModified: false, messages: data, etag };
