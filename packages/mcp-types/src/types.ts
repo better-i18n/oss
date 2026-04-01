@@ -548,6 +548,8 @@ export interface GetPendingChangesResponse {
  * A recent sync or publish job for contextual information.
  */
 export interface RecentActivityItem {
+  /** Sync job ID — use with getSync for full details */
+  id: string;
   /** Job type */
   type: "publish" | "sync" | "import";
   /** Job status */
