@@ -216,8 +216,6 @@ export async function initBetterI18n(
     },
   });
 
-  const lng = await resolveInitialLocale(storage, useDeviceLocale, defaultLocale);
-
   /**
    * Fetch translations from CDN with persistent cache fallback (network-first).
    * On success, writes to cache in the background for offline use.
@@ -260,51 +258,61 @@ export async function initBetterI18n(
     i18nInstance.addResourceBundle(locale, "translation", msgs, true, true);
   }
 
-  // Fetch manifest + initial translations in parallel
-  const [languages, messages] = await Promise.all([
-    core.getLanguages().catch(() => [] as LanguageOption[]),
-    loadMessages(lng),
-  ]);
-
+  // ── Step 1: Fetch manifest to know which languages exist ──────────
+  const languages = await core.getLanguages().catch(() => [] as LanguageOption[]);
   const supportedLngs = languages.map((l) => l.code);
 
-  // ── Unsupported locale safety net ─────────────────────────────────
-  // If device locale (e.g. "es") isn't in the project's supported languages,
-  // the CDN returns empty translations. Without also loading the fallback
-  // language, i18next has no translations to show → raw keys everywhere.
-  // Fix: also load defaultLocale so fallbackLng actually works.
-  const isUnsupportedLocale =
-    supportedLngs.length > 0 && !supportedLngs.includes(lng);
-  const hasEmptyMessages =
-    !messages || Object.keys(messages).length === 0;
+  // ── Step 2: Resolve locale with support check ─────────────────────
+  // Resolve the requested locale, then verify it actually exists in the
+  // project. If the device locale (e.g. "es") isn't supported, fall back
+  // to defaultLocale immediately — don't waste a CDN call on a locale
+  // that will return empty translations.
+  const requestedLng = await resolveInitialLocale(storage, useDeviceLocale, defaultLocale);
 
-  // Build initial resources with the resolved locale
+  // Also check if the user overrode lng via i18nextOptions
+  const overrideLng = i18nextOptions?.lng
+    ? normalizeLocale(i18nextOptions.lng as string)
+    : null;
+
+  // The locale we actually want to use (user override > resolved > default)
+  const candidateLng = overrideLng ?? requestedLng;
+
+  // If this locale isn't supported, fall back to defaultLocale
+  const isSupported = supportedLngs.length === 0 || supportedLngs.includes(candidateLng);
+  const effectiveLng = isSupported ? candidateLng : defaultLocale;
+
+  if (!isSupported && debug) {
+    console.debug(
+      `${LOG_PREFIX} Locale "${candidateLng}" is not in supported languages ` +
+      `[${supportedLngs.join(", ")}], falling back to "${defaultLocale}"`
+    );
+  }
+
+  // ── Step 3: Load messages for the effective locale ────────────────
+  const messages = await loadMessages(effectiveLng);
+
+  const namespaces = Object.keys(messages);
+
+  // ── Step 4: Also load defaultLocale if effective is different ──────
+  // Ensures fallbackLng always has resources available in i18next.
   const resources: Record<string, { translation: Messages } & Messages> = {
-    [lng]: { translation: messages, ...messages },
+    [effectiveLng]: { translation: messages, ...messages },
   };
 
-  // If resolved locale is unsupported or returned empty, pre-load fallback
-  let effectiveLng = lng;
-  if ((isUnsupportedLocale || hasEmptyMessages) && lng !== defaultLocale) {
-    if (debug) {
-      console.debug(
-        `${LOG_PREFIX} Locale "${lng}" is ${isUnsupportedLocale ? "not in supported languages" : "empty"}, ` +
-        `pre-loading fallback locale "${defaultLocale}"`
-      );
-    }
+  if (effectiveLng !== defaultLocale) {
     try {
       const fallbackMessages = await loadMessages(defaultLocale);
       resources[defaultLocale] = { translation: fallbackMessages, ...fallbackMessages };
-      // Switch to defaultLocale so the user sees real content instead of keys
-      effectiveLng = defaultLocale;
     } catch {
-      if (debug) {
-        console.debug(`${LOG_PREFIX} Failed to load fallback locale "${defaultLocale}"`);
-      }
+      // Best-effort — defaultLocale fallback is still configured in i18next
+      // even if we can't pre-load it here
     }
   }
 
-  const namespaces = Object.keys(resources[effectiveLng]?.["translation"] as Record<string, unknown> ?? messages);
+  // ── Step 5: Init i18next ──────────────────────────────────────────
+  // i18nextOptions is spread but we protect lng/fallbackLng/supportedLngs
+  // from being overridden with unsupported values
+  const { lng: _userLng, supportedLngs: _userSupported, ...safeI18nextOptions } = (i18nextOptions ?? {}) as Record<string, unknown>;
 
   await i18nInstance.init({
     resources,
@@ -312,13 +320,13 @@ export async function initBetterI18n(
     // ...messages   = bireysel namespace'ler (colon-notation: t('ns:key') çalışır)
     lng: effectiveLng,
     fallbackLng: defaultLocale,
-    supportedLngs: supportedLngs.length > 0 ? supportedLngs : false,
+    supportedLngs: supportedLngs.length > 0 ? [...supportedLngs, defaultLocale] : false,
     lowerCaseLng: true, // CDN lowercase — match i18next BCP 47 normalization
     defaultNS: "translation",
     fallbackNS: "translation",
     interpolation: { escapeValue: false },
     react: { useSuspense: false },
-    ...i18nextOptions,
+    ...safeI18nextOptions,
   });
 
   if (debug) {
@@ -331,14 +339,14 @@ export async function initBetterI18n(
   // After successful CDN load, compare with staticData to warn about
   // missing namespaces that won't be available offline.
   if (staticData && typeof staticData !== "function") {
-    const bundled = staticData[lng];
+    const bundled = staticData[effectiveLng];
     if (bundled && typeof bundled === "object") {
       const cdnKeys = new Set(namespaces);
       const bundledKeys = new Set(Object.keys(bundled));
       const missing = [...cdnKeys].filter((k) => !bundledKeys.has(k));
       if (missing.length > 0) {
         console.warn(
-          `${LOG_PREFIX} ⚠️  staticData["${lng}"] is missing ${missing.length} namespace(s) that exist on CDN: ` +
+          `${LOG_PREFIX} ⚠️  staticData["${effectiveLng}"] is missing ${missing.length} namespace(s) that exist on CDN: ` +
           `${missing.join(", ")}. These won't be available offline.\n` +
           `  Run "npx @better-i18n/cli pull" to update your bundled translations.`
         );
