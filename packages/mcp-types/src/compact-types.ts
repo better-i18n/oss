@@ -395,6 +395,8 @@ export interface CompactGetPendingChangesResponse {
  * - tf: stats.totalFiles
  */
 export interface CompactRecentActivityItem {
+  /** Sync job ID — use with getSync for details */
+  id: string;
   /** Job type: publish | sync | import */
   tp: string;
   /** Job status */
