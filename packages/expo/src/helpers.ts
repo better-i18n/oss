@@ -267,13 +267,50 @@ export async function initBetterI18n(
   ]);
 
   const supportedLngs = languages.map((l) => l.code);
-  const namespaces = Object.keys(messages);
+
+  // ── Unsupported locale safety net ─────────────────────────────────
+  // If device locale (e.g. "es") isn't in the project's supported languages,
+  // the CDN returns empty translations. Without also loading the fallback
+  // language, i18next has no translations to show → raw keys everywhere.
+  // Fix: also load defaultLocale so fallbackLng actually works.
+  const isUnsupportedLocale =
+    supportedLngs.length > 0 && !supportedLngs.includes(lng);
+  const hasEmptyMessages =
+    !messages || Object.keys(messages).length === 0;
+
+  // Build initial resources with the resolved locale
+  const resources: Record<string, { translation: Messages } & Messages> = {
+    [lng]: { translation: messages, ...messages },
+  };
+
+  // If resolved locale is unsupported or returned empty, pre-load fallback
+  let effectiveLng = lng;
+  if ((isUnsupportedLocale || hasEmptyMessages) && lng !== defaultLocale) {
+    if (debug) {
+      console.debug(
+        `${LOG_PREFIX} Locale "${lng}" is ${isUnsupportedLocale ? "not in supported languages" : "empty"}, ` +
+        `pre-loading fallback locale "${defaultLocale}"`
+      );
+    }
+    try {
+      const fallbackMessages = await loadMessages(defaultLocale);
+      resources[defaultLocale] = { translation: fallbackMessages, ...fallbackMessages };
+      // Switch to defaultLocale so the user sees real content instead of keys
+      effectiveLng = defaultLocale;
+    } catch {
+      if (debug) {
+        console.debug(`${LOG_PREFIX} Failed to load fallback locale "${defaultLocale}"`);
+      }
+    }
+  }
+
+  const namespaces = Object.keys(resources[effectiveLng]?.["translation"] as Record<string, unknown> ?? messages);
 
   await i18nInstance.init({
-    resources: { [lng]: { translation: messages, ...messages } },
+    resources,
     // "translation" = tüm namespace'ler merged (dot-notation: t('section.key') çalışır)
     // ...messages   = bireysel namespace'ler (colon-notation: t('ns:key') çalışır)
-    lng,
+    lng: effectiveLng,
     fallbackLng: defaultLocale,
     supportedLngs: supportedLngs.length > 0 ? supportedLngs : false,
     lowerCaseLng: true, // CDN lowercase — match i18next BCP 47 normalization
