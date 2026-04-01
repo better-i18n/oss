@@ -381,6 +381,8 @@ export interface CompactGetPendingChangesResponse {
   no_pub_rsn?: string;
   /** Recent sync/publish activity (last 3 jobs) */
   recent?: CompactRecentActivityItem[];
+  /** Contextual hint for AI */
+  hint?: string;
 }
 
 /**
@@ -535,6 +537,8 @@ export interface CompactGetSyncResponse {
   log: string[];
   /** Affected keys */
   aff_k: CompactAffectedKey[];
+  /** Contextual hint for AI */
+  hint?: string;
 }
 
 // ============================================================================
@@ -604,6 +608,8 @@ export interface CompactCreateKeysResponse {
   }>;
   /** Pending publish hint */
   pub?: CompactPendingPublishHint;
+  /** Contextual hint for AI */
+  hint?: string;
 }
 
 /**
@@ -649,6 +655,8 @@ export interface CompactUpdateKeysResponse {
   }>;
   /** Pending publish hint */
   pub?: CompactPendingPublishHint;
+  /** Contextual hint for AI */
+  hint?: string;
 }
 
 /**
@@ -676,6 +684,10 @@ export interface CompactDeleteKeysResponse {
   }>;
   /** Skipped key IDs (not found) */
   skip?: string[];
+  /** Pending publish hint */
+  pub?: CompactPendingPublishHint;
+  /** Contextual hint for AI */
+  hint?: string;
 }
 
 // ============================================================================

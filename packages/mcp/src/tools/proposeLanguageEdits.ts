@@ -71,11 +71,21 @@ export const proposeLanguageEdits: Tool = {
         updates,
       });
 
+      // Build contextual hints
+      let hint: string | undefined;
+      if (result.notFound.length > 0) {
+        hint = `${result.notFound.length} language(s) not found: [${result.notFound.join(", ")}]. Language codes are case-normalized. Call getProject to see exact codes.`;
+      } else if (result.results.every((r) => !r.changed)) {
+        hint = "All language status updates were no-ops — the requested status was already set.";
+      }
+
       return success({
         success: result.success,
         results: result.results,
         notFound: result.notFound,
         project: input.project,
+        ...(result.pendingPublish ? { pendingPublish: result.pendingPublish } : {}),
+        ...(hint ? { hint } : {}),
       });
     }),
 };
