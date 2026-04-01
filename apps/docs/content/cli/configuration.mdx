@@ -48,6 +48,28 @@ export const i18nWorkspaceConfig = { // [!code highlight]
 };
 ```
 
+## Pull Options
+
+Configure default behavior for the `better-i18n pull` command, which downloads translations from CDN to local JSON files.
+
+```ts title="i18n.config.ts"
+export const i18nConfig = {
+  project: "your-org/your-project",
+  defaultLocale: "en",
+  pull: { // [!code highlight]
+    output: "./locales",         // Output directory for JSON files // [!code highlight]
+    locales: ["en", "tr", "de"], // Specific locales (default: all) // [!code highlight]
+  }, // [!code highlight]
+};
+```
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `pull.output` | `string` | Directory for downloaded JSON files. Default: `./locales` |
+| `pull.locales` | `string[]` | Specific locales to download. Default: all from CDN manifest |
+
+CLI flags (`-o`, `-l`) override these config values.
+
 ## Lint Options
 
 | Option | Type | Description |

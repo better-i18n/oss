@@ -120,11 +120,34 @@ better-i18n content:types
 
 ---
 
+### `pull` — Download translations for offline fallback
+
+Download translations from CDN to local JSON files. Essential for mobile apps (Expo, React Native) where bundled translations ensure the app works even when the CDN is unreachable — including during App Store Review.
+
+```bash
+better-i18n pull
+```
+
+```text
+✔ Project: acme/my-app
+✔ Manifest: 3 languages (en, de, tr)
+✔ Downloaded 3 locale(s) to locales/
+
+  ✓ en      1867 keys  145.8 KB
+  ✓ de      1742 keys  146.3 KB
+  ✓ tr      1741 keys  131.0 KB
+```
+
+[View full `pull` documentation →](/cli/pull)
+
+---
+
 ## When to use which command
 
 | I want to… | Command |
 |------------|---------|
 | Get a full project health score | `doctor` |
+| Download translations for mobile offline fallback | `pull` |
 | Block CI on i18n regressions | `doctor --ci` |
 | Catch hardcoded strings before commit | `scan --staged --ci` |
 | Quickly check if new keys are uploaded | `check:missing` |

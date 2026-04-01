@@ -152,6 +152,56 @@ export async function initBetterI18n(
   // In React Native, this is always the same module instance — safe to use.
   const i18nInstance = i18nOpt ?? i18nDefault;
 
+  // ── Defense-in-depth warnings ─────────────────────────────────────
+  // Mobile apps MUST have offline fallbacks. Without persistent storage
+  // AND bundled translations, a single CDN timeout = raw keys on screen.
+  if (!userStorage) {
+    console.warn(
+      `${LOG_PREFIX} ⚠️  No persistent storage provided. Translations won't survive app restarts ` +
+      `and every launch will depend on CDN availability. Pass a storage adapter for offline support:\n` +
+      `  storage: storageAdapter(new MMKV())  // or storageAdapter(AsyncStorage)`
+    );
+  }
+
+  if (!staticData) {
+    console.warn(
+      `${LOG_PREFIX} ⚠️  No staticData (bundled translations) provided. If CDN is unreachable ` +
+      `on first launch (e.g. Apple App Review, airplane mode), the app will show raw translation keys.\n` +
+      `  staticData: { en: require('./locales/en.json') }`
+    );
+  } else {
+    // Check for empty staticData — catches the subtle bug where locale JSON files
+    // were cleared but the import still exists (staticData: { en: {}, tr: {} })
+    const emptyLocales: string[] = [];
+    const resolvedData = typeof staticData === "function" ? null : staticData;
+    if (resolvedData) {
+      for (const [locale, messages] of Object.entries(resolvedData)) {
+        if (!messages || typeof messages !== "object" || Object.keys(messages).length === 0) {
+          emptyLocales.push(locale);
+        }
+      }
+    }
+    if (emptyLocales.length > 0) {
+      console.warn(
+        `${LOG_PREFIX} ⚠️  staticData has empty translations for: ${emptyLocales.join(", ")}. ` +
+        `Bundled fallback will not work for these locales. ` +
+        `Make sure your locale JSON files contain actual translations, not empty objects.\n` +
+        `  Tip: Run "npx @better-i18n/cli pull" to sync bundled translations from CDN.`
+      );
+    }
+  }
+
+  if (!userStorage && !staticData) {
+    console.warn(
+      `${LOG_PREFIX} 🚨 CRITICAL: No storage AND no staticData. Your app has zero offline fallback. ` +
+      `If CDN is unreachable (App Store Review, airplane mode, slow network), ` +
+      `users will see raw translation keys. This WILL cause App Store rejection.\n` +
+      `  Fix: Add at least one of:\n` +
+      `    storage: storageAdapter(new MMKV())\n` +
+      `    staticData: { en: require('./locales/en.json') }`
+    );
+  }
+
   const storage = await resolveStorage(userStorage, debug);
   const core = createI18nCore({
     project,
@@ -238,6 +288,25 @@ export async function initBetterI18n(
     console.debug(
       `${LOG_PREFIX} Ready: ${namespaces.length} namespaces, ${supportedLngs.length} languages (${supportedLngs.join(", ")})`
     );
+  }
+
+  // ── staticData drift detection ────────────────────────────────────
+  // After successful CDN load, compare with staticData to warn about
+  // missing namespaces that won't be available offline.
+  if (staticData && typeof staticData !== "function") {
+    const bundled = staticData[lng];
+    if (bundled && typeof bundled === "object") {
+      const cdnKeys = new Set(namespaces);
+      const bundledKeys = new Set(Object.keys(bundled));
+      const missing = [...cdnKeys].filter((k) => !bundledKeys.has(k));
+      if (missing.length > 0) {
+        console.warn(
+          `${LOG_PREFIX} ⚠️  staticData["${lng}"] is missing ${missing.length} namespace(s) that exist on CDN: ` +
+          `${missing.join(", ")}. These won't be available offline.\n` +
+          `  Run "npx @better-i18n/cli pull" to update your bundled translations.`
+        );
+      }
+    }
   }
 
   // Override changeLanguage to pre-load translations BEFORE the language switch.

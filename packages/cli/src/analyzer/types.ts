@@ -75,12 +75,20 @@ export interface ScanOptions {
   verbose?: boolean;
 }
 
+export interface PullConfig {
+  /** Output directory for downloaded translations @default "./locales" */
+  output?: string;
+  /** Specific locale codes to download (default: all from manifest) */
+  locales?: string[];
+}
+
 export interface ProjectContext {
   workspaceId: string;
   projectSlug: string;
   defaultLocale: string;
   cdnBaseUrl?: string;
   lint?: LintConfig;
+  pull?: PullConfig;
 }
 
 export interface DataStructureConfig {

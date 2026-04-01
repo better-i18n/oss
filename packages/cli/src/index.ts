@@ -20,6 +20,7 @@ import {
 } from "./commands/check.js";
 import { doctorCommand } from "./commands/doctor.js";
 import { contentTypesCommand } from "./commands/content-types.js";
+import { pullCommand } from "./commands/pull.js";
 
 program
   .name("better-i18n")
@@ -93,6 +94,16 @@ program
   .option("--skip-sync", "Skip remote CDN comparison")
   .option("--verbose", "Show detailed output")
   .action(doctorCommand);
+
+program
+  .command("pull")
+  .description("Download translations from CDN to local JSON files (offline fallback for mobile)")
+  .option("-p, --project <org/name>", "Project identifier (default: from i18n.config.ts)")
+  .option("-o, --output <path>", "Output directory for JSON files (default: ./locales)")
+  .option("-l, --locales <codes>", "Comma-separated locale codes to download (default: all)")
+  .option("-d, --dir <path>", "Directory to scan for config (default: current directory)")
+  .option("--verbose", "Show detailed output per locale")
+  .action(pullCommand);
 
 program
   .command("content:types")
