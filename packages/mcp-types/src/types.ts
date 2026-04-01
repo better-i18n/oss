@@ -244,6 +244,8 @@ export interface CreateKeysResponse {
   }>;
   /** Pending publish hint - reminds AI to call publish */
   pendingPublish?: PendingPublishHint;
+  /** Contextual hint for AI when result is ambiguous */
+  hint?: string;
 }
 
 /**
@@ -288,6 +290,8 @@ export interface UpdateKeysResponse {
   notFound?: UpdateKeyNotFoundItem[];
   /** Pending publish hint - reminds AI to call publish */
   pendingPublish?: PendingPublishHint;
+  /** Contextual hint for AI when result is ambiguous */
+  hint?: string;
 }
 
 /**
@@ -314,6 +318,10 @@ export interface DeleteKeysResponse {
   marked: MarkedKeyInfo[];
   /** Key IDs that were not found */
   skipped?: string[];
+  /** Pending publish hint */
+  pendingPublish?: PendingPublishHint;
+  /** Contextual hint for AI */
+  hint?: string;
 }
 
 /**
@@ -334,6 +342,8 @@ export interface AddLanguagesResponse {
   added: number;
   skipped: number; // already existed
   pendingPublish?: PendingPublishHint;
+  /** Contextual hint for AI */
+  hint?: string;
 }
 
 /**
@@ -354,6 +364,8 @@ export interface UpdateLanguagesResponse {
   results: LanguageUpdateResult[];
   notFound: string[];
   pendingPublish?: PendingPublishHint;
+  /** Contextual hint for AI */
+  hint?: string;
 }
 
 /**
@@ -467,6 +479,8 @@ export interface GetSyncResponse {
   logs: string[];
   /** Affected keys */
   affectedKeys: AffectedKey[];
+  /** Contextual hint for AI (e.g., failure recovery, polling guidance) */
+  hint?: string;
 }
 
 // ============================================================================
@@ -542,6 +556,8 @@ export interface GetPendingChangesResponse {
   cannotPublishReason?: string;
   /** Recent sync/publish activity for context (last 3 jobs) */
   recentActivity?: RecentActivityItem[];
+  /** Contextual hint for AI */
+  hint?: string;
 }
 
 /**
@@ -585,6 +601,8 @@ export interface PublishResponse {
   languageChangesProcessed?: number;
   /** Human-readable message */
   message: string;
+  /** Contextual hint for AI (next steps, polling guidance) */
+  hint?: string;
 }
 
 

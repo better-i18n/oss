@@ -77,6 +77,10 @@ export const proposeLanguages: Tool = {
         skipped: result.skipped,
         results: result.results,
         project: input.project,
+        ...(result.pendingPublish ? { pendingPublish: result.pendingPublish } : {}),
+        ...(result.added === 0 && result.skipped > 0
+          ? { hint: `All ${result.skipped} submitted language(s) already exist — nothing was added. To change their status, use proposeLanguageEdits.` }
+          : {}),
       });
     }),
 };
