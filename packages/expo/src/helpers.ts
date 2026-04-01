@@ -202,6 +202,24 @@ export async function initBetterI18n(
     );
   }
 
+  // useDeviceLocale without localeKey = user's in-app language choice is lost on every restart.
+  // Two valid patterns:
+  //   1. useDeviceLocale: true  + localeKey → SDK detects device lang on first launch, persists user choice after
+  //   2. useDeviceLocale: false + app passes its own resolved locale via defaultLocale → app manages persistence
+  if (useDeviceLocale && userStorage) {
+    const hasLocaleKey = "readLocale" in userStorage && typeof (userStorage as Record<string, unknown>).readLocale === "function";
+    if (!hasLocaleKey) {
+      console.warn(
+        `${LOG_PREFIX} ⚠️  useDeviceLocale is enabled but storage has no localeKey. ` +
+        `The user's in-app language choice will be lost on every app restart — device locale will be used instead.\n` +
+        `  Fix: Pass localeKey to storageAdapter:\n` +
+        `    storage: storageAdapter(mmkv, { localeKey: '@app:locale' })\n` +
+        `  Or manage locale yourself:\n` +
+        `    useDeviceLocale: false, defaultLocale: yourResolvedLocale`
+      );
+    }
+  }
+
   const storage = await resolveStorage(userStorage, debug);
   const core = createI18nCore({
     project,
