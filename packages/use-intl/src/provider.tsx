@@ -37,14 +37,26 @@ function readSSRData(): SSRData | null {
   }
 }
 
+/** Locale value: 2–8 char BCP 47 tag, e.g. "en", "pt-BR", "zh-Hans". */
+const LOCALE_RE = /^[a-zA-Z]{2,8}(?:-[a-zA-Z0-9]{1,8})*$/;
+
 /**
  * Read locale from a cookie by name.
  * Used as fallback when SSR data is not available (static/SPA builds).
+ *
+ * - Escapes `cookieName` before building the RegExp so names with
+ *   dots, brackets, etc. never throw or match unexpectedly.
+ * - Validates the returned value against a BCP 47 pattern so a
+ *   corrupt/attacker-controlled cookie cannot inject garbage into
+ *   the locale chain.
  */
 function readCookieLocale(cookieName: string): string | null {
   if (typeof document === "undefined") return null;
-  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${cookieName}=([^;]*)`));
-  return match?.[1] ?? null;
+  const safeName = cookieName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${safeName}=([^;]*)`));
+  const value = match?.[1]?.trim() ?? null;
+  if (!value || !LOCALE_RE.test(value)) return null;
+  return value;
 }
 
 // ─── Provider Props ──────────────────────────────────────────────────
@@ -199,15 +211,16 @@ export function BetterI18nProvider({
     ? "preferred-locale"
     : persistLocale || undefined;
 
-  // Locale resolution chain: prop → SSR → cookie (persist or plugin) → "en"
-  const initialLocale = propLocale
-    || ssrData?.locale
-    || (persistCookieName && readCookieLocale(persistCookieName))
-    || (localeCookie && readCookieLocale(localeCookie))
-    || "en";
-
   // ─── Locale State ─────────────────────────────────────────────────
-  const [managedLocale, setManagedLocale] = useState(initialLocale);
+  // Use a lazy initializer so cookie reads run exactly once (not on every render).
+  // Locale resolution chain: prop → SSR → cookie (persist or plugin) → "en"
+  const [managedLocale, setManagedLocale] = useState(() =>
+    propLocale
+    || ssrData?.locale
+    || (persistCookieName ? readCookieLocale(persistCookieName) : null)
+    || (localeCookie ? readCookieLocale(localeCookie) : null)
+    || "en"
+  );
 
   // Sync when external prop changes (e.g., router navigation updates propLocale)
   useEffect(() => {
@@ -230,7 +243,9 @@ export function BetterI18nProvider({
     (newLocale: string) => {
       setManagedLocale(newLocale);
 
-      // Persist locale to cookie (if plugin provided cookie name)
+      // Persist locale to cookie (if vite plugin provided a cookie name).
+      // Written before onLocaleChange so the cookie is always up-to-date
+      // regardless of whether the consumer handles navigation.
       if (localeCookie && typeof document !== "undefined") {
         document.cookie = `${localeCookie}=${newLocale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
       }
@@ -251,27 +266,35 @@ export function BetterI18nProvider({
         const path = window.location.pathname;
         const segments = path.split("/").filter(Boolean);
         const firstSegment = segments[0];
-        const supportedLocales = ssrData?.supportedLocales as string[] | undefined;
-        const isLocaleSegment = firstSegment && /^[a-z]{2}$/i.test(firstSegment) &&
+        const supportedLocales = ssrData?.supportedLocales;
+        // Match BCP 47 tags: "en", "pt-BR", "zh-Hans" (2-8 alpha + optional subtags)
+        const isLocaleSegment =
+          firstSegment !== undefined &&
+          LOCALE_RE.test(firstSegment) &&
           (!supportedLocales || supportedLocales.includes(firstSegment));
         if (isLocaleSegment) {
           segments[0] = newLocale;
         } else {
           segments.unshift(newLocale);
         }
-        window.history.replaceState(null, "", "/" + segments.join("/") + window.location.search);
+        window.history.replaceState(null, "", `/${segments.join("/")}${window.location.search}`);
       }
     },
-    [onLocaleChange, localeCookie, localePrefix],
+    [onLocaleChange, localeCookie, localePrefix, ssrData],
   );
 
   // ─── Messages State ───────────────────────────────────────────────
   // Track the locale that initial messages were **actually built for**.
   // When messages come from SSR (vite plugin), their locale is ssrData.locale.
-  // When messages come from props, their locale matches propLocale (or initialLocale).
+  // When messages come from props, their locale matches managedLocale at mount time.
   // This distinction prevents a critical bug: propLocale="tr" + ssrData.messages="en"
   // would incorrectly mark English messages as fresh for Turkish, skipping CDN fetch.
-  const initialMessagesLocale = propMessages ? initialLocale : ssrData?.locale;
+  //
+  // Stored in state (not derived on each render) so it stays anchored to mount-time
+  // values even after locale switches cause re-renders.
+  const [initialMessagesLocale] = useState(() =>
+    propMessages ? managedLocale : ssrData?.locale
+  );
 
   const [clientMessages, setClientMessages] = useState<Messages | undefined>();
 
@@ -283,12 +306,19 @@ export function BetterI18nProvider({
   const [isLoadingMessages, setIsLoadingMessages] = useState(initialMessages === undefined);
   const [isLoadingLanguages, setIsLoadingLanguages] = useState(!initialLanguages);
 
-  // Create i18n core instance
+  // Capture the locale that was active at mount — used as `defaultLocale` for
+  // the core instance. This must NOT change on locale switches: the core's
+  // `defaultLocale` is a startup hint for the CDN client, not the live locale.
+  // Putting `locale` in the deps would recreate the core (and its TtlCache) on
+  // every language switch, defeating the in-memory cache entirely.
+  const [mountLocale] = useState(locale);
+
+  // Create i18n core instance — stable for the lifetime of the provider.
   const i18nCore = useMemo(
     () =>
       createI18nCore({
         project,
-        defaultLocale: locale,
+        defaultLocale: mountLocale,
         cdnBaseUrl,
         debug,
         logLevel,
@@ -298,7 +328,10 @@ export function BetterI18nProvider({
         fetchTimeout,
         retryCount,
       }),
-    [project, locale, cdnBaseUrl, debug, logLevel, customFetch, storage, staticData, fetchTimeout, retryCount]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [project, cdnBaseUrl, debug, logLevel, customFetch, storage, staticData, fetchTimeout, retryCount]
+    // `mountLocale` intentionally excluded — it never changes after mount.
+    // `locale` intentionally excluded — see comment above.
   );
 
   // Load languages on mount — skip if SSR already provided them
