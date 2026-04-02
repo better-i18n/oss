@@ -18,9 +18,6 @@ import type { Tool } from "../types/index.js";
 const translationValue = z.object({
   title: z.string().optional(),
   bodyMarkdown: z.string().optional(),
-  excerpt: z.string().optional(),
-  metaTitle: z.string().optional(),
-  metaDescription: z.string().optional(),
   customFields: customFieldsSchema,
 });
 
@@ -30,13 +27,7 @@ const inputSchema = projectSchema.extend({
   title: z.string().optional(),
   slug: z.string().optional(),
   bodyMarkdown: z.string().optional(),
-  excerpt: z.string().optional(),
-  featuredImage: z.string().optional(),
-  metaTitle: z.string().optional(),
-  metaDescription: z.string().optional(),
   status: z.enum(["draft", "published", "archived"]).optional(),
-  tags: z.array(z.string()).optional(),
-  translationStatus: z.enum(["draft", "published"]).optional(),
   customFields: customFieldsSchema,
   translations: z.record(z.string(), translationValue).optional(),
 });
@@ -112,36 +103,10 @@ EXAMPLE metadata-only:
           type: "string",
           description: "Updated content body in Markdown format (supports GFM: tables, strikethrough, task lists). WARNING: Do NOT start with a # H1 heading — the entry title is already rendered as the page H1 by the platform. Starting with # Title creates a duplicate visible heading. Begin with an introductory paragraph or ## H2 section instead.",
         },
-        excerpt: {
-          type: "string",
-          description: "Updated excerpt",
-        },
-        featuredImage: {
-          type: "string",
-          description: "Updated featured image URL",
-        },
-        metaTitle: {
-          type: "string",
-          description: "SEO meta title",
-        },
-        metaDescription: {
-          type: "string",
-          description: "SEO meta description",
-        },
         status: {
           type: "string",
           enum: ["draft", "published", "archived"],
           description: "Updated entry status",
-        },
-        tags: {
-          type: "array",
-          items: { type: "string" },
-          description: "Updated tags",
-        },
-        translationStatus: {
-          type: "string",
-          enum: ["draft", "published"],
-          description: "Translation status override. Default: \"published\" (save = publish). Set to \"draft\" to save a translation without publishing it immediately.",
         },
         customFields: {
           type: "object",

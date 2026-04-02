@@ -852,34 +852,23 @@ describe("known divergences — documented schema mismatches", () => {
     expect(apiKeys).toContain("expand");
   });
 
-  it("createContentEntry: tool has 'excerpt', 'featuredImage', 'tags' fields, mcp-types does NOT", () => {
-    // DIVERGENCE: Tool has additional fields for richer content creation
-    // that are not present in the mcp-types createContentEntryInput.
+  it("createContentEntry: tool matches base fields only (excerpt/tags/featuredImage are custom fields, not top-level)", () => {
+    // These fields were removed — they are model-specific custom fields, not base content fields.
+    // Base fields: title, slug, bodyMarkdown, status, sourceLanguageCode, customFields, translations
     const toolProps = propertyKeys(createContentEntry);
-    expect(toolProps).toContain("excerpt");
-    expect(toolProps).toContain("featuredImage");
-    expect(toolProps).toContain("tags");
-
-    const apiKeys = zodKeys(createContentEntryInput);
-    expect(apiKeys).not.toContain("excerpt");
-    expect(apiKeys).not.toContain("featuredImage");
-    expect(apiKeys).not.toContain("tags");
+    expect(toolProps).not.toContain("excerpt");
+    expect(toolProps).not.toContain("featuredImage");
+    expect(toolProps).not.toContain("tags");
+    expect(toolProps).toContain("sourceLanguageCode");
   });
 
-  it("updateContentEntry: tool has 'excerpt', 'metaTitle', 'metaDescription', 'featuredImage', 'tags' — mcp-types does NOT", () => {
-    // DIVERGENCE: Tool has additional SEO and media fields not in mcp-types updateContentEntryInput.
+  it("updateContentEntry: tool matches base fields only (no metaTitle/excerpt/tags)", () => {
+    // These fields were removed — they belong in customFields, not as top-level params.
     const toolProps = propertyKeys(updateContentEntry);
-    expect(toolProps).toContain("excerpt");
-    expect(toolProps).toContain("metaTitle");
-    expect(toolProps).toContain("metaDescription");
-    expect(toolProps).toContain("featuredImage");
-    expect(toolProps).toContain("tags");
-
-    const apiKeys = zodKeys(updateContentEntryInput);
-    expect(apiKeys).not.toContain("excerpt");
-    expect(apiKeys).not.toContain("metaTitle");
-    expect(apiKeys).not.toContain("metaDescription");
-    expect(apiKeys).not.toContain("featuredImage");
-    expect(apiKeys).not.toContain("tags");
+    expect(toolProps).not.toContain("excerpt");
+    expect(toolProps).not.toContain("metaTitle");
+    expect(toolProps).not.toContain("metaDescription");
+    expect(toolProps).not.toContain("featuredImage");
+    expect(toolProps).not.toContain("tags");
   });
 });
