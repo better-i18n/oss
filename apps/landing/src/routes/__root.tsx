@@ -282,9 +282,6 @@ function RootComponent() {
   // update history.replaceState which TanStack Router doesn't observe.
   const handleLocaleChange = useCallback(
     (newLocale: string) => {
-      // Persist user's manual choice so the geo-redirect respects it on future visits
-      document.cookie = `preferred-locale=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
-
       const path = window.location.pathname;
       const segments = path.split("/").filter(Boolean);
       const firstSegment = segments[0];
@@ -355,6 +352,7 @@ function RootComponent() {
             locale={locale}
             messages={messages}
             timeZone="UTC"
+            persistLocale
             onLocaleChange={handleLocaleChange}
             getMessageFallback={({ key }) => {
               const lastSegment = key.split(".").pop() || key;

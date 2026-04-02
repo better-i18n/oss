@@ -85,6 +85,30 @@ export interface BetterI18nProviderProps
    * ```
    */
   onLocaleChange?: (locale: string) => void;
+
+  /**
+   * Persist the active locale to a cookie so returning visitors
+   * get their previously chosen language — even without geo-IP detection.
+   *
+   * - `true` — uses the default cookie name `"preferred-locale"`
+   * - `string` — custom cookie name (e.g., `"my-app-lang"`)
+   * - `false` / `undefined` — no persistence (default, current behavior)
+   *
+   * The cookie is set on every locale change **including initial page load**,
+   * so the server can read it on the next visit before any JS executes.
+   *
+   * Works with any hosting provider — no Cloudflare dependency required.
+   *
+   * @example
+   * ```tsx
+   * <BetterI18nProvider project="acme/web" locale={locale} persistLocale>
+   *   <App />
+   * </BetterI18nProvider>
+   * ```
+   *
+   * @default false
+   */
+  persistLocale?: boolean | string;
 }
 
 /**
@@ -140,6 +164,7 @@ export function BetterI18nProvider({
   localePrefix = "as-needed",
   getMessageFallback: customGetMessageFallback,
   onLocaleChange,
+  persistLocale = false,
 }: BetterI18nProviderProps) {
   // ─── SSR Data (from @better-i18n/vite plugin) ─────────────────────
   // Read plugin-injected translations synchronously from DOM.
@@ -169,6 +194,19 @@ export function BetterI18nProvider({
   }, [propLocale]);
 
   const locale = managedLocale;
+
+  // ─── Locale Persistence ──────────────────────────────────────────
+  // Persist locale to cookie on every change (including initial mount).
+  // This ensures returning visitors get their last-used language even
+  // without geo-IP detection (not everyone uses Cloudflare).
+  const persistCookieName = persistLocale === true
+    ? "preferred-locale"
+    : persistLocale || undefined;
+
+  useEffect(() => {
+    if (!persistCookieName || typeof document === "undefined") return;
+    document.cookie = `${persistCookieName}=${locale}; path=/; max-age=31536000; SameSite=Lax`;
+  }, [locale, persistCookieName]);
 
   // setLocale: updates internal state, persists cookie, updates URL, notifies parent
   const setLocale = useCallback(
