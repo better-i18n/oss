@@ -18,7 +18,6 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "bun": "./src/index.ts",
       "react-native": "./dist/index.js",
       "default": "./dist/index.js"
     },

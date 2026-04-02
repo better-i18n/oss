@@ -18,17 +18,14 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "bun": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./i18next": {
       "types": "./dist/i18next.d.ts",
-      "bun": "./src/i18next.ts",
       "default": "./dist/i18next.js"
     },
     "./react": {
       "types": "./dist/react/index.d.ts",
-      "bun": "./src/react/index.ts",
       "default": "./dist/react/index.js"
     },
     "./package.json": "./package.json"

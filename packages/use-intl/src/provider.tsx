@@ -37,6 +37,16 @@ function readSSRData(): SSRData | null {
   }
 }
 
+/**
+ * Read locale from a cookie by name.
+ * Used as fallback when SSR data is not available (static/SPA builds).
+ */
+function readCookieLocale(cookieName: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${cookieName}=([^;]*)`));
+  return match?.[1] ?? null;
+}
+
 // ─── Provider Props ──────────────────────────────────────────────────
 
 export interface BetterI18nProviderProps
@@ -180,10 +190,21 @@ export function BetterI18nProvider({
     );
   }
 
-  const initialLocale = propLocale || ssrData?.locale || "en";
   const initialMessages = propMessages || ssrData?.messages;
   const initialLanguages = propInitialLanguages || ssrData?.languages;
   const localeCookie = ssrData?.localeCookie;
+
+  // Resolve persist cookie name early — needed for both reading and writing
+  const persistCookieName = persistLocale === true
+    ? "preferred-locale"
+    : persistLocale || undefined;
+
+  // Locale resolution chain: prop → SSR → cookie (persist or plugin) → "en"
+  const initialLocale = propLocale
+    || ssrData?.locale
+    || (persistCookieName && readCookieLocale(persistCookieName))
+    || (localeCookie && readCookieLocale(localeCookie))
+    || "en";
 
   // ─── Locale State ─────────────────────────────────────────────────
   const [managedLocale, setManagedLocale] = useState(initialLocale);
@@ -199,10 +220,6 @@ export function BetterI18nProvider({
   // Persist locale to cookie on every change (including initial mount).
   // This ensures returning visitors get their last-used language even
   // without geo-IP detection (not everyone uses Cloudflare).
-  const persistCookieName = persistLocale === true
-    ? "preferred-locale"
-    : persistLocale || undefined;
-
   useEffect(() => {
     if (!persistCookieName || typeof document === "undefined") return;
     document.cookie = `${persistCookieName}=${locale}; path=/; max-age=31536000; SameSite=Lax`;

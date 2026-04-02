@@ -18,22 +18,18 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "bun": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./hono": {
       "types": "./dist/hono.d.ts",
-      "bun": "./src/hono.ts",
       "default": "./dist/hono.js"
     },
     "./node": {
       "types": "./dist/node.d.ts",
-      "bun": "./src/node.ts",
       "default": "./dist/node.js"
     },
     "./providers/better-auth": {
       "types": "./dist/providers/better-auth.d.ts",
-      "bun": "./src/providers/better-auth.ts",
       "default": "./dist/providers/better-auth.js"
     },
     "./package.json": "./package.json"
