@@ -294,13 +294,28 @@ Publishing is fully automated via GitHub Actions. **NEVER run `npm publish` or `
 ### Release Flow
 
 ```
-1. Create changeset file     →  .changeset/descriptive-name.md
-2. Commit & push to main     →  CI detects pending changeset
-3. CI opens "Version Packages" PR  →  bumps versions, updates CHANGELOGs
-4. Merge that PR              →  CI runs `bun run release` → npm publish
+1. Verify build passes       →  cd packages/{name} && bun run build (MUST pass before changeset!)
+2. Create changeset file      →  .changeset/descriptive-name.md
+3. Commit & push to main      →  CI detects pending changeset
+4. CI opens "Version Packages" PR  →  bumps versions, updates CHANGELOGs
+5. Merge that PR              →  CI runs `bun run release` → npm publish
 ```
 
-### What YOU do (steps 1-2 only)
+### ⚠️ CRITICAL: Verify Build Before Changeset
+
+**ALWAYS run `bun run build` in the changed package BEFORE creating a changeset.** If `tsc` fails, the package's `dist/` won't be generated and npm publish will silently fail in CI (the build script swallows errors with `|| true`).
+
+```bash
+# REQUIRED before creating any changeset:
+cd packages/{name} && bun run build
+
+# If tsc errors → fix them FIRST, then create the changeset
+# If build passes → proceed with changeset
+```
+
+**Incident context:** `@better-i18n/server` versions 0.2.2–0.2.9 were never published to npm because a TypeScript error in `node.ts` caused `tsc` to exit non-zero. The CI `build:packages` script suppressed the error with `2>/dev/null || true`, so no dist/ was generated and publish silently skipped the package.
+
+### What YOU do (steps 1-3 only)
 
 ```bash
 # Option A: Interactive (won't work in non-TTY like Claude Code)
