@@ -1,5 +1,11 @@
 # @better-i18n/server
 
+## 0.3.1
+
+### Patch Changes
+
+- 91d3264: Fix TypeScript build error in node.ts that prevented npm publish since v0.2.2
+
 ## 0.3.0
 
 ### Minor Changes
