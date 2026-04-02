@@ -99,16 +99,21 @@ When Better Auth returns an error (e.g., invalid login), the provider:
 
 1. **Detects** if the response is an `APIError` with a `body.code` (e.g., `INVALID_EMAIL_OR_PASSWORD`)
 2. **Resolves** the user's locale from the `Accept-Language` header
-3. **Fetches** the translation from CDN (namespace: `auth`, key: the error code)
+3. **Fetches** translations from the CDN — all namespaces are served in a single `translations.json` per locale, and the provider scopes to the `auth` namespace automatically
 4. **Replaces** `body.message` with the translated string
 
 If a translation is missing, the original English message is preserved and a warning is logged — auth never breaks because of a missing translation.
 
 ```
 Client (Accept-Language: tr) → Better Auth → APIError
-  → Provider: detectLocale("tr") → CDN: auth.INVALID_EMAIL_OR_PASSWORD
+  → Provider: detectLocale("tr")
+  → CDN: /{org}/{project}/tr/translations.json → { "auth": { "INVALID_EMAIL_OR_PASSWORD": "..." } }
   → Response: { "code": "INVALID_EMAIL_OR_PASSWORD", "message": "Geçersiz e-posta veya şifre" }
 ```
+
+<Callout type="info">
+  Translations are cached in memory (60s TTL). After the first request, subsequent lookups are instant — no extra CDN calls per auth error.
+</Callout>
 
 ## Custom Locale Detection
 
