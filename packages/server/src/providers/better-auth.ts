@@ -1,20 +1,15 @@
 import type { ServerI18n } from "../types.js";
 
 // ---------------------------------------------------------------------------
-// Minimal types — structurally compatible with Better Auth's plugin system.
 // We avoid a runtime dependency on better-auth / @better-auth/core so that
 // @better-i18n/server stays lightweight and version-independent.
+//
+// The hook handler parameter is typed as `unknown` — this is intentional.
+// Better Auth's declared type (`MiddlewareInputContext`) doesn't include
+// `context.returned`, but the hook runner injects it at runtime. Using
+// `unknown` keeps us structurally compatible with any Better Auth version
+// while runtime guards ensure safety.
 // ---------------------------------------------------------------------------
-
-/** @internal Duck-typed subset of Better Auth's HookEndpointContext */
-interface HookContext {
-  context: {
-    returned?: unknown;
-    responseHeaders?: Headers;
-  };
-  headers?: Headers;
-  path?: string;
-}
 
 /**
  * Options for the Better Auth localization provider.
@@ -121,9 +116,18 @@ export function createBetterAuthProvider(
     hooks: {
       after: [
         {
-          matcher: () => true,
-          handler: async (ctx: HookContext) => {
-            const returned = ctx.context.returned;
+          matcher: (_ctx?: unknown) => true,
+          handler: async (ctx: unknown) => {
+            // Better Auth's hook runner injects context.returned at runtime,
+            // but the declared MiddlewareInputContext type doesn't include it.
+            // We use runtime guards instead of static types for safety.
+            const hookCtx = ctx as {
+              context?: { returned?: unknown; responseHeaders?: Headers };
+              headers?: Headers;
+              path?: string;
+            };
+
+            const returned = hookCtx.context?.returned;
 
             // Only intercept APIError responses that carry an error code
             if (!isAPIErrorLike(returned)) return;
@@ -135,9 +139,9 @@ export function createBetterAuthProvider(
             let locale: string;
             try {
               if (options?.getLocale) {
-                locale = await options.getLocale({ headers: ctx.headers });
-              } else if (ctx.headers) {
-                locale = await i18n.detectLocaleFromHeaders(ctx.headers);
+                locale = await options.getLocale({ headers: hookCtx.headers });
+              } else if (hookCtx.headers) {
+                locale = await i18n.detectLocaleFromHeaders(hookCtx.headers);
               } else {
                 locale = i18n.config.defaultLocale;
               }
