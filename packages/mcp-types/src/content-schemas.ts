@@ -285,6 +285,8 @@ export const createContentEntryInput = projectIdentifierSchema.extend({
   bodyMarkdown: z.string().optional().describe("Content body in Markdown format (supports GFM: tables, strikethrough, task lists)"),
   /** Initial status */
   status: z.enum(["draft", "published"]).default("draft").describe("Initial entry status"),
+  /** Explicit publish date (ISO 8601). Auto-set to now when status is "published" if omitted. */
+  publishedAt: z.string().datetime().optional().describe("Explicit publish date (ISO 8601). Auto-set to now when status is published if omitted."),
   /** Custom field values (field_name → value). Accepts string, number, or boolean — non-string values are coerced to string. */
   customFields: z
     .record(z.string(), coercibleFieldValue)
@@ -325,6 +327,8 @@ export const updateContentEntryInput = projectIdentifierSchema.extend({
     .enum(["draft", "published", "archived"])
     .optional()
     .describe("Updated entry status"),
+  /** Explicit publish date (ISO 8601). Auto-set when status changes to "published" if omitted. Use to backdate or schedule entries. */
+  publishedAt: z.string().datetime().optional().describe("Explicit publish date (ISO 8601). Auto-set to now when status → published if omitted."),
   /** Updated custom field values. Accepts string, number, or boolean — non-string values are coerced to string. */
   customFields: z
     .record(z.string(), coercibleFieldValue)
@@ -575,6 +579,7 @@ export const bulkUpdateEntriesInput = projectIdentifierSchema.extend({
           .enum(["draft", "published", "archived"])
           .optional()
           .describe("Updated entry status. Default: published when translationStatus not set."),
+        publishedAt: z.string().datetime().optional().describe("Explicit publish date (ISO 8601). Auto-set to now when status → published if omitted."),
       }),
     )
     .min(1)
@@ -596,6 +601,7 @@ export const bulkCreateEntriesInput = projectIdentifierSchema.extend({
         slug: z.string().describe("URL slug"),
         bodyMarkdown: z.string().optional().describe("Content body in Markdown"),
         status: z.enum(["draft", "published"]).default("draft").describe("Initial status"),
+        publishedAt: z.string().datetime().optional().describe("Explicit publish date (ISO 8601). Auto-set to now when status is published if omitted."),
         customFields: z.record(z.string(), coercibleFieldValue).optional().default({}).describe("Custom field values"),
         translations: z.record(z.string(), translationValue).optional().describe("Target language translations"),
         sourceLanguageCode: z.string().optional().describe("Source language code (defaults to project source language)"),
