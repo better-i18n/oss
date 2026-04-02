@@ -1,5 +1,15 @@
 # @better-i18n/remix
 
+## 0.6.0
+
+### Minor Changes
+
+- 6468495: Add locale persistence so returning visitors get their previously chosen language
+
+  **use-intl:** New `persistLocale` prop on `BetterI18nProvider`. When enabled, sets a cookie on every locale change (including initial page load). Works with any hosting provider — no Cloudflare/geo-IP dependency required.
+
+  **remix:** New `getLocaleCookieHeader(locale, request?)` method on `RemixI18n`. Returns a `Set-Cookie` header value for locale persistence, or `null` when cookie already matches (avoids redundant headers).
+
 ## 0.5.1
 
 ### Patch Changes
