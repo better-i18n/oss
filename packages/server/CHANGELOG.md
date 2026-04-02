@@ -1,5 +1,11 @@
 # @better-i18n/server
 
+## 0.3.2
+
+### Patch Changes
+
+- 38e0634: Fix TypeScript type incompatibility with better-auth@1.3 — handler parameter changed from HookContext to unknown for structural compatibility with BetterAuthPlugin type
+
 ## 0.3.1
 
 ### Patch Changes
