@@ -1,5 +1,16 @@
 # @better-i18n/next
 
+## 0.7.5
+
+### Patch Changes
+
+- 89dd681: Remove "bun" export conditions that referenced unpublished src/ files
+
+  All packages had `"bun": "./src/*.ts"` conditions in their exports map, but `src/` is not included in the npm package (`files: ["dist"]`). Bun runtime resolves the "bun" condition before "default", causing module resolution failures for customers using Bun to build their apps.
+
+- Updated dependencies [89dd681]
+  - @better-i18n/core@0.6.2
+
 ## 0.7.4
 
 ### Patch Changes

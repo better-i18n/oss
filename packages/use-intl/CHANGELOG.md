@@ -1,5 +1,24 @@
 # @better-i18n/use-intl
 
+## 0.7.0
+
+### Minor Changes
+
+- 89dd681: Read persisted locale cookie on initialization for static/SPA builds
+
+  `BetterI18nProvider` now reads the `persistLocale` cookie during initialization, before falling back to `"en"`. Previously, the cookie was written on locale change but never read back — causing locale to reset on page refresh in static/SPA builds where SSR data is unavailable.
+
+  New resolution chain: `propLocale → ssrData → persistLocale cookie → localeCookie → "en"`
+
+### Patch Changes
+
+- 89dd681: Remove "bun" export conditions that referenced unpublished src/ files
+
+  All packages had `"bun": "./src/*.ts"` conditions in their exports map, but `src/` is not included in the npm package (`files: ["dist"]`). Bun runtime resolves the "bun" condition before "default", causing module resolution failures for customers using Bun to build their apps.
+
+- Updated dependencies [89dd681]
+  - @better-i18n/core@0.6.2
+
 ## 0.6.0
 
 ### Minor Changes
