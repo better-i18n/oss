@@ -1,5 +1,11 @@
 # @better-i18n/server
 
+## 0.3.0
+
+### Minor Changes
+
+- 92b920f: Add Better Auth localization provider at `@better-i18n/server/providers/better-auth`. Translates auth error messages via CDN — add translations from the dashboard, no redeployment needed.
+
 ## 0.2.9
 
 ### Patch Changes
