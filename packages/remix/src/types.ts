@@ -91,6 +91,23 @@ export interface RemixI18n {
   detectLocale(request: Request): Promise<string>;
 
   /**
+   * Returns a `Set-Cookie` header value that persists the given locale.
+   * Returns `null` if the cookie already matches (avoids redundant headers).
+   *
+   * Append this to your Response so returning visitors get their previously
+   * chosen language — works with any hosting provider, no geo-IP required.
+   *
+   * @example
+   * ```ts
+   * const response = await handleRequest(request);
+   * const cookie = i18n.getLocaleCookieHeader(locale, request);
+   * if (cookie) response.headers.append("Set-Cookie", cookie);
+   * return response;
+   * ```
+   */
+  getLocaleCookieHeader(locale: string, request?: Request): string | null;
+
+  /**
    * Get all messages for a locale (CDN + TtlCache).
    */
   getMessages(locale: string): Promise<Messages>;

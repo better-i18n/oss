@@ -73,6 +73,13 @@ export default {
       },
     });
 
-    return handleRequest(request);
+    const response = await handleRequest(request);
+
+    // Persist detected locale to cookie so returning visitors get their
+    // chosen language — no geo-IP dependency required.
+    const localeCookie = i18n.getLocaleCookieHeader(locale, request);
+    if (localeCookie) response.headers.append("Set-Cookie", localeCookie);
+
+    return response;
   },
 };

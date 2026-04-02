@@ -110,12 +110,46 @@ export function createRemixI18n(config: RemixI18nConfig): RemixI18n {
     return matched ?? normalized.defaultLocale;
   }
 
+  // ─── getLocaleCookieHeader ──────────────────────────────────────────────────
+
+  /**
+   * Returns a `Set-Cookie` header value that persists the given locale.
+   * Append this to any Response so returning visitors get their chosen language
+   * without relying on geo-IP detection.
+   *
+   * Reads the current cookie from the request to avoid setting the same value
+   * on every request (returns `null` when the cookie already matches).
+   *
+   * @example
+   * ```ts
+   * // server.ts (Hydrogen)
+   * const locale = await i18n.getLocaleFromRequest(request);
+   * const response = await handleRequest(request);
+   * const cookie = i18n.getLocaleCookieHeader(locale, request);
+   * if (cookie) response.headers.append("Set-Cookie", cookie);
+   * return response;
+   * ```
+   */
+  function getLocaleCookieHeader(locale: string, request?: Request): string | null {
+    const { cookieName } = normalized;
+
+    // Skip if cookie already matches — avoid unnecessary Set-Cookie on every response
+    if (request) {
+      const cookieHeader = request.headers.get("cookie") ?? "";
+      const existing = parseCookie(cookieHeader, cookieName);
+      if (existing === locale) return null;
+    }
+
+    return `${cookieName}=${locale}; path=/; max-age=31536000; SameSite=Lax`;
+  }
+
   return {
     config: normalized,
     getLocaleFromRequest,
     buildLocalePath,
     replaceLocaleInPath,
     detectLocale,
+    getLocaleCookieHeader,
     getMessages: core.getMessages.bind(core),
     getLocales: core.getLocales.bind(core),
     getLanguages: core.getLanguages.bind(core),
