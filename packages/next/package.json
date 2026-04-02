@@ -18,32 +18,26 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "bun": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./server": {
       "types": "./dist/server.d.ts",
-      "bun": "./src/server.ts",
       "default": "./dist/server.js"
     },
     "./client": {
       "types": "./dist/client.d.ts",
-      "bun": "./src/client.tsx",
       "default": "./dist/client.js"
     },
     "./middleware": {
       "types": "./dist/middleware.d.ts",
-      "bun": "./src/middleware.ts",
       "default": "./dist/middleware.js"
     },
     "./proxy": {
       "types": "./dist/proxy.d.ts",
-      "bun": "./src/proxy.ts",
       "default": "./dist/proxy.js"
     },
     "./revalidate": {
       "types": "./dist/revalidate.d.ts",
-      "bun": "./src/revalidate.ts",
       "default": "./dist/revalidate.js"
     },
     "./package.json": "./package.json"

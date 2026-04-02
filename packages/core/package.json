@@ -18,13 +18,11 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "bun": "./src/index.ts",
       "react-native": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./react": {
-      "types": "./src/react/index.tsx",
-      "bun": "./src/react/index.tsx",
+      "types": "./dist/react/index.d.ts",
       "default": "./dist/react/index.js"
     },
     "./package.json": "./package.json"
