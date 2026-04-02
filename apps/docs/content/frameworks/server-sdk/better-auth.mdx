@@ -135,17 +135,78 @@ createBetterAuthProvider(i18n, {
 
 ## Default Error Codes
 
-The provider also exports `DEFAULT_AUTH_KEYS` — a map of all 40+ Better Auth core error codes with their English defaults. Use it to seed your namespace:
+The provider exports `DEFAULT_AUTH_KEYS` — all Better Auth core error codes with English defaults. Create these keys in your project's `auth` namespace, then translate them from the dashboard.
+
+<Callout type="tip">
+  **Seed with AI.** Copy the prompt below into Claude, ChatGPT, or any AI agent with the [Better i18n MCP server](/mcp) connected:
+
+  > Create the following keys in the "auth" namespace of my project with their English source text, then translate them into Turkish, German, Spanish, and French:
+  >
+  > INVALID_EMAIL_OR_PASSWORD = "Invalid email or password"
+  > USER_NOT_FOUND = "User not found"
+  > EMAIL_NOT_VERIFIED = "Email not verified"
+  > SESSION_EXPIRED = "Session expired. Re-authenticate to perform this action."
+  > PASSWORD_TOO_SHORT = "Password too short"
+  > PASSWORD_TOO_LONG = "Password too long"
+  > USER_ALREADY_EXISTS = "User already exists."
+  > INVALID_TOKEN = "Invalid token"
+  > TOKEN_EXPIRED = "Token expired"
+  > ACCOUNT_NOT_FOUND = "Account not found"
+</Callout>
+
+### Full Key Reference
+
+| Key | Default English Message |
+|-----|------------------------|
+| **Authentication** | |
+| `INVALID_EMAIL_OR_PASSWORD` | Invalid email or password |
+| `INVALID_PASSWORD` | Invalid password |
+| `INVALID_EMAIL` | Invalid email |
+| `INVALID_TOKEN` | Invalid token |
+| `TOKEN_EXPIRED` | Token expired |
+| `EMAIL_NOT_VERIFIED` | Email not verified |
+| `EMAIL_ALREADY_VERIFIED` | Email is already verified |
+| `EMAIL_MISMATCH` | Email mismatch |
+| **User Management** | |
+| `USER_NOT_FOUND` | User not found |
+| `USER_ALREADY_EXISTS` | User already exists. |
+| `INVALID_USER` | Invalid user |
+| `USER_EMAIL_NOT_FOUND` | User email not found |
+| `FAILED_TO_CREATE_USER` | Failed to create user |
+| `FAILED_TO_UPDATE_USER` | Failed to update user |
+| **Session** | |
+| `SESSION_EXPIRED` | Session expired. Re-authenticate to perform this action. |
+| `SESSION_NOT_FRESH` | Session is not fresh |
+| `FAILED_TO_CREATE_SESSION` | Failed to create session |
+| `FAILED_TO_GET_SESSION` | Failed to get session |
+| **Password** | |
+| `PASSWORD_TOO_SHORT` | Password too short |
+| `PASSWORD_TOO_LONG` | Password too long |
+| `PASSWORD_ALREADY_SET` | User already has a password set |
+| `CREDENTIAL_ACCOUNT_NOT_FOUND` | Credential account not found |
+| **Account & Social** | |
+| `ACCOUNT_NOT_FOUND` | Account not found |
+| `SOCIAL_ACCOUNT_ALREADY_LINKED` | Social account already linked |
+| `LINKED_ACCOUNT_ALREADY_EXISTS` | Linked account already exists |
+| `PROVIDER_NOT_FOUND` | Provider not found |
+| **Validation** | |
+| `VALIDATION_ERROR` | Validation Error |
+| `MISSING_FIELD` | Field is required |
+| `INVALID_CALLBACK_URL` | Invalid callbackURL |
+
+You can also access these programmatically:
 
 ```ts
 import { DEFAULT_AUTH_KEYS } from "@better-i18n/server/providers/better-auth";
 
-console.log(Object.keys(DEFAULT_AUTH_KEYS));
-// ["INVALID_EMAIL_OR_PASSWORD", "USER_NOT_FOUND", "SESSION_EXPIRED", ...]
+// 40+ keys with English defaults
+Object.entries(DEFAULT_AUTH_KEYS).forEach(([key, message]) => {
+  console.log(`${key}: ${message}`);
+});
 ```
 
 <Callout type="info">
-  `DEFAULT_AUTH_KEYS` covers Better Auth **core** error codes. Plugin-specific codes (admin, two-factor, email-otp) can be added as additional keys in your namespace.
+  This table covers Better Auth **core** error codes. Plugin-specific codes (admin, two-factor, email-otp, organization) can be added as additional keys in your namespace.
 </Callout>
 
 ## Sharing with Hono Middleware
