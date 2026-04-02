@@ -50,7 +50,7 @@ describe("listContentEntries", () => {
       });
 
       const call = queryMock.mock.calls[0][0];
-      expect(call.modelSlug).toBe("blog-posts");
+      expect(call.models).toBe("blog-posts");
     });
 
     it("passes search filter", async () => {

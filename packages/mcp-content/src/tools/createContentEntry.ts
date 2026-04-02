@@ -16,8 +16,9 @@ import {
 import type { Tool } from "../types/index.js";
 
 const translationValue = z.object({
-  title: z.string(),
+  title: z.string().optional(),
   bodyMarkdown: z.string().optional(),
+  excerpt: z.string().optional(),
   customFields: customFieldsSchema,
 });
 
@@ -25,8 +26,12 @@ const inputSchema = projectSchema.extend({
   modelSlug: z.string().min(1),
   title: z.string().min(1),
   slug: z.string().min(1),
+  sourceLanguageCode: z.string().optional(),
   bodyMarkdown: z.string().optional(),
+  excerpt: z.string().optional(),
+  featuredImage: z.string().optional(),
   status: z.enum(["draft", "published"]).optional(),
+  tags: z.array(z.string()).optional(),
   customFields: customFieldsSchema,
   translations: z.record(z.string(), translationValue).optional(),
 });
@@ -87,14 +92,31 @@ EXAMPLE (project sl='tr', with localized custom field):
           type: "string",
           description: "URL slug for the entry — this is the UNIVERSAL identifier shared across all languages (used in the CMS, not language-specific). For per-language URL slugs, use a localized custom field (e.g., 'localized_slug' with localized=true) and set it via translations.{lang}.customFields.",
         },
+        sourceLanguageCode: {
+          type: "string",
+          description: "Source language code (defaults to project source language). Override when creating content in a language other than the project default.",
+        },
         bodyMarkdown: {
           type: "string",
           description: "Content body in Markdown format (supports GFM: tables, strikethrough, task lists). WARNING: Do NOT start with a # H1 heading — the entry title is already rendered as the page H1 by the platform. Starting with # Title creates a duplicate visible heading. Begin with an introductory paragraph or ## H2 section instead.",
+        },
+        excerpt: {
+          type: "string",
+          description: "Short excerpt or summary",
+        },
+        featuredImage: {
+          type: "string",
+          description: "Featured image URL",
         },
         status: {
           type: "string",
           enum: ["draft", "published"],
           description: "Initial entry status (default: draft)",
+        },
+        tags: {
+          type: "array",
+          items: { type: "string" },
+          description: "Tags for categorization",
         },
         customFields: {
           type: "object",

@@ -217,7 +217,7 @@ describe("forward contract: tool output → API schema", () => {
 
       const apiArgs = queryMock.mock.calls[0][0];
       expectProjectSplit(apiArgs, "my-org", "my-app");
-      expect(apiArgs.modelSlug).toBe("blog-posts");
+      expect(apiArgs.models).toBe("blog-posts");
       expect(apiArgs.search).toBe("hello world");
       expect(apiArgs.status).toBe("published");
       expect(apiArgs.language).toBe("tr");
