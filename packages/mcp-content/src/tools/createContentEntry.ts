@@ -18,7 +18,6 @@ import type { Tool } from "../types/index.js";
 const translationValue = z.object({
   title: z.string().optional(),
   bodyMarkdown: z.string().optional(),
-  excerpt: z.string().optional(),
   customFields: customFieldsSchema,
 });
 
@@ -28,10 +27,7 @@ const inputSchema = projectSchema.extend({
   slug: z.string().min(1),
   sourceLanguageCode: z.string().optional(),
   bodyMarkdown: z.string().optional(),
-  excerpt: z.string().optional(),
-  featuredImage: z.string().optional(),
   status: z.enum(["draft", "published"]).optional(),
-  tags: z.array(z.string()).optional(),
   customFields: customFieldsSchema,
   translations: z.record(z.string(), translationValue).optional(),
 });
@@ -100,23 +96,10 @@ EXAMPLE (project sl='tr', with localized custom field):
           type: "string",
           description: "Content body in Markdown format (supports GFM: tables, strikethrough, task lists). WARNING: Do NOT start with a # H1 heading — the entry title is already rendered as the page H1 by the platform. Starting with # Title creates a duplicate visible heading. Begin with an introductory paragraph or ## H2 section instead.",
         },
-        excerpt: {
-          type: "string",
-          description: "Short excerpt or summary",
-        },
-        featuredImage: {
-          type: "string",
-          description: "Featured image URL",
-        },
         status: {
           type: "string",
           enum: ["draft", "published"],
           description: "Initial entry status (default: draft)",
-        },
-        tags: {
-          type: "array",
-          items: { type: "string" },
-          description: "Tags for categorization",
         },
         customFields: {
           type: "object",
