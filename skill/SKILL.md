@@ -19,11 +19,13 @@ Dashboard: https://better-i18n.com · Docs: https://docs.better-i18n.com · CDN:
 
 | Package | Version | Install |
 |---|---|---|
-| `@better-i18n/next` | 0.7.5 | `npm install @better-i18n/next@0.7.5` |
-| `@better-i18n/use-intl` | 0.7.0 | `npm install @better-i18n/use-intl@0.7.0` |
-| `@better-i18n/core` | 0.6.2 | `npm install @better-i18n/core@0.6.2` |
-| `@better-i18n/server` | 0.3.3 | `npm install @better-i18n/server@0.3.3` |
-| `@better-i18n/expo` | 0.8.1 | `npm install @better-i18n/expo@0.8.1` |
+| `@better-i18n/next` | 0.7.6 | `npm install @better-i18n/next@0.7.6` |
+| `@better-i18n/use-intl` | 0.8.0 | `npm install @better-i18n/use-intl@0.8.0` |
+| `@better-i18n/core` | 0.7.0 | `npm install @better-i18n/core@0.7.0` |
+| `@better-i18n/server` | 0.4.0 | `npm install @better-i18n/server@0.4.0` |
+| `@better-i18n/vite` | 0.2.6 | `npm install @better-i18n/vite@0.2.6` |
+| `@better-i18n/expo` | 0.8.2 | `npm install @better-i18n/expo@0.8.2` |
+| `@better-i18n/remix` | 0.6.2 | `npm install @better-i18n/remix@0.6.2` |
 | `@better-i18n/sdk` | 3.2.1 | `npm install @better-i18n/sdk@3.2.1` |
 | `@better-i18n/cli` | 0.2.6 | `npx @better-i18n/cli@0.2.6` |
 | `@better-i18n/mcp` | 0.15.5 | `npx -y @better-i18n/mcp@0.15.5` |
@@ -37,7 +39,9 @@ Always check [npm](https://www.npmjs.com/search?q=%40better-i18n) for the latest
 |---|---|---|
 | Next.js (App Router or Pages Router) | `@better-i18n/next` | <references/sdk-next.md> |
 | React + TanStack Router / use-intl | `@better-i18n/use-intl` | <references/sdk-react.md> |
+| Vite + React (SPA or SSR) | `@better-i18n/vite` + `use-intl` | <references/sdk-react.md> |
 | Hono / Node.js server | `@better-i18n/server` | <references/sdk-react.md> |
+| Better Auth (error translation) | `@better-i18n/server` | <references/locale-persistence.md> |
 | Remix / Shopify Hydrogen | `@better-i18n/remix` | <references/sdk-react.md> |
 | React Native / Expo | `@better-i18n/expo` | <references/sdk-mobile.md> |
 | Swift (iOS / macOS / visionOS) | `BetterI18n` via SPM | <references/sdk-mobile.md> |
@@ -58,6 +62,7 @@ Always check [npm](https://www.npmjs.com/search?q=%40better-i18n) for the latest
 | Flutter / Dart | https://docs.better-i18n.com/frameworks/flutter.mdx |
 | Hono / Node.js | https://docs.better-i18n.com/frameworks/server-sdk/hono.mdx |
 | Express / Fastify | https://docs.better-i18n.com/frameworks/server-sdk/node.mdx |
+| Better Auth | https://docs.better-i18n.com/frameworks/server-sdk/better-auth.mdx |
 | tRPC | https://docs.better-i18n.com/frameworks/server-sdk/trpc.mdx |
 | Supabase Edge | https://docs.better-i18n.com/frameworks/server-sdk/supabase.mdx |
 
