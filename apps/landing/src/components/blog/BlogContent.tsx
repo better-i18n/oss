@@ -4,7 +4,6 @@ import parse, {
   HTMLReactParserOptions,
   domToReact,
 } from "html-react-parser";
-import { CodeBlock, CodeBlockCode } from "@better-i18n/ui";
 
 /**
  * Convert a text string into a URL-friendly slug for anchor linking.
@@ -67,10 +66,10 @@ interface BlogContentProps {
 }
 
 /**
- * Parses HTML content and replaces code blocks with styled CodeBlock components.
+ * Parses HTML content and replaces code blocks with dark-themed code blocks.
  *
  * Intercepts <pre><code class="language-xxx"> and renders them
- * using our CodeBlock component with syntax highlighting.
+ * using the same dark code block style as the landing page.
  *
  * When `locale` is provided, rewrites internal links to include the
  * correct locale prefix so readers stay in their language context.
@@ -155,15 +154,20 @@ export default function BlogContent({ html, className, locale }: BlogContentProp
           // Extract code content
           const codeContent = getTextContent(codeNode);
 
-          // Replace with our CodeBlock component
+          // Replace with dark-themed code block matching landing page style
           return (
-            <CodeBlock className="my-6 shadow-sm border-mist-200 bg-mist-50/50">
-              <CodeBlockCode
-                code={codeContent}
-                language={language}
-                theme="github-light"
-              />
-            </CodeBlock>
+            <div className="not-prose my-6 rounded-xl overflow-hidden border border-mist-200 shadow-sm">
+              {language && language !== "text" && (
+                <div className="px-4 py-1.5 bg-mist-50 border-b border-mist-200 text-xs text-mist-500 font-mono">
+                  {language}
+                </div>
+              )}
+              <div className="bg-mist-950 p-5 overflow-x-auto">
+                <pre className="text-[13px] leading-relaxed text-mist-100 font-mono whitespace-pre">
+                  {codeContent}
+                </pre>
+              </div>
+            </div>
           );
         }
       }
