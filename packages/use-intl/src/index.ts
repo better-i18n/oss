@@ -36,8 +36,9 @@ export type {
   BetterI18nContextValue,
 } from "./types.js";
 
-// Re-export locale utilities from core (convenience)
+// Re-export locale + cookie utilities from core (convenience)
 export {
+  getPersistedLocale,
   extractLocale,
   getLocaleFromPath,
   hasLocalePrefix,

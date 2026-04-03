@@ -23,16 +23,16 @@ export interface BetterAuthProviderOptions {
   namespace?: string;
 
   /**
-   * Custom locale resolver. Overrides the default Accept-Language detection.
+   * Custom locale resolver. Overrides all other detection methods.
    *
-   * Useful when locale is stored in a cookie, database, or user profile.
+   * Useful when locale is stored in a database, user profile, or custom header.
    *
    * @example
    * ```ts
    * createBetterAuthProvider(i18n, {
    *   getLocale: async ({ headers }) => {
-   *     const cookie = headers?.get("cookie");
-   *     return parseCookie(cookie)?.locale ?? "en";
+   *     const userId = getUserIdFromSession(headers);
+   *     return await db.users.getLocale(userId) ?? "en";
    *   },
    * })
    * ```
@@ -40,11 +40,54 @@ export interface BetterAuthProviderOptions {
   getLocale?: (context: { headers?: Headers }) => string | Promise<string>;
 
   /**
+   * Read locale from a request cookie by name.
+   *
+   * When set, the provider reads the named cookie from the incoming request's
+   * `Cookie` header. This pairs naturally with `@better-i18n/use-intl`'s
+   * `persistLocale` prop, which writes the user's chosen locale to a cookie
+   * on every change — the server just needs to read it back.
+   *
+   * Detection priority: `getLocale` > `localeCookie` > `Accept-Language` > `defaultLocale`
+   *
+   * @example
+   * ```ts
+   * // Client: <BetterI18nProvider persistLocale="preferred-locale" />
+   * // Server:
+   * createBetterAuthProvider(i18n, { localeCookie: "preferred-locale" })
+   * ```
+   */
+  localeCookie?: string;
+
+  /**
    * Log a warning when a translation key is missing in the namespace.
    * Helps identify untranslated error codes during development.
    * @default true
    */
   warnOnMissingKeys?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Cookie parsing — extract a single named value from a Cookie header.
+// Intentionally minimal: no full RFC 6265 parser, just the common case.
+// ---------------------------------------------------------------------------
+
+/** BCP 47 locale tag: 2–8 alpha, optional subtags separated by hyphens. */
+const LOCALE_RE = /^[a-zA-Z]{2,8}(?:-[a-zA-Z0-9]{1,8})*$/;
+
+/**
+ * Extract a cookie value from a raw `Cookie` header string.
+ * Returns `null` if the cookie is missing or the value doesn't look like a locale.
+ */
+function readCookieFromHeader(
+  cookieHeader: string | null,
+  cookieName: string,
+): string | null {
+  if (!cookieHeader) return null;
+  const safeName = cookieName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${safeName}=([^;]*)`));
+  const value = match?.[1]?.trim() ?? null;
+  if (!value || !LOCALE_RE.test(value)) return null;
+  return value;
 }
 
 // ---------------------------------------------------------------------------
@@ -136,10 +179,17 @@ export function createBetterAuthProvider(
             const errorCode = body.code;
 
             // ── Detect locale ──────────────────────────────────────
+            // Priority: getLocale callback > cookie > Accept-Language > default
             let locale: string;
             try {
               if (options?.getLocale) {
                 locale = await options.getLocale({ headers: hookCtx.headers });
+              } else if (options?.localeCookie && hookCtx.headers) {
+                const cookieValue = readCookieFromHeader(
+                  hookCtx.headers.get("cookie"),
+                  options.localeCookie,
+                );
+                locale = cookieValue ?? await i18n.detectLocaleFromHeaders(hookCtx.headers);
               } else if (hookCtx.headers) {
                 locale = await i18n.detectLocaleFromHeaders(hookCtx.headers);
               } else {
