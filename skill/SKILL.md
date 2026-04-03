@@ -19,11 +19,12 @@ Dashboard: https://better-i18n.com · Docs: https://docs.better-i18n.com · CDN:
 
 | Package | Version | Install |
 |---|---|---|
-| `@better-i18n/next` | 0.7.2 | `npm install @better-i18n/next@0.7.2` |
-| `@better-i18n/use-intl` | 0.5.0 | `npm install @better-i18n/use-intl@0.5.0` |
-| `@better-i18n/core` | 0.5.0 | `npm install @better-i18n/core@0.5.0` |
-| `@better-i18n/expo` | 0.7.5 | `npm install @better-i18n/expo@0.7.5` |
-| `@better-i18n/sdk` | 3.2.0 | `npm install @better-i18n/sdk@3.2.0` |
+| `@better-i18n/next` | 0.7.5 | `npm install @better-i18n/next@0.7.5` |
+| `@better-i18n/use-intl` | 0.7.0 | `npm install @better-i18n/use-intl@0.7.0` |
+| `@better-i18n/core` | 0.6.2 | `npm install @better-i18n/core@0.6.2` |
+| `@better-i18n/server` | 0.3.3 | `npm install @better-i18n/server@0.3.3` |
+| `@better-i18n/expo` | 0.8.1 | `npm install @better-i18n/expo@0.8.1` |
+| `@better-i18n/sdk` | 3.2.1 | `npm install @better-i18n/sdk@3.2.1` |
 | `@better-i18n/cli` | 0.2.6 | `npx @better-i18n/cli@0.2.6` |
 | `@better-i18n/mcp` | 0.15.5 | `npx -y @better-i18n/mcp@0.15.5` |
 | `@better-i18n/mcp-content` | 0.8.1 | `npx -y @better-i18n/mcp-content@0.8.1` |
@@ -75,6 +76,9 @@ Always check [npm](https://www.npmjs.com/search?q=%40better-i18n) for the latest
 | Choose JSON file format | File formats | <references/file-formats.md> |
 | Publish translations to CDN or GitHub | Publish flows | <references/publish-and-analytics.md> |
 | Track coverage, health trends, CDN usage | Analytics | <references/publish-and-analytics.md> |
+| Persist locale across refreshes / auth requests | Locale persistence | <references/locale-persistence.md> |
+| Translate Better Auth error messages | Auth + i18n | <references/locale-persistence.md> |
+| Send app locale in fetch / auth headers | Locale headers | <references/locale-persistence.md> |
 | Format dates, numbers, currencies, relative time | Formatting | <references/sdk-react.md> |
 | Detect locale from country / Accept-Language | Geo detection | <references/cdn.md> |
 | Type-safe `t("key")` autocomplete | TypeScript | <references/sdk-react.md> |
