@@ -1,6 +1,6 @@
 "use client";
 
-import { createI18nCore } from "@better-i18n/core";
+import { createI18nCore, getPersistedLocale } from "@better-i18n/core";
 import type { LanguageOption } from "@better-i18n/core";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { IntlProvider } from "use-intl";
@@ -37,27 +37,8 @@ function readSSRData(): SSRData | null {
   }
 }
 
-/** Locale value: 2–8 char BCP 47 tag, e.g. "en", "pt-BR", "zh-Hans". */
+/** BCP 47 locale tag for URL segment detection. */
 const LOCALE_RE = /^[a-zA-Z]{2,8}(?:-[a-zA-Z0-9]{1,8})*$/;
-
-/**
- * Read locale from a cookie by name.
- * Used as fallback when SSR data is not available (static/SPA builds).
- *
- * - Escapes `cookieName` before building the RegExp so names with
- *   dots, brackets, etc. never throw or match unexpectedly.
- * - Validates the returned value against a BCP 47 pattern so a
- *   corrupt/attacker-controlled cookie cannot inject garbage into
- *   the locale chain.
- */
-function readCookieLocale(cookieName: string): string | null {
-  if (typeof document === "undefined") return null;
-  const safeName = cookieName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${safeName}=([^;]*)`));
-  const value = match?.[1]?.trim() ?? null;
-  if (!value || !LOCALE_RE.test(value)) return null;
-  return value;
-}
 
 // ─── Provider Props ──────────────────────────────────────────────────
 
@@ -217,8 +198,8 @@ export function BetterI18nProvider({
   const [managedLocale, setManagedLocale] = useState(() =>
     propLocale
     || ssrData?.locale
-    || (persistCookieName ? readCookieLocale(persistCookieName) : null)
-    || (localeCookie ? readCookieLocale(localeCookie) : null)
+    || (persistCookieName ? getPersistedLocale(persistCookieName) : null)
+    || (localeCookie ? getPersistedLocale(localeCookie) : null)
     || "en"
   );
 

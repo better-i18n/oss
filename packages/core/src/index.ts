@@ -29,6 +29,9 @@ export {
   type ResolvedFlag,
 } from "./utils/locale-ui.js";
 
+// Cookie utilities
+export { getPersistedLocale } from "./utils/cookie.js";
+
 // Locale utilities
 export {
   normalizeLocale,
