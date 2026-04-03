@@ -1,5 +1,12 @@
 # hono-example
 
+## 0.0.16
+
+### Patch Changes
+
+- Updated dependencies [ffa5353]
+  - @better-i18n/server@0.4.1
+
 ## 0.0.15
 
 ### Patch Changes
