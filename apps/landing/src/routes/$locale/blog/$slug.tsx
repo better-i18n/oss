@@ -346,6 +346,7 @@ function BlogPostPage() {
                     prose-p:text-mist-700 prose-p:leading-[1.8]
                     prose-a:text-mist-950 prose-a:underline-offset-4 prose-a:decoration-mist-300 hover:prose-a:decoration-mist-500
                     prose-strong:text-mist-900 prose-strong:font-semibold
+                    prose-pre:p-0 prose-pre:bg-transparent prose-pre:rounded-none prose-pre:my-0 prose-pre:border-0 prose-pre:shadow-none
                     prose-code:text-mist-900 prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
                     prose-blockquote:border-l-2 prose-blockquote:border-mist-200 prose-blockquote:pl-6 prose-blockquote:text-mist-600 prose-blockquote:not-italic prose-blockquote:font-normal
                     prose-img:rounded-xl prose-img:shadow-sm
