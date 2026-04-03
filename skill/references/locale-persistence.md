@@ -21,12 +21,12 @@ Without explicit persistence, locale resets to `"en"` on every page load.
 ┌─ CLIENT ──────────────────────────────────────────┐
 │                                                    │
 │  1. BetterI18nProvider                             │
-│     persistLocale="preferred-locale"               │
+│     localeCookie="preferred-locale"               │
 │     → Writes cookie on every locale change         │
 │     → Reads cookie on mount (fallback for SPA)     │
 │                                                    │
 │  2. Non-React contexts (auth client, analytics)    │
-│     getPersistedLocale("preferred-locale")          │
+│     getLocaleCookie("preferred-locale")          │
 │     → Reads cookie in module-level code            │
 │                                                    │
 │  Browser sends cookie automatically with requests  │
@@ -58,21 +58,21 @@ import { BetterI18nProvider } from "@better-i18n/use-intl";
 
 <BetterI18nProvider
   project="acme/dashboard"
-  persistLocale="preferred-locale"  // ← cookie name
+  localeCookie="preferred-locale"  // ← cookie name
 >
   <App />
 </BetterI18nProvider>
 ```
 
-**What `persistLocale` does:**
-- `true` → uses default cookie name `"preferred-locale"`
+**What `localeCookie` does:**
+- `true` → uses default cookie name `"locale"`
 - `string` → custom cookie name (e.g., `"ct-locale"`, `"app-lang"`)
 - On every locale change (including mount): writes `document.cookie`
 - On initialization (SPA/static): reads cookie as fallback before `"en"`
 
 **Locale resolution chain:**
 ```
-propLocale → ssrData → persistLocale cookie → localeCookie (Vite plugin) → "en"
+propLocale → ssrData → cookie (localeCookie prop or Vite plugin) → "en"
 ```
 
 ---
@@ -82,8 +82,8 @@ propLocale → ssrData → persistLocale cookie → localeCookie (Vite plugin) �
 For module-level code where React hooks aren't available:
 
 ```typescript
-import { getPersistedLocale } from "@better-i18n/core";
-// Also available: import { getPersistedLocale } from "@better-i18n/use-intl";
+import { getLocaleCookie } from "@better-i18n/core";
+// Also available: import { getLocaleCookie } from "@better-i18n/use-intl";
 
 // Auth client
 import { createAuthClient } from "better-auth/react";
@@ -94,7 +94,7 @@ export const authClient = createAuthClient({
     headers: {
       // Getter — reads fresh cookie value on every request
       get "Accept-Language"() {
-        return getPersistedLocale("preferred-locale") ?? "en";
+        return getLocaleCookie("preferred-locale") ?? "en";
       },
     },
   },
@@ -104,7 +104,7 @@ export const authClient = createAuthClient({
 ```typescript
 // Analytics
 analytics.identify({
-  locale: getPersistedLocale("preferred-locale"),
+  locale: getLocaleCookie("preferred-locale"),
 });
 ```
 
@@ -114,7 +114,7 @@ function apiFetch(url: string, init?: RequestInit) {
   return fetch(url, {
     ...init,
     headers: {
-      "Accept-Language": getPersistedLocale("preferred-locale") ?? "en",
+      "Accept-Language": getLocaleCookie("preferred-locale") ?? "en",
       ...init?.headers,
     },
   });
@@ -174,11 +174,11 @@ export default defineConfig({
 
 ```typescript
 // ❌ Different cookie names — server never reads client's cookie
-<BetterI18nProvider persistLocale="app-locale" />
+<BetterI18nProvider localeCookie="app-locale" />
 createBetterAuthProvider(i18n, { localeCookie: "preferred-locale" })
 
 // ✅ Same cookie name everywhere
-<BetterI18nProvider persistLocale="preferred-locale" />
+<BetterI18nProvider localeCookie="preferred-locale" />
 createBetterAuthProvider(i18n, { localeCookie: "preferred-locale" })
 ```
 
@@ -192,18 +192,18 @@ export const authClient = createAuthClient({
   fetchOptions: {
     headers: {
       get "Accept-Language"() {
-        return getPersistedLocale("preferred-locale") ?? "en";
+        return getLocaleCookie("preferred-locale") ?? "en";
       },
     },
   },
 });
 ```
 
-### 3. Missing `persistLocale` on provider
+### 3. Missing `localeCookie` on provider
 
-Without `persistLocale`, the locale resets to `"en"` on every page refresh in SPA/static builds. SSR apps with middleware don't need this — the middleware detects locale from the URL or cookie on every request.
+Without `localeCookie`, the locale resets to `"en"` on every page refresh in SPA/static builds. SSR apps with middleware don't need this — the middleware detects locale from the URL or cookie on every request.
 
-**When you need `persistLocale`:**
+**When you need `localeCookie`:**
 - Vite SPA (no SSR middleware)
 - Static builds
 - `localePrefix: "never"` (no locale in URL)
@@ -225,7 +225,7 @@ export const authClient = createAuthClient({
   fetchOptions: {
     headers: {
       get "Accept-Language"() {
-        return getPersistedLocale("preferred-locale") ?? "en";
+        return getLocaleCookie("preferred-locale") ?? "en";
       },
     },
   },
@@ -236,17 +236,17 @@ export const authClient = createAuthClient({
 
 ## API Reference
 
-### `persistLocale` (BetterI18nProvider prop)
+### `localeCookie` (BetterI18nProvider prop)
 
 | Value | Behavior |
 |---|---|
 | `false` (default) | No persistence |
-| `true` | Cookie name: `"preferred-locale"` |
+| `true` | Cookie name: `"locale"` |
 | `string` | Custom cookie name |
 
 Cookie format: `{name}={locale}; path=/; max-age=31536000; SameSite=Lax`
 
-### `getPersistedLocale(cookieName)` (from `@better-i18n/core`)
+### `getLocaleCookie(cookieName)` (from `@better-i18n/core`)
 
 | Parameter | Type | Description |
 |---|---|---|

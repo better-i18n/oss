@@ -53,10 +53,10 @@ const langs    = await i18n.getLanguages();         // LanguageOption[] with lab
 ### Cookie utilities
 
 ```typescript
-import { getPersistedLocale } from "@better-i18n/core";
+import { getLocaleCookie } from "@better-i18n/core";
 
 // Read persisted locale in non-React contexts (auth clients, analytics, fetch wrappers)
-const locale = getPersistedLocale("preferred-locale"); // → "tr" | null
+const locale = getLocaleCookie("preferred-locale"); // → "tr" | null
 ```
 
 > **Full locale persistence + auth integration guide:** <references/locale-persistence.md>
@@ -175,7 +175,7 @@ export function Providers({
       project="acme/dashboard"
       locale={locale}
       messages={messages}       // optional: pre-loaded on server
-      persistLocale             // writes locale to cookie for persistence
+      localeCookie             // writes locale to cookie for persistence
     >
       {children}
     </BetterI18nProvider>
