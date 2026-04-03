@@ -49,6 +49,7 @@ function App() {
 | `localePrefix` | `"always" \| "as-needed"` | | URL prefix strategy (default: `"as-needed"`) |
 | `timeZone` | `string` | | Timezone for date formatting |
 | `now` | `Date` | | Current time (for SSR hydration) |
+| `localeCookie` | `boolean \| string` | | Persist locale to cookie. `true` = `"locale"`, string = custom name |
 | `onLocaleChange` | `(locale: string) => void` | | Callback when locale changes |
 | `onError` | `(error: IntlError) => void` | | Error handler for missing translations |
 | `cdnBaseUrl` | `string` | | Custom CDN URL |
@@ -113,29 +114,60 @@ const messages = await getMessages({
 
 ## Locale Persistence
 
-Handle locale changes with persistence:
+Use the `localeCookie` prop to persist the user's language choice across page refreshes:
 
 ```tsx
-function App() {
-  const [locale, setLocale] = useState(() => {
-    return localStorage.getItem('locale') || 'en'
-  })
+<BetterI18nProvider
+  project="org/project"
+  localeCookie // [!code highlight]
+>
+  <App />
+</BetterI18nProvider>
+```
 
-  const handleLocaleChange = (newLocale: string) => {
-    localStorage.setItem('locale', newLocale)
-    setLocale(newLocale)
-  }
+This does two things:
+1. **Writes** a cookie on every locale change (including initial mount)
+2. **Reads** the cookie on initialization as a fallback (for SPA/static builds)
 
-  return (
-    <BetterI18nProvider
-      project="org/project"
-      locale={locale}
-      onLocaleChange={handleLocaleChange}
-    >
-      <App />
-    </BetterI18nProvider>
-  )
-}
+### Options
+
+| Value | Cookie Name | Use Case |
+|-------|------------|----------|
+| `true` | `"locale"` | Most apps — simple default |
+| `"preferred-locale"` | `"preferred-locale"` | Custom name to match your server |
+| `false` (default) | — | SSR apps with middleware (cookie handled server-side) |
+
+### Server-side pairing
+
+Use the same cookie name on both client and server:
+
+```tsx title="Client"
+<BetterI18nProvider localeCookie="preferred-locale" />
+```
+
+```ts title="Server (Better Auth)"
+createBetterAuthProvider(i18n, { localeCookie: "preferred-locale" })
+```
+
+```ts title="Server (Vite plugin)"
+betterI18n({ localeCookie: "preferred-locale" })
+```
+
+<Callout type="tip">
+  The cookie name must match across client and server. When using `localeCookie` (boolean `true`), the default name is `"locale"`.
+</Callout>
+
+### Non-React contexts
+
+Read the cookie outside React (auth clients, analytics, fetch wrappers):
+
+```ts
+import { getLocaleCookie } from "@better-i18n/core";
+
+const locale = getLocaleCookie("locale"); // → "tr" | null
+```
+
+See [Better Auth integration](/frameworks/server-sdk/better-auth#locale-detection) for the full pattern.
 ```
 
 ## Error Handling

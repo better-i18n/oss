@@ -127,20 +127,16 @@ Use `variant="unstyled"` with Tailwind or any CSS framework:
 
 ## Persisting the Locale
 
-### With Vite Plugin (Recommended)
+### With `localeCookie` prop (recommended)
 
-The `@better-i18n/vite` plugin automatically reads the `locale` cookie on each request. Use `onLocaleChange` to set the cookie when the user switches language:
+The `localeCookie` prop handles both reading and writing the locale cookie automatically:
 
 ```tsx title="src/App.tsx"
 import { BetterI18nProvider, LocaleDropdown } from '@better-i18n/use-intl'
 
 function App() {
   return (
-    <BetterI18nProvider
-      onLocaleChange={(newLocale) => {
-        document.cookie = `locale=${newLocale};path=/;max-age=${60 * 60 * 24 * 365}`
-      }}
-    >
+    <BetterI18nProvider localeCookie> {/* [!code highlight] */}
       <LocaleDropdown />
       <Router />
     </BetterI18nProvider>
@@ -148,41 +144,39 @@ function App() {
 }
 ```
 
-On the next page load, the plugin detects the cookie and serves translations for the saved locale.
+This writes a `locale` cookie on every locale change, and reads it back on page refresh. No manual `document.cookie` or `localStorage` needed.
 
-### Without Plugin
+### With Vite Plugin (SSR)
 
-Persist to `localStorage` so the locale survives page refreshes:
+When using `@better-i18n/vite`, set the same cookie name on both the plugin and provider:
+
+```ts title="vite.config.ts"
+betterI18n({
+  project: "your-org/your-project",
+  localeCookie: "locale", // [!code highlight]
+})
+```
 
 ```tsx title="src/App.tsx"
-import { useState } from 'react'
-import { BetterI18nProvider } from '@better-i18n/use-intl'
+<BetterI18nProvider localeCookie> {/* matches "locale" by default */}
+  <App />
+</BetterI18nProvider>
+```
 
-function App() {
-  const [locale, setLocale] = useState(
-    () =>
-      localStorage.getItem('locale') ||
-      navigator.language.split('-')[0] ||
-      'en'
-  )
+The Vite plugin reads the cookie server-side during SSR, and the provider reads it client-side for SPA navigation.
 
-  return (
-    <BetterI18nProvider
-      project="your-org/your-project"
-      locale={locale}
-      onLocaleChange={(newLocale) => {
-        localStorage.setItem('locale', newLocale)
-        setLocale(newLocale)
-      }}
-    >
-      <Router />
-    </BetterI18nProvider>
-  )
-}
+### Custom cookie name
+
+Use a string value to set a custom cookie name:
+
+```tsx
+<BetterI18nProvider localeCookie="preferred-locale">
+  <App />
+</BetterI18nProvider>
 ```
 
 <Callout type="tip">
-  `onLocaleChange` is called automatically by `setLocale()` — wire it to your persistence mechanism (cookie or localStorage).
+  The cookie name must match across client, server, and Vite plugin. See [Provider docs](/frameworks/provider#locale-persistence) for the full server-side pairing pattern.
 </Callout>
 
 ## Next Steps

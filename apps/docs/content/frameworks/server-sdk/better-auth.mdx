@@ -115,17 +115,38 @@ Client (Accept-Language: tr) → Better Auth → APIError
   Translations are cached in memory (60s TTL). After the first request, subsequent lookups are instant — no extra CDN calls per auth error.
 </Callout>
 
-## Custom Locale Detection
+## Locale Detection
 
-By default, the provider reads the `Accept-Language` header. Override this when locale is stored elsewhere:
+By default, the provider reads the `Accept-Language` header. For most apps, you'll want cookie-based detection instead — it uses the locale the user actually chose in your app, not their browser/OS language.
+
+### Cookie-based (recommended)
+
+Pair with the provider's [`localeCookie`](/frameworks/provider#locale-persistence) prop — same cookie name on both sides:
+
+```ts title="src/auth.ts"
+createBetterAuthProvider(i18n, {
+  localeCookie: "locale", // [!code highlight]
+  // reads the "locale" cookie from the request
+  // falls back to Accept-Language if cookie is missing
+})
+```
+
+```tsx title="src/App.tsx"
+// Client writes the cookie automatically:
+<BetterI18nProvider localeCookie> {/* default cookie name: "locale" */}
+  <App />
+</BetterI18nProvider>
+```
+
+### Custom callback
+
+For advanced cases (database, user profile, custom header):
 
 ```ts title="src/auth.ts"
 createBetterAuthProvider(i18n, {
   getLocale: async ({ headers }) => { // [!code highlight]
-    // Read from cookie, database, user profile, etc.
-    const cookie = headers?.get("cookie") ?? "";
-    const match = cookie.match(/locale=([a-z]{2})/);
-    return match?.[1] ?? "en";
+    const userId = getUserIdFromSession(headers);
+    return await db.users.getLocale(userId) ?? "en";
   },
 })
 ```
@@ -135,8 +156,13 @@ createBetterAuthProvider(i18n, {
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `namespace` | `string` | `"auth"` | CDN namespace for auth translations |
-| `getLocale` | `(ctx) => string \| Promise<string>` | Accept-Language detection | Custom locale resolver |
+| `localeCookie` | `string` | — | Cookie name to read locale from (pairs with provider's `localeCookie` prop) |
+| `getLocale` | `(ctx) => string \| Promise<string>` | Accept-Language detection | Custom locale resolver (overrides all other detection) |
 | `warnOnMissingKeys` | `boolean` | `true` | Log warnings for untranslated error codes |
+
+<Callout type="info">
+  **Detection priority:** `getLocale` callback > `localeCookie` > `Accept-Language` header > `defaultLocale`
+</Callout>
 
 ## Default Error Codes
 
