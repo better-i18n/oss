@@ -90,40 +90,10 @@ function CopyButton({ code }: { code: string }) {
   );
 }
 
-const LANG_LABELS: Record<string, { label: string; icon: string }> = {
-  typescript: { label: "TypeScript", icon: "TS" },
-  ts: { label: "TypeScript", icon: "TS" },
-  tsx: { label: "React TSX", icon: "⚛" },
-  javascript: { label: "JavaScript", icon: "JS" },
-  js: { label: "JavaScript", icon: "JS" },
-  jsx: { label: "React JSX", icon: "⚛" },
-  bash: { label: "Terminal", icon: "▶" },
-  sh: { label: "Terminal", icon: "▶" },
-  shell: { label: "Terminal", icon: "▶" },
-  terminal: { label: "Terminal", icon: "▶" },
-  json: { label: "JSON", icon: "{}" },
-  css: { label: "CSS", icon: "#" },
-  html: { label: "HTML", icon: "<>" },
-  swift: { label: "Swift", icon: "🐦" },
-  dart: { label: "Dart", icon: "🎯" },
-  python: { label: "Python", icon: "🐍" },
-  go: { label: "Go", icon: "Go" },
-};
-
-function BlogCodeBlock({ language, code }: { language: string; code: string }) {
-  const langInfo = LANG_LABELS[language];
-
+function BlogCodeBlock({ code }: { code: string }) {
   return (
-    <div className="not-prose my-6 rounded-xl overflow-hidden border border-mist-200 dark:border-mist-800 shadow-sm bg-mist-50 dark:bg-mist-950">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-mist-200 dark:border-mist-800">
-        {langInfo ? (
-          <span className="flex items-center gap-1.5 text-xs text-mist-400 dark:text-mist-500 font-mono">
-            <span className="text-[10px]">{langInfo.icon}</span>
-            {langInfo.label}
-          </span>
-        ) : (
-          <span />
-        )}
+    <div className="not-prose my-6 rounded-xl overflow-hidden border border-mist-200 dark:border-mist-800 shadow-sm bg-mist-50 dark:bg-mist-950 relative group">
+      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
         <CopyButton code={code} />
       </div>
       <div className="p-5 overflow-x-auto">
@@ -224,15 +194,9 @@ export default function BlogContent({ html, className, locale }: BlogContentProp
         );
 
         if (codeNode) {
-          // Extract language from class name (e.g., "language-typescript" -> "typescript")
-          const className = codeNode.attribs?.class || "";
-          const languageMatch = className.match(/language-(\w+)/);
-          const language = languageMatch?.[1] || "";
-
-          // Extract code content
           const codeContent = getTextContent(codeNode);
 
-          return <BlogCodeBlock language={language} code={codeContent} />;
+          return <BlogCodeBlock code={codeContent} />;
         }
       }
 
