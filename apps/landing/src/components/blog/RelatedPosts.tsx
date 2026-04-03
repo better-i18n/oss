@@ -85,7 +85,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
                         <img
                           src={post.authorAvatar}
                           alt={post.authorName}
-                          className="h-4 w-4 rounded-full object-cover shrink-0"
+                          className="h-4 w-4 rounded-full object-cover shrink-0 [image-orientation:from-image]"
                         />
                       )}
                       <span className="text-[10px] font-medium text-mist-500 truncate">{post.authorName}</span>

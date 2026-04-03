@@ -269,7 +269,7 @@ function BlogPostPage() {
                       alt={post.authorName}
                       width={44}
                       height={44}
-                      className="w-11 h-11 rounded-full object-cover ring-2 ring-mist-100"
+                      className="w-11 h-11 rounded-full object-cover ring-2 ring-mist-100 [image-orientation:from-image]"
                     />
                   ) : (
                     <div className="w-11 h-11 rounded-full bg-gradient-to-br from-mist-200 to-mist-300 flex items-center justify-center text-sm font-semibold text-mist-700">
