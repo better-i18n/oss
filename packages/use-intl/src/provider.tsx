@@ -1,6 +1,6 @@
 "use client";
 
-import { createI18nCore, getPersistedLocale } from "@better-i18n/core";
+import { createI18nCore, getLocaleCookie } from "@better-i18n/core";
 import type { LanguageOption } from "@better-i18n/core";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { IntlProvider } from "use-intl";
@@ -93,25 +93,36 @@ export interface BetterI18nProviderProps
    * Persist the active locale to a cookie so returning visitors
    * get their previously chosen language — even without geo-IP detection.
    *
-   * - `true` — uses the default cookie name `"preferred-locale"`
-   * - `string` — custom cookie name (e.g., `"my-app-lang"`)
-   * - `false` / `undefined` — no persistence (default, current behavior)
+   * - `true` — uses the default cookie name `"locale"`
+   * - `string` — custom cookie name (e.g., `"preferred-locale"`)
+   * - `false` / `undefined` — no persistence (default)
    *
-   * The cookie is set on every locale change **including initial page load**,
-   * so the server can read it on the next visit before any JS executes.
+   * **Read + write:** On mount, reads the cookie as a fallback when no SSR
+   * data is available (SPA/static builds). On every locale change, writes
+   * the cookie so the server can read it on the next visit.
    *
-   * Works with any hosting provider — no Cloudflare dependency required.
+   * **Same name everywhere:** Use the same cookie name on the server
+   * (`localeCookie` on `createBetterAuthProvider` or Vite plugin) and
+   * in non-React code (`getLocaleCookie()` from `@better-i18n/core`).
    *
    * @example
    * ```tsx
-   * <BetterI18nProvider project="acme/web" locale={locale} persistLocale>
+   * <BetterI18nProvider project="acme/web" localeCookie>
+   *   <App />
+   * </BetterI18nProvider>
+   * ```
+   *
+   * @example
+   * ```tsx
+   * // Custom cookie name — must match server-side localeCookie option
+   * <BetterI18nProvider project="acme/web" localeCookie="preferred-locale">
    *   <App />
    * </BetterI18nProvider>
    * ```
    *
    * @default false
    */
-  persistLocale?: boolean | string;
+  localeCookie?: boolean | string;
 }
 
 /**
@@ -167,7 +178,7 @@ export function BetterI18nProvider({
   localePrefix = "as-needed",
   getMessageFallback: customGetMessageFallback,
   onLocaleChange,
-  persistLocale = false,
+  localeCookie: localeCookieProp = false,
 }: BetterI18nProviderProps) {
   // ─── SSR Data (from @better-i18n/vite plugin) ─────────────────────
   // Read plugin-injected translations synchronously from DOM.
@@ -185,21 +196,20 @@ export function BetterI18nProvider({
 
   const initialMessages = propMessages || ssrData?.messages;
   const initialLanguages = propInitialLanguages || ssrData?.languages;
-  const localeCookie = ssrData?.localeCookie;
 
-  // Resolve persist cookie name early — needed for both reading and writing
-  const persistCookieName = persistLocale === true
-    ? "preferred-locale"
-    : persistLocale || undefined;
+  // Resolve cookie name: prop > Vite plugin SSR data > none
+  // Same name is used for both reading (init) and writing (on locale change).
+  const cookieName = localeCookieProp === true
+    ? "locale"
+    : localeCookieProp || ssrData?.localeCookie || undefined;
 
   // ─── Locale State ─────────────────────────────────────────────────
   // Use a lazy initializer so cookie reads run exactly once (not on every render).
-  // Locale resolution chain: prop → SSR → cookie (persist or plugin) → "en"
+  // Locale resolution chain: prop → SSR → cookie → "en"
   const [managedLocale, setManagedLocale] = useState(() =>
     propLocale
     || ssrData?.locale
-    || (persistCookieName ? getPersistedLocale(persistCookieName) : null)
-    || (localeCookie ? getPersistedLocale(localeCookie) : null)
+    || (cookieName ? getLocaleCookie(cookieName) : null)
     || "en"
   );
 
@@ -211,24 +221,22 @@ export function BetterI18nProvider({
   const locale = managedLocale;
 
   // ─── Locale Persistence ──────────────────────────────────────────
-  // Persist locale to cookie on every change (including initial mount).
+  // Write locale cookie on every change (including initial mount).
   // This ensures returning visitors get their last-used language even
   // without geo-IP detection (not everyone uses Cloudflare).
   useEffect(() => {
-    if (!persistCookieName || typeof document === "undefined") return;
-    document.cookie = `${persistCookieName}=${locale}; path=/; max-age=31536000; SameSite=Lax`;
-  }, [locale, persistCookieName]);
+    if (!cookieName || typeof document === "undefined") return;
+    document.cookie = `${cookieName}=${locale}; path=/; max-age=31536000; SameSite=Lax`;
+  }, [locale, cookieName]);
 
   // setLocale: updates internal state, persists cookie, updates URL, notifies parent
   const setLocale = useCallback(
     (newLocale: string) => {
       setManagedLocale(newLocale);
 
-      // Persist locale to cookie (if vite plugin provided a cookie name).
-      // Written before onLocaleChange so the cookie is always up-to-date
-      // regardless of whether the consumer handles navigation.
-      if (localeCookie && typeof document !== "undefined") {
-        document.cookie = `${localeCookie}=${newLocale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
+      // Write cookie immediately (before onLocaleChange navigation).
+      if (cookieName && typeof document !== "undefined") {
+        document.cookie = `${cookieName}=${newLocale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
       }
 
       // Notify consumer (e.g., router navigation)
@@ -261,7 +269,7 @@ export function BetterI18nProvider({
         window.history.replaceState(null, "", `/${segments.join("/")}${window.location.search}`);
       }
     },
-    [onLocaleChange, localeCookie, localePrefix, ssrData],
+    [onLocaleChange, cookieName, localePrefix, ssrData],
   );
 
   // ─── Messages State ───────────────────────────────────────────────

@@ -38,7 +38,7 @@ export type {
 
 // Re-export locale + cookie utilities from core (convenience)
 export {
-  getPersistedLocale,
+  getLocaleCookie,
   extractLocale,
   getLocaleFromPath,
   hasLocalePrefix,

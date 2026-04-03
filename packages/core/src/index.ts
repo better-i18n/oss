@@ -30,7 +30,7 @@ export {
 } from "./utils/locale-ui.js";
 
 // Cookie utilities
-export { getPersistedLocale } from "./utils/cookie.js";
+export { getLocaleCookie } from "./utils/cookie.js";
 
 // Locale utilities
 export {
