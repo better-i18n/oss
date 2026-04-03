@@ -50,6 +50,17 @@ const langs    = await i18n.getLanguages();         // LanguageOption[] with lab
 4. **staticData** — bundled fallback translations (optional, for offline / build-time)
 5. **Empty object** — never throws, always returns something
 
+### Cookie utilities
+
+```typescript
+import { getPersistedLocale } from "@better-i18n/core";
+
+// Read persisted locale in non-React contexts (auth clients, analytics, fetch wrappers)
+const locale = getPersistedLocale("preferred-locale"); // → "tr" | null
+```
+
+> **Full locale persistence + auth integration guide:** <references/locale-persistence.md>
+
 ### Locale utilities
 
 ```typescript
@@ -164,6 +175,7 @@ export function Providers({
       project="acme/dashboard"
       locale={locale}
       messages={messages}       // optional: pre-loaded on server
+      persistLocale             // writes locale to cookie for persistence
     >
       {children}
     </BetterI18nProvider>
@@ -277,6 +289,22 @@ app.get("/hello", (c) => {
   return c.json({ message: t("greeting") });
 });
 ```
+
+### Better Auth integration
+
+```typescript
+import { createBetterAuthProvider } from "@better-i18n/server/providers/better-auth";
+
+export const auth = betterAuth({
+  plugins: [
+    createBetterAuthProvider(i18n, {
+      localeCookie: "preferred-locale",  // reads locale from request cookie
+    }),
+  ],
+});
+```
+
+> **Full guide with client + server setup:** <references/locale-persistence.md>
 
 ---
 
