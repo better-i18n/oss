@@ -157,7 +157,7 @@ export default function BlogContent({ html, className, locale }: BlogContentProp
 
           // Replace with our CodeBlock component
           return (
-            <CodeBlock className="my-6">
+            <CodeBlock className="my-6 shadow-sm border-mist-200 bg-mist-50/50">
               <CodeBlockCode
                 code={codeContent}
                 language={language}
