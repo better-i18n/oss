@@ -83,6 +83,8 @@ export function getWebSiteSchema(locale?: string) {
  */
 export function getSoftwareApplicationSchema(options?: {
   offerDescription?: string;
+  /** OG image URL — when provided, used instead of logo for consistent metadata signals */
+  image?: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -91,7 +93,7 @@ export function getSoftwareApplicationSchema(options?: {
     applicationCategory: "DeveloperApplication",
     operatingSystem: "Web",
     url: SITE_URL,
-    image: `${SITE_URL}/logo.png`,
+    image: options?.image || `${SITE_URL}/logo.png`,
     datePublished: "2026-01-01",
     dateModified: BUILD_DATE,
     offers: {
@@ -180,6 +182,12 @@ export function getArticleSchema(options: ArticleSchemaOptions) {
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": options.url,
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: imageUrl,
+        width: 1200,
+        height: 630,
+      },
     },
     ...(options.wordCount && { wordCount: options.wordCount }),
     ...(options.timeRequired && { timeRequired: options.timeRequired }),
@@ -302,12 +310,15 @@ function getReviewSchemas() {
 export function getHomePageStructuredData(options?: {
   locale?: string;
   offerDescription?: string;
+  /** OG image URL — ensures schema image matches og:image for consistent AI Overview thumbnails */
+  ogImage?: string;
 }) {
   return formatStructuredData([
     getOrganizationSchema(options?.locale ? { locale: options.locale } : undefined),
     getWebSiteSchema(options?.locale),
     getSoftwareApplicationSchema({
       offerDescription: options?.offerDescription,
+      image: options?.ogImage,
     }),
     ...getReviewSchemas(),
   ]);
@@ -354,7 +365,16 @@ export function getChangelogEntrySchema(options: {
         softwareVersion: options.version,
       },
     }),
-    mainEntityOfPage: { "@type": "WebPage", "@id": options.url },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": options.url,
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/logo.png`,
+        width: 1200,
+        height: 630,
+      },
+    },
   };
 }
 
@@ -503,6 +523,8 @@ export function getWebPageSchema(options: {
   name: string;
   description: string;
   url: string;
+  /** OG image URL — enables primaryImageOfPage for Google AI Overview thumbnails */
+  image?: string;
   speakable?: string[]; // CSS selectors for speakable content
 }) {
   return {
@@ -516,6 +538,14 @@ export function getWebPageSchema(options: {
       name: SITE_NAME,
       url: SITE_URL,
     },
+    ...(options.image && {
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: options.image,
+        width: 1200,
+        height: 630,
+      },
+    }),
     ...(options.speakable && {
       speakable: {
         "@type": "SpeakableSpecification",
@@ -542,13 +572,14 @@ export function getTechArticleSchema(options: {
   const datePublished = options.datePublished || "2026-01-01";
   const dateModified = options.dateModified || BUILD_DATE;
 
+  const imageUrl = options.image || `${SITE_URL}/logo.png`;
   return {
     "@context": "https://schema.org",
     "@type": "TechArticle",
     headline: options.headline,
     description: options.description,
     url: options.url,
-    image: options.image || `${SITE_URL}/logo.png`,
+    image: imageUrl,
     datePublished,
     dateModified,
     author: {
@@ -567,6 +598,12 @@ export function getTechArticleSchema(options: {
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": options.url,
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: imageUrl,
+        width: 1200,
+        height: 630,
+      },
     },
     ...(options.dependencies && { dependencies: options.dependencies.join(", ") }),
     ...(options.proficiencyLevel && { proficiencyLevel: options.proficiencyLevel }),
@@ -637,6 +674,8 @@ export function getCollectionPageSchema(options: {
   name: string;
   description: string;
   url: string;
+  /** OG image URL — enables primaryImageOfPage for Google AI Overview thumbnails */
+  image?: string;
   inLanguage?: string;
 }) {
   return {
@@ -650,6 +689,14 @@ export function getCollectionPageSchema(options: {
       name: SITE_NAME,
       url: SITE_URL,
     },
+    ...(options.image && {
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: options.image,
+        width: 1200,
+        height: 630,
+      },
+    }),
     ...(options.inLanguage && { inLanguage: options.inLanguage }),
   };
 }

@@ -11,7 +11,8 @@ interface BlogCardProps {
 }
 
 export default function BlogCard({ post, locale, priority = false }: BlogCardProps) {
-  const bannerUrl = buildOgImageUrl("og/blog", {
+  // Prefer CMS banner image, fall back to dynamic OG service
+  const bannerUrl = post.bannerImage ?? buildOgImageUrl("og/blog", {
     title: post.title,
     author: post.authorName ?? undefined,
     authorImage: post.authorAvatar ?? undefined,
