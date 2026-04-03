@@ -1,3 +1,4 @@
+import * as React from "react";
 import parse, {
   DOMNode,
   Element,
@@ -55,6 +56,56 @@ function rewriteInternalLink(href: string, locale: string): string {
   }
   // Handle relative paths
   return rewritePath(href, locale);
+}
+
+// ─── Blog Code Block ────────────────────────────────────────────────
+
+function CopyButton({ code }: { code: string }) {
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="absolute top-2.5 right-2.5 p-1.5 rounded-md text-mist-400 hover:text-mist-200 hover:bg-mist-800 transition-colors"
+      title="Copy code"
+      aria-label="Copy code"
+    >
+      {copied ? (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      ) : (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
+function BlogCodeBlock({ language, code }: { language: string; code: string }) {
+  return (
+    <div className="not-prose my-6 rounded-xl overflow-hidden border border-mist-200 dark:border-mist-800 shadow-sm">
+      <div className="flex items-center justify-between px-4 py-1.5 bg-mist-50 dark:bg-mist-900 border-b border-mist-200 dark:border-mist-800">
+        <span className="text-xs text-mist-500 dark:text-mist-400 font-mono">
+          {language && language !== "text" ? language : "code"}
+        </span>
+      </div>
+      <div className="relative bg-mist-950 dark:bg-mist-950 p-5 overflow-x-auto">
+        <CopyButton code={code} />
+        <pre className="text-[13px] leading-relaxed text-mist-100 font-mono whitespace-pre pr-10">
+          {code}
+        </pre>
+      </div>
+    </div>
+  );
 }
 
 // ─── Component ───────────────────────────────────────────────────────
@@ -154,21 +205,7 @@ export default function BlogContent({ html, className, locale }: BlogContentProp
           // Extract code content
           const codeContent = getTextContent(codeNode);
 
-          // Replace with dark-themed code block matching landing page style
-          return (
-            <div className="not-prose my-6 rounded-xl overflow-hidden border border-mist-200 shadow-sm">
-              {language && language !== "text" && (
-                <div className="px-4 py-1.5 bg-mist-50 border-b border-mist-200 text-xs text-mist-500 font-mono">
-                  {language}
-                </div>
-              )}
-              <div className="bg-mist-950 p-5 overflow-x-auto">
-                <pre className="text-[13px] leading-relaxed text-mist-100 font-mono whitespace-pre">
-                  {codeContent}
-                </pre>
-              </div>
-            </div>
-          );
+          return <BlogCodeBlock language={language} code={codeContent} />;
         }
       }
 
