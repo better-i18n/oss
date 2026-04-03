@@ -95,7 +95,7 @@
     },
     "apps/hono-example": {
       "name": "hono-example",
-      "version": "0.0.15",
+      "version": "0.0.16",
       "dependencies": {
         "@better-i18n/server": "workspace:*",
         "@hono/zod-openapi": "^0.19.4",
@@ -364,7 +364,7 @@
     },
     "packages/server": {
       "name": "@better-i18n/server",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
         "use-intl": ">=4.0.0",
