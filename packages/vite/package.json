@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/vite",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Vite plugin for Better i18n — SSR translation injection, zero FOUC",
   "license": "MIT",
   "repository": {
