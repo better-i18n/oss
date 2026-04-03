@@ -74,7 +74,7 @@ export default function BlogCard({ post, locale, priority = false }: BlogCardPro
                 alt={post.authorName}
                 width={24}
                 height={24}
-                className="w-6 h-6 rounded-full object-cover"
+                className="w-6 h-6 rounded-full object-cover [image-orientation:from-image]"
               />
             ) : (
               <div className="w-6 h-6 rounded-full bg-mist-200 flex items-center justify-center text-[10px] font-semibold text-mist-600">
