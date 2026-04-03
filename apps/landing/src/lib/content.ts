@@ -22,6 +22,8 @@ export interface BlogPost {
   excerpt: string;
   readTime: string | null;
   featured: boolean;
+  /** CMS banner image URL — used for OG meta, blog list thumbnails, and article hero */
+  bannerImage: string | null;
   category: string | null;
   authorName: string | null;
   authorAvatar: string | null;
@@ -35,6 +37,8 @@ export interface BlogPostListItem {
   publishedAt: string | null;
   readTime: string | null;
   featured: boolean;
+  /** CMS banner image URL — used for blog list thumbnails, falls back to OG service */
+  bannerImage: string | null;
   category: string | null;
   authorName: string | null;
   authorAvatar: string | null;
@@ -168,6 +172,7 @@ function mapEntryBase(entry: {
   return {
     readTime: (entry.read_time as string | null) ?? null,
     featured: entry.featured === "true",
+    bannerImage: (entry.banner_image as string | null) ?? null,
     category: entry.relations?.category?.name ?? null,
     authorName: entry.relations?.author?.title ?? null,
     authorAvatar: entry.relations?.author?.avatar ?? null,

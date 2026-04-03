@@ -75,13 +75,15 @@ export const Route = createFileRoute("/$locale/")({
     const heroTitle = heroNs?.title;
     const heroSubtitle = heroNs?.subtitle;
 
+    const ogImage = buildOgImageUrl("og", {
+      title: heroTitle,
+      description: heroSubtitle,
+    });
+
     const meta = getLocalizedMeta(messages, "home", {
       locale,
       pathname,
-      ogImage: buildOgImageUrl("og", {
-        title: heroTitle,
-        description: heroSubtitle,
-      }),
+      ogImage,
     });
 
     // Extract localized FAQ items from i18n messages (homeFaq namespace)
@@ -105,6 +107,7 @@ export const Route = createFileRoute("/$locale/")({
       scripts: [
         ...getHomePageStructuredData({
           locale,
+          ogImage,
         }),
         ...(faqItems.length > 0
           ? formatStructuredData(getFAQSchema(faqItems, locale))

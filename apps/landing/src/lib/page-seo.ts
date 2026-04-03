@@ -87,15 +87,20 @@ interface PageSEOOptions {
 }
 
 /**
- * Get structured data based on page type
+ * Get structured data based on page type.
+ *
+ * `ogImage` is threaded through to schema generators so that the schema.org `image`
+ * and `primaryImageOfPage` properties match the `og:image` meta tag — a requirement
+ * for Google AI Overview thumbnail selection (see GEO best practices).
  */
 function getStructuredDataForPageType(
   pageType: PageType,
-  options?: PageSEOOptions["structuredDataOptions"]
+  options?: PageSEOOptions["structuredDataOptions"],
+  ogImage?: string,
 ) {
   switch (pageType) {
     case "home":
-      return getHomePageStructuredData({});
+      return getHomePageStructuredData({ ogImage });
     case "pricing":
       return getPricingPageStructuredData({});
     case "comparison":
@@ -138,6 +143,7 @@ function getStructuredDataForPageType(
               name: options.title,
               description: options.description,
               url: options.url || "",
+              image: ogImage,
               speakable: DEFAULT_SPEAKABLE_SELECTORS,
             }),
           ])
@@ -189,14 +195,18 @@ export function getPageHead(options: PageSEOOptions) {
     ? { ...structuredDataOptions, url: structuredDataOptions.url ?? getCanonicalUrl(locale, pathname) }
     : structuredDataOptions;
 
+  // Thread OG image URL into structured data so schema.org image properties
+  // match the og:image meta tag — consistent signals improve Google AI Overview CTR.
+  const ogImage = resolvedMeta.ogImage;
+
   // Determine structured data: custom > pageType > isHomepage > default
   let scripts;
   if (customStructuredData) {
     scripts = customStructuredData;
   } else if (pageType) {
-    scripts = getStructuredDataForPageType(pageType, enrichedStructuredDataOptions);
+    scripts = getStructuredDataForPageType(pageType, enrichedStructuredDataOptions, ogImage);
   } else if (isHomepage) {
-    scripts = getHomePageStructuredData({});
+    scripts = getHomePageStructuredData({ ogImage });
   } else {
     scripts = getDefaultStructuredData();
   }

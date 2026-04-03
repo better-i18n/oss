@@ -28,7 +28,8 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
 
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         {posts.map((post) => {
-          const bannerUrl = buildOgImageUrl("og/blog", {
+          // Prefer CMS banner image, fall back to dynamic OG service
+          const bannerUrl = post.bannerImage ?? buildOgImageUrl("og/blog", {
             title: post.title,
             author: post.authorName ?? undefined,
             authorImage: post.authorAvatar ?? undefined,

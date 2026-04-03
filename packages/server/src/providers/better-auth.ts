@@ -173,7 +173,7 @@ export function createBetterAuthProvider(
             const returned = hookCtx.context?.returned;
 
             // Only intercept APIError responses that carry an error code
-            if (!isAPIErrorLike(returned)) return;
+            if (!isAPIErrorLike(returned)) return ctx;
 
             const { body } = returned;
             const errorCode = body.code;
@@ -197,7 +197,7 @@ export function createBetterAuthProvider(
               }
             } catch {
               // Locale detection failed — keep original message
-              return;
+              return ctx;
             }
 
             // ── Translate ──────────────────────────────────────────
@@ -226,6 +226,8 @@ export function createBetterAuthProvider(
               // CDN fetch failed or namespace missing — keep original message.
               // Auth must never break because of i18n.
             }
+
+            return ctx;
           },
         },
       ],
