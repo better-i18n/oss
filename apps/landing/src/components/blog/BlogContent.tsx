@@ -73,7 +73,7 @@ function CopyButton({ code }: { code: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="absolute top-2.5 right-2.5 p-1.5 rounded-md text-mist-400 hover:text-mist-200 hover:bg-mist-800 transition-colors"
+      className="p-1.5 rounded-md text-mist-400 hover:text-mist-600 dark:hover:text-mist-200 hover:bg-mist-200 dark:hover:bg-mist-800 transition-colors"
       title="Copy code"
       aria-label="Copy code"
     >
@@ -90,17 +90,44 @@ function CopyButton({ code }: { code: string }) {
   );
 }
 
+const LANG_LABELS: Record<string, { label: string; icon: string }> = {
+  typescript: { label: "TypeScript", icon: "TS" },
+  ts: { label: "TypeScript", icon: "TS" },
+  tsx: { label: "React TSX", icon: "⚛" },
+  javascript: { label: "JavaScript", icon: "JS" },
+  js: { label: "JavaScript", icon: "JS" },
+  jsx: { label: "React JSX", icon: "⚛" },
+  bash: { label: "Terminal", icon: "▶" },
+  sh: { label: "Terminal", icon: "▶" },
+  shell: { label: "Terminal", icon: "▶" },
+  terminal: { label: "Terminal", icon: "▶" },
+  json: { label: "JSON", icon: "{}" },
+  css: { label: "CSS", icon: "#" },
+  html: { label: "HTML", icon: "<>" },
+  swift: { label: "Swift", icon: "🐦" },
+  dart: { label: "Dart", icon: "🎯" },
+  python: { label: "Python", icon: "🐍" },
+  go: { label: "Go", icon: "Go" },
+};
+
 function BlogCodeBlock({ language, code }: { language: string; code: string }) {
+  const langInfo = LANG_LABELS[language];
+
   return (
-    <div className="not-prose my-6 rounded-xl overflow-hidden border border-mist-200 dark:border-mist-800 shadow-sm">
-      <div className="flex items-center justify-between px-4 py-1.5 bg-mist-50 dark:bg-mist-900 border-b border-mist-200 dark:border-mist-800">
-        <span className="text-xs text-mist-500 dark:text-mist-400 font-mono">
-          {language && language !== "text" ? language : "code"}
-        </span>
-      </div>
-      <div className="relative bg-mist-950 dark:bg-mist-950 p-5 overflow-x-auto">
+    <div className="not-prose my-6 rounded-xl overflow-hidden border border-mist-200 dark:border-mist-800 shadow-sm bg-mist-50 dark:bg-mist-950">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-mist-200 dark:border-mist-800">
+        {langInfo ? (
+          <span className="flex items-center gap-1.5 text-xs text-mist-400 dark:text-mist-500 font-mono">
+            <span className="text-[10px]">{langInfo.icon}</span>
+            {langInfo.label}
+          </span>
+        ) : (
+          <span />
+        )}
         <CopyButton code={code} />
-        <pre className="text-[13px] leading-relaxed text-mist-100 font-mono whitespace-pre pr-10">
+      </div>
+      <div className="p-5 overflow-x-auto">
+        <pre className="text-[13px] leading-relaxed text-mist-800 dark:text-mist-200 font-mono whitespace-pre">
           {code}
         </pre>
       </div>
@@ -200,7 +227,7 @@ export default function BlogContent({ html, className, locale }: BlogContentProp
           // Extract language from class name (e.g., "language-typescript" -> "typescript")
           const className = codeNode.attribs?.class || "";
           const languageMatch = className.match(/language-(\w+)/);
-          const language = languageMatch?.[1] || "typescript";
+          const language = languageMatch?.[1] || "";
 
           // Extract code content
           const codeContent = getTextContent(codeNode);
