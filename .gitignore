@@ -65,3 +65,9 @@ apps/landing/SEO-REVIEW-FINDINGS.md
 **/.react-router/
 apps/landing/SEO_ACTION_PLAN.md
 .wrangler/
+
+# Graphify knowledge graph (generated)
+graphify-out/
+
+# OpenLogs (dev server logs for AI)
+.openlogs/
