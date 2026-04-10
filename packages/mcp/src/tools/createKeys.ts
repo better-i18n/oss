@@ -32,6 +32,7 @@ const inputSchema = projectSchema.extend({
       nc: namespaceContextSchema,
     }),
   ).min(1),
+  force: z.boolean().optional().default(false).describe("Force creation despite path collisions (leaf↔object conflicts). Use with caution."),
 });
 
 export const createKeys: Tool = {
@@ -51,6 +52,14 @@ NAMESPACE RULE (CRITICAL):
 - CORRECT: { n: "meta.title", ns: "terms" }
 - An unknown ns value silently creates a NEW namespace — always verify against getProject output.
 - Same key name in a different namespace creates a SEPARATE key (not a duplicate).
+
+PATH COLLISION GUARD (CRITICAL):
+- In nested JSON, a key cannot be both a leaf value AND a parent object.
+- Creating "step.workspace.title" when "step.workspace" exists as a leaf → CONFLICT error.
+- Creating "nav" when "nav.home" exists → CONFLICT error.
+- Sibling keys are fine: "nav.home" + "nav.settings" = OK.
+- Use force=true to override (risky — may cause orphan keys on CDN).
+- This also checks within the same batch: sending both "workspace" and "workspace.title" → CONFLICT.
 
 SILENT BEHAVIORS:
 - Existing keys (same name + namespace) are silently SKIPPED. Use updateKeys instead.
@@ -88,6 +97,10 @@ To add translations to EXISTING keys, use listKeys + updateKeys instead.`,
             required: ["n"],
           },
         },
+        force: {
+          type: "boolean",
+          description: "Force creation despite path collisions (leaf↔object conflicts). Default: false. Use with caution — may cause orphan keys on CDN.",
+        },
       },
       required: ["project", "k"],
     },
@@ -112,6 +125,7 @@ To add translations to EXISTING keys, use listKeys + updateKeys instead.`,
           orgSlug: workspaceId,
           projectSlug,
           k,
+          ...(input.force && { force: true }),
         });
 
         return success(result);
