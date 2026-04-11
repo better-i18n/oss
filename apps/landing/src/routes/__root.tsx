@@ -271,6 +271,33 @@ function NotFoundPage() {
   );
 }
 
+function BetterSupportWidget() {
+  useEffect(() => {
+    if (document.getElementById("better-support-widget")) return;
+    const isProd = window.location.hostname !== "localhost";
+    const s = document.createElement("script");
+    s.id = "better-support-widget";
+    s.src = isProd
+      ? "https://support-api.better-i18n.com/widget.js"
+      : "http://localhost:52500/widget.js";
+    s.setAttribute(
+      "data-key",
+      isProd
+        ? "pk_live_Nir-sHLl1_qc9S9EuV9RdNN5"
+        : "pk_test_bsup_seed_00000001",
+    );
+    s.setAttribute(
+      "data-api-url",
+      isProd
+        ? "https://support-api.better-i18n.com"
+        : "http://localhost:52500",
+    );
+    s.async = true;
+    document.body.appendChild(s);
+  }, []);
+  return null;
+}
+
 function RootComponent() {
   const { locale, locales, requestId } = Route.useRouteContext();
   const router = useRouter();
@@ -367,6 +394,7 @@ function RootComponent() {
           </BetterI18nProvider>
         </QueryClientProvider>
         <Scripts />
+        <BetterSupportWidget />
       </body>
     </html>
   );
