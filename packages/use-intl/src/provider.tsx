@@ -205,11 +205,13 @@ export function BetterI18nProvider({
 
   // ─── Locale State ─────────────────────────────────────────────────
   // Use a lazy initializer so cookie reads run exactly once (not on every render).
-  // Locale resolution chain: prop → SSR → cookie → "en"
+  // Locale resolution chain: prop → cookie (if localeCookie) → SSR → "en"
+  // Cookie takes priority over SSR because SSR locale is baked at build-time
+  // (static builds always have "en"), while cookie reflects user's runtime choice.
   const [managedLocale, setManagedLocale] = useState(() =>
     propLocale
-    || ssrData?.locale
     || (cookieName ? getLocaleCookie(cookieName) : null)
+    || ssrData?.locale
     || "en"
   );
 
