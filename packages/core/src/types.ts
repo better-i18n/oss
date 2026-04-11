@@ -141,13 +141,23 @@ export interface ManifestFile {
 }
 
 /**
+ * Per-language file entry in manifest v2.
+ * When `namespaces` is present, the project uses namespaced_folders delivery.
+ * Old SDKs fall back to `url` (combined translations.json for backward compat).
+ * New SDKs check `namespaces` first and fetch per-namespace files in parallel.
+ */
+export interface ManifestFileEntry extends ManifestFile {
+  namespaces?: Record<string, ManifestFile>;
+}
+
+/**
  * CDN manifest response
  */
 export interface ManifestResponse {
   projectSlug?: string;
   sourceLanguage?: string;
   languages: ManifestLanguage[];
-  files?: Record<string, ManifestFile>;
+  files?: Record<string, ManifestFileEntry>;
   updatedAt?: string;
 }
 

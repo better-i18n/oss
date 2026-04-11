@@ -6,6 +6,7 @@ import type {
   I18nCore,
   I18nCoreConfig,
   LanguageOption,
+  ManifestFileEntry,
   ManifestResponse,
   Messages,
   NormalizedConfig,
@@ -286,9 +287,84 @@ const fetchMessagesFromCdn = async (
 };
 
 /**
+ * Fetch a single namespace file from its absolute URL.
+ * No ETag support — v2 namespace files rely on TtlCache + CDN max-age.
+ */
+const fetchNamespaceFile = async (
+  config: NormalizedConfig,
+  namespace: string,
+  url: string,
+  fetchFn: typeof fetch
+): Promise<Record<string, unknown>> => {
+  const logger = createLogger(config, "messages");
+  logger.debug("fetching namespace", { namespace, url });
+
+  const response = await fetchWithRetry(
+    fetchFn,
+    url,
+    { headers: { "Cache-Control": "no-store" }, cache: "no-store" },
+    config.fetchTimeout,
+    config.retryCount
+  );
+
+  if (!response.ok) {
+    const message = `Namespace fetch failed for "${namespace}" (${response.status})`;
+    logger.error(message);
+    throw new Error(`[better-i18n] ${message}`);
+  }
+
+  const data = (await response.json()) as Record<string, unknown>;
+  logger.debug("fetched namespace", { namespace, keys: Object.keys(data).length });
+  return data;
+};
+
+/**
+ * Fetch all namespace files for a locale in parallel and merge into Messages.
+ * Throws if any namespace fetch fails — partial results are not returned.
+ */
+const fetchNamespacedMessages = async (
+  config: NormalizedConfig,
+  locale: string,
+  namespaces: Record<string, ManifestFileEntry>,
+  fetchFn: typeof fetch
+): Promise<MessagesFetchResult> => {
+  const logger = createLogger(config, "messages");
+  const entries = Object.entries(namespaces);
+
+  logger.debug("fetching namespaced messages", {
+    locale,
+    count: entries.length,
+    namespaces: entries.map(([ns]) => ns),
+  });
+
+  // Fetch all namespace files in parallel — fail fast on any error
+  const results = await Promise.all(
+    entries.map(([namespace, fileInfo]) =>
+      fetchNamespaceFile(config, namespace, fileInfo.url, fetchFn).then(
+        (data) => [namespace, data] as const
+      )
+    )
+  );
+
+  // Merge into Messages: { namespace1: {...}, namespace2: {...} }
+  const messages: Messages = {};
+  for (const [namespace, data] of results) {
+    messages[namespace] = data;
+  }
+
+  logger.debug("merged namespaced messages", {
+    locale,
+    namespaces: Object.keys(messages),
+    totalKeys: Object.values(messages).reduce((sum, ns) => sum + Object.keys(ns).length, 0),
+  });
+
+  return { notModified: false, messages, etag: null };
+};
+
+/**
  * Get messages with full fallback chain:
  * 1. Memory cache (TtlCache)
- * 2. CDN fetch (with timeout + retry)
+ * 2. CDN fetch — v2 (namespace files) or v1 (single file), with timeout + retry
  * 3. Persistent storage
  * 4. staticData
  * 5. Throw (last resort)
@@ -307,30 +383,48 @@ const getMessagesWithFallback = async (
   const memoryCached = messagesCache.get(cacheKey);
   if (memoryCached) return memoryCached;
 
-  // 2. CDN fetch (with ETag If-None-Match when available)
+  // 2. CDN fetch — detect namespace delivery (v2) from manifest, or use single file (v1)
   try {
-    const cachedETag = messagesETagCache.get(cacheKey);
-    const result = await fetchMessagesFromCdn(config, safeLng, fetchFn, cachedETag);
+    let result: MessagesFetchResult;
 
-    // 304 Not Modified — CDN confirmed content unchanged; refresh TTL with stored data
-    if (result.notModified) {
-      const stored = await readFromStorage<Messages>(config.storage, storageKey);
-      if (stored) {
-        logger.debug(`304: refreshing TTL for "${safeLng}" from storage`);
-        messagesCache.set(cacheKey, stored, config.manifestCacheTtlMs);
-        return stored;
-      }
-      // No storage fallback — re-fetch without ETag to get fresh data
-      const freshResult = await fetchMessagesFromCdn(config, safeLng, fetchFn);
-      if (!freshResult.notModified) {
-        messagesCache.set(cacheKey, freshResult.messages, config.manifestCacheTtlMs);
-        if (freshResult.etag) messagesETagCache.set(cacheKey, freshResult.etag, config.manifestCacheTtlMs);
-        writeToStorage(config.storage, storageKey, freshResult.messages);
-        return freshResult.messages;
+    // Check manifest for namespace delivery (v2)
+    // Manifest is already cached in TtlCache — this is a sub-microsecond lookup on hit
+    const manifest = await getManifestWithCache(config, fetchFn).catch(() => null);
+    const fileEntry = manifest?.files?.[safeLng];
+    const hasNamespaces =
+      fileEntry != null &&
+      "namespaces" in fileEntry &&
+      fileEntry.namespaces != null &&
+      Object.keys(fileEntry.namespaces).length > 0;
+
+    if (hasNamespaces) {
+      // v2: fetch per-namespace files in parallel and merge
+      result = await fetchNamespacedMessages(config, safeLng, fileEntry.namespaces!, fetchFn);
+    } else {
+      // v1: single-file fetch with ETag support (unchanged path)
+      const cachedETag = messagesETagCache.get(cacheKey);
+      result = await fetchMessagesFromCdn(config, safeLng, fetchFn, cachedETag);
+
+      // 304 Not Modified — CDN confirmed content unchanged; refresh TTL with stored data
+      if (result.notModified) {
+        const stored = await readFromStorage<Messages>(config.storage, storageKey);
+        if (stored) {
+          logger.debug(`304: refreshing TTL for "${safeLng}" from storage`);
+          messagesCache.set(cacheKey, stored, config.manifestCacheTtlMs);
+          return stored;
+        }
+        // No storage fallback — re-fetch without ETag to get fresh data
+        const freshResult = await fetchMessagesFromCdn(config, safeLng, fetchFn);
+        if (!freshResult.notModified) {
+          messagesCache.set(cacheKey, freshResult.messages, config.manifestCacheTtlMs);
+          if (freshResult.etag) messagesETagCache.set(cacheKey, freshResult.etag, config.manifestCacheTtlMs);
+          writeToStorage(config.storage, storageKey, freshResult.messages);
+          return freshResult.messages;
+        }
       }
     }
 
-    // 200 OK — new or changed content
+    // 200 OK — new or changed content (both v1 non-304 and v2)
     if (!result.notModified) {
       messagesCache.set(cacheKey, result.messages, config.manifestCacheTtlMs);
       if (result.etag) messagesETagCache.set(cacheKey, result.etag, config.manifestCacheTtlMs);
