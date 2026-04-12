@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# Lock files
+bun.lock
+
+# Patches
+patches/
+
+# Generated
+*.generated.*
+*.d.ts
+
+# Config files
+vitest.config.ts
+eslint.config.ts
+tsconfig.json
