@@ -422,3 +422,12 @@ Rules:
 - Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
 - If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
 - After modifying code files in this session, run `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` to keep the graph current
+
+## Debugging (CRITICAL — Log + Code methodology)
+
+When ANY error is reported or suspected, ALWAYS read logs FIRST:
+1. **Logs first** → Check `.openlogs/` or `ol tail` for the relevant service — find exact error, stack trace, timestamp
+2. **Code second** → With log context, read the failing file/line — understand WHY it broke
+3. **Fix with precision** → Logs show reality, code shows intent. The gap = the bug.
+
+**Never debug by code-reading alone.** You'll guess at symptoms and risk false fixes. Logs pinpoint; code explains. Together = surgical fix.
