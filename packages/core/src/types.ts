@@ -169,6 +169,15 @@ export interface ManifestResponse {
    * SDK falls back to parallel individual fetches when this is false/absent.
    */
   batch?: boolean;
+  /**
+   * Top-level namespace list for slim manifests.
+   * When present, per-locale `files[locale].namespaces` objects can be omitted —
+   * SDK constructs URLs deterministically: `{baseUrl}/{locale}/{ns}.json`.
+   *
+   * This reduces manifest size from ~477KB to ~10-15KB for projects with
+   * 100+ namespaces × 20+ locales (removes ~240KB of redundant URL/size/date entries).
+   */
+  namespaces?: string[];
 }
 
 /**
