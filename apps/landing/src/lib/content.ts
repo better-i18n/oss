@@ -192,7 +192,10 @@ function hasTranslation(
   const langs = raw.availableLanguages ?? raw.langs;
   // No language metadata → assume source language only
   if (!Array.isArray(langs)) return true;
-  return (langs as string[]).includes(locale);
+  // Handle both string[] and {code}[] shapes from the content API
+  return (langs as Array<string | { code: string }>).some(
+    (v) => (typeof v === "string" ? v : v.code) === locale,
+  );
 }
 
 /**
@@ -343,9 +346,14 @@ export async function getBlogPost(
     const raw = entry as unknown as Record<string, unknown>;
     const rawLangs = raw.availableLanguages ?? raw.langs;
     const availableLanguages = Array.isArray(rawLangs)
-      ? (rawLangs as unknown[]).filter(
-          (v): v is string => typeof v === "string",
-        )
+      ? (rawLangs as unknown[]).flatMap((v): string[] => {
+          if (typeof v === "string") return [v];
+          if (v !== null && typeof v === "object") {
+            const code = (v as Record<string, unknown>).code;
+            if (typeof code === "string") return [code];
+          }
+          return [];
+        })
       : null;
     const post: BlogPost = {
       id: entry.id,
@@ -675,9 +683,14 @@ export async function getMarketingPage(
     const raw = entry as unknown as Record<string, unknown>;
     const rawLangs = raw.availableLanguages ?? raw.langs;
     const availableLanguages = Array.isArray(rawLangs)
-      ? (rawLangs as unknown[]).filter(
-          (v): v is string => typeof v === "string",
-        )
+      ? (rawLangs as unknown[]).flatMap((v): string[] => {
+          if (typeof v === "string") return [v];
+          if (v !== null && typeof v === "object") {
+            const code = (v as Record<string, unknown>).code;
+            if (typeof code === "string") return [code];
+          }
+          return [];
+        })
       : null;
     const page: MarketingPage = {
       id: entry.id,
