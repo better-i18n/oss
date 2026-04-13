@@ -324,6 +324,69 @@ const fetchNamespaceFile = async (
 };
 
 /**
+ * Fetch multiple namespaces in a single HTTP request via CDN batch endpoint.
+ * Like tRPC batching: N namespace requests → 1 HTTP round-trip.
+ *
+ * URL: `/{locale}/batch.json?ns=common,nav,hero`
+ * Response: `{ "common": {...}, "nav": {...}, "hero": {...} }`
+ *
+ * Returns null if the batch request fails (caller falls back to individual fetches).
+ */
+const fetchBatchNamespaces = async (
+  config: NormalizedConfig,
+  locale: string,
+  namespaces: string[],
+  fetchFn: typeof fetch
+): Promise<Messages | null> => {
+  const logger = createLogger(config, "messages");
+  const sorted = [...namespaces].sort();
+  const url = `${getProjectBaseUrl(config)}/${locale}/batch.json?ns=${sorted.join(",")}`;
+
+  logger.debug("batch fetching namespaces", { locale, count: sorted.length });
+
+  try {
+    const response = await fetchWithRetry(
+      fetchFn,
+      url,
+      {
+        headers: { "Cache-Control": "no-store", "Accept-Encoding": "gzip, br" },
+        cache: "no-store",
+      },
+      config.fetchTimeout,
+      config.retryCount
+    );
+
+    if (!response.ok) {
+      logger.debug("batch endpoint returned error", { status: response.status });
+      return null;
+    }
+
+    const data = (await response.json()) as Messages;
+
+    // Validate: batch response must contain at least one requested namespace.
+    // CDN returns {} for unknown paths — distinguish from "all namespaces empty".
+    const returnedKeys = Object.keys(data);
+    const hasRequestedKeys = returnedKeys.some((k) => sorted.includes(k));
+    if (returnedKeys.length === 0 || !hasRequestedKeys) {
+      logger.debug("batch response empty or invalid, falling back to individual fetches");
+      return null;
+    }
+
+    logger.debug("batch fetched", {
+      locale,
+      requested: sorted.length,
+      returned: returnedKeys.length,
+    });
+
+    return data;
+  } catch (err) {
+    // Batch failed — not critical, individual fetches will handle it
+    logger.debug("batch fetch failed, falling back", err);
+    return null;
+  }
+};
+
+/**
  * Fetch all namespace files for a locale in parallel and merge into Messages.
  * Throws if any namespace fetch fails — partial results are not returned.
  */
@@ -434,16 +497,34 @@ const getMessagesWithFallback = async (
           return merged;
         }
 
+        const toFetchKeys = Object.keys(toFetch);
         logger.debug("selective namespace loading", {
           cached: Object.keys(merged).length,
-          fetching: Object.keys(toFetch).length,
+          fetching: toFetchKeys.length,
           total: requestedNamespaces.length,
+          batch: manifest?.batch ?? false,
         });
 
-        const nsResult = await fetchNamespacedMessages(config, safeLng, toFetch, fetchFn);
-        if (!nsResult.notModified) {
+        // ── Batch fetch: single HTTP request for all uncached namespaces ──
+        // Like tRPC batching — N namespace requests merged into 1 round-trip.
+        // Only attempted when CDN declares batch support (manifest.batch === true)
+        // and there are 2+ namespaces to fetch (single ns = direct fetch is fine).
+        let fetchedMessages: Messages | null = null;
+        if (manifest?.batch && toFetchKeys.length > 1) {
+          fetchedMessages = await fetchBatchNamespaces(config, safeLng, toFetchKeys, fetchFn);
+        }
+
+        // Fallback: parallel individual fetches (always works, even without batch support)
+        if (!fetchedMessages) {
+          const nsResult = await fetchNamespacedMessages(config, safeLng, toFetch, fetchFn);
+          if (!nsResult.notModified) {
+            fetchedMessages = nsResult.messages;
+          }
+        }
+
+        if (fetchedMessages) {
           // Cache each fetched namespace individually
-          for (const [ns, data] of Object.entries(nsResult.messages)) {
+          for (const [ns, data] of Object.entries(fetchedMessages)) {
             messagesCache.set(
               `${baseCacheKey}|ns:${ns}`,
               { [ns]: data },
