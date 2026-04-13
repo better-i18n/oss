@@ -216,9 +216,11 @@ export interface I18nCore {
   getManifest: (options?: { forceRefresh?: boolean }) => Promise<ManifestResponse>;
 
   /**
-   * Get messages for a specific locale
+   * Get messages for a specific locale.
+   * When `namespaces` is provided and the project uses namespaced CDN delivery,
+   * only the specified namespaces are fetched (instead of all).
    */
-  getMessages: (locale: string) => Promise<Messages>;
+  getMessages: (locale: string, options?: { namespaces?: string[] }) => Promise<Messages>;
 
   /**
    * Get available locale codes

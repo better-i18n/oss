@@ -14,6 +14,16 @@ export interface GetMessagesConfig extends Omit<
    * Locale to fetch messages for
    */
   locale: string;
+
+  /**
+   * When the project uses namespaced CDN delivery (v2), only fetch these
+   * namespaces instead of all. Reduces CDN round-trips and payload size.
+   *
+   * Has no effect on v1 (single-file) projects.
+   *
+   * @example ["common", "hero", "pricing"]
+   */
+  namespaces?: string[];
 }
 
 /**
@@ -35,7 +45,9 @@ export async function getMessages(
     retryCount: config.retryCount,
   });
 
-  const messages = (await i18n.getMessages(config.locale)) as Messages;
+  const messages = (await i18n.getMessages(config.locale, {
+    namespaces: config.namespaces,
+  })) as Messages;
 
   // better-i18n convention: JSON matches exact namespace structure.
   // if CDN returns { "hero": { "title": "..." } }, use-intl expects exactly that

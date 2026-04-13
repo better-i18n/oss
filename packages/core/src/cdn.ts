@@ -372,11 +372,14 @@ const fetchNamespacedMessages = async (
 const getMessagesWithFallback = async (
   config: NormalizedConfig,
   locale: string,
-  fetchFn: typeof fetch
+  fetchFn: typeof fetch,
+  requestedNamespaces?: string[]
 ): Promise<Messages> => {
   const safeLng = normalizeLocale(locale);
   const logger = createLogger(config, "messages");
-  const cacheKey = `${buildCacheKey(config.cdnBaseUrl, config.project)}|${safeLng}`;
+  // Include requested namespaces in cache key so selective fetches don't collide
+  const nsSuffix = requestedNamespaces ? `|ns:${requestedNamespaces.sort().join(",")}` : "";
+  const cacheKey = `${buildCacheKey(config.cdnBaseUrl, config.project)}|${safeLng}${nsSuffix}`;
   const storageKey = buildMessagesStorageKey(config.project, safeLng);
 
   // 1. Memory cache
@@ -399,7 +402,23 @@ const getMessagesWithFallback = async (
 
     if (hasNamespaces) {
       // v2: fetch per-namespace files in parallel and merge
-      result = await fetchNamespacedMessages(config, safeLng, fileEntry.namespaces!, fetchFn);
+      // When requestedNamespaces is provided, only fetch those (selective loading)
+      let namespacesToFetch = fileEntry.namespaces!;
+      if (requestedNamespaces && requestedNamespaces.length > 0) {
+        const filtered: Record<string, ManifestFileEntry> = {};
+        for (const ns of requestedNamespaces) {
+          if (namespacesToFetch[ns]) {
+            filtered[ns] = namespacesToFetch[ns];
+          }
+        }
+        namespacesToFetch = filtered;
+        logger.debug("selective namespace loading", {
+          requested: requestedNamespaces.length,
+          available: Object.keys(fileEntry.namespaces!).length,
+          fetching: Object.keys(namespacesToFetch).length,
+        });
+      }
+      result = await fetchNamespacedMessages(config, safeLng, namespacesToFetch, fetchFn);
     } else {
       // v1: single-file fetch with ETag support (unchanged path)
       const cachedETag = messagesETagCache.get(cacheKey);
@@ -496,8 +515,8 @@ export const createI18nCore = (config: I18nCoreConfig): I18nCore => {
     getManifest: (options?: { forceRefresh?: boolean }) =>
       getManifestWithCache(normalized, fetchFn, options?.forceRefresh),
 
-    getMessages: (locale: string) =>
-      getMessagesWithFallback(normalized, locale, fetchFn),
+    getMessages: (locale: string, options?: { namespaces?: string[] }) =>
+      getMessagesWithFallback(normalized, locale, fetchFn, options?.namespaces),
 
     getLocales: async (): Promise<string[]> => {
       const manifest = await getManifestWithCache(normalized, fetchFn);

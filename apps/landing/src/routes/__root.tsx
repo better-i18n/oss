@@ -19,7 +19,7 @@ import { getMessages } from "@better-i18n/use-intl/server";
 import { detectLocale } from "@better-i18n/core";
 import { getRequestHeader } from "@tanstack/react-start/server";
 import { i18nConfig } from "../i18n.config";
-import { filterMessagesByPath } from "../lib/page-namespaces";
+import { filterMessagesByPath, getNamespacesForPage, extractPagePath } from "../lib/page-namespaces";
 import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
@@ -152,7 +152,16 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   },
 
   loader: async ({ context, location }) => {
-    const allMessages = await getMessages({ project: i18nConfig.project, locale: context.locale });
+    // Selective namespace loading: only fetch namespaces this page actually uses
+    // instead of all 103 namespaces from CDN (103 fetches → ~10 fetches)
+    const pagePath = extractPagePath(location.pathname);
+    const namespaces = getNamespacesForPage(pagePath) ?? undefined;
+
+    const allMessages = await getMessages({
+      project: i18nConfig.project,
+      locale: context.locale,
+      namespaces: namespaces as string[] | undefined,
+    });
     const messages = filterMessagesByPath(allMessages, location.pathname);
 
     const isSSR = typeof document === "undefined";
