@@ -1,6 +1,7 @@
 export { createClient } from "./client.js";
 export { ContentQueryBuilder, SingleQueryBuilder } from "./query-builder.js";
 export { createHttpClient } from "./http.js";
+export { extractLanguageCodes, hasLanguage } from "./utils.js";
 /** @deprecated Use `createHttpClient` from `./http.js` instead. */
 export { createContentAPIClient } from "./content-api.js";
 export type {

@@ -4,7 +4,7 @@
  * Fetches blog posts from Better i18n Content API.
  */
 
-import { createClient, type ContentClient } from "@better-i18n/sdk";
+import { createClient, extractLanguageCodes, hasLanguage, type ContentClient } from "@better-i18n/sdk";
 import { marked } from "marked";
 
 // ─── Types ───────────────────────────────────────────────────────────
@@ -188,14 +188,7 @@ function hasTranslation(
   item: { [key: string]: unknown },
   locale: string,
 ): boolean {
-  const raw = item as Record<string, unknown>;
-  const langs = raw.availableLanguages ?? raw.langs;
-  // No language metadata → assume source language only
-  if (!Array.isArray(langs)) return true;
-  // Handle both string[] and {code}[] shapes from the content API
-  return (langs as Array<string | { code: string }>).some(
-    (v) => (typeof v === "string" ? v : v.code) === locale,
-  );
+  return hasLanguage(item as Record<string, unknown>, locale);
 }
 
 /**
@@ -345,16 +338,8 @@ export async function getBlogPost(
     const excerpt = extractExcerpt(entry.body);
     const raw = entry as unknown as Record<string, unknown>;
     const rawLangs = raw.availableLanguages ?? raw.langs;
-    const availableLanguages = Array.isArray(rawLangs)
-      ? (rawLangs as unknown[]).flatMap((v): string[] => {
-          if (typeof v === "string") return [v];
-          if (v !== null && typeof v === "object") {
-            const code = (v as Record<string, unknown>).code;
-            if (typeof code === "string") return [code];
-          }
-          return [];
-        })
-      : null;
+    const codes = extractLanguageCodes(rawLangs as (string | { code: string })[] | null);
+    const availableLanguages = codes.length > 0 ? codes : null;
     const post: BlogPost = {
       id: entry.id,
       slug: entry.slug,
@@ -682,16 +667,8 @@ export async function getMarketingPage(
     const excerpt = extractExcerpt(entry.body);
     const raw = entry as unknown as Record<string, unknown>;
     const rawLangs = raw.availableLanguages ?? raw.langs;
-    const availableLanguages = Array.isArray(rawLangs)
-      ? (rawLangs as unknown[]).flatMap((v): string[] => {
-          if (typeof v === "string") return [v];
-          if (v !== null && typeof v === "object") {
-            const code = (v as Record<string, unknown>).code;
-            if (typeof code === "string") return [code];
-          }
-          return [];
-        })
-      : null;
+    const codes = extractLanguageCodes(rawLangs as (string | { code: string })[] | null);
+    const availableLanguages = codes.length > 0 ? codes : null;
     const page: MarketingPage = {
       id: entry.id,
       slug: entry.slug,
