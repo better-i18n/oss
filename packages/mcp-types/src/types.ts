@@ -49,6 +49,20 @@ export interface ProjectInfo {
   targetLanguages: string[];
   /** CDN URL pattern for this project (e.g., "https://cdn.better-i18n.com/acme/myapp/{locale}/{namespace}.json") */
   cdnFormat: string;
+  /**
+   * How files are organized on CDN/disk:
+   * - "single_file": one file per language (e.g., `/en/translations.json`) — "default" namespace maps to "translations" in URL
+   * - "namespaced_folders": one file per namespace per language (e.g., `/en/common.json`, `/en/auth.json`) — namespace name used directly in URL
+   * - null: unknown/legacy — treat as "single_file" for backward compat
+   */
+  fileStructure: "single_file" | "namespaced_folders" | null;
+  /**
+   * How keys are structured inside each JSON file:
+   * - "flat": dot-notation keys `{"auth.login": "Sign in"}`
+   * - "nested": nested objects `{"auth": {"login": "Sign in"}}`
+   * - null: unknown/legacy — treat as "nested" for backward compat
+   */
+  keyFormat: "flat" | "nested" | null;
 }
 
 /**
