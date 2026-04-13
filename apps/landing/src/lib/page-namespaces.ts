@@ -319,6 +319,27 @@ export function getNamespacesForPage(
 }
 
 /**
+ * Get the list of CDN namespace file names needed for a given page path.
+ * Unlike `getNamespacesForPage`, this resolves dot-path specs (e.g., "marketing.compare.crowdin")
+ * to their root CDN namespace ("marketing"), since CDN stores one file per top-level namespace.
+ * Returns deduplicated list. Returns null when no mapping is found.
+ */
+export function getCdnNamespacesForPage(
+  pagePath: string,
+): string[] | null {
+  const specs = getNamespacesForPage(pagePath);
+  if (!specs) return null;
+
+  const cdnNamespaces = new Set<string>();
+  for (const spec of specs) {
+    // "marketing.compare.crowdin" → "marketing" (CDN file name)
+    // "common" → "common" (already a CDN file name)
+    cdnNamespaces.add(spec.split(".")[0]);
+  }
+  return [...cdnNamespaces];
+}
+
+/**
  * Filter a messages object to only include the specified top-level namespace keys.
  * Returns a new object (immutable).
  */
