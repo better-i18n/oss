@@ -9,7 +9,7 @@
  */
 
 import { createI18nCore } from "@better-i18n/core";
-import { createClient } from "@better-i18n/sdk";
+import { createClient, extractLanguageCodes } from "@better-i18n/sdk";
 import type { ContentEntryListItem, ListEntriesOptions } from "@better-i18n/sdk";
 
 import { SITE_URL, MARKETING_PAGES } from "./pages";
@@ -435,19 +435,8 @@ export function generateFeatureDetailPages(
  */
 function toBlogPostMeta(item: ContentEntryListItem): BlogPostMeta {
   const raw = item as unknown as Record<string, unknown>;
-  // API returns `langs` (list response) or `availableLanguages` (SDK type) — check both
   const rawLangs = Array.isArray(raw.langs) ? raw.langs : raw.availableLanguages;
-  const availableLanguages = Array.isArray(rawLangs)
-    ? (rawLangs as unknown[]).flatMap((v): string[] => {
-      if (typeof v === "string") return [v];
-      if (v !== null && typeof v === "object") {
-        const code = (v as Record<string, unknown>).code;
-        if (typeof code === "string") return [code];
-      }
-      return [];
-    })
-    : undefined;
-
+  const codes = extractLanguageCodes(rawLangs as (string | { code: string })[] | null);
   const excerpt = typeof raw.excerpt === "string" ? raw.excerpt : undefined;
 
   return {
@@ -455,28 +444,18 @@ function toBlogPostMeta(item: ContentEntryListItem): BlogPostMeta {
     title: item.title,
     publishedAt: item.publishedAt,
     excerpt,
-    availableLanguages,
+    availableLanguages: codes.length > 0 ? codes : undefined,
   };
 }
 
 function toFeaturePageMeta(item: ContentEntryListItem): FeaturePageMeta {
   const raw = item as unknown as Record<string, unknown>;
-  // API returns `langs` (list response) or `availableLanguages` (SDK type) — check both
   const rawLangs = Array.isArray(raw.langs) ? raw.langs : raw.availableLanguages;
-  const availableLanguages = Array.isArray(rawLangs)
-    ? (rawLangs as unknown[]).flatMap((v): string[] => {
-      if (typeof v === "string") return [v];
-      if (v !== null && typeof v === "object") {
-        const code = (v as Record<string, unknown>).code;
-        if (typeof code === "string") return [code];
-      }
-      return [];
-    })
-    : undefined;
+  const codes = extractLanguageCodes(rawLangs as (string | { code: string })[] | null);
 
   return {
     slug: item.slug,
-    availableLanguages,
+    availableLanguages: codes.length > 0 ? codes : undefined,
     publishedAt: item.publishedAt ?? undefined,
   };
 }
