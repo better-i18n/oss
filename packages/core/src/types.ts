@@ -112,6 +112,8 @@ export interface ParsedProject {
 export interface NormalizedConfig extends I18nCoreConfig, ParsedProject {
   cdnBaseUrl: string;
   manifestCacheTtlMs: number;
+  /** Separate TTL for translation messages cache (dev=0, prod=5min by default) */
+  messagesCacheTtlMs: number;
   fetchTimeout: number;
   retryCount: number;
 }
