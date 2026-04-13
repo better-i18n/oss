@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/mcp-types",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "Shared types for Better i18n MCP packages (synced from internal)",
   "type": "module",

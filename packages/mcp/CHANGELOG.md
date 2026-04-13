@@ -1,5 +1,11 @@
 # @better-i18n/mcp
 
+## 0.17.0
+
+### Minor Changes
+
+- 98dccd3: Add path collision detection to createKeys MCP tool. When creating keys that would cause leaf↔object conflicts in JSON output (e.g., "step.workspace.title" when "step.workspace" exists as a leaf), the tool now throws a CONFLICT error with detailed explanation. Also detects intra-batch collisions. Use `force: true` to override when intentional.
+
 ## 0.16.0
 
 ### Minor Changes
