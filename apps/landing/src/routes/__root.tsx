@@ -159,6 +159,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const pagePath = extractPagePath(location.pathname);
     const cdnNamespaces = getCdnNamespacesForPage(pagePath) ?? undefined;
 
+    if (import.meta.env.DEV && cdnNamespaces) {
+      console.info(`[i18n] ${pagePath || "home"}: fetching ${cdnNamespaces.length} namespaces (of 103)`, cdnNamespaces);
+    }
+
     const allMessages = await getMessages({
       project: i18nConfig.project,
       locale: context.locale,
