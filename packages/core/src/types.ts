@@ -161,6 +161,14 @@ export interface ManifestResponse {
   languages: ManifestLanguage[];
   files?: Record<string, ManifestFileEntry>;
   updatedAt?: string;
+  /**
+   * When true, CDN supports batch namespace fetching in a single HTTP request:
+   * `GET /{locale}/batch.json?ns=common,nav,hero`
+   * → `{ "common": {...}, "nav": {...}, "hero": {...} }`
+   *
+   * SDK falls back to parallel individual fetches when this is false/absent.
+   */
+  batch?: boolean;
 }
 
 /**
