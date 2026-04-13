@@ -1,5 +1,3 @@
-import type { ContentEntryLanguage } from "./types.js";
-
 /**
  * Extract language codes from the `availableLanguages` field of a content entry.
  *
@@ -15,7 +13,7 @@ import type { ContentEntryLanguage } from "./types.js";
  * ```
  */
 export function extractLanguageCodes(
-  langs: readonly (string | ContentEntryLanguage)[] | string[] | null | undefined,
+  langs: readonly unknown[] | null | undefined,
 ): string[] {
   if (!Array.isArray(langs)) return [];
   return (langs as unknown[]).flatMap((v): string[] => {

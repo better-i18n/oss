@@ -338,7 +338,7 @@ export async function getBlogPost(
     const excerpt = extractExcerpt(entry.body);
     const raw = entry as unknown as Record<string, unknown>;
     const rawLangs = raw.availableLanguages ?? raw.langs;
-    const codes = extractLanguageCodes(rawLangs as (string | { code: string })[] | null);
+    const codes = extractLanguageCodes(rawLangs as unknown[] | null);
     const availableLanguages = codes.length > 0 ? codes : null;
     const post: BlogPost = {
       id: entry.id,
@@ -667,7 +667,7 @@ export async function getMarketingPage(
     const excerpt = extractExcerpt(entry.body);
     const raw = entry as unknown as Record<string, unknown>;
     const rawLangs = raw.availableLanguages ?? raw.langs;
-    const codes = extractLanguageCodes(rawLangs as (string | { code: string })[] | null);
+    const codes = extractLanguageCodes(rawLangs as unknown[] | null);
     const availableLanguages = codes.length > 0 ? codes : null;
     const page: MarketingPage = {
       id: entry.id,
