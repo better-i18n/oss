@@ -675,5 +675,90 @@ describe("cdn fallback", () => {
 
       expect(messages).toEqual(MESSAGES_EN);
     });
+
+    // ─── Selective namespace loading ─────────────────────────────────
+
+    it("fetches only requested namespaces when specified", async () => {
+      const mockFetch = createMockFetch({
+        "manifest.json": { ok: true, data: MANIFEST_V2 },
+        "en/common.json": { ok: true, data: NS_COMMON_EN },
+      });
+
+      const i18n = createI18nCore({ ...BASE_CONFIG, fetch: mockFetch });
+      const messages = await i18n.getMessages("en", { namespaces: ["common"] });
+
+      // Only common should be fetched, auth should NOT be present
+      expect(messages).toEqual({ common: NS_COMMON_EN });
+      // manifest (1) + common.json (1) = 2 fetches (auth.json NOT fetched)
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    it("selective fetch does not pollute cache for full fetch", async () => {
+      const mockFetch = createMockFetch({
+        "manifest.json": { ok: true, data: MANIFEST_V2 },
+        "en/common.json": { ok: true, data: NS_COMMON_EN },
+        "en/auth.json": { ok: true, data: NS_AUTH_EN },
+      });
+
+      const i18n = createI18nCore({ ...BASE_CONFIG, fetch: mockFetch });
+
+      // First: selective fetch (only common)
+      const partial = await i18n.getMessages("en", { namespaces: ["common"] });
+      expect(partial).toEqual({ common: NS_COMMON_EN });
+
+      // Second: full fetch (all namespaces) — must NOT return cached partial
+      const full = await i18n.getMessages("en");
+      expect(full).toEqual({ common: NS_COMMON_EN, auth: NS_AUTH_EN });
+    });
+
+    it("ignores namespaces option for v1 single-file projects", async () => {
+      // v1 manifest — no namespaces field
+      const manifestV1: ManifestResponse = {
+        ...MANIFEST,
+        files: {
+          en: {
+            url: "https://cdn.test.com/acme/dashboard/en/translations.json",
+            size: 500,
+            lastModified: "2026-01-01T00:00:00Z",
+          },
+        },
+      };
+
+      const mockFetch = createMockFetch({
+        "manifest.json": { ok: true, data: manifestV1 },
+        "en/translations.json": { ok: true, data: MESSAGES_EN },
+      });
+
+      const i18n = createI18nCore({ ...BASE_CONFIG, fetch: mockFetch });
+      // Passing namespaces to a v1 project should be silently ignored
+      const messages = await i18n.getMessages("en", { namespaces: ["common"] });
+
+      // Should return full messages (v1 doesn't support namespace filtering)
+      expect(messages).toEqual(MESSAGES_EN);
+    });
+
+    it("handles requested namespaces that don't exist in manifest", async () => {
+      const mockFetch = createMockFetch({
+        "manifest.json": { ok: true, data: MANIFEST_V2 },
+        "en/common.json": { ok: true, data: NS_COMMON_EN },
+      });
+
+      const i18n = createI18nCore({ ...BASE_CONFIG, fetch: mockFetch });
+      // "nonexistent" doesn't exist in manifest — should be silently skipped
+      const messages = await i18n.getMessages("en", { namespaces: ["common", "nonexistent"] });
+
+      expect(messages).toEqual({ common: NS_COMMON_EN });
+    });
+
+    it("returns empty Messages when all requested namespaces are missing", async () => {
+      const mockFetch = createMockFetch({
+        "manifest.json": { ok: true, data: MANIFEST_V2 },
+      });
+
+      const i18n = createI18nCore({ ...BASE_CONFIG, fetch: mockFetch });
+      const messages = await i18n.getMessages("en", { namespaces: ["nonexistent"] });
+
+      expect(messages).toEqual({});
+    });
   });
 });
