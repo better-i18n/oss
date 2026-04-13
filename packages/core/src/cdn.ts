@@ -6,7 +6,6 @@ import type {
   I18nCore,
   I18nCoreConfig,
   LanguageOption,
-  ManifestFileEntry,
   ManifestResponse,
   Messages,
   NormalizedConfig,
@@ -387,31 +386,33 @@ const fetchBatchNamespaces = async (
 };
 
 /**
- * Fetch all namespace files for a locale in parallel and merge into Messages.
+ * Fetch namespace files for a locale in parallel and merge into Messages.
+ * URLs are constructed deterministically: `{baseUrl}/{locale}/{ns}.json`.
  * Throws if any namespace fetch fails — partial results are not returned.
  */
 const fetchNamespacedMessages = async (
   config: NormalizedConfig,
   locale: string,
-  namespaces: Record<string, ManifestFileEntry>,
+  namespaces: string[],
   fetchFn: typeof fetch
 ): Promise<MessagesFetchResult> => {
   const logger = createLogger(config, "messages");
-  const entries = Object.entries(namespaces);
+  const baseUrl = getProjectBaseUrl(config);
 
   logger.debug("fetching namespaced messages", {
     locale,
-    count: entries.length,
-    namespaces: entries.map(([ns]) => ns),
+    count: namespaces.length,
+    namespaces,
   });
 
   // Fetch all namespace files in parallel — fail fast on any error
   const results = await Promise.all(
-    entries.map(([namespace, fileInfo]) =>
-      fetchNamespaceFile(config, namespace, fileInfo.url, fetchFn).then(
-        (data) => [namespace, data] as const
-      )
-    )
+    namespaces.map((ns) => {
+      const url = `${baseUrl}/${locale}/${ns}.json`;
+      return fetchNamespaceFile(config, ns, url, fetchFn).then(
+        (data) => [ns, data] as const
+      );
+    })
   );
 
   // Merge into Messages: { namespace1: {...}, namespace2: {...} }
@@ -461,11 +462,23 @@ const getMessagesWithFallback = async (
     // Manifest is already cached in TtlCache — this is a sub-microsecond lookup on hit
     const manifest = await getManifestWithCache(config, fetchFn).catch(() => null);
     const fileEntry = manifest?.files?.[safeLng];
-    const hasNamespaces =
-      fileEntry != null &&
-      "namespaces" in fileEntry &&
-      fileEntry.namespaces != null &&
-      Object.keys(fileEntry.namespaces).length > 0;
+
+    // Detect namespace delivery (v2) from two sources:
+    // - Rich manifest: per-locale `files[locale].namespaces` object (has URLs, sizes)
+    // - Slim manifest: top-level `manifest.namespaces` string[] (just names, ~240KB smaller)
+    // SDK constructs URLs deterministically — per-locale URL objects are redundant.
+    const perLocaleNs = fileEntry?.namespaces;
+    const hasPerLocaleNs = perLocaleNs != null && Object.keys(perLocaleNs).length > 0;
+    const topLevelNs = manifest?.namespaces;
+    const hasTopLevelNs = Array.isArray(topLevelNs) && topLevelNs.length > 0;
+    const hasNamespaces = hasPerLocaleNs || hasTopLevelNs;
+
+    // Build available namespace set from whichever source exists
+    const availableNs: Set<string> = hasPerLocaleNs
+      ? new Set(Object.keys(perLocaleNs!))
+      : hasTopLevelNs
+        ? new Set(topLevelNs!)
+        : new Set();
 
     if (hasNamespaces) {
       if (requestedNamespaces && requestedNamespaces.length > 0) {
@@ -474,33 +487,31 @@ const getMessagesWithFallback = async (
         // reuse shared namespaces without re-fetching. Example:
         //   home needs [common, nav, hero]  → 3 fetches, 3 cache entries
         //   blog needs [common, nav, blog]  → common+nav = cache hits, 1 fetch
-        const allNs = fileEntry.namespaces!;
         const merged: Messages = {};
-        const toFetch: Record<string, ManifestFileEntry> = {};
+        const toFetch: string[] = [];
 
         for (const ns of requestedNamespaces) {
-          if (!allNs[ns]) continue; // skip non-existent namespaces silently
+          if (!availableNs.has(ns)) continue; // skip non-existent namespaces silently
           const nsKey = `${baseCacheKey}|ns:${ns}`;
           const cached = messagesCache.get(nsKey);
           if (cached?.[ns] != null) {
             merged[ns] = cached[ns];
           } else {
-            toFetch[ns] = allNs[ns];
+            toFetch.push(ns);
           }
         }
 
         // All namespaces served from cache — zero CDN requests
-        if (Object.keys(toFetch).length === 0) {
+        if (toFetch.length === 0) {
           logger.debug("all namespaces from cache", {
             count: Object.keys(merged).length,
           });
           return merged;
         }
 
-        const toFetchKeys = Object.keys(toFetch);
         logger.debug("selective namespace loading", {
           cached: Object.keys(merged).length,
-          fetching: toFetchKeys.length,
+          fetching: toFetch.length,
           total: requestedNamespaces.length,
           batch: manifest?.batch ?? false,
         });
@@ -510,8 +521,8 @@ const getMessagesWithFallback = async (
         // Only attempted when CDN declares batch support (manifest.batch === true)
         // and there are 2+ namespaces to fetch (single ns = direct fetch is fine).
         let fetchedMessages: Messages | null = null;
-        if (manifest?.batch && toFetchKeys.length > 1) {
-          fetchedMessages = await fetchBatchNamespaces(config, safeLng, toFetchKeys, fetchFn);
+        if (manifest?.batch && toFetch.length > 1) {
+          fetchedMessages = await fetchBatchNamespaces(config, safeLng, toFetch, fetchFn);
         }
 
         // Fallback: parallel individual fetches (always works, even without batch support)
@@ -540,7 +551,7 @@ const getMessagesWithFallback = async (
       }
 
       // v2 full fetch: all namespace files in parallel (no selective filter)
-      result = await fetchNamespacedMessages(config, safeLng, fileEntry.namespaces!, fetchFn);
+      result = await fetchNamespacedMessages(config, safeLng, [...availableNs], fetchFn);
     } else {
       // v1: single-file fetch with ETag support (unchanged path)
       const cachedETag = messagesETagCache.get(cacheKey);

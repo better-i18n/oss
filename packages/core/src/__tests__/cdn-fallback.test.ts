@@ -915,5 +915,95 @@ describe("cdn fallback", () => {
       expect(page3).toEqual({ auth: NS_AUTH_EN });
       expect(fetchCallCount).toBe(afterPage1); // Still no additional fetches
     });
+
+    // ─── Slim manifest (top-level namespaces, no per-locale objects) ──
+
+    it("works with slim manifest (top-level namespaces string[])", async () => {
+      const MANIFEST_SLIM: ManifestResponse = {
+        projectSlug: "dashboard",
+        sourceLanguage: "en",
+        languages: [
+          { code: "en", name: "English", isSource: true },
+          { code: "tr", name: "Turkish" },
+        ],
+        batch: true,
+        namespaces: ["common", "auth"],
+        // files has NO per-locale namespaces sub-objects — slim manifest
+        files: {
+          en: {
+            url: "https://cdn.test.com/acme/dashboard/en/translations.json",
+            size: 500,
+            lastModified: "2026-01-01T00:00:00Z",
+          },
+        },
+      };
+
+      const mockFetch = createMockFetch({
+        "manifest.json": { ok: true, data: MANIFEST_SLIM },
+        "batch.json": { ok: true, data: { common: NS_COMMON_EN, auth: NS_AUTH_EN } },
+      });
+
+      const i18n = createI18nCore({ ...BASE_CONFIG, fetch: mockFetch });
+      const messages = await i18n.getMessages("en", { namespaces: ["common", "auth"] });
+
+      expect(messages).toEqual({ common: NS_COMMON_EN, auth: NS_AUTH_EN });
+      // manifest (1) + batch (1) = 2 fetches
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    it("slim manifest full fetch uses top-level namespace names", async () => {
+      const MANIFEST_SLIM: ManifestResponse = {
+        projectSlug: "dashboard",
+        sourceLanguage: "en",
+        languages: [{ code: "en", name: "English", isSource: true }],
+        namespaces: ["common", "auth"],
+        files: {
+          en: {
+            url: "https://cdn.test.com/acme/dashboard/en/translations.json",
+            size: 500,
+            lastModified: "2026-01-01T00:00:00Z",
+          },
+        },
+      };
+
+      const mockFetch = createMockFetch({
+        "manifest.json": { ok: true, data: MANIFEST_SLIM },
+        "en/common.json": { ok: true, data: NS_COMMON_EN },
+        "en/auth.json": { ok: true, data: NS_AUTH_EN },
+      });
+
+      const i18n = createI18nCore({ ...BASE_CONFIG, fetch: mockFetch });
+      // Full fetch (no namespace filter) — should use top-level namespace list
+      const messages = await i18n.getMessages("en");
+
+      expect(messages).toEqual({ common: NS_COMMON_EN, auth: NS_AUTH_EN });
+    });
+
+    it("slim manifest skips non-existent namespaces silently", async () => {
+      const MANIFEST_SLIM: ManifestResponse = {
+        projectSlug: "dashboard",
+        sourceLanguage: "en",
+        languages: [{ code: "en", name: "English", isSource: true }],
+        namespaces: ["common", "auth"],
+        files: {
+          en: {
+            url: "https://cdn.test.com/acme/dashboard/en/translations.json",
+            size: 500,
+            lastModified: "2026-01-01T00:00:00Z",
+          },
+        },
+      };
+
+      const mockFetch = createMockFetch({
+        "manifest.json": { ok: true, data: MANIFEST_SLIM },
+        "en/common.json": { ok: true, data: NS_COMMON_EN },
+      });
+
+      const i18n = createI18nCore({ ...BASE_CONFIG, fetch: mockFetch });
+      // "nonexistent" not in manifest.namespaces — should be silently skipped
+      const messages = await i18n.getMessages("en", { namespaces: ["common", "nonexistent"] });
+
+      expect(messages).toEqual({ common: NS_COMMON_EN });
+    });
   });
 });
