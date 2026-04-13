@@ -382,12 +382,11 @@ const getMessagesWithFallback = async (
 ): Promise<Messages> => {
   const safeLng = normalizeLocale(locale);
   const logger = createLogger(config, "messages");
-  // Include requested namespaces in cache key so selective fetches don't collide
-  const nsSuffix = requestedNamespaces ? `|ns:${requestedNamespaces.sort().join(",")}` : "";
-  const cacheKey = `${buildCacheKey(config.cdnBaseUrl, config.project)}|${safeLng}${nsSuffix}`;
+  const baseCacheKey = `${buildCacheKey(config.cdnBaseUrl, config.project)}|${safeLng}`;
+  const cacheKey = baseCacheKey; // v1 and full-v2 composite key (no namespace suffix)
   const storageKey = buildMessagesStorageKey(config.project, safeLng);
 
-  // 1. Memory cache
+  // 1. Memory cache (serves v1 and full-v2 fetches; selective path uses per-namespace lookup below)
   const memoryCached = messagesCache.get(cacheKey);
   if (memoryCached) return memoryCached;
 
@@ -406,24 +405,61 @@ const getMessagesWithFallback = async (
       Object.keys(fileEntry.namespaces).length > 0;
 
     if (hasNamespaces) {
-      // v2: fetch per-namespace files in parallel and merge
-      // When requestedNamespaces is provided, only fetch those (selective loading)
-      let namespacesToFetch = fileEntry.namespaces!;
       if (requestedNamespaces && requestedNamespaces.length > 0) {
-        const filtered: Record<string, ManifestFileEntry> = {};
+        // ── Per-namespace caching for selective loads ──────────────────
+        // Each namespace is cached individually so cross-page navigations
+        // reuse shared namespaces without re-fetching. Example:
+        //   home needs [common, nav, hero]  → 3 fetches, 3 cache entries
+        //   blog needs [common, nav, blog]  → common+nav = cache hits, 1 fetch
+        const allNs = fileEntry.namespaces!;
+        const merged: Messages = {};
+        const toFetch: Record<string, ManifestFileEntry> = {};
+
         for (const ns of requestedNamespaces) {
-          if (namespacesToFetch[ns]) {
-            filtered[ns] = namespacesToFetch[ns];
+          if (!allNs[ns]) continue; // skip non-existent namespaces silently
+          const nsKey = `${baseCacheKey}|ns:${ns}`;
+          const cached = messagesCache.get(nsKey);
+          if (cached?.[ns] != null) {
+            merged[ns] = cached[ns];
+          } else {
+            toFetch[ns] = allNs[ns];
           }
         }
-        namespacesToFetch = filtered;
+
+        // All namespaces served from cache — zero CDN requests
+        if (Object.keys(toFetch).length === 0) {
+          logger.debug("all namespaces from cache", {
+            count: Object.keys(merged).length,
+          });
+          return merged;
+        }
+
         logger.debug("selective namespace loading", {
-          requested: requestedNamespaces.length,
-          available: Object.keys(fileEntry.namespaces!).length,
-          fetching: Object.keys(namespacesToFetch).length,
+          cached: Object.keys(merged).length,
+          fetching: Object.keys(toFetch).length,
+          total: requestedNamespaces.length,
         });
+
+        const nsResult = await fetchNamespacedMessages(config, safeLng, toFetch, fetchFn);
+        if (!nsResult.notModified) {
+          // Cache each fetched namespace individually
+          for (const [ns, data] of Object.entries(nsResult.messages)) {
+            messagesCache.set(
+              `${baseCacheKey}|ns:${ns}`,
+              { [ns]: data },
+              config.messagesCacheTtlMs,
+            );
+            merged[ns] = data;
+          }
+        }
+
+        // Write merged result to storage for offline fallback (fire-and-forget)
+        writeToStorage(config.storage, storageKey, merged);
+        return merged;
       }
-      result = await fetchNamespacedMessages(config, safeLng, namespacesToFetch, fetchFn);
+
+      // v2 full fetch: all namespace files in parallel (no selective filter)
+      result = await fetchNamespacedMessages(config, safeLng, fileEntry.namespaces!, fetchFn);
     } else {
       // v1: single-file fetch with ETag support (unchanged path)
       const cachedETag = messagesETagCache.get(cacheKey);

@@ -760,5 +760,37 @@ describe("cdn fallback", () => {
 
       expect(messages).toEqual({});
     });
+
+    it("reuses cached namespaces across different selective fetches (cross-page navigation)", async () => {
+      let fetchCallCount = 0;
+      const mockFetch = createMockFetch({
+        "manifest.json": { ok: true, data: MANIFEST_V2 },
+        "en/common.json": { ok: true, data: NS_COMMON_EN },
+        "en/auth.json": { ok: true, data: NS_AUTH_EN },
+      });
+      const originalMockFetch = mockFetch;
+      const countingFetch = ((...args: Parameters<typeof fetch>) => {
+        fetchCallCount++;
+        return originalMockFetch(...args);
+      }) as typeof fetch;
+
+      const i18n = createI18nCore({ ...BASE_CONFIG, fetch: countingFetch });
+
+      // Page 1: needs [common, auth] → fetches both (manifest + common + auth = 3 requests)
+      const page1 = await i18n.getMessages("en", { namespaces: ["common", "auth"] });
+      expect(page1).toEqual({ common: NS_COMMON_EN, auth: NS_AUTH_EN });
+      const afterPage1 = fetchCallCount;
+      expect(afterPage1).toBe(3); // manifest + common + auth
+
+      // Page 2: needs [common] → common already cached, zero CDN requests
+      const page2 = await i18n.getMessages("en", { namespaces: ["common"] });
+      expect(page2).toEqual({ common: NS_COMMON_EN });
+      expect(fetchCallCount).toBe(afterPage1); // NO additional fetches
+
+      // Page 3: needs [auth] → auth already cached, zero CDN requests
+      const page3 = await i18n.getMessages("en", { namespaces: ["auth"] });
+      expect(page3).toEqual({ auth: NS_AUTH_EN });
+      expect(fetchCallCount).toBe(afterPage1); // Still no additional fetches
+    });
   });
 });
