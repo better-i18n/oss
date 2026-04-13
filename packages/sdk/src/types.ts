@@ -60,8 +60,12 @@ export type ContentEntry<CF extends Record<string, string | null> = Record<strin
   publishedAt: string | null;
   /** Source language code of the project (e.g. `"en"`). */
   sourceLanguage: string;
-  /** Language codes that have translations for this entry (e.g. `["en", "fr", "tr"]`). */
-  availableLanguages: string[];
+  /**
+   * Languages that have translations for this entry.
+   * The API returns `ContentEntryLanguage[]` objects with code, name, and countryCode.
+   * Typed as a union for backward compatibility — always check element shape at runtime.
+   */
+  availableLanguages: (string | ContentEntryLanguage)[];
   /**
    * Rich language descriptors for each available translation.
    * Present on single-entry responses (`single()`) — includes display name and country code.
@@ -119,8 +123,8 @@ export type ContentEntryListItem<CF extends Record<string, string | null> = Reco
   body?: string | null;
   /** Source language code of the project (e.g. `"en"`). Only present on list responses when included. */
   sourceLanguage?: string;
-  /** Language codes that have translations for this entry. Only present on list responses when included. */
-  availableLanguages?: string[];
+  /** Languages that have translations for this entry. Only present on list responses when included. */
+  availableLanguages?: (string | ContentEntryLanguage)[];
   /** Expanded relation fields (only present when expand is used) */
   relations?: Record<string, RelationValue | null>;
 } & CF;
