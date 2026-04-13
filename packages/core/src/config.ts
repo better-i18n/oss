@@ -2,7 +2,8 @@ import type { I18nCoreConfig, NormalizedConfig, ParsedProject } from "./types.js
 
 const DEFAULT_CDN_BASE_URL = "https://cdn.better-i18n.com";
 const DEFAULT_CACHE_TTL_MS_PROD = 5 * 60 * 1000; // 5 minutes
-const DEFAULT_CACHE_TTL_MS_DEV = 0; // no cache in dev — always fetch fresh
+const DEFAULT_CACHE_TTL_MS_DEV = 0; // no cache in dev — always fetch fresh translations
+const DEFAULT_MANIFEST_CACHE_TTL_MS_DEV = 30 * 1000; // 30s in dev — manifest rarely changes
 const DEFAULT_FETCH_TIMEOUT_MS = 10_000; // 10 seconds
 const DEFAULT_RETRY_COUNT = 1;
 
@@ -57,9 +58,12 @@ export const normalizeConfig = (config: I18nCoreConfig): NormalizedConfig => {
     workspaceId,
     projectSlug,
     cdnBaseUrl: config.cdnBaseUrl?.replace(/\/$/, "") || DEFAULT_CDN_BASE_URL,
+    // Manifest: 30s in dev (rarely changes), 5min in prod
     manifestCacheTtlMs:
       config.manifestCacheTtlMs ??
-      (devMode ? DEFAULT_CACHE_TTL_MS_DEV : DEFAULT_CACHE_TTL_MS_PROD),
+      (devMode ? DEFAULT_MANIFEST_CACHE_TTL_MS_DEV : DEFAULT_CACHE_TTL_MS_PROD),
+    // Messages: 0 in dev (always fresh translations), 5min in prod
+    messagesCacheTtlMs: devMode ? DEFAULT_CACHE_TTL_MS_DEV : DEFAULT_CACHE_TTL_MS_PROD,
     fetchTimeout: config.fetchTimeout ?? DEFAULT_FETCH_TIMEOUT_MS,
     retryCount: config.retryCount ?? DEFAULT_RETRY_COUNT,
   };

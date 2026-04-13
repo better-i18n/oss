@@ -146,8 +146,8 @@ const fetchManifestFromCdn = async (
     fetchFn,
     url,
     // cache: "no-store" bypasses browser disk cache (fetch API option).
-    // The header alone is not enough — browser ignores it for disk cache reads.
-    { headers: { "Cache-Control": "no-store" }, cache: "no-store" },
+    // Accept-Encoding requests compression: 477KB → 26KB for manifest (94% reduction).
+    { headers: { "Cache-Control": "no-store", "Accept-Encoding": "gzip, br" }, cache: "no-store" },
     config.fetchTimeout,
     config.retryCount
   );
@@ -239,7 +239,11 @@ const fetchMessagesFromCdn = async (
 
   logger.debug("fetching", url);
 
-  const headers: Record<string, string> = { "Cache-Control": "no-store" };
+  const headers: Record<string, string> = {
+    "Cache-Control": "no-store",
+    // Request compression: single-file translations.json is often 200-500KB uncompressed
+    "Accept-Encoding": "gzip, br",
+  };
   if (ifNoneMatch) {
     headers["If-None-Match"] = ifNoneMatch;
   }
@@ -302,7 +306,8 @@ const fetchNamespaceFile = async (
   const response = await fetchWithRetry(
     fetchFn,
     url,
-    { headers: { "Cache-Control": "no-store" }, cache: "no-store" },
+    // Per-namespace files are typically 10-50KB — compression still worthwhile
+    { headers: { "Cache-Control": "no-store", "Accept-Encoding": "gzip, br" }, cache: "no-store" },
     config.fetchTimeout,
     config.retryCount
   );
@@ -429,13 +434,13 @@ const getMessagesWithFallback = async (
         const stored = await readFromStorage<Messages>(config.storage, storageKey);
         if (stored) {
           logger.debug(`304: refreshing TTL for "${safeLng}" from storage`);
-          messagesCache.set(cacheKey, stored, config.manifestCacheTtlMs);
+          messagesCache.set(cacheKey, stored, config.messagesCacheTtlMs);
           return stored;
         }
         // No storage fallback — re-fetch without ETag to get fresh data
         const freshResult = await fetchMessagesFromCdn(config, safeLng, fetchFn);
         if (!freshResult.notModified) {
-          messagesCache.set(cacheKey, freshResult.messages, config.manifestCacheTtlMs);
+          messagesCache.set(cacheKey, freshResult.messages, config.messagesCacheTtlMs);
           if (freshResult.etag) messagesETagCache.set(cacheKey, freshResult.etag, config.manifestCacheTtlMs);
           writeToStorage(config.storage, storageKey, freshResult.messages);
           return freshResult.messages;
@@ -445,7 +450,7 @@ const getMessagesWithFallback = async (
 
     // 200 OK — new or changed content (both v1 non-304 and v2)
     if (!result.notModified) {
-      messagesCache.set(cacheKey, result.messages, config.manifestCacheTtlMs);
+      messagesCache.set(cacheKey, result.messages, config.messagesCacheTtlMs);
       if (result.etag) messagesETagCache.set(cacheKey, result.etag, config.manifestCacheTtlMs);
       writeToStorage(config.storage, storageKey, result.messages);
       return result.messages;
@@ -460,7 +465,7 @@ const getMessagesWithFallback = async (
     const stored = await readFromStorage<Messages>(config.storage, storageKey);
     if (stored) {
       logger.info(`serving messages for "${safeLng}" from persistent storage (stale)`);
-      messagesCache.set(cacheKey, stored, config.manifestCacheTtlMs);
+      messagesCache.set(cacheKey, stored, config.messagesCacheTtlMs);
       return stored;
     }
 
