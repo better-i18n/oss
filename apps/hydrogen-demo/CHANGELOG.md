@@ -1,5 +1,13 @@
 # hydrogen-demo
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies [36ffcfe]
+  - @better-i18n/sdk@3.3.0
+  - @better-i18n/remix@0.6.3
+
 ## 0.0.12
 
 ### Patch Changes
