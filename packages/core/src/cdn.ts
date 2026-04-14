@@ -550,8 +550,17 @@ const getMessagesWithFallback = async (
         return merged;
       }
 
-      // v2 full fetch: all namespace files in parallel (no selective filter)
-      result = await fetchNamespacedMessages(config, safeLng, [...availableNs], fetchFn);
+      // v2 full fetch: prefer batch endpoint when CDN supports it, fallback to parallel.
+      // This avoids 100+ individual CDN requests per locale when callers don't pass
+      // the selective `namespaces` option — single round-trip instead of N round-trips.
+      const fullNs = [...availableNs];
+      let batched: Messages | null = null;
+      if (manifest?.batch && fullNs.length > 1) {
+        batched = await fetchBatchNamespaces(config, safeLng, fullNs, fetchFn);
+      }
+      result = batched
+        ? { messages: batched, notModified: false, etag: null }
+        : await fetchNamespacedMessages(config, safeLng, fullNs, fetchFn);
     } else {
       // v1: single-file fetch with ETag support (unchanged path)
       const cachedETag = messagesETagCache.get(cacheKey);
