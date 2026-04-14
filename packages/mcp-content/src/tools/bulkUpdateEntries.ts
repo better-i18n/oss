@@ -98,7 +98,7 @@ EXAMPLE (batch-translate to Turkish):
               languageCode: { type: "string", description: "Single-language mode: language to update" },
               title: { type: "string", description: "Updated title" },
               slug: { type: "string", description: "Updated URL slug" },
-              bodyMarkdown: { type: "string", description: "Updated content body in Markdown" },
+              bodyMarkdown: { type: "string", description: "Updated content body in Markdown. WARNING: Do NOT start with a # H1 heading — the entry title is rendered separately as the page H1. Begin with a paragraph or ## H2 section." },
               customFields: { type: "object", description: "Updated custom field values as { fieldName: value }" },
               translations: { type: "object", description: "Multi-language translations — { langCode: { title, bodyMarkdown, customFields } }" },
               status: { type: "string", enum: ["draft", "published", "archived"], description: "Updated entry status" },
