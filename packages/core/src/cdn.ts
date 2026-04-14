@@ -658,7 +658,12 @@ export const createI18nCore = (config: I18nCoreConfig): I18nCore => {
       getManifestWithCache(normalized, fetchFn, options?.forceRefresh),
 
     getMessages: (locale: string, options?: { namespaces?: string[] }) =>
-      getMessagesWithFallback(normalized, locale, fetchFn, options?.namespaces),
+      getMessagesWithFallback(
+        normalized,
+        locale,
+        fetchFn,
+        options?.namespaces ?? normalized.namespaces,
+      ),
 
     getLocales: async (): Promise<string[]> => {
       const manifest = await getManifestWithCache(normalized, fetchFn);
