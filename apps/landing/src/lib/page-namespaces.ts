@@ -24,6 +24,7 @@ const SHARED_NAMESPACES = [
   "breadcrumbs",
   "cookieBanner",
   "cta",
+  "meta",
 ] as const;
 
 // ─── Types ──────────────────────────────────────────────────────────
