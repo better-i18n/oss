@@ -260,7 +260,7 @@
     },
     "packages/mcp": {
       "name": "@better-i18n/mcp",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "bin": {
         "better-i18n-mcp": "./dist/index.js",
       },
@@ -277,7 +277,7 @@
     },
     "packages/mcp-content": {
       "name": "@better-i18n/mcp-content",
-      "version": "0.8.5",
+      "version": "0.8.6",
       "bin": {
         "better-i18n-mcp-content": "./dist/index.js",
       },
