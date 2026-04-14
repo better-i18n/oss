@@ -32,17 +32,10 @@ export interface GetMessagesConfig extends Omit<
 export async function getMessages(
   config: GetMessagesConfig,
 ): Promise<Messages> {
+  const { locale, namespaces: _callNs, ...coreFields } = config;
   const i18n = createI18nCore({
-    project: config.project,
-    defaultLocale: config.locale,
-    cdnBaseUrl: config.cdnBaseUrl,
-    debug: config.debug,
-    logLevel: config.logLevel,
-    fetch: config.fetch,
-    storage: config.storage,
-    staticData: config.staticData,
-    fetchTimeout: config.fetchTimeout,
-    retryCount: config.retryCount,
+    ...coreFields,
+    defaultLocale: locale,
   });
 
   const messages = (await i18n.getMessages(config.locale, {
