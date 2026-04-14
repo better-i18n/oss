@@ -467,7 +467,7 @@ export default function Header({ className }: { className?: string }) {
                             <item.Icon className="size-4 text-mist-800" />
                           </span>
                           <span className="min-w-0">
-                            <span className="block text-sm font-medium text-mist-950 leading-snug">{item.name}</span>
+                            <span className="block text-sm font-medium text-mist-950 leading-snug">{t(`integrations.featured.${item.slug}.name`, { defaultValue: item.name })}</span>
                             <span className="block text-xs text-mist-500 leading-relaxed mt-0.5">{t(`integrations.featured.${item.slug}.description`, { defaultValue: item.defaultDescription })}</span>
                           </span>
                         </Link>
