@@ -9,6 +9,7 @@
 import { z } from "zod";
 import {
   customFieldsSchema,
+  detectH1InBody,
   executeTool,
   projectInputProperty,
   projectSchema,
@@ -134,6 +135,10 @@ EXAMPLE (batch-translate to Turkish):
         entries,
       } as Parameters<typeof client.mcpContent.bulkUpdateEntries.mutate>[0]);
 
-      return success(result);
+      const h1Warn = detectH1InBody({ entries: input.entries });
+      return success({
+        ...result,
+        ...(h1Warn && { warn: h1Warn }),
+      });
     }),
 };

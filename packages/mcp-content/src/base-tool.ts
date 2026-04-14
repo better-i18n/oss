@@ -68,6 +68,49 @@ export function error(message: string): ToolResult {
 }
 
 /**
+ * Detects bodyMarkdown fields starting with # H1 headings (common AI agent mistake).
+ * Returns a warning string if found, or undefined if clean.
+ *
+ * Checks top-level bodyMarkdown and all translations.{lang}.bodyMarkdown.
+ */
+export function detectH1InBody(input: {
+  bodyMarkdown?: string;
+  translations?: Record<string, { bodyMarkdown?: string }>;
+  entries?: Array<{
+    bodyMarkdown?: string;
+    translations?: Record<string, { bodyMarkdown?: string }>;
+  }>;
+}): string | undefined {
+  const offenders: string[] = [];
+  const h1Re = /^\s*#\s+/;
+
+  const check = (md: string | undefined, label: string) => {
+    if (md && h1Re.test(md)) offenders.push(label);
+  };
+
+  check(input.bodyMarkdown, "bodyMarkdown");
+  if (input.translations) {
+    for (const [lang, t] of Object.entries(input.translations)) {
+      check(t.bodyMarkdown, `translations.${lang}.bodyMarkdown`);
+    }
+  }
+  if (input.entries) {
+    for (let i = 0; i < input.entries.length; i++) {
+      const entry = input.entries[i];
+      check(entry.bodyMarkdown, `entries[${i}].bodyMarkdown`);
+      if (entry.translations) {
+        for (const [lang, t] of Object.entries(entry.translations)) {
+          check(t.bodyMarkdown, `entries[${i}].translations.${lang}.bodyMarkdown`);
+        }
+      }
+    }
+  }
+
+  if (offenders.length === 0) return undefined;
+  return `Body starts with # H1 heading in: ${offenders.join(", ")}. The entry title is already rendered as the page H1 — starting body with # Title creates a duplicate heading. Remove the # H1 line and begin with a paragraph or ## H2 section.`;
+}
+
+/**
  * Wraps tool execution with common error handling for project-scoped tools
  */
 export async function executeTool<T extends { project: string }>(
