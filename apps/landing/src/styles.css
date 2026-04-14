@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
-@source "../../../node_modules/@better-i18n/ui";
+@source "../../node_modules/@better-i18n/ui";
 
 /* Self-hosted Geist fonts (variable woff2 from geist npm package) */
 @font-face {
