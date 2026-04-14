@@ -1,5 +1,16 @@
 # @better-i18n/next
 
+## 0.8.0
+
+### Minor Changes
+
+- 6698bd0: Expose full `getMessages(locale, { namespaces })` signature from core — previously narrowed to `(locale: string)` only. Config-level `namespaces` option now flows through to both internal core instances. Reduces code duplication in `createNextI18nCore` with shared `coreFields` object.
+
+### Patch Changes
+
+- Updated dependencies [6698bd0]
+  - @better-i18n/core@0.10.0
+
 ## 0.7.8
 
 ### Patch Changes
