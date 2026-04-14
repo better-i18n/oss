@@ -465,12 +465,14 @@ function toFeaturePageMeta(item: ContentEntryListItem): FeaturePageMeta {
 /**
  * Fetches ALL entries from a content model by paginating through API results.
  * The Content API has a max limit of 100 items per request.
- * For 202 blog posts, this makes 3 API calls (100 + 100 + 2).
+ *
+ * Use `fields` to request only needed columns — omitting heavy fields like
+ * `body` dramatically reduces memory usage (200+ entries × all languages).
  */
 async function fetchAllEntries(
   client: ReturnType<typeof createClient>,
   model: string,
-  options: Pick<ListEntriesOptions, "status" | "sort" | "order">,
+  options: Pick<ListEntriesOptions, "status" | "sort" | "order" | "fields">,
 ): Promise<readonly ContentEntryListItem[]> {
   const allItems: ContentEntryListItem[] = [];
   let page = 1;
@@ -510,13 +512,21 @@ export async function fetchSeoData(options: {
       status: "published",
       sort: "publishedAt",
       order: "desc",
+      // Only fetch fields needed for sitemap — exclude `body` to avoid OOM
+      // when paginating 200+ entries with full markdown content per language.
+      fields: ["slug", "title", "publishedAt", "excerpt", "langs"],
     }),
-    client.getEntries("marketing-pages", { status: "published", limit: 100 }),
+    client.getEntries("marketing-pages", {
+      status: "published",
+      limit: 100,
+      fields: ["slug", "page_type", "langs"],
+    }),
     client.getEntries("changelog-beta", {
       status: "published",
       sort: "publishedAt",
       order: "desc",
       limit: 100,
+      fields: ["slug", "title", "publishedAt"],
     }),
   ]);
 
