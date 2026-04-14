@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { getRequestConfig } from "next-intl/server";
 import { createI18nCore } from "@better-i18n/core";
-import type { I18nCore, Messages } from "@better-i18n/core";
+import type { I18nCore } from "@better-i18n/core";
 
 import { normalizeConfig } from "./config.js";
 import type { I18nConfig, NextFetchRequestInit } from "./types.js";
@@ -14,14 +14,10 @@ import type { I18nConfig, NextFetchRequestInit } from "./types.js";
 const getRequestLocaleCache = cache(() => ({ locale: undefined as string | undefined }));
 
 /**
- * Next.js i18n core instance with ISR support
+ * Next.js i18n core instance with ISR support.
+ * Inherits full `I18nCore` interface including namespace-aware `getMessages`.
  */
-export interface NextI18nCore extends I18nCore {
-  /**
-   * Get messages for a locale with Next.js ISR revalidation
-   */
-  getMessages: (locale: string) => Promise<Messages>;
-}
+export type NextI18nCore = I18nCore;
 
 /**
  * Create a fetch function with Next.js ISR revalidation
@@ -62,44 +58,33 @@ const createIsrFetch = (revalidateSeconds: number): typeof fetch => {
 export const createNextI18nCore = (config: I18nConfig): NextI18nCore => {
   const normalized = normalizeConfig(config);
 
-  // Core instance uses ISR fetch for manifest (default 3600s)
-  const manifestFetch = createIsrFetch(normalized.manifestRevalidateSeconds);
-  const i18nCore = createI18nCore({
+  // Shared core fields (everything except fetch, which differs per use-case)
+  const coreFields = {
     project: normalized.project,
     defaultLocale: normalized.defaultLocale,
     cdnBaseUrl: normalized.cdnBaseUrl,
     manifestCacheTtlMs: normalized.manifestCacheTtlMs,
     debug: normalized.debug,
     logLevel: normalized.logLevel,
-    fetch: manifestFetch,
     storage: normalized.storage,
     staticData: normalized.staticData,
     fetchTimeout: normalized.fetchTimeout,
     retryCount: normalized.retryCount,
-  });
+    namespaces: normalized.namespaces,
+  };
+
+  // Core instance uses ISR fetch for manifest (default 3600s)
+  const manifestFetch = createIsrFetch(normalized.manifestRevalidateSeconds);
+  const i18nCore = createI18nCore({ ...coreFields, fetch: manifestFetch });
 
   // Messages use separate ISR fetch with shorter revalidation (default 30s)
   const messagesFetch = createIsrFetch(normalized.messagesRevalidateSeconds);
-
-  // Build a core instance with ISR messages fetch for fallback support
-  const messagesCore = createI18nCore({
-    project: normalized.project,
-    defaultLocale: normalized.defaultLocale,
-    cdnBaseUrl: normalized.cdnBaseUrl,
-    manifestCacheTtlMs: normalized.manifestCacheTtlMs,
-    debug: normalized.debug,
-    logLevel: normalized.logLevel,
-    fetch: messagesFetch,
-    storage: normalized.storage,
-    staticData: normalized.staticData,
-    fetchTimeout: normalized.fetchTimeout,
-    retryCount: normalized.retryCount,
-  });
+  const messagesCore = createI18nCore({ ...coreFields, fetch: messagesFetch });
 
   return {
     ...i18nCore,
-    getMessages: (locale: string): Promise<Messages> =>
-      messagesCore.getMessages(locale),
+    getMessages: (locale: string, options?: { namespaces?: string[] }) =>
+      messagesCore.getMessages(locale, options),
   };
 };
 
@@ -207,6 +192,8 @@ export const createNextIntlRequestConfig = (config: I18nConfig) =>
     const timeZone =
       normalized.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+    // Config-level namespaces flow through to core via normalized config.
+    // Per-call override is also possible: i18n.getMessages(locale, { namespaces: [...] })
     return {
       locale,
       messages: await i18n.getMessages(locale),
@@ -235,10 +222,13 @@ export const getLocales = (config: I18nConfig) =>
   createNextI18nCore(config).getLocales();
 
 /**
- * Get messages for a locale
+ * Get messages for a locale, optionally filtered to specific namespaces
  */
-export const getMessages = (config: I18nConfig, locale: string) =>
-  createNextI18nCore(config).getMessages(locale);
+export const getMessages = (
+  config: I18nConfig,
+  locale: string,
+  options?: { namespaces?: string[] },
+) => createNextI18nCore(config).getMessages(locale, options);
 
 /**
  * Get language options with metadata

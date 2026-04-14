@@ -84,6 +84,21 @@ export interface I18nCoreConfig {
   staticData?: Record<string, Messages> | (() => Promise<Record<string, Messages>>);
 
   /**
+   * Default namespaces to fetch when the project uses namespaced CDN delivery.
+   * When set, `getMessages(locale)` only fetches these namespaces instead of all.
+   * Can be overridden per-call: `getMessages(locale, { namespaces: [...] })`.
+   *
+   * Only effective for projects with `fileStructure: "namespaced_folders"`.
+   * Ignored for `single_file` projects (no namespace concept in CDN).
+   *
+   * @example
+   * ```ts
+   * namespaces: ["common", "auth", "dashboard"]
+   * ```
+   */
+  namespaces?: string[];
+
+  /**
    * CDN fetch timeout in milliseconds.
    * If a fetch does not complete within this time, the request is aborted
    * and fallback sources are tried.
