@@ -174,10 +174,13 @@ function NotFoundPage() {
 function BetterSupportWidget() {
   useEffect(() => {
     if (document.getElementById("better-support-widget")) return;
+    // Key is baked in at build time via Vite — import.meta.env.VITE_PUBLIC_HELPWAY_KEY
+    const key = import.meta.env.VITE_PUBLIC_HELPWAY_KEY;
+    if (!key) return;
     const s = document.createElement("script");
     s.id = "better-support-widget";
     s.src = "https://api.helpway.ai/widget.js";
-    s.setAttribute("data-key", "pk_live_Nir-sHLl1_qc9S9EuV9RdNN5");
+    s.setAttribute("data-key", key);
     s.async = true;
     document.body.appendChild(s);
   }, []);
