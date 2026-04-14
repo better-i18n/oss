@@ -453,7 +453,7 @@ export default function Header({ className }: { className?: string }) {
                 <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[480px] shadow-lg">
                   <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm" role="menu">
                     <p className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500">
-                      {t("integrations.featured", { defaultValue: "Featured" })}
+                      {t("integrations.featuredLabel", { defaultValue: "Featured" })}
                     </p>
                     <div className="grid grid-cols-2 gap-0.5 mt-0.5">
                       {NAV_INTEGRATIONS.map((item) => (
