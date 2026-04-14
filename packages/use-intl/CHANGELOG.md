@@ -1,5 +1,11 @@
 # @better-i18n/use-intl
 
+## 0.8.4
+
+### Patch Changes
+
+- 06a1429: Pass all core config fields (including `namespaces`) through to `createI18nCore` via spread instead of listing each field individually. This ensures new core options like config-level `namespaces` automatically flow through without needing use-intl changes.
+
 ## 0.8.3
 
 ### Patch Changes
