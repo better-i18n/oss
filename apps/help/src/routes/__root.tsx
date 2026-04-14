@@ -171,6 +171,19 @@ function NotFoundPage() {
   );
 }
 
+function BetterSupportWidget() {
+  useEffect(() => {
+    if (document.getElementById("better-support-widget")) return;
+    const s = document.createElement("script");
+    s.id = "better-support-widget";
+    s.src = "https://api.helpway.ai/widget.js";
+    s.setAttribute("data-key", "pk_live_ds0Y8RtYg20IlT_HufD5ud1j");
+    s.async = true;
+    document.body.appendChild(s);
+  }, []);
+  return null;
+}
+
 function RootComponent() {
   const { locale, locales, requestId } = Route.useRouteContext();
   const [queryClient] = useState(createQueryClient);
@@ -237,6 +250,7 @@ function RootComponent() {
           </BetterI18nProvider>
         </QueryClientProvider>
         <Scripts />
+        <BetterSupportWidget />
       </body>
     </html>
   );

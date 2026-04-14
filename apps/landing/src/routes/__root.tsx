@@ -44,7 +44,10 @@ const SSR_MAP_MAX_SIZE = 50;
  * Escapes characters that would break HTML parsing: <, >, &, and line separators.
  */
 function safeJsonForScript(value: unknown): string {
-  return JSON.stringify(value)
+  // Guard: JSON.stringify(undefined) returns undefined (not "undefined") —
+  // .replace() on undefined throws. Falls back to empty object so the script
+  // tag is always valid JSON; client hydration can refetch via loader.
+  return JSON.stringify(value ?? {})
     .replace(/</g, "\\u003c")
     .replace(/>/g, "\\u003e")
     .replace(/&/g, "\\u0026")
@@ -292,8 +295,7 @@ function BetterSupportWidget() {
     const s = document.createElement("script");
     s.id = "better-support-widget";
     s.src = "https://api.helpway.ai/widget.js";
-    s.setAttribute("data-key", "pk_live_Nir-sHLl1_qc9S9EuV9RdNN5");
-    s.setAttribute("data-api-url", "https://api.helpway.ai");
+    s.setAttribute("data-key", "pk_live_ds0Y8RtYg20IlT_HufD5ud1j");
     s.async = true;
     document.body.appendChild(s);
   }, []);

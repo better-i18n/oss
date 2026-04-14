@@ -1,3 +1,4 @@
+import { BetterSupportWidget } from '@/components/better-support-widget';
 import SearchDialog from '@/components/search';
 import { ThemeSync } from '@/components/theme-provider';
 import { baseOptions } from '@/lib/layout.shared';
@@ -111,6 +112,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
             {children}
           </DocsLayout>
         </RootProvider>
+        <BetterSupportWidget />
       </body>
     </html>
   );
