@@ -8,6 +8,7 @@
 import { z } from "zod";
 import {
   customFieldsSchema,
+  detectH1InBody,
   executeTool,
   projectInputProperty,
   projectSchema,
@@ -133,9 +134,11 @@ EXAMPLE (project sl='tr', with localized custom field):
         ...data,
       } as Parameters<typeof client.mcpContent.createContentEntry.mutate>[0]);
 
+      const h1Warn = detectH1InBody(data);
       return success({
         created: true,
         entry: result,
+        ...(h1Warn && { warn: h1Warn }),
       });
     }),
 };

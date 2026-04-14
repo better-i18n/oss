@@ -8,6 +8,7 @@
 import { z } from "zod";
 import {
   customFieldsSchema,
+  detectH1InBody,
   executeTool,
   projectInputProperty,
   projectSchema,
@@ -145,9 +146,11 @@ EXAMPLE metadata-only:
         ...data,
       } as Parameters<typeof client.mcpContent.updateContentEntry.mutate>[0]);
 
+      const h1Warn = detectH1InBody(data);
       return success({
         updated: true,
         entry: result,
+        ...(h1Warn && { warn: h1Warn }),
       });
     }),
 };
