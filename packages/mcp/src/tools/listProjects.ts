@@ -15,11 +15,11 @@ export const listProjects: Tool = {
     name: "listProjects",
     description:
       "List all projects you have access to. Call this first to discover available projects before using other tools. " +
-      "Each project includes a cdnFormat URL pattern: https://cdn.better-i18n.com/{orgSlug}/{projectSlug}/{locale}/{namespace}.json. " +
-      "Also returns fileStructure and keyFormat fields so you can construct correct CDN URLs: " +
-      'fileStructure="single_file" → one file per language (/en/translations.json) — "default" namespace maps to "translations" in URL. ' +
-      'fileStructure="namespaced_folders" → one file per namespace per language (/en/common.json, /en/auth.json) — namespace name used directly in URL. ' +
-      'keyFormat="flat" → dot-notation keys in JSON. keyFormat="nested" → nested objects in JSON.',
+      "Response: { cdnBaseUrl, projects[] }. Build CDN URLs as `${cdnBaseUrl}/${slug}/${locale}/${ns}.json`. " +
+      "Per-project fileStructure and keyFormat control CDN layout and JSON shape: " +
+      'fileStructure="single_file" → one file per language, use "translations" as ns literal (/en/translations.json). ' +
+      'fileStructure="namespaced_folders" → one file per namespace (/en/common.json, /en/auth.json). ' +
+      'keyFormat="flat" → dot-notation string keys. keyFormat="nested" → tree-shaped objects (parent paths become objects, not leaf strings).',
     inputSchema: {
       type: "object",
       properties: {},
