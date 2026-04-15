@@ -62,4 +62,22 @@ export default ts.config(
       globals: { ...globals.node },
     },
   },
+
+  {
+    files: ["apps/landing/src/seo/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/*"],
+              message:
+                "seo/ is loaded by vite.config.ts at config-time, before Vite alias resolution. Use relative imports (e.g., ../lib/content) instead of @/ path aliases.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 );
