@@ -14,10 +14,12 @@
  *      Fetching it for 22 locales × thousands of posts blew the Node heap.
  *      We use `fields: [...]` to request only what the list UI renders and
  *      rely on the CMS `excerpt` field (no client-side extraction).
- *   3. **Sequential per-locale.** Paralleling Promise.allSettled across 22
- *      locales multiplied peak memory by 22× — enough to OOM even with
- *      body excluded. Process one locale at a time so the prior batch is
- *      eligible for GC before the next fetch starts.
+ *   3. **Capped + bounded-concurrent.** Every locale is capped at
+ *      POST_CAP posts (enough for the list UI's pagination + category
+ *      filter). A LOCALE_CONCURRENCY-sized worker pool processes the
+ *      locales so wall time stays O(N/concurrency) instead of O(N), and
+ *      peak memory stays bounded to concurrency × cap × per-post-size.
+ *      The sitemap still emits every post URL — SEO coverage is unaffected.
  */
 
 import { writeFile, mkdir } from "node:fs/promises";
@@ -46,6 +48,20 @@ export interface BlogIndex {
 
 const POSTS_PER_PAGE = 12;
 const PAGE_SIZE = 100;
+/**
+ * Cap on posts baked into each locale's blog-index JSON. The list UI
+ * paginates 12 posts per page, so 500 = ~42 pages — far beyond what any
+ * human scrolls. The sitemap (generatePages) still includes every post,
+ * so SEO indexing is unaffected by this cap.
+ */
+const POST_CAP = 500;
+/**
+ * How many locales to fetch concurrently. Sequential was correct for
+ * memory safety when each locale held full body markdown; with POST_CAP
+ * and fields-limited fetches the per-locale footprint is ~500 × ~500B
+ * = 250KB, so a concurrency pool is safe and cuts wall time ~N×.
+ */
+const LOCALE_CONCURRENCY = 6;
 
 type RelationValue = { title?: string; [key: string]: string | null | undefined };
 type RawEntry = {
@@ -111,13 +127,15 @@ async function fetchPostsForLocale(
       // posts with an actual translation.
       if (!hasLanguage(raw as Record<string, unknown>, locale)) continue;
       collected.push(mapEntry(raw));
+      if (collected.length >= POST_CAP) break;
     }
 
+    if (collected.length >= POST_CAP) break;
     hasMore = result.hasMore;
     page++;
   }
 
-  return collected;
+  return collected.slice(0, POST_CAP);
 }
 
 /**
@@ -140,33 +158,42 @@ export async function generateBlogIndexes(
 
   const ok: Array<{ locale: string; count: number }> = [];
   const failed: Array<{ locale: string; error: string }> = [];
+  const queue = [...locales];
 
-  for (const locale of locales) {
-    const filePath = join(publicDir, `blog-index-${locale}.json`);
-    try {
-      const allPosts = await fetchPostsForLocale(client, locale);
-      const categories = [
-        ...new Set(allPosts.flatMap((p) => (p.category ? [p.category] : []))),
-      ].sort();
-      const index: BlogIndex = {
-        allPosts,
-        categories,
-        totalPages: Math.max(1, Math.ceil(allPosts.length / POSTS_PER_PAGE)),
-        generatedAt: new Date().toISOString(),
-      };
-      await writeFile(filePath, JSON.stringify(index), "utf-8");
-      ok.push({ locale, count: allPosts.length });
-    } catch (error) {
-      failed.push({ locale, error: String(error) });
-      const fallback: BlogIndex = {
-        allPosts: [],
-        categories: [],
-        totalPages: 1,
-        generatedAt: new Date().toISOString(),
-      };
-      await writeFile(filePath, JSON.stringify(fallback), "utf-8");
+  async function worker(): Promise<void> {
+    while (queue.length > 0) {
+      const locale = queue.shift();
+      if (!locale) return;
+      const filePath = join(publicDir, `blog-index-${locale}.json`);
+      try {
+        const allPosts = await fetchPostsForLocale(client, locale);
+        const categories = [
+          ...new Set(allPosts.flatMap((p) => (p.category ? [p.category] : []))),
+        ].sort();
+        const index: BlogIndex = {
+          allPosts,
+          categories,
+          totalPages: Math.max(1, Math.ceil(allPosts.length / POSTS_PER_PAGE)),
+          generatedAt: new Date().toISOString(),
+        };
+        await writeFile(filePath, JSON.stringify(index), "utf-8");
+        ok.push({ locale, count: allPosts.length });
+      } catch (error) {
+        failed.push({ locale, error: String(error) });
+        const fallback: BlogIndex = {
+          allPosts: [],
+          categories: [],
+          totalPages: 1,
+          generatedAt: new Date().toISOString(),
+        };
+        await writeFile(filePath, JSON.stringify(fallback), "utf-8");
+      }
     }
   }
+
+  await Promise.all(
+    Array.from({ length: LOCALE_CONCURRENCY }, () => worker()),
+  );
 
   console.log(
     `[SEO] Blog indexes: ${ok.length} generated (${ok
