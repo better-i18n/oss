@@ -6,6 +6,7 @@
     "index",
     "setup",
     "ssr",
+    "selective-loading",
     "routing",
     "middleware",
     "typescript"

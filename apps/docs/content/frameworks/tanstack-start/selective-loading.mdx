@@ -1,0 +1,243 @@
+---
+title: Selective Loading
+description: Fetch only the namespaces each page needs — used in production on better-i18n.com landing
+---
+
+The [better-i18n.com landing page](https://better-i18n.com) is built with TanStack Start and dogfoods this pattern. With **103 namespaces × 22 locales**, fetching the full translation bundle on every SSR render would be wasteful — most pages only need 5–10 namespaces. This guide shows the end-to-end implementation.
+
+Prerequisites:
+
+- Project configured with `fileStructure: "namespaced_folders"`
+- `@better-i18n/core` `>= 0.7` and `@better-i18n/use-intl` `>= 0.6`
+
+See [Core — Selective Loading](/docs/core/selective-loading) for the underlying SDK behavior.
+
+## Architecture
+
+```
+Request /tr/pricing
+       ↓
+__root.tsx beforeLoad
+       ↓ detect locale (cookie / geo / default)
+__root.tsx loader
+       ↓ resolve page → namespaces: ["common", "nav", "pricing"]
+       ↓ getMessages("tr", { namespaces })
+       ↓ CDN batch.json?ns=common,nav,pricing  (single request)
+       ↓ returns { common:{..}, nav:{..}, pricing:{..} }
+       ↓ store in ssrMessagesByRequest map
+component render
+       ↓ BetterI18nProvider messages={messages}
+       ↓ SSR HTML includes <script id="__i18n_messages__">
+Client hydration
+       ↓ reads #__i18n_messages__ synchronously (no loading flash)
+Client navigation
+       ↓ loader re-runs with new page's namespaces
+       ↓ shared namespaces (common, nav) hit SDK cache — 0 CDN requests
+```
+
+## Step 1 — Page-to-Namespace Mapping
+
+Create a manifest that maps URL paths to the namespaces each page needs. Keep it explicit — grep-able, reviewable in PRs, no runtime surprises.
+
+```ts title="src/lib/page-namespaces.ts"
+/**
+ * URL path (without locale prefix) → namespaces to preload.
+ * Every entry is an exact match. Falls back to PAGE_DEFAULTS when no match.
+ */
+export const PAGE_NAMESPACES: Record<string, readonly string[]> = {
+  "": ["common", "navigation", "footer", "hero", "features"],
+  "pricing": ["common", "navigation", "footer", "pricing"],
+  "blog": ["common", "navigation", "footer", "blog"],
+  "changelog": ["common", "navigation", "footer", "changelog"],
+  // ...one entry per route
+};
+
+const PAGE_DEFAULTS = ["common", "navigation", "footer"];
+
+/**
+ * Extract the path segment that matters for namespace resolution.
+ * Strips locale prefix and leading/trailing slashes.
+ */
+export function extractPagePath(pathname: string): string {
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length === 0) return "";
+  // Skip the locale prefix ("tr" in "/tr/pricing" → "pricing")
+  if (/^[a-z]{2}$/i.test(segments[0])) segments.shift();
+  return segments.join("/");
+}
+
+/**
+ * Resolve page path to the list of namespaces the page actually uses.
+ * Returns `null` to signal "fetch all" (used when path is unknown).
+ */
+export function getCdnNamespacesForPage(pagePath: string): string[] | null {
+  const specs = PAGE_NAMESPACES[pagePath] ?? PAGE_DEFAULTS;
+  // Strip any dot-path specs down to their top-level CDN namespace.
+  // "marketing.compare.crowdin" → "marketing" (CDN has one file per top-level ns).
+  const set = new Set<string>();
+  for (const spec of specs) set.add(spec.split(".")[0]);
+  return [...set];
+}
+```
+
+## Step 2 — Root Loader
+
+The root route's `loader` resolves the page namespaces and calls `getMessages` with them. In SSR, messages are passed to React through a per-request side-channel (not loader data) so they don't balloon TanStack Router's dehydration payload.
+
+```tsx title="src/routes/__root.tsx"
+import { createRootRouteWithContext } from "@tanstack/react-router";
+import { getMessages } from "@better-i18n/use-intl/server";
+import type { Messages } from "@better-i18n/use-intl";
+import { i18nConfig } from "../i18n.config";
+import {
+  extractPagePath,
+  getCdnNamespacesForPage,
+} from "../lib/page-namespaces";
+
+// Per-request side channel: SSR fills this, the component reads + deletes.
+// Keyed by a unique requestId so concurrent CF Worker requests don't collide.
+const ssrMessagesByRequest = new Map<string, Messages>();
+const SSR_MAP_MAX_SIZE = 50;
+
+export const Route = createRootRouteWithContext<{
+  locale: string;
+  requestId: string;
+}>()({
+  beforeLoad: async ({ location }) => {
+    // ... your locale detection logic ...
+    const locale = detectLocale(location.pathname);
+    const requestId = crypto.randomUUID();
+    return { locale, requestId };
+  },
+
+  loader: async ({ context, location }) => {
+    const pagePath = extractPagePath(location.pathname);
+    const namespaces = getCdnNamespacesForPage(pagePath) ?? undefined;
+
+    const messages = await getMessages({
+      project: i18nConfig.project,
+      locale: context.locale,
+      namespaces,
+    });
+
+    const isSSR = typeof document === "undefined";
+    if (isSSR) {
+      // LRU-ish eviction — stop unbounded growth on errored requests
+      if (ssrMessagesByRequest.size >= SSR_MAP_MAX_SIZE) {
+        const oldest = ssrMessagesByRequest.keys().next().value;
+        if (oldest) ssrMessagesByRequest.delete(oldest);
+      }
+      ssrMessagesByRequest.set(context.requestId, messages);
+    }
+
+    // On SSR return undefined — don't bloat dehydrated loader data.
+    // On client navigation, return messages so the provider has them.
+    return { locale: context.locale, messages: isSSR ? undefined : messages };
+  },
+
+  component: RootComponent,
+});
+```
+
+## Step 3 — Hydration Bridge
+
+To avoid a loading flash on hydration, serialize the SSR messages into an inert `<script type="application/json">` tag. The client reads this synchronously — no fetch, no waterfall.
+
+```tsx title="src/routes/__root.tsx (continued)"
+function safeJsonForScript(value: unknown): string {
+  // Prevent </script> injection + LS/PS that break HTML parsers
+  return JSON.stringify(value)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
+function getClientMessages(): Messages | undefined {
+  if (typeof document === "undefined") return undefined;
+  const el = document.getElementById("__i18n_messages__");
+  if (!el?.textContent) return undefined;
+  try {
+    return JSON.parse(el.textContent) as Messages;
+  } catch {
+    return undefined;
+  }
+}
+
+function RootComponent() {
+  const { locale, requestId } = Route.useRouteContext();
+  const loaderData = Route.useLoaderData();
+
+  const messages = (() => {
+    // SSR: pull from the per-request map, then drop it
+    if (typeof document === "undefined") {
+      const msgs = ssrMessagesByRequest.get(requestId);
+      if (msgs) ssrMessagesByRequest.delete(requestId);
+      return msgs;
+    }
+    // Client: loader data (navigation) > hydration script (first load)
+    return loaderData?.messages ?? getClientMessages();
+  })();
+
+  return (
+    <html lang={locale}>
+      <body>
+        <script
+          type="application/json"
+          id="__i18n_messages__"
+          suppressHydrationWarning
+        >
+          {safeJsonForScript(messages)}
+        </script>
+        <BetterI18nProvider
+          project={i18nConfig.project}
+          locale={locale}
+          messages={messages}
+        >
+          <Outlet />
+        </BetterI18nProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+## Step 4 — Verify in Dev
+
+The SDK logs selective fetches in development. After starting the dev server, navigate to a route and check the console:
+
+```
+[i18n] pricing: fetching 4 namespaces (of 103) [common, footer, navigation, pricing]
+```
+
+And on the CDN response headers you should see (when batch support is live):
+
+```
+X-Batch-Count: 4
+X-Batch-Requested: 4
+X-Cache-Status: HIT | MISS
+```
+
+## Production Observations
+
+From the better-i18n.com landing page in production:
+
+| Page | Namespaces | First-visit CDN requests | Cached-visit requests |
+| --- | --- | --- | --- |
+| Home | 6 | 2 (manifest + batch) | 0 |
+| Pricing | 4 | 1 batch | 0 |
+| Blog post (cold cache) | 4 | 1 batch | 0 |
+| Any second page after home | 3-4 | 0-1 | 0 |
+
+After visiting 3-4 pages, most subsequent navigations produce **zero** CDN requests because shared namespaces (`common`, `navigation`, `footer`) are already in the SDK's per-namespace cache.
+
+## Why the Per-Request Map?
+
+A single module-scoped `let ssrMessages: Messages` would race across concurrent requests on CF Workers — one request's render could read another request's messages. The `Map<requestId, Messages>` pattern is race-free and standard for SSR side-channels on shared-isolate edge runtimes.
+
+## Related
+
+- [Core — Selective Loading](/docs/core/selective-loading) — feature overview
+- [TanStack Start — SSR](/docs/frameworks/tanstack-start/ssr) — general SSR patterns
+- [TanStack Start — Middleware](/docs/frameworks/tanstack-start/middleware) — locale detection and redirects

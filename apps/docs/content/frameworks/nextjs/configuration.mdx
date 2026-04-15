@@ -45,6 +45,7 @@ You can also configure CLI-specific options (like linting rules and file exclusi
 | `staticData` | `Record<string, Messages> \| (() => Promise<...>)` | — | Last-resort bundled translations for offline use |
 | `fetchTimeout` | `number` | `10000` | CDN fetch timeout in ms |
 | `retryCount` | `number` | `1` | Retry attempts on CDN failure |
+| `namespaces` | `string[]` | — | Default namespaces to fetch on every call (namespaced_folders projects only). See [Selective Loading](/docs/core/selective-loading). |
 
 ---
 

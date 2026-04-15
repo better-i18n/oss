@@ -1,0 +1,162 @@
+---
+title: Selective Loading
+description: Fetch only the namespaces a page needs — automatic per-namespace caching and batch requests
+icon: Layers
+---
+
+For projects with **namespaced file structure** (`fileStructure: "namespaced_folders"`), Better i18n can fetch only the namespaces a page actually uses instead of the whole translation bundle. This is powered by three layers:
+
+1. **Selective fetch** — `getMessages(locale, { namespaces })` requests a subset
+2. **Per-namespace caching** — each namespace caches individually; cross-page navigations reuse shared namespaces
+3. **Batch endpoint (tRPC-style)** — N namespace requests collapse into 1 HTTP round-trip
+
+No configuration required on the consumer side if the project's CDN announces batch support (`manifest.batch === true`) — the SDK uses it automatically.
+
+## Why It Matters
+
+A marketing site with **103 namespaces × 22 locales** has a combined translation file around **500KB**. Most pages only need 5–10 namespaces:
+
+| Scenario | Requests | Bytes over the wire |
+| --- | --- | --- |
+| Full bundle (every locale, every page) | 1 | ~500KB |
+| Selective (batch on) — first visit | 1 | ~30KB |
+| Selective — second page (cache reuse) | 0–1 | 0–5KB |
+
+The savings compound as a user navigates multiple pages; shared namespaces (`common`, `navigation`, `footer`) are fetched once and reused.
+
+## Basic Usage
+
+```ts
+import { createI18nCore } from "@better-i18n/core";
+
+const i18n = createI18nCore({
+  project: "acme/landing",
+  defaultLocale: "en",
+});
+
+// Full fetch — all namespaces (legacy behavior)
+const all = await i18n.getMessages("en");
+
+// Selective — only these namespaces
+const page = await i18n.getMessages("en", {
+  namespaces: ["common", "hero", "pricing"],
+});
+```
+
+The second signature is a **no-op for projects that don't use `namespaced_folders`** — passing `namespaces` to a single-file project is silently ignored (the SDK returns the combined file as usual).
+
+## How It Works
+
+### 1. Selective Fetch
+
+When `namespaces` is provided, the SDK:
+
+1. Reads the manifest (cached, ~3KB compressed)
+2. Validates requested namespaces against `manifest.namespaces`
+3. Fetches only the requested set from the CDN
+
+Non-existent namespaces are skipped silently — requesting `["common", "nonexistent"]` returns just `{ common: {...} }` without errors.
+
+### 2. Per-Namespace Caching
+
+Each namespace is stored under an individual cache key:
+
+```
+{cdnBaseUrl}|{project}|{locale}|ns:common
+{cdnBaseUrl}|{project}|{locale}|ns:navigation
+{cdnBaseUrl}|{project}|{locale}|ns:footer
+```
+
+Compare this to a composite cache key (`ns:common,navigation,footer`) — with composite keys, navigating to a different page with different namespaces would always be a cache miss. With per-namespace caching, shared namespaces are reused across navigations:
+
+```
+Home     needs: [common, hero, pricing]        → 3 cache writes
+Blog     needs: [common, navigation, blog]     → common hits cache, 2 new fetches
+Changelog needs: [common, navigation, changelog] → common + navigation hit cache, 1 fetch
+```
+
+After 3–4 pages, most navigations require **zero** CDN requests.
+
+### 3. Batch Endpoint (When Available)
+
+If `manifest.batch === true`, the SDK collapses multiple uncached namespace requests into a **single** HTTP request via `/{locale}/batch.json?ns=...`:
+
+```
+GET https://cdn.better-i18n.com/acme/landing/en/batch.json?ns=common,hero,pricing
+→ { "common": {...}, "hero": {...}, "pricing": {...} }
+```
+
+Behavior:
+
+- Single namespace → direct fetch (batch overhead isn't worth it for one file)
+- Two or more uncached namespaces → single batch request
+- Batch fails → automatic fallback to parallel individual fetches
+- Fresh responses are split into per-namespace cache entries (see above)
+
+The batch endpoint is cached at the CDN edge with a **version-based cache key** so publishes invalidate automatically without having to enumerate every possible namespace combination.
+
+## Validating Your Project
+
+Not every project has `namespaced_folders`. Verify via the manifest:
+
+```bash
+curl -s https://cdn.better-i18n.com/acme/landing/manifest.json \
+  | jq '{ batch, namespaces }'
+```
+
+Expected output for a batch-enabled project:
+
+```json
+{
+  "batch": true,
+  "namespaces": ["auth", "blog", "common", "footer", "hero", "navigation", "pricing"]
+}
+```
+
+If `batch` is absent or `false`, the SDK still supports selective loading via parallel individual fetches — just without the single-request optimization.
+
+## Production Behavior
+
+### Staleness
+
+| Layer | TTL | Invalidation |
+| --- | --- | --- |
+| SDK TtlCache (per-namespace) | 60s default, `messagesCacheTtlMs` configurable | Implicit on TTL expiry |
+| CDN edge cache (batch response) | 60s | Version bump on publish |
+| CDN edge cache (individual file) | 60s | Purge fires on publish |
+
+After publish, stale translations surface within ~60s at most — same as the non-batch path.
+
+### Fallback Chain
+
+Selective loading respects the same fallback chain as the full-fetch path:
+
+```
+1. TtlCache (per-namespace)
+       ↓ miss
+2. Batch endpoint (if manifest.batch === true and 2+ uncached)
+       ↓ fail
+3. Individual parallel fetches
+       ↓ fail
+4. Persistent storage (if configured)
+       ↓ fail
+5. staticData
+       ↓ fail
+6. Throw
+```
+
+Each step preserves previously-fetched namespaces — a partial batch failure doesn't invalidate namespaces already served from cache.
+
+## When NOT to Use Selective Loading
+
+- **Small projects (< 20 namespaces total)** — the combined file is small enough that selective fetches don't meaningfully reduce bytes.
+- **Single-file projects** (`fileStructure: "single_file"`) — the feature is silently ignored, but there's no performance benefit either.
+- **Offline-first apps** — prefer full fetch + `staticData` fallback so every namespace is bundled for offline availability.
+
+For most SaaS apps, **full fetch is fine**. Selective loading is a marketing-site and multi-page-app optimization.
+
+## Related
+
+- [API Reference — `getMessages`](/docs/core/api-reference#getmessages) — signature and options
+- [How It Works](/docs/core/how-it-works) — CDN architecture and purge flow
+- [TanStack Start — Selective Loading Example](/docs/frameworks/tanstack-start/selective-loading) — end-to-end loader pattern from the `better-i18n` landing page

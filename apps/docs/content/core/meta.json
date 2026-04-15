@@ -10,6 +10,7 @@
     "---Package---",
     "index",
     "api-reference",
+    "selective-loading",
     "locale-utilities"
   ]
 }
