@@ -468,24 +468,55 @@ function toFeaturePageMeta(item: ContentEntryListItem): FeaturePageMeta {
  *
  * Use `fields` to request only needed columns — omitting heavy fields like
  * `body` dramatically reduces memory usage (200+ entries × all languages).
+ *
+ * Defensive pagination: we triangulate `hasMore` against (a) id-based dedup,
+ * (b) `total` from the response, and (c) a hard page cap. Content API has
+ * historically returned `hasMore: true` forever on certain filter combos
+ * (repeating page 1 content), which OOM'd Node at ~2,689 iterations × 100
+ * items. Any of the three guards here stops the loop before that.
  */
+const FETCH_HARD_PAGE_CAP = 200; // 200 × 100 = 20k — well above any real dataset
 async function fetchAllEntries(
   client: ReturnType<typeof createClient>,
   model: string,
   options: Pick<ListEntriesOptions, "status" | "sort" | "order" | "fields">,
 ): Promise<readonly ContentEntryListItem[]> {
   const allItems: ContentEntryListItem[] = [];
+  const seen = new Set<string>();
   let page = 1;
+  let apiTotal: number | undefined;
 
-  while (true) {
+  while (page <= FETCH_HARD_PAGE_CAP) {
     const result = await client.getEntries(model, {
       ...options,
       limit: 100,
       page,
     });
-    allItems.push(...result.items);
+    if (typeof result.total === "number") apiTotal = result.total;
+
+    let addedThisPage = 0;
+    for (const item of result.items) {
+      if (seen.has(item.id)) continue;
+      seen.add(item.id);
+      allItems.push(item);
+      addedThisPage++;
+    }
+
+    // API said hasMore=false → trust it and stop
     if (!result.hasMore) break;
+    // Page returned zero NEW items (all duplicates or empty) → API is stuck
+    if (addedThisPage === 0) break;
+    // Collected everything the API claims exists → stop even if hasMore=true
+    if (apiTotal !== undefined && allItems.length >= apiTotal) break;
+
     page++;
+  }
+
+  if (page > FETCH_HARD_PAGE_CAP) {
+    console.warn(
+      `[SEO] fetchAllEntries(${model}) hit hard cap at page ${FETCH_HARD_PAGE_CAP}. ` +
+        `Collected ${allItems.length} unique items (API total: ${apiTotal ?? "unknown"}).`,
+    );
   }
 
   return allItems;

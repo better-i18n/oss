@@ -208,11 +208,17 @@ export async function getAllBlogPostsForLocale(
 
   try {
     const PAGE_SIZE = 100;
+    const HARD_PAGE_CAP = 50; // 50 × 100 = 5k posts per locale (real count ~254)
     let page = 1;
-    let allItems: Array<Record<string, unknown>> = [];
-    let hasMore = true;
+    const allItems: Array<Record<string, unknown>> = [];
+    const seen = new Set<string>();
+    let apiTotal: number | undefined;
 
-    while (hasMore) {
+    // Defensive pagination: Content API's cache key omits `page`, so pages 2+
+    // currently return stale page-1 data with hasMore=true forever. Three
+    // guards triangulate the stop condition — whichever fires first wins.
+    // See Obsidian task: content-api-pagination-cache-bug.
+    while (page <= HARD_PAGE_CAP) {
       const result = await getContentClient().getEntries(BLOG_MODEL, {
         language: locale,
         status: "published",
@@ -222,9 +228,28 @@ export async function getAllBlogPostsForLocale(
         page,
         expand: ["author", "category"],
       });
-      allItems = [...allItems, ...result.items];
-      hasMore = result.hasMore;
+      if (typeof result.total === "number") apiTotal = result.total;
+
+      let addedThisPage = 0;
+      for (const item of result.items) {
+        const slug = item.slug as string | undefined;
+        if (!slug || seen.has(slug)) continue;
+        seen.add(slug);
+        allItems.push(item as Record<string, unknown>);
+        addedThisPage++;
+      }
+
+      if (!result.hasMore) break;
+      if (addedThisPage === 0) break;
+      if (apiTotal !== undefined && allItems.length >= apiTotal) break;
       page++;
+    }
+
+    if (page > HARD_PAGE_CAP) {
+      console.warn(
+        `[content] getAllBlogPostsForLocale(${locale}) hit hard cap at page ${HARD_PAGE_CAP}. ` +
+          `Collected ${allItems.length} unique posts (API total: ${apiTotal ?? "unknown"}).`,
+      );
     }
 
     const posts = allItems

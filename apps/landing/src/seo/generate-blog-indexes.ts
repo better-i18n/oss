@@ -132,23 +132,46 @@ async function fetchPage(
   return (await res.json()) as ListResponse;
 }
 
+// Defensive pagination: Content API has returned hasMore=true forever on
+// certain filter combos (repeating page-1 content) which OOM'd builds. Three
+// guards: slug-based dedup, API `total` ceiling, and a hard page cap.
+const LOCALE_HARD_PAGE_CAP = 100; // 100 × 100 = 10k posts per locale max
+
 async function fetchPostsForLocale(
   project: string,
   apiKey: string,
   locale: string,
 ): Promise<BlogPostListItem[]> {
   const collected: BlogPostListItem[] = [];
+  const seen = new Set<string>();
   let page = 1;
-  let hasMore = true;
+  let apiTotal: number | undefined;
 
-  while (hasMore) {
+  while (page <= LOCALE_HARD_PAGE_CAP) {
     const result = await fetchPage(project, apiKey, locale, page);
+    if (typeof result.total === "number") apiTotal = result.total;
+
+    let addedThisPage = 0;
     for (const raw of result.items) {
       if (!hasLanguage(raw, locale)) continue;
+      if (seen.has(raw.slug)) continue;
+      seen.add(raw.slug);
       collected.push(mapEntry(raw));
+      addedThisPage++;
     }
-    hasMore = result.hasMore;
+
+    if (!result.hasMore) break;
+    if (addedThisPage === 0) break;
+    if (apiTotal !== undefined && collected.length >= apiTotal) break;
+
     page++;
+  }
+
+  if (page > LOCALE_HARD_PAGE_CAP) {
+    console.warn(
+      `[SEO] fetchPostsForLocale(${locale}) hit hard cap. ` +
+        `Collected ${collected.length} unique posts (API total: ${apiTotal ?? "unknown"}).`,
+    );
   }
 
   return collected;
