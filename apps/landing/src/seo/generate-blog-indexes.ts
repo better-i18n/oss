@@ -16,7 +16,7 @@ import { join } from "node:path";
 import {
   getAllBlogPostsForLocale,
   type BlogPostListItem,
-} from "@/lib/content";
+} from "../lib/content";
 
 export interface BlogIndex {
   readonly allPosts: readonly BlogPostListItem[];
