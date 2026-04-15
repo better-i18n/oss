@@ -37,9 +37,12 @@ Every webhook request has the same envelope format:
 
 ```json
 {
+  "id": "evt_01jfk2abcd...",
   "webhookConfigId": "wh_01jfk2...",
   "eventType": "translations.published",
   "timestamp": 1734567890123,
+  "createdAt": "2024-12-19T10:31:30.123Z",
+  "version": "1",
   "data": {
     // event-specific fields (see Events below)
   }
@@ -48,9 +51,12 @@ Every webhook request has the same envelope format:
 
 | Field | Type | Description |
 |-------|------|-------------|
+| `id` | `string` | Stable event id (`evt_*`). Use as an idempotency key — if you see the same id twice, treat it as the same event (e.g. on manual redelivery). |
 | `webhookConfigId` | `string` | ID of the webhook endpoint that fired this event |
 | `eventType` | `string` | One of the event types listed below |
 | `timestamp` | `number` | Unix milliseconds when the event was dispatched |
+| `createdAt` | `string` | ISO-8601 timestamp, same moment as `timestamp` |
+| `version` | `string` | Envelope version — currently `"1"` |
 | `data` | `object` | Event-specific payload |
 
 ---
@@ -60,14 +66,28 @@ Every webhook request has the same envelope format:
 ```http
 POST /api/webhooks/i18n HTTP/1.1
 Content-Type: application/json
-X-Better-I18n-Signature: sha256=a1b2c3d4e5...
+X-Better-I18n-Signature: t=1734567890,v1=a1b2c3...,sha256=d4e5f6...
 X-Better-I18n-Event: translations.published
+X-Better-I18n-Id: evt_01jfk2abcd...
 ```
 
 | Header | Description |
 |--------|-------------|
-| `X-Better-I18n-Signature` | HMAC-SHA256 signature of the raw request body, prefixed with `sha256=` |
+| `X-Better-I18n-Signature` | Dual-format HMAC signature — see below |
 | `X-Better-I18n-Event` | The event type (mirrors `payload.eventType`) |
+| `X-Better-I18n-Id` | The stable event id (mirrors `payload.id`) |
+
+### Signature format
+
+The signature header is a comma-separated list of components, Stripe-style:
+
+```
+t=<unix_seconds>,v1=<hex>,sha256=<hex>
+```
+
+- **`t`** — unix seconds when the payload was signed. Your handler **must** reject requests whose `t` is older than ~5 minutes (replay protection).
+- **`v1`** — HMAC-SHA256 of the string `${t}.${body}`. This is the current signature scheme; it binds the timestamp into the signature so an attacker can't replay a captured request with a fresh `t`.
+- **`sha256`** — HMAC-SHA256 of just the body. Legacy scheme, retained for backward compatibility with pre-v1 integrations. New consumers should ignore this component and verify `v1`.
 
 ---
 
@@ -93,16 +113,23 @@ Use a **timing-safe comparison** (`timingSafeEqual` in Node.js, `crypto.subtle` 
 import { createHmac, timingSafeEqual } from "crypto";
 
 const WEBHOOK_SECRET = process.env.BETTER_I18N_WEBHOOK_SECRET!;
+const TOLERANCE_SECONDS = 300;
 
-function verifySignature(body: string, signature: string): boolean {
-  const expected = "sha256=" + createHmac("sha256", WEBHOOK_SECRET)
-    .update(body)
-    .digest("hex");
-
-  return timingSafeEqual(
-    Buffer.from(expected),
-    Buffer.from(signature),
+function verifySignature(body: string, header: string): boolean {
+  const parts = Object.fromEntries(
+    header.split(",").map((p) => {
+      const [k, ...rest] = p.split("=");
+      return [k, rest.join("=")];
+    }),
   );
+  const t = Number(parts.t);
+  if (!Number.isFinite(t) || !parts.v1) return false;
+  if (Math.abs(Math.floor(Date.now() / 1000) - t) > TOLERANCE_SECONDS) return false;
+
+  const expected = createHmac("sha256", WEBHOOK_SECRET)
+    .update(`${t}.${body}`)
+    .digest("hex");
+  return timingSafeEqual(Buffer.from(expected), Buffer.from(parts.v1));
 }
 
 export async function POST(req: Request) {
@@ -131,8 +158,18 @@ export async function POST(req: Request) {
 async function verifySignature(
   secret: string,
   body: string,
-  signature: string,
+  header: string,
 ): Promise<boolean> {
+  const parts = Object.fromEntries(
+    header.split(",").map((p) => {
+      const [k, ...rest] = p.split("=");
+      return [k, rest.join("=")];
+    }),
+  );
+  const t = Number(parts.t);
+  if (!Number.isFinite(t) || !parts.v1) return false;
+  if (Math.abs(Math.floor(Date.now() / 1000) - t) > 300) return false;
+
   const key = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(secret),
@@ -140,17 +177,14 @@ async function verifySignature(
     false,
     ["verify"],
   );
-
-  const sigHex = signature.replace("sha256=", "");
   const sigBytes = new Uint8Array(
-    sigHex.match(/.{2}/g)!.map((b) => parseInt(b, 16)),
+    parts.v1.match(/.{2}/g)!.map((b) => parseInt(b, 16)),
   );
-
   return crypto.subtle.verify(
     "HMAC",
     key,
     sigBytes,
-    new TextEncoder().encode(body),
+    new TextEncoder().encode(`${t}.${body}`),
   );
 }
 
@@ -188,14 +222,27 @@ app.post(
   express.raw({ type: "application/json" }),
   (req, res) => {
     const body = req.body.toString();
-    const signature = req.headers["x-better-i18n-signature"] as string;
+    const header = req.headers["x-better-i18n-signature"] as string;
 
-    const expected = "sha256=" + createHmac("sha256", process.env.BETTER_I18N_WEBHOOK_SECRET!)
-      .update(body)
-      .digest("hex");
-
-    if (!timingSafeEqual(Buffer.from(expected), Buffer.from(signature))) {
+    const parts = Object.fromEntries(
+      header.split(",").map((p) => {
+        const [k, ...rest] = p.split("=");
+        return [k, rest.join("=")];
+      }),
+    );
+    const t = Number(parts.t);
+    if (!Number.isFinite(t) || !parts.v1) {
       return res.status(401).send("Unauthorized");
+    }
+    if (Math.abs(Math.floor(Date.now() / 1000) - t) > 300) {
+      return res.status(401).send("Stale request");
+    }
+
+    const expected = createHmac("sha256", process.env.BETTER_I18N_WEBHOOK_SECRET!)
+      .update(`${t}.${body}`)
+      .digest("hex");
+    if (!timingSafeEqual(Buffer.from(expected), Buffer.from(parts.v1))) {
+      return res.status(401).send("Bad signature");
     }
 
     const event = JSON.parse(body);
