@@ -29,7 +29,7 @@ export default defineConfig(async ({ mode }) => {
       // the route loader can fetch them from `public/` during build and
       // at runtime on SPA navigation.
       const publicDir = fileURLToPath(new URL("./public", import.meta.url));
-      await generateBlogIndexes(data.locales, publicDir);
+      await generateBlogIndexes(data.locales, publicDir, { project, apiKey });
     } catch (error) {
       console.error("[SEO] Build-time generation failed:", error);
     }
