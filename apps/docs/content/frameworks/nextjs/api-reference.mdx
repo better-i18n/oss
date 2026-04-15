@@ -181,13 +181,28 @@ const manifest = await i18n.getManifest({ forceRefresh: true });
 
 </AccordionItem>
 
-<AccordionItem title="getMessages(locale)">
+<AccordionItem title="getMessages(locale, options?)">
 Fetches translation messages for a locale. Cached with 30s ISR.
 
 ```ts
+// Full fetch (all namespaces)
 const messages = await i18n.getMessages("tr");
 // { common: { welcome: "Hoş geldiniz" }, ... }
+
+// Selective — only fetch these namespaces (namespaced_folders projects)
+const subset = await i18n.getMessages("tr", {
+  namespaces: ["common", "hero"],
+});
 ```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `locale` | `string` | Locale code |
+| `options.namespaces` | `string[]?` | Fetch only these namespaces. Silently ignored for `single_file` projects. |
+
+<Callout type="info">
+Pass `namespaces` at [`createI18n` config time](/docs/frameworks/nextjs/configuration) to apply it to every call, or per-call here for page-specific overrides. See [Core — Selective Loading](/docs/core/selective-loading) for how batching and per-namespace caching work.
+</Callout>
 
 </AccordionItem>
 
@@ -257,15 +272,23 @@ export default createNextIntlRequestConfig({
 
 </AccordionItem>
 
-<AccordionItem title="getMessages(config, locale)">
+<AccordionItem title="getMessages(config, locale, options?)">
 Standalone function to fetch messages.
 
 ```ts
 import { getMessages } from "@better-i18n/next/server";
 
+// Full fetch
 const messages = await getMessages(
   { project: "org/project", defaultLocale: "en" },
   "tr"
+);
+
+// Selective — only fetch these namespaces
+const subset = await getMessages(
+  { project: "org/project", defaultLocale: "en" },
+  "tr",
+  { namespaces: ["common", "pricing"] }
 );
 ```
 

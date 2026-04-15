@@ -1,0 +1,134 @@
+---
+title: Selective Loading
+description: Fetch only the namespaces each Next.js page needs
+---
+
+For projects with `fileStructure: "namespaced_folders"`, you can fetch only the namespaces a page uses instead of the full translation bundle. This reduces payload on both SSR renders and ISR-cached responses.
+
+See [Core — Selective Loading](/docs/core/selective-loading) for the underlying behavior (per-namespace caching, batch endpoint, etc.). This page covers Next.js-specific integration.
+
+## Option A — Global Default via Config
+
+Set `namespaces` on `createI18n` and every `getMessages` call uses that list:
+
+```ts title="src/i18n/config.ts"
+import { createI18n } from "@better-i18n/next";
+
+export const i18n = createI18n({
+  project: "acme/app",
+  defaultLocale: "en",
+  // Every getMessages() call will fetch only these namespaces
+  namespaces: ["common", "navigation", "auth"],
+});
+```
+
+Use this when your whole app shares a small fixed set of namespaces. ISR still applies — messages revalidate every 30s by default.
+
+## Option B — Per-Page Override (App Router)
+
+For a multi-route marketing site where each page needs different namespaces, call the standalone `getMessages` directly from the route's Server Component:
+
+```tsx title="src/app/[locale]/pricing/page.tsx"
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "@better-i18n/next/server";
+import { i18nConfig } from "@/i18n.config";
+
+const PAGE_NAMESPACES = ["common", "navigation", "pricing", "footer"];
+
+export default async function PricingPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  const messages = await getMessages(i18nConfig, locale, {
+    namespaces: PAGE_NAMESPACES,
+  });
+
+  return (
+    <NextIntlClientProvider messages={messages} locale={locale}>
+      {/* ... page content ... */}
+    </NextIntlClientProvider>
+  );
+}
+```
+
+This overrides the config-level default for that page only. ISR caching applies per-URL, so each page gets its own revalidation cycle.
+
+## Option C — Central Page-to-Namespace Map
+
+For larger sites, centralize the mapping so you can grep which pages use which namespaces:
+
+```ts title="src/lib/page-namespaces.ts"
+export const PAGE_NAMESPACES: Record<string, readonly string[]> = {
+  "/": ["common", "navigation", "hero", "features", "footer"],
+  "/pricing": ["common", "navigation", "pricing", "footer"],
+  "/blog": ["common", "navigation", "blog", "footer"],
+  "/blog/[slug]": ["common", "navigation", "blog", "footer"],
+};
+
+const DEFAULTS = ["common", "navigation", "footer"];
+
+export function resolveNamespaces(pathname: string): string[] {
+  return [...(PAGE_NAMESPACES[pathname] ?? DEFAULTS)];
+}
+```
+
+Then each page imports it:
+
+```tsx title="src/app/[locale]/pricing/page.tsx"
+import { resolveNamespaces } from "@/lib/page-namespaces";
+
+export default async function PricingPage({ params }) {
+  const { locale } = await params;
+  const messages = await getMessages(i18nConfig, locale, {
+    namespaces: resolveNamespaces("/pricing"),
+  });
+  // ...
+}
+```
+
+## Interaction with ISR
+
+Next.js ISR caches responses per URL, and the underlying `@better-i18n/core` SDK also maintains a per-namespace in-memory cache:
+
+| Layer | Cached by | Key |
+| --- | --- | --- |
+| Next.js `fetch` cache | Next.js runtime | URL (incl. query) — different namespace sets = different cache entries |
+| SDK TtlCache | `@better-i18n/core` global | `cdnBaseUrl + project + locale + ns` — shared across the Node process |
+
+Both caches compound: subsequent requests to the same URL hit Next's cache; requests to different pages with overlapping namespaces benefit from the SDK cache.
+
+## When to Use Which Option
+
+| Scenario | Recommended |
+| --- | --- |
+| App with 10–30 total namespaces | Option A (global default is fine) |
+| Marketing site / documentation with 50+ namespaces | Option C (central map) |
+| Single-page per-route differences | Option B (page-level override) |
+| `fileStructure: "single_file"` | Don't bother — feature is silently ignored |
+
+## Verify in Production
+
+Inspect a page's network payload in DevTools. With selective loading enabled and the CDN supporting batch, you should see a single request like:
+
+```
+GET https://cdn.better-i18n.com/acme/app/en/batch.json?ns=common,navigation,pricing
+```
+
+with response headers:
+
+```
+X-Batch-Count: 3
+X-Batch-Requested: 3
+X-Cache-Status: HIT | MISS
+```
+
+If you see individual `.json` requests per namespace, the CDN doesn't have batch support yet — the SDK automatically falls back to parallel fetches (still faster than downloading the full bundle, but not as optimal).
+
+## Related
+
+- [Core — Selective Loading](/docs/core/selective-loading) — feature overview
+- [Configuration](/docs/frameworks/nextjs/configuration) — `namespaces` config option
+- [API Reference](/docs/frameworks/nextjs/api-reference#getmessagesconfig-locale-options) — `getMessages` standalone signature

@@ -95,6 +95,31 @@ Each locale has its own JSON file with namespaced translations:
 }
 ```
 
+### Namespaced Delivery
+
+Projects with many translation files (marketing sites, documentation portals) can use **namespaced delivery** — one file per namespace per locale:
+
+```
+https://cdn.better-i18n.com/acme/landing/en/common.json
+https://cdn.better-i18n.com/acme/landing/en/hero.json
+https://cdn.better-i18n.com/acme/landing/en/pricing.json
+```
+
+With namespaced delivery enabled, the manifest exposes two extra fields:
+
+```json
+{
+  "batch": true,
+  "namespaces": ["common", "hero", "pricing", "footer"],
+  "files": { "en": { "url": ".../translations.json", ... } }
+}
+```
+
+- `batch: true` — CDN supports `/{locale}/batch.json?ns=a,b,c` for multi-namespace requests in a single round-trip
+- `namespaces: string[]` — authoritative list for SDK validation
+
+The SDK fetches only the namespaces a page needs instead of the entire bundle. See [Selective Loading](/docs/core/selective-loading) for configuration and performance details.
+
 ---
 
 ## Caching Strategy

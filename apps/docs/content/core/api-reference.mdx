@@ -21,19 +21,31 @@ const i18n = createI18nCore({
 ### Instance Methods
 
 <Accordion>
-<AccordionItem title="getMessages(locale)">
+<AccordionItem title="getMessages(locale, options?)">
 Fetches translation messages for a specific locale from the CDN.
 
 ```ts
+// Full fetch — all namespaces
 const messages = await i18n.getMessages("tr");
 // { common: { welcome: "Hoş geldiniz" }, auth: { login: "Giriş Yap" } }
+
+// Selective — only fetch these namespaces (namespaced_folders projects)
+const subset = await i18n.getMessages("tr", {
+  namespaces: ["common", "hero"],
+});
+// { common: {...}, hero: {...} }
 ```
 
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `locale` | `string` | Locale code (e.g., `"en"`, `"tr"`, `"de"`) |
+| `options.namespaces` | `string[]?` | Fetch only these namespaces. Silently ignored for `single_file` projects. |
 
 **Returns:** `Promise<Messages>` — Translation key-value pairs
+
+<Callout type="info">
+When `options.namespaces` is provided on a batch-enabled project (`manifest.batch === true`), the SDK collapses multiple namespace requests into a single HTTP call and caches each namespace individually for cross-page reuse. See [Selective Loading](/docs/core/selective-loading) for the full picture.
+</Callout>
 
 </AccordionItem>
 
@@ -407,8 +419,14 @@ interface ManifestResponse {
   languages: ManifestLanguage[];
   files?: Record<string, ManifestFile>;
   updatedAt?: string;
+  /** CDN supports batch namespace fetching via /{locale}/batch.json?ns=... */
+  batch?: boolean;
+  /** Top-level namespace list for namespaced_folders projects */
+  namespaces?: string[];
 }
 ```
+
+The `batch` and `namespaces` fields appear only for `namespaced_folders` projects served by CDN workers that support batching. See [Selective Loading](/docs/core/selective-loading) for how the SDK uses them.
 
 </AccordionItem>
 
@@ -451,7 +469,10 @@ Instance returned by `createI18nCore()`.
 interface I18nCore {
   config: NormalizedConfig;
   getManifest(options?: { forceRefresh?: boolean }): Promise<ManifestResponse>;
-  getMessages(locale: string): Promise<Messages>;
+  getMessages(
+    locale: string,
+    options?: { namespaces?: string[] },
+  ): Promise<Messages>;
   getLocales(): Promise<string[]>;
   getLanguages(): Promise<LanguageOption[]>;
 }
