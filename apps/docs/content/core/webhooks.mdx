@@ -14,6 +14,7 @@ Webhooks let your application react instantly to translation events — no polli
 - **Cache invalidation** — clear your Redis/Varnish/CDN cache when translations update
 - **CI/CD pipelines** — kick off a deploy when new translations are approved
 - **Slack/Discord notifications** — alert your team when a sync completes
+- **Static-site rebuilds** — trigger a GitHub Actions `repository_dispatch` on `content.entry.published` to rebuild a site whose data comes from the Content CMS
 
 ---
 
@@ -337,6 +338,252 @@ Fired when a target language is removed from a project.
 
 ---
 
+## Content CMS Events
+
+If your project uses the Content CMS (`@better-i18n/sdk`), every mutation emits a webhook. Use these to rebuild static sites on publish, invalidate downstream caches, or notify teams when structural changes happen.
+
+### Shared fields
+
+All `content.*` events carry the same base envelope plus a standard set of fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `event` | `string` | Event name (same as `eventType` in the outer envelope) |
+| `timestamp` | `string` (ISO 8601) | When the mutation occurred |
+| `org` | `string` | Organization slug |
+| `project` | `string` | Project slug |
+| `model` | `string \| null` | Content model slug (e.g. `"blog-post"`) |
+| `actor` | `object \| null` | Who triggered the mutation |
+| `actor.userId` | `string` | User id (or agent id for `mcp`) |
+| `actor.via` | `"ui" \| "mcp" \| "api" \| "system"` | Where the mutation came from |
+
+The `actor.via` field lets downstream consumers filter by provenance — for example, only rebuilding when a human publishes (`ui`) and ignoring bulk agent corrections (`mcp`).
+
+---
+
+### `content.entry.created`
+
+Fired when a new entry is inserted into a content model.
+
+```json
+{
+  "eventType": "content.entry.created",
+  "data": {
+    "event": "content.entry.created",
+    "timestamp": "2026-04-15T10:00:00.000Z",
+    "org": "acme",
+    "project": "marketing-site",
+    "model": "blog-post",
+    "entry": {
+      "id": "ent_01abc",
+      "slug": "hello-world",
+      "status": "draft",
+      "previousStatus": null,
+      "publishedAt": null,
+      "sourceLanguageCode": "en"
+    },
+    "languages": ["en"],
+    "changedLanguages": ["en"],
+    "actor": { "userId": "usr_xyz", "via": "ui" }
+  }
+}
+```
+
+### `content.entry.updated`
+
+Fired when an entry is edited and the status does NOT change. If the edit also transitions the status, a `content.entry.published` or `content.entry.unpublished` event is emitted instead.
+
+```json
+{
+  "eventType": "content.entry.updated",
+  "data": {
+    "event": "content.entry.updated",
+    "timestamp": "2026-04-15T10:05:00.000Z",
+    "org": "acme",
+    "project": "marketing-site",
+    "model": "blog-post",
+    "entry": {
+      "id": "ent_01abc",
+      "slug": "hello-world",
+      "status": "draft",
+      "previousStatus": "draft",
+      "publishedAt": null,
+      "sourceLanguageCode": "en"
+    },
+    "languages": ["en", "tr"],
+    "changedLanguages": ["tr"],
+    "actor": { "userId": "usr_xyz", "via": "ui" }
+  }
+}
+```
+
+The `changedLanguages` array tells you **which languages were touched by this mutation** — use it to scope cache invalidation instead of flushing every locale.
+
+### `content.entry.published`
+
+Fired when an entry transitions to `status: "published"`. This is the event to subscribe to for most static-site rebuild workflows.
+
+```json
+{
+  "eventType": "content.entry.published",
+  "data": {
+    "event": "content.entry.published",
+    "timestamp": "2026-04-15T10:10:00.000Z",
+    "org": "acme",
+    "project": "marketing-site",
+    "model": "blog-post",
+    "entry": {
+      "id": "ent_01abc",
+      "slug": "hello-world",
+      "status": "published",
+      "previousStatus": "draft",
+      "publishedAt": "2026-04-15T10:10:00.000Z",
+      "sourceLanguageCode": "en"
+    },
+    "languages": ["en", "tr"],
+    "changedLanguages": [],
+    "actor": { "userId": "usr_xyz", "via": "ui" }
+  }
+}
+```
+
+<Callout type="info">
+`previousStatus` lets you distinguish first-publishes (`"draft" → "published"`) from re-publishes (`"published" → "published"`). Useful for welcome emails, social announcements, etc.
+</Callout>
+
+### `content.entry.unpublished`
+
+Fired when a published entry reverts to `draft` or `archived`.
+
+```json
+{
+  "eventType": "content.entry.unpublished",
+  "data": {
+    "event": "content.entry.unpublished",
+    "timestamp": "2026-04-15T10:20:00.000Z",
+    "org": "acme",
+    "project": "marketing-site",
+    "model": "blog-post",
+    "entry": {
+      "id": "ent_01abc",
+      "slug": "hello-world",
+      "status": "draft",
+      "previousStatus": "published",
+      "publishedAt": null,
+      "sourceLanguageCode": "en"
+    },
+    "languages": ["en", "tr"],
+    "changedLanguages": [],
+    "actor": { "userId": "usr_xyz", "via": "ui" }
+  }
+}
+```
+
+### `content.entry.deleted`
+
+Fired when an entry is hard-deleted. The payload carries the entry slug so you can purge it from downstream caches.
+
+```json
+{
+  "eventType": "content.entry.deleted",
+  "data": {
+    "event": "content.entry.deleted",
+    "timestamp": "2026-04-15T10:30:00.000Z",
+    "org": "acme",
+    "project": "marketing-site",
+    "model": "blog-post",
+    "entry": {
+      "id": "ent_01abc",
+      "slug": "hello-world",
+      "status": null,
+      "previousStatus": null,
+      "publishedAt": null,
+      "sourceLanguageCode": null
+    },
+    "languages": ["en", "tr"],
+    "actor": { "userId": "usr_xyz", "via": "ui" }
+  }
+}
+```
+
+### `content.entry.bulkPublished` / `bulkUpdated` / `bulkDeleted`
+
+Bulk mutations fire **two sets of events**:
+
+1. A single rollup (`bulkPublished` / `bulkUpdated` / `bulkDeleted`) with the full list of entries in one payload.
+2. N per-entry events — one `content.entry.published` / `.unpublished` / `.updated` / `.deleted` per affected entry.
+
+This lets you subscribe granularly (e.g., only `content.entry.published` for per-entry CDN purge) or coarsely (`content.entry.bulkPublished` for one rebuild no matter how many entries are in the batch).
+
+```json
+{
+  "eventType": "content.entry.bulkPublished",
+  "data": {
+    "event": "content.entry.bulkPublished",
+    "timestamp": "2026-04-15T10:00:00.000Z",
+    "org": "acme",
+    "project": "marketing-site",
+    "model": "blog-post",
+    "entries": [
+      { "id": "ent_1", "slug": "post-a", "previousStatus": "draft",     "status": "published" },
+      { "id": "ent_2", "slug": "post-b", "previousStatus": "published", "status": "published" }
+    ],
+    "count": 2,
+    "languages": ["en", "tr"],
+    "actor": { "userId": "mcp-agent", "via": "mcp" }
+  }
+}
+```
+
+`bulkUpdated` may mix per-entry transitions — each row in `entries[]` carries its own `previousStatus` / `status` so you can tell which entries newly became published vs. reverted vs. just edited.
+
+---
+
+### `content.model.created` / `updated` / `deleted`
+
+Fired when a content model (the schema for a content type — e.g. "Blog Post") is created, modified, or deleted. Model mutations are relatively rare but have a large blast radius; subscribe if your application type-generates from the schema.
+
+```json
+{
+  "eventType": "content.model.created",
+  "data": {
+    "event": "content.model.created",
+    "timestamp": "2026-04-15T09:00:00.000Z",
+    "org": "acme",
+    "project": "marketing-site",
+    "model": "blog-post",
+    "actor": { "userId": "usr_xyz", "via": "ui" }
+  }
+}
+```
+
+---
+
+### `content.field.added` / `updated` / `deleted`
+
+Fired when a custom field is added to, modified on, or removed from a content model. The `field` block describes the field's identity and localization flag.
+
+```json
+{
+  "eventType": "content.field.added",
+  "data": {
+    "event": "content.field.added",
+    "timestamp": "2026-04-15T09:30:00.000Z",
+    "org": "acme",
+    "project": "marketing-site",
+    "model": "blog-post",
+    "field": {
+      "name": "hero_image",
+      "type": "image",
+      "localized": false
+    },
+    "actor": { "userId": "usr_xyz", "via": "ui" }
+  }
+}
+```
+
+---
+
 ## Responding to Webhooks
 
 Your endpoint must return a `2xx` status code within **10 seconds**, otherwise the delivery is marked as failed.
@@ -374,3 +621,80 @@ If you need to rotate the secret (e.g., after a potential leak), click **Regener
 <Callout type="warn">
 After regenerating, all deliveries signed with the old secret will fail verification until you deploy the new secret to your application.
 </Callout>
+
+---
+
+## Recipe: Rebuild a static site on content publish
+
+A common pattern for Content CMS consumers is bridging a Better i18n webhook to a GitHub Actions `repository_dispatch`, which rebuilds the site on demand:
+
+```
+Content CMS publish
+  → content.entry.published webhook
+  → your webhook handler (Vercel Function, CF Worker, etc.)
+  → POST /repos/OWNER/REPO/dispatches  (GitHub REST API)
+  → GitHub Actions rebuilds + deploys
+```
+
+Minimal bridge (runs on any edge or Node runtime):
+
+```ts title="webhook-bridge.ts"
+async function handler(req: Request) {
+  const body = await req.text();
+  const sig = req.headers.get("x-better-i18n-signature") ?? "";
+  if (!await verifySignature(SECRET, body, sig)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const event = JSON.parse(body);
+
+  // Only rebuild on actual publishes of blog posts
+  const shouldRebuild =
+    (event.eventType === "content.entry.published"
+      || event.eventType === "content.entry.bulkPublished")
+    && event.data.model === "blog-post";
+
+  if (!shouldRebuild) return new Response("OK");
+
+  await fetch(
+    "https://api.github.com/repos/YOUR_ORG/YOUR_REPO/dispatches",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GITHUB_DISPATCH_TOKEN}`,
+        Accept: "application/vnd.github+json",
+      },
+      body: JSON.stringify({
+        event_type: "content-updated",
+        client_payload: {
+          model: event.data.model,
+          entrySlug: event.data.entry?.slug,
+          via: event.data.actor?.via,
+        },
+      }),
+    },
+  );
+
+  return new Response("Dispatched");
+}
+```
+
+And the matching workflow:
+
+```yaml title=".github/workflows/deploy-on-content.yml"
+on:
+  repository_dispatch:
+    types: [content-updated]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: bun run build
+      - run: bun run deploy
+```
+
+Filter by `event.data.actor?.via === "ui"` if you only want to rebuild on human-triggered publishes (skipping MCP / API bulk corrections).
