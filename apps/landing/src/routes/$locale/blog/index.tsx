@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
-import { createServerFn } from "@tanstack/react-start";
-import { getAllBlogPostsForLocale, POSTS_PER_PAGE, type BlogPostListItem } from "@/lib/content";
+import { POSTS_PER_PAGE, type BlogPostListItem } from "@/lib/content";
+import { loadBlogIndex } from "@/lib/blog-index";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/blog/BlogCard";
@@ -29,30 +29,18 @@ import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 import { getLocaleTier } from "@/seo/locale-tiers";
 
-const loadBlogPosts = createServerFn({ method: "GET" })
-  .inputValidator((data: { locale: string }) => data)
-  .handler(async ({ data }) => {
-    const allPosts = await getAllBlogPostsForLocale(data.locale);
-    const categories = [...new Set(
-      allPosts.flatMap((p) => (p.category ? [p.category] : []))
-    )].sort();
-    return {
-      allPosts,
-      categories,
-      totalPages: Math.ceil(allPosts.length / POSTS_PER_PAGE),
-    };
-  });
-
 export const Route = createFileRoute("/$locale/blog/")({
   loader: async ({ params, context }) => {
     const { filterMessages } = await import("@/lib/page-namespaces");
-    const [allMessages, result] = await Promise.all([
+    const [allMessages, index] = await Promise.all([
       getMessages({ project: i18nConfig.project, locale: context.locale }),
-      loadBlogPosts({ data: { locale: params.locale } }),
+      loadBlogIndex(params.locale),
     ]);
     const messages = filterMessages(allMessages, ["meta", "breadcrumbs"]);
     return {
-      ...result,
+      allPosts: index.allPosts,
+      categories: index.categories,
+      totalPages: index.totalPages,
       messages,
       locale: context.locale,
     };

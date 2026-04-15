@@ -20,10 +20,16 @@ export default defineConfig(async ({ mode }) => {
     try {
       const { fetchSeoData, generatePages } = await import("./src/seo/generate-pages");
       const { generateAllLlmsTxtFiles } = await import("./src/seo/llms-txt");
+      const { generateBlogIndexes } = await import("./src/seo/generate-blog-indexes");
       const data = await fetchSeoData({ project, apiKey });
       pages = generatePages(data);
       llmsFiles = generateAllLlmsTxtFiles(data.blogPosts, data.locales, data.i18nMessages);
       console.log(`[SEO] Generated ${llmsFiles.size} llms.txt files`);
+      // Emit static blog index JSON per locale BEFORE prerender runs so
+      // the route loader can fetch them from `public/` during build and
+      // at runtime on SPA navigation.
+      const publicDir = fileURLToPath(new URL("./public", import.meta.url));
+      await generateBlogIndexes(data.locales, publicDir);
     } catch (error) {
       console.error("[SEO] Build-time generation failed:", error);
     }

@@ -11,3 +11,6 @@ count.txt
 .output
 .vinxi
 todos.json
+
+# Build-time generated blog indexes (one per locale)
+public/blog-index-*.json

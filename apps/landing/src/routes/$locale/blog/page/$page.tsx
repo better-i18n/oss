@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, notFound, Link } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
-import { createServerFn } from "@tanstack/react-start";
-import { getBlogPosts, POSTS_PER_PAGE, type BlogPostListItem } from "@/lib/content";
+import { POSTS_PER_PAGE, type BlogPostListItem } from "@/lib/content";
+import { loadBlogIndex } from "@/lib/blog-index";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/blog/BlogCard";
@@ -27,20 +27,6 @@ import {
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 
-const loadPaginatedPosts = createServerFn({ method: "GET" })
-  .inputValidator((data: { locale: string; page: number }) => data)
-  .handler(async ({ data }) => {
-    const result = await getBlogPosts(data.locale, {
-      limit: POSTS_PER_PAGE,
-      page: data.page,
-    });
-    return {
-      posts: result.posts,
-      totalPages: Math.ceil(result.total / POSTS_PER_PAGE),
-      currentPage: data.page,
-    };
-  });
-
 export const Route = createFileRoute("/$locale/blog/page/$page")({
   loader: async ({ params, context }) => {
     const pageNum = parseInt(params.page, 10);
@@ -59,20 +45,27 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
       throw notFound();
     }
 
-    const result = await loadPaginatedPosts({
-      data: { locale: params.locale, page: pageNum },
-    });
+    const index = await loadBlogIndex(params.locale);
+    const totalPages = Math.max(
+      1,
+      Math.ceil(index.allPosts.length / POSTS_PER_PAGE),
+    );
 
     // Page out of range → 404
-    if (pageNum > result.totalPages) {
+    if (pageNum > totalPages) {
       throw notFound();
     }
+
+    const start = (pageNum - 1) * POSTS_PER_PAGE;
+    const posts = index.allPosts.slice(start, start + POSTS_PER_PAGE);
 
     const { filterMessages } = await import("@/lib/page-namespaces");
     const allMessages = await getMessages({ project: i18nConfig.project, locale: context.locale });
     const messages = filterMessages(allMessages, ["meta", "breadcrumbs"]);
     return {
-      ...result,
+      posts,
+      totalPages,
+      currentPage: pageNum,
       messages,
       locale: context.locale,
     };
