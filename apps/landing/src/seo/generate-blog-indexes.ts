@@ -12,19 +12,22 @@
  *      from `../lib/content` or any module that touches `import.meta.env`.
  *   2. **No `body` field.** Body markdown is huge (avg 10-50KB per post).
  *      Fetching it for 22 locales × thousands of posts blew the Node heap.
- *      We use `fields: [...]` to request only what the list UI renders and
- *      rely on the CMS `excerpt` field (no client-side extraction).
- *   3. **Capped + bounded-concurrent.** Every locale is capped at
- *      POST_CAP posts (enough for the list UI's pagination + category
- *      filter). A LOCALE_CONCURRENCY-sized worker pool processes the
- *      locales so wall time stays O(N/concurrency) instead of O(N), and
- *      peak memory stays bounded to concurrency × cap × per-post-size.
- *      The sitemap still emits every post URL — SEO coverage is unaffected.
+ *      We request only the list-UI shape and rely on the CMS `excerpt`.
+ *   3. **Direct fetch with cache bypass.** The @better-i18n/sdk client
+ *      does not expose a fetch override, and the content API's edge cache
+ *      was serving stale snapshots — newly published posts took hours/days
+ *      to appear. We call the REST endpoint ourselves with
+ *      `Cache-Control: no-cache` so every build sees the authoritative
+ *      entry list. The runtime UI path still goes through the SDK + CDN.
+ *   4. **Bounded-concurrent, uncapped.** No POST_CAP: list UI shows every
+ *      published post. A LOCALE_CONCURRENCY-sized worker pool keeps wall
+ *      time reasonable; per-post size without `body` is small enough
+ *      (~500B) that a full locale (thousands of posts) stays under a few
+ *      MB in memory.
  */
 
 import { writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { createClient, hasLanguage } from "@better-i18n/sdk";
 
 export interface BlogPostListItem {
   readonly slug: string;
@@ -48,20 +51,8 @@ export interface BlogIndex {
 
 const POSTS_PER_PAGE = 12;
 const PAGE_SIZE = 100;
-/**
- * Cap on posts baked into each locale's blog-index JSON. The list UI
- * paginates 12 posts per page, so 500 = ~42 pages — far beyond what any
- * human scrolls. The sitemap (generatePages) still includes every post,
- * so SEO indexing is unaffected by this cap.
- */
-const POST_CAP = 500;
-/**
- * How many locales to fetch concurrently. Sequential was correct for
- * memory safety when each locale held full body markdown; with POST_CAP
- * and fields-limited fetches the per-locale footprint is ~500 × ~500B
- * = 250KB, so a concurrency pool is safe and cuts wall time ~N×.
- */
 const LOCALE_CONCURRENCY = 6;
+const API_BASE = "https://content.better-i18n.com/v1/content";
 
 type RelationValue = { title?: string; [key: string]: string | null | undefined };
 type RawEntry = {
@@ -73,8 +64,28 @@ type RawEntry = {
   featured?: string | boolean | null;
   banner_image?: string | null;
   relations?: Record<string, RelationValue | null | undefined>;
+  availableLanguages?: unknown;
+  langs?: unknown;
   [key: string]: unknown;
 };
+
+interface ListResponse {
+  readonly items: readonly RawEntry[];
+  readonly hasMore: boolean;
+  readonly total?: number;
+}
+
+function hasLanguage(item: RawEntry, locale: string): boolean {
+  const langs = item.availableLanguages ?? item.langs;
+  if (!Array.isArray(langs)) return true;
+  return (langs as unknown[]).some((v) => {
+    if (typeof v === "string") return v === locale;
+    if (v !== null && typeof v === "object") {
+      return (v as Record<string, unknown>).code === locale;
+    }
+    return false;
+  });
+}
 
 function mapEntry(entry: RawEntry): BlogPostListItem {
   return {
@@ -91,8 +102,39 @@ function mapEntry(entry: RawEntry): BlogPostListItem {
   };
 }
 
+async function fetchPage(
+  project: string,
+  apiKey: string,
+  locale: string,
+  page: number,
+): Promise<ListResponse> {
+  const params = new URLSearchParams({
+    language: locale,
+    status: "published",
+    sort: "publishedAt",
+    order: "desc",
+    limit: String(PAGE_SIZE),
+    page: String(page),
+    expand: "author,category",
+    fields: "slug,title,excerpt,publishedAt,read_time,featured,banner_image,langs",
+  });
+  const url = `${API_BASE}/${project}/models/blog-posts/entries?${params}`;
+  const res = await fetch(url, {
+    headers: {
+      "x-api-key": apiKey,
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText} fetching ${locale} page ${page}`);
+  }
+  return (await res.json()) as ListResponse;
+}
+
 async function fetchPostsForLocale(
-  client: ReturnType<typeof createClient>,
+  project: string,
+  apiKey: string,
   locale: string,
 ): Promise<BlogPostListItem[]> {
   const collected: BlogPostListItem[] = [];
@@ -100,49 +142,23 @@ async function fetchPostsForLocale(
   let hasMore = true;
 
   while (hasMore) {
-    const result = await client.getEntries("blog-posts", {
-      language: locale,
-      status: "published",
-      sort: "publishedAt",
-      order: "desc",
-      limit: PAGE_SIZE,
-      page,
-      expand: ["author", "category"],
-      fields: [
-        "slug",
-        "title",
-        "excerpt",
-        "publishedAt",
-        "read_time",
-        "featured",
-        "banner_image",
-        "langs",
-      ],
-    });
-
-    for (const item of result.items) {
-      const raw = item as unknown as RawEntry & Record<string, unknown>;
-      // The Content API falls back to source language when a translation
-      // is missing; filter those out so the locale's index only shows
-      // posts with an actual translation.
-      if (!hasLanguage(raw as Record<string, unknown>, locale)) continue;
+    const result = await fetchPage(project, apiKey, locale, page);
+    for (const raw of result.items) {
+      if (!hasLanguage(raw, locale)) continue;
       collected.push(mapEntry(raw));
-      if (collected.length >= POST_CAP) break;
     }
-
-    if (collected.length >= POST_CAP) break;
     hasMore = result.hasMore;
     page++;
   }
 
-  return collected.slice(0, POST_CAP);
+  return collected;
 }
 
 /**
- * Fetch blog posts for each locale sequentially and write each as a
- * static JSON file into `public/`. Failures for one locale emit an
- * empty index for that locale so the build never breaks on a single
- * API hiccup — the empty-state UI handles zero posts gracefully.
+ * Fetch blog posts for each locale with bounded concurrency, writing
+ * each as a static JSON file into `public/`. Failures for one locale
+ * emit an empty index so the build never breaks on a single API hiccup
+ * — the empty-state UI handles zero posts gracefully.
  */
 export async function generateBlogIndexes(
   locales: readonly string[],
@@ -151,11 +167,7 @@ export async function generateBlogIndexes(
 ): Promise<void> {
   await mkdir(publicDir, { recursive: true });
 
-  const client = createClient({
-    project: options.project,
-    apiKey: options.apiKey,
-  });
-
+  const { project, apiKey } = options;
   const ok: Array<{ locale: string; count: number }> = [];
   const failed: Array<{ locale: string; error: string }> = [];
   const queue = [...locales];
@@ -166,7 +178,7 @@ export async function generateBlogIndexes(
       if (!locale) return;
       const filePath = join(publicDir, `blog-index-${locale}.json`);
       try {
-        const allPosts = await fetchPostsForLocale(client, locale);
+        const allPosts = await fetchPostsForLocale(project, apiKey, locale);
         const categories = [
           ...new Set(allPosts.flatMap((p) => (p.category ? [p.category] : []))),
         ].sort();
