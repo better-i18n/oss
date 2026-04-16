@@ -1,0 +1,163 @@
+---
+title: Caching & Freshness
+description: How the Content API caches responses, how purge works after a publish, and how to configure caching in your framework
+icon: Clock
+---
+
+The Content API serves cached responses from Cloudflare KV for low latency. This page explains what's cached, how invalidation works after you publish changes in the dashboard, and how to tune caching in your framework.
+
+## TL;DR
+
+- **Cache layer:** Cloudflare KV, globally consistent, 60 second TTL.
+- **Purge trigger:** every mutation in the dashboard (publish, update, delete, field change) fires a targeted cache purge within seconds.
+- **After purge:** next request is a cache MISS, reads fresh data, re-caches. Maximum staleness before auto-refresh: **60 seconds** (the TTL failsafe).
+- **Your app's cache:** if you put the Content API behind your own cache (Next.js ISR, Vercel edge, a browser `fetch`), that layer has its own TTL and is NOT purged when you publish. See [Framework Configuration](#framework-configuration).
+
+## What Gets Cached
+
+Only `GET` requests to `/v1/content/*` with status `200`. The cache key encodes:
+
+| Axis | Included in key? |
+|------|------------------|
+| org slug, project slug, model slug | ✓ |
+| `language`, `status` | ✓ |
+| `page`, `limit`, `sort`, `order`, `fields`, `expand` | ✓ (hashed) |
+| `search=…`, `filter[x]=…` | ✗ — bypasses cache entirely |
+
+High-cardinality parameters (`search`, `filter[*]`) skip the cache because unique values almost never repeat before the TTL expires — caching them would burn write quota without serving reads.
+
+Response header `X-Cache: HIT` or `MISS` tells you which path served the request. Inspect it during development:
+
+```bash
+curl -I -H "x-api-key: bi-..." \
+  "https://content.better-i18n.com/v1/content/acme/web/models/blog-posts/entries"
+# → x-cache: HIT
+```
+
+## Publish → Purge → Fresh Data
+
+```
+You publish in the dashboard
+  → Platform API fires POST /purge to the Content API
+  → Content API deletes every cache key under the affected scope
+  → Next SDK request: MISS → DB read → fresh data cached for 60s
+```
+
+**Purge scopes (finest to broadest):**
+
+| Action | Scope purged |
+|--------|-------------|
+| Publish / update / delete **one entry** | That entry (all languages) + the model's list caches |
+| Bulk publish / delete | Each named entry (all languages) + the model's list caches (one atomic fan-out) |
+| Add / edit / remove a **field** | Every list and entry cache under the model |
+| Rename / delete a **model** | Every cache under the model |
+| Project-wide change | Models list only |
+
+Purge is **best-effort**: it fires as fire-and-forget, and if it fails for any reason (network blip, Content API deploy mid-flight), the 60-second TTL guarantees eventual freshness within one minute. You should never see stale data for more than 60 seconds after a publish — if you do, the most likely culprit is **your own framework's cache layer** (see below).
+
+## Response Cache-Control
+
+Every successful `GET` response carries:
+
+```
+Cache-Control: public, s-maxage=60, stale-while-revalidate=120
+```
+
+- **`s-maxage=60`** — downstream CDNs (Cloudflare, Vercel, your edge) may cache for 60 seconds.
+- **`stale-while-revalidate=120`** — for another 2 minutes after expiry, a downstream may serve the stale copy while fetching fresh in the background.
+
+After you publish, **your downstream CDN keeps serving its cached copy** until `s-maxage` expires or until you manually purge that layer. The Content API has no way to reach into your Vercel/Cloudflare cache. Plan your revalidation windows accordingly.
+
+## Framework Configuration
+
+### Next.js (App Router)
+
+Two patterns, pick based on your freshness requirements.
+
+**Fresh within 60s (recommended for most sites):**
+
+```ts
+const res = await fetch(
+  `${API}/v1/content/${ORG}/${PROJECT}/models/blog-posts/entries`,
+  {
+    headers: { "x-api-key": process.env.BETTER_I18N_API_KEY! },
+    next: { revalidate: 60 },
+  },
+);
+```
+
+`revalidate: 60` matches the Content API's TTL. After you publish, Next.js will fetch fresh data within 60 seconds on the next request.
+
+**Instant freshness after publish (e.g. preview mode):**
+
+```ts
+const res = await fetch(url, {
+  headers: { "x-api-key": process.env.BETTER_I18N_API_KEY! },
+  cache: "no-store",
+});
+```
+
+`no-store` disables Next.js's fetch cache entirely — every request hits the Content API, which still serves from its KV cache. You pay an extra round-trip but skip any Next.js revalidation delay.
+
+**What NOT to do:**
+
+```ts
+// ❌ Long revalidate without manual invalidation = stale content for hours
+const res = await fetch(url, { next: { revalidate: 3600 } });
+```
+
+If you set `revalidate` longer than 60 seconds, publishes in the dashboard won't surface until Next.js revalidates. If you must use a long window, pair it with [On-demand revalidation](https://nextjs.org/docs/app/building-your-application/caching#on-demand-revalidation) triggered by a [Content webhook](/sdk/webhooks).
+
+### Remix / Hydrogen
+
+```ts
+export async function loader({ context }: LoaderArgs) {
+  const res = await fetch(url, {
+    headers: {
+      "x-api-key": context.env.BETTER_I18N_API_KEY,
+      "Cache-Control": "max-age=60",
+    },
+  });
+  return json(await res.json(), {
+    headers: {
+      "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=120",
+    },
+  });
+}
+```
+
+Keep your `s-maxage` aligned with the Content API's (60s). Longer values mean stale content after publish.
+
+### Raw `fetch` in the browser
+
+The browser honors `Cache-Control: public, s-maxage=60` for CDN caching but largely ignores it for its own cache. Users will generally get fresh responses each time unless you opt into `cache: "force-cache"`.
+
+## Instant Invalidation: Webhooks
+
+If 60 seconds is too long and you need sub-second freshness:
+
+1. Subscribe to Content CMS [webhook events](/sdk/webhooks) (`entry.published`, `entry.updated`).
+2. On receipt, trigger your framework's on-demand revalidation:
+   - Next.js: `revalidateTag()` or `revalidatePath()`
+   - Cloudflare / Fastly: surrogate-key purge
+   - Vercel: `fetch('/api/revalidate?tag=...', { method: 'POST' })`
+
+This combines the Content API's 60-second auto-refresh floor with your own revalidation on webhook delivery — giving you best-effort instant freshness without giving up caching.
+
+## Observability
+
+Two headers help you debug caching:
+
+| Header | Meaning |
+|--------|---------|
+| `X-Cache: HIT` | Response came from Content API's KV cache |
+| `X-Cache: MISS` | Response came from origin (DB), now cached |
+| `Cache-Control: …` | Downstream cache directives (see above) |
+
+If you suspect a stale response after publishing:
+
+1. Check `X-Cache` on the stale response — if `HIT`, it's the Content API cache (should auto-refresh within 60s).
+2. Check your framework's cache headers — if Next.js is serving from its fetch cache, look at `next: { revalidate }` config.
+3. Check your CDN (Vercel / Cloudflare edge) — if `s-maxage` propagated, that layer is holding it.
+
+Most "stale after publish" reports trace back to a long `revalidate` in the SDK caller, not the Content API itself.

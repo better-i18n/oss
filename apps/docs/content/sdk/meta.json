@@ -11,6 +11,7 @@
     "models-and-entries",
     "api-reference",
     "---Advanced---",
+    "caching",
     "typescript"
   ]
 }
