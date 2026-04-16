@@ -8,9 +8,11 @@ The Content API serves cached responses from Cloudflare KV for low latency. This
 
 ## TL;DR
 
-- **Cache layer:** Cloudflare KV, globally consistent, 60 second TTL.
+- **Cache layer:** Cloudflare KV, globally consistent, 60 second freshness window.
 - **Purge trigger:** every mutation in the dashboard (publish, update, delete, field change) fires a targeted cache purge within seconds.
 - **After purge:** next request is a cache MISS, reads fresh data, re-caches. Maximum staleness before auto-refresh: **60 seconds** (the TTL failsafe).
+- **Resilience:** if the origin database is unreachable past the freshness window, the Content API serves the last cached response with `X-Cache: STALE` for up to 24 hours. No 5xx surfaces to your SDK during short outages.
+- **Observability:** every response carries `X-Cache`, `X-Cache-Tags`, `Age`, and `Last-Modified` headers so you can trace what you got and when.
 - **Your app's cache:** if you put the Content API behind your own cache (Next.js ISR, Vercel edge, a browser `fetch`), that layer has its own TTL and is NOT purged when you publish. See [Framework Configuration](#framework-configuration).
 
 ## What Gets Cached
@@ -26,13 +28,26 @@ Only `GET` requests to `/v1/content/*` with status `200`. The cache key encodes:
 
 High-cardinality parameters (`search`, `filter[*]`) skip the cache because unique values almost never repeat before the TTL expires — caching them would burn write quota without serving reads.
 
-Response header `X-Cache: HIT` or `MISS` tells you which path served the request. Inspect it during development:
+Response header `X-Cache: HIT`, `MISS`, or `STALE` tells you which path served the request. Inspect it during development:
 
 ```bash
 curl -I -H "x-api-key: bi-..." \
   "https://content.better-i18n.com/v1/content/acme/web/models/blog-posts/entries"
 # → x-cache: HIT
+# → x-cache-tags: org:acme,project:web,model:blog-posts
+# → age: 12
+# → last-modified: Wed, 16 Apr 2026 18:41:03 GMT
 ```
+
+### Cache state semantics
+
+| `X-Cache` value | What it means | When it happens |
+|---|---|---|
+| `HIT` | Fresh cached response, no origin trip | Age < 60s and entry present |
+| `MISS` | Origin hit, response freshly cached | First request, or post-purge, or after freshness window with healthy origin |
+| `STALE` | Origin unreachable, expired cache served as fallback | Origin error past freshness window with cached entry still in 24h retention |
+
+`STALE` is a **resilience signal**, not a routine state. Seeing it in production means origin had a blip — the body is up to 24 hours old but your app stays available instead of receiving a 5xx. If `STALE` rates climb above zero, check the Content API status.
 
 ## Publish → Purge → Fresh Data
 
@@ -53,7 +68,29 @@ You publish in the dashboard
 | Rename / delete a **model** | Every cache under the model |
 | Project-wide change | Models list only |
 
-Purge is **best-effort**: it fires as fire-and-forget, and if it fails for any reason (network blip, Content API deploy mid-flight), the 60-second TTL guarantees eventual freshness within one minute. You should never see stale data for more than 60 seconds after a publish — if you do, the most likely culprit is **your own framework's cache layer** (see below).
+Purge is **best-effort**: it fires as fire-and-forget, and if it fails for any reason (network blip, Content API deploy mid-flight), the 60-second freshness window guarantees eventual consistency within one minute. You should never see stale data for more than 60 seconds after a publish — if you do, the most likely culprit is **your own framework's cache layer** (see below).
+
+## Stale-if-error (resilience fallback)
+
+The Content API keeps every cached entry for **24 hours past its freshness window** as a fallback pool for origin outages. The window splits into two states:
+
+```
+0s ──────────── 60s ──────────────────────────────── 24h 60s
+│ Fresh (HIT)   │ Stale (revalidate — MISS on success, STALE on error)
+```
+
+- **Inside 60s:** entry is fresh. Served directly as `X-Cache: HIT`.
+- **Past 60s, origin OK:** origin is re-hit; cache rewritten with new body; response returned as `X-Cache: MISS`. You see the new data as if it were the first request.
+- **Past 60s, origin fails (throw or 5xx):** expired entry is served as `X-Cache: STALE` with `Age` reflecting real age. No error propagates to your SDK.
+- **Past 24h 60s:** entry is evicted from KV. Origin error now surfaces as a 5xx to your SDK.
+
+You get three practical guarantees from this layer:
+
+1. **Short outages are invisible.** Database blips, region failovers, deploys — none surface as 5xx to your app as long as the affected content was requested at least once in the prior 24 hours.
+2. **You can detect degraded mode.** Monitor `X-Cache: STALE` rates — non-zero means origin is unhealthy.
+3. **Staleness is bounded and auditable.** `Age` header is never higher than freshness window + stale budget. You can alert on `Age > 3600` if freshness matters for your use case.
+
+Stale-if-error is automatic — nothing to configure on your end.
 
 ## Response Cache-Control
 
@@ -146,18 +183,44 @@ This combines the Content API's 60-second auto-refresh floor with your own reval
 
 ## Observability
 
-Two headers help you debug caching:
+Every response carries headers that identify which cache layer served it and how old the payload is:
 
-| Header | Meaning |
-|--------|---------|
-| `X-Cache: HIT` | Response came from Content API's KV cache |
-| `X-Cache: MISS` | Response came from origin (DB), now cached |
-| `Cache-Control: …` | Downstream cache directives (see above) |
+| Header | Meaning | Emitted on |
+|--------|---------|------------|
+| `X-Cache: HIT` | Fresh cached response from Content API's KV | HIT |
+| `X-Cache: MISS` | Response came from origin (DB), now cached | MISS |
+| `X-Cache: STALE` | Origin unreachable, serving last cached entry | STALE |
+| `X-Cache-Tags` | Ordered, comma-delimited scope labels (see below) | HIT, MISS, STALE |
+| `Age` | Seconds since the cached entry was captured from origin | HIT, STALE |
+| `Last-Modified` | RFC 1123 timestamp of when origin produced the body | HIT, STALE |
+| `Cache-Control` | Downstream cache directives (see above) | All |
 
-If you suspect a stale response after publishing:
+### Cache tags
 
-1. Check `X-Cache` on the stale response — if `HIT`, it's the Content API cache (should auto-refresh within 60s).
-2. Check your framework's cache headers — if Next.js is serving from its fetch cache, look at `next: { revalidate }` config.
-3. Check your CDN (Vercel / Cloudflare edge) — if `s-maxage` propagated, that layer is holding it.
+`X-Cache-Tags` encodes the exact scope of the cached entry. Format:
 
-Most "stale after publish" reports trace back to a long `revalidate` in the SDK caller, not the Content API itself.
+```
+X-Cache-Tags: org:acme,project:web,model:blog-posts,entry:hello-world,lang:tr,status:published
+```
+
+Tags are ordered broadest-first (org → project → model → entry → language → status). Default values (no language/status) are suppressed to keep the header compact.
+
+Use tags for:
+
+- **Debugging:** "Which scope was this response keyed under?" — read the tag list.
+- **Surrogate-key CDNs:** If you front the Content API with a Fastly, Bunny, Netlify, or Cloudflare Enterprise cache, you can propagate `X-Cache-Tags` as surrogate keys and relay our purge events to that layer. Webhook receives the invalidated tags; your frontend purges them.
+- **Custom invalidation logic:** Tags give you a stable contract for "all caches under this entry" without parsing URLs.
+
+### Diagnosing stale responses
+
+If you suspect a stale response after publishing, walk the layers in order:
+
+1. **Check `X-Cache` + `Age` on the response.**
+   - `HIT` with `Age < 60` → Content API cache, auto-refreshes within 60s. Wait, then re-check.
+   - `HIT` with `Age >= 60` → shouldn't happen (bug — report). Fresh window exceeded.
+   - `STALE` → origin is degraded. Check `https://status.better-i18n.com`.
+   - `MISS` → response came from origin. If still stale, the data in DB is stale (or your purge didn't fire).
+2. **Check your framework's cache headers.** If Next.js is serving from its fetch cache, look at `next: { revalidate }` config.
+3. **Check your CDN (Vercel / Cloudflare edge).** If `s-maxage` propagated, that layer is holding it.
+
+Most "stale after publish" reports trace back to a long `revalidate` in the SDK caller or a downstream CDN — not the Content API itself.
