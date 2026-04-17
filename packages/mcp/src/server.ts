@@ -83,9 +83,7 @@ export function createConfiguredServer(
 
 ## Character encoding (UTF-8) — CRITICAL
 
-All translation values are UTF-8. Send non-ASCII characters (ö, ş, ç, ğ, ı, é, ñ, ä, 中, 日, ع, etc.) as-is. Do NOT transliterate to ASCII (e.g., never send "ogretmen" for "öğretmen", "sehir" for "şehir", "cocuk" for "çocuk", "muenchen" for "münchen"). Transliterated values are stored and served verbatim through the CDN — they silently corrupt end-user translations, which defeats the entire purpose of localization.
-
-If your runtime or string escaping mangles diacritics during JSON serialization, use Unicode escape sequences instead: \u00f6 (ö), \u015f (ş), \u00e7 (ç), \u011f (ğ), \u0131 (ı), \u00fc (ü), \u00e9 (é), \u00f1 (ñ). If you find yourself "simplifying" characters to avoid encoding issues, STOP — that is a client-side bug to fix, not a limitation of this MCP.
+All string inputs are UTF-8. Send non-ASCII characters in every language (diacritics, CJK, Cyrillic, Arabic, Hebrew, emoji, etc.) exactly as the user wrote them. Do NOT transliterate, strip, or "simplify" them to ASCII — stored values are served verbatim through the CDN and corrupt end-user translations. If your JSON serializer mangles characters, use Unicode escapes (e.g. \u00f6) instead. Lossy encoding is always a client-side bug, never a limitation of this MCP.
 
 ## Key creation safety
 

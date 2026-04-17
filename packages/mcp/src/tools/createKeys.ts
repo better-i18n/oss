@@ -80,8 +80,8 @@ To add translations to EXISTING keys, use listKeys + updateKeys instead.`,
             properties: {
               n: { type: "string", description: "Key name (e.g., 'submit_button', 'nav.home')" },
               ns: { type: "string", description: "Namespace (default: 'default'). MUST match existing keys' namespace — wrong namespace creates duplicate keys." },
-              v: { type: "string", description: "Source language text" },
-              t: { type: "object", description: "Target translations as {langCode: text}" },
+              v: { type: "string", description: "Source language text. UTF-8 — send non-ASCII as-is, never transliterate to ASCII." },
+              t: { type: "object", description: "Target translations as {langCode: text}. UTF-8 — send non-ASCII as-is, never transliterate." },
               nc: {
                 type: "object",
                 description: "Optional context for the namespace (description, team, domain, aiPrompt, tags). Applied once per namespace.",
