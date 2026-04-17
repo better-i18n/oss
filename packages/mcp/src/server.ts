@@ -79,6 +79,21 @@ export function createConfiguredServer(
         tools: {},
         logging: {},
       },
+      instructions: `Better i18n MCP — manages translation keys and publishes localized content for the Better i18n platform.
+
+## Character encoding (UTF-8) — CRITICAL
+
+All translation values are UTF-8. Send non-ASCII characters (ö, ş, ç, ğ, ı, é, ñ, ä, 中, 日, ع, etc.) as-is. Do NOT transliterate to ASCII (e.g., never send "ogretmen" for "öğretmen", "sehir" for "şehir", "cocuk" for "çocuk", "muenchen" for "münchen"). Transliterated values are stored and served verbatim through the CDN — they silently corrupt end-user translations, which defeats the entire purpose of localization.
+
+If your runtime or string escaping mangles diacritics during JSON serialization, use Unicode escape sequences instead: \u00f6 (ö), \u015f (ş), \u00e7 (ç), \u011f (ğ), \u0131 (ı), \u00fc (ü), \u00e9 (é), \u00f1 (ñ). If you find yourself "simplifying" characters to avoid encoding issues, STOP — that is a client-side bug to fix, not a limitation of this MCP.
+
+## Key creation safety
+
+Before calling createKeys, always listKeys first. If the key already exists in any namespace, use updateKeys — not createKeys — to avoid duplicates. (Reference incident: an AI agent once created 1005 phantom keys by calling createKeys with a wrong namespace when updateKeys was the correct tool.)
+
+## Finding untranslated content
+
+Use getPendingChanges to inspect unpublished edits before calling publishTranslations. Published translations reach the CDN immediately.`,
     },
   );
 

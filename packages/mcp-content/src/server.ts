@@ -125,7 +125,12 @@ Never use language= when you want to find content that needs translating — alw
 ### Typical batch-translate workflow
 1. listContentEntries({ missingLanguage: "X" })  — find untranslated entries
 2. bulkUpdateEntries with translations map        — update all at once (max 20 per call)
-3. bulkPublishEntries                             — publish if needed`,
+3. bulkPublishEntries                             — publish if needed
+
+### Character encoding (UTF-8) — CRITICAL
+All string inputs are UTF-8. Send non-ASCII characters (ö, ş, ç, ğ, ı, é, ñ, ä, 中, 日, ع, etc.) as-is. Do NOT transliterate to ASCII (e.g., never send "ogretmen" for "öğretmen", "sehir" for "şehir", "cocuk" for "çocuk", "muenchen" for "münchen"). Transliterated values are stored verbatim and silently corrupt end-user content — the whole point of a multilingual CMS is preserving native scripts exactly.
+
+If your runtime or string escaping mangles diacritics during JSON serialization, use Unicode escape sequences instead: \u00f6 (ö), \u015f (ş), \u00e7 (ç), \u011f (ğ), \u0131 (ı). If you find yourself "simplifying" characters to avoid encoding issues, STOP — that is a client-side bug to fix, not a limitation of this MCP.`,
     },
   );
 
