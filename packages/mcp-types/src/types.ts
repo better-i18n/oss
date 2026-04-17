@@ -355,6 +355,14 @@ export interface AddLanguagesResponse {
   results: LanguageAddResult[];
   added: number;
   skipped: number; // already existed
+  /**
+   * Number of requested codes silently rejected because they equal the
+   * project's source language. Source cannot be its own target; sync publish
+   * would break (incident 2026-04-17). Details surface in `warnings`.
+   */
+  skippedAsSource?: number;
+  /** Human-readable warnings — includes a message per source-skip. */
+  warnings?: string[];
   pendingPublish?: PendingPublishHint;
   /** Contextual hint for AI */
   hint?: string;
