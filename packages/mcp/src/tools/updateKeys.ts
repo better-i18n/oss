@@ -56,7 +56,7 @@ IMPORTANT:
             properties: {
               id: { type: "string", description: "Translation key UUID (required). Get from getAllTranslations or listKeys response." },
               l: { type: "string", description: "Language code (e.g., 'tr', 'de')" },
-              t: { type: "string", description: "Translation text" },
+              t: { type: "string", description: "Translation text. UTF-8 — send non-ASCII characters as-is, never transliterate to ASCII." },
               s: { type: "boolean", description: "true if updating source language text" },
               st: { type: "string", description: "Translation status (e.g., 'published')" },
             },
