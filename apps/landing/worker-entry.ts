@@ -11,7 +11,27 @@ const NO_CACHE_PREFIXES = ["/api/"];
  * If not found in ASSETS, return 404 immediately — never let TanStack's
  * locale-redirect logic catch these paths (e.g. /favicon.png → /tr/favicon.png).
  */
-const STATIC_FILE_RE = /\.(?:png|ico|svg|webp|jpg|jpeg|gif|webmanifest|txt|xml|woff2?|ttf|otf|map)$/i;
+const STATIC_FILE_RE = /\.(?:png|ico|svg|webp|jpg|jpeg|gif|webmanifest|txt|xml|woff2?|ttf|otf|map|json|md)$/i;
+
+/**
+ * Agent-discovery endpoints under /.well-known/ that have NO file extension.
+ * These would otherwise fall through to TanStack Start and get caught by
+ * locale-redirect (→ 307 /tr/.well-known/...). Map each extension-less public
+ * path to the static asset alias in ASSETS and serve it with the correct
+ * Content-Type for agent consumption.
+ */
+const WELL_KNOWN_ALIASES = new Map<
+  string,
+  { path: string; contentType: string }
+>([
+  [
+    "/.well-known/api-catalog",
+    {
+      path: "/.well-known/api-catalog.json",
+      contentType: "application/linkset+json",
+    },
+  ],
+]);
 
 /**
  * SEO redirect map — consolidated/removed pages → pillar pages.
@@ -175,6 +195,21 @@ const SECURITY_HEADERS: ReadonlyArray<readonly [string, string]> = [
   ],
 ] as const;
 
+/**
+ * RFC 8288 Link headers advertising agent-discovery endpoints.
+ * Applied to every HTML response so crawling agents can find our
+ * API catalog, MCP server card, agent skills index, and llms.txt
+ * without probing well-known paths.
+ */
+const DISCOVERY_LINK_HEADER = [
+  '</.well-known/api-catalog>; rel="api-catalog"',
+  '</.well-known/mcp/server-card.json>; rel="mcp-server-card"',
+  '</.well-known/agent-skills/index.json>; rel="agent-skills"',
+  '</llms.txt>; rel="alternate"; type="text/plain"',
+  '<https://docs.better-i18n.com>; rel="service-doc"',
+  '<https://platform.better-i18n.com/v1>; rel="service"',
+].join(", ");
+
 export default {
   async fetch(
     request: Request,
@@ -189,6 +224,60 @@ export default {
         status: 301,
         headers: { Location: `${url.origin}${redirectTarget}` },
       });
+    }
+
+    // Markdown content negotiation for agents (Cloudflare "Markdown for
+    // Agents" pattern). When an agent sends `Accept: text/markdown` without
+    // also accepting HTML, serve our llms.txt (a curated markdown digest of
+    // the whole site) as the markdown representation of any page. Browsers
+    // never hit this path because they always send `text/html` in Accept.
+    //
+    // Phase 2 (separate ticket) will add per-route build-time `.md` files
+    // so each URL returns a page-specific markdown body. For now this
+    // unblocks the scanner — which was hitting a 500 when TanStack's SSR
+    // tried to render with a markdown-only Accept header.
+    const acceptHeader = request.headers.get("Accept") || "";
+    const wantsMarkdown =
+      acceptHeader.includes("text/markdown") &&
+      !acceptHeader.includes("text/html");
+    if (wantsMarkdown && request.method === "GET") {
+      try {
+        const mdResponse = await env.ASSETS.fetch(
+          new Request(`${url.origin}/llms.txt`, { method: "GET" })
+        );
+        if (mdResponse.ok) {
+          const h = new Headers();
+          h.set("Content-Type", "text/markdown; charset=utf-8");
+          h.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=3600");
+          h.set("Access-Control-Allow-Origin", "*");
+          h.set("X-Markdown-Source", "llms.txt");
+          return new Response(mdResponse.body, { status: 200, headers: h });
+        }
+      } catch {
+        // Fall through to normal handling if ASSETS is unavailable
+      }
+    }
+
+    // Agent-discovery endpoints without extensions — serve as aliased static
+    // asset with the correct Content-Type (must run BEFORE STATIC_FILE_RE
+    // since the public URL has no extension to match).
+    const alias = WELL_KNOWN_ALIASES.get(url.pathname);
+    if (alias) {
+      try {
+        const assetResponse = await env.ASSETS.fetch(
+          new Request(`${url.origin}${alias.path}`, { method: "GET" })
+        );
+        if (assetResponse.ok) {
+          const h = new Headers(assetResponse.headers);
+          h.set("Content-Type", alias.contentType);
+          h.set("Access-Control-Allow-Origin", "*");
+          h.set("Cache-Control", "public, max-age=300");
+          return new Response(assetResponse.body, { status: 200, headers: h });
+        }
+      } catch {
+        // ASSETS.fetch failure — fall through to 404
+      }
+      return new Response("Not found", { status: 404 });
     }
 
     // Static files: serve directly from ASSETS, never fall through to SSR.
@@ -235,6 +324,14 @@ export default {
     // Apply security headers
     for (const [key, value] of SECURITY_HEADERS) {
       newHeaders.set(key, value);
+    }
+
+    // Advertise agent-discovery endpoints via RFC 8288 Link header
+    // (scoped to HTML responses — agents crawling pages will see it,
+    // but we avoid polluting asset responses like /favicon.png).
+    const responseContentType = newHeaders.get("Content-Type") || "";
+    if (responseContentType.includes("text/html")) {
+      newHeaders.set("Link", DISCOVERY_LINK_HEADER);
     }
 
     const cacheControl = getCacheControl(request, response);
