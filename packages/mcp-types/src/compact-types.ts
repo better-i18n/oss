@@ -660,6 +660,50 @@ export interface CompactUpdateKeysResponse {
 }
 
 /**
+ * Compact response from setTranslations endpoint.
+ *
+ * Field Mappings:
+ * - ok: success
+ * - cnt: keysUpdated (number of keys with at least one translation written)
+ * - wrote: translationsWritten (total key×lang rows written)
+ * - upd: per-key summary [{ id, k, lng[] }]
+ * - errors: not-found items (partial-fail)
+ * - pub: pendingPublish
+ */
+export interface CompactSetTranslationsResponse {
+  /** Operation success — false only when ALL submitted keys were not found */
+  ok: boolean;
+  /** Number of keys for which at least one translation was written */
+  cnt: number;
+  /** Total number of (key × language) translation rows written */
+  wrote: number;
+  /** Per-key summary of successful writes */
+  upd: Array<{
+    /** Key UUID */
+    id: string;
+    /** Key name */
+    k: string;
+    /** Languages written for this key */
+    lng: string[];
+  }>;
+  /** Keys that could not be found — partial-fail reporting */
+  errors?: Array<{
+    /** Key UUID that was not found */
+    id: string;
+    /** Languages that were requested */
+    l: string[];
+    /** Error code */
+    code: "not_found";
+    /** Human-readable message */
+    msg: string;
+  }>;
+  /** Pending publish hint */
+  pub?: CompactPendingPublishHint;
+  /** Contextual hint for AI */
+  hint?: string;
+}
+
+/**
  * Compact response from deleteKeys endpoint.
  *
  * Field Mappings:

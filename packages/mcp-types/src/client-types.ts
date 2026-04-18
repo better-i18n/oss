@@ -12,6 +12,7 @@ import type {
   ListKeysInput,
   CreateKeysInput,
   UpdateKeysInput,
+  SetTranslationsInput,
   DeleteKeysInput,
   AddLanguagesInput,
   UpdateLanguagesInput,
@@ -60,6 +61,7 @@ import type {
   CompactGetSyncResponse,
   CompactCreateKeysResponse,
   CompactUpdateKeysResponse,
+  CompactSetTranslationsResponse,
   CompactDeleteKeysResponse,
   CompactListKeysResponse,
   CompactGetTranslationsCompactResponse,
@@ -128,6 +130,9 @@ export interface MCPClient {
   };
   updateKeys: {
     mutate: (input: UpdateKeysInput) => Promise<CompactUpdateKeysResponse>;
+  };
+  setTranslations: {
+    mutate: (input: SetTranslationsInput) => Promise<CompactSetTranslationsResponse>;
   };
   deleteKeys: {
     mutate: (input: DeleteKeysInput) => Promise<CompactDeleteKeysResponse>;

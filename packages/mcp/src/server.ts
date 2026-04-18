@@ -28,6 +28,7 @@ import { getTranslations } from "./tools/getTranslations.js";
 import { listKeys } from "./tools/listKeys.js";
 import { listProjects } from "./tools/listProjects.js";
 import { publishTranslations } from "./tools/publishTranslations.js";
+import { setTranslations } from "./tools/setTranslations.js";
 import { updateKeys } from "./tools/updateKeys.js";
 
 export interface ServerConfig {
@@ -89,6 +90,16 @@ All string inputs are UTF-8. Send non-ASCII characters in every language (diacri
 
 Before calling createKeys, always listKeys first. If the key already exists in any namespace, use updateKeys — not createKeys — to avoid duplicates. (Reference incident: an AI agent once created 1005 phantom keys by calling createKeys with a wrong namespace when updateKeys was the correct tool.)
 
+## Choosing between translation-write tools
+
+Three tools can write translation data. Pick the narrowest one for the task:
+
+- **setTranslations** — FAST PATH for bulk target translations. Shape: t=[{ id, t: { lang: "...", lang: "..." } }]. One entry per KEY, map of languages inside. Use this when an AI has translated N keys into M languages in one shot — roughly 55-65% smaller payload than updateKeys for the same work. Only writes target languages at status="approved". Source-language entries in the map are silently ignored.
+- **updateKeys** — Use when editing source text (s=true), changing status (st), or doing single-language edits. Shape: t=[{ id, l, t, s?, st? }], one entry per (key × language).
+- **createKeys** — Only when the key does not yet exist.
+
+For translation batches in particular: prefer **setTranslations** over **updateKeys**. Both require UUIDs from listKeys / getAllTranslations.
+
 ## Finding untranslated content
 
 Use getPendingChanges to inspect unpublished edits before calling publishTranslations. Published translations reach the CDN immediately.`,
@@ -139,6 +150,7 @@ Use getPendingChanges to inspect unpublished edits before calling publishTransla
       annotate(getTranslations.definition, readOnly),
       annotate(createKeys.definition, write),
       annotate(updateKeys.definition, write),
+      annotate(setTranslations.definition, write),
       annotate(deleteKeys.definition, destructive),
       annotate(getPendingChanges.definition, readOnly),
       annotate(publishTranslations.definition, write),
@@ -178,6 +190,9 @@ Use getPendingChanges to inspect unpublished edits before calling publishTransla
           break;
         case "updateKeys":
           result = await updateKeys.execute(apiClient, args);
+          break;
+        case "setTranslations":
+          result = await setTranslations.execute(apiClient, args);
           break;
         case "deleteKeys":
           result = await deleteKeys.execute(apiClient, args);
