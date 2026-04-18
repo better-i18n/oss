@@ -35,8 +35,34 @@ REQUIRED WORKFLOW (follow in order):
 
 ⚠️ PERMANENT DELETION: Soft-deleted keys (from deleteKeys) become permanently deleted after publish. There is NO way to recover them. Verify with getPendingChanges → deletedKeys before publishing.
 
-If translations array is omitted, ALL pending changes are published.
-If translations array is provided, only those specific items are published.
+═══════════════════════════════════════════════════════════════
+PARTIAL PUBLISH (recommended for agent workflows)
+═══════════════════════════════════════════════════════════════
+
+The optional 'translations' filter lets you publish ONLY what you just wrote,
+instead of flushing every pending change in the project. This is the right
+choice for incremental agent work — you avoid accidentally shipping someone
+else's half-reviewed drafts.
+
+Example — after setTranslations / updateKeys with UUIDs you just received:
+
+  publishTranslations({
+    project: "org/proj",
+    translations: [
+      { keyId: "<uuid>", languageCode: "tr" },
+      { keyId: "<uuid>", languageCode: "de" },
+      { keyId: "<uuid>", languageCode: "fr" }
+    ]
+  })
+
+When to OMIT the filter (publish everything pending):
+- User explicitly asks for a full project publish.
+- You are running a scheduled/batch publish job with no prior write context.
+
+When to INCLUDE the filter (publish only your writes):
+- Any agent flow: translate → write → publish-what-you-wrote.
+- Multi-agent projects where another reviewer may have pending drafts.
+- Anything iterative where you don't want surprise co-deploys.
 
 Returns syncJobIds — use getSync(syncId) to verify deployment completed successfully.`,
     inputSchema: {
