@@ -3,9 +3,43 @@
 import { createI18nCore, getLocaleCookie } from "@better-i18n/core";
 import type { LanguageOption } from "@better-i18n/core";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import { IntlProvider } from "use-intl";
+import { IntlProvider, type IntlErrorCode } from "use-intl";
 import { BetterI18nContext } from "./context.js";
 import type { BetterI18nProviderConfig, Messages } from "./types.js";
+
+// ─── Development-time error surface ─────────────────────────────────
+//
+// `use-intl` calls `onError` whenever a message lookup or ICU parse
+// fails (missing key, unmatched <tag>, malformed plural, etc). The
+// library's fallback is to return the key itself so the UI keeps
+// rendering — but that silent fallback is *devastating* for debugging
+// because the raw key appears on screen with zero console output.
+//
+// The previous default here was `() => {}` which made this invisible.
+// New default: log in development, stay silent in production. Consumer
+// can still pass their own `onError` to override (telemetry, Sentry,
+// etc).
+const isDevelopment =
+  typeof process !== "undefined" && process.env?.NODE_ENV !== "production";
+
+function defaultOnError(error: {
+  code: IntlErrorCode;
+  message: string;
+  originalMessage?: string;
+}) {
+  if (!isDevelopment) return;
+  // MISSING_MESSAGE is by far the most common case — show the key name
+  // prominently so developers can jump straight to creating it. For
+  // format errors (INVALID_MESSAGE, FORMATTING_ERROR) include the
+  // original message so ICU parse failures like `<head>` are diagnosable
+  // without having to re-derive the source string.
+  const prefix = `[better-i18n] ${error.code}`;
+  if (error.originalMessage) {
+    console.warn(`${prefix}: ${error.message}\n  source: ${error.originalMessage}`);
+  } else {
+    console.warn(`${prefix}: ${error.message}`);
+  }
+}
 
 // ─── SSR Data Injection ──────────────────────────────────────────────
 
@@ -413,6 +447,9 @@ export function BetterI18nProvider({
           locale={locale}
           messages={{}}
           timeZone={timeZone}
+          // Bootstrap phase — messages not yet loaded. Stay silent because
+          // the very first renders WILL miss every key until the CDN fetch
+          // resolves; logging each would flood the console.
           onError={() => {}}
           getMessageFallback={customGetMessageFallback}
         >
@@ -429,7 +466,7 @@ export function BetterI18nProvider({
         messages={messages}
         timeZone={timeZone}
         now={now}
-        onError={onError ?? (() => {})}
+        onError={onError ?? defaultOnError}
         getMessageFallback={customGetMessageFallback}
       >
         {children as never}
