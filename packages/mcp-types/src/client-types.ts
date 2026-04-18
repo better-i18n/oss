@@ -20,6 +20,7 @@ import type {
   GetSyncsInput,
   GetSyncInput,
   CancelSyncInput,
+  GetTranslationContextInput,
   GetPendingChangesInput,
   PublishInput,
 } from "./schemas";
@@ -61,6 +62,7 @@ import type {
   CompactGetSyncsResponse,
   CompactGetSyncResponse,
   CompactCancelSyncResponse,
+  CompactGetTranslationContextResponse,
   CompactCreateKeysResponse,
   CompactUpdateKeysResponse,
   CompactSetTranslationsResponse,
@@ -109,6 +111,7 @@ import type {
  * - getSyncs - Returns CompactGetSyncsResponse
  * - getSync - Returns CompactGetSyncResponse
  * - cancelSync - Returns CompactCancelSyncResponse
+ * - getTranslationContext - Returns CompactGetTranslationContextResponse
  *
  * **Verbose Endpoints (unchanged):**
  * - listProjects, getAllTranslations, publishTranslations
@@ -157,6 +160,11 @@ export interface MCPClient {
   };
   cancelSync: {
     mutate: (input: CancelSyncInput) => Promise<CompactCancelSyncResponse>;
+  };
+  getTranslationContext: {
+    query: (
+      input: GetTranslationContextInput,
+    ) => Promise<CompactGetTranslationContextResponse>;
   };
   getPendingChanges: {
     query: (

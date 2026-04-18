@@ -504,6 +504,43 @@ export const getSyncInput = z.object({
 export type GetSyncInput = z.input<typeof getSyncInput>;
 
 /**
+ * Input schema for getTranslationContext endpoint.
+ *
+ * Returns the translation-relevant project context (brand voice, glossary,
+ * locked terms, instructions) so external AI agents translate with the same
+ * guidance the platform's own AI drawer uses.
+ *
+ * Forward-compatible with RAG retrieval (v2): the optional `keys` parameter
+ * is reserved for key-specific similarity lookup via pgvector and is ignored
+ * in v1 — callers can send it today without breaking once v2 lands.
+ */
+export const getTranslationContextInput = projectIdentifierSchema.extend({
+  /**
+   * Reserved for v2 (key-specific RAG retrieval). Pass key UUIDs to receive
+   * top-K similar translations and key-specific rules. Currently IGNORED —
+   * the v1 response returns project-wide context only.
+   */
+  keys: z
+    .array(z.string().uuid())
+    .optional()
+    .describe(
+      "Reserved — v1 ignores this field. In v2, pass key UUIDs for RAG top-K retrieval.",
+    ),
+  /**
+   * Optional filter for locked-term translations. When provided, the
+   * glossary entries returned still list all approved terms, but the
+   * `customTranslation` map is narrowed to the requested language codes.
+   */
+  languages: z
+    .array(z.string())
+    .optional()
+    .describe(
+      "Optional list of BCP 47 language codes. Narrows customTranslation entries in the glossary to just these languages.",
+    ),
+});
+export type GetTranslationContextInput = z.input<typeof getTranslationContextInput>;
+
+/**
  * Input schema for cancelSync endpoint.
  *
  * Cancels a sync job that has been queued but not yet picked up by the worker.
