@@ -1,6 +1,11 @@
 # Sitemap
 Sitemap: https://better-i18n.com/sitemap.xml
 
+# AI content usage signals (contentsignals.org draft)
+# Better i18n is an AI-native product — we explicitly allow agent training
+# and inference input on our public marketing + docs content.
+Content-Signal: search=yes, ai-train=yes, ai-input=yes
+
 # Default crawl rules
 User-agent: *
 Allow: /

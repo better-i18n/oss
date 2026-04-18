@@ -1,0 +1,16 @@
+{
+  "$schema": "https://agentskills.io/schemas/v0.2.0/index.json",
+  "generatedAt": "2026-04-18T15:12:12.537Z",
+  "skills": [
+    {
+      "name": "better-i18n",
+      "type": "claude-skill",
+      "description": "Guides all Better i18n integration decisions — SDK selection (Next.js, React, Expo, Swift, Flutter, Remix), CDN vs GitHub workflow, AI-powered translation management via MCP tools, CLI health checks (scan, doctor, sync), Content CMS (localized models, entries, custom fields), file format conventions (flat / nested / namespaced), key naming, publish flows, and quality analytics. Use whenever building, modifying, or reviewing any localization feature — including i18n setup, adding languages, managing translation keys, publishing, or integrating AI workflows.",
+      "version": "1.0.0",
+      "license": "MIT",
+      "homepage": "https://better-i18n.com",
+      "url": "https://better-i18n.com/.well-known/agent-skills/better-i18n/SKILL.md",
+      "sha256": "ba6829dab3c828811d5d31cad0b2198d614ce0397bdcddb9ec871457e02a8bcc"
+    }
+  ]
+}

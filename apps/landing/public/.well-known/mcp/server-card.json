@@ -1,0 +1,67 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/server-card.json",
+  "serverInfo": {
+    "name": "better-i18n",
+    "version": "1.0.0",
+    "vendor": "Better i18n",
+    "homepage": "https://better-i18n.com",
+    "documentation": "https://docs.better-i18n.com/mcp"
+  },
+  "description": "AI-native localization infrastructure — translations (TMS) and headless content (CMS) exposed as MCP tools. Agents can scan source code, propose translations, publish languages, and manage CMS entries without leaving the conversation.",
+  "servers": [
+    {
+      "name": "better-i18n",
+      "description": "Translation management — list keys, propose translations, publish languages, review pending changes. Project scope: listKeys, createKeys, updateKeys, getTranslations, proposeLanguages, publishTranslations.",
+      "package": "@better-i18n/mcp",
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "@better-i18n/mcp"],
+        "env": {
+          "BETTER_I18N_API_KEY": "<your api key>",
+          "BETTER_I18N_PROJECT": "<org/project>"
+        }
+      },
+      "auth": {
+        "type": "api-key",
+        "headerName": "X-API-Key",
+        "provisionUrl": "https://dash.better-i18n.com/settings/api-keys"
+      },
+      "capabilities": {
+        "tools": true,
+        "resources": false,
+        "prompts": false
+      }
+    },
+    {
+      "name": "better-i18n-content",
+      "description": "Headless CMS — manage localized content models and entries. Create/update/publish entries across languages with custom fields (text, media, rich-text, relations).",
+      "package": "@better-i18n/mcp-content",
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "@better-i18n/mcp-content"],
+        "env": {
+          "BETTER_I18N_CONTENT_API_KEY": "<your api key>",
+          "BETTER_I18N_PROJECT": "<org/project>"
+        }
+      },
+      "auth": {
+        "type": "api-key",
+        "headerName": "X-API-Key",
+        "provisionUrl": "https://dash.better-i18n.com/settings/api-keys"
+      },
+      "capabilities": {
+        "tools": true,
+        "resources": true,
+        "prompts": false
+      }
+    }
+  ],
+  "links": {
+    "apiCatalog": "https://better-i18n.com/.well-known/api-catalog",
+    "agentSkills": "https://better-i18n.com/.well-known/agent-skills/index.json",
+    "llmsTxt": "https://better-i18n.com/llms.txt",
+    "oauthDiscovery": "https://dash.better-i18n.com/.well-known/openid-configuration"
+  }
+}
