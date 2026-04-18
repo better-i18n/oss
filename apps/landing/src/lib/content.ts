@@ -62,7 +62,10 @@ export function getContentClient(): ContentClient {
       throw new Error("BETTER_I18N_CONTENT_API_KEY is not configured");
     if (!project) throw new Error("BETTER_I18N_PROJECT is not configured");
 
-    _client = createClient({ project, apiKey, debug: true });
+    // SDK debug logs fire once per request — during SSG/prerender that's
+    // thousands of lines and bloats memory. Enable only in dev server.
+    const debug = import.meta.env.DEV === true;
+    _client = createClient({ project, apiKey, debug });
   }
   return _client;
 }
