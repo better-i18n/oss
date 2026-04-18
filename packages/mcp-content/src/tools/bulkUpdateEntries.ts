@@ -33,13 +33,13 @@ const inputSchema = projectSchema.extend({
     customFields: customFieldsSchema,
     translations: z.record(z.string(), translationValue).optional(),
     status: z.enum(["draft", "published", "archived"]).optional(),
-  })).min(1).max(20),
+  })).min(1).max(200),
 });
 
 export const bulkUpdateEntries: Tool = {
   definition: {
     name: "bulkUpdateEntries",
-    description: `Update multiple content entries in a single call (max 20).
+    description: `Update multiple content entries in a single call (max 200 per call). Partial success — response includes a 'failed' array; retry only those.
 
 ALWAYS prefer this over calling updateContentEntry multiple times.
 Rule: if you need to update 2 or more entries → use this tool, not a loop of updateContentEntry calls.
@@ -91,7 +91,7 @@ EXAMPLE (batch-translate to Turkish):
         ...projectInputProperty,
         entries: {
           type: "array",
-          description: "Entries to update (max 20)",
+          description: "Entries to update (max 200). Partial success — response includes a 'failed' array.",
           items: {
             type: "object",
             properties: {
