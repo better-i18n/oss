@@ -143,7 +143,20 @@ const SECURITY_HEADERS: ReadonlyArray<readonly [string, string]> = [
   ["Permissions-Policy", "camera=(), microphone=(), geolocation=()"],
   [
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; img-src 'self' https://og.better-i18n.com https://cdn.better-i18n.com data: https:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://cdn.better-i18n.com https://www.google-analytics.com https://*.better-i18n.com; frame-src https://www.googletagmanager.com;",
+    [
+      "default-src 'self'",
+      // script-src: GA/GTM for analytics, CF beacon for RUM, helpway widget
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai",
+      // script-src-elem mirrors script-src because some browsers fall back
+      // to script-src when elem isn't set — modern browsers like Chrome 125+
+      // require elem to be explicit or they block every <script> element.
+      "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai",
+      "img-src 'self' https://og.better-i18n.com https://cdn.better-i18n.com https://api.helpway.ai data: https:",
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self' data:",
+      "connect-src 'self' https://cdn.better-i18n.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai https://*.better-i18n.com",
+      "frame-src https://www.googletagmanager.com https://api.helpway.ai",
+    ].join("; "),
   ],
 ] as const;
 
@@ -235,13 +248,14 @@ export default {
     // Static files: serve directly from ASSETS, never fall through to SSR.
     // This prevents locale-redirect logic from catching paths like /favicon.png.
     if (STATIC_FILE_RE.test(url.pathname)) {
-      try {
-        const assetResponse = await env.ASSETS.fetch(request);
-        if (assetResponse.ok) return assetResponse;
-      } catch {
-        // ASSETS.fetch failure — fall through to 404
-      }
-      return new Response("Not found", { status: 404 });
+      // Return ASSETS response verbatim (including 304/404/etc). The previous
+      // `if (assetResponse.ok)` guard was too strict: browsers send conditional
+      // requests that legitimately come back as 304 Not Modified, and treating
+      // those as failures and returning our own 404 broke all cached CSS/JS/
+      // image/font loads — the site layout disintegrated because stylesheet
+      // revalidation hits produced HTML 404 bodies instead of the real
+      // "not modified" signal. Trust the asset server's own status.
+      return env.ASSETS.fetch(request);
     }
 
     // Inject CF country code as a header so SSR can detect locale from geo
