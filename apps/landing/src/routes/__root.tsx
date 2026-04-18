@@ -214,10 +214,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       links: [
         { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
         { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
-        { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png", media: "(prefers-color-scheme: light)" },
-        { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png", media: "(prefers-color-scheme: light)" },
-        { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32-dark.png", media: "(prefers-color-scheme: dark)" },
-        { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16-dark.png", media: "(prefers-color-scheme: dark)" },
+        // Always serve the dark-scheme PNG set. The prefers-color-scheme
+        // split was previously serving a dark glyph on a transparent
+        // background in light mode, which some browsers render as an empty
+        // square against matching tab chrome (Safari private, some strict
+        // tab themes). The dark-scheme variant is a light glyph that
+        // stays visible on every tab background regardless of theme.
+        { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32-dark.png" },
+        { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16-dark.png" },
         { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
         { rel: "manifest", href: "/site.webmanifest" },
         // TODO: restore dns-prefetch for og.better-i18n.com when OG service is live
