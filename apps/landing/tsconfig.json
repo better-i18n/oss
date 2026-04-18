@@ -1,11 +1,11 @@
 {
-  "include": ["src/**/*.ts", "src/**/*.tsx", "*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "*.ts", "scripts/**/*.ts"],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",

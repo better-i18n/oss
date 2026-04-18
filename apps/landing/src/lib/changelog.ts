@@ -40,7 +40,8 @@ export function getChangelogClient(): ContentClient {
     if (!apiKey) throw new Error("BETTER_I18N_CONTENT_API_KEY is not configured");
     if (!project) throw new Error("BETTER_I18N_PROJECT is not configured");
 
-    _changelogClient = createClient({ project, apiKey, debug: true });
+    const debug = import.meta.env.DEV === true;
+    _changelogClient = createClient({ project, apiKey, debug });
   }
   return _changelogClient;
 }
