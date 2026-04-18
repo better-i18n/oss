@@ -510,32 +510,50 @@ export type GetSyncInput = z.input<typeof getSyncInput>;
  * locked terms, instructions) so external AI agents translate with the same
  * guidance the platform's own AI drawer uses.
  *
- * Forward-compatible with RAG retrieval (v2): the optional `keys` parameter
- * is reserved for key-specific similarity lookup via pgvector and is ignored
- * in v1 — callers can send it today without breaking once v2 lands.
+ * Pass `keys` to enable v2 RAG retrieval — each key receives its own top-K
+ * similar passages (past approved translations, glossary, preferences,
+ * instructions, content) via pgvector cosine similarity. Omit `keys` for
+ * the v1 project-wide snapshot only.
  */
 export const getTranslationContextInput = projectIdentifierSchema.extend({
   /**
-   * Reserved for v2 (key-specific RAG retrieval). Pass key UUIDs to receive
-   * top-K similar translations and key-specific rules. Currently IGNORED —
-   * the v1 response returns project-wide context only.
+   * Optional — when provided, triggers v2 per-key RAG retrieval. Each key
+   * UUID receives its own top-K similar passages in `keySpecificRules`.
+   * Max 50 keys per call to keep latency predictable. Omit for project-wide
+   * context only.
    */
   keys: z
     .array(z.string().uuid())
+    .max(50)
     .optional()
     .describe(
-      "Reserved — v1 ignores this field. In v2, pass key UUIDs for RAG top-K retrieval.",
+      "Optional — key UUIDs (max 50) for per-key RAG retrieval. Omit for project-wide context only.",
+    ),
+  /**
+   * Top-K results per key for RAG retrieval. Only meaningful when `keys`
+   * is provided. Default 5 — each key returns up to 5 most-similar passages.
+   */
+  kPerKey: z
+    .number()
+    .int()
+    .min(1)
+    .max(20)
+    .default(5)
+    .describe(
+      "Top-K similar passages per key (1-20, default 5). Only used when `keys` is provided.",
     ),
   /**
    * Optional filter for locked-term translations. When provided, the
    * glossary entries returned still list all approved terms, but the
    * `customTranslation` map is narrowed to the requested language codes.
+   * Also scopes RAG retrieval so language-specific embeddings match only
+   * these target languages (language-agnostic entries remain included).
    */
   languages: z
     .array(z.string())
     .optional()
     .describe(
-      "Optional list of BCP 47 language codes. Narrows customTranslation entries in the glossary to just these languages.",
+      "Optional BCP 47 language codes. Narrows glossary customTranslation entries and RAG retrieval to these languages.",
     ),
 });
 export type GetTranslationContextInput = z.input<typeof getTranslationContextInput>;
