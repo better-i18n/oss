@@ -458,8 +458,16 @@ export type SyncJobType =
 
 /**
  * Sync job status.
+ *
+ * Terminal states (no longer processed by worker): completed, failed, cancelled.
+ * Non-terminal states (visible to worker): pending, in_progress.
  */
-export type SyncJobStatus = "pending" | "in_progress" | "completed" | "failed";
+export type SyncJobStatus =
+  | "pending"
+  | "in_progress"
+  | "completed"
+  | "failed"
+  | "cancelled";
 
 /**
  * User who triggered the sync job.
@@ -544,6 +552,30 @@ export interface GetSyncResponse {
   /** Affected keys */
   affectedKeys: AffectedKey[];
   /** Contextual hint for AI (e.g., failure recovery, polling guidance) */
+  hint?: string;
+}
+
+/**
+ * Response from cancelSync endpoint.
+ *
+ * Semantics:
+ * - Only `pending` jobs can be cancelled. Jobs already picked up by the worker
+ *   (`in_progress`) or in a terminal state (`completed`/`failed`/`cancelled`)
+ *   return `cancelled: false` with a `reason` explaining why.
+ * - No CDN/GitHub rollback is performed — cancelling only prevents the job
+ *   from starting. Partial deploys (if any) are NOT reverted; the next publish
+ *   produces a consistent state.
+ */
+export interface CancelSyncResponse {
+  /** Sync job ID that was targeted */
+  syncId: string;
+  /** Whether the cancellation actually changed state (false = no-op) */
+  cancelled: boolean;
+  /** Status the job had BEFORE the cancel attempt */
+  previousStatus: SyncJobStatus;
+  /** Reason explaining the outcome (always present, useful for both success and no-op cases) */
+  reason: string;
+  /** Contextual hint for AI (e.g., next-step guidance after a no-op) */
   hint?: string;
 }
 

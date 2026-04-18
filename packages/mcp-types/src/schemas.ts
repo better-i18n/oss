@@ -459,7 +459,7 @@ export const getSyncsInput = projectIdentifierSchema.extend({
     .describe("Number of sync jobs to return"),
   /** Filter by sync status */
   status: z
-    .enum(["pending", "in_progress", "completed", "failed"])
+    .enum(["pending", "in_progress", "completed", "failed", "cancelled"])
     .optional()
     .describe("Filter syncs by status"),
   /** Filter by job type */
@@ -480,6 +480,20 @@ export const getSyncInput = z.object({
   syncId: z.string().describe("The sync job ID to retrieve details for"),
 });
 export type GetSyncInput = z.input<typeof getSyncInput>;
+
+/**
+ * Input schema for cancelSync endpoint.
+ *
+ * Cancels a sync job that has been queued but not yet picked up by the worker.
+ * Scoped by org + project to prevent cross-project cancellation via a leaked ID.
+ */
+export const cancelSyncInput = projectIdentifierSchema.extend({
+  /** Sync job ID to cancel (from publishTranslations or getSyncs) */
+  syncId: z
+    .string()
+    .describe("The sync job ID to cancel (returned by publishTranslations)"),
+});
+export type CancelSyncInput = z.input<typeof cancelSyncInput>;
 
 // ============================================================================
 // Publish Endpoint Schemas

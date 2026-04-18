@@ -22,6 +22,7 @@ import { createKeys } from "./tools/createKeys.js";
 import { deleteKeys } from "./tools/deleteKeys.js";
 import { getPendingChanges } from "./tools/getPendingChanges.js";
 import { getProject } from "./tools/getProject.js";
+import { cancelSync } from "./tools/cancelSync.js";
 import { getSync } from "./tools/getSync.js";
 import { getSyncs } from "./tools/getSyncs.js";
 import { getTranslations } from "./tools/getTranslations.js";
@@ -102,7 +103,11 @@ For translation batches in particular: prefer **setTranslations** over **updateK
 
 ## Finding untranslated content
 
-Use getPendingChanges to inspect unpublished edits before calling publishTranslations. Published translations reach the CDN immediately.`,
+Use getPendingChanges to inspect unpublished edits before calling publishTranslations. Published translations reach the CDN immediately.
+
+## Recovering from a wrong publish
+
+If publishTranslations was called with wrong data, call **cancelSync(syncId)** as early as possible — only jobs still in status="pending" can be cancelled. Once the worker has picked the job up (status="in_progress") or it has reached a terminal state, cancelSync returns can=false and the agent should compensate with a corrective publish instead of trying to abort.`,
     },
   );
 
@@ -156,6 +161,7 @@ Use getPendingChanges to inspect unpublished edits before calling publishTransla
       annotate(publishTranslations.definition, write),
       annotate(getSyncs.definition, readOnly),
       annotate(getSync.definition, readOnly),
+      annotate(cancelSync.definition, write),
     ],
   }));
 
@@ -208,6 +214,9 @@ Use getPendingChanges to inspect unpublished edits before calling publishTransla
           break;
         case "getSync":
           result = await getSync.execute(apiClient, args);
+          break;
+        case "cancelSync":
+          result = await cancelSync.execute(apiClient, args);
           break;
         default:
           throw new Error(`Unknown tool: ${name}`);

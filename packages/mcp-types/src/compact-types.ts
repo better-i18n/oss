@@ -541,6 +541,29 @@ export interface CompactGetSyncResponse {
   hint?: string;
 }
 
+/**
+ * Compact response from cancelSync endpoint.
+ *
+ * Field Mappings:
+ * - id: syncId (unchanged - already short)
+ * - can: cancelled
+ * - prev: previousStatus
+ * - rsn: reason
+ * - hint: hint (unchanged - already useful)
+ */
+export interface CompactCancelSyncResponse {
+  /** Sync job ID that was targeted */
+  id: string;
+  /** Whether the cancellation actually changed state */
+  can: boolean;
+  /** Status the job had BEFORE the cancel attempt */
+  prev: SyncJobStatus;
+  /** Reason explaining the outcome */
+  rsn: string;
+  /** Contextual hint for AI */
+  hint?: string;
+}
+
 // ============================================================================
 // Compact Write Response Types (createKeys, updateKeys, deleteKeys)
 // ============================================================================
