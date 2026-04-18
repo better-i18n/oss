@@ -31,13 +31,13 @@ const inputSchema = projectSchema.extend({
     status: z.enum(["draft", "published"]).default("draft"),
     customFields: customFieldsSchema,
     translations: z.record(z.string(), translationValue).optional(),
-  })).min(1).max(20),
+  })).min(1).max(200),
 });
 
 export const bulkCreateEntries: Tool = {
   definition: {
     name: "bulkCreateEntries",
-    description: `Create multiple content entries in a single model at once (max 20).
+    description: `Create multiple content entries in a single model at once (max 200 per call). Partial success — response includes a 'failed' array; retry only those.
 
 ALWAYS prefer this over calling createContentEntry multiple times.
 Rule: if you need to create 2 or more entries → use this tool, not a loop of createContentEntry calls.
@@ -92,7 +92,7 @@ EXAMPLE (multi-language — all translations in one call):
         },
         entries: {
           type: "array",
-          description: "Entries to create (max 20)",
+          description: "Entries to create (max 200). Partial success — response includes a 'failed' array.",
           items: {
             type: "object",
             properties: {

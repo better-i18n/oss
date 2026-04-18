@@ -15,14 +15,14 @@ import {
 import type { Tool } from "../types/index.js";
 
 const inputSchema = projectSchema.extend({
-  entryIds: z.array(z.string().uuid()).min(1).max(50),
+  entryIds: z.array(z.string().uuid()).min(1).max(500),
 });
 
 export const bulkPublishEntries: Tool = {
   definition: {
     name: "bulkPublishEntries",
     description:
-      "Publish multiple content entries at once (status change only — NOT a CDN deploy). ALWAYS prefer this over calling publishContentEntry multiple times. Rule: publishing 2+ entries → use this tool, not a loop (max 50 entries per call). Typical workflow after bulkCreateEntries: collect the returned entry IDs → bulkPublishEntries to make them live. Partial success is possible — response reports published count and any failures. CDN delivery is managed separately.",
+      "Publish multiple content entries at once (status change only — NOT a CDN deploy). ALWAYS prefer this over calling publishContentEntry multiple times. Rule: publishing 2+ entries → use this tool, not a loop (max 500 entries per call). Typical workflow after bulkCreateEntries: collect the returned entry IDs → bulkPublishEntries to make them live. Partial success is possible — response reports published count and any failures. CDN delivery is managed separately.",
     inputSchema: {
       type: "object",
       properties: {
@@ -30,7 +30,7 @@ export const bulkPublishEntries: Tool = {
         entryIds: {
           type: "array",
           items: { type: "string" },
-          description: "Entry UUIDs to publish (max 50)",
+          description: "Entry UUIDs to publish (max 500). Partial success — response includes a 'failed' array; retry only those.",
         },
       },
       required: ["project", "entryIds"],

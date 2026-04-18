@@ -124,7 +124,7 @@ Never use language= when you want to find content that needs translating — alw
 
 ### Typical batch-translate workflow
 1. listContentEntries({ missingLanguage: "X" })  — find untranslated entries
-2. bulkUpdateEntries with translations map        — update all at once (max 20 per call)
+2. bulkUpdateEntries with translations map        — update all at once (max 200 per call; 'failed' array reports partial fails, retry only those)
 3. bulkPublishEntries                             — publish if needed
 
 ### Character encoding (UTF-8) — CRITICAL

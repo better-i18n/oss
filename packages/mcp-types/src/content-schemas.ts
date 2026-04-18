@@ -546,8 +546,10 @@ export const bulkPublishEntriesInput = projectIdentifierSchema.extend({
   entryIds: z
     .array(z.string().uuid())
     .min(1)
-    .max(50)
-    .describe("Entry UUIDs to publish (max 50)"),
+    .max(500)
+    .describe(
+      "Entry UUIDs to publish (max 500). Partial success: response includes a 'failed' array — retry only those.",
+    ),
 });
 export type BulkPublishEntriesInput = z.input<typeof bulkPublishEntriesInput>;
 
@@ -583,8 +585,10 @@ export const bulkUpdateEntriesInput = projectIdentifierSchema.extend({
       }),
     )
     .min(1)
-    .max(20)
-    .describe("Entries to update (max 20). Use listContentEntries({ missingLanguage: 'X' }) to find entries needing translation."),
+    .max(200)
+    .describe(
+      "Entries to update (max 200). Partial success: response includes a 'failed' array — retry only those. Use listContentEntries({ missingLanguage: 'X' }) to find entries needing translation.",
+    ),
 });
 export type BulkUpdateEntriesInput = z.input<typeof bulkUpdateEntriesInput>;
 
@@ -608,8 +612,10 @@ export const bulkCreateEntriesInput = projectIdentifierSchema.extend({
       }),
     )
     .min(1)
-    .max(20)
-    .describe("Entries to create (max 20)"),
+    .max(200)
+    .describe(
+      "Entries to create (max 200). Partial success: response includes a 'failed' array — retry only those.",
+    ),
 });
 export type BulkCreateEntriesInput = z.input<typeof bulkCreateEntriesInput>;
 
