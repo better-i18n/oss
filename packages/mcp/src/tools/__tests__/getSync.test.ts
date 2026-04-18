@@ -30,6 +30,47 @@ describe("getSync", () => {
     expect(queryFn).toHaveBeenCalledWith({ syncId: "sync-123" });
   });
 
+  it("forwards waitMs when provided (blocking wait opt-in)", async () => {
+    const queryFn = vi.fn().mockResolvedValue(mockSyncData);
+    const client = createMockClient({ mcp: { getSync: { query: queryFn } } });
+
+    await getSync.execute(client, { syncId: "sync-123", waitMs: 15000 });
+
+    expect(queryFn).toHaveBeenCalledWith({
+      syncId: "sync-123",
+      waitMs: 15000,
+    });
+  });
+
+  it("omits waitMs when not provided (instant snapshot — backward-compat)", async () => {
+    const queryFn = vi.fn().mockResolvedValue(mockSyncData);
+    const client = createMockClient({ mcp: { getSync: { query: queryFn } } });
+
+    await getSync.execute(client, { syncId: "sync-123" });
+
+    const call = queryFn.mock.calls[0][0];
+    expect(call).toEqual({ syncId: "sync-123" });
+    expect(call).not.toHaveProperty("waitMs");
+  });
+
+  it("rejects waitMs beyond the 25000ms safety cap", async () => {
+    const client = createMockClient();
+    const result = await getSync.execute(client, {
+      syncId: "sync-123",
+      waitMs: 30000,
+    });
+    expect(isErrorResult(result)).toBe(true);
+  });
+
+  it("accepts waitMs=0 as explicit opt-out (equivalent to omit on server)", async () => {
+    const queryFn = vi.fn().mockResolvedValue(mockSyncData);
+    const client = createMockClient({ mcp: { getSync: { query: queryFn } } });
+
+    await getSync.execute(client, { syncId: "sync-123", waitMs: 0 });
+
+    expect(queryFn).toHaveBeenCalledWith({ syncId: "sync-123", waitMs: 0 });
+  });
+
   it("returns API response as success", async () => {
     const queryFn = vi.fn().mockResolvedValue(mockSyncData);
     const client = createMockClient({ mcp: { getSync: { query: queryFn } } });
