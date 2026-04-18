@@ -11,7 +11,8 @@ const NO_CACHE_PREFIXES = ["/api/"];
  * If not found in ASSETS, return 404 immediately — never let TanStack's
  * locale-redirect logic catch these paths (e.g. /favicon.png → /tr/favicon.png).
  */
-const STATIC_FILE_RE = /\.(?:png|ico|svg|webp|jpg|jpeg|gif|webmanifest|txt|xml|woff2?|ttf|otf|map|json|md)$/i;
+const STATIC_FILE_RE =
+  /\.(?:png|ico|svg|webp|jpg|jpeg|gif|webmanifest|txt|xml|woff2?|ttf|otf|map|json|md|js|mjs|css|avif)$/i;
 
 /**
  * Agent-discovery endpoints under /.well-known/ that have NO file extension.
