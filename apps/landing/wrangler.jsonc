@@ -9,7 +9,22 @@
     "directory": "dist/client",
     "binding": "ASSETS",
     "not_found_handling": "none",
-    "run_worker_first": true
+    // Path-based worker-first routing. HTML + agent discovery endpoints
+    // flow through the worker so we can inject SECURITY_HEADERS, the Link
+    // header, Markdown negotiation and the extension-less /.well-known/*
+    // aliases. Bundled Vite assets, fonts, logo webp sets, comment avatars
+    // and other hashed static files bypass the worker entirely — they're
+    // served directly by Cloudflare's asset server for sub-millisecond edge
+    // delivery. This restores pre-rollout page-load performance while
+    // keeping the agent-ready surface intact. Negation (`!/pattern`) is
+    // documented at https://developers.cloudflare.com/workers/static-assets/binding/#run_worker_first
+    "run_worker_first": [
+      "/*",
+      "!/assets/*",
+      "!/fonts/*",
+      "!/brand/*",
+      "!/comments/*"
+    ]
   },
   "observability": {
     "logs": {
