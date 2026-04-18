@@ -34,6 +34,8 @@ export const updateKeys: Tool = {
     name: "updateKeys",
     description: `Update translations for existing keys. UUID required — do NOT use createKeys for existing keys.
 
+For bulk translation writes (multiple languages per key, or many keys at once), prefer setTranslations — same result with ~55-65% smaller payload. Use updateKeys only for source-text edits (s=true), status changes (st), or single-language edits.
+
 WORKFLOW to add missing translations:
 1. listKeys({ missingLanguage: 'hr', fields: ['id'] }) → get UUIDs
 2. updateKeys({ t: [{ id: '<uuid>', l: 'hr', t: '<translation>' }] })
