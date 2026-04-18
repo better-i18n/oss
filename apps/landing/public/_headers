@@ -1,0 +1,30 @@
+# Cloudflare Workers Static Assets honours this file (same syntax as Pages).
+# Single source of truth for security headers, Link discovery hints, and
+# CORS rules across every response — direct-asset, worker-proxied, or
+# SSR-rendered. Keeping it as a build-time artifact instead of runtime code
+# mirrors how we ship CMS content: static, reviewable, cache-friendly.
+#
+# Rules:
+#   * Each block starts with a path glob (first column).
+#   * Headers beneath a block apply when the path matches.
+#   * More specific blocks override less specific ones for the same header.
+
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai; script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai; img-src 'self' https://*.better-i18n.com https://api.helpway.ai data: https:; style-src 'self' 'unsafe-inline'; font-src 'self' https://*.better-i18n.com data:; media-src 'self' https://*.better-i18n.com; connect-src 'self' https://*.better-i18n.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai wss://api.helpway.ai; frame-src https://www.googletagmanager.com https://api.helpway.ai
+  Link: </.well-known/api-catalog>; rel="api-catalog", </.well-known/mcp/server-card.json>; rel="mcp-server-card", </.well-known/agent-skills/index.json>; rel="agent-skills", </llms.txt>; rel="alternate"; type="text/plain", <https://docs.better-i18n.com>; rel="service-doc"
+
+# Agent-discovery endpoints — open CORS so any origin (and any crawler) can
+# read them, short edge cache so updates propagate quickly after a deploy.
+/.well-known/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300
+
+# API catalog is a linkset — override the generic application/json default
+# so RFC 9727 consumers see the expected Content-Type.
+/.well-known/api-catalog.json
+  Content-Type: application/linkset+json
