@@ -307,19 +307,14 @@ export default {
 
     const response = await tanstack.fetch(ssrRequest, env, ctx);
 
-    // Try serving pre-compressed Brotli for HTML pages
-    const brResponse = await tryServeBrotli(request, response, env);
-
-    const finalBody = brResponse ? brResponse.body : response.body;
+    // NOTE: the legacy `tryServeBrotli` pre-compressed shortcut was removed
+    // after enabling `run_worker_first: true`. With worker-first routing CF
+    // Assets already negotiates compression on the response coming back from
+    // `tanstack.fetch`, and manually swapping in `.html.br` bodies on top of
+    // that produced Content-Encoding mismatches that rendered pages as raw
+    // binary. We now let CF's built-in brotli/zstd handle compression.
+    const finalBody = response.body;
     const newHeaders = new Headers(response.headers);
-
-    if (brResponse) {
-      newHeaders.set("Content-Encoding", "br");
-      newHeaders.set("Content-Type", "text/html; charset=utf-8");
-      newHeaders.delete("Content-Length");
-      // Vary on Accept-Encoding so caches store both versions
-      newHeaders.set("Vary", "Accept-Encoding");
-    }
 
     // Apply security headers
     for (const [key, value] of SECURITY_HEADERS) {
