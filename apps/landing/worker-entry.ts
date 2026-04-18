@@ -133,55 +133,6 @@ interface Env {
   [key: string]: unknown;
 }
 
-/**
- * Try to serve a pre-compressed Brotli version of the HTML response.
- *
- * Pre-compressed .html.br files are generated at build time with Brotli
- * quality 11 (~20-30% smaller than Cloudflare's default edge compression).
- * This function checks if:
- *   1. The response is HTML
- *   2. The client accepts Brotli encoding
- *   3. A .br asset exists for the resolved path
- *
- * Returns the compressed response if all conditions are met, or null to
- * signal the caller should use the original response.
- */
-async function tryServeBrotli(
-  request: Request,
-  response: Response,
-  env: Env,
-): Promise<Response | null> {
-  // Only compress HTML responses
-  const contentType = response.headers.get("Content-Type") || "";
-  if (!contentType.includes("text/html")) return null;
-
-  // Only if client accepts Brotli
-  const acceptEncoding = request.headers.get("Accept-Encoding") || "";
-  if (!acceptEncoding.includes("br")) return null;
-
-  // Only for successful GET responses
-  if (request.method !== "GET" || response.status !== 200) return null;
-
-  // Build the .br asset URL: /en/page/ → /en/page/index.html.br
-  const url = new URL(request.url);
-  const brPaths = url.pathname.endsWith("/")
-    ? [`${url.pathname}index.html.br`]
-    : [`${url.pathname}/index.html.br`, `${url.pathname}.br`];
-
-  try {
-    for (const brPath of brPaths) {
-      const brResponse = await env.ASSETS.fetch(
-        new Request(`${url.origin}${brPath}`, { method: "GET" }),
-      );
-      if (brResponse.ok) return brResponse;
-    }
-    return null;
-  } catch {
-    // ASSETS.fetch failure — fall back silently
-    return null;
-  }
-}
-
 /** Security headers applied to every response. */
 const SECURITY_HEADERS: ReadonlyArray<readonly [string, string]> = [
   ["Strict-Transport-Security", "max-age=31536000; includeSubDomains"],
