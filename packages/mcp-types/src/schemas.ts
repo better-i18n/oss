@@ -321,6 +321,65 @@ export type UpdateKeysOutput = z.infer<typeof updateKeysInput>;
 export type UpdateKeysInput = z.input<typeof updateKeysInput>;
 
 /**
+ * Compact setTranslations item — one key, multiple target-language translations.
+ *
+ * Shape optimized for the dominant agent pattern:
+ * "AI produces translations for N languages, writes them back in one call."
+ *
+ * Fields:
+ * - id: translation key UUID (REQUIRED)
+ * - t: map of { languageCode: translationText } — target languages only
+ *
+ * Notes:
+ * - Language codes are lowercased (BCP 47: "zh-Hans" → "zh-hans")
+ * - Unlisted languages are untouched (merge semantics)
+ * - Source language submissions are ignored — use updateKeys with s=true to edit source text
+ * - Empty string is stored as empty translation (NOT a delete — use UI/deleteKeys to remove)
+ */
+const compactSetTranslationsItem = z.object({
+  /** Translation key UUID — from listKeys or getTranslations id field */
+  id: z
+    .string()
+    .uuid()
+    .describe(
+      "Translation key UUID (required). Get from listKeys or getAllTranslations id field.",
+    ),
+  /** Target translations as { languageCode: text } — lowercased on input */
+  t: z
+    .record(
+      z.string().transform((v) => v.toLowerCase()),
+      z.string(),
+    )
+    .describe(
+      "Map of { languageCode: translationText }. Target languages only. Source language entries are ignored — use updateKeys for source text edits.",
+    ),
+});
+
+/**
+ * Input schema for setTranslations endpoint.
+ *
+ * Narrow-purpose write: upsert target translations for existing keys, in bulk,
+ * with a minimal payload shape (≈55-65% smaller than updateKeys for N-language batches).
+ *
+ * Merge semantics at language level:
+ *   existing { tr, de }  +  setTranslations({ tr, fr })  →  { tr (overwritten), de (unchanged), fr (inserted) }
+ *
+ * Guardrails:
+ * - id must be a UUID — unknown UUIDs are reported in notFound[], NEVER silent-create
+ * - No source-text edits, no status changes, no soft-delete — keep those in updateKeys/deleteKeys
+ */
+export const setTranslationsInput = projectIdentifierSchema.extend({
+  /** Array of per-key translation batches */
+  t: z
+    .preprocess(coerceJsonArray, z.array(compactSetTranslationsItem).min(1).max(500))
+    .describe(
+      "Array of per-key translation batches. Each item: { id, t: { lang: text, ... } }. Max 500 keys per call.",
+    ),
+});
+export type SetTranslationsOutput = z.infer<typeof setTranslationsInput>;
+export type SetTranslationsInput = z.input<typeof setTranslationsInput>;
+
+/**
  * Input schema for deleteKeys endpoint.
  * Soft-deletes translation keys by UUID.
  */

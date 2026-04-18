@@ -309,6 +309,48 @@ export interface UpdateKeysResponse {
 }
 
 /**
+ * A successful per-key result from setTranslations.
+ */
+export interface SetTranslationsResultItem {
+  /** Key UUID */
+  keyId: string;
+  /** Key name (for display in UI / activity logs) */
+  key: string;
+  /** Languages written for this key (lowercased) */
+  updatedLanguages: string[];
+}
+
+/**
+ * A key that could not be found during setTranslations (id-based only).
+ */
+export interface SetTranslationsNotFoundItem {
+  /** Key UUID that was not found */
+  id: string;
+  /** Languages that were requested for this key */
+  languages: string[];
+}
+
+/**
+ * Response from setTranslations endpoint.
+ */
+export interface SetTranslationsResponse {
+  /** Operation success — false only when ALL submitted keys were not found */
+  success: boolean;
+  /** Number of keys for which at least one translation was written */
+  keysUpdated: number;
+  /** Total number of (key × language) translation rows written */
+  translationsWritten: number;
+  /** Per-key summary of successful writes */
+  updates: SetTranslationsResultItem[];
+  /** Keys that were not found (partial-fail reporting) */
+  notFound?: SetTranslationsNotFoundItem[];
+  /** Pending publish hint — reminds AI to call publish */
+  pendingPublish?: PendingPublishHint;
+  /** Contextual hint for AI when result is ambiguous */
+  hint?: string;
+}
+
+/**
  * Marked key info from deleteKeys endpoint.
  */
 export interface MarkedKeyInfo {
