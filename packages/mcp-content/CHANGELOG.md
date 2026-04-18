@@ -1,5 +1,15 @@
 # @better-i18n/mcp-content
 
+## 0.9.0
+
+### Minor Changes
+
+- 6efce5e: Raise bulk content entry caps to unblock large agent batches: `bulkUpdateEntries` 20→200, `bulkCreateEntries` 20→200, `bulkPublishEntries` 50→500. Previous caps forced AI agents into many round trips for naturally one-shot workloads (e.g. "translate all 200 blog posts to Turkish"), costing tokens, latency, and breaking single-call partial-failure semantics. Partial failure reporting via `failed[]` is unchanged and now covers a wider slice of real workloads in one call.
+
+### Patch Changes
+
+- d5f2beb: Add UTF-8 character encoding guardrail to MCP server instructions. Some AI agents (Codex observed in the wild) transliterate non-ASCII characters to ASCII (e.g., "öğretmen" → "ogretmen") during JSON string serialization, silently corrupting translations. Both MCP servers now prominently instruct agents to send non-ASCII characters as-is or use Unicode escape sequences, and mark transliteration as a client-side bug to fix. Also adds server-level instructions to `@better-i18n/mcp` (previously had none), including the phantom-keys incident guardrail (always `listKeys` before `createKeys`).
+
 ## 0.8.6
 
 ### Patch Changes
