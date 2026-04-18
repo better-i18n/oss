@@ -541,6 +541,99 @@ export interface CompactGetSyncResponse {
   hint?: string;
 }
 
+// ============================================================================
+// Compact Translation Context Types
+// ============================================================================
+
+/**
+ * Compact glossary term.
+ *
+ * Field Mappings:
+ * - t: term
+ * - tp: type
+ * - d: description
+ * - mnt: mustNotTranslate (boolean; omitted when false)
+ * - tr: customTranslation map
+ */
+export interface CompactTranslationContextGlossaryTerm {
+  /** Source-language term */
+  t: string;
+  /** Term classification */
+  tp: string;
+  /** Description — may be truncated to ~120 chars for token efficiency */
+  d: string;
+  /** Must-not-translate flag (optional; omitted when false) */
+  mnt?: boolean;
+  /** Locked translations: { [langCode]: text } */
+  tr: Record<string, string>;
+}
+
+/**
+ * Compact tone preferences.
+ *
+ * Field Mappings:
+ * - f: formality
+ * - e: emotionalTone
+ * - tl: technicalLevel
+ * - p: pacing
+ * - v: voiceCharacteristics
+ */
+export interface CompactTranslationContextTone {
+  f?: string;
+  e?: string;
+  tl?: string;
+  p?: string;
+  v?: string[];
+}
+
+/**
+ * Compact project context.
+ *
+ * Field Mappings:
+ * - d: description
+ * - aud: targetAudience
+ * - cat: productCategory
+ * - tone: tone
+ */
+export interface CompactTranslationContextProject {
+  d?: string;
+  aud?: string;
+  cat?: string;
+  tone?: CompactTranslationContextTone;
+}
+
+/**
+ * Compact response from getTranslationContext endpoint.
+ *
+ * Field Mappings:
+ * - prj: project
+ * - src: sourceLanguage
+ * - tgt: targetLanguages
+ * - inst: instructions
+ * - ctx: context
+ * - gl: glossary
+ * - glt: glossaryTotal
+ * - hint: hint (unchanged — already useful)
+ */
+export interface CompactGetTranslationContextResponse {
+  /** Project slug */
+  prj: string;
+  /** Source language code */
+  src: string;
+  /** Active target language codes */
+  tgt: string[];
+  /** Owner-configured system prompt (null when unset) */
+  inst: string | null;
+  /** Brand / tone context (null when unset) */
+  ctx: CompactTranslationContextProject | null;
+  /** Approved glossary terms */
+  gl: CompactTranslationContextGlossaryTerm[];
+  /** Total approved terms available */
+  glt: number;
+  /** Contextual hint for AI */
+  hint?: string;
+}
+
 /**
  * Compact response from cancelSync endpoint.
  *

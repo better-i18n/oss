@@ -555,6 +555,82 @@ export interface GetSyncResponse {
   hint?: string;
 }
 
+// ============================================================================
+// Translation Context Types
+// ============================================================================
+
+/**
+ * A single glossary term returned by getTranslationContext.
+ */
+export interface TranslationContextGlossaryTerm {
+  /** Source-language term (e.g., "dashboard", "Checkout") */
+  term: string;
+  /** Term classification: brand | product | technical | terminology */
+  type: string;
+  /** What this term means — used by the model to disambiguate */
+  description: string;
+  /** If true, the term must never be translated (e.g., brand names) */
+  mustNotTranslate: boolean;
+  /**
+   * Locked translations per language: { [languageCode]: translationText }.
+   * Narrowed by the `languages` input when supplied.
+   */
+  customTranslation: Record<string, string>;
+}
+
+/**
+ * Tone / voice preferences extracted from aiContext.
+ */
+export interface TranslationContextTone {
+  formality?: string;
+  emotionalTone?: string;
+  technicalLevel?: string;
+  pacing?: string;
+  voiceCharacteristics?: string[];
+}
+
+/**
+ * Project-wide context the model should respect when translating.
+ */
+export interface TranslationContextProject {
+  /** What the product is / does (from Analyze Website or manual setup) */
+  description?: string;
+  /** Who the product targets */
+  targetAudience?: string;
+  /** Product category (e.g., "SaaS", "Fintech") */
+  productCategory?: string;
+  /** Tone preferences (see TranslationContextTone) */
+  tone?: TranslationContextTone;
+}
+
+/**
+ * Response from getTranslationContext endpoint.
+ *
+ * v1 returns project-wide context only — glossary, instructions, tone.
+ * v2 will add `keySpecificRules` via pgvector RAG when `keys` is provided.
+ */
+export interface GetTranslationContextResponse {
+  /** Project identifier (slug) */
+  project: string;
+  /** Source language code (BCP 47, lowercase — e.g., "en") */
+  sourceLanguage: string;
+  /** Active target language codes (BCP 47, lowercase) */
+  targetLanguages: string[];
+  /**
+   * Free-form system prompt the project owner configured (may be null).
+   * The model should treat this as high-priority instructions.
+   */
+  instructions: string | null;
+  /** Brand / product / tone context (may be null if not configured yet) */
+  context: TranslationContextProject | null;
+  /** Approved glossary terms (ordered by term, typically capped at 30) */
+  glossary: TranslationContextGlossaryTerm[];
+  /** Total number of approved glossary terms available for this project */
+  glossaryTotal: number;
+  /** Hint for the agent (e.g., "no context configured — run Analyze Website") */
+  hint?: string;
+}
+
 /**
  * Response from cancelSync endpoint.
  *

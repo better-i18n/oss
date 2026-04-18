@@ -25,6 +25,7 @@ import { getProject } from "./tools/getProject.js";
 import { cancelSync } from "./tools/cancelSync.js";
 import { getSync } from "./tools/getSync.js";
 import { getSyncs } from "./tools/getSyncs.js";
+import { getTranslationContext } from "./tools/getTranslationContext.js";
 import { getTranslations } from "./tools/getTranslations.js";
 import { listKeys } from "./tools/listKeys.js";
 import { listProjects } from "./tools/listProjects.js";
@@ -101,6 +102,10 @@ Three tools can write translation data. Pick the narrowest one for the task:
 
 For translation batches in particular: prefer **setTranslations** over **updateKeys**. Both require UUIDs from listKeys / getAllTranslations.
 
+## Translating with project context
+
+Before translating non-trivial content, call **getTranslationContext({ project })** ONCE and inject the result into your system prompt. You get the owner-configured instructions, brand voice / tone, and the approved glossary — including locked translations and must-not-translate terms. Treat gl[].mnt === true as a hard rule: never translate those terms. When gl[].tr[lang] is present, prefer the locked translation over free translation. Cache the response in-process; it rarely changes within a session.
+
 ## Finding untranslated content
 
 Use getPendingChanges to inspect unpublished edits before calling publishTranslations. Published translations reach the CDN immediately.
@@ -162,6 +167,7 @@ If publishTranslations was called with wrong data, call **cancelSync(syncId)** a
       annotate(getSyncs.definition, readOnly),
       annotate(getSync.definition, readOnly),
       annotate(cancelSync.definition, write),
+      annotate(getTranslationContext.definition, readOnly),
     ],
   }));
 
@@ -217,6 +223,9 @@ If publishTranslations was called with wrong data, call **cancelSync(syncId)** a
           break;
         case "cancelSync":
           result = await cancelSync.execute(apiClient, args);
+          break;
+        case "getTranslationContext":
+          result = await getTranslationContext.execute(apiClient, args);
           break;
         default:
           throw new Error(`Unknown tool: ${name}`);
