@@ -474,10 +474,32 @@ export type GetSyncsInput = z.input<typeof getSyncsInput>;
 /**
  * Input schema for getSync endpoint.
  * Get detailed information about a specific sync operation.
+ *
+ * Supports optional server-side blocking wait (waitMs) that turns the N-roundtrip
+ * polling pattern into a single call for publishes that finish within the window.
  */
 export const getSyncInput = z.object({
   /** Sync job ID */
   syncId: z.string().describe("The sync job ID to retrieve details for"),
+  /**
+   * Optional server-side blocking wait in milliseconds. When supplied, the
+   * endpoint polls the job every ~2s and returns as soon as the job reaches a
+   * terminal state (completed / failed / cancelled). If the timeout elapses
+   * first, returns the latest snapshot. Omit or set 0 for the original
+   * non-blocking snapshot behavior.
+   *
+   * Upper bound 25000ms — keeps a safety margin under the 30s CF Worker
+   * wall-time cap (HTTP overhead + final DB read).
+   */
+  waitMs: z
+    .number()
+    .int()
+    .min(0)
+    .max(25000)
+    .optional()
+    .describe(
+      "Max milliseconds to wait server-side for a terminal state (0-25000). Omit for an instant snapshot.",
+    ),
 });
 export type GetSyncInput = z.input<typeof getSyncInput>;
 
