@@ -112,6 +112,53 @@ interface Env {
   [key: string]: unknown;
 }
 
+/**
+ * Headers applied to worker-returned SSR HTML responses.
+ *
+ * `public/_headers` covers every path served by Cloudflare Assets directly,
+ * including env.ASSETS.fetch() pass-throughs. But Cloudflare does NOT merge
+ * the _headers file onto responses constructed inside the worker — once
+ * tanstack.fetch() returns a new Response, the edge treats it as
+ * Worker-generated and sends it unchanged. Mirror the _headers security
+ * + discovery payload here so HTML pages (/en/, /tr/blog/..., etc.) get the
+ * same policy the static surface already has.
+ *
+ * Keep this list in sync with public/_headers — both files should describe
+ * the same security posture. If they drift, the scanner will start reporting
+ * missing headers on HTML URLs.
+ */
+const HTML_RESPONSE_HEADERS: ReadonlyArray<readonly [string, string]> = [
+  ["Strict-Transport-Security", "max-age=31536000; includeSubDomains"],
+  ["X-Content-Type-Options", "nosniff"],
+  ["X-Frame-Options", "SAMEORIGIN"],
+  ["Referrer-Policy", "strict-origin-when-cross-origin"],
+  ["Permissions-Policy", "camera=(), microphone=(), geolocation=()"],
+  [
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai",
+      "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai",
+      "img-src 'self' https://*.better-i18n.com https://api.helpway.ai data: https:",
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self' https://*.better-i18n.com data:",
+      "media-src 'self' https://*.better-i18n.com",
+      "connect-src 'self' https://*.better-i18n.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai wss://api.helpway.ai",
+      "frame-src https://www.googletagmanager.com https://api.helpway.ai",
+    ].join("; "),
+  ],
+  [
+    "Link",
+    [
+      '</.well-known/api-catalog>; rel="api-catalog"',
+      '</.well-known/mcp/server-card.json>; rel="mcp-server-card"',
+      '</.well-known/agent-skills/index.json>; rel="agent-skills"',
+      '</llms.txt>; rel="alternate"; type="text/plain"',
+      '<https://docs.better-i18n.com>; rel="service-doc"',
+    ].join(", "),
+  ],
+] as const;
+
 export default {
   async fetch(
     request: Request,
@@ -201,6 +248,25 @@ export default {
       });
     }
 
-    return tanstack.fetch(ssrRequest, env, ctx);
+    const response = await tanstack.fetch(ssrRequest, env, ctx);
+
+    // Apply HTML_RESPONSE_HEADERS only when the response looks like an HTML
+    // page — we don't want to layer CSP/Link onto JSON/image fallbacks that
+    // tanstack might occasionally return for edge cases.
+    const ct = response.headers.get("Content-Type") || "";
+    if (!ct.includes("text/html")) return response;
+
+    const h = new Headers(response.headers);
+    for (const [k, v] of HTML_RESPONSE_HEADERS) h.set(k, v);
+    // Short edge cache + stale-while-revalidate so published content reflows
+    // across locales within a few minutes without blowing up on origin.
+    if (!h.has("Cache-Control") && request.method === "GET" && response.status < 400) {
+      h.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=3600");
+    }
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: h,
+    });
   },
 };
