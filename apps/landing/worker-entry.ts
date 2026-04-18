@@ -145,16 +145,20 @@ const SECURITY_HEADERS: ReadonlyArray<readonly [string, string]> = [
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      // script-src: GA/GTM for analytics, CF beacon for RUM, helpway widget
+      // script-src: GA/GTM for analytics, CF beacon for RUM, helpway widget.
       "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai",
-      // script-src-elem mirrors script-src because some browsers fall back
-      // to script-src when elem isn't set — modern browsers like Chrome 125+
-      // require elem to be explicit or they block every <script> element.
+      // script-src-elem mirrors script-src because Chrome 125+ requires the
+      // elem directive to be explicit — when only script-src is set it now
+      // blocks every <script> element.
       "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai",
-      "img-src 'self' https://og.better-i18n.com https://cdn.better-i18n.com https://api.helpway.ai data: https:",
+      // *.better-i18n.com covers cdn, s3 (R2 assets: flags, avatars, content
+      // media), og, docs, dash — adding every subdomain individually would
+      // drift quickly, so we use the zone-wide wildcard.
+      "img-src 'self' https://*.better-i18n.com https://api.helpway.ai data: https:",
       "style-src 'self' 'unsafe-inline'",
-      "font-src 'self' data:",
-      "connect-src 'self' https://cdn.better-i18n.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai https://*.better-i18n.com",
+      "font-src 'self' https://*.better-i18n.com data:",
+      "media-src 'self' https://*.better-i18n.com",
+      "connect-src 'self' https://*.better-i18n.com https://www.google-analytics.com https://static.cloudflareinsights.com https://api.helpway.ai",
       "frame-src https://www.googletagmanager.com https://api.helpway.ai",
     ].join("; "),
   ],
