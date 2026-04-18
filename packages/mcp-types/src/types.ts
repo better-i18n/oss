@@ -604,10 +604,47 @@ export interface TranslationContextProject {
 }
 
 /**
+ * A single piece of RAG-retrieved context for one translation key.
+ */
+export interface TranslationContextSimilarItem {
+  /**
+   * Source of the retrieved passage:
+   * - "translation" — an approved past translation pair
+   * - "glossary"    — a glossary term definition
+   * - "preference"  — a user correction to a past AI suggestion
+   * - "instruction" — a project-level AI instruction snippet
+   * - "content"     — a CMS content entry
+   */
+  type: "translation" | "glossary" | "preference" | "instruction" | "content";
+  /** The retrieved text — use verbatim for terminology consistency */
+  content: string;
+  /** Cosine similarity score in [0, 1]. Higher = more relevant */
+  score: number;
+  /** Language code (null for language-agnostic entries like instructions) */
+  language: string | null;
+}
+
+/**
+ * Per-key RAG retrieval results for v2.
+ *
+ * Returned only when the caller passes `keys` to getTranslationContext and
+ * the project has embeddings. Attribution is preserved: each input key
+ * receives its own top-K ranked by cosine similarity over pgvector.
+ */
+export interface TranslationContextKeyRule {
+  /** Original key UUID from the input */
+  keyId: string;
+  /** Key name (e.g., "auth.login.title") — included for agent debugging */
+  key: string;
+  /** Top-K similar passages from projectEmbedding, ordered by relevance */
+  similar: TranslationContextSimilarItem[];
+}
+
+/**
  * Response from getTranslationContext endpoint.
  *
  * v1 returns project-wide context only — glossary, instructions, tone.
- * v2 will add `keySpecificRules` via pgvector RAG when `keys` is provided.
+ * v2 adds `keySpecificRules` via pgvector RAG when `keys` is provided.
  */
 export interface GetTranslationContextResponse {
   /** Project identifier (slug) */
@@ -627,6 +664,12 @@ export interface GetTranslationContextResponse {
   glossary: TranslationContextGlossaryTerm[];
   /** Total number of approved glossary terms available for this project */
   glossaryTotal: number;
+  /**
+   * v2: per-key RAG retrieval results. Present only when the caller passes
+   * `keys`, embeddings exist for the project, and the embedding service is
+   * available. Omitted (undefined) in v1-mode calls.
+   */
+  keySpecificRules?: TranslationContextKeyRule[];
   /** Hint for the agent (e.g., "no context configured — run Analyze Website") */
   hint?: string;
 }

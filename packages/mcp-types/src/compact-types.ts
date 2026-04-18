@@ -603,6 +603,43 @@ export interface CompactTranslationContextProject {
 }
 
 /**
+ * Compact RAG-retrieved context item (v2).
+ *
+ * Field Mappings:
+ * - tp: type
+ * - c: content
+ * - s: score
+ * - l: language
+ */
+export interface CompactTranslationContextSimilarItem {
+  /** Source type: translation | glossary | preference | instruction | content */
+  tp: string;
+  /** Retrieved text (may be truncated to ~200 chars for token efficiency) */
+  c: string;
+  /** Cosine similarity score in [0, 1] */
+  s: number;
+  /** Language code (null for language-agnostic entries) */
+  l: string | null;
+}
+
+/**
+ * Compact per-key RAG retrieval (v2).
+ *
+ * Field Mappings:
+ * - id: keyId
+ * - k: key
+ * - sim: similar
+ */
+export interface CompactTranslationContextKeyRule {
+  /** Key UUID from the input */
+  id: string;
+  /** Key name (for agent debugging) */
+  k: string;
+  /** Top-K similar passages */
+  sim: CompactTranslationContextSimilarItem[];
+}
+
+/**
  * Compact response from getTranslationContext endpoint.
  *
  * Field Mappings:
@@ -613,6 +650,7 @@ export interface CompactTranslationContextProject {
  * - ctx: context
  * - gl: glossary
  * - glt: glossaryTotal
+ * - rules: keySpecificRules (v2, optional)
  * - hint: hint (unchanged — already useful)
  */
 export interface CompactGetTranslationContextResponse {
@@ -630,6 +668,8 @@ export interface CompactGetTranslationContextResponse {
   gl: CompactTranslationContextGlossaryTerm[];
   /** Total approved terms available */
   glt: number;
+  /** v2: per-key RAG retrieval (omitted when keys not provided / no embeddings) */
+  rules?: CompactTranslationContextKeyRule[];
   /** Contextual hint for AI */
   hint?: string;
 }

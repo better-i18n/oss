@@ -106,6 +106,8 @@ For translation batches in particular: prefer **setTranslations** over **updateK
 
 Before translating non-trivial content, call **getTranslationContext({ project })** ONCE and inject the result into your system prompt. You get the owner-configured instructions, brand voice / tone, and the approved glossary — including locked translations and must-not-translate terms. Treat gl[].mnt === true as a hard rule: never translate those terms. When gl[].tr[lang] is present, prefer the locked translation over free translation. Cache the response in-process; it rarely changes within a session.
 
+For a sharper signal, pass **keys: string[]** (UUIDs from listKeys, max 50) alongside the call. You get back rules[] — per-key pgvector RAG retrieval of the most similar past translations, glossary hits, preferences, and instructions for THIS project. Use rules[i].sim[] entries (scored 0-1) as the authoritative source for terminology consistency: if a past translation for a similar key was "Panel" (score 0.91), reuse that term rather than inventing a new one.
+
 ## Finding untranslated content
 
 Use getPendingChanges to inspect unpublished edits before calling publishTranslations. Published translations reach the CDN immediately.
