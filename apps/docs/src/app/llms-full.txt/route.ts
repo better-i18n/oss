@@ -4,9 +4,10 @@ import { generateVersionHeader } from '@/lib/get-versions';
 export const revalidate = false;
 
 export async function GET() {
-  const versionHeader = generateVersionHeader();
-  const scan = source.getPages().map(getLLMText);
-  const scanned = await Promise.all(scan);
+  const [versionHeader, scanned] = await Promise.all([
+    generateVersionHeader(),
+    Promise.all(source.getPages().map(getLLMText)),
+  ]);
 
   return new Response(versionHeader + scanned.join('\n\n'));
 }

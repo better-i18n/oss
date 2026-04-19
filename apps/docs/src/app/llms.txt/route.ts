@@ -93,7 +93,7 @@ function renderTree(nodes: PageTreeNode[], isTopLevel = false): string {
 }
 
 export async function GET() {
-  const versionHeader = generateVersionHeader();
+  const versionHeader = await generateVersionHeader();
   const tree = source.getPageTree();
 
   const intro = `# Better i18n
