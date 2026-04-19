@@ -1,10 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-interface PackageVersions {
+export interface PackageVersions {
   next: string;
   useIntl: string;
   expo: string;
+  remix: string;
+  server: string;
   cli: string;
   mcp: string;
   mcpContent: string;
@@ -31,6 +33,8 @@ export function getPackageVersions(): PackageVersions {
     next: readVersion('next'),
     useIntl: readVersion('use-intl'),
     expo: readVersion('expo'),
+    remix: readVersion('remix'),
+    server: readVersion('server'),
     cli: readVersion('cli'),
     mcp: readVersion('mcp'),
     mcpContent: readVersion('mcp-content'),
@@ -53,6 +57,8 @@ Use these exact versions when installing packages:
 | @better-i18n/next | ${versions.next} | npm install @better-i18n/next@${versions.next} |
 | @better-i18n/use-intl | ${versions.useIntl} | npm install @better-i18n/use-intl@${versions.useIntl} |
 | @better-i18n/expo | ${versions.expo} | npm install @better-i18n/expo@${versions.expo} |
+| @better-i18n/remix | ${versions.remix} | npm install @better-i18n/remix@${versions.remix} |
+| @better-i18n/server | ${versions.server} | npm install @better-i18n/server@${versions.server} |
 | @better-i18n/cli | ${versions.cli} | npx @better-i18n/cli@${versions.cli} |
 | @better-i18n/mcp | ${versions.mcp} | npx @better-i18n/mcp@${versions.mcp} |
 | @better-i18n/mcp-content | ${versions.mcpContent} | npx @better-i18n/mcp-content@${versions.mcpContent} |
