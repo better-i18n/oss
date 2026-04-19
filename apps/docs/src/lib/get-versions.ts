@@ -14,39 +14,86 @@ export interface PackageVersions {
   core: string;
 }
 
-// Module-level cache - versions only read once per process
+// Source of truth hierarchy:
+//   1. npm registry — what `npm install` can actually resolve (ground truth for users)
+//   2. monorepo package.json — fallback when npm is unreachable at build time
+//
+// Why this order: a changeset can bump package.json locally before CI publishes to
+// npm (or if publish silently fails). Serving the pre-publish version to AI prompts
+// produces copy-paste `npm install` commands that 404 for users.
+
+const NPM_PACKAGE_NAMES: Record<keyof PackageVersions, string> = {
+  next: '@better-i18n/next',
+  useIntl: '@better-i18n/use-intl',
+  expo: '@better-i18n/expo',
+  remix: '@better-i18n/remix',
+  server: '@better-i18n/server',
+  cli: '@better-i18n/cli',
+  mcp: '@better-i18n/mcp',
+  mcpContent: '@better-i18n/mcp-content',
+  sdk: '@better-i18n/sdk',
+  core: '@better-i18n/core',
+};
+
+// Local monorepo directory name (fallback only)
+const LOCAL_DIRS: Record<keyof PackageVersions, string> = {
+  next: 'next',
+  useIntl: 'use-intl',
+  expo: 'expo',
+  remix: 'remix',
+  server: 'server',
+  cli: 'cli',
+  mcp: 'mcp',
+  mcpContent: 'mcp-content',
+  sdk: 'sdk',
+  core: 'core',
+};
+
 let cachedVersions: PackageVersions | null = null;
 
-export function getPackageVersions(): PackageVersions {
+async function fetchNpmLatest(pkg: string): Promise<string | null> {
+  try {
+    const res = await fetch(`https://registry.npmjs.org/${pkg}/latest`, {
+      headers: { Accept: 'application/json' },
+      // Build-time only — no runtime cache concerns
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { version?: string };
+    return body.version ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function readLocalVersion(dir: string): string {
+  const packagesDir = resolve(process.cwd(), '../../packages');
+  const pkgJson = JSON.parse(
+    readFileSync(resolve(packagesDir, dir, 'package.json'), 'utf-8'),
+  );
+  return pkgJson.version;
+}
+
+async function resolveOne(key: keyof PackageVersions): Promise<string> {
+  const npmVersion = await fetchNpmLatest(NPM_PACKAGE_NAMES[key]);
+  if (npmVersion) return npmVersion;
+  return readLocalVersion(LOCAL_DIRS[key]);
+}
+
+export async function getPackageVersions(): Promise<PackageVersions> {
   if (cachedVersions) return cachedVersions;
 
-  const packagesDir = resolve(process.cwd(), '../../packages');
+  const keys = Object.keys(NPM_PACKAGE_NAMES) as (keyof PackageVersions)[];
+  const resolved = await Promise.all(keys.map((k) => resolveOne(k)));
 
-  const readVersion = (pkg: string) => {
-    const pkgJson = JSON.parse(
-      readFileSync(resolve(packagesDir, pkg, 'package.json'), 'utf-8')
-    );
-    return pkgJson.version;
-  };
-
-  cachedVersions = {
-    next: readVersion('next'),
-    useIntl: readVersion('use-intl'),
-    expo: readVersion('expo'),
-    remix: readVersion('remix'),
-    server: readVersion('server'),
-    cli: readVersion('cli'),
-    mcp: readVersion('mcp'),
-    mcpContent: readVersion('mcp-content'),
-    sdk: readVersion('sdk'),
-    core: readVersion('core'),
-  };
+  cachedVersions = Object.fromEntries(
+    keys.map((k, i) => [k, resolved[i]]),
+  ) as unknown as PackageVersions;
 
   return cachedVersions;
 }
 
-export function generateVersionHeader(): string {
-  const versions = getPackageVersions();
+export async function generateVersionHeader(): Promise<string> {
+  const versions = await getPackageVersions();
 
   return `# Better i18n Package Versions
 
