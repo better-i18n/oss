@@ -1,0 +1,33 @@
+version: 2
+updates:
+  - package-ecosystem: "bun"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
+    ignore:
+      - dependency-name: "@better-i18n/*"
+
+  - package-ecosystem: "bun"
+    directory: "/apps/landing"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "@better-i18n/*"
+
+  - package-ecosystem: "bun"
+    directory: "/apps/docs"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 3
+    ignore:
+      - dependency-name: "@better-i18n/*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
