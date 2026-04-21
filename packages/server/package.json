@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "@better-i18n/core": "workspace:*",
-    "use-intl": ">=4.0.0"
+    "use-intl": ">=4.9.1"
   },
   "peerDependencies": {
     "hono": ">=4.0.0"
