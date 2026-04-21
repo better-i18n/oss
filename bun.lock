@@ -153,7 +153,7 @@
         "@better-i18n/use-intl": "workspace:*",
         "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.90",
         "@radix-ui/react-hover-card": "^1.1.15",
-        "@remotion/player": "^4.0.409",
+        "@remotion/player": "^4.0.450",
         "@tailwindcss/vite": "^4.1.18",
         "@tanstack/react-devtools": "^0.7.0",
         "@tanstack/react-query": "^5.90.20",
@@ -1488,7 +1488,7 @@
 
     "@remix-run/node-fetch-server": ["@remix-run/node-fetch-server@0.9.0", "", {}, "sha512-SoLMv7dbH+njWzXnOY6fI08dFMI5+/dQ+vY3n8RnnbdG7MdJEgiP28Xj/xWlnRnED/aB6SFw56Zop+LbmaaKqA=="],
 
-    "@remotion/player": ["@remotion/player@4.0.443", "", { "dependencies": { "remotion": "4.0.443" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-R7dftiGaIHXMXG7HwHjuvpV63NgLlPRzDtM/RrMWSYj3yLZdqDhjCFvbNIhPoydekCj1D1yVyBt0Uk8pdeMGiA=="],
+    "@remotion/player": ["@remotion/player@4.0.450", "", { "dependencies": { "remotion": "4.0.449" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-DDKgHfKVWzo29r2gMwODHSsRanfp1NexsmSaSK72qvISEvs77CYgt07LZezNObTkG4GeHZc1Svv4VYaZ8R+Q+A=="],
 
     "@resvg/resvg-wasm": ["@resvg/resvg-wasm@2.4.0", "", {}, "sha512-C7c51Nn4yTxXFKvgh2txJFNweaVcfUPQxwEUFw4aWsCmfiBDJsTSwviIF8EcwjQ6k8bPyMWCl1vw4BdxE569Cg=="],
 
@@ -4066,7 +4066,7 @@
 
     "remark-stringify": ["remark-stringify@11.0.0", "", { "dependencies": { "@types/mdast": "^4.0.0", "mdast-util-to-markdown": "^2.0.0", "unified": "^11.0.0" } }, "sha512-1OSmLd3awB/t8qdoEOMazZkNsfVTeY4fTsgzcQFdXNq8ToTN4ZGwrMnlda4K6smTFKD+GRV6O48i6Z4iKgPPpw=="],
 
-    "remotion": ["remotion@4.0.443", "", { "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-zfqqhy4TN148lT2Rf6Xl6iYLnnCdh4WNpZM+iZ1aTe9vbMNY1Wb3FAcQNN2hnUi2hfPdD8zOpwdt9/KDRZEN9A=="],
+    "remotion": ["remotion@4.0.449", "", { "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-8M2PO5rDm0sJ4CnkjVMJFbz504WPlRg8Q/eU4ND6/nubBXAHVB8LwpehukZ/3tXuDF2Wd7pneL2E137EJjxSrg=="],
 
     "require-directory": ["require-directory@2.1.1", "", {}, "sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q=="],
 
