@@ -32,7 +32,7 @@
     "@react-native-async-storage/async-storage": "2.1.2",
     "i18next": "^24.0.0",
     "intl-pluralrules": "^2.0.1",
-    "react": "19.1.0",
+    "react": "19.2.5",
     "react-i18next": "^15.4.1",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",

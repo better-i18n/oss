@@ -9,7 +9,7 @@
   "dependencies": {
     "@better-i18n/use-intl": "workspace:^",
     "@better-i18n/vite": "workspace:^",
-    "react": "^19.0.0",
+    "react": "^19.2.5",
     "react-dom": "^19.0.0",
     "use-intl": "^4.7.0"
   },
