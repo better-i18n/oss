@@ -37,7 +37,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "remotion": "^4.0.409",
-    "tailwindcss": "^4.1.18",
+    "tailwindcss": "^4.2.4",
     "use-intl": "^4.7.0",
     "vite-tsconfig-paths": "^6.0.2",
     "workers-og": "^0.0.27"
