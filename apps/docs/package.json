@@ -31,7 +31,7 @@
     "@types/react-dom": "^19",
     "postcss": "^8.5.6",
     "serve": "^14.2.5",
-    "tailwindcss": "^4.1.18",
+    "tailwindcss": "^4.2.4",
     "typescript": "^5.9.3",
     "wrangler": "^4.46.0"
   }
