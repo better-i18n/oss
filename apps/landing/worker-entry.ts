@@ -44,6 +44,13 @@ const WELL_KNOWN_ALIASES = new Map<
       contentType: "application/linkset+json",
     },
   ],
+  [
+    "/.well-known/oauth-protected-resource",
+    {
+      path: "/.well-known/oauth-protected-resource.json",
+      contentType: "application/json",
+    },
+  ],
 ]);
 
 /**
