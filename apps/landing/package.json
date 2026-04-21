@@ -21,7 +21,7 @@
     "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.90",
     "@radix-ui/react-hover-card": "^1.1.15",
     "@remotion/player": "^4.0.409",
-    "@tailwindcss/vite": "^4.1.18",
+    "@tailwindcss/vite": "^4.2.4",
     "@tanstack/react-devtools": "^0.7.0",
     "@tanstack/react-query": "^5.90.20",
     "@tanstack/react-router": "~1.149.0",

@@ -32,7 +32,7 @@
     "@shopify/cli-hydrogen": "^11.1.0",
     "@shopify/hydrogen-codegen": "^0.3.3",
     "@shopify/mini-oxygen": "4.0.2",
-    "@tailwindcss/vite": "^4.1.0",
+    "@tailwindcss/vite": "^4.2.4",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "tailwindcss": "^4.1.0",
