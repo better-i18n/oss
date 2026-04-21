@@ -18,7 +18,7 @@
     "@better-i18n/sdk": "^3.3.0",
     "@better-i18n/ui": "^0.1.1",
     "@better-i18n/use-intl": "workspace:*",
-    "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.90",
+    "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.203",
     "@radix-ui/react-hover-card": "^1.1.15",
     "@remotion/player": "^4.0.409",
     "@tailwindcss/vite": "^4.1.18",
