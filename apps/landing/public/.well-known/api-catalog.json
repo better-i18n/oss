@@ -19,6 +19,10 @@
         {
           "href": "https://api.better-i18n.com/.well-known/oauth-protected-resource",
           "type": "application/json"
+        },
+        {
+          "href": "https://api.better-i18n.com/.well-known/oauth-authorization-server",
+          "type": "application/json"
         }
       ],
       "status": [
