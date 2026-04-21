@@ -115,7 +115,7 @@
       "dependencies": {
         "@better-i18n/remix": "workspace:*",
         "@better-i18n/sdk": "workspace:*",
-        "@shopify/hydrogen": "^2026.1.0",
+        "@shopify/hydrogen": "^2026.4.1",
         "@shopify/remix-oxygen": "^3.0.0",
         "graphql": "^16.10.0",
         "graphql-tag": "^2.12.6",
@@ -1586,11 +1586,11 @@
 
     "@shopify/graphql-codegen": ["@shopify/graphql-codegen@0.0.2", "", { "dependencies": { "@graphql-codegen/add": "^5.0.1", "@graphql-codegen/typescript": "^4.0.2", "@graphql-codegen/typescript-operations": "^4.1.0", "type-fest": "^4.5.0" }, "peerDependencies": { "graphql": "^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0" } }, "sha512-DScSpsQ+ucv6Y4cujXa5ye9r4lZ6Jl7S+90iyfxEgeTW6HVh/0b9PDcSCJ4T1EONc7kmvCx1dd83tTvCmc7X7A=="],
 
-    "@shopify/hydrogen": ["@shopify/hydrogen@2026.1.3", "", { "dependencies": { "@shopify/graphql-client": "1.4.1", "@shopify/hydrogen-react": "2026.1.2", "content-security-policy-builder": "^2.2.0", "flame-chart-js": "2.3.1", "isbot": "^5.1.21", "source-map-support": "^0.5.21", "type-fest": "^4.33.0", "use-resize-observer": "^9.1.0", "worktop": "^0.7.3" }, "peerDependencies": { "@react-router/dev": "7.12.0", "react": "^18.3.1 || ~19.0.3 || ~19.1.4 || ^19.2.3", "react-router": "7.12.0", "vite": "^5.1.0 || ^6.2.1" }, "optionalPeers": ["vite"] }, "sha512-h6J9SemK4SqOmsmlPW7GhC1bdeCJ7ghcRVIqOMJwFrGENhbOOWKhEKJ2cEjw/eEfKmnY0BYUbCmYNVRaDivGjw=="],
+    "@shopify/hydrogen": ["@shopify/hydrogen@2026.4.1", "", { "dependencies": { "@shopify/graphql-client": "1.4.1", "@shopify/hydrogen-react": "2026.4.1", "content-security-policy-builder": "^2.2.0", "flame-chart-js": "2.3.1", "isbot": "^5.1.21", "source-map-support": "^0.5.21", "type-fest": "^4.33.0", "use-resize-observer": "^9.1.0", "worktop": "^0.7.3" }, "peerDependencies": { "@react-router/dev": "^7.12.0", "react": "^18.3.1 || ~19.0.3 || ~19.1.4 || ^19.2.3", "react-router": "^7.12.0", "vite": "^5.1.0 || ^6.2.1" }, "optionalPeers": ["vite"] }, "sha512-x0Q8c1sLd2z3CQtSA9iONBktxY8mvNJqv8TOmhJa4kyK7vsMhpMohDDWV45Lyb1R70YaOzd9/i8hKb5xvuvgvw=="],
 
     "@shopify/hydrogen-codegen": ["@shopify/hydrogen-codegen@0.3.3", "", { "dependencies": { "@shopify/graphql-codegen": "^0.0.2" } }, "sha512-Kqtea44dALwjgd+O4bSskBj/zTJXwfAnkBU9jkBwMqcEGvoz0y3TCUcAxdBtJNI07vt6LTzmXmNU9dbql1HDzQ=="],
 
-    "@shopify/hydrogen-react": ["@shopify/hydrogen-react@2026.1.2", "", { "dependencies": { "@google/model-viewer": "^4.0.0", "@xstate/fsm": "2.0.0", "ast-v8-to-istanbul": "^0.3.11", "graphql": "^16.10.0", "type-fest": "^4.33.0", "worktop": "^0.7.3" }, "peerDependencies": { "react": "^18.3.1 || ~19.0.3 || ~19.1.4 || ^19.2.3", "react-dom": "^18.3.1 || ~19.0.3 || ~19.1.4 || ^19.2.3", "vite": "^5.1.0 || ^6.2.1" } }, "sha512-FV/D+5eK/cu51BAqVlqifhVjbf0VTg3J5Lr3lcwMghaFAY2WeQ37WMIDfeeg/zcr3/QiwENf1wxH160Vdi/YOQ=="],
+    "@shopify/hydrogen-react": ["@shopify/hydrogen-react@2026.4.1", "", { "dependencies": { "@google/model-viewer": "^4.0.0", "@xstate/fsm": "2.0.0", "ast-v8-to-istanbul": "^0.3.11", "graphql": "^16.10.0", "type-fest": "^4.33.0", "worktop": "^0.7.3" }, "peerDependencies": { "react": "^18.3.1 || ~19.0.3 || ~19.1.4 || ^19.2.3", "react-dom": "^18.3.1 || ~19.0.3 || ~19.1.4 || ^19.2.3", "vite": "^5.1.0 || ^6.2.1" } }, "sha512-ZOp+34yuDBGhtTLM21sjxm+bQNw8S59GfkLCuaGlmWBzv09lmNHLUWe+QOi44EvNqzrFExxnMeeXrEDXmc//3g=="],
 
     "@shopify/mini-oxygen": ["@shopify/mini-oxygen@4.0.2", "", { "dependencies": { "@mjackson/node-fetch-server": "^0.7.0", "body-parser": "1.20.4", "connect": "^3.7.0", "get-port": "^7.1.0", "miniflare": "3.20250310.1", "mrmime": "2.0.0", "source-map": "^0.7.4", "source-map-support": "^0.5.21", "stack-trace": "^1.0.0-pre2", "undici": "7.24.0", "ws": "^8.18.0" }, "peerDependencies": { "vite": "^6.2.1" }, "optionalPeers": ["vite"] }, "sha512-bdL0Gi4M+gj4RB2FcFG2r/UNpNAyoUjJYRpkUZTxKF49K19lrNDcS8AQ/Qg6AGk5WP/6cKfrtp7XRXW10OBz3A=="],
 
