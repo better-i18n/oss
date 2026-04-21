@@ -108,6 +108,16 @@ Before translating non-trivial content, call **getTranslationContext({ project }
 
 For a sharper signal, pass **keys: string[]** (UUIDs from listKeys, max 50) alongside the call. You get back rules[] — per-key pgvector RAG retrieval of the most similar past translations, glossary hits, preferences, and instructions for THIS project. Use rules[i].sim[] entries (scored 0-1) as the authoritative source for terminology consistency: if a past translation for a similar key was "Panel" (score 0.91), reuse that term rather than inventing a new one.
 
+## CDN file delivery modes
+
+getProject returns cdn.fs (fileStructure) and cdn.kf (keyFormat):
+- **single_file**: all keys in one file per locale at \`/{locale}/translations.json\`
+- **namespaced_folders**: one file per namespace at \`/{locale}/{namespace}.json\`
+- **flat**: dot-notation keys (\`"auth.login": "Sign in"\`)
+- **nested**: nested objects (\`{"auth": {"login": "Sign in"}}\`)
+
+Always check cdn.fs before constructing CDN URLs — do NOT assume namespace-based paths.
+
 ## Finding untranslated content
 
 Use getPendingChanges to inspect unpublished edits before calling publishTranslations. Published translations reach the CDN immediately.
