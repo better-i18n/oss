@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@better-i18n/server": "workspace:*",
-    "@hono/zod-openapi": "^0.19.4",
+    "@hono/zod-openapi": "^1.3.0",
     "@scalar/hono-api-reference": "^0.9.0",
     "hono": "^4.0.0",
     "use-intl": "^4.0.0",
