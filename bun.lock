@@ -71,7 +71,7 @@
         "@tanstack/router-plugin": "~1.149.0",
         "@tanstack/start-server-functions-server": "^1.131.2",
         "lucide-react": "^0.577.0",
-        "marked": "^15.0.0",
+        "marked": "^18.0.2",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "tailwindcss": "^4.1.18",
@@ -166,7 +166,7 @@
         "framer-motion": "^12.29.0",
         "html-react-parser": "^5.2.15",
         "lucide-react": "^0.561.0",
-        "marked": "^15.0.0",
+        "marked": "^18.0.2",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "remotion": "^4.0.409",
@@ -3446,7 +3446,7 @@
 
     "markdown-table": ["markdown-table@3.0.4", "", {}, "sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw=="],
 
-    "marked": ["marked@15.0.12", "", { "bin": { "marked": "bin/marked.js" } }, "sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA=="],
+    "marked": ["marked@18.0.2", "", { "bin": { "marked": "bin/marked.js" } }, "sha512-NsmlUYBS/Zg57rgDWMYdnre6OTj4e+qq/JS2ot3KrYLSoHLw+sDu0Nm1ZGpRgYAq6c+b1ekaY5NzVchMCQnzcg=="],
 
     "marked-highlight": ["marked-highlight@2.2.4", "", { "peerDependencies": { "marked": ">=4 <19" } }, "sha512-PZxisNMJDduSjc0q6uvjsnqqHCXc9s0eyzxDO9sB1eNGJnd/H1/Fu+z6g/liC1dfJdFW4SftMwMlLvsBhUPrqQ=="],
 
