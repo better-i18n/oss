@@ -27,6 +27,20 @@ const STATIC_FILE_RE =
   /\.(?:png|ico|svg|webp|jpg|jpeg|gif|webmanifest|txt|xml|woff2?|ttf|otf|map|json|md|js|mjs|css|avif)$/i;
 
 /**
+ * Well-known paths that live on a different issuer host (e.g. the OAuth
+ * authorization server is `dash.better-i18n.com`, not this marketing origin).
+ * RFC 8414 requires the discovery document to sit on the issuer's origin,
+ * so publishing a static copy here would fail strict validators — instead
+ * issue a permanent redirect so agents follow the pointer to the real doc.
+ */
+const WELL_KNOWN_REDIRECTS = new Map<string, string>([
+  [
+    "/.well-known/oauth-authorization-server",
+    "https://api.better-i18n.com/.well-known/oauth-authorization-server",
+  ],
+]);
+
+/**
  * Agent-discovery endpoints under /.well-known/ that have NO file extension.
  * These would otherwise fall through to TanStack Start and get caught by
  * locale-redirect (→ 307 /tr/.well-known/...). Map each extension-less public
@@ -160,6 +174,8 @@ const HTML_RESPONSE_HEADERS: ReadonlyArray<readonly [string, string]> = [
       '</.well-known/api-catalog>; rel="api-catalog"',
       '</.well-known/mcp/server-card.json>; rel="mcp-server-card"',
       '</.well-known/agent-skills/index.json>; rel="agent-skills"',
+      '</.well-known/oauth-protected-resource>; rel="oauth-protected-resource"',
+      '<https://api.better-i18n.com/.well-known/oauth-authorization-server>; rel="oauth-authorization-server"',
       '</llms.txt>; rel="alternate"; type="text/plain"',
       '<https://docs.better-i18n.com>; rel="service-doc"',
     ].join(", "),
@@ -214,7 +230,22 @@ export default {
       }
     }
 
-    // 3. Extension-less /.well-known/* endpoints — serve as aliased static
+    // 3a. Cross-origin /.well-known/* endpoints — 301 to the real issuer.
+    // RFC 8414 + RFC 9728 put discovery on the issuer's origin; we only act
+    // as a signpost from the marketing domain.
+    const redirectUrl = WELL_KNOWN_REDIRECTS.get(url.pathname);
+    if (redirectUrl) {
+      return new Response(null, {
+        status: 301,
+        headers: {
+          Location: redirectUrl,
+          "Cache-Control": "public, max-age=300",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
+    // 3b. Extension-less /.well-known/* endpoints — serve as aliased static
     // asset with the correct Content-Type. Must run BEFORE STATIC_FILE_RE
     // because these public URLs have no extension to match.
     const alias = WELL_KNOWN_ALIASES.get(url.pathname);
