@@ -38,7 +38,7 @@
     "esbuild": "^0.27.2",
     "react-grab": "^0.1.28",
     "react-scan": "^0.5.3",
-    "typescript": "^5.7.2",
+    "typescript": "^6.0.3",
     "vite": "~7.1.5",
     "vite-plugin-minify": "^2.1.0",
     "wrangler": "^4.62.0"
