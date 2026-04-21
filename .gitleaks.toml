@@ -1,0 +1,77 @@
+# Gitleaks configuration for Better i18n OSS repo (public).
+# Docs: https://github.com/gitleaks/gitleaks#configuration
+#
+# Extends the built-in default ruleset with project-specific rules for
+# Better i18n key formats, plus an allowlist for known-safe paths and patterns.
+
+[extend]
+useDefault = true
+
+# ─── Project-specific detection rules ────────────────────────────────────────
+
+[[rules]]
+id = "better-i18n-api-key"
+description = "Better i18n production API key"
+# API keys are prefixed `bi_` followed by 32-64 alphanumeric chars.
+regex = '''bi_[a-zA-Z0-9]{32,64}'''
+tags = ["key", "better-i18n"]
+[rules.allowlist]
+# Prefix-distinguished placeholders + public read-only keys:
+#   _example_ / _test_ / _seed_  → fixtures (never real keys)
+#   _pub_                         → public read-only keys (CDN read key,
+#                                   safe to embed inline like Stripe pk_live_)
+regexes = ['''bi_example_''', '''bi_test_''', '''bi_seed_''', '''bi_pub_''']
+
+[[rules]]
+id = "better-i18n-mcp-token"
+description = "Better i18n MCP OAuth token"
+regex = '''bi_mcp_[a-zA-Z0-9]{32,}'''
+tags = ["token", "mcp"]
+
+# ─── Disable noisy upstream rules ────────────────────────────────────────────
+# The upstream `generic-api-key` rule flags any quoted 20+ char string next to
+# "key", "token", "secret" etc. Our project-specific rules above cover our
+# actual formats precisely. Disabling reduces noise significantly.
+[[rules]]
+id = "generic-api-key"
+description = "DISABLED — too noisy, replaced by project-specific rules above"
+regex = '''____disabled_never_matches____'''
+tags = ["disabled"]
+
+# ─── Global allowlist ────────────────────────────────────────────────────────
+
+[allowlist]
+description = "Known-safe paths and patterns"
+paths = [
+  # Lock files — package-registry tokens in URLs are safe (public registry).
+  '''bun\.lock$''',
+  '''package-lock\.json$''',
+  '''yarn\.lock$''',
+  '''pnpm-lock\.yaml$''',
+  # Build and dist artifacts.
+  '''dist/''',
+  '''build/''',
+  '''\.cache/''',
+  # .env files (gitignored, but working-tree scans see them).
+  '''(^|/)\.env(\..*)?$''',
+  '''(^|/)\.dev\.vars$''',
+  # Test fixtures + example placeholders.
+  '''__fixtures__/''',
+  '''\.example$''',
+]
+regexes = [
+  # Documentation placeholder tokens.
+  '''your[_-]?api[_-]?key[_-]?here''',
+  '''<YOUR_.*_KEY>''',
+  '''\$\{[A-Z_]+\}''',
+  # Known-safe prefixed placeholders.
+  '''bi_(example|test|seed)_''',
+]
+stopwords = [
+  "example",
+  "placeholder",
+  "your-api-key",
+  "YOUR_API_KEY",
+  "dummy",
+  "fake",
+]
