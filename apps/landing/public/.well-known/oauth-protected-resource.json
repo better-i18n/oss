@@ -1,0 +1,18 @@
+{
+  "resource": "https://better-i18n.com",
+  "authorization_servers": [
+    "https://dash.better-i18n.com"
+  ],
+  "bearer_methods_supported": [
+    "header"
+  ],
+  "scopes_supported": [
+    "openid",
+    "profile",
+    "email",
+    "offline_access"
+  ],
+  "resource_documentation": "https://docs.better-i18n.com/api",
+  "resource_policy_uri": "https://better-i18n.com/terms",
+  "resource_tos_uri": "https://better-i18n.com/terms"
+}

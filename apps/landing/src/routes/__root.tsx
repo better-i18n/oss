@@ -25,6 +25,7 @@ import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
 import { SvgSprite } from "../components/SvgSprite";
 import { CookieBanner } from "../components/CookieBanner";
+import { WebMcpRegistrar } from "../components/WebMcpRegistrar";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 /**
@@ -399,6 +400,7 @@ function RootComponent() {
           >
             <Outlet />
             <CookieBanner />
+            <WebMcpRegistrar locale={locale} />
           </BetterI18nProvider>
         </QueryClientProvider>
         <Scripts />
