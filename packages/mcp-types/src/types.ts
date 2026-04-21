@@ -23,10 +23,14 @@ export interface CdnInfo {
   baseUrl: string;
   /** Full manifest URL (e.g., ".../acme/myapp/manifest.json") */
   manifestUrl: string;
-  /** URL pattern with placeholders (e.g., ".../acme/myapp/{locale}/{namespace}.json") */
+  /** URL pattern with placeholders — reflects actual fileStructure */
   pattern: string;
   /** 1-2 real example URLs constructed from project data */
   exampleUrls: string[];
+  /** File delivery mode: "single_file" → one translations.json per locale, "namespaced_folders" → one file per namespace */
+  fileStructure: "single_file" | "namespaced_folders";
+  /** JSON key format: "flat" → dot-notation keys, "nested" → nested objects */
+  keyFormat: "flat" | "nested";
 }
 
 // ============================================================================

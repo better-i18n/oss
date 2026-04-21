@@ -37,10 +37,14 @@ export interface CompactCdnInfo {
   base: string;
   /** Full manifest URL */
   mfst: string;
-  /** URL pattern with {locale}/{namespace} placeholders */
+  /** URL pattern — reflects actual file delivery mode */
   pat: string;
   /** Real example URLs */
   ex: string[];
+  /** File delivery: "single_file" | "namespaced_folders" */
+  fs: "single_file" | "namespaced_folders";
+  /** JSON key format: "flat" | "nested" */
+  kf: "flat" | "nested";
 }
 
 // ============================================================================

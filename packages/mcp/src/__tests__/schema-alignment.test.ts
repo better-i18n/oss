@@ -1083,6 +1083,8 @@ describe("response type conformance", () => {
         mfst: "https://cdn.example.com/manifest.json",
         pat: "https://cdn.example.com/{locale}/{namespace}.json",
         ex: ["https://cdn.example.com/en/auth.json"],
+        fs: "namespaced_folders",
+        kf: "nested",
       },
       msg: "No GitHub repository linked",
     };
