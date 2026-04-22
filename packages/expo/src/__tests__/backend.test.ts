@@ -32,15 +32,42 @@ const MOCK_NESTED_TRANSLATIONS = {
   },
 };
 
-const createMockFetch = (data: Record<string, unknown> = MOCK_TRANSLATIONS) =>
-  mock(() =>
-    Promise.resolve(
-      new Response(JSON.stringify(data), {
+/**
+ * Minimal manifest payload shared by every test's mock fetch. The SDK's core
+ * `getMessages` fetches the manifest up front to derive a version suffix for
+ * its cache key (see oss/packages/core/src/cdn.ts). Without a valid manifest
+ * response, the derivation falls back to "unversioned" AND the manifest fetch
+ * retries on every call — breaking cache-hit assertions below. Returning a
+ * proper manifest once lets core's TtlCache short-circuit subsequent reads.
+ */
+const buildMockManifest = (locale: string) => ({
+  languages: [{ code: locale, name: locale, isSource: true }],
+  files: {
+    [locale]: {
+      url: `https://cdn.better-i18n.com/acme/app/${locale}/translations.json`,
+      size: 100,
+      lastModified: "2026-01-01T00:00:00.000Z",
+    },
+  },
+  updatedAt: "2026-01-01T00:00:00.000Z",
+});
+
+const createMockFetch = (
+  data: Record<string, unknown> = MOCK_TRANSLATIONS,
+  locale = "en",
+) =>
+  mock((input: string | Request | URL) => {
+    const url = typeof input === "string" ? input : input.toString();
+    const body = url.includes("manifest.json")
+      ? JSON.stringify(buildMockManifest(locale))
+      : JSON.stringify(data);
+    return Promise.resolve(
+      new Response(body, {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      })
-    )
-  );
+      }),
+    );
+  });
 
 const createFailingFetch = () =>
   mock(() =>
@@ -123,7 +150,9 @@ describe("BetterI18nBackend", () => {
 
     const data = await readFromBackend(backend, "en");
     expect(data).toEqual(MOCK_TRANSLATIONS);
-    expect(mockFetch).toHaveBeenCalledTimes(1);
+    // First read: 1 manifest + 1 translations = 2 CDN round-trips.
+    // The manifest fetch feeds the version suffix on the messages cache key.
+    expect(mockFetch).toHaveBeenCalledTimes(2);
   });
 
   it("should serve from memory cache on second read", async () => {
@@ -137,8 +166,9 @@ describe("BetterI18nBackend", () => {
     await readFromBackend(backend, "en");
     await readFromBackend(backend, "en");
 
-    // Only one CDN fetch (second read from memory cache)
-    expect(mockFetch).toHaveBeenCalledTimes(1);
+    // First read: 2 fetches (manifest + translations). Second read: 0 —
+    // manifest and messages both served from their TtlCache.
+    expect(mockFetch).toHaveBeenCalledTimes(2);
   });
 
   it("should fall back to persistent cache when CDN is down", async () => {
@@ -164,7 +194,10 @@ describe("BetterI18nBackend", () => {
 
     const data = await readFromBackend(backend2, "en");
     expect(data).toEqual(MOCK_TRANSLATIONS);
-    expect(failingFetch).toHaveBeenCalledTimes(1);
+    // Fall-back path: core tries the manifest first, it 500s; core then tries
+    // the messages file, it 500s too; both fall through to the persistent
+    // storage written by backend1's successful read. Two CDN attempts.
+    expect(failingFetch).toHaveBeenCalledTimes(2);
   });
 
   it("should always get fresh data from CDN after app restart", async () => {
@@ -194,7 +227,9 @@ describe("BetterI18nBackend", () => {
 
     const data = await readFromBackend(backend2, "en");
     expect(data).toEqual(updatedTranslations);
-    expect(updatedFetch).toHaveBeenCalledTimes(1);
+    // Post-restart the caches are empty, so the new backend must re-fetch
+    // both the manifest (for version) and the translations payload.
+    expect(updatedFetch).toHaveBeenCalledTimes(2);
   });
 
   it("should throw when CDN fails and no cache exists", async () => {
@@ -316,17 +351,44 @@ describe("BetterI18nBackend", () => {
 
   it("should handle different languages independently", async () => {
     const trTranslations = { welcome: "Hosgeldiniz" };
-    let callCount = 0;
-    const multiFetch = mock((url: string) => {
-      callCount++;
-      const data = (url as string).includes("/tr/")
-        ? trTranslations
-        : MOCK_TRANSLATIONS;
+    let translationFetches = 0;
+    const multiFetch = mock((input: string | Request | URL) => {
+      const url = typeof input === "string" ? input : input.toString();
+      // Manifest serves both locales; version is shared so every messages
+      // fetch reuses the manifest's TtlCache hit on subsequent calls.
+      if (url.includes("manifest.json")) {
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              languages: [
+                { code: "en", name: "English", isSource: true },
+                { code: "tr", name: "Turkish", isSource: false },
+              ],
+              files: {
+                en: {
+                  url: "https://cdn.better-i18n.com/acme/app/en/translations.json",
+                  size: 100,
+                  lastModified: "2026-01-01T00:00:00.000Z",
+                },
+                tr: {
+                  url: "https://cdn.better-i18n.com/acme/app/tr/translations.json",
+                  size: 100,
+                  lastModified: "2026-01-01T00:00:00.000Z",
+                },
+              },
+              updatedAt: "2026-01-01T00:00:00.000Z",
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          ),
+        );
+      }
+      translationFetches++;
+      const data = url.includes("/tr/") ? trTranslations : MOCK_TRANSLATIONS;
       return Promise.resolve(
         new Response(JSON.stringify(data), {
           status: 200,
           headers: { "Content-Type": "application/json" },
-        })
+        }),
       );
     });
 
@@ -342,7 +404,9 @@ describe("BetterI18nBackend", () => {
 
     expect(enData).toEqual(MOCK_TRANSLATIONS);
     expect(trData).toEqual(trTranslations);
-    expect(callCount).toBe(2);
+    // Count only translation fetches — one per locale. The shared manifest
+    // is served from TtlCache after the first call across both locales.
+    expect(translationFetches).toBe(2);
   });
 });
 
