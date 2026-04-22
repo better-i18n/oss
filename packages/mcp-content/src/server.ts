@@ -44,6 +44,14 @@ import { updateField } from "./tools/updateField.js";
 import { removeField } from "./tools/removeField.js";
 import { reorderFields } from "./tools/reorderFields.js";
 
+// Block catalog tools (BETTER-246 / BETTER-247)
+import { registerBlock } from "./tools/registerBlock.js";
+import { bulkRegisterBlocks } from "./tools/bulkRegisterBlocks.js";
+import { listBlocks } from "./tools/listBlocks.js";
+import { getBlock } from "./tools/getBlock.js";
+import { validateBlockParams } from "./tools/validateBlockParams.js";
+import { deleteBlock } from "./tools/deleteBlock.js";
+
 export interface ServerConfig {
   apiUrl: string;
   apiKey: string;
@@ -186,6 +194,13 @@ All string inputs are UTF-8. Send non-ASCII characters in every language (diacri
     updateField,
     removeField,
     reorderFields,
+    // Block catalog
+    registerBlock,
+    bulkRegisterBlocks,
+    listBlocks,
+    getBlock,
+    validateBlockParams,
+    deleteBlock,
   };
 
   // List available tools
@@ -211,10 +226,18 @@ All string inputs are UTF-8. Send non-ASCII characters in every language (diacri
       annotate(addField.definition, write),
       annotate(updateField.definition, write),
       annotate(reorderFields.definition, write),
+      // Block catalog (read)
+      annotate(listBlocks.definition, readOnly),
+      annotate(getBlock.definition, readOnly),
+      annotate(validateBlockParams.definition, readOnly),
+      // Block catalog (write)
+      annotate(registerBlock.definition, write),
+      annotate(bulkRegisterBlocks.definition, write),
       // Destructive
       annotate(deleteContentEntry.definition, destructive),
       annotate(deleteContentModel.definition, destructive),
       annotate(removeField.definition, destructive),
+      annotate(deleteBlock.definition, destructive),
     ],
   }));
 
