@@ -137,7 +137,7 @@ export function createBetterI18nMiddleware(
       // - Headers via { request: { headers } } — response.headers don't reach page handler
       // - X-NEXT-INTL-LOCALE header — getRequestConfig reads this to determine locale
 
-      let pathname = request.nextUrl.pathname;
+      const pathname = request.nextUrl.pathname;
 
       // Guard: if URL accidentally contains a locale prefix (e.g. /tr/about),
       // strip it and redirect — prevents double-prefix rewrite bug

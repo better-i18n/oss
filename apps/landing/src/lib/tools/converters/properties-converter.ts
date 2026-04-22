@@ -37,7 +37,7 @@ export const propertiesConverter: FormatConverter = {
       else sepIdx = Math.min(eqIdx, colonIdx);
 
       const key = trimmed.slice(0, sepIdx).trim();
-      let value = trimmed.slice(sepIdx + 1).trim();
+      const value = trimmed.slice(sepIdx + 1).trim();
 
       if (!key) continue;
 

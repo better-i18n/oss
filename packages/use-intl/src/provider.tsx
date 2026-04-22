@@ -353,7 +353,7 @@ export function BetterI18nProvider({
         fetchTimeout,
         retryCount,
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     [project, cdnBaseUrl, debug, logLevel, customFetch, storage, staticData, fetchTimeout, retryCount]
     // `mountLocale` intentionally excluded — it never changes after mount.
     // `locale` intentionally excluded — see comment above.

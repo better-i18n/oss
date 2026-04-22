@@ -389,7 +389,7 @@ export async function initBetterI18n(
               `${LOG_PREFIX} Pre-loaded ${Object.keys(newMessages).length} namespaces for ${safeLng}`
             );
           }
-        } catch (_error) {
+        } catch {
           if (debug) {
             console.debug(
               `${LOG_PREFIX} Pre-load failed for ${safeLng}, continuing with fallback`
@@ -399,7 +399,11 @@ export async function initBetterI18n(
       } else {
         // Resources are in memory but persistent cache may be stale/missing.
         // Reconstruct from i18next store and write — critical for iOS widget extensions.
-        const storeData = (i18nInstance as any).store?.data?.[safeLng];
+        // `i18next` types don't expose `.store.data`, but the runtime shape is stable
+        // and documented. Cast is deliberate and narrowly scoped.
+        const storeData = (i18nInstance as unknown as {
+          store?: { data?: Record<string, Record<string, unknown>> };
+        }).store?.data?.[safeLng];
         if (storeData) {
           const messages: Messages = {};
           for (const [ns, data] of Object.entries(storeData)) {

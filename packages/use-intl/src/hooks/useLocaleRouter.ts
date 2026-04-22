@@ -110,14 +110,14 @@ export function useLocaleRouter(): UseLocaleRouterReturn {
   let location: ReturnType<typeof useLocation> | null = null;
 
   try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+     
     router = useRouter();
   } catch {
     // No TanStack Router context — will use context-based navigation
   }
 
   try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+     
     location = useLocation();
   } catch {
     // No TanStack Router context
