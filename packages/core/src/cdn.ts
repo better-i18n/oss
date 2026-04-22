@@ -8,6 +8,8 @@ import type {
   LanguageOption,
   ManifestResponse,
   Messages,
+  MessagesUpdateEvent,
+  MessagesUpdateListener,
   NormalizedConfig,
   TranslationStorage,
 } from "./types.js";
@@ -20,6 +22,57 @@ const manifestCache = new TtlCache<ManifestResponse>();
 const messagesCache = new TtlCache<Messages>();
 // ETag cache — keyed same as messagesCache, stores last ETag for If-None-Match
 const messagesETagCache = new TtlCache<string>();
+
+// ─── Manifest-driven revalidation ───────────────────────────────────
+//
+// Cache keys include the manifest-reported version for each locale
+// (`files[locale].lastModified` or a manifest-level fallback). When the CDN
+// publishes new content, the manifest's version moves, every client's cache
+// key shifts with it, and the next fetch goes to origin. No stale hits.
+//
+// `revalidate(locale)` flips the freshness decision from "TTL elapsed?" to
+// "has the CDN advertised a newer version?". The manifest payload is small
+// (~5KB) and ETag-aware, so the check is effectively free on 304.
+//
+// No CF/Worker coupling — everything is RFC 7234 HTTP semantics.
+
+// Locales currently being revalidated — de-duplicates concurrent callers.
+const inFlightRevalidations = new Set<string>();
+
+// Global subscriber set (module-scoped: all cores/instances share the bus).
+// Listeners register themselves through createI18nCore(...).onMessagesUpdate.
+const messagesListeners = new Set<MessagesUpdateListener>();
+
+const notifyMessagesUpdate = (event: MessagesUpdateEvent): void => {
+  for (const listener of messagesListeners) {
+    try {
+      listener(event);
+    } catch {
+      // Listener exceptions must not break the revalidation path.
+    }
+  }
+};
+
+/**
+ * Extract the freshness version for a locale from the manifest.
+ *
+ * Precedence:
+ *   1. `files[locale].lastModified` (v2, per-locale precision)
+ *   2. `manifest.updatedAt`         (manifest-wide fallback)
+ *   3. `"unversioned"`              (no manifest at all — keeps BC)
+ *
+ * The returned string is opaque and only compared with `===`. It never needs
+ * to parse into a timestamp.
+ */
+const deriveLocaleVersion = (
+  manifest: ManifestResponse | null | undefined,
+  locale: string,
+): string => {
+  const perLocale = manifest?.files?.[locale]?.lastModified;
+  if (perLocale) return perLocale;
+  if (manifest?.updatedAt) return manifest.updatedAt;
+  return "unversioned";
+};
 
 // ─── Storage helpers ────────────────────────────────────────────────
 
@@ -431,36 +484,110 @@ const fetchNamespacedMessages = async (
 };
 
 /**
+ * Force a freshness check for `locale` against the CDN.
+ *
+ * Procedure:
+ *   1. Snapshot the previously-known version (from in-memory manifest cache).
+ *   2. Force-refresh the manifest (ETag-aware — typically 304 Not Modified).
+ *   3. If `deriveLocaleVersion()` changed, fetch fresh messages and notify
+ *      subscribers. If unchanged, exit early — zero additional bandwidth.
+ *
+ * De-duplicated per locale: concurrent callers collapse into one round-trip.
+ *
+ * This is the primitive React providers call on `visibilitychange`, `focus`,
+ * and optional polling intervals. It is also safe to call manually after a
+ * user action that is expected to change published content.
+ */
+const revalidateMessages = async (
+  config: NormalizedConfig,
+  locale: string,
+  fetchFn: typeof fetch,
+  requestedNamespaces: string[] | undefined,
+): Promise<void> => {
+  const safeLng = normalizeLocale(locale);
+  if (inFlightRevalidations.has(safeLng)) return;
+  inFlightRevalidations.add(safeLng);
+
+  const logger = createLogger(config, "messages");
+
+  try {
+    // Before-version: whatever the cached manifest reports (may itself be stale,
+    // that is the point — next step gets the authoritative answer from origin).
+    const oldManifest = await getManifestWithCache(config, fetchFn).catch(() => null);
+    const oldVersion = deriveLocaleVersion(oldManifest, safeLng);
+
+    // Force a fresh manifest — this is the only real network call most of the
+    // time, and 304 when nothing changed. Platform-side cache invalidation
+    // (CF purge on publish, or any equivalent for non-CF CDNs) is what makes
+    // the CDN serve a new version here.
+    const freshManifest = await getManifestWithCache(config, fetchFn, true).catch(() => null);
+    const newVersion = deriveLocaleVersion(freshManifest, safeLng);
+
+    if (oldVersion === newVersion) {
+      logger.debug(`revalidate: no version change for "${safeLng}" (${newVersion})`);
+      return;
+    }
+
+    logger.info(`revalidate: version changed for "${safeLng}": ${oldVersion} → ${newVersion}`);
+
+    // Fetch the new payload. `getMessagesWithFallback` will populate the
+    // version-aware cache key derived from the fresh manifest.
+    const messages = await getMessagesWithFallback(
+      config,
+      locale,
+      fetchFn,
+      requestedNamespaces,
+    );
+
+    notifyMessagesUpdate({ locale: safeLng, messages });
+  } catch (err) {
+    logger.debug("revalidate: failed (keeping cached copy)", err);
+  } finally {
+    inFlightRevalidations.delete(safeLng);
+  }
+};
+
+/**
  * Get messages with full fallback chain:
- * 1. Memory cache (TtlCache)
+ * 1. Memory cache (TtlCache) — version-aware: key includes manifest lastModified
  * 2. CDN fetch — v2 (namespace files) or v1 (single file), with timeout + retry
  * 3. Persistent storage
  * 4. staticData
  * 5. Throw (last resort)
+ *
+ * The manifest is fetched up front so its `lastModified` (or `updatedAt`
+ * fallback) can be baked into the cache key. When the CDN publishes new
+ * content the version moves, every cached entry is orphaned, and the next
+ * call goes to origin. This eliminates stale hits without TTL tuning.
  */
 const getMessagesWithFallback = async (
   config: NormalizedConfig,
   locale: string,
   fetchFn: typeof fetch,
-  requestedNamespaces?: string[]
+  requestedNamespaces?: string[],
 ): Promise<Messages> => {
   const safeLng = normalizeLocale(locale);
   const logger = createLogger(config, "messages");
   const baseCacheKey = `${buildCacheKey(config.cdnBaseUrl, config.project)}|${safeLng}`;
-  const cacheKey = baseCacheKey; // v1 and full-v2 composite key (no namespace suffix)
   const storageKey = buildMessagesStorageKey(config.project, safeLng);
 
-  // 1. Memory cache (serves v1 and full-v2 fetches; selective path uses per-namespace lookup below)
+  // Fetch manifest first — the freshness oracle. Has its own short-TTL cache +
+  // ETag, so this is essentially free on 304. If the manifest fetch fails
+  // (offline, CDN down), we continue with an `"unversioned"` key and rely on
+  // downstream storage/staticData fallbacks.
+  const manifest = await getManifestWithCache(config, fetchFn).catch(() => null);
+  const version = deriveLocaleVersion(manifest, safeLng);
+  const cacheKey = `${baseCacheKey}|v:${version}`;
+
+  // 1. Memory cache — version-aware. A hit here means we already have the
+  // exact published payload for this locale. Old versions are orphaned, so
+  // there is no "serve stale" concern.
   const memoryCached = messagesCache.get(cacheKey);
   if (memoryCached) return memoryCached;
 
   // 2. CDN fetch — detect namespace delivery (v2) from manifest, or use single file (v1)
   try {
     let result: MessagesFetchResult;
-
-    // Check manifest for namespace delivery (v2)
-    // Manifest is already cached in TtlCache — this is a sub-microsecond lookup on hit
-    const manifest = await getManifestWithCache(config, fetchFn).catch(() => null);
     const fileEntry = manifest?.files?.[safeLng];
 
     // Detect namespace delivery (v2) from two sources:
@@ -492,7 +619,7 @@ const getMessagesWithFallback = async (
 
         for (const ns of requestedNamespaces) {
           if (!availableNs.has(ns)) continue; // skip non-existent namespaces silently
-          const nsKey = `${baseCacheKey}|ns:${ns}`;
+          const nsKey = `${baseCacheKey}|v:${version}|ns:${ns}`;
           const cached = messagesCache.get(nsKey);
           if (cached?.[ns] != null) {
             merged[ns] = cached[ns];
@@ -537,7 +664,7 @@ const getMessagesWithFallback = async (
           // Cache each fetched namespace individually
           for (const [ns, data] of Object.entries(fetchedMessages)) {
             messagesCache.set(
-              `${baseCacheKey}|ns:${ns}`,
+              `${baseCacheKey}|v:${version}|ns:${ns}`,
               { [ns]: data },
               config.messagesCacheTtlMs,
             );
@@ -686,6 +813,16 @@ export const createI18nCore = (config: I18nCoreConfig): I18nCore => {
 
       return languages;
     },
+
+    onMessagesUpdate: (listener: MessagesUpdateListener): (() => void) => {
+      messagesListeners.add(listener);
+      return () => {
+        messagesListeners.delete(listener);
+      };
+    },
+
+    revalidate: (locale: string): Promise<void> =>
+      revalidateMessages(normalized, locale, fetchFn, normalized.namespaces),
   };
 };
 
