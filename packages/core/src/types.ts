@@ -238,6 +238,15 @@ export interface CacheEntry<T> {
 /**
  * i18n core instance returned by createI18nCore
  */
+export interface MessagesUpdateEvent {
+  /** Normalized locale the fresh messages belong to (e.g. `"tr"`). */
+  locale: string;
+  /** Fresh messages payload — safe to swap into the provider's state. */
+  messages: Messages;
+}
+
+export type MessagesUpdateListener = (event: MessagesUpdateEvent) => void;
+
 export interface I18nCore {
   /**
    * Resolved configuration
@@ -253,6 +262,11 @@ export interface I18nCore {
    * Get messages for a specific locale.
    * When `namespaces` is provided and the project uses namespaced CDN delivery,
    * only the specified namespaces are fetched (instead of all).
+   *
+   * Stale-while-revalidate: when a memory cache hit happens, the cached copy is
+   * returned immediately AND a background revalidation is kicked off against the
+   * CDN. If the revalidation returns different content, subscribers registered
+   * via {@link onMessagesUpdate} are notified with the fresh payload.
    */
   getMessages: (locale: string, options?: { namespaces?: string[] }) => Promise<Messages>;
 
@@ -265,4 +279,36 @@ export interface I18nCore {
    * Get language options with metadata (for UI components)
    */
   getLanguages: () => Promise<LanguageOption[]>;
+
+  /**
+   * Subscribe to background revalidation updates.
+   *
+   * When a call to {@link revalidate} detects that the CDN manifest version
+   * has changed for the given locale, fresh messages are fetched and the
+   * listener is invoked with the new payload. React providers use this to
+   * re-render stale UI without a full reload.
+   *
+   * @returns Unsubscribe function.
+   */
+  onMessagesUpdate: (listener: MessagesUpdateListener) => () => void;
+
+  /**
+   * Force a freshness check against the CDN for the given locale.
+   *
+   * Flow:
+   * 1. Fetch the manifest with `forceRefresh` (ETag-aware — cheap, ~5KB, usually 304).
+   * 2. Compare `files[locale].lastModified` (or `manifest.updatedAt` fallback)
+   *    with the version that was active at the last fetch.
+   * 3. If the version is unchanged, the call exits early (no message fetch).
+   * 4. If the version changed, fetch new messages and notify subscribers
+   *    registered via {@link onMessagesUpdate}.
+   *
+   * Call this on `visibilitychange` / `focus` / a polling interval to keep
+   * long-lived tabs fresh without a full reload. Safe to call frequently —
+   * in-flight calls are de-duplicated per locale.
+   *
+   * Infrastructure-agnostic: only uses standard HTTP semantics (ETag,
+   * Cache-Control). No CF/Worker/Vercel coupling.
+   */
+  revalidate: (locale: string) => Promise<void>;
 }
