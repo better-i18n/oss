@@ -48,6 +48,59 @@ import type {
 } from "./content-schemas";
 
 import type {
+  RegisterBlockInput,
+  BulkRegisterBlocksInput,
+  ListBlocksInput,
+  GetBlockInput,
+  ValidateBlockParamsInput,
+  DeleteBlockInput,
+} from "./content-block-schemas";
+
+// —————————————————————————————————————————————————————————————————————————————
+// Block catalog response shapes (see BETTER-246 / BETTER-247)
+// —————————————————————————————————————————————————————————————————————————————
+
+export interface BlockSummaryResponse {
+  id: string;
+  slug: string;
+  displayName: string;
+  category: string | null;
+  registeredAt: string | Date;
+  updatedAt: string | Date;
+}
+
+export interface BulkRegisterBlocksResponse {
+  registered: number;
+  blocks: BlockSummaryResponse[];
+}
+
+export interface BlockDetailResponse {
+  slug: string;
+  displayName: string;
+  category: string | null;
+  description: string | null;
+  paramsSchema: Record<string, unknown>;
+  previewUrl: string | null;
+  previewOrigin: string | null;
+  sourceCommit?: string | null;
+  registeredAt: string | Date;
+  updatedAt: string | Date;
+}
+
+export interface ListBlocksResponse {
+  blocks: BlockDetailResponse[];
+}
+
+export interface ValidateBlockParamsResponse {
+  valid: boolean;
+  errors?: Array<{ path: string; message: string; expected?: unknown }>;
+}
+
+export interface DeleteBlockResponse {
+  deleted: boolean;
+}
+
+import type {
   ListProjectsResponse,
   GetAllTranslationsResponse,
   AddLanguagesResponse,
@@ -281,6 +334,30 @@ export interface MCPContentClient {
     mutate: (
       input: ReorderFieldsInput,
     ) => Promise<CompactReorderFieldsResponse>;
+  };
+
+  // Block catalog (BETTER-246 / BETTER-247)
+  registerBlock: {
+    mutate: (input: RegisterBlockInput) => Promise<BlockSummaryResponse>;
+  };
+  bulkRegisterBlocks: {
+    mutate: (
+      input: BulkRegisterBlocksInput,
+    ) => Promise<BulkRegisterBlocksResponse>;
+  };
+  listBlocks: {
+    query: (input: ListBlocksInput) => Promise<ListBlocksResponse>;
+  };
+  getBlock: {
+    query: (input: GetBlockInput) => Promise<BlockDetailResponse>;
+  };
+  validateBlockParams: {
+    query: (
+      input: ValidateBlockParamsInput,
+    ) => Promise<ValidateBlockParamsResponse>;
+  };
+  deleteBlock: {
+    mutate: (input: DeleteBlockInput) => Promise<DeleteBlockResponse>;
   };
 }
 
