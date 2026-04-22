@@ -28,3 +28,6 @@ export * from "./content-types";
 
 // Re-export content compact types
 export * from "./content-compact-types";
+
+// Re-export block catalog schemas (BETTER-246 / BETTER-247)
+export * from "./content-block-schemas";
