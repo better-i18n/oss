@@ -387,17 +387,28 @@ export function BetterI18nProvider({
     };
   }, [i18nCore, initialLanguages]);
 
-  // Load messages when locale changes.
-  // Skip when initial messages (prop or SSR) are still fresh for the current locale.
+  // Load messages on locale change AND whenever the provider mounts.
+  //
+  // SWR semantics:
+  // - If SSR/prop messages already match the active locale, we DO NOT flip the
+  //   loading flag — the first paint stays FOUC-free. But we still hit
+  //   `getMessages()` so the core can (a) serve its own in-memory cache
+  //   instantly and (b) kick off a background revalidation against the CDN.
+  // - If the SSR blob is for a different locale than the user is actually on
+  //   (common on static builds: blob=en, URL=/tr/...), we show the loader
+  //   while fetching the correct locale's messages.
+  //
+  // The background revalidation result is delivered through
+  // `i18nCore.onMessagesUpdate` — see the subscribe effect below.
   useEffect(() => {
-    if (initialMessages && initialMessagesLocale === locale) {
-      return;
-    }
+    const hasFreshInitial = Boolean(
+      initialMessages && initialMessagesLocale === locale,
+    );
 
     let cancelled = false;
 
     const loadMessages = async () => {
-      setIsLoadingMessages(true);
+      if (!hasFreshInitial) setIsLoadingMessages(true);
 
       try {
         const msgs = await i18nCore.getMessages(locale);
@@ -410,7 +421,7 @@ export function BetterI18nProvider({
           error
         );
       } finally {
-        if (!cancelled) {
+        if (!cancelled && !hasFreshInitial) {
           setIsLoadingMessages(false);
         }
       }
@@ -421,7 +432,49 @@ export function BetterI18nProvider({
     return () => {
       cancelled = true;
     };
-  }, [locale, i18nCore, initialMessages]);
+  }, [locale, i18nCore, initialMessages, initialMessagesLocale]);
+
+  // Subscribe to background revalidation updates from the core.
+  // When a manifest-version-diff revalidation produces different messages for
+  // our active locale, swap them into state so the UI re-renders without a
+  // full reload. This is what lets newly published CMS keys show up on
+  // long-lived tabs — exactly the behavior `@better-i18n/next` gives via
+  // per-request SSR on the server.
+  useEffect(() => {
+    const unsubscribe = i18nCore.onMessagesUpdate((event) => {
+      if (event.locale === locale) {
+        setClientMessages(event.messages as Messages);
+      }
+    });
+    return unsubscribe;
+  }, [i18nCore, locale]);
+
+  // Freshness triggers: ask the core to revalidate when the tab returns to
+  // the foreground or the window regains focus. `revalidate()` is a cheap
+  // manifest check (ETag-aware, typically 304) and only hits message CDN if
+  // the published version actually changed. De-duplicated in the core, so
+  // multiple triggers collapse to one round-trip.
+  //
+  // Infrastructure-agnostic: pure browser APIs, no CF/Worker coupling.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const trigger = () => {
+      i18nCore.revalidate(locale).catch(() => {
+        // Revalidation is best-effort — the cached copy keeps serving.
+      });
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") trigger();
+    };
+
+    window.addEventListener("focus", trigger);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("focus", trigger);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [i18nCore, locale]);
 
   const contextValue = useMemo(
     () => ({
