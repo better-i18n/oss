@@ -353,7 +353,9 @@ function parseLintConfig(content: string): LintConfig | undefined {
     for (const match of regexLiterals) {
       try {
         patterns.push(new RegExp(match[1], match[2]));
-      } catch {}
+      } catch {
+        // Skip malformed regex literals silently — user supplied input.
+      }
     }
 
     // Second pass: extract string literals like "pattern" or 'pattern'
@@ -361,7 +363,9 @@ function parseLintConfig(content: string): LintConfig | undefined {
     for (const match of stringLiterals) {
       try {
         patterns.push(new RegExp(match[1]));
-      } catch {}
+      } catch {
+        // Skip malformed regex strings silently — user supplied input.
+      }
     }
 
     if (patterns.length > 0) {

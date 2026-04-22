@@ -39,7 +39,7 @@ export function RemixI18nProvider({
         now={now}
         onError={onError ?? (() => {})}
       >
-        {children as any}
+        {children as never}
       </IntlProvider>
     </RemixI18nContext.Provider>
   );

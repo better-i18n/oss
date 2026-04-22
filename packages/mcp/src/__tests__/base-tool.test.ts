@@ -220,7 +220,6 @@ describe("executeTool", () => {
       { project: "acme/website", value: "x" },
       schema,
       async () => {
-        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw "string error";
       },
     );
@@ -278,7 +277,6 @@ describe("executeSimpleTool", () => {
       { name: "good", count: 1 },
       schema,
       async () => {
-        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw 42;
       },
     );

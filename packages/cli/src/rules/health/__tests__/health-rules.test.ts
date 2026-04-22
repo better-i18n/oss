@@ -62,14 +62,6 @@ function buildContext(
   };
 }
 
-/** Count diagnostics by rule */
-function countByRule(
-  diagnostics: I18nDiagnostic[],
-  rule: string,
-): number {
-  return diagnostics.filter((d) => d.rule === rule).length;
-}
-
 /** Get diagnostics for a specific language */
 function forLanguage(
   diagnostics: I18nDiagnostic[],

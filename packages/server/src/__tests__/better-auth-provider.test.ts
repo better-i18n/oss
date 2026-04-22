@@ -317,7 +317,7 @@ describe("locale detection", () => {
       headers: undefined,
       path: "/sign-in/email",
     };
-    await handler(ctx as any);
+    await handler(ctx as Parameters<typeof handler>[0]);
 
     // Falls back to English (defaultLocale)
     expect(error.body.message).toBe(

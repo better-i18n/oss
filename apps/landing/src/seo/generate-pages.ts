@@ -16,7 +16,6 @@ import { SITE_URL, MARKETING_PAGES } from "./pages";
 import type { ChangeFreq } from "./pages";
 import { getLocaleTier, TIER_PRIORITY_MULTIPLIER } from "./locale-tiers";
 import type { LocaleTier } from "./locale-tiers";
-import { ALL_LOCALE_CODES } from "../lib/tools/locales";
 import { ALL_FORMAT_PAIR_SLUGS } from "../lib/tools/formats";
 
 // ─── Types ──────────────────────────────────────────────────────────
@@ -642,52 +641,6 @@ export async function fetchSeoData(options: {
   }
 
   return { locales, blogPosts, featurePages, changelogEntries, i18nMessages, localeCoverage };
-}
-
-// ─── Generator: Locale Explorer Detail Pages ─────────────────────────
-
-function generateLocaleExplorerPages(
-  allLocales: readonly string[],
-): readonly PageEntry[] {
-  return ALL_LOCALE_CODES.flatMap((localeCode) => {
-    const sitemapLocales = allLocales.filter(
-      (l) => getLocaleTier(l) !== "tier3",
-    );
-    const alternateRefs = buildAlternateRefs(sitemapLocales, (locale) =>
-      buildPageUrl(locale, `tools/locale-explorer/${localeCode}`),
-    );
-
-    const sitemapEntries = sitemapLocales.map((locale): PageEntry => {
-      const tier = getLocaleTier(locale);
-      const shouldPrerender = tier === "tier1" || tier === "tier2";
-      const priorityMultiplier = TIER_PRIORITY_MULTIPLIER[tier];
-
-      return {
-        path: buildPagePath(locale, `tools/locale-explorer/${localeCode}`),
-        sitemap: {
-          priority: +(0.6 * priorityMultiplier).toFixed(2),
-          changefreq: "yearly",
-          alternateRefs,
-        },
-        prerender: shouldPrerender ? { enabled: true } : undefined,
-      };
-    });
-
-    const tier3Locales = allLocales.filter(
-      (l) => getLocaleTier(l) === "tier3",
-    );
-    const tier3Entries = tier3Locales.map((locale): PageEntry => ({
-      path: buildPagePath(locale, `tools/locale-explorer/${localeCode}`),
-      sitemap: {
-        priority: 0,
-        changefreq: "yearly",
-        alternateRefs,
-        noindex: true,
-      },
-    }));
-
-    return [...sitemapEntries, ...tier3Entries];
-  });
 }
 
 // ─── Generator: Converter Format Pair Pages ──────────────────────────

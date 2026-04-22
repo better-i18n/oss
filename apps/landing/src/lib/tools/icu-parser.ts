@@ -63,7 +63,7 @@ function extractBranchKeys(body: string): readonly string[] {
     if (i >= body.length) break;
 
     // read key token (everything up to the next '{')
-    let keyStart = i;
+    const keyStart = i;
     while (i < body.length && body[i] !== "{") i++;
     const key = body.slice(keyStart, i).trim();
     if (key) keys.push(key);
@@ -197,7 +197,7 @@ function parseBranchMap(body: string): Record<string, string> {
     while (i < body.length && /\s/.test(body[i])) i++;
     if (i >= body.length) break;
 
-    let keyStart = i;
+    const keyStart = i;
     while (i < body.length && body[i] !== "{") i++;
     const key = body.slice(keyStart, i).trim();
 
