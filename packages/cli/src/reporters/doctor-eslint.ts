@@ -11,6 +11,7 @@ import type { I18nDiagnostic } from "../rules/registry.js";
 
 // ── ANSI helpers ────────────────────────────────────────────────────
 
+// eslint-disable-next-line no-control-regex -- ANSI escape sequences to strip color for visual width calc
 const ANSI_RE = /\u001B\[[0-9;]*m/g;
 const stripAnsi = (s: string) => s.replace(ANSI_RE, "");
 const visLen = (s: string) => stripAnsi(s).length;

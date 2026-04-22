@@ -2,7 +2,7 @@ import type { FormatConverter } from "./types";
 
 /** Extract text between XML tags */
 function extractTagContent(xml: string, tag: string): string | null {
-  const match = xml.match(new RegExp(`<${tag}[^>]*>([\s\S]*?)<\/${tag}>`, "i"));
+  const match = xml.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i"));
   return match ? match[1] : null;
 }
 

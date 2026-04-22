@@ -295,7 +295,7 @@ export async function contentTypesCommand(
 
   // Resolve project from config or CLI flag
   let project = options.project;
-  let apiKey = options.apiKey || process.env.BETTER_I18N_API_KEY;
+  const apiKey = options.apiKey || process.env.BETTER_I18N_API_KEY;
 
   if (!project) {
     const rootDir = resolve(options.dir || process.cwd());

@@ -79,7 +79,7 @@ interface ScanStats {
   dynamicKeys: number;
 }
 
-export function reportVerboseStats(stats: ScanStats, filesScanned: number, durationMs: number): void {
+export function reportVerboseStats(stats: ScanStats, _filesScanned: number, _durationMs: number): void {
   console.log(dim(`\n🔍 Scan Details:`));
   console.log(dim(`  - Root-scoped translators: ${stats.rootScopedTranslators}`));
   console.log(dim(`  - Unbound translators: ${stats.unboundTranslators}`));
