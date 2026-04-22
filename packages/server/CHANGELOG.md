@@ -1,5 +1,12 @@
 # @better-i18n/server
 
+## 0.4.5
+
+### Patch Changes
+
+- Updated dependencies [5522999]
+  - @better-i18n/core@0.11.0
+
 ## 0.4.4
 
 ### Patch Changes
