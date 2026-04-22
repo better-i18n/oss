@@ -1,5 +1,11 @@
 # hydrogen-demo
 
+## 0.0.16
+
+### Patch Changes
+
+- @better-i18n/remix@0.6.6
+
 ## 0.0.15
 
 ### Patch Changes

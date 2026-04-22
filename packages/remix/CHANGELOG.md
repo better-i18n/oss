@@ -1,5 +1,12 @@
 # @better-i18n/remix
 
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies [5522999]
+  - @better-i18n/core@0.11.0
+
 ## 0.6.5
 
 ### Patch Changes
