@@ -90,11 +90,27 @@ import type {
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Extract the shape of a Zod schema (for .extend-based objects) */
-function zodKeys(schema: z.ZodTypeAny): string[] {
-  if (schema instanceof z.ZodObject) {
-    return Object.keys(schema.shape);
-  }
+/**
+ * Extract the shape of a Zod schema.
+ *
+ * The parameter is typed as `unknown` on purpose: this test file's local `z`
+ * import can be a different realm/version than the one used to build
+ * `@better-i18n/mcp-types` (common when workspace packages pin different
+ * Zod majors, e.g. v3 vs v4). Typing against `z.ZodTypeAny` forces
+ * cross-realm assignability, which TypeScript rejects. We probe structurally
+ * at runtime — same reason `instanceof z.ZodObject` also can't be used here.
+ */
+function zodKeys(schema: unknown): string[] {
+  const s = schema as {
+    shape?: Record<string, unknown>;
+    def?: { shape?: Record<string, unknown> };
+    _def?: { shape?: () => Record<string, unknown> };
+    constructor?: { name?: string };
+  };
+  if (s?.constructor?.name !== "ZodObject") return [];
+  if (s.shape && typeof s.shape === "object") return Object.keys(s.shape);
+  if (s.def?.shape && typeof s.def.shape === "object") return Object.keys(s.def.shape);
+  if (typeof s._def?.shape === "function") return Object.keys(s._def.shape());
   return [];
 }
 
