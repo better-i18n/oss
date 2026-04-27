@@ -1,7 +1,22 @@
+import { lazy, Suspense } from "react";
 import { useT } from "@/lib/i18n";
 import { Link, useParams } from "@tanstack/react-router";
-import { Demo } from "../demo";
 import { SpriteIcon } from "@/components/SpriteIcon";
+
+const LazyDemo = lazy(() =>
+  import("../demo").then((m) => ({ default: m.Demo })),
+);
+
+function DemoSkeleton() {
+  return (
+    <div className="w-full h-full animate-pulse bg-mist-100 rounded-lg flex items-center justify-center">
+      <div className="text-center space-y-3">
+        <div className="h-3 w-32 bg-mist-200 rounded mx-auto" />
+        <div className="h-3 w-24 bg-mist-200 rounded mx-auto" />
+      </div>
+    </div>
+  );
+}
 
 export default function Hero() {
   const t = useT("hero");
@@ -68,7 +83,9 @@ export default function Hero() {
                 "0 28px 70px rgba(0, 0, 0, 0.25), 0 14px 32px rgba(0, 0, 0, 0.15)",
             }}
           >
-            <Demo />
+            <Suspense fallback={<DemoSkeleton />}>
+              <LazyDemo />
+            </Suspense>
           </div>
         </div>
 
@@ -83,7 +100,9 @@ export default function Hero() {
               height: "600px",
             }}
           >
-            <Demo />
+            <Suspense fallback={<DemoSkeleton />}>
+              <LazyDemo />
+            </Suspense>
           </div>
         </div>
       </div>
