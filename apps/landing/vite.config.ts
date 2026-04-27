@@ -63,6 +63,34 @@ export default defineConfig(async ({ mode }) => {
     // import syntax but the package is CJS — Vite needs to CJS-interop it.
     optimizeDeps: {
       include: ["react-dom/server"],
+      // html-react-parser's transitive dep `html-dom-parser` exposes a
+      // "browser" condition in its package.json exports that resolves to a
+      // DOM-based parser (uses `document.implementation.createHTMLDocument`).
+      // If Vite pre-bundles it for the client, the browser build leaks into
+      // the SSR import graph even after ssr.resolve.conditions is tightened.
+      // Exclude both packages from pre-bundling so SSR resolves them itself.
+      exclude: ["html-dom-parser", "html-react-parser"],
+    },
+    // SSR build (Cloudflare Workers target). TanStack Start's worker pipeline
+    // activates the "browser" condition during dependency resolution, which
+    // makes html-dom-parser pick its DOM-based build — fatal on Workers (no
+    // `document`). Every blog page SSR throws `This browser does not support
+    // document.implementation.createHTMLDocument`. Pin the SSR resolver to
+    // workerd/node conditions so the server build (htmlparser2-backed) wins,
+    // and inline both packages with noExternal so Vite — not the runtime —
+    // performs the resolution.
+    ssr: {
+      noExternal: ["html-react-parser", "html-dom-parser"],
+      resolve: {
+        conditions: ["workerd", "node", "import", "module", "default"],
+        externalConditions: [
+          "workerd",
+          "node",
+          "import",
+          "module",
+          "default",
+        ],
+      },
     },
     plugins: [
       // Workaround: TanStack Router/Start SSR utilities import Node.js
