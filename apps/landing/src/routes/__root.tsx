@@ -27,7 +27,11 @@ import { SvgSprite } from "../components/SvgSprite";
 import { CookieBanner } from "../components/CookieBanner";
 import { WebMcpRegistrar } from "../components/WebMcpRegistrar";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { HelpwayWidget } from "@helpway/react";
+import { lazy, Suspense } from "react";
+
+const LazyHelpwayWidget = lazy(() =>
+  import("@helpway/react").then((m) => ({ default: m.HelpwayWidget })),
+);
 
 /**
  * Per-request SSR side-channel for i18n messages.
@@ -393,7 +397,11 @@ function RootComponent() {
           </BetterI18nProvider>
         </QueryClientProvider>
         <Scripts />
-        <HelpwayWidget apiKey="pk_live_Nir-sHLl1_qc9S9EuV9RdNN5" locale={locale} />
+        {typeof document !== "undefined" && (
+          <Suspense fallback={null}>
+            <LazyHelpwayWidget apiKey="pk_live_Nir-sHLl1_qc9S9EuV9RdNN5" locale={locale} />
+          </Suspense>
+        )}
       </body>
     </html>
   );
