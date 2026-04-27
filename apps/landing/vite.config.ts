@@ -42,6 +42,21 @@ export default defineConfig(async ({ mode }) => {
   }
 
   return {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            // Demo is lazy-loaded — keep it in its own chunk
+            if (id.includes("/demo/")) return "demo";
+            // Split heavy vendor libs so the main chunk stays lean.
+            // These vendor chunks are immutable-cached and shared across pages.
+            if (id.includes("node_modules/@central-icons-react")) return "vendor-icons";
+            if (id.includes("node_modules/lucide-react")) return "vendor-icons";
+            if (id.includes("node_modules/html-react-parser") || id.includes("node_modules/html-dom-parser")) return "vendor-html-parser";
+          },
+        },
+      },
+    },
     define: {
       "import.meta.env.BETTER_I18N_CONTENT_API_KEY": JSON.stringify(
         env.BETTER_I18N_CONTENT_API_KEY,
