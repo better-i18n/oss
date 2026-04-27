@@ -46,8 +46,6 @@ export default defineConfig(async ({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks(id: string) {
-            // Demo is lazy-loaded — keep it in its own chunk
-            if (id.includes("/demo/")) return "demo";
             // Split heavy vendor libs so the main chunk stays lean.
             // These vendor chunks are immutable-cached and shared across pages.
             if (id.includes("node_modules/@central-icons-react")) return "vendor-icons";
