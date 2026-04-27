@@ -8,6 +8,8 @@
 //   3. Extension-less /.well-known/* aliases that would otherwise be caught
 //      by TanStack's locale-redirect logic.
 //   4. STATIC_FILE_RE short-circuit so hashed assets never hit SSR.
+//   4b. Prerender passthrough — serve the build-time SSG HTML for marketing
+//       pages directly from ASSETS when it exists, skipping SSR entirely.
 //   5. Geo header injection + TanStack Start delegation for real HTML.
 //
 // Everything header-related (CSP, HSTS, Link, cache TTLs, CORS for the
@@ -271,6 +273,52 @@ export default {
       return env.ASSETS.fetch(request);
     }
 
+    // 4b. Prerender passthrough — if the build produced a static index.html
+    // for this locale+path, serve it directly from ASSETS with our security
+    // headers layered on top. Skips a full TanStack SSR render (can be 1–7s
+    // cold) and drops to the asset-handler floor (~50ms). SSR is only paid
+    // for paths the build did not prerender (e.g. new blog posts published
+    // after the last deploy — see the redeploy webhook in BETTER-xxx).
+    //
+    // Filters:
+    //   - GET only: mutation requests + server-fn POSTs must hit SSR.
+    //   - Trailing slash: TanStack routes canonicalise with a trailing slash,
+    //     so the SSG output always lives at `${pathname}index.html`. Requests
+    //     without a slash flow to SSR where the 307 redirect is issued.
+    //   - Accept: text/html: server-fn GET calls and JSON navigations don't
+    //     claim to accept HTML — those still reach SSR.
+    if (
+      request.method === "GET" &&
+      url.pathname.endsWith("/") &&
+      acceptHeader.includes("text/html")
+    ) {
+      try {
+        const assetResponse = await env.ASSETS.fetch(
+          new Request(`${url.origin}${url.pathname}index.html`, {
+            method: "GET",
+          }),
+        );
+        if (assetResponse.status === 200) {
+          const h = new Headers(assetResponse.headers);
+          for (const [k, v] of HTML_RESPONSE_HEADERS) h.set(k, v);
+          if (!h.has("Cache-Control")) {
+            h.set(
+              "Cache-Control",
+              "public, s-maxage=300, stale-while-revalidate=3600",
+            );
+          }
+          h.set("X-Served-By", "prerender");
+          return new Response(assetResponse.body, {
+            status: 200,
+            statusText: "OK",
+            headers: h,
+          });
+        }
+      } catch {
+        // Asset handler unavailable — fall through to SSR
+      }
+    }
+
     // 5. Inject CF country code as a header so SSR can detect locale from geo
     // before handing off to TanStack.
     const cfCountry = (request as unknown as { cf?: { country?: string } }).cf
@@ -301,6 +349,7 @@ export default {
     if (!h.has("Cache-Control") && request.method === "GET" && response.status < 400) {
       h.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=3600");
     }
+    h.set("X-Served-By", "ssr");
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
