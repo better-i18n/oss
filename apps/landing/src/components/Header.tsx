@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Link, useParams } from "@tanstack/react-router";
 
 import { cn } from "@better-i18n/ui/lib/utils";
@@ -17,7 +18,10 @@ import { SpriteIcon } from "@/components/SpriteIcon";
 import { useT } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { MobileNav } from "./MobileNav";
+
+const LazyMobileNav = lazy(() =>
+  import("./MobileNav").then((m) => ({ default: m.MobileNav })),
+);
 
 // Featured integrations shown in the nav dropdown
 const NAV_INTEGRATIONS: Array<{
@@ -748,7 +752,21 @@ export default function Header({ className }: { className?: string }) {
               </a>
             </div>
           </div>
-          <MobileNav />
+          <Suspense
+            fallback={
+              <div className="lg:hidden">
+                <div className="flex size-10 items-center justify-center rounded-lg text-mist-950">
+                  <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 5h16" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 12h16" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 19h16" />
+                  </svg>
+                </div>
+              </div>
+            }
+          >
+            <LazyMobileNav />
+          </Suspense>
         </div>
       </nav>
     </header>
