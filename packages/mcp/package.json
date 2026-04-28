@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@better-i18n/mcp-types": "workspace:*",
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.19.39",
     "typescript": "~5.9.2"
   },
   "engines": {
