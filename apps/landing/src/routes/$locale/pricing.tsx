@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import Pricing from "@/components/Pricing";
 import { getPageHead, getFAQSchema, formatStructuredData } from "@/lib/page-seo";
@@ -61,15 +60,6 @@ function PricingPage() {
   const { locale } = Route.useParams();
   const { plans } = Route.useLoaderData();
 
-  const trustBadges = [
-    { key: "uptime", label: t("trust.uptime") },
-    { key: "gdpr", label: t("trust.gdpr") },
-    { key: "soc2", label: t("trust.soc2") },
-    { key: "support", label: t("trust.support") },
-    { key: "cdn", label: t("trust.cdn") },
-    { key: "encryption", label: t("trust.encryption") },
-  ];
-
   return (
     <MarketingLayout showCTA={false}>
       {/* Pricing Section — use h1 on dedicated pricing page */}
@@ -79,7 +69,7 @@ function PricingPage() {
       <PricingComparison />
 
       {/* FAQ Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="mx-auto max-w-3xl px-6 lg:px-10">
           <h2 className="font-display text-2xl font-medium text-mist-950 mb-8 text-center">
             {t("faq.title")}
@@ -105,25 +95,6 @@ function PricingPage() {
               question={t("faq.discounts.question")}
               answer={t("faq.discounts.answer")}
             />
-          </div>
-        </div>
-      </section>
-
-      {/* Trust Section */}
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950">
-              {t("trust.title")}
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
-            {trustBadges.map((item) => (
-              <div key={item.key} className="flex items-center gap-2 justify-center p-4 rounded-lg bg-white border border-mist-200">
-                <SpriteIcon name="checkmark" className="size-4 text-mist-950" />
-                <span className="text-sm font-medium text-mist-700">{item.label}</span>
-              </div>
-            ))}
           </div>
         </div>
       </section>
