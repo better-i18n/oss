@@ -153,7 +153,7 @@
         "@better-i18n/ui": "^0.2.0",
         "@better-i18n/use-intl": "workspace:*",
         "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.90",
-        "@helpway/react": "0.3.2",
+        "@helpway/react": "0.3.4",
         "@radix-ui/react-hover-card": "^1.1.15",
         "@remotion/player": "^4.0.450",
         "@tailwindcss/vite": "^4.1.18",
@@ -1040,7 +1040,7 @@
 
     "@graphql-typed-document-node/core": ["@graphql-typed-document-node/core@3.2.0", "", { "peerDependencies": { "graphql": "^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0" } }, "sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ=="],
 
-    "@helpway/react": ["@helpway/react@0.3.2", "", { "dependencies": { "@trpc/client": "^11.5.1", "zustand": "^5.0.11" }, "peerDependencies": { "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" } }, "sha512-oFPjMBkSxKaGJZn5I1/UNW71knshleTmCpbmh1gQjW2li9WzFfnScJ9z+ibq9T46ERJV7KxYG6Y9tu9FH5ajWQ=="],
+    "@helpway/react": ["@helpway/react@0.3.4", "", { "dependencies": { "@trpc/client": "^11.5.1", "zustand": "^5.0.11" }, "peerDependencies": { "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" } }, "sha512-kYV2yHCW/1ygG2rbbo0Sr3fw11F8+tfgQmBKiRl9becQV4h/jPQryDF0LLeRTr8s/k6OwZoj0mKnZ/e/fEjxog=="],
 
     "@hono/node-server": ["@hono/node-server@1.19.12", "", { "peerDependencies": { "hono": "^4" } }, "sha512-txsUW4SQ1iilgE0l9/e9VQWmELXifEFvmdA1j6WFh/aFPj99hIntrSsq/if0UWyGVkmrRPKA1wCeP+UCr1B9Uw=="],
 
