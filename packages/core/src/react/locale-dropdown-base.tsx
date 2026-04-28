@@ -484,15 +484,26 @@ export function LocaleDropdownBase({
     };
   }, []);
 
-  // Use top/left instead of floatingStyles (which uses transform: translate).
-  // Our CSS animations also use transform — they'd override the positioning.
-  const { refs, x, y, placement: resolvedPlacement } = useFloating({
-    open: true,
-    strategy: "absolute",
-    placement: placementProp === "top" ? "top-end" : "bottom-end",
-    middleware: [offset(4), flip({ padding: 16 }), shift({ padding: 8 })],
-    whileElementsMounted: autoUpdate,
-  });
+  // SSR guard: @floating-ui/react calls useId() internally which fails
+  // during Vite SSR dev (React context not fully initialized). On the server
+  // we skip floating positioning — the dropdown is always closed on first
+  // render anyway, so coordinates don't matter.
+  const isServer = typeof window === "undefined";
+  const clientFloating = isServer
+    ? null
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    : useFloating({
+        open: true,
+        strategy: "absolute",
+        placement: placementProp === "top" ? "top-end" : "bottom-end",
+        middleware: [offset(4), flip({ padding: 16 }), shift({ padding: 8 })],
+        whileElementsMounted: autoUpdate,
+      });
+  const noopRef = useRef(null);
+  const refs = clientFloating?.refs ?? { setReference: () => {}, setFloating: () => {}, floating: noopRef, reference: noopRef };
+  const x = clientFloating?.x ?? 0;
+  const y = clientFloating?.y ?? 0;
+  const resolvedPlacement = clientFloating?.placement ?? (placementProp === "top" ? "top-end" : "bottom-end");
 
   const menuPositionStyle: CSSProperties = {
     position: "absolute",
