@@ -206,6 +206,15 @@ export interface KeyWithTranslations {
   translations: Record<string, string>;
   /** List of languages with translations */
   translatedLanguages: string[];
+  /**
+   * True when this row is a phantom legacy duplicate — namespace_id IS NULL
+   * and `key` contains the full namespace path, while another row with
+   * namespace_id set exists for the same logical key. Phantoms cause CDN
+   * file corruption via last-write-wins iteration in the file generator.
+   * Recommended action: deleteKeys with this row's id. (BETTER-260)
+   * Field is omitted when false to keep responses lean.
+   */
+  phantom?: boolean;
 }
 
 /**
