@@ -233,6 +233,7 @@ export interface CompactGetAllTranslationsResponse {
  * - tl: translatedLanguages (optional, included when "translatedLanguages" in fields)
  * - tlc: translatedLanguageCount (optional, included when "translatedLanguageCount" in fields)
  * - tr: translations (optional, included when "translations" in fields)
+ * - p: phantom (optional, ONLY set when true — legacy duplicate, recommend deleteKeys)
  */
 export interface CompactListKeysKey {
   /** Key name */
@@ -249,6 +250,14 @@ export interface CompactListKeysKey {
   tlc?: number;
   /** Translation texts by language code (when "translations" field requested) */
   tr?: Record<string, string>;
+  /**
+   * Phantom flag — only set to `true` for legacy duplicate rows that should
+   * be deleted. `namespace_id IS NULL` + key contains namespace path, while
+   * a proper namespaced row exists for the same logical key. Causes CDN
+   * file corruption (BETTER-260). Use deleteKeys with this row's id to fix.
+   * Omitted when false to keep payloads lean.
+   */
+  p?: true;
 }
 
 /**
