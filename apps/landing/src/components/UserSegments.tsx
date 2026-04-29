@@ -204,9 +204,9 @@ function SegmentCard({
       className="group flex h-full scroll-mt-24 flex-col rounded-2xl border border-mist-200 bg-white shadow-[0_18px_50px_-40px_rgba(15,23,42,0.28)] transition-shadow duration-200 hover:border-mist-300 hover:shadow-md overflow-hidden"
     >
       {/* Inner framed panel — content-sized; outer card aligns via grid + mt-auto on list */}
-      <div className="p-1.5">
+      <div className="p-1.5 flex-1 flex flex-col">
         <div
-          className={`rounded-xl border border-mist-200/60 ${palette.panelBg} px-5 pt-5 pb-5 flex flex-col`}
+          className={`rounded-xl border border-mist-200/60 ${palette.panelBg} px-5 pt-5 pb-5 flex flex-col flex-1`}
         >
           {/* Header row — icon + arrow */}
           <div className="flex items-start justify-between gap-4 mb-4">
