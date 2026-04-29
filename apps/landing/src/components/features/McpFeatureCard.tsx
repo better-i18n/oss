@@ -118,7 +118,7 @@ export function McpFeatureCard() {
             return (
               <div
                 key={tab.id}
-                className={`relative flex items-center gap-1.5 px-2 py-2 text-[10px] font-medium transition-colors ${
+                className={`relative flex items-center gap-1.5 px-2 py-2 text-[10px] font-medium whitespace-nowrap transition-colors ${
                   isActive ? "text-mist-900" : "text-mist-500"
                 }`}
               >
