@@ -13,13 +13,6 @@ const config = {
     loader: 'custom',
     loaderFile: './src/lib/cloudflare-image-loader.ts',
   },
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      tailwindcss: false,
-    };
-    return config;
-  },
 };
 
 export default withMDX(config);
