@@ -81,6 +81,19 @@
   --color-fd-ring: hsl(220, 9%, 55%);
 }
 
+/* OAuth Theme - Purple */
+[data-docs-section="oauth"] {
+  --color-fd-primary: hsl(262, 60%, 50%);
+  --color-fd-primary-foreground: hsl(0, 0%, 98%);
+  --color-fd-ring: hsl(262, 60%, 58%);
+}
+
+.dark[data-docs-section="oauth"] {
+  --color-fd-primary: hsl(262, 60%, 68%);
+  --color-fd-primary-foreground: hsl(262, 60%, 12%);
+  --color-fd-ring: hsl(262, 60%, 58%);
+}
+
 /* ============================================
    Visual Polish & Enhancements
    ============================================
@@ -93,6 +106,7 @@
   --color-sdk: hsl(24, 90%, 50%);
   --color-mcp: hsl(220, 9%, 42%);
   --color-cli: hsl(220, 9%, 46%);
+  --color-oauth: hsl(262, 60%, 50%);
 }
 
 .dark {
@@ -101,6 +115,7 @@
   --color-sdk: hsl(24, 90%, 65%);
   --color-mcp: hsl(220, 9%, 62%);
   --color-cli: hsl(220, 9%, 65%);
+  --color-oauth: hsl(262, 60%, 68%);
 }
 
 /* Sidebar Tab Icon Colors
