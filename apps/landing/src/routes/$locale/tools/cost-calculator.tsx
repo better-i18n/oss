@@ -24,7 +24,7 @@ export const Route = createFileRoute("/$locale/tools/cost-calculator")({
       metaFallback: {
         title: "Localization Cost Calculator",
         description:
-          "Estimate localization costs across human translation, AI+review, and Better i18n pricing.",
+          "Estimate localization costs across human translation, AI+review, and Better I18N pricing.",
       },
     }),
   component: CostCalculatorPage,
@@ -52,9 +52,9 @@ const faqItems = [
       "The optimal number depends on your target markets. European markets often require 5–10 languages, while global products may need 20+. Each additional language multiplies costs linearly — but also multiplies potential revenue from new markets.",
   },
   {
-    question: "How does Better i18n reduce localization costs?",
+    question: "How does Better I18N reduce localization costs?",
     answer:
-      "Better i18n uses context-aware AI to generate high-quality translations, leverages translation memory to avoid re-translating existing strings, and provides a developer-first SDK that eliminates integration overhead. First 1,000 keys are free to get started.",
+      "Better I18N uses context-aware AI to generate high-quality translations, leverages translation memory to avoid re-translating existing strings, and provides a developer-first SDK that eliminates integration overhead. First 1,000 keys are free to get started.",
   },
 ];
 
@@ -261,7 +261,7 @@ function CostCalculatorPage() {
   return (
     <ToolLayout
       title="Localization Cost Calculator"
-      description="Estimate your translation costs with a side-by-side comparison of professional human, AI-assisted, and Better i18n pricing."
+      description="Estimate your translation costs with a side-by-side comparison of professional human, AI-assisted, and Better I18N pricing."
       subtitle="Free Tool"
       currentSlug="cost-calculator"
       locale={locale}
@@ -484,7 +484,7 @@ function CostCalculatorPage() {
             </svg>
             <div>
               <p className="text-sm font-semibold text-green-900">
-                Save up to {savingsPercent}% with Better i18n
+                Save up to {savingsPercent}% with Better I18N
               </p>
               <p className="text-xs text-green-700">
                 Compared to professional human translation at the same quality level.
@@ -521,7 +521,7 @@ function CostCalculatorPage() {
                     const perLangMax = wordCountState.count * tier.maxPerWord;
                     const totalMin = perLangMin * selectedLanguages.length;
                     const totalMax = perLangMax * selectedLanguages.length;
-                    const isBetterI18n = tier.name === "Better i18n AI";
+                    const isBetterI18n = tier.name === "Better I18N AI";
 
                     return (
                       <tr
@@ -592,7 +592,7 @@ function CostCalculatorPage() {
                       MONTHLY_CHANGE_RATE *
                       selectedLanguages.length *
                       tier.maxPerWord;
-                    const isBetterI18n = tier.name === "Better i18n AI";
+                    const isBetterI18n = tier.name === "Better I18N AI";
 
                     return (
                       <tr

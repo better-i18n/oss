@@ -80,7 +80,7 @@ function CliCodeScanningPage() {
               {t("hero.title", { defaultValue: "CLI & Code Scanning: Find Every Untranslated String Automatically" })}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "Stop hunting through source files for hardcoded strings. Better i18n's CLI uses AST-based parsing to scan your entire codebase, detect untranslated text in JSX components and attributes, report missing and unused keys, and integrate seamlessly into your CI pipeline." })}
+              {t("hero.subtitle", { defaultValue: "Stop hunting through source files for hardcoded strings. Better I18N's CLI uses AST-based parsing to scan your entire codebase, detect untranslated text in JSX components and attributes, report missing and unused keys, and integrate seamlessly into your CI pipeline." })}
             </p>
           </div>
         </div>
@@ -93,7 +93,7 @@ function CliCodeScanningPage() {
               {t("features.title", { defaultValue: "AST-Powered Code Scanning" })}
             </h2>
             <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("features.subtitle", { defaultValue: "Unlike regex-based scanners that produce false positives, Better i18n parses your code into an Abstract Syntax Tree for precise, context-aware string detection." })}
+              {t("features.subtitle", { defaultValue: "Unlike regex-based scanners that produce false positives, Better I18N parses your code into an Abstract Syntax Tree for precise, context-aware string detection." })}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -122,7 +122,7 @@ function CliCodeScanningPage() {
                 {t("cliCommands.title", { defaultValue: "CLI Commands for Translation Auditing" })}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("cliCommands.paragraph1", { defaultValue: "The check command provides an interactive, developer-friendly auditing experience. It compares the translation keys used in your source code against the keys stored in Better i18n's remote, surfacing both missing keys that need translation and unused keys that can be cleaned up." })}
+                {t("cliCommands.paragraph1", { defaultValue: "The check command provides an interactive, developer-friendly auditing experience. It compares the translation keys used in your source code against the keys stored in Better I18N's remote, surfacing both missing keys that need translation and unused keys that can be cleaned up." })}
               </p>
               <p className="text-mist-700 leading-relaxed">
                 {t("cliCommands.paragraph2", { defaultValue: "Dynamic key patterns like template literals are detected automatically. When your code uses t(`key.${variable}`), the CLI recognizes the dynamic segment and includes it in pattern-matched reports, so nothing slips through the cracks." })}
@@ -203,10 +203,10 @@ function CliCodeScanningPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Better i18n CLI: Code Scanning Built for Localization" })}
+              {t("solution.title", { defaultValue: "Better I18N CLI: Code Scanning Built for Localization" })}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better i18n's CLI combines AST-based code scanning with remote key management in a single tool. Scan your codebase for hardcoded strings, compare local usage against your remote translation store, detect unused keys that inflate bundle size, and generate reports for your CI pipeline — all without leaving your terminal." })}
+              {t("solution.content", { defaultValue: "Better I18N's CLI combines AST-based code scanning with remote key management in a single tool. Scan your codebase for hardcoded strings, compare local usage against your remote translation store, detect unused keys that inflate bundle size, and generate reports for your CI pipeline — all without leaving your terminal." })}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
@@ -266,19 +266,19 @@ function CliCodeScanningPage() {
             {t("cta.title", { defaultValue: "Ship Translations Without Missing a String" })}
           </h2>
           <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Better i18n's CLI scans your code, detects every untranslated string, and fits into your CI pipeline so nothing reaches production without a translation." })}
+            {t("cta.subtitle", { defaultValue: "Better I18N's CLI scans your code, detects every untranslated string, and fits into your CI pipeline so nothing reaches production without a translation." })}
           </p>
           <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <a
               href="https://dash.better-i18n.com"
-              aria-label="Start using Better i18n CLI and code scanning tools for free"
+              aria-label="Start using Better I18N CLI and code scanning tools for free"
               className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
             >
               {t("cta.primary", { defaultValue: "Get Started Free" })}
             </a>
             <a
               href="https://docs.better-i18n.com"
-              aria-label="Read the Better i18n CLI documentation"
+              aria-label="Read the Better I18N CLI documentation"
               className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
             >
               {t("cta.secondary", { defaultValue: "Read the Docs" })}

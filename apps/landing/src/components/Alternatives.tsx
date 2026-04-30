@@ -22,7 +22,7 @@ export default function Alternatives() {
             {t("vsLabel", { defaultValue: "Compare" })}
           </div>
           <h2 className="mt-4 font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            {t("title", { defaultValue: "Why Teams Switch to Better i18n" })}
+            {t("title", { defaultValue: "Why Teams Switch to Better I18N" })}
           </h2>
           <p className="mt-4 max-w-2xl text-lg text-mist-700">
             {t("subtitle", { defaultValue: "A modern alternative to legacy localization platforms." })}
@@ -96,7 +96,7 @@ export default function Alternatives() {
                   </span>
                   <p className="mt-2 text-sm leading-6 text-mist-600">
                     {t(`${alt.key}.description`, {
-                      defaultValue: `See how Better i18n compares with ${alt.name}.`,
+                      defaultValue: `See how Better I18N compares with ${alt.name}.`,
                     })}
                   </p>
                 </div>

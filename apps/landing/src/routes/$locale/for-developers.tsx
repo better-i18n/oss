@@ -37,7 +37,7 @@ export const Route = createFileRoute("/$locale/for-developers")({
       : [];
 
     const educationalScripts = getEducationalPageStructuredData({
-      title: "Better i18n for Developers",
+      title: "Better I18N for Developers",
       description: "Developer-first internationalization with type-safe SDKs, Git integration, global CDN delivery, and automated translation workflows.",
       url: `https://better-i18n.com/${locale}/for-developers`,
       locale,
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/$locale/for-developers")({
 
     const howToScript = howToSteps.length > 0
       ? formatStructuredData(getHowToSchema({
-          name: "How to Set Up i18n as a Developer with Better i18n",
+          name: "How to Set Up i18n as a Developer with Better I18N",
           description: "Developer workflow for connecting your repo, discovering keys, translating, and publishing.",
           steps: howToSteps,
           totalTime: "PT10M",

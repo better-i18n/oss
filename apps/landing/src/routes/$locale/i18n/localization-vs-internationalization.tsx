@@ -193,7 +193,7 @@ function L10nVsI18nPage() {
               {t("together.paragraph1", { defaultValue: "Software internationalization and localization are two sides of the same coin. Internationalization prepares your codebase to support multiple locales, while localization fills in the locale-specific content. You internationalize once, then localize for each market." })}
             </p>
             <p className="text-mist-700 leading-relaxed">
-              {t("together.paragraph2", { defaultValue: "Better i18n bridges both processes: it handles internationalization through type-safe SDKs and automatic key discovery, and streamlines localization with AI-powered translations, glossary management, and instant CDN deployment." })}
+              {t("together.paragraph2", { defaultValue: "Better I18N bridges both processes: it handles internationalization through type-safe SDKs and automatic key discovery, and streamlines localization with AI-powered translations, glossary management, and instant CDN deployment." })}
             </p>
           </div>
         </div>
@@ -231,7 +231,7 @@ function L10nVsI18nPage() {
             {t("cta.title", { defaultValue: "Handle Both i18n and l10n in One Platform" })}
           </h2>
           <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Better i18n covers the full internationalization and localization pipeline. From code to translation to deployment." })}
+            {t("cta.subtitle", { defaultValue: "Better I18N covers the full internationalization and localization pipeline. From code to translation to deployment." })}
           </p>
           <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <a

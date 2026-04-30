@@ -126,8 +126,8 @@ struct WelcomeView: View {
             answer: "Apple's recommended approach is String Catalogs (.xcstrings), introduced in Xcode 15. String Catalogs replace the older .strings and .stringsdict files with a single JSON-based file that supports all plural rules, device-specific variants, and string variations. Xcode automatically extracts localizable strings from your Swift and SwiftUI code, and tracks translation completion percentage per locale.",
           },
           {
-            question: "How does Better i18n work with Xcode and String Catalogs?",
-            answer: "Better i18n uses its CLI to export translations from your String Catalogs, push them to the dashboard for professional translation or AI-assisted translation, then import the translated files back into Xcode. The workflow is: `better-i18n push` exports your .xcstrings file, translators work in the Better i18n dashboard, and `better-i18n pull` downloads the completed translations back into Xcode format. This replaces manual .xcloc file management.",
+            question: "How does Better I18N work with Xcode and String Catalogs?",
+            answer: "Better I18N uses its CLI to export translations from your String Catalogs, push them to the dashboard for professional translation or AI-assisted translation, then import the translated files back into Xcode. The workflow is: `better-i18n push` exports your .xcstrings file, translators work in the Better I18N dashboard, and `better-i18n pull` downloads the completed translations back into Xcode format. This replaces manual .xcloc file management.",
           },
           {
             question: "What is the difference between NSLocalizedString and SwiftUI's native localization?",
@@ -135,15 +135,15 @@ struct WelcomeView: View {
           },
           {
             question: "How do I implement RTL (right-to-left) support on iOS?",
-            answer: "iOS handles RTL layout automatically when the user selects an RTL language like Arabic or Hebrew. SwiftUI's layout system uses leading/trailing instead of left/right, and UIKit respects UIView.semanticContentAttribute. The key is to avoid hardcoded left/right margins and use Auto Layout with leading/trailing constraints. Better i18n supports Arabic and Hebrew as target languages and handles bidirectional text in the translation editor.",
+            answer: "iOS handles RTL layout automatically when the user selects an RTL language like Arabic or Hebrew. SwiftUI's layout system uses leading/trailing instead of left/right, and UIKit respects UIView.semanticContentAttribute. The key is to avoid hardcoded left/right margins and use Auto Layout with leading/trailing constraints. Better I18N supports Arabic and Hebrew as target languages and handles bidirectional text in the translation editor.",
           },
           {
             question: "Can I use over-the-air (OTA) translation updates on iOS?",
-            answer: "Apple's App Store review policy requires that core app functionality not change between reviews, but translation content updates are generally permitted via OTA mechanisms. Better i18n's native Swift SDK (BetterI18n) fetches translations from the CDN at runtime, allowing you to push translation corrections and new language support without an app store release. The SDK uses a two-phase load: it reads from local storage first for instant display, then refreshes from CDN in the background.",
+            answer: "Apple's App Store review policy requires that core app functionality not change between reviews, but translation content updates are generally permitted via OTA mechanisms. Better I18N's native Swift SDK (BetterI18n) fetches translations from the CDN at runtime, allowing you to push translation corrections and new language support without an app store release. The SDK uses a two-phase load: it reads from local storage first for instant display, then refreshes from CDN in the background.",
           },
           {
             question: "What pluralization rules does iOS support and how many are there?",
-            answer: "iOS supports all Unicode CLDR plural categories: zero, one, two, few, many, and other. Not all languages use all categories — English only uses one and other, while Arabic uses all six. String Catalogs in Xcode 15 automatically show the relevant plural forms for each target locale. Better i18n's translation editor also surfaces the correct plural forms per language so translators never miss a required plural case.",
+            answer: "iOS supports all Unicode CLDR plural categories: zero, one, two, few, many, and other. Not all languages use all categories — English only uses one and other, while Arabic uses all six. String Catalogs in Xcode 15 automatically show the relevant plural forms for each target locale. Better I18N's translation editor also surfaces the correct plural forms per language so translators never miss a required plural case.",
           },
         ]}
       />

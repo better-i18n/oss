@@ -37,7 +37,7 @@ export default function Integrations() {
             {t("title", { defaultValue: "Integrations That Fit Your Stack" })}
           </h2>
           <p className="mt-4 text-lg text-mist-700 max-w-2xl mx-auto">
-            {t("subtitle", { defaultValue: "Connect Better i18n to your existing tools and workflows." })}
+            {t("subtitle", { defaultValue: "Connect Better I18N to your existing tools and workflows." })}
           </p>
         </div>
 

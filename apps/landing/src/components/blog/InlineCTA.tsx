@@ -17,7 +17,7 @@ const ROTATING_MESSAGES = [
   {
     title: "Ship multilingual products faster",
     description:
-      "Better i18n automates translation workflows so you can focus on building.",
+      "Better I18N automates translation workflows so you can focus on building.",
   },
   {
     title: "Translate with AI. Ship with confidence.",
@@ -32,7 +32,7 @@ const ROTATING_MESSAGES = [
   {
     title: "Already trusted by 66+ teams worldwide",
     description:
-      "Join growing teams who ship faster and reach more users with Better i18n.",
+      "Join growing teams who ship faster and reach more users with Better I18N.",
   },
   {
     title: "From code to global in under 5 minutes",

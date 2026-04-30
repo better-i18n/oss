@@ -15,7 +15,7 @@ export interface BlogCTAConfig {
 const DEFAULT_CTA: BlogCTAConfig = {
   title: "Ship multilingual products faster",
   description:
-    "Better i18n automates translation workflows so you can focus on building, not translating.",
+    "Better I18N automates translation workflows so you can focus on building, not translating.",
   ctaText: "Start free trial",
   ctaUrl: "https://dash.better-i18n.com",
 } as const;
@@ -29,7 +29,7 @@ const SLUG_CTAS: ReadonlyArray<readonly [prefix: string, cta: BlogCTAConfig]> =
     [
       "icu-message-format",
       {
-        title: "Better i18n handles ICU natively",
+        title: "Better I18N handles ICU natively",
         description:
           "Full ICU MessageFormat support with plurals, selects, and nested arguments out of the box.",
         ctaText: "See pricing",
@@ -39,7 +39,7 @@ const SLUG_CTAS: ReadonlyArray<readonly [prefix: string, cta: BlogCTAConfig]> =
     [
       "ai-translation-tools",
       {
-        title: "Compare AI engines in Better i18n",
+        title: "Compare AI engines in Better I18N",
         description:
           "Switch between GPT-4, Claude, DeepL, and Google Translate per project or per key.",
         ctaText: "Explore features",
@@ -71,7 +71,7 @@ const SLUG_CTAS: ReadonlyArray<readonly [prefix: string, cta: BlogCTAConfig]> =
       {
         title: "Automated multilingual schema markup",
         description:
-          "Better i18n generates hreflang tags, JSON-LD, and localized sitemaps automatically.",
+          "Better I18N generates hreflang tags, JSON-LD, and localized sitemaps automatically.",
         ctaText: "Explore features",
         ctaUrl: "/features",
       },
@@ -91,7 +91,7 @@ const CATEGORY_CTAS: Readonly<Record<string, BlogCTAConfig>> = {
     ctaUrl: "/features",
   },
   "product-updates": {
-    title: "Stay up to date with Better i18n",
+    title: "Stay up to date with Better I18N",
     description:
       "New features ship every week. Try the latest improvements in your dashboard.",
     ctaText: "Open dashboard",

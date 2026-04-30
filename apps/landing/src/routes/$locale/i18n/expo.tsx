@@ -39,7 +39,7 @@ function ExpoI18nPage() {
       step: 1,
       title: "Install packages",
       description:
-        "Add the Better i18n Expo adapter along with expo-localization and react-i18next.",
+        "Add the Better I18N Expo adapter along with expo-localization and react-i18next.",
       code: "npm install @better-i18n/expo expo-localization react-i18next i18next",
       fileName: "terminal",
     },
@@ -111,7 +111,7 @@ function HomeScreen() {
 
       <SetupGuide title="Get started in 4 steps" steps={setupSteps} />
 
-      <FeatureList title="Why use Better i18n with Expo?" features={features} />
+      <FeatureList title="Why use Better I18N with Expo?" features={features} />
 
       <FrameworkFAQ
         title="Expo i18n — Frequently Asked Questions"
@@ -121,12 +121,12 @@ function HomeScreen() {
             answer: "The recommended stack is react-i18next + expo-localization + @better-i18n/expo. expo-localization reads the device's language setting, react-i18next provides the t() hook and pluralization engine, and @better-i18n/expo fetches translations from the CDN with offline caching. This combination works in Expo Go without ejecting, supports over-the-air translation updates, and is compatible with both Expo Router and bare React Native projects.",
           },
           {
-            question: "How does Better i18n work with Expo Router?",
-            answer: "With Expo Router, you wrap your root _layout.tsx with the i18n initialization. Import your i18n.ts file at the top of the root layout — this ensures translations are loaded before any screen renders. Expo Router's file-based routing doesn't require URL-based locale prefixes; locale state is managed globally via i18next and the device locale from expo-localization. The Better i18n CDN delivers translations per locale on demand.",
+            question: "How does Better I18N work with Expo Router?",
+            answer: "With Expo Router, you wrap your root _layout.tsx with the i18n initialization. Import your i18n.ts file at the top of the root layout — this ensures translations are loaded before any screen renders. Expo Router's file-based routing doesn't require URL-based locale prefixes; locale state is managed globally via i18next and the device locale from expo-localization. The Better I18N CDN delivers translations per locale on demand.",
           },
           {
             question: "Can I push translation updates without an app store release?",
-            answer: "Yes. Better i18n's Expo adapter fetches translations from the CDN at runtime. When you publish new or corrected translations in the Better i18n dashboard, the next app launch downloads the updated strings — no new app build required. Translations are cached in AsyncStorage or MMKV so users see the last known translations even when offline. This makes translation hotfixes fast without waiting for App Store or Google Play review.",
+            answer: "Yes. Better I18N's Expo adapter fetches translations from the CDN at runtime. When you publish new or corrected translations in the Better I18N dashboard, the next app launch downloads the updated strings — no new app build required. Translations are cached in AsyncStorage or MMKV so users see the last known translations even when offline. This makes translation hotfixes fast without waiting for App Store or Google Play review.",
           },
           {
             question: "How do I detect and use the device language in Expo?",

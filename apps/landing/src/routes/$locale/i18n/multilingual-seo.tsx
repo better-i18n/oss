@@ -18,7 +18,7 @@ export const Route = createFileRoute("/$locale/i18n/multilingual-seo")({
       structuredDataOptions: {
         title: "Multilingual SEO Guide",
         description:
-          "Complete guide to multilingual SEO: optimize your website for multiple languages and regions to rank globally with Better i18n.",
+          "Complete guide to multilingual SEO: optimize your website for multiple languages and regions to rank globally with Better I18N.",
       },
     });
   },
@@ -313,10 +313,10 @@ function MultilingualSeoPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "How Better i18n Powers Your Multilingual SEO" })}
+              {t("solution.title", { defaultValue: "How Better I18N Powers Your Multilingual SEO" })}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better i18n automates the translation pipeline that underpins multilingual SEO success. From AI-powered localization that preserves keyword intent to automatic hreflang injection and CDN-delivered locale bundles, Better i18n removes the technical friction of multilingual SEO implementation." })}
+              {t("solution.content", { defaultValue: "Better I18N automates the translation pipeline that underpins multilingual SEO success. From AI-powered localization that preserves keyword intent to automatic hreflang injection and CDN-delivered locale bundles, Better I18N removes the technical friction of multilingual SEO implementation." })}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
@@ -452,7 +452,7 @@ function MultilingualSeoPage() {
           <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <a
               href="https://dash.better-i18n.com"
-              aria-label="Get started with Better i18n for multilingual SEO"
+              aria-label="Get started with Better I18N for multilingual SEO"
               className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
             >
               {t("cta.primary", { defaultValue: "Get Started Free" })}

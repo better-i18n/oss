@@ -90,13 +90,13 @@ function CookiePolicyPage() {
               <tbody>
                 <tr>
                   <td><code>bi18n_cookie_consent</code></td>
-                  <td>Better i18n</td>
+                  <td>Better I18N</td>
                   <td>{t("cookies.consent.purpose", { defaultValue: "Stores your cookie consent preferences" })}</td>
                   <td>{t("cookies.consent.duration", { defaultValue: "Persistent" })}</td>
                 </tr>
                 <tr>
                   <td><code>bi18n_locale</code></td>
-                  <td>Better i18n</td>
+                  <td>Better I18N</td>
                   <td>{t("cookies.locale.purpose", { defaultValue: "Remembers your language preference" })}</td>
                   <td>{t("cookies.locale.duration", { defaultValue: "Persistent" })}</td>
                 </tr>

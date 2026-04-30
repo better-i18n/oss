@@ -102,7 +102,7 @@ const ciFeatures = [
     descKey: "ci.features.dashboardReporting.description",
     defaultTitle: "Dashboard Reporting",
     defaultDesc:
-      "Upload results to the Better i18n dashboard with --report for historical tracking, trend analysis, and team-wide visibility into i18n health.",
+      "Upload results to the Better I18N dashboard with --report for historical tracking, trend analysis, and team-wide visibility into i18n health.",
   },
 ];
 

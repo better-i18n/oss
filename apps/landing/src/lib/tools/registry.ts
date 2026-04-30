@@ -34,7 +34,7 @@ export const TOOL_REGISTRY: readonly ToolMeta[] = [
     titleKey: "marketing.tools.common.costCalculatorTitle",
     descriptionKey: "marketing.tools.common.costCalculatorDesc",
     fallbackTitle: "Cost Calculator",
-    fallbackDescription: "Estimate localization costs with side-by-side comparison of human, AI, and Better i18n pricing",
+    fallbackDescription: "Estimate localization costs with side-by-side comparison of human, AI, and Better I18N pricing",
     icon: "💰",
     href: "tools/cost-calculator",
   },

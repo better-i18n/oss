@@ -213,7 +213,7 @@ function LocaleDetailPage() {
       currentSlug="locale-explorer"
       locale={locale}
       breadcrumbs={breadcrumbs}
-      ctaText="This locale is supported by Better i18n"
+      ctaText="This locale is supported by Better I18N"
     >
       <div className="space-y-10">
 
@@ -447,7 +447,7 @@ function LocaleDetailPage() {
         {/* CTA Banner */}
         <div className="rounded-xl border border-mist-200 bg-mist-950 px-6 py-8 text-center">
           <p className="font-display text-xl font-medium text-white">
-            {localeData.englishName} is supported by Better i18n
+            {localeData.englishName} is supported by Better I18N
           </p>
           <p className="mt-2 text-sm text-mist-400">
             Add <code className="font-mono text-mist-300">{localeCode}</code> to your project in seconds — no manual config required.

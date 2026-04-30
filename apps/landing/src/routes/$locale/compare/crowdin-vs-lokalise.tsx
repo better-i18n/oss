@@ -37,7 +37,7 @@ export const Route = createFileRoute("/$locale/compare/crowdin-vs-lokalise")({
   component: CrowdinVsLokalisePage,
 });
 
-const COMPETITORS = ["Better i18n", "Crowdin", "Lokalise"] as const;
+const COMPETITORS = ["Better I18N", "Crowdin", "Lokalise"] as const;
 
 function buildValues(
   betterI18n: boolean | string,
@@ -45,7 +45,7 @@ function buildValues(
   lokalise: boolean | string,
 ): ReadonlyMap<string, boolean | string> {
   return new Map<string, boolean | string>([
-    ["Better i18n", betterI18n],
+    ["Better I18N", betterI18n],
     ["Crowdin", crowdin],
     ["Lokalise", lokalise],
   ]);
@@ -175,18 +175,18 @@ function CrowdinVsLokalisePage() {
         links={[
           {
             to: "/$locale/compare/crowdin",
-            title: t("compare.crowdinVsLokalise.related.crowdin", { defaultValue: "Better i18n vs Crowdin" }),
+            title: t("compare.crowdinVsLokalise.related.crowdin", { defaultValue: "Better I18N vs Crowdin" }),
             description: t("compare.crowdinVsLokalise.related.crowdinDesc", { defaultValue: "Detailed two-way comparison with Crowdin" }),
           },
           {
             to: "/$locale/compare/lokalise",
-            title: t("compare.crowdinVsLokalise.related.lokalise", { defaultValue: "Better i18n vs Lokalise" }),
+            title: t("compare.crowdinVsLokalise.related.lokalise", { defaultValue: "Better I18N vs Lokalise" }),
             description: t("compare.crowdinVsLokalise.related.lokaliseDesc", { defaultValue: "Detailed two-way comparison with Lokalise" }),
           },
           {
             to: "/$locale/features",
             title: t("compare.crowdinVsLokalise.related.features", { defaultValue: "All Features" }),
-            description: t("compare.crowdinVsLokalise.related.featuresDesc", { defaultValue: "Explore the full Better i18n platform" }),
+            description: t("compare.crowdinVsLokalise.related.featuresDesc", { defaultValue: "Explore the full Better I18N platform" }),
           },
         ]}
       />

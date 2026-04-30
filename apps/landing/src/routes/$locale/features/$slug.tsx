@@ -84,7 +84,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
     );
 
     const meta = {
-      title: truncateTitle(`${page?.title || "Feature"} | Better i18n`),
+      title: truncateTitle(`${page?.title || "Feature"} | Better I18N`),
       description: excerpt,
       ogTitle: page?.title || "Feature",
       ogDescription: excerpt,

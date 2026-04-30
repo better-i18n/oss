@@ -602,7 +602,7 @@ function PrivacyPage() {
           <dd>{t("sections.definitions.dataController.definition", { defaultValue: "The natural or legal person, public authority, agency, or other body which, alone or jointly with others, determines the purposes and means of the processing of personal data, including the security measures concerning the operation and use of this application. The Data Controller, unless otherwise specified, is Better i18n, Inc." })}</dd>
 
           <dt><strong>{t("sections.definitions.application.term", { defaultValue: "This Application" })}</strong></dt>
-          <dd>{t("sections.definitions.application.definition", { defaultValue: "The means by which the personal data of the user is collected and processed — referring to better-i18n.com and the Better i18n platform." })}</dd>
+          <dd>{t("sections.definitions.application.definition", { defaultValue: "The means by which the personal data of the user is collected and processed — referring to better-i18n.com and the Better I18N platform." })}</dd>
 
           <dt><strong>{t("sections.definitions.service.term", { defaultValue: "Service" })}</strong></dt>
           <dd>{t("sections.definitions.service.definition", { defaultValue: "The service provided by this application as described in the Terms of Service." })}</dd>

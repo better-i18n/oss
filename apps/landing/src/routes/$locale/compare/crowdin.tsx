@@ -88,7 +88,7 @@ function CrowdinComparisonPage() {
         ]}
       />
 
-      {/* Why Better i18n */}
+      {/* Why Better I18N */}
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-12">
@@ -137,7 +137,7 @@ function CrowdinComparisonPage() {
         links={[
           { to: "/$locale/what-is", title: t("compare.crowdin.related.whatIsI18n", { defaultValue: "What is i18n?" }), description: t("compare.crowdin.related.whatIsI18nDesc", { defaultValue: "Understanding internationalization fundamentals" }) },
           { to: "/$locale/i18n/react", title: t("compare.crowdin.related.react", { defaultValue: "React i18n" }), description: t("compare.crowdin.related.reactDesc", { defaultValue: "Integrate translations into your React app" }) },
-          { to: "/$locale/features", title: t("compare.crowdin.related.features", { defaultValue: "All Features" }), description: t("compare.crowdin.related.featuresDesc", { defaultValue: "Explore the full Better i18n platform" }) },
+          { to: "/$locale/features", title: t("compare.crowdin.related.features", { defaultValue: "All Features" }), description: t("compare.crowdin.related.featuresDesc", { defaultValue: "Explore the full Better I18N platform" }) },
         ]}
       />
 

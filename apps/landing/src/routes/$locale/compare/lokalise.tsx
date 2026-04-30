@@ -72,7 +72,7 @@ function LokaliseComparisonPage() {
         ]}
       />
 
-      {/* Why Better i18n */}
+      {/* Why Better I18N */}
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-12">

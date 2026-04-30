@@ -87,7 +87,7 @@ function TermsPage() {
         <p>
           {t("sections.introduction.content", {
             defaultValue:
-              "These Terms of Service (\"Terms\") govern your use of the Better i18n platform, website (better-i18n.com), APIs, SDKs, and any related services (collectively, the \"Service\") provided by Better i18n, Inc. (\"we\", \"us\", \"our\"). By accessing or using the Service, you agree to be bound by these Terms in a legally binding way.",
+              "These Terms of Service (\"Terms\") govern your use of the Better I18N platform, website (better-i18n.com), APIs, SDKs, and any related services (collectively, the \"Service\") provided by Better i18n, Inc. (\"we\", \"us\", \"our\"). By accessing or using the Service, you agree to be bound by these Terms in a legally binding way.",
           })}
         </p>
         <p>
@@ -121,7 +121,7 @@ function TermsPage() {
         <p>
           {t("sections.services.description", {
             defaultValue:
-              "Better i18n provides a localization infrastructure platform that includes translation management, AI-powered translation, content delivery via CDN, SDK integrations, a content management system (CMS), MCP servers, and related developer tools. The Service is offered as a cloud-based SaaS solution.",
+              "Better I18N provides a localization infrastructure platform that includes translation management, AI-powered translation, content delivery via CDN, SDK integrations, a content management system (CMS), MCP servers, and related developer tools. The Service is offered as a cloud-based SaaS solution.",
           })}
         </p>
         <p>
@@ -439,7 +439,7 @@ function TermsPage() {
         </h2>
         <dl>
           <dt><strong>{t("sections.definitions.service.term", { defaultValue: "Service" })}</strong></dt>
-          <dd>{t("sections.definitions.service.definition", { defaultValue: "The Better i18n platform, website, APIs, SDKs, and all related tools and services." })}</dd>
+          <dd>{t("sections.definitions.service.definition", { defaultValue: "The Better I18N platform, website, APIs, SDKs, and all related tools and services." })}</dd>
 
           <dt><strong>{t("sections.definitions.user.term", { defaultValue: "User (or You)" })}</strong></dt>
           <dd>{t("sections.definitions.user.definition", { defaultValue: "The individual or organization that uses the Service." })}</dd>

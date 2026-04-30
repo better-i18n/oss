@@ -135,7 +135,7 @@ function FeaturesPage() {
       title: t("core.workflow.title", "Git-native from day one"),
       description: t(
         "core.workflow.description",
-        "Better i18n fits your existing development workflow instead of replacing it. Translations sync through pull requests, deploy through your CI/CD pipeline, and deliver through our global CDN.",
+        "Better I18N fits your existing development workflow instead of replacing it. Translations sync through pull requests, deploy through your CI/CD pipeline, and deliver through our global CDN.",
       ),
       supportingPoints: [
         t(
@@ -281,7 +281,7 @@ function FeaturesPage() {
             <p className="mt-4 max-w-2xl text-lg text-mist-700">
               {t(
                 "core.subtitle",
-                "Explore the core layers of Better i18n, from context-aware translation to developer workflows and automated content discovery.",
+                "Explore the core layers of Better I18N, from context-aware translation to developer workflows and automated content discovery.",
               )}
             </p>
           </div>

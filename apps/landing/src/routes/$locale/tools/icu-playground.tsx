@@ -423,7 +423,7 @@ function ICUPlaygroundPage() {
       locale={locale}
       faqItems={FAQ_ITEMS}
       breadcrumbs={breadcrumbs}
-      ctaText="Manage all your ICU messages in Better i18n"
+      ctaText="Manage all your ICU messages in Better I18N"
       ctaHref="https://dash.better-i18n.com"
     >
       {/* Top toolbar */}
@@ -602,13 +602,13 @@ function ICUPlaygroundPage() {
               Managing hundreds of ICU messages?
             </p>
             <p className="mt-1 text-sm text-mist-600">
-              Better i18n handles validation, delivery, and AI-powered translations — so your team ships faster.
+              Better I18N handles validation, delivery, and AI-powered translations — so your team ships faster.
             </p>
             <a
               href="https://dash.better-i18n.com"
               className="mt-3 inline-flex items-center justify-center rounded-xl bg-mist-950 px-4 py-2 text-sm font-medium text-white hover:bg-mist-800"
             >
-              Try Better i18n free
+              Try Better I18N free
             </a>
           </div>
         </div>

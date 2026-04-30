@@ -40,7 +40,7 @@ export interface LlmsLocaleStrings {
 
 const ENGLISH_DEFAULTS: LlmsLocaleStrings = {
   tagline: "AI-powered localization platform for developers and product teams. Ship multilingual apps faster with automated translations, context-aware AI, and seamless framework integrations.",
-  about: "Better i18n is a translation management system (TMS) that combines AI-powered translations with developer-first tooling. It supports React, Next.js, Vue, Nuxt, Angular, Svelte, and Expo (React Native) through official SDK packages. The platform provides context-rich translation environments for translators, automated sync for developers, and hassle-free localization management for product teams.",
+  about: "Better I18N is a translation management system (TMS) that combines AI-powered translations with developer-first tooling. It supports React, Next.js, Vue, Nuxt, Angular, Svelte, and Expo (React Native) through official SDK packages. The platform provides context-rich translation environments for translators, automated sync for developers, and hassle-free localization management for product teams.",
   headings: {
     keyPages: "Key Pages",
     solutionsByRole: "Solutions by Role",
@@ -125,7 +125,7 @@ function pathToKey(pagePath: string): string {
 
 /**
  * English fallback titles — used only when CDN messages are unavailable.
- * Source of truth is Better i18n platform (page-titles namespace).
+ * Source of truth is Better I18N platform (page-titles namespace).
  */
 const ENGLISH_PAGE_TITLES: Readonly<Record<string, string>> = {
   "": "Home", features: "Features", pricing: "Pricing", integrations: "Integrations",
@@ -147,11 +147,11 @@ const ENGLISH_PAGE_TITLES: Readonly<Record<string, string>> = {
   "i18n/vite": "Vite i18n Guide", "i18n/remix-hydrogen": "Remix & Hydrogen i18n Guide",
   "i18n/react-intl": "React Intl Guide", "i18n/react-native-localization": "React Native Localization",
   "i18n/for-developers": "i18n for Developers",
-  compare: "Comparisons Overview", "compare/crowdin": "Better i18n vs Crowdin",
-  "compare/lokalise": "Better i18n vs Lokalise", "compare/phrase": "Better i18n vs Phrase",
-  "compare/transifex": "Better i18n vs Transifex", "compare/smartling": "Better i18n vs Smartling",
-  "compare/xtm": "Better i18n vs XTM",
-  "compare/crowdin-vs-lokalise": "Crowdin vs Lokalise vs Better i18n",
+  compare: "Comparisons Overview", "compare/crowdin": "Better I18N vs Crowdin",
+  "compare/lokalise": "Better I18N vs Lokalise", "compare/phrase": "Better I18N vs Phrase",
+  "compare/transifex": "Better I18N vs Transifex", "compare/smartling": "Better I18N vs Smartling",
+  "compare/xtm": "Better I18N vs XTM",
+  "compare/crowdin-vs-lokalise": "Crowdin vs Lokalise vs Better I18N",
   "i18n/complete-guide": "Complete Guide to i18n & Localization",
   "what-is": "What is i18n? Internationalization & Localization Guide",
   "what-is-internationalization": "What is Internationalization?",
@@ -197,7 +197,7 @@ const ENGLISH_PAGE_TITLES: Readonly<Record<string, string>> = {
 
 /**
  * English fallback descriptions — used only when CDN messages are unavailable.
- * Source of truth is Better i18n platform (page-descriptions namespace).
+ * Source of truth is Better I18N platform (page-descriptions namespace).
  */
 const ENGLISH_PAGE_DESCRIPTIONS: Readonly<Record<string, string>> = {
   "": "AI-powered localization platform overview — SDKs for React, Next.js, Vue, Angular, Svelte, Expo, Flutter. Free tier available.",
@@ -209,16 +209,16 @@ const ENGLISH_PAGE_DESCRIPTIONS: Readonly<Record<string, string>> = {
   "for-product-teams": "Localization management dashboard with progress tracking, review workflows, and analytics.",
   "i18n/complete-guide": "Comprehensive guide covering i18n fundamentals, implementation patterns, and best practices.",
   "what-is": "Learn the difference between internationalization (i18n) and localization (l10n) with comparison table.",
-  compare: "Side-by-side comparisons of Better i18n vs Crowdin, Lokalise, Phrase, Transifex, Smartling, and XTM.",
-  "compare/crowdin": "Feature, pricing, and developer experience comparison between Better i18n and Crowdin.",
-  "compare/lokalise": "Feature, pricing, and developer experience comparison between Better i18n and Lokalise.",
-  "compare/phrase": "Feature, pricing, and developer experience comparison between Better i18n and Phrase.",
-  "compare/transifex": "Feature, pricing, and developer experience comparison between Better i18n and Transifex.",
-  "compare/smartling": "Feature, pricing, and developer experience comparison between Better i18n and Smartling. Covers AI translation, workflow automation, and enterprise capabilities.",
-  "compare/xtm": "Feature, pricing, and developer experience comparison between Better i18n and XTM. Covers translation memory, connector ecosystem, and localization workflows.",
-  "compare/crowdin-vs-lokalise": "Three-way comparison of Crowdin vs Lokalise vs Better i18n. Pricing for 10-person teams, feature matrix, CLI/API/SDK coverage, and migration guide.",
+  compare: "Side-by-side comparisons of Better I18N vs Crowdin, Lokalise, Phrase, Transifex, Smartling, and XTM.",
+  "compare/crowdin": "Feature, pricing, and developer experience comparison between Better I18N and Crowdin.",
+  "compare/lokalise": "Feature, pricing, and developer experience comparison between Better I18N and Lokalise.",
+  "compare/phrase": "Feature, pricing, and developer experience comparison between Better I18N and Phrase.",
+  "compare/transifex": "Feature, pricing, and developer experience comparison between Better I18N and Transifex.",
+  "compare/smartling": "Feature, pricing, and developer experience comparison between Better I18N and Smartling. Covers AI translation, workflow automation, and enterprise capabilities.",
+  "compare/xtm": "Feature, pricing, and developer experience comparison between Better I18N and XTM. Covers translation memory, connector ecosystem, and localization workflows.",
+  "compare/crowdin-vs-lokalise": "Three-way comparison of Crowdin vs Lokalise vs Better I18N. Pricing for 10-person teams, feature matrix, CLI/API/SDK coverage, and migration guide.",
   blog: "Latest articles on internationalization, localization, multilingual SEO, and translation management.",
-  about: "Company story, mission, and team behind Better i18n.",
+  about: "Company story, mission, and team behind Better I18N.",
   "i18n/react": "Step-by-step React i18n setup with @better-i18n/use-intl, hooks, and context API.",
   "i18n/nextjs": "Next.js App Router i18n with Server Components, middleware locale detection, and SSR.",
   "i18n/vue": "Vue 3 Composition API i18n integration with reactive translations and lazy loading.",
@@ -229,7 +229,7 @@ const ENGLISH_PAGE_DESCRIPTIONS: Readonly<Record<string, string>> = {
   "tools/locale-explorer": "Interactive locale explorer with Intl API formatting examples, CLDR plural rules, and framework config generators for 250+ locales.",
   "tools/icu-playground": "Live ICU MessageFormat playground with syntax validation, multi-locale preview, variable injection, and code snippet generation.",
   "tools/translation-file-converter": "Convert between JSON, PO, XLIFF, ARB, YAML, CSV, Android XML, iOS Strings, and Java Properties translation file formats.",
-  "tools/cost-calculator": "Estimate localization costs across human translation, AI+review, and Better i18n — with per-language breakdown and ROI projection.",
+  "tools/cost-calculator": "Estimate localization costs across human translation, AI+review, and Better I18N — with per-language breakdown and ROI projection.",
   "tools/hreflang-generator": "Generate and validate hreflang tags for multilingual SEO — HTML link tags, XML sitemap entries, and HTTP headers.",
 };
 
@@ -426,7 +426,7 @@ function renderLinkSection(
 
 function buildHeader(strings: LlmsLocaleStrings): string {
   return [
-    "# Better i18n",
+    "# Better I18N",
     "",
     `> ${strings.tagline}`,
     "",
@@ -438,7 +438,7 @@ function buildHeader(strings: LlmsLocaleStrings): string {
 
 function buildDetailedHeader(strings: LlmsLocaleStrings): string {
   return [
-    "# Better i18n — Full Reference",
+    "# Better I18N — Full Reference",
     "",
     `> ${strings.tagline}`,
     "",
@@ -532,7 +532,7 @@ export function generateLlmsFullTxtContent(
  *
  * - Root `/llms.txt` and `/llms-full.txt` are always English.
  * - Each locale gets `{locale}/llms.txt` and `{locale}/llms-full.txt`.
- * - When `i18nMessages` is provided, translations come from the Better i18n CDN.
+ * - When `i18nMessages` is provided, translations come from the Better I18N CDN.
  *   Falls back to English defaults when CDN messages are unavailable.
  *
  * Pure function — no I/O.

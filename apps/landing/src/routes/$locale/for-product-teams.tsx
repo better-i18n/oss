@@ -23,7 +23,7 @@ export const Route = createFileRoute("/$locale/for-product-teams")({
       pathname: "/for-product-teams",
       pageType: "educational",
       structuredDataOptions: {
-        title: "Better i18n for Product Teams",
+        title: "Better I18N for Product Teams",
         description: "Centralized localization dashboard with real-time progress tracking, team collaboration, and instant deployment for product managers.",
       },
     });

@@ -34,8 +34,8 @@ export const Route = createFileRoute("/$locale/integrations/$slug")({
       structuredDataOptions: {
         title: `${cmsItem?.name || "Integration"} integration`,
         description: cmsItem
-          ? `Explore how ${cmsItem.name} fits into Better i18n workflows for developer-led localization.`
-          : "Explore Better i18n integrations.",
+          ? `Explore how ${cmsItem.name} fits into Better I18N workflows for developer-led localization.`
+          : "Explore Better I18N integrations.",
       },
     });
   },

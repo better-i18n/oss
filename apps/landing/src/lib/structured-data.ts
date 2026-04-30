@@ -258,7 +258,7 @@ const TESTIMONIAL_REVIEWS = [
     jobTitle: "Founder",
     worksFor: "Hellospace",
     url: "https://hellospace.world/",
-    quote: "Better i18n completely changed how we handle localization. The AI translations are incredibly accurate and context-aware.",
+    quote: "Better I18N completely changed how we handle localization. The AI translations are incredibly accurate and context-aware.",
   },
   {
     author: "Tevfik Can Karanfil",
@@ -279,7 +279,7 @@ const TESTIMONIAL_REVIEWS = [
     jobTitle: "Engineering Manager",
     worksFor: "Masraff",
     url: "https://masraff.ai",
-    quote: "Better i18n transformed our localization pipeline. We manage 20+ languages across our fintech products with zero friction — the AI understands financial terminology perfectly.",
+    quote: "Better I18N transformed our localization pipeline. We manage 20+ languages across our fintech products with zero friction — the AI understands financial terminology perfectly.",
   },
 ] as const;
 

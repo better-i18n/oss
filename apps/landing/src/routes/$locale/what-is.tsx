@@ -47,8 +47,8 @@ export const Route = createFileRoute("/$locale/what-is")({
 
     const howToScript = howToSteps.length > 0
       ? formatStructuredData(getHowToSchema({
-          name: "How to Internationalize Your Application with Better i18n",
-          description: "Step-by-step guide to setting up internationalization using Better i18n.",
+          name: "How to Internationalize Your Application with Better I18N",
+          description: "Step-by-step guide to setting up internationalization using Better I18N.",
           steps: howToSteps,
           totalTime: "PT15M",
           inLanguage: locale,
@@ -259,7 +259,7 @@ function WhatIsPage() {
         </div>
       </section>
 
-      {/* How Better i18n Simplifies the Process */}
+      {/* How Better I18N Simplifies the Process */}
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">

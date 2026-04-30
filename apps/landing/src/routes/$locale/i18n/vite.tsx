@@ -24,7 +24,7 @@ export const Route = createFileRoute("/$locale/i18n/vite")({
       metaFallback: {
         title: "Vite i18n Guide",
         description:
-          "Use Better i18n with Vite for typed translations, fast local development, and CDN-delivered locale content.",
+          "Use Better I18N with Vite for typed translations, fast local development, and CDN-delivered locale content.",
       },
       structuredDataOptions: {
         framework: "Vite",
@@ -134,13 +134,13 @@ export default function App() {
       <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
         title="Vite i18n without slowing down development"
-        subtitle="Use Better i18n with Vite projects to keep hot reload fast, translation keys typed, and locale content easy to ship across app and marketing surfaces."
+        subtitle="Use Better I18N with Vite projects to keep hot reload fast, translation keys typed, and locale content easy to ship across app and marketing surfaces."
         badgeText="Vite i18n"
       />
 
       <SetupGuide title="Get started in 3 steps" steps={setupSteps} />
 
-      <FeatureList title="Why use Better i18n with Vite?" features={features} />
+      <FeatureList title="Why use Better I18N with Vite?" features={features} />
 
       <CodeExample
         title="Typical Vite setup"

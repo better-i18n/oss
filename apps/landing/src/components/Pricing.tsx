@@ -216,7 +216,7 @@ export default function Pricing({
                     href={plan.ctaHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`${plan.ctaLabel} — Better i18n ${plan.name}`}
+                    aria-label={`${plan.ctaLabel} — Better I18N ${plan.name}`}
                     className={cn(
                       "mt-5 inline-flex w-full items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200",
                       isPopular

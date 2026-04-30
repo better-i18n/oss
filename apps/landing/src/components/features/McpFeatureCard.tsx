@@ -9,7 +9,7 @@
  *
  * 4-beat story arc: cycles through the four IDEs, sliding the underline
  * indicator and crossfading the code block content. Demonstrates that
- * Better i18n's MCP works across every major coding agent.
+ * Better I18N's MCP works across every major coding agent.
  */
 
 import { useRef } from "react";

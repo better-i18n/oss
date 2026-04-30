@@ -17,7 +17,7 @@ export default function CTA() {
               href="https://dash.better-i18n.com"
               aria-label={t("startTrialAriaLabel", {
                 defaultValue:
-                  "Start free trial — Better i18n localization platform",
+                  "Start free trial — Better I18N localization platform",
               })}
               className="inline-flex items-center justify-center rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800"
             >

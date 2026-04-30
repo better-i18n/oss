@@ -100,7 +100,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
 
     const excerpt = post?.excerpt || "";
     const postTitle = post?.title || "Post";
-    const authorName = post?.authorName || "Better i18n Team";
+    const authorName = post?.authorName || "Better I18N Team";
 
     // Build base meta using getLocalizedMeta with article type
     const meta = getLocalizedMeta(
@@ -117,7 +117,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     // Override with blog-specific values (immutable spread)
     const blogMeta = {
       ...meta,
-      title: truncateTitle(`${postTitle} | Better i18n`),
+      title: truncateTitle(`${postTitle} | Better I18N`),
       description: excerpt,
       ogTitle: postTitle,
       ogDescription: excerpt,

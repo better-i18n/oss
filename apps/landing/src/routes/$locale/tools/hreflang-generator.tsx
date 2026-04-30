@@ -70,9 +70,9 @@ const FAQ_ITEMS = [
       "The most frequent errors are: missing the x-default tag, non-reciprocal annotations, using wrong locale codes (e.g. 'en_US' instead of 'en-US'), duplicate locale codes in the same page, and pointing hreflang URLs to redirecting or non-canonical pages. Use this tool's validation panel to catch these before deployment.",
   },
   {
-    question: "Does Better i18n handle hreflang automatically?",
+    question: "Does Better I18N handle hreflang automatically?",
     answer:
-      "Yes — Better i18n auto-generates hreflang tags for every locale your app supports, using the canonical URLs from your routing configuration. No manual tag management needed as you add or remove languages.",
+      "Yes — Better I18N auto-generates hreflang tags for every locale your app supports, using the canonical URLs from your routing configuration. No manual tag management needed as you add or remove languages.",
   },
 ] as const;
 
@@ -155,7 +155,7 @@ function HreflangGeneratorPage() {
         { label: "Free Tools", href: "/tools" },
         { label: "Hreflang Generator" },
       ]}
-      ctaText="Auto-generate hreflang with Better i18n"
+      ctaText="Auto-generate hreflang with Better I18N"
       ctaHref="https://dash.better-i18n.com"
     >
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
@@ -395,7 +395,7 @@ function HreflangGeneratorPage() {
 
       {/* CTA note */}
       <p className="mt-10 text-center text-sm text-mist-600">
-        Better i18n auto-generates hreflang for your localized app — no manual
+        Better I18N auto-generates hreflang for your localized app — no manual
         tag management required.{" "}
         <a
           href="https://dash.better-i18n.com"

@@ -54,7 +54,7 @@ export async function personaLoader(
 
 /**
  * English fallback labels for persona pages.
- * Source of truth is Better i18n platform (page-titles namespace).
+ * Source of truth is Better I18N platform (page-titles namespace).
  */
 const ENGLISH_PERSONA_LABELS: Readonly<Record<string, string>> = {
   "for-marketers": "For Marketers",
@@ -110,7 +110,7 @@ export function personaHead(loaderData?: {
 
   return {
     meta: [
-      { title: `${page?.title || label} - Better i18n` },
+      { title: `${page?.title || label} - Better I18N` },
       { name: "description", content: excerpt },
       { property: "og:title", content: page?.title || "" },
       { property: "og:description", content: excerpt },
@@ -120,7 +120,7 @@ export function personaHead(loaderData?: {
       { property: "og:image:alt", content: page?.title || label },
       { property: "og:type", content: "website" },
       { property: "og:url", content: canonicalUrl },
-      { property: "og:site_name", content: "Better i18n" },
+      { property: "og:site_name", content: "Better I18N" },
       { property: "og:locale", content: locale },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@betteri18n" },
@@ -129,7 +129,7 @@ export function personaHead(loaderData?: {
       { name: "twitter:image", content: dynamicOgImage },
       { name: "twitter:image:alt", content: page?.title || label },
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
-      { name: "author", content: "Better i18n" },
+      { name: "author", content: "Better I18N" },
       ...(page?.targetKeywords
         ? [{ name: "keywords", content: page.targetKeywords }]
         : []),

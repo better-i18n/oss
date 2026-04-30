@@ -267,10 +267,10 @@ function CulturalAdaptationPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "How Better i18n Supports Cultural Adaptation" })}
+              {t("solution.title", { defaultValue: "How Better I18N Supports Cultural Adaptation" })}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better i18n is built for teams that take cultural adaptation seriously. Our platform handles the technical infrastructure — locale routing, ICU message formatting, RTL layout support, and plural rules for over 200 languages — so your team can focus on the content and cultural strategy that turns visitors into customers across every market." })}
+              {t("solution.content", { defaultValue: "Better I18N is built for teams that take cultural adaptation seriously. Our platform handles the technical infrastructure — locale routing, ICU message formatting, RTL layout support, and plural rules for over 200 languages — so your team can focus on the content and cultural strategy that turns visitors into customers across every market." })}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
@@ -332,19 +332,19 @@ function CulturalAdaptationPage() {
             {t("cta.title", { defaultValue: "Build Websites That Feel Local Everywhere" })}
           </h2>
           <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Better i18n gives your team the infrastructure to adapt your product culturally for every market — from different languages to different payment flows." })}
+            {t("cta.subtitle", { defaultValue: "Better I18N gives your team the infrastructure to adapt your product culturally for every market — from different languages to different payment flows." })}
           </p>
           <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <a
               href="https://dash.better-i18n.com"
-              aria-label="Start cultural adaptation for your website with Better i18n for free"
+              aria-label="Start cultural adaptation for your website with Better I18N for free"
               className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
             >
               {t("cta.primary", { defaultValue: "Get Started Free" })}
             </a>
             <a
               href="https://docs.better-i18n.com"
-              aria-label="Read the Better i18n documentation"
+              aria-label="Read the Better I18N documentation"
               className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
             >
               {t("cta.secondary", { defaultValue: "Read the Docs" })}

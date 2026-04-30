@@ -14,7 +14,7 @@ export const COST_TIERS: readonly CostTier[] = [
     description: "Machine translation reviewed by human translators",
   },
   {
-    name: "Better i18n AI",
+    name: "Better I18N AI",
     minPerWord: 0.01,
     maxPerWord: 0.03,
     description: "AI-powered translation with context-aware quality",

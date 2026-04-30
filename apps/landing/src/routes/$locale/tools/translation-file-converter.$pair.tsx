@@ -22,7 +22,7 @@ export const Route = createFileRoute(
     const pair = loaderData?.formatPair;
     const sourceName = pair?.source.name ?? "";
     const targetName = pair?.target.name ?? "";
-    const title = `${sourceName} to ${targetName} Converter — Better i18n`;
+    const title = `${sourceName} to ${targetName} Converter — Better I18N`;
     const description = `Convert ${sourceName} translation files to ${targetName} format instantly. Free, browser-based converter — no file upload required.`;
 
     return getPageHead({

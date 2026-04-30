@@ -91,7 +91,7 @@ export const Route = createFileRoute("/$locale/changelog/$slug")({
     const pathname = `/changelog/${slug}`;
 
     const title = truncateTitle(
-      `${entry?.title || "Release"} — Better i18n Changelog`,
+      `${entry?.title || "Release"} — Better I18N Changelog`,
     );
     const description =
       entry?.summary ||

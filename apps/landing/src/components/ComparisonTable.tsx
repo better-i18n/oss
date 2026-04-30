@@ -19,12 +19,12 @@ export function ComparisonTable({ competitorName, features, featureLabel }: Comp
   const t = useT("compare");
   const defaultFeatureLabel = t("featureColumn", { defaultValue: "Feature" });
   return (
-    <div role="table" aria-label={`Feature comparison: Better i18n vs ${competitorName}`} className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
+    <div role="table" aria-label={`Feature comparison: Better I18N vs ${competitorName}`} className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
       {/* Header */}
       <div role="row" className="grid grid-cols-3 bg-mist-50 border-b border-mist-200">
         <div role="columnheader" className="p-4 text-sm font-medium text-mist-600">{featureLabel ?? defaultFeatureLabel}</div>
         <div role="columnheader" className="p-4 text-sm font-medium text-mist-950 text-center border-l border-mist-200 bg-mist-100">
-          Better i18n
+          Better I18N
         </div>
         <div role="columnheader" className="p-4 text-sm font-medium text-mist-600 text-center border-l border-mist-200">
           {competitorName}
@@ -465,7 +465,7 @@ interface OtherComparisonsProps {
 export function OtherComparisons({ currentSlug, locale, title }: OtherComparisonsProps) {
   const t = useT("compare");
   const others = allComparisons.filter((c) => c.slug !== currentSlug);
-  const vsLabelTemplate = t("vsLabel", { defaultValue: "Better i18n vs {name}" });
+  const vsLabelTemplate = t("vsLabel", { defaultValue: "Better I18N vs {name}" });
 
   return (
     <section className="py-16 border-t border-mist-200">

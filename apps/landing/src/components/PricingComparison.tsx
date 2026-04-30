@@ -16,14 +16,14 @@ type Vendor = (typeof VENDORS)[number];
 type Cell = true | false | string | { i18n: string; fb: string };
 
 const VENDOR_LABELS: Record<Vendor, string> = {
-  betterI18n: "Better i18n",
+  betterI18n: "Better I18N",
   lokalise: "Lokalise",
   crowdin: "Crowdin",
   phrase: "Phrase",
 };
 
 /**
- * Render the vendor label. Better i18n is special-cased to show our logo
+ * Render the vendor label. Better I18N is special-cased to show our logo
  * + branded wordmark; competitors render as plain text.
  */
 function VendorHeader({ vendor }: { vendor: Vendor }) {
@@ -551,13 +551,13 @@ export function PricingComparison() {
         <div className="max-w-3xl mb-12">
           <h2 className="font-display text-3xl/[1.08] font-medium tracking-[-0.03em] text-mist-950 sm:text-4xl/[1.04] text-balance">
             {t("comparison.title", {
-              defaultValue: "Why teams choose Better i18n over legacy TMS",
+              defaultValue: "Why teams choose Better I18N over legacy TMS",
             })}
           </h2>
           <p className="mt-5 text-lg text-mist-600 text-pretty">
             {t("comparison.subtitle", {
               defaultValue:
-                "Better i18n delivers the same translation memory and review workflows — with native AI, edge CDN delivery, and a modern stack — without the enterprise contract.",
+                "Better I18N delivers the same translation memory and review workflows — with native AI, edge CDN delivery, and a modern stack — without the enterprise contract.",
             })}
           </p>
         </div>
@@ -617,7 +617,7 @@ export function PricingComparison() {
 
                   // Feature row
                   // Detect whether this is the LAST feature row of the
-                  // entire matrix to round Better i18n column's bottom corners.
+                  // entire matrix to round Better I18N column's bottom corners.
                   const isLastRow = idx === ITEMS.length - 1;
 
                   return (

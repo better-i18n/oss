@@ -72,7 +72,7 @@ function PhraseComparisonPage() {
         ]}
       />
 
-      {/* Why Better i18n */}
+      {/* Why Better I18N */}
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-12">
@@ -118,7 +118,7 @@ function PhraseComparisonPage() {
         locale={locale}
         links={[
           { to: "/$locale/what-is-localization", title: t("compare.phrase.related.l10n", { defaultValue: "What is Localization?" }), description: t("compare.phrase.related.l10nDesc", { defaultValue: "Understanding l10n for enterprise teams" }) },
-          { to: "/$locale/features", title: t("compare.phrase.related.features", { defaultValue: "Platform Features" }), description: t("compare.phrase.related.featuresDesc", { defaultValue: "See the full Better i18n feature set" }) },
+          { to: "/$locale/features", title: t("compare.phrase.related.features", { defaultValue: "Platform Features" }), description: t("compare.phrase.related.featuresDesc", { defaultValue: "See the full Better I18N feature set" }) },
           { to: "/$locale/for-developers", title: t("compare.phrase.related.forDevs", { defaultValue: "For Developers" }), description: t("compare.phrase.related.forDevsDesc", { defaultValue: "Developer-first localization workflows" }) },
         ]}
       />

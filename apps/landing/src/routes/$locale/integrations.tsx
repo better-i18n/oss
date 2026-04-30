@@ -34,8 +34,8 @@ export const Route = createFileRoute("/$locale/integrations")({
       pathname: "/integrations",
       pageType: "educational",
       structuredDataOptions: {
-        title: "Better i18n Integrations Directory",
-        description: "Explore Better i18n integrations for GitHub, CLI, API, MCP, CDN delivery, Next.js, React, Expo, Vue, and more. Discover integration surfaces for modern localization workflows.",
+        title: "Better I18N Integrations Directory",
+        description: "Explore Better I18N integrations for GitHub, CLI, API, MCP, CDN delivery, Next.js, React, Expo, Vue, and more. Discover integration surfaces for modern localization workflows.",
       },
     });
   },
@@ -152,7 +152,7 @@ function IntegrationsIndex({ locale }: { locale: string }) {
             <p className="mt-5 max-w-xl text-sm/7 text-mist-700">
               {t("hero.subtitle", {
                 defaultValue:
-                  "Better i18n is not a giant marketplace. It is a focused integration surface for teams that want AI-native localization, Git-native review, and CDN-first delivery without heavy TMS overhead.",
+                  "Better I18N is not a giant marketplace. It is a focused integration surface for teams that want AI-native localization, Git-native review, and CDN-first delivery without heavy TMS overhead.",
               })}
             </p>
           </div>
