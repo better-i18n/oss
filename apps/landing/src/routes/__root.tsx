@@ -34,6 +34,28 @@ const LazyHelpwayWidget = lazy(() =>
 );
 
 /**
+ * Mounts the Helpway widget client-side only without causing hydration
+ * mismatch. Renders nothing on SSR and on the first client render so
+ * server HTML and the initial client render match. After the post-mount
+ * effect flips `mounted` to true, the widget is rendered on the client
+ * only — at that point React has already committed the matching server
+ * tree, so there's no mismatch to detect.
+ */
+function HelpwayWidgetMount({ locale }: { locale: string }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return (
+    <Suspense fallback={null}>
+      <LazyHelpwayWidget
+        apiKey="pk_live_Nir-sHLl1_qc9S9EuV9RdNN5"
+        locale={locale}
+      />
+    </Suspense>
+  );
+}
+
+/**
  * Per-request SSR side-channel for i18n messages.
  *
  * Keyed by a unique requestId generated in beforeLoad — safe under concurrent
@@ -397,11 +419,7 @@ function RootComponent() {
           </BetterI18nProvider>
         </QueryClientProvider>
         <Scripts />
-        {typeof document !== "undefined" && (
-          <Suspense fallback={null}>
-            <LazyHelpwayWidget apiKey="pk_live_Nir-sHLl1_qc9S9EuV9RdNN5" locale={locale} />
-          </Suspense>
-        )}
+        <HelpwayWidgetMount locale={locale} />
       </body>
     </html>
   );
