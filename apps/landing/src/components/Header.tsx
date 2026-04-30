@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "@tanstack/react-router";
 
 import { cn } from "@better-i18n/ui/lib/utils";
@@ -51,9 +51,9 @@ declare global {
   }
 }
 
-const LazyMobileNav = lazy(() =>
-  import("./MobileNav").then((m) => ({ default: m.MobileNav })),
-);
+// MobileNav is now lightweight (~1KB trigger only) — its panel chunk is
+// lazy-loaded inside MobileNav itself when the user opens the menu.
+import { MobileNav } from "./MobileNav";
 
 export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
@@ -629,21 +629,7 @@ export default function Header({ className }: { className?: string }) {
               </a>
             </div>
           </div>
-          <Suspense
-            fallback={
-              <div className="lg:hidden">
-                <div className="flex size-10 items-center justify-center rounded-lg text-mist-950">
-                  <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 5h16" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 12h16" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 19h16" />
-                  </svg>
-                </div>
-              </div>
-            }
-          >
-            <LazyMobileNav />
-          </Suspense>
+          <MobileNav />
         </div>
       </nav>
     </header>

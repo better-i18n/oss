@@ -1,0 +1,590 @@
+import { useCallback, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { Link, useParams } from "@tanstack/react-router";
+import { cn } from "@better-i18n/ui/lib/utils";
+import {
+  IconAiTranslate,
+  IconPeople,
+  IconNewspaper,
+  IconLiveActivity,
+} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { LifeBuoy } from "lucide-react";
+import { SpriteIcon } from "@/components/SpriteIcon";
+import { useT } from "@/lib/i18n";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useState } from "react";
+
+type SectionKey = "product" | "developers" | "resources" | null;
+
+function useFocusTrap(
+  containerRef: React.RefObject<HTMLElement | null>,
+  isActive: boolean,
+) {
+  useEffect(() => {
+    if (!isActive || !containerRef.current) return;
+
+    const container = containerRef.current;
+    const focusableSelector =
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+
+      const focusable = Array.from(
+        container.querySelectorAll<HTMLElement>(focusableSelector),
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    container.addEventListener("keydown", handleKeyDown);
+    return () => container.removeEventListener("keydown", handleKeyDown);
+  }, [isActive, containerRef]);
+}
+
+interface MobileNavPanelProps {
+  isOpen: boolean;
+  onClose: () => void;
+  menuId: string;
+}
+
+export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps) {
+  const { locale } = useParams({ strict: false });
+  const t = useT("header");
+  const [expandedSection, setExpandedSection] = useState<SectionKey>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const localeParam = locale || "en";
+
+  useFocusTrap(menuRef, isOpen);
+
+  const close = useCallback(() => {
+    setExpandedSection(null);
+    onClose();
+  }, [onClose]);
+
+  const toggleSection = useCallback((section: SectionKey) => {
+    setExpandedSection((prev) => (prev === section ? null : section));
+  }, []);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, close]);
+
+  // Lock body scroll when open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <>
+      {/* Backdrop */}
+      <div
+        className={cn(
+          "fixed inset-0 z-[9998] bg-black/20 backdrop-blur-sm transition-opacity duration-300",
+          isOpen ? "opacity-100" : "pointer-events-none opacity-0",
+        )}
+        aria-hidden="true"
+        onClick={close}
+      />
+
+      {/* Drawer panel */}
+      <div
+        ref={menuRef}
+        id={menuId}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("aria.mobileNav", {
+          defaultValue: "Mobile navigation",
+        })}
+        className={cn(
+          "fixed inset-0 z-[9999] flex w-full flex-col shadow-xl transition-transform duration-300 ease-in-out",
+          isOpen ? "translate-x-0" : "translate-x-full",
+        )}
+        style={{ backgroundColor: "#f5f5f5" }}
+      >
+        {/* Drawer header: logo left, close button right */}
+        <div className="flex h-[5.25rem] shrink-0 items-center justify-between px-6">
+          <Link
+            to="/$locale/"
+            params={{ locale: localeParam }}
+            onClick={close}
+            className="inline-flex items-center"
+          >
+            <img
+              src="/brand/logo.svg"
+              alt="Better I18N"
+              width={28}
+              height={28}
+              className="h-7 w-8"
+            />
+          </Link>
+          <button
+            type="button"
+            onClick={close}
+            aria-label={t("aria.closeMenu", { defaultValue: "Close menu" })}
+            className="flex size-10 items-center justify-center rounded-lg text-mist-950 hover:bg-mist-200 transition-colors"
+          >
+            <svg
+              className="size-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* Scrollable content */}
+        <nav
+          aria-label={t("aria.mobileNav", {
+            defaultValue: "Mobile navigation",
+          })}
+          className="flex-1 overflow-y-auto overscroll-contain px-6 pb-6"
+        >
+          <div className="space-y-1">
+            <Link
+              to="/$locale/features/"
+              params={{ locale: localeParam }}
+              onClick={close}
+              className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+            >
+              {t("features", { defaultValue: "Features" })}
+            </Link>
+
+            <Link
+              to="/$locale/tools/"
+              params={{ locale: localeParam }}
+              onClick={close}
+              className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+            >
+              {t("tools", { defaultValue: "Tools" })}
+            </Link>
+
+            {/* Product */}
+            <AccordionSection
+              label={t("forProduct", { defaultValue: "Product" })}
+              isExpanded={expandedSection === "product"}
+              onToggle={() => toggleSection("product")}
+            >
+              <div className="space-y-1 pb-1">
+                <Link
+                  to="/$locale/for-translators/"
+                  params={{ locale: localeParam }}
+                  onClick={close}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-mist-200 bg-white text-mist-700 shadow-sm">
+                    <IconAiTranslate className="size-4" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-mist-950">
+                      {t("segments.translators.title", {
+                        defaultValue: "For Translators",
+                      })}
+                    </div>
+                    <div className="text-xs text-mist-700">
+                      {t("segments.translators.shortDescription", {
+                        defaultValue: "Context-rich translation environment",
+                      })}
+                    </div>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/$locale/for-developers/"
+                  params={{ locale: localeParam }}
+                  onClick={close}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-mist-200 bg-white text-mist-700 shadow-sm">
+                    <SpriteIcon name="code-brackets" className="size-4" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-mist-950">
+                      {t("segments.developers.title", {
+                        defaultValue: "For Developers",
+                      })}
+                    </div>
+                    <div className="text-xs text-mist-700">
+                      {t("segments.developers.shortDescription", {
+                        defaultValue:
+                          "Automated sync and developer-first tools",
+                      })}
+                    </div>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/$locale/for-product-teams/"
+                  params={{ locale: localeParam }}
+                  onClick={close}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-mist-200 bg-white text-mist-700 shadow-sm">
+                    <SpriteIcon name="rocket" className="size-4" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-mist-950">
+                      {t("segments.productTeams.title", {
+                        defaultValue: "For Product Teams",
+                      })}
+                    </div>
+                    <div className="text-xs text-mist-700">
+                      {t("segments.productTeams.shortDescription", {
+                        defaultValue: "Manage localization without the hassle",
+                      })}
+                    </div>
+                  </div>
+                </Link>
+
+                <div className="px-3 pt-2">
+                  <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-mist-600">
+                    {t("menu.moreSolutions", {
+                      defaultValue: "More Solutions",
+                    })}
+                  </p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                    {[
+                      {
+                        to: "/$locale/for-enterprises/" as const,
+                        key: "enterprises",
+                        label: "Enterprises",
+                      },
+                      {
+                        to: "/$locale/for-saas/" as const,
+                        key: "saas",
+                        label: "SaaS",
+                      },
+                      {
+                        to: "/$locale/for-ecommerce/" as const,
+                        key: "ecommerce",
+                        label: "E-Commerce",
+                      },
+                      {
+                        to: "/$locale/for-startups/" as const,
+                        key: "startups",
+                        label: "Startups",
+                      },
+                      {
+                        to: "/$locale/for-agencies/" as const,
+                        key: "agencies",
+                        label: "Agencies",
+                      },
+                    ].map((item) => (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        params={{ locale: localeParam }}
+                        onClick={close}
+                        className="py-1.5 text-sm text-mist-700 hover:text-mist-950 transition-colors"
+                      >
+                        {t(`menu.solutions.${item.key}`, {
+                          defaultValue: item.label,
+                        })}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </AccordionSection>
+
+            {/* Developers */}
+            <AccordionSection
+              label={t("developers.title", { defaultValue: "Developers" })}
+              isExpanded={expandedSection === "developers"}
+              onToggle={() => toggleSection("developers")}
+            >
+              <div className="space-y-1 pb-1">
+                <p className="px-3 py-1 text-xs font-medium uppercase tracking-wider text-mist-700">
+                  {t("developers.frameworkGuides", {
+                    defaultValue: "Framework Guides",
+                  })}
+                </p>
+                <div className="grid grid-cols-2 gap-1">
+                  {[
+                    { to: "/$locale/i18n/react/" as const, label: "React" },
+                    { to: "/$locale/i18n/nextjs/" as const, label: "Next.js" },
+                    { to: "/$locale/i18n/vue/" as const, label: "Vue" },
+                    { to: "/$locale/i18n/nuxt/" as const, label: "Nuxt" },
+                    { to: "/$locale/i18n/angular/" as const, label: "Angular" },
+                    { to: "/$locale/i18n/svelte/" as const, label: "Svelte" },
+                  ].map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      params={{ locale: localeParam }}
+                      onClick={close}
+                      className="rounded-lg px-3 py-2 text-sm font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+                <div className="px-3 pt-2">
+                  <a
+                    href="https://docs.better-i18n.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-mist-700 hover:text-mist-950 transition-colors"
+                  >
+                    {t("developers.viewDocs", {
+                      defaultValue: "View full documentation",
+                    })}
+                  </a>
+                </div>
+              </div>
+            </AccordionSection>
+
+            <Link
+              to="/$locale/pricing/"
+              params={{ locale: localeParam }}
+              onClick={close}
+              className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+            >
+              {t("pricing", { defaultValue: "Pricing" })}
+            </Link>
+
+            <Link
+              to="/$locale/compare/"
+              params={{ locale: localeParam }}
+              onClick={close}
+              className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+            >
+              {t("compare", { defaultValue: "Compare" })}
+            </Link>
+
+            {/* Resources */}
+            <AccordionSection
+              label={t("resources.title", { defaultValue: "Resources" })}
+              isExpanded={expandedSection === "resources"}
+              onToggle={() => toggleSection("resources")}
+            >
+              <div className="space-y-1 pb-1">
+                <Link
+                  to="/$locale/about/"
+                  params={{ locale: localeParam }}
+                  onClick={close}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <IconPeople className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("resources.about.title", { defaultValue: "About Us" })}
+                  </span>
+                </Link>
+
+                <Link
+                  to="/$locale/privacy/"
+                  params={{ locale: localeParam }}
+                  onClick={close}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <SpriteIcon name="shield-check" className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("resources.privacy.title", {
+                      defaultValue: "Privacy Policy",
+                    })}
+                  </span>
+                </Link>
+
+                <Link
+                  to="/$locale/terms/"
+                  params={{ locale: localeParam }}
+                  onClick={close}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <SpriteIcon name="script" className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("resources.terms.title", {
+                      defaultValue: "Terms of Service",
+                    })}
+                  </span>
+                </Link>
+
+                <div className="my-1 border-t border-mist-200" />
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    close();
+                    if (typeof window !== "undefined") window.Helpway?.open();
+                  }}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-mist-200 transition-colors"
+                >
+                  <LifeBuoy className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("resources.helpCenter", { defaultValue: "Help Center" })}
+                  </span>
+                </button>
+
+                <a
+                  href="https://docs.better-i18n.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <SpriteIcon name="book" className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("documentation", { defaultValue: "Documentation" })}
+                  </span>
+                </a>
+
+                <Link
+                  to="/$locale/changelog/"
+                  params={{ locale: localeParam }}
+                  onClick={close}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <SpriteIcon name="sparkles-soft" className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("changelog", { defaultValue: "Changelog" })}
+                  </span>
+                </Link>
+
+                <Link
+                  to="/$locale/blog/"
+                  params={{ locale: localeParam }}
+                  onClick={close}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <IconNewspaper className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("blog", { defaultValue: "Blog" })}
+                  </span>
+                </Link>
+
+                <a
+                  href="https://docs.better-i18n.com/api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <SpriteIcon name="api-connection" className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("apiReference", { defaultValue: "API Reference" })}
+                  </span>
+                </a>
+
+                <a
+                  href="https://status.better-i18n.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <IconLiveActivity className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("status", { defaultValue: "Status" })}
+                  </span>
+                </a>
+
+                <Link
+                  to="/$locale/what-is/"
+                  params={{ locale: localeParam }}
+                  onClick={close}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                >
+                  <SpriteIcon name="globe" className="size-4 text-mist-600" />
+                  <span className="text-sm font-medium text-mist-950">
+                    {t("resources.whatIsI18n", {
+                      defaultValue: "What is i18n?",
+                    })}
+                  </span>
+                </Link>
+              </div>
+            </AccordionSection>
+          </div>
+
+          <div className="mt-6 border-t border-mist-200 pt-6">
+            <div className="flex items-center justify-between px-3">
+              <span className="text-sm font-medium text-mist-700">
+                {t("language", { defaultValue: "Language" })}
+              </span>
+              <LanguageSwitcher />
+            </div>
+          </div>
+        </nav>
+      </div>
+    </>,
+    document.body,
+  );
+}
+
+function AccordionSection({
+  label,
+  isExpanded,
+  onToggle,
+  children,
+}: {
+  label: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  const contentId = `mobile-section-${label.toLowerCase().replace(/\s+/g, "-")}`;
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isExpanded}
+        aria-controls={contentId}
+        className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+      >
+        {label}
+        <SpriteIcon
+          name="chevron-bottom"
+          className={cn(
+            "size-4 text-mist-600 transition-transform duration-200",
+            isExpanded && "rotate-180",
+          )}
+        />
+      </button>
+      <div
+        id={contentId}
+        role="region"
+        className={cn(
+          "grid transition-all duration-200 ease-in-out",
+          isExpanded
+            ? "grid-rows-[1fr] opacity-100"
+            : "grid-rows-[0fr] opacity-0",
+        )}
+      >
+        <div className="overflow-hidden pl-2">{children}</div>
+      </div>
+    </div>
+  );
+}
