@@ -1,21 +1,40 @@
+import { lazy, Suspense } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useT } from "@/lib/i18n";
+// Above-the-fold (eager): Header + Hero own the LCP candidate (the hero h1)
+// and the visible viewport on first paint. Footer is small and shared, also
+// eager.
 import Header from "../../components/Header";
 import Hero from "../../components/Hero";
-import Features from "../../components/Features";
-import FrameworkSupport from "../../components/FrameworkSupport";
-import UseCases from "../../components/UseCases";
-import UserSegments from "../../components/UserSegments";
-import MetricsBadges from "../../components/MetricsBadges";
-import IndustryStats from "../../components/IndustryStats";
-import Alternatives from "../../components/Alternatives";
-import ComparisonFAQ from "../../components/ComparisonFAQ";
-import Testimonials from "../../components/Testimonials";
-import Changelog from "../../components/Changelog";
-import Pricing from "../../components/Pricing";
 import Footer from "../../components/Footer";
-import { RelatedPages } from "@/components/RelatedPages";
+// Below-the-fold (code-split): each section ships as its own chunk so the
+// initial JS bundle stays small and the browser can fetch + parse them in
+// parallel with the main bundle. SSG still resolves these Suspense
+// boundaries at prerender time, so the static HTML keeps every section's
+// SEO content. React 19's progressive hydration takes care of priority on
+// the client. See BETTER-264.
+const Features = lazy(() => import("../../components/Features"));
+const FrameworkSupport = lazy(() => import("../../components/FrameworkSupport"));
+const UseCases = lazy(() => import("../../components/UseCases"));
+const UserSegments = lazy(() => import("../../components/UserSegments"));
+const MetricsBadges = lazy(() => import("../../components/MetricsBadges"));
+const IndustryStats = lazy(() => import("../../components/IndustryStats"));
+const Alternatives = lazy(() => import("../../components/Alternatives"));
+const ComparisonFAQ = lazy(() => import("../../components/ComparisonFAQ"));
+const Testimonials = lazy(() => import("../../components/Testimonials"));
+const Changelog = lazy(() => import("../../components/Changelog"));
+const Pricing = lazy(() => import("../../components/Pricing"));
+const RelatedPages = lazy(() =>
+  import("@/components/RelatedPages").then((m) => ({ default: m.RelatedPages })),
+);
+
+// Same-size placeholder for each below-fold section while its chunk loads.
+// Keeps layout stable (no CLS) and keeps DOM aria-hidden so screen readers
+// don't announce empty regions.
+const SectionFallback = ({ minHeight = 600 }: { minHeight?: number }) => (
+  <div aria-hidden="true" style={{ minHeight }} />
+);
 import {
   getLocalizedMeta,
   formatMetaTags,
@@ -153,18 +172,42 @@ function LandingPage() {
       <Header />
       <main id="main-content">
         <Hero />
-        <Features />
-        <FrameworkSupport />
-        <UseCases />
-        <UserSegments />
-        <Alternatives />
-        <Testimonials />
-        <IndustryStats />
-        <Changelog releases={recentChangelogs} />
-        <Pricing plans={plans} />
-        <ComparisonFAQ />
-        <MetricsBadges />
-        <RelatedPages currentPage="home" locale={locale} variant="content" />
+        <Suspense fallback={<SectionFallback minHeight={800} />}>
+          <Features />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <FrameworkSupport />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <UseCases />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <UserSegments />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <Alternatives />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <Testimonials />
+        </Suspense>
+        <Suspense fallback={<SectionFallback minHeight={400} />}>
+          <IndustryStats />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <Changelog releases={recentChangelogs} />
+        </Suspense>
+        <Suspense fallback={<SectionFallback minHeight={800} />}>
+          <Pricing plans={plans} />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <ComparisonFAQ />
+        </Suspense>
+        <Suspense fallback={<SectionFallback minHeight={300} />}>
+          <MetricsBadges />
+        </Suspense>
+        <Suspense fallback={<SectionFallback minHeight={400} />}>
+          <RelatedPages currentPage="home" locale={locale} variant="content" />
+        </Suspense>
       </main>
       <Footer />
     </>
