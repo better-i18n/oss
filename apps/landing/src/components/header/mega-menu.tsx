@@ -29,6 +29,7 @@ import {
 import { Link, type LinkProps } from "@tanstack/react-router";
 import { cn } from "@better-i18n/ui/lib/utils";
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { IconArrowUpRight } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 // ─── Context ─────────────────────────────────────────────────────────
 
@@ -347,7 +348,11 @@ interface MegaMenuPillProps {
 const pillClassName =
   "group/pill flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-mist-50 transition-colors";
 
-function PillInner({ icon, label }: MegaMenuPillProps) {
+function PillInner({
+  icon,
+  label,
+  external,
+}: MegaMenuPillProps & { external?: boolean }) {
   return (
     <>
       <span
@@ -364,10 +369,17 @@ function PillInner({ icon, label }: MegaMenuPillProps) {
       <span className="flex-1 text-sm font-medium text-mist-800 group-hover/pill:text-mist-950 transition-colors">
         {label}
       </span>
-      <SpriteIcon
-        name="arrow-right"
-        className="size-3 text-mist-400 -translate-x-1 opacity-0 transition-all duration-200 group-hover/pill:translate-x-0 group-hover/pill:opacity-100 group-hover/pill:text-mist-700"
-      />
+      {external ? (
+        // External link icon — hints "opens in new tab"
+        <IconArrowUpRight
+          className="size-3 text-mist-400 opacity-0 -translate-y-0.5 translate-x-0.5 transition-all duration-200 group-hover/pill:opacity-100 group-hover/pill:translate-y-0 group-hover/pill:translate-x-0 group-hover/pill:text-mist-700"
+        />
+      ) : (
+        <SpriteIcon
+          name="arrow-right"
+          className="size-3 text-mist-400 -translate-x-1 opacity-0 transition-all duration-200 group-hover/pill:translate-x-0 group-hover/pill:opacity-100 group-hover/pill:text-mist-700"
+        />
+      )}
     </>
   );
 }
@@ -387,13 +399,44 @@ export function MegaMenuPill(props: MegaMenuPillProps & InternalLinkProps) {
 }
 
 export function MegaMenuPillExternal(
-  props: MegaMenuPillProps & { href: string; target?: string; rel?: string },
+  props: MegaMenuPillProps & {
+    href: string;
+    target?: string;
+    rel?: string;
+    /** Show external-link arrow on hover (good for off-site links) */
+    external?: boolean;
+    index?: number;
+  },
 ) {
-  const { icon, label, href, target, rel } = props;
+  const { icon, label, href, target, rel, external, index } = props;
   return (
-    <a href={href} target={target} rel={rel} className={pillClassName}>
-      <PillInner icon={icon} label={label} />
+    <a
+      href={href}
+      target={target}
+      rel={rel}
+      className={cn(pillClassName, staggerClasses(index))}
+    >
+      <PillInner icon={icon} label={label} external={external} />
     </a>
+  );
+}
+
+/**
+ * Button variant of MegaMenuPill — for actions that don't navigate
+ * (e.g., open in-page widget, copy to clipboard, toggle modal).
+ */
+export function MegaMenuPillButton(
+  props: MegaMenuPillProps & { onClick: () => void; index?: number },
+) {
+  const { icon, label, onClick, index } = props;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(pillClassName, "text-left w-full", staggerClasses(index))}
+    >
+      <PillInner icon={icon} label={label} />
+    </button>
   );
 }
 

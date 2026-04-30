@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "@tanstack/react-router";
 
 import { cn } from "@better-i18n/ui/lib/utils";
@@ -10,6 +10,7 @@ import {
   IconModelcontextprotocol,
   IconCloudySparkle,
   IconConsoleSimple,
+  IconArrowUpRight,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import {
   NextjsIcon,
@@ -33,8 +34,10 @@ import {
   MegaMenuCard,
   MegaMenuPill,
   MegaMenuPillExternal,
+  MegaMenuPillButton,
   MegaMenuFooter,
 } from "./header/mega-menu";
+import { useWidgetStore } from "@helpway/react";
 
 const LazyMobileNav = lazy(() =>
   import("./MobileNav").then((m) => ({ default: m.MobileNav })),
@@ -43,6 +46,15 @@ const LazyMobileNav = lazy(() =>
 export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
   const t = useT("header");
+
+  // Open Helpway widget panel programmatically. Store is provided by
+  // <HelpwayWidget> mounted in __root.tsx — falls back to no-op during
+  // SSR (provider not yet active) and on the very first client render
+  // before the lazy-loaded widget hydrates.
+  const setWidgetOpen = useWidgetStore((s) => s.setOpen);
+  const openHelpWidget = useCallback(() => {
+    setWidgetOpen?.(true);
+  }, [setWidgetOpen]);
 
   // Defer the status fetch until the main thread is idle. The status pill is
   // a non-critical secondary signal; running it during hydration competes with
@@ -497,10 +509,8 @@ export default function Header({ className }: { className?: string }) {
                   label={t("resources.support", { defaultValue: "Support & company" })}
                   layoutClass="grid grid-cols-3 gap-1"
                 >
-                  <MegaMenuPillExternal
-                    href={`https://help.better-i18n.com/${locale || "en"}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <MegaMenuPillButton
+                    onClick={openHelpWidget}
                     icon={<LifeBuoy className="size-4" />}
                     label={t("resources.helpCenter", {
                       defaultValue: "Help Center",
@@ -510,6 +520,7 @@ export default function Header({ className }: { className?: string }) {
                     href="https://docs.better-i18n.com/"
                     target="_blank"
                     rel="noopener noreferrer"
+                    external
                     icon={<SpriteIcon name="book" className="size-4" />}
                     label={t("documentation", {
                       defaultValue: "Documentation",
@@ -525,19 +536,23 @@ export default function Header({ className }: { className?: string }) {
 
                 <MegaMenuFooter
                   primary={
-                    <a
-                      href="mailto:help@better-i18n.com"
-                      className="inline-flex items-center gap-1 hover:text-mist-700 transition-colors"
+                    <button
+                      type="button"
+                      onClick={openHelpWidget}
+                      className="inline-flex items-center gap-1.5 hover:text-mist-700 transition-colors"
                     >
-                      <span>help@better-i18n.com</span>
-                    </a>
+                      <LifeBuoy className="size-3.5" />
+                      {t("resources.contactSupport", {
+                        defaultValue: "Contact support",
+                      })}
+                    </button>
                   }
                   secondary={
                     <a
                       href="https://status.better-i18n.com"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 hover:text-mist-950 transition-colors"
+                      className="group/status inline-flex items-center gap-1.5 hover:text-mist-950 transition-colors"
                     >
                       <span
                         className={cn(
@@ -550,6 +565,7 @@ export default function Header({ className }: { className?: string }) {
                             defaultValue: "All systems operational",
                           })
                         : t("status", { defaultValue: "Status" })}
+                      <IconArrowUpRight className="size-3 text-mist-400 opacity-0 -translate-y-0.5 translate-x-0.5 transition-all duration-200 group-hover/status:opacity-100 group-hover/status:translate-y-0 group-hover/status:translate-x-0 group-hover/status:text-mist-700" />
                     </a>
                   }
                 />
