@@ -25,10 +25,10 @@ export function CmsPersonaPage({
   return (
     <MarketingLayout bgClassName="bg-white" showCTA={true}>
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-mist-50 to-white">
+      <section>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 sm:py-24">
           <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full bg-mist-200 px-3 py-1.5 text-sm font-medium text-mist-700 mb-6">
+            <span className="inline-flex items-center gap-2 rounded-full border border-mist-200 bg-white px-3 py-1.5 text-sm font-medium text-mist-700 mb-6">
               {getPersonaLabel(page.slug)}
             </span>
             <h1
@@ -65,11 +65,12 @@ export function CmsPersonaPage({
         </div>
       </section>
 
-      {/* Content */}
+      {/* Content — left-aligned to match hero container, narrower body
+          for readability (max ~70ch line length). */}
       {page.bodyHtml && (
         <section className="py-16">
-          <article className="mx-auto max-w-4xl px-6 lg:px-10">
-            <div className="min-w-0">
+          <div className="mx-auto max-w-7xl px-6 lg:px-10">
+            <article className="max-w-3xl min-w-0">
               <BlogContent
                 html={page.bodyHtml}
                 locale={locale}
@@ -84,8 +85,8 @@ export function CmsPersonaPage({
                   prose-li:text-mist-700
                   prose-hr:border-mist-100"
               />
-            </div>
-          </article>
+            </article>
+          </div>
         </section>
       )}
 
