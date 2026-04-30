@@ -59,11 +59,45 @@ export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
   const t = useT("header");
 
+  // Pre-warm widget chunk during browser idle so it's hydrated by the time
+  // the user clicks Help Center. Lazy-load is for LCP — pre-warming on idle
+  // doesn't hurt LCP but eliminates the click-to-open delay.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const ric = (
+      window as Window & {
+        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      }
+    ).requestIdleCallback;
+    const warm = () => {
+      // The chunk import primes the network + parse, but doesn't mount.
+      // Mount happens via the <LazyHelpwayWidget> in __root.tsx.
+      import("@helpway/react").catch(() => {});
+    };
+    if (ric) {
+      ric(warm, { timeout: 4000 });
+    } else {
+      setTimeout(warm, 3000);
+    }
+  }, []);
+
   // Open Helpway widget via global API (window.Helpway.open). The widget
-  // mounts itself in __root.tsx; until it hydrates, this is a no-op.
+  // is lazy-loaded in __root.tsx, so window.Helpway may not be available
+  // immediately on first click — retry briefly until the widget hydrates.
   // Using the global avoids needing <SupportProvider> context in the header.
   const openHelpWidget = useCallback(() => {
-    if (typeof window !== "undefined") window.Helpway?.open();
+    if (typeof window === "undefined") return;
+    let attempts = 0;
+    const tryOpen = () => {
+      if (window.Helpway?.open) {
+        window.Helpway.open();
+        return;
+      }
+      if (attempts++ < 30) {
+        setTimeout(tryOpen, 100); // up to ~3s while widget chunk loads
+      }
+    };
+    tryOpen();
   }, []);
 
   // Defer the status fetch until the main thread is idle. The status pill is
