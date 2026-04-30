@@ -1,0 +1,52 @@
+---
+title: Error Reference
+description: HTTP status codes and error bodies returned by the OAuth 2.0 API.
+---
+
+## Error responses
+
+| Status | Error | Meaning |
+|--------|-------|---------|
+| `400` | `invalid_request` | Missing or malformed parameter |
+| `400` | `invalid_grant` | Code expired, redirect_uri mismatch, or refresh token revoked |
+| `401` | `invalid_token` | Access or installation token expired or wrong type |
+| `403` | `missing_scope` | Token is valid but the route needs a scope you don't hold |
+| `403` | `wrong_organization` | Token's grant org doesn't match the resource's org |
+| `404` | `grant_not_found` | The `grantId` was deleted or never existed |
+| `410` | `grant_revoked` | Grant exists but was revoked by the user or partner |
+| `429` | `rate_limited` | Per-installation rate cap hit (1,000 req/min default) |
+
+## Error body format
+
+All errors return a JSON body:
+
+```json
+{
+  "error": "missing_scope",
+  "required": "translations:publish"
+}
+```
+
+The `required` field is only present for `missing_scope` errors.
+
+## How to handle each error
+
+### `400 invalid_grant`
+
+The user revoked your app, or the authorization code expired. **Stop retrying.** Surface a "Reconnect" prompt in your UI.
+
+### `401 invalid_token`
+
+Your access or installation token expired. Refresh the access token, then re-mint the installation token. If refresh also fails with `invalid_grant`, the user revoked.
+
+### `403 missing_scope`
+
+Your token doesn't have permission for this endpoint. **Do not retry.** The user needs to re-authorize with a wider scope set. Surface the missing scope to the user.
+
+### `410 grant_revoked`
+
+The grant was explicitly revoked. Mark the connection as dead in your database and show a reconnect prompt. The user must go through the full OAuth flow again.
+
+### `429 rate_limited`
+
+Back off and retry after the `Retry-After` header value. Default rate limit is 1,000 requests per minute per installation token.

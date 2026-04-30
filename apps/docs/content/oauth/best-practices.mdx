@@ -1,0 +1,63 @@
+---
+title: Best Practices
+description: Security, caching, and UX patterns for OAuth 2.0 integrations.
+---
+
+## Security
+
+- **Never store tokens client-side** — all tokens are server-side secrets. The `bi_oat_` prefix distinguishes OAuth tokens from `bi_pub_` public keys
+- **Use the narrowest scope set** — users approve fewer permissions more readily
+- **Handle `410 grant_revoked` as a first-class state** — don't show a generic error, show "Reconnect"
+- **Don't retry `403 missing_scope`** — the user must re-authorize with wider scope
+
+## Caching
+
+- **Cache installation tokens in memory** — 1h TTL with 60s refresh window = ~2 mints/hour
+- **Don't persist installation tokens to disk** — they're short-lived; caching in Redis with matching TTL is fine, Postgres is wasteful
+- **Key cache by `(grantId, organizationId)`** — a scope change re-issues a new grant
+
+## Token rotation
+
+- **Always persist the latest `refresh_token`** — it may rotate on each use
+- **Refresh proactively** — don't wait for a 401, check expiry before each API call
+
+## Multiple organizations
+
+Each grant is `(user × organization)`. To access a second org:
+
+1. Start a new authorize flow
+2. The consent screen lets the user pick a different org
+3. You get a new `grant_id` + `refresh_token` for that org
+4. Store one row per `(userId, organizationId)` in your database
+
+If a user re-authorizes for an org they already have a grant for, we update the existing grant in-place. Your callback should `UPSERT` on `(userId, organizationId)`.
+
+## What to store
+
+The minimum per connection:
+
+```ts
+interface BetterI18nConnection {
+  ownerId: string;          // Your user ID
+  grantId: string;          // From token exchange
+  refreshToken: string;     // Server-side only
+  organizationId: string;   // From /oauth-client/me
+  scopes: string[];         // What was granted
+  projectIds: string[];     // [] = all projects
+  disconnectedAt?: Date;    // Set on revoke
+}
+```
+
+## CDN delivery
+
+Translations published via the API are served at:
+
+```
+https://cdn.better-i18n.com/{org}/{project}/{locale}.json
+```
+
+This URL is **public** — no auth needed. Your users' apps fetch translations from the CDN at runtime using our SDKs or a simple `fetch()`.
+
+## MCP for AI agents
+
+The same `bi_oat_` token works in the MCP server. If your platform has AI coding capabilities, inject the MCP config into the user's workspace after OAuth consent. See [MCP Integration](/oauth/mcp-integration) for details.

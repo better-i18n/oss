@@ -1,0 +1,62 @@
+---
+title: Scopes
+description: What each OAuth scope grants and which endpoints it protects.
+---
+
+## Scope reference
+
+| Scope | Default | What it opens |
+|-------|---------|---------------|
+| `org:read` | On | Organization metadata |
+| `projects:read` | On | List and get projects |
+| `projects:write` | **Off** | Create/modify project settings |
+| `keys:read` | On | List translation keys |
+| `keys:write` | On | Create, update, delete keys |
+| `translations:read` | On | Read translations |
+| `translations:write` | On | Write translations (drafts) |
+| `translations:publish` | **Off** | Publish to the public CDN |
+| `content:read` | On | Read Content CMS entries |
+| `content:write` | On | Write Content CMS entries |
+| `content:publish` | **Off** | Publish content entries |
+| `glossary:read` | On | Read glossary terms |
+| `glossary:write` | **Off** | Modify glossary terms |
+
+## Default vs destructive scopes
+
+**Default-on** scopes are pre-checked on the consent screen. The user can uncheck any of them.
+
+**Default-off** scopes (marked **Off** above) require the user to explicitly opt in. They surface a yellow warning on the consent screen because they can modify production-facing content:
+
+- `translations:publish` — pushes to the public CDN
+- `content:publish` — publishes content entries
+- `projects:write` — changes project structure
+- `glossary:write` — rewrites brand terminology
+
+## Endpoint → scope mapping
+
+| Method | Endpoint | Required scope |
+|--------|----------|---------------|
+| `GET` | `/oauth-client/me` | None (identity) |
+| `GET` | `/oauth-client/organizations` | `org:read` |
+| `GET` | `/oauth-client/organizations/:org/projects` | `projects:read` |
+| `GET` | `/v1/keys` | `keys:read` |
+| `POST` | `/v1/keys` | `keys:write` |
+| `DELETE` | `/v1/keys/:id` | `keys:write` |
+| `GET` | `/v1/translations` | `translations:read` |
+| `POST` | `/v1/translations` | `translations:write` |
+| `POST` | `/v1/translations/publish` | `translations:publish` |
+| `GET` | `/v1/content/entries` | `content:read` |
+| `POST` | `/v1/content/entries` | `content:write` |
+| `POST` | `/v1/content/entries/:id/publish` | `content:publish` |
+| `GET` | `/v1/glossary` | `glossary:read` |
+| `POST` | `/v1/glossary` | `glossary:write` |
+
+## Requesting scopes
+
+Pass scopes as a space-separated string in the `scope` query parameter:
+
+```
+scope=org:read+projects:read+keys:read+keys:write+translations:write
+```
+
+Request only what you need. Users are more likely to approve integrations that ask for fewer permissions.

@@ -1,0 +1,84 @@
+---
+title: MCP Integration
+description: Use your OAuth token with AI agents via the Better i18n MCP server.
+---
+
+The `bi_oat_` installation token works directly with the Better i18n MCP server — no additional setup needed. This means your users' AI coding agents can manage translations through the same scoped token.
+
+## How it works
+
+```
+AI Agent (Cursor, Claude Code, ChatGPT)
+  ↓ MCP Protocol
+@better-i18n/mcp server
+  ↓ x-api-key: bi_oat_...
+api.better-i18n.com
+  ↓ scope enforcement
+Resource APIs
+```
+
+The MCP server sends the token via `x-api-key` header. The API recognizes `bi_oat_` tokens from the `apikey` table and enforces the same scope rules as REST.
+
+## Configure the MCP server
+
+### stdio transport (Cursor, Claude Code)
+
+Add to your IDE's MCP config (e.g., `.cursor/mcp.json`):
+
+```json title=".cursor/mcp.json"
+{
+  "mcpServers": {
+    "better-i18n": {
+      "command": "npx",
+      "args": ["@better-i18n/mcp@latest"],
+      "env": {
+        "BETTER_I18N_API_KEY": "bi_oat_your_token_here"
+      }
+    }
+  }
+}
+```
+
+### HTTP transport (ChatGPT, Codex, Agents SDK)
+
+Send the token as a Bearer header to the MCP HTTP endpoint:
+
+```bash
+curl -X POST https://mcp.better-i18n.com/mcp \
+  -H "Authorization: Bearer bi_oat_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ ... MCP request ... }'
+```
+
+## Available MCP tools
+
+With a scoped `bi_oat_` token, your agent can call:
+
+| Tool | Required scope |
+|------|---------------|
+| `listProjects` | `projects:read` |
+| `getProject` | `projects:read` |
+| `listKeys` | `keys:read` |
+| `createKeys` | `keys:write` |
+| `updateKeys` | `translations:write` |
+| `setTranslations` | `translations:write` |
+| `deleteKeys` | `keys:write` |
+| `getTranslations` | `translations:read` |
+| `publishTranslations` | `translations:publish` |
+| `getTranslationContext` | `projects:read` |
+
+If a tool requires a scope the token doesn't have, the API returns `403 missing_scope` — the agent surfaces this to the user.
+
+## Partner auto-inject pattern
+
+If you're a platform partner (like Loveable, Replit, Bolt), you can auto-configure MCP for your users:
+
+1. After OAuth consent, you have a `bi_oat_` token
+2. Write a `.cursor/mcp.json` (or equivalent) to the user's workspace
+3. The user's AI agent immediately has translation capabilities
+
+This is the **agent-native** differentiator — no competitor offers scoped, consent-driven MCP integration.
+
+## Scope enforcement
+
+MCP tools hit the same API endpoints as REST calls. A token with only `keys:read` + `translations:read` can list and read translations but **cannot** create keys or publish. The scope boundary is enforced at the API middleware level, not at the MCP layer.

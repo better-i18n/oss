@@ -1,0 +1,74 @@
+---
+title: Calling APIs
+description: Use installation tokens to read and write translations.
+---
+
+Send the installation token as the Bearer for all resource endpoints:
+
+## Reading keys
+
+```bash
+curl https://api.better-i18n.com/v1/keys \
+  -H "Authorization: Bearer bi_oat_d7ab12..."
+```
+
+## Writing translations
+
+```bash
+curl -X POST https://api.better-i18n.com/v1/translations \
+  -H "Authorization: Bearer bi_oat_d7ab12..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "keyId": "k_...",
+    "language": "de",
+    "value": "Hallo Welt"
+  }'
+```
+
+## Publishing to CDN
+
+```bash
+curl -X POST https://api.better-i18n.com/v1/translations/publish \
+  -H "Authorization: Bearer bi_oat_d7ab12..." \
+  -H "Content-Type: application/json" \
+  -d '{ "projectId": "proj_..." }'
+```
+
+## Scope enforcement
+
+If your token is missing the required scope, you'll get:
+
+```json
+{
+  "error": "missing_scope",
+  "required": "translations:publish"
+}
+```
+
+**Do not retry this.** The user needs to re-authorize with the wider scope. See [scopes](/oauth/scopes) for the full mapping.
+
+## Identity endpoint
+
+To check "who am I and what was granted":
+
+```bash
+curl https://api.better-i18n.com/oauth-client/me \
+  -H "Authorization: Bearer <access_token>"
+```
+
+This is the only endpoint callable with the **access token** directly (not the installation token). It requires no scope and returns the user, grant, and resolved scopes.
+
+## Handling revocation
+
+When a token is revoked, API calls return:
+
+```json
+HTTP/1.1 410 Gone
+{ "error": "grant_revoked" }
+```
+
+Treat this as a first-class state in your UI — show a "Reconnect" prompt, don't retry.
+
+## Next step
+
+See the [scope reference](/oauth/scopes) for what each scope unlocks.
