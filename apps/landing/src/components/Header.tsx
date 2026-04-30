@@ -142,6 +142,7 @@ export default function Header({ className }: { className?: string }) {
                   layoutClass="grid grid-cols-2 gap-1"
                 >
                   <MegaMenuCard
+                    index={0}
                     to="/$locale/for-developers/"
                     params={{ locale: locale || "en" }}
                     icon={<SpriteIcon name="code-brackets" className="size-5" />}
@@ -153,6 +154,7 @@ export default function Header({ className }: { className?: string }) {
                     })}
                   />
                   <MegaMenuCard
+                    index={1}
                     to="/$locale/for-translators/"
                     params={{ locale: locale || "en" }}
                     icon={<IconAiTranslate className="size-5" />}
@@ -164,6 +166,7 @@ export default function Header({ className }: { className?: string }) {
                     })}
                   />
                   <MegaMenuCard
+                    index={2}
                     to="/$locale/for-product-teams/"
                     params={{ locale: locale || "en" }}
                     icon={<SpriteIcon name="rocket" className="size-5" />}
@@ -175,6 +178,7 @@ export default function Header({ className }: { className?: string }) {
                     })}
                   />
                   <MegaMenuCard
+                    index={3}
                     to="/$locale/for-enterprises/"
                     params={{ locale: locale || "en" }}
                     icon={<IconPeople className="size-5" />}
@@ -192,6 +196,7 @@ export default function Header({ className }: { className?: string }) {
                   layoutClass="grid grid-cols-3 gap-1"
                 >
                   <MegaMenuPill
+                    index={4}
                     to="/$locale/for-startups/"
                     params={{ locale: locale || "en" }}
                     icon={<SpriteIcon name="zap" className="size-4" />}
@@ -200,12 +205,14 @@ export default function Header({ className }: { className?: string }) {
                     })}
                   />
                   <MegaMenuPill
+                    index={5}
                     to="/$locale/for-saas/"
                     params={{ locale: locale || "en" }}
                     icon={<IconCloudySparkle className="size-4" />}
                     label={t("menu.solutions.saas", { defaultValue: "SaaS" })}
                   />
                   <MegaMenuPill
+                    index={6}
                     to="/$locale/for-ecommerce/"
                     params={{ locale: locale || "en" }}
                     icon={<SpriteIcon name="chart" className="size-4" />}
@@ -214,6 +221,7 @@ export default function Header({ className }: { className?: string }) {
                     })}
                   />
                   <MegaMenuPill
+                    index={7}
                     to="/$locale/for-agencies/"
                     params={{ locale: locale || "en" }}
                     icon={<SpriteIcon name="group" className="size-4" />}
