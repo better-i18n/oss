@@ -14,14 +14,14 @@ Your App                        Better i18n
                                 (org + scope selection)
 2. Receive auth code      ←     Redirect back with ?code=
 
-3. Exchange code          →     /api/auth/mcp/token
+3. Exchange code          →     dash.better-i18n.com/api/auth/mcp/token
    for tokens             ←     access_token + refresh_token + grant_id
 
-4. Mint installation      →     POST /installations/:grantId/tokens
+4. Mint installation      →     POST /api/oauth-client/installations/:grantId/tokens
    token                  ←     bi_oat_... (1h, scoped)
 
-5. Call resource APIs     →     GET /v1/keys (Bearer bi_oat_...)
-                          ←     Translation data
+5. Call resource APIs     →     GET /api/oauth-client/v1/projects/:id
+                          ←     Scoped project data
 ```
 
 ## Token model
@@ -45,6 +45,23 @@ The **access token** can mint installation tokens but cannot read resources. The
 - The user can revoke one partner-org pair without affecting others
 - Partners get fine-grained, per-organization, per-project scoping
 
+## Base URLs
+
+Use the dashboard origin for browser-based OAuth, because the user signs in and
+approves consent there:
+
+```
+https://dash.better-i18n.com/api/auth/mcp/authorize
+https://dash.better-i18n.com/api/auth/mcp/token
+```
+
+Use the API origin for partner resource calls after you have an installation
+token:
+
+```
+https://api.better-i18n.com/api/oauth-client/...
+```
+
 ## Three channels, one token
 
 Once you have a `bi_oat_` token, you can use it across:
@@ -62,7 +79,7 @@ The same scope enforcement applies everywhere — a token without `translations:
 - [Register your app](/oauth/register-app) — Get a `client_id`
 - [Authorization flow](/oauth/authorization-flow) — PKCE, consent, code exchange
 - [Installation tokens](/oauth/installation-tokens) — Mint and cache `bi_oat_` keys
-- [Calling APIs](/oauth/calling-apis) — Use installation tokens with `/v1/*` endpoints
+- [Calling APIs](/oauth/calling-apis) — Use installation tokens with partner API endpoints
 - [Scopes](/oauth/scopes) — What each scope grants
 - [MCP integration](/oauth/mcp-integration) — Use your token with AI agents
 - [Error reference](/oauth/errors) — Status codes and error bodies

@@ -118,9 +118,25 @@
   --color-oauth: hsl(262, 60%, 68%);
 }
 
-/* Sidebar Tab Icon Colors
-   Note: Colors are applied via React inline styles in layout.tsx
-   This CSS only defines the CSS variables used by those inline styles */
+/* Sidebar tab icons: keep Fumadocs' responsive wrappers, but force the
+   actual section icon to stay compact and inherit the section color. */
+.docs-sidebar-tab-icon {
+  color: var(--docs-sidebar-tab-icon-color);
+  display: inline-flex;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.docs-sidebar-tab-icon-svg,
+.docs-sidebar-tab-icon svg {
+  width: 1.125rem !important;
+  height: 1.125rem !important;
+  color: inherit;
+  stroke: currentColor;
+}
 
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {

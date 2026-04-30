@@ -8,7 +8,7 @@ description: Step-by-step OAuth 2.0 authorization code flow with PKCE.
 Redirect the user to Better i18n's authorization endpoint:
 
 ```
-https://api.better-i18n.com/api/auth/mcp/authorize
+https://dash.better-i18n.com/api/auth/mcp/authorize
   ?response_type=code
   &client_id=<your_client_id>
   &redirect_uri=<urlencoded_redirect_uri>
@@ -26,8 +26,7 @@ Use the **narrowest scope set** you need. Destructive scopes (`translations:publ
 
 The user sees our consent screen where they:
 
-- Pick **one organization** (each org creates a separate grant)
-- Optionally narrow scope to specific projects
+- Pick one or more organizations they can administer
 - Toggle individual permissions on/off
 - Click **Authorize**
 
@@ -36,7 +35,7 @@ After consenting, the user lands on a "Connection complete" screen with a **Cont
 ## 3. Exchange code for tokens
 
 ```bash
-curl -X POST https://api.better-i18n.com/api/auth/mcp/token \
+curl -X POST https://dash.better-i18n.com/api/auth/mcp/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   --data-urlencode "grant_type=authorization_code" \
   --data-urlencode "code=<the_code>" \
@@ -75,7 +74,7 @@ app.get("/connect/start", async (c) => {
   });
 
   const url = new URL(
-    "https://api.better-i18n.com/api/auth/mcp/authorize",
+    "https://dash.better-i18n.com/api/auth/mcp/authorize",
   );
   url.searchParams.set("response_type", "code");
   url.searchParams.set("client_id", env.BETTER_I18N_CLIENT_ID);
@@ -96,7 +95,7 @@ app.get("/connect/callback", async (c) => {
   await kv.delete(`pkce:${state}`);
 
   const res = await fetch(
-    "https://api.better-i18n.com/api/auth/mcp/token",
+    "https://dash.better-i18n.com/api/auth/mcp/token",
     {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },

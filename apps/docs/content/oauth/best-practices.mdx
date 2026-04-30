@@ -23,12 +23,15 @@ description: Security, caching, and UX patterns for OAuth 2.0 integrations.
 
 ## Multiple organizations
 
-Each grant is `(user × organization)`. To access a second org:
+Each grant is scoped to one organization. The consent screen can create grants
+for multiple organizations in one approval when the user selects more than one.
+Store one connection row per returned grant.
+
+To add access later:
 
 1. Start a new authorize flow
-2. The consent screen lets the user pick a different org
-3. You get a new `grant_id` + `refresh_token` for that org
-4. Store one row per `(userId, organizationId)` in your database
+2. Ask the user to select the additional organization
+3. Store the new `grant_id` + `refresh_token`
 
 If a user re-authorizes for an org they already have a grant for, we update the existing grant in-place. Your callback should `UPSERT` on `(userId, organizationId)`.
 
@@ -41,7 +44,7 @@ interface BetterI18nConnection {
   ownerId: string;          // Your user ID
   grantId: string;          // From token exchange
   refreshToken: string;     // Server-side only
-  organizationId: string;   // From /oauth-client/me
+  organizationId: string;   // From installation token response or organizations API
   scopes: string[];         // What was granted
   projectIds: string[];     // [] = all projects
   disconnectedAt?: Date;    // Set on revoke
