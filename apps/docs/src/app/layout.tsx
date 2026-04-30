@@ -66,6 +66,7 @@ const tabColors: Record<string, string> = {
   'root:sdk': 'var(--color-sdk)',
   'root:mcp': 'var(--color-mcp)',
   'root:cli': 'var(--color-cli)',
+  'root:oauth': 'var(--color-oauth)',
 };
 
 // Tab descriptions shown in the sidebar dropdown
@@ -75,6 +76,7 @@ const tabDescriptions: Record<string, string> = {
   'root:sdk': 'Headless CMS client for fetching content',
   'root:mcp': 'AI-powered translation tools',
   'root:cli': 'Detect and sync translation keys',
+  'root:oauth': 'Partner integrations with scoped OAuth 2.0 tokens',
 };
 
 export default function Layout({ children }: LayoutProps<'/'>) {
