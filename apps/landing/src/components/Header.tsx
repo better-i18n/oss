@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Link, useParams } from "@tanstack/react-router";
 
 import { cn } from "@better-i18n/ui/lib/utils";
@@ -72,11 +72,33 @@ export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
   const t = useT("header");
 
+  // Defer the status fetch until the main thread is idle. The status pill is
+  // a non-critical secondary signal; running it during hydration competes with
+  // the home page's 13-section hydration and shows up as INP cost. Idle is the
+  // earliest moment we can fetch without harming LCP/INP. See BETTER-268.
+  const [statusQueryEnabled, setStatusQueryEnabled] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const ric =
+      (window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
+    if (ric) {
+      const handle = ric(() => setStatusQueryEnabled(true), { timeout: 3000 });
+      return () => {
+        const cic =
+          (window as Window & { cancelIdleCallback?: (h: number) => void }).cancelIdleCallback;
+        cic?.(handle);
+      };
+    }
+    const t = setTimeout(() => setStatusQueryEnabled(true), 2000);
+    return () => clearTimeout(t);
+  }, []);
+
   const { data: statusData } = useQuery<{ status: string }>({
     queryKey: ["site-status"],
     queryFn: () => fetch("/api/status").then((r) => r.json()),
     staleTime: 60_000,
     refetchOnWindowFocus: false,
+    enabled: statusQueryEnabled,
   });
   const isStatusOk = !statusData || statusData.status === "operational";
 
