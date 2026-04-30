@@ -37,7 +37,19 @@ import {
   MegaMenuPillButton,
   MegaMenuFooter,
 } from "./header/mega-menu";
-import { useWidgetStore } from "@helpway/react";
+
+// Helpway widget exposes a global window.Helpway API once mounted.
+// Header lives outside <SupportProvider> tree, so we call this global
+// instead of useWidgetStore (which throws without provider context).
+declare global {
+  interface Window {
+    Helpway?: {
+      open: () => void;
+      close: () => void;
+      toggle: () => void;
+    };
+  }
+}
 
 const LazyMobileNav = lazy(() =>
   import("./MobileNav").then((m) => ({ default: m.MobileNav })),
@@ -47,14 +59,12 @@ export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
   const t = useT("header");
 
-  // Open Helpway widget panel programmatically. Store is provided by
-  // <HelpwayWidget> mounted in __root.tsx — falls back to no-op during
-  // SSR (provider not yet active) and on the very first client render
-  // before the lazy-loaded widget hydrates.
-  const setWidgetOpen = useWidgetStore((s) => s.setOpen);
+  // Open Helpway widget via global API (window.Helpway.open). The widget
+  // mounts itself in __root.tsx; until it hydrates, this is a no-op.
+  // Using the global avoids needing <SupportProvider> context in the header.
   const openHelpWidget = useCallback(() => {
-    setWidgetOpen?.(true);
-  }, [setWidgetOpen]);
+    if (typeof window !== "undefined") window.Helpway?.open();
+  }, []);
 
   // Defer the status fetch until the main thread is idle. The status pill is
   // a non-critical secondary signal; running it during hydration competes with
