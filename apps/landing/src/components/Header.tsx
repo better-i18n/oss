@@ -18,6 +18,14 @@ import { SpriteIcon } from "@/components/SpriteIcon";
 import { useT } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import {
+  MegaMenu,
+  MegaMenuPanel,
+  MegaMenuSection,
+  MegaMenuCard,
+  MegaMenuPill,
+  MegaMenuFooter,
+} from "./header/mega-menu";
 
 const LazyMobileNav = lazy(() =>
   import("./MobileNav").then((m) => ({ default: m.MobileNav })),
@@ -125,181 +133,124 @@ export default function Header({ className }: { className?: string }) {
             </Link>
           </div>
           <div className="hidden lg:flex items-center gap-8">
-            {/* For Product Mega Menu */}
-            <div className="relative group">
-              <button
-                aria-haspopup="true"
-                aria-expanded="false"
-                className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600"
-              >
-                {t("forProduct", { defaultValue: "Product" })}
-                <SpriteIcon
-                  name="chevron-bottom"
-                  className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180"
-                />
-              </button>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[540px] shadow-lg">
-                  {/* Grid container with border */}
-                  <div
-                    className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm"
-                    role="menu"
-                  >
-                    <div className="grid grid-cols-2 gap-2">
-                      {/* For Translators */}
-                      <Link
-                        to="/$locale/for-translators/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <div className="flex-shrink-0 size-12 rounded-lg bg-white border border-mist-200 shadow-sm flex items-center justify-center text-mist-700">
-                          <IconAiTranslate className="size-5" />
-                        </div>
-                        <div className="flex-1 min-w-0 pt-0.5">
-                          <div className="text-sm font-medium text-mist-950">
-                            {t("segments.translators.title", {
-                              defaultValue: "For Translators",
-                            })}
-                          </div>
-                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
-                            {t("segments.translators.shortDescription", {
-                              defaultValue:
-                                "Context-rich translation environment",
-                            })}
-                          </div>
-                        </div>
-                      </Link>
-
-                      {/* For Developers */}
-                      <Link
-                        to="/$locale/for-developers/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <div className="flex-shrink-0 size-12 rounded-lg bg-white border border-mist-200 shadow-sm flex items-center justify-center text-mist-700">
-                          <SpriteIcon name="code-brackets" className="size-5" />
-                        </div>
-                        <div className="flex-1 min-w-0 pt-0.5">
-                          <div className="text-sm font-medium text-mist-950">
-                            {t("segments.developers.title", {
-                              defaultValue: "For Developers",
-                            })}
-                          </div>
-                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
-                            {t("segments.developers.shortDescription", {
-                              defaultValue:
-                                "Automated sync and developer-first tools",
-                            })}
-                          </div>
-                        </div>
-                      </Link>
-
-                      {/* For Product Teams */}
-                      <Link
-                        to="/$locale/for-product-teams/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <div className="flex-shrink-0 size-12 rounded-lg bg-white border border-mist-200 shadow-sm flex items-center justify-center text-mist-700">
-                          <SpriteIcon name="rocket" className="size-5" />
-                        </div>
-                        <div className="flex-1 min-w-0 pt-0.5">
-                          <div className="text-sm font-medium text-mist-950">
-                            {t("segments.productTeams.title", {
-                              defaultValue: "For Product Teams",
-                            })}
-                          </div>
-                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
-                            {t("segments.productTeams.shortDescription", {
-                              defaultValue:
-                                "Manage localization without the hassle",
-                            })}
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* More Solutions */}
-                  <div className="px-3 py-2">
-                    <p className="text-xs font-medium text-mist-600 uppercase tracking-wider mb-1.5">
-                      {t("menu.moreSolutions", {
-                        defaultValue: "More Solutions",
+            {/* Product Mega Menu */}
+            <MegaMenu label={t("forProduct", { defaultValue: "Product" })}>
+              <MegaMenuPanel widthClass="w-[640px]">
+                <MegaMenuSection
+                  label={t("menu.whoItsFor", { defaultValue: "Who it's for" })}
+                  noDivider
+                >
+                  <div className="grid grid-cols-2 gap-1">
+                    <MegaMenuCard
+                      to="/$locale/for-developers/"
+                      params={{ locale: locale || "en" }}
+                      icon={<SpriteIcon name="code-brackets" className="size-5" />}
+                      title={t("segments.developers.title", {
+                        defaultValue: "For Developers",
                       })}
-                    </p>
-                    <div className="grid grid-cols-3 gap-x-4 gap-y-1">
-                      {/* Business & Industry */}
-                      <Link
-                        to="/$locale/for-enterprises/"
-                        params={{ locale: locale || "en" }}
-                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
-                      >
-                        {t("menu.solutions.enterprises", {
-                          defaultValue: "Enterprises",
-                        })}
-                      </Link>
-                      <Link
-                        to="/$locale/for-saas/"
-                        params={{ locale: locale || "en" }}
-                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
-                      >
-                        {t("menu.solutions.saas", { defaultValue: "SaaS" })}
-                      </Link>
-                      <Link
-                        to="/$locale/for-ecommerce/"
-                        params={{ locale: locale || "en" }}
-                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
-                      >
-                        {t("menu.solutions.ecommerce", {
-                          defaultValue: "E-Commerce",
-                        })}
-                      </Link>
-                      <Link
-                        to="/$locale/for-startups/"
-                        params={{ locale: locale || "en" }}
-                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
-                      >
-                        {t("menu.solutions.startups", {
-                          defaultValue: "Startups",
-                        })}
-                      </Link>
-                      <Link
-                        to="/$locale/for-agencies/"
-                        params={{ locale: locale || "en" }}
-                        className="text-sm text-mist-700 hover:text-mist-950 py-1 transition-colors"
-                      >
-                        {t("menu.solutions.agencies", {
-                          defaultValue: "Agencies",
-                        })}
-                      </Link>
-                    </div>
+                      description={t("segments.developers.shortDescription", {
+                        defaultValue: "Type-safe SDKs, MCP & Git workflow",
+                      })}
+                    />
+                    <MegaMenuCard
+                      to="/$locale/for-translators/"
+                      params={{ locale: locale || "en" }}
+                      icon={<IconAiTranslate className="size-5" />}
+                      title={t("segments.translators.title", {
+                        defaultValue: "For Translators",
+                      })}
+                      description={t("segments.translators.shortDescription", {
+                        defaultValue: "Context-rich CAT environment + AI",
+                      })}
+                    />
+                    <MegaMenuCard
+                      to="/$locale/for-product-teams/"
+                      params={{ locale: locale || "en" }}
+                      icon={<SpriteIcon name="rocket" className="size-5" />}
+                      title={t("segments.productTeams.title", {
+                        defaultValue: "For Product Teams",
+                      })}
+                      description={t("segments.productTeams.shortDescription", {
+                        defaultValue: "Manage localization without the hassle",
+                      })}
+                    />
+                    <MegaMenuCard
+                      to="/$locale/for-enterprises/"
+                      params={{ locale: locale || "en" }}
+                      icon={<IconPeople className="size-5" />}
+                      title={t("segments.enterprises.title", {
+                        defaultValue: "For Enterprises",
+                      })}
+                      description={t("segments.enterprises.shortDescription", {
+                        defaultValue: "Localization at enterprise scale",
+                      })}
+                    />
                   </div>
+                </MegaMenuSection>
 
-                  {/* Footer CTA */}
-                  <div className="px-3 py-2.5 border-t border-mist-100 flex items-center justify-between">
+                <MegaMenuSection
+                  label={t("menu.byIndustry", { defaultValue: "By industry" })}
+                >
+                  <div className="grid grid-cols-3 gap-1">
+                    <MegaMenuPill
+                      to="/$locale/for-startups/"
+                      params={{ locale: locale || "en" }}
+                      icon={<SpriteIcon name="zap" className="size-4" />}
+                      label={t("menu.solutions.startups", {
+                        defaultValue: "Startups",
+                      })}
+                    />
+                    <MegaMenuPill
+                      to="/$locale/for-saas/"
+                      params={{ locale: locale || "en" }}
+                      icon={<IconCloudySparkle className="size-4" />}
+                      label={t("menu.solutions.saas", { defaultValue: "SaaS" })}
+                    />
+                    <MegaMenuPill
+                      to="/$locale/for-ecommerce/"
+                      params={{ locale: locale || "en" }}
+                      icon={<SpriteIcon name="chart" className="size-4" />}
+                      label={t("menu.solutions.ecommerce", {
+                        defaultValue: "E-Commerce",
+                      })}
+                    />
+                    <MegaMenuPill
+                      to="/$locale/for-agencies/"
+                      params={{ locale: locale || "en" }}
+                      icon={<SpriteIcon name="group" className="size-4" />}
+                      label={t("menu.solutions.agencies", {
+                        defaultValue: "Agencies",
+                      })}
+                    />
+                  </div>
+                </MegaMenuSection>
+
+                <MegaMenuFooter
+                  primary={
                     <Link
                       to="/$locale/features/"
                       params={{ locale: locale || "en" }}
-                      className="text-sm font-medium text-mist-950 hover:underline"
+                      className="inline-flex items-center gap-1 hover:text-mist-700 transition-colors"
                     >
-                      {t("features", { defaultValue: "All features" })} →
+                      {t("features", { defaultValue: "All features" })}
+                      <SpriteIcon name="arrow-right" className="size-3.5" />
                     </Link>
-                    <p className="text-sm text-mist-700">
-                      <a
-                        href="https://cal.com/better-i18n/30min?overlayCalendar=true"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-medium text-mist-950 hover:underline"
-                      >
-                        {t("menu.scheduleDemo", {
-                          defaultValue: "Schedule a demo",
-                        })}
-                      </a>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  }
+                  secondary={
+                    <a
+                      href="https://cal.com/better-i18n/30min?overlayCalendar=true"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-mist-950 transition-colors"
+                    >
+                      {t("menu.scheduleDemo", {
+                        defaultValue: "Schedule a demo",
+                      })}
+                    </a>
+                  }
+                />
+              </MegaMenuPanel>
+            </MegaMenu>
             {/* Developers Mega Menu */}
             <div className="relative group">
               <button
