@@ -1,7 +1,19 @@
+import { lazy, Suspense } from "react";
 import { useT } from "@/lib/i18n";
 import { Link, useParams } from "@tanstack/react-router";
-import { Demo } from "../demo";
 import { SpriteIcon } from "@/components/SpriteIcon";
+
+// Demo is interactive, below-the-fold on mobile, and pulls in 5 sub-components
+// + mock data (~6KB). Lazy-load it so the hero text + CTA hydrate first and the
+// LCP candidate (h1) doesn't wait on Demo's parse/execute.
+// See BETTER-265.
+const LazyDemo = lazy(() =>
+  import("../demo").then((m) => ({ default: m.Demo })),
+);
+
+const DemoFallback = () => (
+  <div aria-hidden="true" className="w-full h-full" />
+);
 
 export default function Hero() {
   const t = useT("hero");
@@ -68,7 +80,9 @@ export default function Hero() {
                 "0 28px 70px rgba(0, 0, 0, 0.25), 0 14px 32px rgba(0, 0, 0, 0.15)",
             }}
           >
-            <Demo />
+            <Suspense fallback={<DemoFallback />}>
+              <LazyDemo />
+            </Suspense>
           </div>
         </div>
 
@@ -83,7 +97,9 @@ export default function Hero() {
               height: "600px",
             }}
           >
-            <Demo />
+            <Suspense fallback={<DemoFallback />}>
+              <LazyDemo />
+            </Suspense>
           </div>
         </div>
       </div>
