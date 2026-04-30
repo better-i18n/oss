@@ -139,35 +139,31 @@ export function MegaMenuPanel({
 }: MegaMenuPanelProps) {
   const { open, onPanelEnter, onPanelLeave } = useMegaMenu();
 
-  // When closed we still render but mark data-state so exit animation runs.
-  // After the animation duration the parent's open=false will already have
-  // swapped state; we use `pointer-events-none` to neutralize closed panels
-  // so they don't intercept clicks during the fade-out frame.
+  // Single-layer panel (no nested borders). Children inherit our data-state
+  // via `group-data-[state=open]:*` selectors so each item can stagger in.
   return (
     <div
       data-state={open ? "open" : "closed"}
       onMouseEnter={onPanelEnter}
       onMouseLeave={onPanelLeave}
       className={cn(
-        "absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50",
-        // Visibility — when closed, panel should not block UI underneath
+        "group/panel absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50",
         open ? "pointer-events-auto" : "pointer-events-none",
-        // Animation — drives off data-state, so enter+exit are both handled
         "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-1 data-[state=open]:duration-200",
         "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:slide-out-to-top-1 data-[state=closed]:duration-150",
-        // Don't paint anything while idle-closed (skip first-render flash)
         !open && "opacity-0",
       )}
     >
       <div
         className={cn(
-          "bg-mist-50 rounded-2xl border border-mist-200 p-2 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.25)]",
+          // Single white panel — strong layered shadow + faint top highlight
+          // simulates depth without a second visible border ring.
+          "bg-white rounded-2xl border border-mist-200 overflow-hidden",
+          "shadow-[0_1px_0_0_rgba(255,255,255,0.5)_inset,0_24px_64px_-24px_rgba(15,23,42,0.22),0_8px_24px_-12px_rgba(15,23,42,0.08)]",
           widthClass,
         )}
       >
-        <div className="bg-white rounded-xl border border-mist-200 shadow-sm overflow-hidden">
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );
@@ -179,12 +175,39 @@ interface MegaMenuSectionProps {
   label?: string;
   /** Removes the divider above this section */
   noDivider?: boolean;
+  /** Tailwind class for inner item layout (e.g., "grid grid-cols-2 gap-1") */
+  layoutClass?: string;
   children: ReactNode;
 }
+
+/**
+ * Stagger animation — runs on each direct child of the inner grid.
+ * Drives off the panel's data-state via `group/panel` — re-fires every
+ * time the panel reopens because Tailwind only injects animation
+ * properties when `data-state="open"` is active.
+ *
+ * Timing: 300ms duration + 30ms stagger = items wave in over ~450ms total.
+ * `fill-mode-both` keeps items at opacity-0 during the delay so they don't
+ * flash into view before their turn.
+ */
+const STAGGER_CHILD =
+  "[&>*]:opacity-0 " +
+  "[&>*]:group-data-[state=open]/panel:animate-in " +
+  "[&>*]:group-data-[state=open]/panel:fade-in-0 " +
+  "[&>*]:group-data-[state=open]/panel:slide-in-from-top-1 " +
+  "[&>*]:group-data-[state=open]/panel:duration-300 " +
+  "[&>*]:group-data-[state=open]/panel:fill-mode-both " +
+  "[&>*:nth-child(1)]:[animation-delay:40ms] " +
+  "[&>*:nth-child(2)]:[animation-delay:70ms] " +
+  "[&>*:nth-child(3)]:[animation-delay:100ms] " +
+  "[&>*:nth-child(4)]:[animation-delay:130ms] " +
+  "[&>*:nth-child(5)]:[animation-delay:160ms] " +
+  "[&>*:nth-child(6)]:[animation-delay:190ms]";
 
 export function MegaMenuSection({
   label,
   noDivider,
+  layoutClass,
   children,
 }: MegaMenuSectionProps) {
   return (
@@ -195,11 +218,17 @@ export function MegaMenuSection({
       )}
     >
       {label && (
-        <p className="px-1 mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500">
+        <p
+          className={cn(
+            "px-1 mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500",
+            // Label fades in just before its items start cascading
+            "opacity-0 group-data-[state=open]/panel:animate-in group-data-[state=open]/panel:fade-in-0 group-data-[state=open]/panel:duration-200 group-data-[state=open]/panel:fill-mode-both",
+          )}
+        >
           {label}
         </p>
       )}
-      {children}
+      <div className={cn(layoutClass, STAGGER_CHILD)}>{children}</div>
     </div>
   );
 }
@@ -218,12 +247,28 @@ const cardClassName =
 function CardInner({ icon, title, description }: MegaMenuCardProps) {
   return (
     <>
-      <div className="flex-shrink-0 size-11 rounded-xl bg-gradient-to-br from-mist-50 to-white border border-mist-200 shadow-[0_1px_0_rgba(15,23,42,0.04)] flex items-center justify-center text-mist-700 transition-all duration-200 group-hover/card:from-white group-hover/card:to-mist-50 group-hover/card:border-mist-300 group-hover/card:shadow-[0_4px_12px_-4px_rgba(15,23,42,0.12)]">
+      <div
+        className={cn(
+          // Base — soft inset gradient that reads as "raised" without a hard border
+          "flex-shrink-0 size-11 rounded-xl flex items-center justify-center text-mist-700",
+          "bg-gradient-to-br from-mist-50 to-white border border-mist-200",
+          "shadow-[0_1px_0_rgba(15,23,42,0.04)]",
+          // Smooth multi-property transition
+          "transition-[transform,box-shadow,background,border-color,color] duration-300 ease-out",
+          // Hover — gradient flips, border darkens, icon container lifts slightly
+          "group-hover/card:from-white group-hover/card:to-mist-50",
+          "group-hover/card:border-mist-300 group-hover/card:text-mist-950",
+          "group-hover/card:shadow-[0_6px_16px_-6px_rgba(15,23,42,0.18)]",
+          "group-hover/card:scale-[1.04] group-hover/card:-rotate-1",
+        )}
+      >
         {icon}
       </div>
       <div className="flex-1 min-w-0 pt-0.5">
         <div className="flex items-center gap-1.5">
-          <span className="text-sm font-medium text-mist-950">{title}</span>
+          <span className="text-sm font-medium text-mist-950 transition-transform duration-200 group-hover/card:translate-x-0.5">
+            {title}
+          </span>
           <SpriteIcon
             name="arrow-right"
             className="size-3 text-mist-400 -translate-x-1 opacity-0 transition-all duration-200 group-hover/card:translate-x-0 group-hover/card:opacity-100 group-hover/card:text-mist-700"
@@ -295,12 +340,24 @@ const pillClassName =
 function PillInner({ icon, label }: MegaMenuPillProps) {
   return (
     <>
-      <span className="flex size-7 items-center justify-center rounded-md bg-mist-50 border border-mist-200 text-mist-700 transition-colors group-hover/pill:bg-white group-hover/pill:border-mist-300 group-hover/pill:text-mist-950">
+      <span
+        className={cn(
+          "flex size-7 items-center justify-center rounded-md text-mist-700",
+          "bg-mist-50 border border-mist-200",
+          "transition-[transform,background,border-color,color] duration-200 ease-out",
+          "group-hover/pill:bg-white group-hover/pill:border-mist-300 group-hover/pill:text-mist-950",
+          "group-hover/pill:scale-[1.08]",
+        )}
+      >
         {icon}
       </span>
-      <span className="text-sm font-medium text-mist-800 group-hover/pill:text-mist-950 transition-colors">
+      <span className="flex-1 text-sm font-medium text-mist-800 group-hover/pill:text-mist-950 transition-colors">
         {label}
       </span>
+      <SpriteIcon
+        name="arrow-right"
+        className="size-3 text-mist-400 -translate-x-1 opacity-0 transition-all duration-200 group-hover/pill:translate-x-0 group-hover/pill:opacity-100 group-hover/pill:text-mist-700"
+      />
     </>
   );
 }

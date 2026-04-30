@@ -139,90 +139,88 @@ export default function Header({ className }: { className?: string }) {
                 <MegaMenuSection
                   label={t("menu.whoItsFor", { defaultValue: "Who it's for" })}
                   noDivider
+                  layoutClass="grid grid-cols-2 gap-1"
                 >
-                  <div className="grid grid-cols-2 gap-1">
-                    <MegaMenuCard
-                      to="/$locale/for-developers/"
-                      params={{ locale: locale || "en" }}
-                      icon={<SpriteIcon name="code-brackets" className="size-5" />}
-                      title={t("segments.developers.title", {
-                        defaultValue: "For Developers",
-                      })}
-                      description={t("segments.developers.shortDescription", {
-                        defaultValue: "Type-safe SDKs, MCP & Git workflow",
-                      })}
-                    />
-                    <MegaMenuCard
-                      to="/$locale/for-translators/"
-                      params={{ locale: locale || "en" }}
-                      icon={<IconAiTranslate className="size-5" />}
-                      title={t("segments.translators.title", {
-                        defaultValue: "For Translators",
-                      })}
-                      description={t("segments.translators.shortDescription", {
-                        defaultValue: "Context-rich CAT environment + AI",
-                      })}
-                    />
-                    <MegaMenuCard
-                      to="/$locale/for-product-teams/"
-                      params={{ locale: locale || "en" }}
-                      icon={<SpriteIcon name="rocket" className="size-5" />}
-                      title={t("segments.productTeams.title", {
-                        defaultValue: "For Product Teams",
-                      })}
-                      description={t("segments.productTeams.shortDescription", {
-                        defaultValue: "Manage localization without the hassle",
-                      })}
-                    />
-                    <MegaMenuCard
-                      to="/$locale/for-enterprises/"
-                      params={{ locale: locale || "en" }}
-                      icon={<IconPeople className="size-5" />}
-                      title={t("segments.enterprises.title", {
-                        defaultValue: "For Enterprises",
-                      })}
-                      description={t("segments.enterprises.shortDescription", {
-                        defaultValue: "Localization at enterprise scale",
-                      })}
-                    />
-                  </div>
+                  <MegaMenuCard
+                    to="/$locale/for-developers/"
+                    params={{ locale: locale || "en" }}
+                    icon={<SpriteIcon name="code-brackets" className="size-5" />}
+                    title={t("segments.developers.title", {
+                      defaultValue: "For Developers",
+                    })}
+                    description={t("segments.developers.shortDescription", {
+                      defaultValue: "Type-safe SDKs, MCP & Git workflow",
+                    })}
+                  />
+                  <MegaMenuCard
+                    to="/$locale/for-translators/"
+                    params={{ locale: locale || "en" }}
+                    icon={<IconAiTranslate className="size-5" />}
+                    title={t("segments.translators.title", {
+                      defaultValue: "For Translators",
+                    })}
+                    description={t("segments.translators.shortDescription", {
+                      defaultValue: "Context-rich CAT environment + AI",
+                    })}
+                  />
+                  <MegaMenuCard
+                    to="/$locale/for-product-teams/"
+                    params={{ locale: locale || "en" }}
+                    icon={<SpriteIcon name="rocket" className="size-5" />}
+                    title={t("segments.productTeams.title", {
+                      defaultValue: "For Product Teams",
+                    })}
+                    description={t("segments.productTeams.shortDescription", {
+                      defaultValue: "Manage localization without the hassle",
+                    })}
+                  />
+                  <MegaMenuCard
+                    to="/$locale/for-enterprises/"
+                    params={{ locale: locale || "en" }}
+                    icon={<IconPeople className="size-5" />}
+                    title={t("segments.enterprises.title", {
+                      defaultValue: "For Enterprises",
+                    })}
+                    description={t("segments.enterprises.shortDescription", {
+                      defaultValue: "Localization at enterprise scale",
+                    })}
+                  />
                 </MegaMenuSection>
 
                 <MegaMenuSection
                   label={t("menu.byIndustry", { defaultValue: "By industry" })}
+                  layoutClass="grid grid-cols-3 gap-1"
                 >
-                  <div className="grid grid-cols-3 gap-1">
-                    <MegaMenuPill
-                      to="/$locale/for-startups/"
-                      params={{ locale: locale || "en" }}
-                      icon={<SpriteIcon name="zap" className="size-4" />}
-                      label={t("menu.solutions.startups", {
-                        defaultValue: "Startups",
-                      })}
-                    />
-                    <MegaMenuPill
-                      to="/$locale/for-saas/"
-                      params={{ locale: locale || "en" }}
-                      icon={<IconCloudySparkle className="size-4" />}
-                      label={t("menu.solutions.saas", { defaultValue: "SaaS" })}
-                    />
-                    <MegaMenuPill
-                      to="/$locale/for-ecommerce/"
-                      params={{ locale: locale || "en" }}
-                      icon={<SpriteIcon name="chart" className="size-4" />}
-                      label={t("menu.solutions.ecommerce", {
-                        defaultValue: "E-Commerce",
-                      })}
-                    />
-                    <MegaMenuPill
-                      to="/$locale/for-agencies/"
-                      params={{ locale: locale || "en" }}
-                      icon={<SpriteIcon name="group" className="size-4" />}
-                      label={t("menu.solutions.agencies", {
-                        defaultValue: "Agencies",
-                      })}
-                    />
-                  </div>
+                  <MegaMenuPill
+                    to="/$locale/for-startups/"
+                    params={{ locale: locale || "en" }}
+                    icon={<SpriteIcon name="zap" className="size-4" />}
+                    label={t("menu.solutions.startups", {
+                      defaultValue: "Startups",
+                    })}
+                  />
+                  <MegaMenuPill
+                    to="/$locale/for-saas/"
+                    params={{ locale: locale || "en" }}
+                    icon={<IconCloudySparkle className="size-4" />}
+                    label={t("menu.solutions.saas", { defaultValue: "SaaS" })}
+                  />
+                  <MegaMenuPill
+                    to="/$locale/for-ecommerce/"
+                    params={{ locale: locale || "en" }}
+                    icon={<SpriteIcon name="chart" className="size-4" />}
+                    label={t("menu.solutions.ecommerce", {
+                      defaultValue: "E-Commerce",
+                    })}
+                  />
+                  <MegaMenuPill
+                    to="/$locale/for-agencies/"
+                    params={{ locale: locale || "en" }}
+                    icon={<SpriteIcon name="group" className="size-4" />}
+                    label={t("menu.solutions.agencies", {
+                      defaultValue: "Agencies",
+                    })}
+                  />
                 </MegaMenuSection>
 
                 <MegaMenuFooter
