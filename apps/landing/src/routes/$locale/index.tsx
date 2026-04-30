@@ -28,14 +28,23 @@ import { getChangelogsMeta } from "@/lib/changelog";
 import { withTimeout } from "@/lib/fetch-utils";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
-import { filterMessages } from "@/lib/page-namespaces";
 import { getPricingPlans, type PricingPlan } from "@/lib/content";
 
+// Pre-built head() output — keeps the heavy `messages` dictionary OUT of
+// loaderData so TanStack Router doesn't dehydrate it into the SSR HTML
+// (avoiding a duplicate of __root's <script id="__i18n_messages__"> embed).
+// See BETTER-263 for the CWV background.
+type HeadData = {
+  meta: ReturnType<typeof formatMetaTags>;
+  links: Array<ReturnType<typeof getCanonicalLink>>;
+  scripts: ReturnType<typeof formatStructuredData>;
+};
+
 type HomeLoaderData = {
-  messages: Record<string, string>;
   locale: string;
   recentChangelogs: ReturnType<typeof Array.prototype.slice>;
   plans: PricingPlan[];
+  headData: HeadData;
 };
 
 export const Route = createFileRoute("/$locale/")({
@@ -49,45 +58,29 @@ export const Route = createFileRoute("/$locale/")({
       withTimeout(getChangelogsMeta(locale), 3000, []),
       getPricingPlans(context.locale),
     ]);
-    // head() only accesses meta.home.*, hero.{title,subtitle}, homeFaq.{N}.*
-    const messages = filterMessages(allMessages, [
-      "meta",
-      "breadcrumbs",
-      "hero",
-      "homeFaq",
-    ]);
-    return {
-      messages: messages as Record<string, Record<string, string>>,
-      locale: context.locale,
-      recentChangelogs: releases.slice(0, 4),
-      plans,
-    };
-  },
-  head: ({ loaderData }) => {
-    const locale = loaderData?.locale || "en";
-    const pathname = "/";
-    const messages = loaderData?.messages || {};
 
-    // Extract localized hero text for OG image
-    const heroNs = (messages as Record<string, unknown>)?.hero as
+    // Pre-build head() output here so we never dehydrate the full messages
+    // dict into loaderData. Only the small set of meta tags / links / scripts
+    // we actually emit ends up in the SSR HTML — the messages themselves are
+    // embedded ONCE by __root via <script id="__i18n_messages__">.
+    const pathname = "/";
+    const heroNs = (allMessages as Record<string, unknown>)?.hero as
       | Record<string, string>
       | undefined;
-    const heroTitle = heroNs?.title;
-    const heroSubtitle = heroNs?.subtitle;
-
     const ogImage = buildOgImageUrl("og", {
-      title: heroTitle,
-      description: heroSubtitle,
+      title: heroNs?.title,
+      description: heroNs?.subtitle,
     });
-
-    const meta = getLocalizedMeta(messages, "home", {
-      locale,
-      pathname,
-      ogImage,
-    });
-
-    // Extract localized FAQ items from i18n messages (homeFaq namespace)
-    const faqNs = (messages as Record<string, unknown>)?.homeFaq as
+    const metaTags = getLocalizedMeta(
+      (allMessages ?? {}) as Record<string, Record<string, string>>,
+      "home",
+      {
+        locale: context.locale,
+        pathname,
+        ogImage,
+      },
+    );
+    const faqNs = (allMessages as Record<string, unknown>)?.homeFaq as
       | Record<string, Record<string, string>>
       | undefined;
     const faqItems = [1, 2, 3, 4]
@@ -98,23 +91,32 @@ export const Route = createFileRoute("/$locale/")({
       })
       .filter((item): item is { question: string; answer: string } => item !== null);
 
-    return {
-      meta: formatMetaTags(meta, { locale }),
+    const headData: HeadData = {
+      meta: formatMetaTags(metaTags, { locale: context.locale }),
       links: [
         ...getAlternateLinks(pathname),
-        getCanonicalLink(locale, pathname),
+        getCanonicalLink(context.locale, pathname),
       ],
       scripts: [
         ...getHomePageStructuredData({
-          locale,
+          locale: context.locale,
           ogImage,
         }),
         ...(faqItems.length > 0
-          ? formatStructuredData(getFAQSchema(faqItems, locale))
+          ? formatStructuredData(getFAQSchema(faqItems, context.locale))
           : []),
       ],
     };
+
+    return {
+      locale: context.locale,
+      recentChangelogs: releases.slice(0, 4),
+      plans,
+      headData,
+    };
   },
+  head: ({ loaderData }) =>
+    loaderData?.headData ?? { meta: [], links: [], scripts: [] },
   component: LandingPage,
 });
 
