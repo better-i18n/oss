@@ -1,38 +1,67 @@
 ---
 title: Calling APIs
-description: Use installation tokens to read and write translations.
+description: Use installation tokens to call the partner API.
 ---
 
-Send the installation token as the Bearer for all resource endpoints:
+Send the installation token as the Bearer token for partner API endpoints.
 
-## Reading keys
+## Identity
+
+Use the OAuth access token to check who connected and which Better i18n account
+it belongs to:
 
 ```bash
-curl https://api.better-i18n.com/v1/keys \
+curl https://api.better-i18n.com/api/oauth-client/me \
+  -H "Authorization: Bearer <access_token>"
+```
+
+## Organizations and projects
+
+List organizations the user granted access to:
+
+```bash
+curl https://api.better-i18n.com/api/oauth-client/organizations \
+  -H "Authorization: Bearer bi_oat_d7ab12..." \
+```
+
+List projects in an organization:
+
+```bash
+curl https://api.better-i18n.com/api/oauth-client/organizations/<org_id>/projects \
   -H "Authorization: Bearer bi_oat_d7ab12..."
 ```
 
-## Writing translations
+Create a CDN-backed project in the granted organization:
 
 ```bash
-curl -X POST https://api.better-i18n.com/v1/translations \
+curl -X POST https://api.better-i18n.com/api/oauth-client/v1/projects \
   -H "Authorization: Bearer bi_oat_d7ab12..." \
   -H "Content-Type: application/json" \
-  -d '{
-    "keyId": "k_...",
-    "language": "de",
-    "value": "Hallo Welt"
-  }'
+  -d '{ "name": "Marketing site", "slug": "marketing-site", "sourceLanguage": "en" }'
 ```
 
-## Publishing to CDN
+Read project details:
 
 ```bash
-curl -X POST https://api.better-i18n.com/v1/translations/publish \
+curl https://api.better-i18n.com/api/oauth-client/v1/projects/<project_id> \
+  -H "Authorization: Bearer bi_oat_d7ab12..."
+```
+
+Add a target language:
+
+```bash
+curl -X POST https://api.better-i18n.com/api/oauth-client/v1/projects/<project_id>/languages \
   -H "Authorization: Bearer bi_oat_d7ab12..." \
   -H "Content-Type: application/json" \
-  -d '{ "projectId": "proj_..." }'
+  -d '{ "code": "de" }'
 ```
+
+## Translation keys and values
+
+Dedicated REST endpoints for keys, translations, publishing, glossary, and
+Content CMS writes are in active partner rollout. Until they are available in
+your account, use the Better i18n MCP tools with the same `bi_oat_` token for
+translation key and value operations. See [MCP integration](/oauth/mcp-integration).
 
 ## Scope enforcement
 
@@ -49,14 +78,9 @@ If your token is missing the required scope, you'll get:
 
 ## Identity endpoint
 
-To check "who am I and what was granted":
-
-```bash
-curl https://api.better-i18n.com/oauth-client/me \
-  -H "Authorization: Bearer <access_token>"
-```
-
-This is the only endpoint callable with the **access token** directly (not the installation token). It requires no scope and returns the user, grant, and resolved scopes.
+`/api/oauth-client/me` is the only endpoint callable with the **access token**
+directly. Organization, project, and resource endpoints require the
+installation token.
 
 ## Handling revocation
 

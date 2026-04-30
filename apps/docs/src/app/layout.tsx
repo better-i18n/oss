@@ -2,12 +2,13 @@ import { BetterSupportWidget } from '@/components/better-support-widget';
 import SearchDialog from '@/components/search';
 import { ThemeSync } from '@/components/theme-provider';
 import { baseOptions } from '@/lib/layout.shared';
+import { cn } from '@/lib/cn';
 import { source } from '@/lib/source';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import React from 'react';
+import React, { type CSSProperties } from 'react';
 import './global.css';
 
 function SidebarFooter() {
@@ -79,6 +80,52 @@ const tabDescriptions: Record<string, string> = {
   'root:oauth': 'Partner integrations with scoped OAuth 2.0 tokens',
 };
 
+const tabSectionAliases: Record<string, string> = {
+  core: 'root:core',
+  frameworks: 'root:frameworks',
+  sdk: 'root:sdk',
+  mcp: 'root:mcp',
+  cli: 'root:cli',
+  oauth: 'root:oauth',
+};
+
+type IconElementProps = {
+  className?: string;
+  style?: CSSProperties;
+};
+
+function renderSidebarTabIcon(icon: React.ReactNode, color: string) {
+  if (!icon) return icon;
+
+  return (
+    <span
+      className="docs-sidebar-tab-icon"
+      style={{ '--docs-sidebar-tab-icon-color': color } as CSSProperties}
+    >
+      {React.isValidElement<IconElementProps>(icon)
+        ? React.cloneElement(icon, {
+            className: cn('docs-sidebar-tab-icon-svg', icon.props.className),
+            style: {
+              ...icon.props.style,
+              color: 'var(--docs-sidebar-tab-icon-color)',
+            },
+          })
+        : icon}
+    </span>
+  );
+}
+
+function resolveSidebarTabId(id: string | undefined, url: string | undefined) {
+  if (id && tabColors[id]) return id;
+
+  const section = url?.split('/').filter(Boolean)[0];
+  if (section && tabSectionAliases[section]) {
+    return tabSectionAliases[section];
+  }
+
+  return id ?? '';
+}
+
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} font-sans`} suppressHydrationWarning>
@@ -92,7 +139,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
               footer: <SidebarFooter />,
               tabs: {
                 transform: (option, node) => {
-                  const id = node.$id || '';
+                  const id = resolveSidebarTabId(node.$id, option.url);
                   const color = tabColors[id];
                   const description = tabDescriptions[id];
 
@@ -100,11 +147,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
                     ...option,
                     ...(description && { description }),
                     ...(color && option.icon && {
-                      icon: React.isValidElement(option.icon)
-                        ? React.cloneElement(option.icon, {
-                            style: { color, width: 20, height: 20 },
-                          } as React.HTMLAttributes<HTMLElement>)
-                        : option.icon,
+                      icon: renderSidebarTabIcon(option.icon, color),
                     }),
                   };
                 },

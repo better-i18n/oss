@@ -7,18 +7,18 @@ description: Refresh expired tokens and handle the rotation lifecycle.
 
 ```
 access_token expired
-  → POST /api/auth/mcp/token (grant_type=refresh_token)
+  → POST https://dash.better-i18n.com/api/auth/mcp/token (grant_type=refresh_token)
   → new access_token (30m), same refresh_token
 
 installation_token expired
-  → POST /installations/:grantId/tokens
+  → POST https://api.better-i18n.com/api/oauth-client/installations/:grantId/tokens
   → new bi_oat_... (1h)
 ```
 
 ## Refresh the access token
 
 ```bash
-curl -X POST https://api.better-i18n.com/api/auth/mcp/token \
+curl -X POST https://dash.better-i18n.com/api/auth/mcp/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   --data-urlencode "grant_type=refresh_token" \
   --data-urlencode "refresh_token=<your_refresh_token>" \
@@ -58,7 +58,7 @@ async function ensureAccessToken(conn: Connection): Promise<string> {
   }
 
   // Refresh it
-  const res = await fetch("https://api.better-i18n.com/api/auth/mcp/token", {
+  const res = await fetch("https://dash.better-i18n.com/api/auth/mcp/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({

@@ -36,20 +36,17 @@ description: What each OAuth scope grants and which endpoints it protects.
 
 | Method | Endpoint | Required scope |
 |--------|----------|---------------|
-| `GET` | `/oauth-client/me` | None (identity) |
-| `GET` | `/oauth-client/organizations` | `org:read` |
-| `GET` | `/oauth-client/organizations/:org/projects` | `projects:read` |
-| `GET` | `/v1/keys` | `keys:read` |
-| `POST` | `/v1/keys` | `keys:write` |
-| `DELETE` | `/v1/keys/:id` | `keys:write` |
-| `GET` | `/v1/translations` | `translations:read` |
-| `POST` | `/v1/translations` | `translations:write` |
-| `POST` | `/v1/translations/publish` | `translations:publish` |
-| `GET` | `/v1/content/entries` | `content:read` |
-| `POST` | `/v1/content/entries` | `content:write` |
-| `POST` | `/v1/content/entries/:id/publish` | `content:publish` |
-| `GET` | `/v1/glossary` | `glossary:read` |
-| `POST` | `/v1/glossary` | `glossary:write` |
+| `GET` | `/api/oauth-client/me` | None (identity, access token) |
+| `GET` | `/api/oauth-client/organizations` | `org:read` |
+| `GET` | `/api/oauth-client/organizations/:orgId/projects` | `projects:read` |
+| `GET` | `/api/oauth-client/organizations/:orgSlug/projects/:projectSlug/models` | `content:read` |
+| `POST` | `/api/oauth-client/v1/projects` | `projects:write` |
+| `GET` | `/api/oauth-client/v1/projects/:projectId` | `projects:read` |
+| `POST` | `/api/oauth-client/v1/projects/:projectId/languages` | `projects:write` |
+
+Translation key, translation value, publishing, glossary, and Content CMS write
+operations use the same scopes through the MCP tools while dedicated partner
+REST endpoints roll out.
 
 ## Requesting scopes
 
