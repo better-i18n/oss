@@ -181,28 +181,31 @@ interface MegaMenuSectionProps {
 }
 
 /**
- * Stagger animation — runs on each direct child of the inner grid.
- * Drives off the panel's data-state via `group/panel` — re-fires every
- * time the panel reopens because Tailwind only injects animation
- * properties when `data-state="open"` is active.
+ * Per-item stagger animation classes — applied DIRECTLY to each Card/Pill
+ * (not via parent [&>*] selector, which doesn't compose with group-data-*
+ * variants reliably in Tailwind JIT).
  *
- * Timing: 300ms duration + 30ms stagger = items wave in over ~450ms total.
- * `fill-mode-both` keeps items at opacity-0 during the delay so they don't
- * flash into view before their turn.
+ * Each item picks its delay from the array using its position index.
+ * Re-fires on every open because Tailwind only injects animation properties
+ * when data-state="open" is active on the panel.
  */
-const STAGGER_CHILD =
-  "[&>*]:opacity-0 " +
-  "[&>*]:group-data-[state=open]/panel:animate-in " +
-  "[&>*]:group-data-[state=open]/panel:fade-in-0 " +
-  "[&>*]:group-data-[state=open]/panel:slide-in-from-top-1 " +
-  "[&>*]:group-data-[state=open]/panel:duration-300 " +
-  "[&>*]:group-data-[state=open]/panel:fill-mode-both " +
-  "[&>*:nth-child(1)]:[animation-delay:40ms] " +
-  "[&>*:nth-child(2)]:[animation-delay:70ms] " +
-  "[&>*:nth-child(3)]:[animation-delay:100ms] " +
-  "[&>*:nth-child(4)]:[animation-delay:130ms] " +
-  "[&>*:nth-child(5)]:[animation-delay:160ms] " +
-  "[&>*:nth-child(6)]:[animation-delay:190ms]";
+export const STAGGER_DELAYS = [
+  "[animation-delay:40ms]",
+  "[animation-delay:70ms]",
+  "[animation-delay:100ms]",
+  "[animation-delay:130ms]",
+  "[animation-delay:160ms]",
+  "[animation-delay:190ms]",
+  "[animation-delay:220ms]",
+  "[animation-delay:250ms]",
+];
+
+export const ITEM_ENTER =
+  "group-data-[state=open]/panel:animate-in " +
+  "group-data-[state=open]/panel:fade-in-0 " +
+  "group-data-[state=open]/panel:slide-in-from-top-1 " +
+  "group-data-[state=open]/panel:duration-300 " +
+  "group-data-[state=open]/panel:fill-mode-both";
 
 export function MegaMenuSection({
   label,
@@ -221,14 +224,13 @@ export function MegaMenuSection({
         <p
           className={cn(
             "px-1 mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500",
-            // Label fades in just before its items start cascading
-            "opacity-0 group-data-[state=open]/panel:animate-in group-data-[state=open]/panel:fade-in-0 group-data-[state=open]/panel:duration-200 group-data-[state=open]/panel:fill-mode-both",
+            "group-data-[state=open]/panel:animate-in group-data-[state=open]/panel:fade-in-0 group-data-[state=open]/panel:duration-200 group-data-[state=open]/panel:fill-mode-both",
           )}
         >
           {label}
         </p>
       )}
-      <div className={cn(layoutClass, STAGGER_CHILD)}>{children}</div>
+      <div className={layoutClass}>{children}</div>
     </div>
   );
 }
@@ -243,6 +245,12 @@ interface MegaMenuCardProps {
 
 const cardClassName =
   "group/card flex items-start gap-3 p-3 rounded-lg hover:bg-mist-50 transition-colors";
+
+function staggerClasses(index?: number) {
+  if (index === undefined) return "";
+  const delay = STAGGER_DELAYS[Math.min(index, STAGGER_DELAYS.length - 1)];
+  return cn(ITEM_ENTER, delay);
+}
 
 function CardInner({ icon, title, description }: MegaMenuCardProps) {
   return (
@@ -293,16 +301,18 @@ type InternalLinkProps = {
   to: LinkProps["to"];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>;
+  /** Position in the stagger sequence (0-based). Optional — omit to skip stagger. */
+  index?: number;
 };
 
 export function MegaMenuCard(props: MegaMenuCardProps & InternalLinkProps) {
-  const { icon, title, description, to, params } = props;
+  const { icon, title, description, to, params, index } = props;
   return (
     <Link
       to={to}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       params={params as any}
-      className={cardClassName}
+      className={cn(cardClassName, staggerClasses(index))}
     >
       <CardInner icon={icon} title={title} description={description} />
     </Link>
@@ -363,13 +373,13 @@ function PillInner({ icon, label }: MegaMenuPillProps) {
 }
 
 export function MegaMenuPill(props: MegaMenuPillProps & InternalLinkProps) {
-  const { icon, label, to, params } = props;
+  const { icon, label, to, params, index } = props;
   return (
     <Link
       to={to}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       params={params as any}
-      className={pillClassName}
+      className={cn(pillClassName, staggerClasses(index))}
     >
       <PillInner icon={icon} label={label} />
     </Link>
