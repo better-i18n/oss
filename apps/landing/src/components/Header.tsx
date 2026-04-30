@@ -6,13 +6,21 @@ import {
   IconAiTranslate,
   IconPeople,
   IconNewspaper,
-  IconLiveActivity,
   IconGithub,
   IconModelcontextprotocol,
   IconCloudySparkle,
   IconConsoleSimple,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { NextjsIcon } from "@/components/icons/FrameworkIcons";
+import {
+  NextjsIcon,
+  ReactIcon,
+  VueIcon,
+  NuxtIcon,
+  AngularIcon,
+  SvelteIcon,
+  ExpoIcon,
+  TanStackIcon,
+} from "@/components/icons/FrameworkIcons";
 import { LifeBuoy } from "lucide-react";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { useT } from "@/lib/i18n";
@@ -24,57 +32,13 @@ import {
   MegaMenuSection,
   MegaMenuCard,
   MegaMenuPill,
+  MegaMenuPillExternal,
   MegaMenuFooter,
 } from "./header/mega-menu";
 
 const LazyMobileNav = lazy(() =>
   import("./MobileNav").then((m) => ({ default: m.MobileNav })),
 );
-
-// Featured integrations shown in the nav dropdown
-const NAV_INTEGRATIONS: Array<{
-  slug: string;
-  name: string;
-  defaultDescription: string;
-  Icon: React.ComponentType<{ className?: string }>;
-}> = [
-  {
-    slug: "github",
-    name: "GitHub",
-    defaultDescription: "Review translation PRs in your Git workflow",
-    Icon: IconGithub,
-  },
-  {
-    slug: "mcp-server",
-    name: "MCP Server",
-    defaultDescription: "AI agents manage translations via Claude, Cursor",
-    Icon: IconModelcontextprotocol,
-  },
-  {
-    slug: "global-cdn",
-    name: "Global CDN",
-    defaultDescription: "Serve translations from 300+ edge locations",
-    Icon: IconCloudySparkle,
-  },
-  {
-    slug: "nextjs",
-    name: "Next.js",
-    defaultDescription: "App Router native with CDN-first delivery",
-    Icon: NextjsIcon,
-  },
-  {
-    slug: "cli",
-    name: "CLI",
-    defaultDescription: "Scan, sync, and automate from the terminal",
-    Icon: IconConsoleSimple,
-  },
-  {
-    slug: "ai-translation",
-    name: "AI Translation",
-    defaultDescription: "Generate drafts, review before shipping",
-    Icon: IconAiTranslate,
-  },
-];
 
 export default function Header({ className }: { className?: string }) {
   const { locale } = useParams({ strict: false });
@@ -258,219 +222,208 @@ export default function Header({ className }: { className?: string }) {
               </MegaMenuPanel>
             </MegaMenu>
             {/* Developers Mega Menu */}
-            <div className="relative group">
-              <button
-                aria-haspopup="true"
-                aria-expanded="false"
-                className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600"
-              >
-                {t("developers.title", { defaultValue: "Developers" })}
-                <SpriteIcon
-                  name="chevron-bottom"
-                  className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180"
-                />
-              </button>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[520px] shadow-lg">
-                  <div
-                    className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm"
-                    role="menu"
-                  >
-                    <p className="px-2.5 py-1.5 text-xs font-medium text-mist-700 uppercase tracking-wider">
-                      {t("developers.frameworkGuides", {
-                        defaultValue: "Framework Guides",
-                      })}
-                    </p>
-                    <div className="grid grid-cols-3 gap-1 mt-1">
-                      <Link
-                        to="/$locale/i18n/react/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <span className="text-sm font-medium text-mist-950">
-                          React
-                        </span>
-                        <SpriteIcon
-                          name="arrow-right"
-                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
-                        />
-                      </Link>
-                      <Link
-                        to="/$locale/i18n/nextjs/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <span className="text-sm font-medium text-mist-950">
-                          Next.js
-                        </span>
-                        <SpriteIcon
-                          name="arrow-right"
-                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
-                        />
-                      </Link>
-                      <Link
-                        to="/$locale/i18n/vue/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <span className="text-sm font-medium text-mist-950">
-                          Vue
-                        </span>
-                        <SpriteIcon
-                          name="arrow-right"
-                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
-                        />
-                      </Link>
-                      <Link
-                        to="/$locale/i18n/nuxt/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <span className="text-sm font-medium text-mist-950">
-                          Nuxt
-                        </span>
-                        <SpriteIcon
-                          name="arrow-right"
-                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
-                        />
-                      </Link>
-                      <Link
-                        to="/$locale/i18n/angular/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <span className="text-sm font-medium text-mist-950">
-                          Angular
-                        </span>
-                        <SpriteIcon
-                          name="arrow-right"
-                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
-                        />
-                      </Link>
-                      <Link
-                        to="/$locale/i18n/svelte/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <span className="text-sm font-medium text-mist-950">
-                          Svelte
-                        </span>
-                        <SpriteIcon
-                          name="arrow-right"
-                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
-                        />
-                      </Link>
-                      <Link
-                        to="/$locale/i18n/expo/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <span className="text-sm font-medium text-mist-950">
-                          Expo
-                        </span>
-                        <SpriteIcon
-                          name="arrow-right"
-                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
-                        />
-                      </Link>
-                      <Link
-                        to="/$locale/i18n/tanstack-start/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <span className="text-sm font-medium text-mist-950">
-                          TanStack Start
-                        </span>
-                        <SpriteIcon
-                          name="arrow-right"
-                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
-                        />
-                      </Link>
-                      <Link
-                        to="/$locale/i18n/server/"
-                        params={{ locale: locale || "en" }}
-                        className="group/item flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <span className="text-sm font-medium text-mist-950">
-                          Server / Hono
-                        </span>
-                        <SpriteIcon
-                          name="arrow-right"
-                          className="size-3.5 text-mist-400 opacity-0 group-hover/item:opacity-100 transition-opacity"
-                        />
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="px-3 py-2.5 flex items-center justify-between">
-                    <p className="text-sm text-mist-700">
-                      {t("developers.viewDocs", {
-                        defaultValue: "View full documentation",
-                      })}
-                    </p>
+            <MegaMenu label={t("developers.title", { defaultValue: "Developers" })}>
+              <MegaMenuPanel widthClass="w-[560px]">
+                <MegaMenuSection
+                  label={t("developers.frameworkGuides", {
+                    defaultValue: "Framework Guides",
+                  })}
+                  noDivider
+                  layoutClass="grid grid-cols-3 gap-1"
+                >
+                  <MegaMenuPill
+                    index={0}
+                    to="/$locale/i18n/react/"
+                    params={{ locale: locale || "en" }}
+                    icon={<ReactIcon className="size-4" />}
+                    label="React"
+                  />
+                  <MegaMenuPill
+                    index={1}
+                    to="/$locale/i18n/nextjs/"
+                    params={{ locale: locale || "en" }}
+                    icon={<NextjsIcon className="size-4" />}
+                    label="Next.js"
+                  />
+                  <MegaMenuPill
+                    index={2}
+                    to="/$locale/i18n/vue/"
+                    params={{ locale: locale || "en" }}
+                    icon={<VueIcon className="size-4" />}
+                    label="Vue"
+                  />
+                  <MegaMenuPill
+                    index={3}
+                    to="/$locale/i18n/nuxt/"
+                    params={{ locale: locale || "en" }}
+                    icon={<NuxtIcon className="size-4" />}
+                    label="Nuxt"
+                  />
+                  <MegaMenuPill
+                    index={4}
+                    to="/$locale/i18n/angular/"
+                    params={{ locale: locale || "en" }}
+                    icon={<AngularIcon className="size-4" />}
+                    label="Angular"
+                  />
+                  <MegaMenuPill
+                    index={5}
+                    to="/$locale/i18n/svelte/"
+                    params={{ locale: locale || "en" }}
+                    icon={<SvelteIcon className="size-4" />}
+                    label="Svelte"
+                  />
+                  <MegaMenuPill
+                    index={6}
+                    to="/$locale/i18n/expo/"
+                    params={{ locale: locale || "en" }}
+                    icon={<ExpoIcon className="size-4" />}
+                    label="Expo"
+                  />
+                  <MegaMenuPill
+                    index={7}
+                    to="/$locale/i18n/tanstack-start/"
+                    params={{ locale: locale || "en" }}
+                    icon={<TanStackIcon className="size-4" />}
+                    label="TanStack"
+                  />
+                  <MegaMenuPill
+                    index={8}
+                    to="/$locale/i18n/server/"
+                    params={{ locale: locale || "en" }}
+                    icon={<IconConsoleSimple className="size-4" />}
+                    label="Hono / Node"
+                  />
+                </MegaMenuSection>
+
+                <MegaMenuFooter
+                  primary={
                     <a
                       href="https://docs.better-i18n.com/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm font-medium text-mist-950 hover:underline"
+                      className="inline-flex items-center gap-1 hover:text-mist-700 transition-colors"
                     >
+                      <SpriteIcon name="book" className="size-3.5" />
                       {t("documentation", { defaultValue: "Documentation" })}
                     </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* Integrations Mega Menu */}
-            <div className="relative group">
-              <button
-                aria-haspopup="true"
-                aria-expanded="false"
-                className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600"
-              >
-                {t("integrations.title", { defaultValue: "Integrations" })}
-                <SpriteIcon
-                  name="chevron-bottom"
-                  className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180"
+                  }
+                  secondary={
+                    <a
+                      href="https://docs.better-i18n.com/api"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-mist-950 transition-colors"
+                    >
+                      {t("apiReference", { defaultValue: "API Reference" })}
+                    </a>
+                  }
                 />
-              </button>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 w-[480px] shadow-lg">
-                  <div className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm" role="menu">
-                    <p className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500">
-                      {t("integrations.featuredLabel", { defaultValue: "Featured" })}
-                    </p>
-                    <div className="grid grid-cols-2 gap-0.5 mt-0.5">
-                      {NAV_INTEGRATIONS.map((item) => (
-                        <Link
-                          key={item.slug}
-                          to="/$locale/integrations/$slug/"
-                          params={{ locale: locale || "en", slug: item.slug }}
-                          className="group/item flex items-start gap-3 px-2.5 py-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                        >
-                          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-mist-200 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)] mt-0.5">
-                            <item.Icon className="size-4 text-mist-800" />
-                          </span>
-                          <span className="min-w-0">
-                            <span className="block text-sm font-medium text-mist-950 leading-snug">{t(`integrations.featured.${item.slug}.name`, { defaultValue: item.name })}</span>
-                            <span className="block text-xs text-mist-500 leading-relaxed mt-0.5">{t(`integrations.featured.${item.slug}.description`, { defaultValue: item.defaultDescription })}</span>
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="px-3 py-2.5 flex items-center justify-between">
+              </MegaMenuPanel>
+            </MegaMenu>
+            {/* Integrations Mega Menu */}
+            <MegaMenu label={t("integrations.title", { defaultValue: "Integrations" })}>
+              <MegaMenuPanel widthClass="w-[600px]">
+                <MegaMenuSection
+                  label={t("integrations.featuredLabel", {
+                    defaultValue: "Featured",
+                  })}
+                  noDivider
+                  layoutClass="grid grid-cols-2 gap-1"
+                >
+                  <MegaMenuCard
+                    index={0}
+                    to="/$locale/integrations/$slug/"
+                    params={{ locale: locale || "en", slug: "mcp-server" }}
+                    icon={<IconModelcontextprotocol className="size-5" />}
+                    title={t("integrations.featured.mcp-server.name", {
+                      defaultValue: "MCP Server",
+                    })}
+                    description={t("integrations.featured.mcp-server.description", {
+                      defaultValue: "AI agents manage translations natively",
+                    })}
+                  />
+                  <MegaMenuCard
+                    index={1}
+                    to="/$locale/integrations/$slug/"
+                    params={{ locale: locale || "en", slug: "github" }}
+                    icon={<IconGithub className="size-5" />}
+                    title={t("integrations.featured.github.name", {
+                      defaultValue: "GitHub Sync",
+                    })}
+                    description={t("integrations.featured.github.description", {
+                      defaultValue: "PR-based i18n workflow",
+                    })}
+                  />
+                </MegaMenuSection>
+
+                <MegaMenuSection
+                  label={t("integrations.byCategory", {
+                    defaultValue: "By category",
+                  })}
+                  layoutClass="grid grid-cols-2 gap-1"
+                >
+                  <MegaMenuPill
+                    index={2}
+                    to="/$locale/integrations/$slug/"
+                    params={{ locale: locale || "en", slug: "global-cdn" }}
+                    icon={<IconCloudySparkle className="size-4" />}
+                    label={t("integrations.featured.global-cdn.name", {
+                      defaultValue: "Global CDN",
+                    })}
+                  />
+                  <MegaMenuPill
+                    index={3}
+                    to="/$locale/integrations/$slug/"
+                    params={{ locale: locale || "en", slug: "ai-translation" }}
+                    icon={<IconAiTranslate className="size-4" />}
+                    label={t("integrations.featured.ai-translation.name", {
+                      defaultValue: "AI Translation",
+                    })}
+                  />
+                  <MegaMenuPill
+                    index={4}
+                    to="/$locale/integrations/$slug/"
+                    params={{ locale: locale || "en", slug: "nextjs" }}
+                    icon={<NextjsIcon className="size-4" />}
+                    label={t("integrations.featured.nextjs.name", {
+                      defaultValue: "Next.js",
+                    })}
+                  />
+                  <MegaMenuPill
+                    index={5}
+                    to="/$locale/integrations/$slug/"
+                    params={{ locale: locale || "en", slug: "cli" }}
+                    icon={<IconConsoleSimple className="size-4" />}
+                    label={t("integrations.featured.cli.name", {
+                      defaultValue: "CLI",
+                    })}
+                  />
+                </MegaMenuSection>
+
+                <MegaMenuFooter
+                  primary={
                     <Link
                       to="/$locale/integrations/"
                       params={{ locale: locale || "en" }}
-                      className="inline-flex items-center gap-1.5 text-sm font-medium text-mist-950 hover:text-mist-600"
+                      className="inline-flex items-center gap-1 hover:text-mist-700 transition-colors"
                     >
-                      {t("integrations.exploreAll", { defaultValue: "Explore all integrations" })}
+                      {t("integrations.exploreAll", {
+                        defaultValue: "All integrations",
+                      })}
                       <SpriteIcon name="arrow-right" className="size-3.5" />
                     </Link>
-                    <span className="text-xs text-mist-500">{t("integrations.count", { defaultValue: "20 integrations" })}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  }
+                  secondary={
+                    <span>
+                      {t("integrations.count", {
+                        defaultValue: "20+ integrations",
+                      })}
+                    </span>
+                  }
+                />
+              </MegaMenuPanel>
+            </MegaMenu>
 
             <Link
               to="/$locale/pricing/"
@@ -479,244 +432,129 @@ export default function Header({ className }: { className?: string }) {
             >
               {t("pricing", { defaultValue: "Pricing" })}
             </Link>
-            <div className="relative group">
-              <button
-                aria-haspopup="true"
-                aria-expanded="false"
-                className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600"
-              >
-                {t("resources.title", { defaultValue: "Resources" })}
-                <SpriteIcon
-                  name="chevron-bottom"
-                  className="w-4 h-4 text-mist-600 group-hover:text-mist-950 transition-transform group-hover:rotate-180"
-                />
-              </button>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="bg-mist-50 rounded-xl border border-mist-200 p-1.5 shadow-lg min-w-[480px]">
-                  <div className="flex gap-2">
-                    {/* Left column - Main links with icons and descriptions */}
-                    <div
-                      className="bg-white rounded-lg border border-mist-200 p-2 shadow-sm space-y-1 min-w-[260px]"
-                      role="menu"
+            {/* Resources Mega Menu */}
+            <MegaMenu label={t("resources.title", { defaultValue: "Resources" })}>
+              <MegaMenuPanel widthClass="w-[600px]">
+                <MegaMenuSection
+                  label={t("resources.learn", { defaultValue: "Learn" })}
+                  noDivider
+                  layoutClass="grid grid-cols-2 gap-1"
+                >
+                  <MegaMenuCard
+                    index={0}
+                    to="/$locale/what-is/"
+                    params={{ locale: locale || "en" }}
+                    icon={<SpriteIcon name="book" className="size-5" />}
+                    title={t("resources.whatIsI18n", {
+                      defaultValue: "What is i18n?",
+                    })}
+                    description={t("resources.whatIsI18nDesc", {
+                      defaultValue: "Complete guide to i18n & l10n",
+                    })}
+                  />
+                  <MegaMenuCard
+                    index={1}
+                    to="/$locale/blog/"
+                    params={{ locale: locale || "en" }}
+                    icon={<IconNewspaper className="size-5" />}
+                    title={t("blog", { defaultValue: "Blog" })}
+                    description={t("resources.blogDesc", {
+                      defaultValue: "Engineering & localization insights",
+                    })}
+                  />
+                </MegaMenuSection>
+
+                <MegaMenuSection
+                  label={t("resources.tools", { defaultValue: "Tools & utilities" })}
+                  layoutClass="grid grid-cols-3 gap-1"
+                >
+                  <MegaMenuPill
+                    index={2}
+                    to="/$locale/tools/"
+                    params={{ locale: locale || "en" }}
+                    icon={<SpriteIcon name="code-brackets" className="size-4" />}
+                    label={t("resources.freeTools", {
+                      defaultValue: "Free Tools",
+                    })}
+                  />
+                  <MegaMenuPill
+                    index={3}
+                    to="/$locale/compare/"
+                    params={{ locale: locale || "en" }}
+                    icon={<SpriteIcon name="sparkles-soft" className="size-4" />}
+                    label={t("compare", { defaultValue: "Compare" })}
+                  />
+                  <MegaMenuPill
+                    index={4}
+                    to="/$locale/changelog/"
+                    params={{ locale: locale || "en" }}
+                    icon={<SpriteIcon name="sparkles-soft" className="size-4" />}
+                    label={t("changelog", { defaultValue: "Changelog" })}
+                  />
+                </MegaMenuSection>
+
+                <MegaMenuSection
+                  label={t("resources.support", { defaultValue: "Support & company" })}
+                  layoutClass="grid grid-cols-3 gap-1"
+                >
+                  <MegaMenuPillExternal
+                    href={`https://help.better-i18n.com/${locale || "en"}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    icon={<LifeBuoy className="size-4" />}
+                    label={t("resources.helpCenter", {
+                      defaultValue: "Help Center",
+                    })}
+                  />
+                  <MegaMenuPillExternal
+                    href="https://docs.better-i18n.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    icon={<SpriteIcon name="book" className="size-4" />}
+                    label={t("documentation", {
+                      defaultValue: "Documentation",
+                    })}
+                  />
+                  <MegaMenuPill
+                    to="/$locale/about/"
+                    params={{ locale: locale || "en" }}
+                    icon={<IconPeople className="size-4" />}
+                    label={t("resources.about.title", { defaultValue: "About" })}
+                  />
+                </MegaMenuSection>
+
+                <MegaMenuFooter
+                  primary={
+                    <a
+                      href="mailto:help@better-i18n.com"
+                      className="inline-flex items-center gap-1 hover:text-mist-700 transition-colors"
                     >
-                      {/* About Us */}
-                      <Link
-                        to="/$locale/about/"
-                        params={{ locale: locale || "en" }}
-                        className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <div className="flex-shrink-0 size-12 rounded-lg bg-white border border-mist-200 shadow-sm flex items-center justify-center text-mist-700">
-                          <IconPeople className="size-5" />
-                        </div>
-                        <div className="flex-1 min-w-0 pt-0.5">
-                          <div className="text-sm font-medium text-mist-950">
-                            {t("resources.about.title", {
-                              defaultValue: "About Us",
-                            })}
-                          </div>
-                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
-                            {t("resources.about.description", {
-                              defaultValue: "The team behind Better I18N",
-                            })}
-                          </div>
-                        </div>
-                      </Link>
-
-                      {/* Privacy Policy */}
-                      <Link
-                        to="/$locale/privacy/"
-                        params={{ locale: locale || "en" }}
-                        className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <div className="flex-shrink-0 size-12 rounded-lg bg-white border border-mist-200 shadow-sm flex items-center justify-center text-mist-700">
-                          <SpriteIcon name="shield-check" className="size-5" />
-                        </div>
-                        <div className="flex-1 min-w-0 pt-0.5">
-                          <div className="text-sm font-medium text-mist-950">
-                            {t("resources.privacy.title", {
-                              defaultValue: "Privacy Policy",
-                            })}
-                          </div>
-                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
-                            {t("resources.privacy.description", {
-                              defaultValue: "How we handle your data",
-                            })}
-                          </div>
-                        </div>
-                      </Link>
-
-                      {/* Terms of Service */}
-                      <Link
-                        to="/$locale/terms/"
-                        params={{ locale: locale || "en" }}
-                        className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-mist-50 transition-colors"
-                      >
-                        <div className="flex-shrink-0 size-12 rounded-lg bg-white border border-mist-200 shadow-sm flex items-center justify-center text-mist-700">
-                          <SpriteIcon name="script" className="size-5" />
-                        </div>
-                        <div className="flex-1 min-w-0 pt-0.5">
-                          <div className="text-sm font-medium text-mist-950">
-                            {t("resources.terms.title", {
-                              defaultValue: "Terms of Service",
-                            })}
-                          </div>
-                          <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
-                            {t("resources.terms.description", {
-                              defaultValue: "Our terms and conditions",
-                            })}
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-
-                    {/* Right column - Simple links with small icons */}
-                    <div className="p-3 space-y-1 min-w-[180px]" role="menu">
-                      {/* Help Center */}
-                      <a
-                        href={`https://help.better-i18n.com/${locale || "en"}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
-                      >
-                        <LifeBuoy className="size-4 text-mist-600" />
-                        <span className="text-sm font-medium text-mist-950">
-                          {t("resources.helpCenter", {
-                            defaultValue: "Help Center",
-                          })}
-                        </span>
-                      </a>
-
-                      {/* Documentation */}
-                      <a
-                        href="https://docs.better-i18n.com/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
-                      >
-                        <SpriteIcon
-                          name="book"
-                          className="size-4 text-mist-600"
-                        />
-                        <span className="text-sm font-medium text-mist-950">
-                          {t("documentation", {
-                            defaultValue: "Documentation",
-                          })}
-                        </span>
-                      </a>
-
-                      {/* Changelog */}
-                      <Link
-                        to="/$locale/changelog/"
-                        params={{ locale: locale || "en" }}
-                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
-                      >
-                        <SpriteIcon
-                          name="sparkles-soft"
-                          className="size-4 text-mist-600"
-                        />
-                        <span className="text-sm font-medium text-mist-950">
-                          {t("changelog", { defaultValue: "Changelog" })}
-                        </span>
-                      </Link>
-
-                      {/* Blog */}
-                      <Link
-                        to="/$locale/blog/"
-                        params={{ locale: locale || "en" }}
-                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
-                      >
-                        <IconNewspaper className="size-4 text-mist-600" />
-                        <span className="text-sm font-medium text-mist-950">
-                          {t("blog", { defaultValue: "Blog" })}
-                        </span>
-                      </Link>
-
-                      {/* API Reference */}
-                      <a
-                        href="https://docs.better-i18n.com/api"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
-                      >
-                        <SpriteIcon
-                          name="api-connection"
-                          className="size-4 text-mist-600"
-                        />
-                        <span className="text-sm font-medium text-mist-950">
-                          {t("apiReference", { defaultValue: "API Reference" })}
-                        </span>
-                      </a>
-
-                      {/* Status */}
-                      <a
-                        href="https://status.better-i18n.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
-                      >
-                        <div className="relative">
-                          <IconLiveActivity className="size-4 text-mist-600" />
-                          {!isStatusOk && (
-                            <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-red-500 ring-1 ring-white" />
-                          )}
-                        </div>
-                        <span className="text-sm font-medium text-mist-950">
-                          {t("status", { defaultValue: "Status" })}
-                        </span>
-                      </a>
-
-                      {/* What is i18n? */}
-                      <Link
-                        to="/$locale/what-is/"
-                        params={{ locale: locale || "en" }}
-                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
-                      >
-                        <SpriteIcon
-                          name="globe"
-                          className="size-4 text-mist-600"
-                        />
-                        <span className="text-sm font-medium text-mist-950">
-                          {t("resources.whatIsI18n", {
-                            defaultValue: "What is i18n?",
-                          })}
-                        </span>
-                      </Link>
-
-                      {/* Free Tools */}
-                      <Link
-                        to="/$locale/tools/"
-                        params={{ locale: locale || "en" }}
-                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
-                      >
-                        <SpriteIcon
-                          name="code-brackets"
-                          className="size-4 text-mist-600"
-                        />
-                        <span className="text-sm font-medium text-mist-950">
-                          {t("resources.freeTools", {
-                            defaultValue: "Free Tools",
-                          })}
-                        </span>
-                      </Link>
-                      {/* Compare */}
-                      <Link
-                        to="/$locale/compare/"
-                        params={{ locale: locale || "en" }}
-                        className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white transition-colors"
-                      >
-                        <SpriteIcon
-                          name="sparkles-soft"
-                          className="size-4 text-mist-600"
-                        />
-                        <span className="text-sm font-medium text-mist-950">
-                          {t("compare", { defaultValue: "Compare" })}
-                        </span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                      <span>help@better-i18n.com</span>
+                    </a>
+                  }
+                  secondary={
+                    <a
+                      href="https://status.better-i18n.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 hover:text-mist-950 transition-colors"
+                    >
+                      <span
+                        className={cn(
+                          "size-1.5 rounded-full",
+                          isStatusOk ? "bg-emerald-500" : "bg-red-500",
+                        )}
+                      />
+                      {isStatusOk
+                        ? t("resources.allOperational", {
+                            defaultValue: "All systems operational",
+                          })
+                        : t("status", { defaultValue: "Status" })}
+                    </a>
+                  }
+                />
+              </MegaMenuPanel>
+            </MegaMenu>
           </div>
           <div className="hidden lg:flex flex-1 items-center justify-end gap-4">
             <LanguageSwitcher />
