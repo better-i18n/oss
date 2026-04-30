@@ -20,7 +20,7 @@ export const Route = createFileRoute("/$locale/i18n/best-tms")({
 
 const platforms = [
   {
-    name: "Better i18n",
+    name: "Better I18N",
     highlight: true,
     features: ["MCP Support", "AST Key Discovery", "Git-First", "Free Tier"],
     pricing: "From $0/mo",
@@ -118,7 +118,7 @@ function BestTmsPage() {
                     <span className="text-sm font-medium text-mist-950">
                       {platform.pricing}
                     </span>
-                    {platform.name !== "Better i18n" && (
+                    {platform.name !== "Better I18N" && (
                       <Link
                         to={`/$locale/compare/${platform.name.toLowerCase().replace(" ", "-")}`}
                         params={{ locale }}
@@ -192,23 +192,23 @@ function BestTmsPage() {
               },
               {
                 question: "What is the difference between a TMS and a CAT tool?",
-                answer: "A CAT (Computer-Assisted Translation) tool is a translator's workbench — it shows source and target side-by-side, suggests translations from memory (translation memory / TM), and enforces quality checks. A TMS manages the broader workflow: project management, file routing, vendor management, and integration with code repositories. Many modern platforms combine both: Better i18n, Lokalise, and Phrase include CAT-like translation editors alongside TMS workflow features.",
+                answer: "A CAT (Computer-Assisted Translation) tool is a translator's workbench — it shows source and target side-by-side, suggests translations from memory (translation memory / TM), and enforces quality checks. A TMS manages the broader workflow: project management, file routing, vendor management, and integration with code repositories. Many modern platforms combine both: Better I18N, Lokalise, and Phrase include CAT-like translation editors alongside TMS workflow features.",
               },
               {
                 question: "How much does a TMS cost?",
-                answer: "Pricing varies enormously. Phrase starts at ~$385/month, Lokalise at ~$140/month, and Crowdin at ~$40/month for basic plans. Better i18n offers a free tier for getting started and paid plans based on project scale. Enterprise platforms like Smartling and XTM are priced on request and can cost thousands per month. The key is to evaluate total cost: platform fees plus the time saved by developers and translators.",
+                answer: "Pricing varies enormously. Phrase starts at ~$385/month, Lokalise at ~$140/month, and Crowdin at ~$40/month for basic plans. Better I18N offers a free tier for getting started and paid plans based on project scale. Enterprise platforms like Smartling and XTM are priced on request and can cost thousands per month. The key is to evaluate total cost: platform fees plus the time saved by developers and translators.",
               },
               {
                 question: "Can a TMS replace human translators?",
                 answer: "Not entirely — but it dramatically reduces their workload. AI translation (including GPT-4 and specialized MT engines) produces good first drafts that human translators then review and correct. This post-editing workflow is typically 3-5x faster than translating from scratch. For high-stakes content (legal, medical, marketing copy), human review remains essential. For UI strings and error messages, AI translation with spot-checking is usually sufficient.",
               },
               {
-                question: "What makes Better i18n different from Crowdin, Lokalise, and Phrase?",
-                answer: "Better i18n is built for the modern development stack: CDN-first delivery means translations never ship in your JavaScript bundle, MCP support lets AI agents manage translations directly, and the Git-native workflow treats translations as first-class code artifacts. Crowdin and Lokalise are excellent products but were designed in the 2010s — Better i18n is designed for the 2020s, with AI agents, edge computing, and developer experience as first-class concerns. Plus, Better i18n starts free.",
+                question: "What makes Better I18N different from Crowdin, Lokalise, and Phrase?",
+                answer: "Better I18N is built for the modern development stack: CDN-first delivery means translations never ship in your JavaScript bundle, MCP support lets AI agents manage translations directly, and the Git-native workflow treats translations as first-class code artifacts. Crowdin and Lokalise are excellent products but were designed in the 2010s — Better I18N is designed for the 2020s, with AI agents, edge computing, and developer experience as first-class concerns. Plus, Better I18N starts free.",
               },
               {
-                question: "How do I migrate from Crowdin or Lokalise to Better i18n?",
-                answer: "Better i18n's CLI can import existing translation files in JSON, XLIFF, PO, and ARB formats. The migration steps are: export your translations from Crowdin/Lokalise, run `better-i18n import` to push them to your Better i18n project, configure your SDK to point to the Better i18n CDN, and remove the old TMS integration. Most teams complete the migration in under a day. Better i18n's support team can assist with complex migrations.",
+                question: "How do I migrate from Crowdin or Lokalise to Better I18N?",
+                answer: "Better I18N's CLI can import existing translation files in JSON, XLIFF, PO, and ARB formats. The migration steps are: export your translations from Crowdin/Lokalise, run `better-i18n import` to push them to your Better I18N project, configure your SDK to point to the Better I18N CDN, and remove the old TMS integration. Most teams complete the migration in under a day. Better I18N's support team can assist with complex migrations.",
               },
             ].map((item, i) => (
               <div key={i} className="border-b border-mist-100 pb-8 last:border-0 last:pb-0">

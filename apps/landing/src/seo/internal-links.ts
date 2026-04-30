@@ -79,7 +79,7 @@ const COMPARISONS = ["compare/crowdin", "compare/lokalise", "compare/phrase", "c
 const COMPARISON_ANCHORS: Readonly<Record<string, string>> = {
   "compare/crowdin": "Crowdin alternative",
   "compare/lokalise": "Lokalise comparison",
-  "compare/phrase": "Phrase vs Better i18n",
+  "compare/phrase": "Phrase vs Better I18N",
   "compare/transifex": "Transifex alternative",
   "compare/smartling": "Smartling comparison",
   "compare/xtm": "XTM alternative",

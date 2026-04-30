@@ -229,7 +229,7 @@ function TranslationManagementSystemPage() {
             {t("cta.title", { defaultValue: "Try the AI-Native Translation Management System" })}
           </h2>
           <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Better i18n combines AI translation, developer tools, and team collaboration in one platform." })}
+            {t("cta.subtitle", { defaultValue: "Better I18N combines AI translation, developer tools, and team collaboration in one platform." })}
           </p>
           <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <a

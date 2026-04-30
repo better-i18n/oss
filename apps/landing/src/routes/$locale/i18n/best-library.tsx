@@ -219,7 +219,7 @@ function BestLibraryPage() {
               },
               {
                 criterion: "Bundle size",
-                description: "Lightweight matters for client-side apps. svelte-i18n and basic i18next configurations are small. next-intl with RSC only loads translations for the current locale. Better i18n CDN delivery means zero translation data in your JS bundle.",
+                description: "Lightweight matters for client-side apps. svelte-i18n and basic i18next configurations are small. next-intl with RSC only loads translations for the current locale. Better I18N CDN delivery means zero translation data in your JS bundle.",
               },
               {
                 criterion: "Pluralization needs",
@@ -227,11 +227,11 @@ function BestLibraryPage() {
               },
               {
                 criterion: "Translation management",
-                description: "Libraries only handle runtime rendering. For managing translations at scale — AI translation, team review, CDN delivery — you need a TMS alongside the library. Better i18n integrates with all major i18n libraries via the CLI.",
+                description: "Libraries only handle runtime rendering. For managing translations at scale — AI translation, team review, CDN delivery — you need a TMS alongside the library. Better I18N integrates with all major i18n libraries via the CLI.",
               },
               {
                 criterion: "OTA updates",
-                description: "If you need to push translation corrections without a new deployment, choose a library with runtime loading support. Better i18n delivers translations via CDN with 60-second cache max-age, enabling near-instant updates for web and mobile apps.",
+                description: "If you need to push translation corrections without a new deployment, choose a library with runtime loading support. Better I18N delivers translations via CDN with 60-second cache max-age, enabling near-instant updates for web and mobile apps.",
               },
             ].map((item) => (
               <div key={item.criterion} className="p-6 rounded-2xl border border-mist-100 bg-white">
@@ -261,15 +261,15 @@ function BestLibraryPage() {
               },
               {
                 question: "What is the difference between i18n libraries and a TMS?",
-                answer: "An i18n library handles runtime translation — it takes a key like 'welcome.title' and returns the translated string for the active locale. A Translation Management System (TMS) like Better i18n handles the workflow: storing translations, AI-assisted translation, team review, CDN delivery, and CI/CD sync. You need both: the library for rendering and the TMS for managing translation content.",
+                answer: "An i18n library handles runtime translation — it takes a key like 'welcome.title' and returns the translated string for the active locale. A Translation Management System (TMS) like Better I18N handles the workflow: storing translations, AI-assisted translation, team review, CDN delivery, and CI/CD sync. You need both: the library for rendering and the TMS for managing translation content.",
               },
               {
-                question: "Does Better i18n work with react-i18next?",
-                answer: "Yes. Better i18n integrates with react-i18next via the @better-i18n/expo package for React Native, or by configuring react-i18next's backend to load from the Better i18n CDN. The Better i18n CLI syncs your i18next JSON translation files with the dashboard. This gives you react-i18next's mature runtime with Better i18n's managed translation workflow.",
+                question: "Does Better I18N work with react-i18next?",
+                answer: "Yes. Better I18N integrates with react-i18next via the @better-i18n/expo package for React Native, or by configuring react-i18next's backend to load from the Better I18N CDN. The Better I18N CLI syncs your i18next JSON translation files with the dashboard. This gives you react-i18next's mature runtime with Better I18N's managed translation workflow.",
               },
               {
                 question: "How do i18n libraries handle missing translations?",
-                answer: "Most libraries fall back to a specified fallback locale (usually the source language) when a translation is missing. react-i18next and i18next log missing keys in development mode. next-intl throws errors for missing keys in development and silently falls back in production. Better i18n's dashboard shows translation coverage per language, so you can ensure 100% coverage before deploying.",
+                answer: "Most libraries fall back to a specified fallback locale (usually the source language) when a translation is missing. react-i18next and i18next log missing keys in development mode. next-intl throws errors for missing keys in development and silently falls back in production. Better I18N's dashboard shows translation coverage per language, so you can ensure 100% coverage before deploying.",
               },
             ].map((item, i) => (
               <div key={i} className="border-b border-mist-100 pb-8 last:border-0 last:pb-0">

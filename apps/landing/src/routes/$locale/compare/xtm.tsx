@@ -192,7 +192,7 @@ function XTMComparisonPage() {
               defaultValue: "All Features",
             }),
             description: t("compare.xtm.related.featuresDesc", {
-              defaultValue: "Explore the full Better i18n platform",
+              defaultValue: "Explore the full Better I18N platform",
             }),
           },
         ]}

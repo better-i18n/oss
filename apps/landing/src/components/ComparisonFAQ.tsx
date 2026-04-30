@@ -26,7 +26,7 @@ export default function ComparisonFAQ() {
             </h2>
             <p className="mt-4 text-base leading-7 text-mist-600">
               {t("faqSubtitle", {
-                defaultValue: "Common questions about switching to Better i18n.",
+                defaultValue: "Common questions about switching to Better I18N.",
               })}
             </p>
           </div>

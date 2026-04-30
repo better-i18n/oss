@@ -86,9 +86,9 @@ export function WebMcpRegistrar({ locale }: WebMcpRegistrarProps) {
     const tools: readonly ModelContextTool[] = [
       {
         name: "navigate_to_page",
-        title: "Navigate to a Better i18n page",
+        title: "Navigate to a Better I18N page",
         description:
-          "Navigate the Better i18n marketing site to a specific page using client-side routing. " +
+          "Navigate the Better I18N marketing site to a specific page using client-side routing. " +
           "Accepts a locale-less slug such as 'pricing', 'features', 'i18n/react', 'compare/crowdin', or 'for-developers'. " +
           "Pass an empty string to go to the homepage. Use the list_pages tool to discover valid slugs.",
         inputSchema: {
@@ -112,9 +112,9 @@ export function WebMcpRegistrar({ locale }: WebMcpRegistrarProps) {
       },
       {
         name: "list_pages",
-        title: "List every available Better i18n marketing page",
+        title: "List every available Better I18N marketing page",
         description:
-          "Return a catalog of every public page on Better i18n's marketing site, grouped by category: " +
+          "Return a catalog of every public page on Better I18N's marketing site, grouped by category: " +
           "'core' (home, features, pricing, integrations), 'personas' (for-developers, for-agencies, etc.), " +
           "'frameworkGuides' (i18n/react, i18n/nextjs, i18n/expo, etc.), 'comparisons' (compare/crowdin, compare/lokalise, etc.), " +
           "'tools' (free developer tools), and 'educational' (what-is-*). Call this before navigate_to_page when unsure of a path.",
@@ -128,9 +128,9 @@ export function WebMcpRegistrar({ locale }: WebMcpRegistrarProps) {
       },
       {
         name: "search_pages",
-        title: "Search Better i18n pages by keyword",
+        title: "Search Better I18N pages by keyword",
         description:
-          "Find pages on the Better i18n marketing site whose slug contains a keyword. " +
+          "Find pages on the Better I18N marketing site whose slug contains a keyword. " +
           "Useful for locating a framework guide, competitor comparison, or persona page when the exact slug is unknown. " +
           "Matches are case-insensitive substring matches against the path.",
         inputSchema: {
@@ -156,9 +156,9 @@ export function WebMcpRegistrar({ locale }: WebMcpRegistrarProps) {
       },
       {
         name: "open_dashboard",
-        title: "Open the Better i18n dashboard",
+        title: "Open the Better I18N dashboard",
         description:
-          "Navigate the browser to the Better i18n dashboard at dash.better-i18n.com. " +
+          "Navigate the browser to the Better I18N dashboard at dash.better-i18n.com. " +
           "Use this when the user wants to sign up, sign in, or start a new localization project. " +
           "Optionally accepts a sub-path such as 'signup' or 'login'.",
         inputSchema: {
@@ -180,10 +180,10 @@ export function WebMcpRegistrar({ locale }: WebMcpRegistrarProps) {
       },
       {
         name: "open_docs",
-        title: "Open the Better i18n documentation",
+        title: "Open the Better I18N documentation",
         description:
-          "Navigate the browser to the Better i18n docs at docs.better-i18n.com. " +
-          "Use this when the user asks how to integrate Better i18n or needs SDK/API reference. " +
+          "Navigate the browser to the Better I18N docs at docs.better-i18n.com. " +
+          "Use this when the user asks how to integrate Better I18N or needs SDK/API reference. " +
           "Optionally accepts a sub-path such as 'quickstart' or 'sdk/next'.",
         inputSchema: {
           type: "object",

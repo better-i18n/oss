@@ -13,7 +13,7 @@ export const Route = createFileRoute("/$locale/tools/translation-file-converter"
       pathname: "/tools/translation-file-converter",
       pageType: "tool",
       metaFallback: {
-        title: "Translation File Converter — Better i18n Free Tools",
+        title: "Translation File Converter — Better I18N Free Tools",
         description:
           "Convert translation files between JSON, PO, XLIFF, ARB, YAML, CSV, Android XML, iOS Strings, and Java Properties. Free, browser-based, no upload required.",
       },

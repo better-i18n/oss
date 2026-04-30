@@ -10,8 +10,8 @@ export const Route = createFileRoute("/$locale/compare/")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     const comparisonListSchema = getComparisonSchema({
-      title: "Better i18n Alternatives Comparison",
-      description: "Compare Better i18n with top translation management platforms.",
+      title: "Better I18N Alternatives Comparison",
+      description: "Compare Better I18N with top translation management platforms.",
       items: [
         { name: "Crowdin", description: "Cloud-based TMS for agile teams", url: `${SITE_URL}/en/compare/crowdin` },
         { name: "Lokalise", description: "Translation and localization platform", url: `${SITE_URL}/en/compare/lokalise` },
@@ -32,10 +32,10 @@ export const Route = createFileRoute("/$locale/compare/")({
 });
 
 const competitors = [
-  { key: "crowdin", name: "Crowdin", slug: "crowdin", defaultDesc: "See how Better i18n compares to Crowdin for developer-first localization workflows.", defaultHighlight: "AI-native translations" },
-  { key: "lokalise", name: "Lokalise", slug: "lokalise", defaultDesc: "Compare Better i18n with Lokalise for modern app localization and deployment.", defaultHighlight: "Built-in CDN delivery" },
-  { key: "phrase", name: "Phrase", slug: "phrase", defaultDesc: "See how Better i18n compares to Phrase for enterprise translation management.", defaultHighlight: "Developer-first platform" },
-  { key: "transifex", name: "Transifex", slug: "transifex", defaultDesc: "Compare Better i18n with Transifex for open-source and SaaS localization.", defaultHighlight: "Free tier available" },
+  { key: "crowdin", name: "Crowdin", slug: "crowdin", defaultDesc: "See how Better I18N compares to Crowdin for developer-first localization workflows.", defaultHighlight: "AI-native translations" },
+  { key: "lokalise", name: "Lokalise", slug: "lokalise", defaultDesc: "Compare Better I18N with Lokalise for modern app localization and deployment.", defaultHighlight: "Built-in CDN delivery" },
+  { key: "phrase", name: "Phrase", slug: "phrase", defaultDesc: "See how Better I18N compares to Phrase for enterprise translation management.", defaultHighlight: "Developer-first platform" },
+  { key: "transifex", name: "Transifex", slug: "transifex", defaultDesc: "Compare Better I18N with Transifex for open-source and SaaS localization.", defaultHighlight: "Free tier available" },
 ];
 
 function ComparePage() {
@@ -49,10 +49,10 @@ function ComparePage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl">
             <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("hero.title", { defaultValue: "Compare Better i18n" })}
+              {t("hero.title", { defaultValue: "Compare Better I18N" })}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "See how Better i18n stacks up against other localization platforms." })}
+              {t("hero.subtitle", { defaultValue: "See how Better I18N stacks up against other localization platforms." })}
             </p>
           </div>
         </div>
@@ -69,7 +69,7 @@ function ComparePage() {
               <thead>
                 <tr className="border-b border-mist-200 bg-mist-50">
                   <th className="text-left px-5 py-3 font-medium text-mist-700 w-48">Feature</th>
-                  <th className="text-center px-4 py-3 font-semibold text-emerald-700 bg-emerald-50/60">Better i18n</th>
+                  <th className="text-center px-4 py-3 font-semibold text-emerald-700 bg-emerald-50/60">Better I18N</th>
                   <th className="text-center px-4 py-3 font-medium text-mist-600">Crowdin</th>
                   <th className="text-center px-4 py-3 font-medium text-mist-600">Lokalise</th>
                   <th className="text-center px-4 py-3 font-medium text-mist-600">Phrase</th>
@@ -119,7 +119,7 @@ function ComparePage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-lg font-medium text-mist-950">
-                      Better i18n vs {competitor.name}
+                      Better I18N vs {competitor.name}
                     </h3>
                     <p className="mt-1 text-sm text-mist-600">
                       {t(`competitors.${competitor.key}.description`, { defaultValue: competitor.defaultDesc })}

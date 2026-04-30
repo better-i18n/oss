@@ -196,7 +196,7 @@ function SmartlingComparisonPage() {
               defaultValue: "All Features",
             }),
             description: t("compare.smartling.related.featuresDesc", {
-              defaultValue: "Explore the full Better i18n platform",
+              defaultValue: "Explore the full Better I18N platform",
             }),
           },
         ]}

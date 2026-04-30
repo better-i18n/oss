@@ -62,7 +62,7 @@ export default function DeveloperHero() {
               >
                 <img
                   src="/docs.webp"
-                  alt="Better i18n Documentation"
+                  alt="Better I18N Documentation"
                   className="w-full h-full object-cover object-top"
                 />
               </div>

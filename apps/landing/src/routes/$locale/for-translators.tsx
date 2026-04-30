@@ -21,7 +21,7 @@ export const Route = createFileRoute("/$locale/for-translators")({
       pathname: "/for-translators",
       pageType: "educational",
       structuredDataOptions: {
-        title: "Better i18n for Translators",
+        title: "Better I18N for Translators",
         description: "AI-powered translation with brand glossary support, human-in-the-loop review, and instant CDN publishing for professional translators.",
       },
     });

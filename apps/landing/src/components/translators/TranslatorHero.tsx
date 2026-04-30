@@ -63,7 +63,7 @@ export default function TranslatorHero() {
               >
                 <img
                   src="/translators.webp"
-                  alt="Better i18n Translation Editor"
+                  alt="Better I18N Translation Editor"
                   className="w-full h-full object-cover object-top"
                 />
               </div>

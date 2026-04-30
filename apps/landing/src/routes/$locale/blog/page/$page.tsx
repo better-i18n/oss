@@ -81,7 +81,7 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
       pathname,
       ogImage: buildOgImageUrl("og", {
         title: `Blog — Page ${currentPage}`,
-        description: "Latest posts from the Better i18n team",
+        description: "Latest posts from the Better I18N team",
         site: "blog",
       }),
     });
@@ -121,7 +121,7 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
         getWebSiteSchema(locale),
         breadcrumbSchema,
         getCollectionPageSchema({
-          name: `${msgs["breadcrumbs.blog"] ?? "Blog"} — ${(msgs["breadcrumbs.page"] ?? "Page {page}").replace("{page}", String(currentPage))} | Better i18n`,
+          name: `${msgs["breadcrumbs.blog"] ?? "Blog"} — ${(msgs["breadcrumbs.page"] ?? "Page {page}").replace("{page}", String(currentPage))} | Better I18N`,
           description: meta.description || "Latest updates, tutorials, and insights about internationalization and localization.",
           url: `${SITE_URL}/${locale}/blog/page/${currentPage}/`,
           inLanguage: locale,

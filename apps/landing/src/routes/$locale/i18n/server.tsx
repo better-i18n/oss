@@ -114,7 +114,7 @@ app.get('/api/users/:id', (req, res) => {
       <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
         title="Server-Side i18n for Hono, Express & Edge"
-        subtitle="Internationalize your API and server-rendered apps. Better i18n provides middleware for Hono, Express, Fastify, and edge runtimes with automatic locale detection."
+        subtitle="Internationalize your API and server-rendered apps. Better I18N provides middleware for Hono, Express, Fastify, and edge runtimes with automatic locale detection."
         badgeText="Server-Side i18n"
       />
 
@@ -127,7 +127,7 @@ app.get('/api/users/:id', (req, res) => {
       />
 
       <FeatureList
-        title="Why use Better i18n on the server?"
+        title="Why use Better I18N on the server?"
         features={features}
       />
 

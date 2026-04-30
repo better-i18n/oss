@@ -192,7 +192,7 @@ export function MobileNav() {
                 >
                   <img
                     src="/brand/logo.svg"
-                    alt="Better i18n"
+                    alt="Better I18N"
                     width={28}
                     height={28}
                     className="h-7 w-8"

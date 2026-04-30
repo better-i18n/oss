@@ -255,10 +255,10 @@ function TranslationSolutionsPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Better i18n: The Developer-First Translation Solution" })}
+              {t("solution.title", { defaultValue: "Better I18N: The Developer-First Translation Solution" })}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better i18n is built for engineering teams that want an AI-native translation solution that fits into their existing workflow. Scan your codebase for strings, translate to Hindi, Mandarin, Mexican Spanish, and 100+ other languages with context-aware AI, then push updates without a new deployment." })}
+              {t("solution.content", { defaultValue: "Better I18N is built for engineering teams that want an AI-native translation solution that fits into their existing workflow. Scan your codebase for strings, translate to Hindi, Mandarin, Mexican Spanish, and 100+ other languages with context-aware AI, then push updates without a new deployment." })}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
@@ -274,7 +274,7 @@ function TranslationSolutionsPage() {
                   {t("solution.feature2.title", { defaultValue: "API-First Architecture" })}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature2.description", { defaultValue: "Full REST and SDK access means you can integrate Better i18n into any CI/CD pipeline, CMS, or custom workflow." })}
+                  {t("solution.feature2.description", { defaultValue: "Full REST and SDK access means you can integrate Better I18N into any CI/CD pipeline, CMS, or custom workflow." })}
                 </p>
               </div>
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
@@ -320,19 +320,19 @@ function TranslationSolutionsPage() {
             {t("cta.title", { defaultValue: "Find Your Translation Solution Today" })}
           </h2>
           <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Better i18n gives you AI translation, developer SDKs, and global CDN delivery in one platform — free to start." })}
+            {t("cta.subtitle", { defaultValue: "Better I18N gives you AI translation, developer SDKs, and global CDN delivery in one platform — free to start." })}
           </p>
           <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <a
               href="https://dash.better-i18n.com"
-              aria-label="Start using Better i18n translation solutions for free"
+              aria-label="Start using Better I18N translation solutions for free"
               className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
             >
               {t("cta.primary", { defaultValue: "Get Started Free" })}
             </a>
             <a
               href="https://docs.better-i18n.com"
-              aria-label="Read the Better i18n documentation for translation solutions"
+              aria-label="Read the Better I18N documentation for translation solutions"
               className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
             >
               {t("cta.secondary", { defaultValue: "Read the Docs" })}

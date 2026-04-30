@@ -1,7 +1,7 @@
 import { getCachedLocales } from "./locales";
 import { SITE_URL } from "@/seo/pages";
 import { getLocaleTier } from "@/seo/locale-tiers";
-const SITE_NAME = "Better i18n";
+const SITE_NAME = "Better I18N";
 const OG_SERVICE_URL = "https://og.better-i18n.com";
 const DEFAULT_OG_IMAGE = `${OG_SERVICE_URL}/og`;
 const TWITTER_HANDLE = "@betteri18n";
@@ -49,7 +49,7 @@ function getNestedValue(obj: MetaMessages, path: string): string | undefined {
 /**
  * Ensure a title stays within the SERP-safe character limit.
  * Strategy: if the title exceeds MAX_TITLE_LENGTH and contains a brand suffix
- * (e.g. "| Better i18n" or "- Better i18n"), remove it first.
+ * (e.g. "| Better I18N" or "- Better I18N"), remove it first.
  * If still too long, hard-truncate with ellipsis.
  */
 function truncateTitle(title: string): string {
@@ -109,7 +109,7 @@ export function getCanonicalUrl(locale: string, pathname: string = "/"): string 
 
 /**
  * Extract localized meta tags from i18n messages
- * @param messages - All loaded i18n messages from Better i18n CDN
+ * @param messages - All loaded i18n messages from Better I18N CDN
  * @param pageKey - Meta page key (e.g., 'home', 'forTranslators', 'forDevelopers')
  * @param options - Additional options like locale and pathname
  * @returns Localized meta tag values

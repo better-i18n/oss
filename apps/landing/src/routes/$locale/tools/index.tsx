@@ -27,7 +27,7 @@ const faqItems = [
   {
     question: "Are these tools really free?",
     answer:
-      "Yes — all tools are completely free with no usage limits. There is no signup required, no credit card, and no trial period. The tools are funded by Better i18n's paid plans, which you can explore if you need a full translation management platform.",
+      "Yes — all tools are completely free with no usage limits. There is no signup required, no credit card, and no trial period. The tools are funded by Better I18N's paid plans, which you can explore if you need a full translation management platform.",
   },
   {
     question: "Do these tools run in my browser?",
@@ -37,7 +37,7 @@ const faqItems = [
   {
     question: "Do I need to create an account to use these tools?",
     answer:
-      "No account or signup is required. Open any tool and start using it immediately. If you later decide to manage your translations at scale, you can sign up for Better i18n — but that is entirely optional.",
+      "No account or signup is required. Open any tool and start using it immediately. If you later decide to manage your translations at scale, you can sign up for Better I18N — but that is entirely optional.",
   },
   {
     question: "What tools are available?",
@@ -100,7 +100,7 @@ function ToolsHubPage() {
               Ready to scale your i18n?
             </h2>
             <p className="max-w-2xl text-base/7 text-mist-700">
-              Try Better i18n — first 1,000 keys free. Type-safe SDKs,
+              Try Better I18N — first 1,000 keys free. Type-safe SDKs,
               AI-powered translations, and real-time collaboration for your
               whole team.
             </p>
@@ -109,7 +109,7 @@ function ToolsHubPage() {
                 href="https://dash.better-i18n.com"
                 className="inline-flex items-center justify-center rounded-xl bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800"
               >
-                Try Better i18n — first 1,000 keys free
+                Try Better I18N — first 1,000 keys free
               </a>
               <a
                 href="https://cal.com/better-i18n/30min?overlayCalendar=true"

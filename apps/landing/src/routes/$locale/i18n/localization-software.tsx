@@ -251,10 +251,10 @@ function LocalizationSoftwarePage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Better i18n: Modern Localization Software for Developer Teams" })}
+              {t("solution.title", { defaultValue: "Better I18N: Modern Localization Software for Developer Teams" })}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better i18n is cloud-based localization software built for engineering teams. It ships with AST-powered key discovery, a built-in AI translation engine, GitHub sync, and a global CDN — covering everything from Japanese to English translation workflows through to French and Russian localization, all with free-tier access." })}
+              {t("solution.content", { defaultValue: "Better I18N is cloud-based localization software built for engineering teams. It ships with AST-powered key discovery, a built-in AI translation engine, GitHub sync, and a global CDN — covering everything from Japanese to English translation workflows through to French and Russian localization, all with free-tier access." })}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
@@ -317,19 +317,19 @@ function LocalizationSoftwarePage() {
             {t("cta.title", { defaultValue: "Try the Localization Software Built for Developers" })}
           </h2>
           <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Set up Better i18n in minutes, connect your repository, and ship multilingual features without slowing down your release cycle." })}
+            {t("cta.subtitle", { defaultValue: "Set up Better I18N in minutes, connect your repository, and ship multilingual features without slowing down your release cycle." })}
           </p>
           <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <a
               href="https://dash.better-i18n.com"
-              aria-label="Start using Better i18n localization software for free"
+              aria-label="Start using Better I18N localization software for free"
               className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
             >
               {t("cta.primary", { defaultValue: "Get Started Free" })}
             </a>
             <a
               href="https://docs.better-i18n.com"
-              aria-label="Read the Better i18n documentation for localization software"
+              aria-label="Read the Better I18N documentation for localization software"
               className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
             >
               {t("cta.secondary", { defaultValue: "Read the Docs" })}

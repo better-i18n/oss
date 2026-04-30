@@ -53,7 +53,7 @@ export const Route = createFileRoute("/$locale/blog/")({
       pathname,
       ogImage: buildOgImageUrl("og", {
         title: "Blog",
-        description: "Latest posts from the Better i18n team",
+        description: "Latest posts from the Better I18N team",
         site: "blog",
       }),
     });
@@ -78,7 +78,7 @@ export const Route = createFileRoute("/$locale/blog/")({
         getWebSiteSchema(locale),
         breadcrumbSchema,
         getCollectionPageSchema({
-          name: `${msgs["breadcrumbs.blog"] ?? "Blog"} | Better i18n`,
+          name: `${msgs["breadcrumbs.blog"] ?? "Blog"} | Better I18N`,
           description: meta.description || "Tutorials, guides, and best practices for internationalization, localization, and translation management.",
           url: `${SITE_URL}/${locale}/blog/`,
           inLanguage: locale,

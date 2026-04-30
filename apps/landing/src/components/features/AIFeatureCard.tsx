@@ -61,7 +61,7 @@ export function AIFeatureCard() {
     >
       <div className="p-1.5">
         <div className="h-[320px] bg-mist-50 rounded-xl border border-mist-200/60 px-5 pt-6 pb-4 flex flex-col shrink-0 relative">
-          {/* Assistant header — Better i18n logo + model badge */}
+          {/* Assistant header — Better I18N logo + model badge */}
           <div className="flex items-center gap-2.5 mb-4">
             <span
               aria-hidden

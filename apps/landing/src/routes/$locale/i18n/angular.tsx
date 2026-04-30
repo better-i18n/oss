@@ -53,7 +53,7 @@ function AngularI18nPage() {
     {
       step: 1,
       title: "Install",
-      description: "Add the Better i18n Angular package to your project.",
+      description: "Add the Better I18N Angular package to your project.",
       code: "npm install @better-i18n/angular",
       fileName: "terminal",
     },

@@ -97,7 +97,7 @@ export function CmsPersonaPage({
               {t("builtForEveryTeam", "Built for every team")}
             </h2>
             <p className="text-base text-mist-600 mb-8 max-w-2xl">
-              {t("builtForEveryTeamDesc", "See how Better i18n adapts to different roles and industries.")}
+              {t("builtForEveryTeamDesc", "See how Better I18N adapts to different roles and industries.")}
             </p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {relatedPersonas.map((persona) => (

@@ -556,7 +556,7 @@ export default function ContactPage() {
 
       <CodeExample
         title="On-Demand Revalidation"
-        description="Trigger ISR revalidation when translations are updated — hook into the Better i18n publish webhook."
+        description="Trigger ISR revalidation when translations are updated — hook into the Better I18N publish webhook."
         code={isrOnDemandCode}
       />
 

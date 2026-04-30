@@ -24,7 +24,7 @@ export const Route = createFileRoute("/$locale/i18n/remix-hydrogen")({
       metaFallback: {
         title: "Remix & Hydrogen i18n Guide",
         description:
-          "Use Better i18n with Remix and Shopify Hydrogen for localized route trees, server-loaded locale state, and SEO-friendly storefront content.",
+          "Use Better I18N with Remix and Shopify Hydrogen for localized route trees, server-loaded locale state, and SEO-friendly storefront content.",
       },
       structuredDataOptions: {
         framework: "Remix & Hydrogen",
@@ -134,14 +134,14 @@ export default function App() {
       <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
         title="Remix & Hydrogen i18n for storefront and route-driven apps"
-        subtitle="Use Better i18n to keep server-rendered locale state, localized storefront content, and search-facing routes aligned in one workflow."
+        subtitle="Use Better I18N to keep server-rendered locale state, localized storefront content, and search-facing routes aligned in one workflow."
         badgeText="Remix & Hydrogen i18n"
       />
 
       <SetupGuide title="Get started in 3 steps" steps={setupSteps} />
 
       <FeatureList
-        title="Why use Better i18n with Remix and Hydrogen?"
+        title="Why use Better I18N with Remix and Hydrogen?"
         features={features}
       />
 

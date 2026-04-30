@@ -52,7 +52,7 @@ export default function ProductCTA() {
                 <a href="http://carna.ai/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                   <img
                     src="/carna.webp"
-                    alt="Carna - Better i18n customer"
+                    alt="Carna - Better I18N customer"
                     width={112}
                     height={28}
                     loading="lazy"
@@ -62,7 +62,7 @@ export default function ProductCTA() {
                 <a href="https://hellonomad.app/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                   <img
                     src="/nomadwork.webp"
-                    alt="Nomad Work - Better i18n customer"
+                    alt="Nomad Work - Better I18N customer"
                     width={112}
                     height={28}
                     loading="lazy"
@@ -72,7 +72,7 @@ export default function ProductCTA() {
                 <a href="https://hellospace.world/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                   <img
                     src="/hellospace.webp"
-                    alt="Hellospace - Better i18n customer"
+                    alt="Hellospace - Better I18N customer"
                     width={112}
                     height={28}
                     loading="lazy"
@@ -82,7 +82,7 @@ export default function ProductCTA() {
                 <a href="https://masraff.ai" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                   <img
                     src="/masraff.webp"
-                    alt="Masraff - Better i18n customer"
+                    alt="Masraff - Better I18N customer"
                     width={28}
                     height={28}
                     loading="lazy"
@@ -92,7 +92,7 @@ export default function ProductCTA() {
                 <a href="https://www.cloudflare.com/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
                   <img
                     src="/cloudflare.webp"
-                    alt="Cloudflare - Better i18n customer"
+                    alt="Cloudflare - Better I18N customer"
                     width={112}
                     height={28}
                     loading="lazy"

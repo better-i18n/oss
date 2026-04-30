@@ -6,7 +6,7 @@ const testimonialsData = [
     title: "Founder, Hellospace",
     image: "/comments/samet.webp",
     url: "https://hellospace.world/",
-    quote: "Better i18n completely changed how we handle localization. The AI translations are incredibly accurate and context-aware.",
+    quote: "Better I18N completely changed how we handle localization. The AI translations are incredibly accurate and context-aware.",
   },
   {
     name: "Tevfik Can Karanfil",
@@ -27,7 +27,7 @@ const testimonialsData = [
     title: "Engineering Manager, Masraff",
     image: "/comments/arhun.webp",
     url: "https://masraff.ai",
-    quote: "Better i18n transformed our localization pipeline. We manage 20+ languages across our fintech products with zero friction — the AI understands financial terminology perfectly.",
+    quote: "Better I18N transformed our localization pipeline. We manage 20+ languages across our fintech products with zero friction — the AI understands financial terminology perfectly.",
   },
 ];
 
@@ -45,7 +45,7 @@ export default function Testimonials() {
             <p className="mt-4 max-w-2xl text-lg text-mist-600">
               {t("subtitle", {
                 defaultValue:
-                  "Real teams using Better i18n across product, engineering, and AI-driven localization workflows.",
+                  "Real teams using Better I18N across product, engineering, and AI-driven localization workflows.",
               })}
             </p>
           </div>

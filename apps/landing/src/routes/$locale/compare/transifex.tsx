@@ -72,7 +72,7 @@ function TransifexComparisonPage() {
         ]}
       />
 
-      {/* Why Better i18n */}
+      {/* Why Better I18N */}
       <section className="py-16 bg-mist-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-12">
@@ -116,7 +116,7 @@ function TransifexComparisonPage() {
         heading={t("compare.transifex.relatedTopics", { defaultValue: "Keep Reading" })}
         locale={locale}
         links={[
-          { to: "/$locale/for-developers", title: t("compare.transifex.related.forDevs", { defaultValue: "For Developers" }), description: t("compare.transifex.related.forDevsDesc", { defaultValue: "How Better i18n fits your dev workflow" }) },
+          { to: "/$locale/for-developers", title: t("compare.transifex.related.forDevs", { defaultValue: "For Developers" }), description: t("compare.transifex.related.forDevsDesc", { defaultValue: "How Better I18N fits your dev workflow" }) },
           { to: "/$locale/what-is", title: t("compare.transifex.related.whatIsI18n", { defaultValue: "What is i18n?" }), description: t("compare.transifex.related.whatIsI18nDesc", { defaultValue: "Internationalization fundamentals explained" }) },
           { to: "/$locale/i18n/vue", title: t("compare.transifex.related.vue", { defaultValue: "Vue i18n" }), description: t("compare.transifex.related.vueDesc", { defaultValue: "Composition API-based translations" }) },
         ]}

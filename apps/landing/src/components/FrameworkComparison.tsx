@@ -162,7 +162,7 @@ export function LibraryIntegration({
               className="p-6 rounded-2xl border border-mist-200 bg-mist-50/50"
             >
               <h3 className="text-lg font-medium text-mist-950 mb-2">
-                Better i18n + {lib.name}
+                Better I18N + {lib.name}
               </h3>
               <p className="text-sm text-mist-600 mb-4">{lib.description}</p>
               <div className="flex items-start gap-2 p-3 bg-white rounded-lg border border-mist-100">

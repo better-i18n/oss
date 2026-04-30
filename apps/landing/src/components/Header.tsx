@@ -114,7 +114,7 @@ export default function Header({ className }: { className?: string }) {
             >
               <img
                 src="/brand/logo.svg"
-                alt="Better i18n - Translation Management Platform"
+                alt="Better I18N - Translation Management Platform"
                 width={28}
                 height={28}
                 className="w-8 h-7 text-black dark:text-white"
@@ -559,7 +559,7 @@ export default function Header({ className }: { className?: string }) {
                           </div>
                           <div className="text-xs text-mist-700 leading-relaxed mt-0.5">
                             {t("resources.about.description", {
-                              defaultValue: "The team behind Better i18n",
+                              defaultValue: "The team behind Better I18N",
                             })}
                           </div>
                         </div>

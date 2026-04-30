@@ -1,7 +1,7 @@
 /**
  * Integrations catalog — icon resolution layer.
  *
- * Integration data is stored in Better i18n Content CMS (model: "integrations").
+ * Integration data is stored in Better I18N Content CMS (model: "integrations").
  * This file maps CMS `icon_type`/`icon_name` strings to actual React components
  * and sprite icon names for use in the UI.
  *

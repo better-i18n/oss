@@ -262,10 +262,10 @@ function WebsiteTranslationPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Translate Your Website Faster with Better i18n" })}
+              {t("solution.title", { defaultValue: "Translate Your Website Faster with Better I18N" })}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better i18n connects your codebase directly to an AI translation engine trained on your glossary and brand voice. Automatically extract every string — from English to Spanish, English to German, English to Arabic, and beyond — then publish translations to a global CDN without touching your deployment pipeline." })}
+              {t("solution.content", { defaultValue: "Better I18N connects your codebase directly to an AI translation engine trained on your glossary and brand voice. Automatically extract every string — from English to Spanish, English to German, English to Arabic, and beyond — then publish translations to a global CDN without touching your deployment pipeline." })}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
@@ -332,14 +332,14 @@ function WebsiteTranslationPage() {
           <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <a
               href="https://dash.better-i18n.com"
-              aria-label="Start translating your website for free with Better i18n"
+              aria-label="Start translating your website for free with Better I18N"
               className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
             >
               {t("cta.primary", { defaultValue: "Get Started Free" })}
             </a>
             <a
               href="https://docs.better-i18n.com"
-              aria-label="Read the Better i18n documentation for website translation"
+              aria-label="Read the Better I18N documentation for website translation"
               className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
             >
               {t("cta.secondary", { defaultValue: "Read the Docs" })}

@@ -125,7 +125,7 @@ export default function AboutPage() {
       <SetupGuide title="Set up in 4 steps" steps={setupSteps} />
 
       <FeatureList
-        title="Why use Better i18n with TanStack Start?"
+        title="Why use Better I18N with TanStack Start?"
         features={features}
       />
 

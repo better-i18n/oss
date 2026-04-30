@@ -1,7 +1,7 @@
 /**
- * Better i18n Content SDK Client
+ * Better I18N Content SDK Client
  *
- * Fetches blog posts from Better i18n Content API.
+ * Fetches blog posts from Better I18N Content API.
  */
 
 import { createClient, extractLanguageCodes, hasLanguage, type ContentClient } from "@better-i18n/sdk";
@@ -525,7 +525,7 @@ export interface IntegrationCmsItem {
   summary: string;
   detail: string | null;
   badgeLabel: string | null;
-  /** URL from Better i18n Content media field — takes priority over logDomain */
+  /** URL from Better I18N Content media field — takes priority over logDomain */
   logoUrl: string | null;
   /** Brandfetch domain fallback (only used when logoUrl is null) */
   logDomain: string | null;

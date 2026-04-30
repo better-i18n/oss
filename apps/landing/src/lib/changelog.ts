@@ -1,7 +1,7 @@
 /**
- * Better i18n Content SDK Client - Changelog
+ * Better I18N Content SDK Client - Changelog
  *
- * Fetches changelog entries from Better i18n Content API.
+ * Fetches changelog entries from Better I18N Content API.
  * Uses the new query builder API (client.from()) instead of deprecated getEntries/getEntry.
  */
 

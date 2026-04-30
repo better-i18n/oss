@@ -18,7 +18,7 @@ export const Route = createFileRoute("/$locale/i18n/website-localization")({
       structuredDataOptions: {
         title: "Website Localization Guide",
         description:
-          "Complete guide to website localization: translate and adapt your web application for global audiences with Better i18n.",
+          "Complete guide to website localization: translate and adapt your web application for global audiences with Better I18N.",
       },
     });
   },
@@ -195,15 +195,15 @@ function WebsiteLocalizationPage() {
         </div>
       </section>
 
-      {/* How Better i18n Helps */}
+      {/* How Better I18N Helps */}
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Streamline Website Localization with Better i18n" })}
+              {t("solution.title", { defaultValue: "Streamline Website Localization with Better I18N" })}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better i18n combines AI-powered translation with developer-friendly tools to make website localization seamless. Auto-discover translation keys from your codebase, translate with context-aware AI, and deploy to global CDN instantly." })}
+              {t("solution.content", { defaultValue: "Better I18N combines AI-powered translation with developer-friendly tools to make website localization seamless. Auto-discover translation keys from your codebase, translate with context-aware AI, and deploy to global CDN instantly." })}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">

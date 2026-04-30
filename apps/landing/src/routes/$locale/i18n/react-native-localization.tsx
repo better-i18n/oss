@@ -48,7 +48,7 @@ function ReactNativeLocalizationPage() {
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "workflow.step1.title", descKey: "workflow.step1.description", defaultTitle: "Install the SDK", defaultDesc: "Add the Better i18n package to your React Native or Expo project and wrap your root component with the translation provider." },
+    { number: "1", titleKey: "workflow.step1.title", descKey: "workflow.step1.description", defaultTitle: "Install the SDK", defaultDesc: "Add the Better I18N package to your React Native or Expo project and wrap your root component with the translation provider." },
     { number: "2", titleKey: "workflow.step2.title", descKey: "workflow.step2.description", defaultTitle: "Extract Keys", defaultDesc: "Run the CLI to scan your components and automatically extract all translation keys into your resource files." },
     { number: "3", titleKey: "workflow.step3.title", descKey: "workflow.step3.description", defaultTitle: "Translate with AI", defaultDesc: "Use AI-powered translation to instantly generate translations for all target languages, then review and refine as needed." },
     { number: "4", titleKey: "workflow.step4.title", descKey: "workflow.step4.description", defaultTitle: "Deploy via CDN", defaultDesc: "Push translations to the global CDN. Your app fetches the latest translations automatically — no app store resubmission required." },
@@ -75,7 +75,7 @@ function ReactNativeLocalizationPage() {
               {t("hero.title", { defaultValue: "React Native & Expo Localization: Ship Your Mobile App in Every Language" })}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "Localizing a React Native or Expo app means more than translating strings. You need device locale detection, offline-ready translations, platform-specific formatting, and a way to update translations without resubmitting to the App Store or Google Play. Better i18n handles all of it." })}
+              {t("hero.subtitle", { defaultValue: "Localizing a React Native or Expo app means more than translating strings. You need device locale detection, offline-ready translations, platform-specific formatting, and a way to update translations without resubmitting to the App Store or Google Play. Better I18N handles all of it." })}
             </p>
           </div>
         </div>
@@ -136,7 +136,7 @@ function ReactNativeLocalizationPage() {
                 {t("challenges.rtl.paragraph1", { defaultValue: "Arabic, Hebrew, and other right-to-left languages require mirrored layouts, flipped icons, and adjusted text alignment. React Native provides I18nManager for toggling RTL, but coordinating that with your translation system requires careful integration." })}
               </p>
               <p className="text-sm text-mist-700">
-                {t("challenges.rtl.paragraph2", { defaultValue: "Better i18n detects the writing direction from the active locale and exposes it through the useLocale hook, so your layout can adapt automatically without manual RTL checks in every component." })}
+                {t("challenges.rtl.paragraph2", { defaultValue: "Better I18N detects the writing direction from the active locale and exposes it through the useLocale hook, so your layout can adapt automatically without manual RTL checks in every component." })}
               </p>
             </div>
           </div>
@@ -148,10 +148,10 @@ function ReactNativeLocalizationPage() {
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
               <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("integration.title", { defaultValue: "How Better i18n Integrates with Expo & React Native" })}
+                {t("integration.title", { defaultValue: "How Better I18N Integrates with Expo & React Native" })}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("integration.paragraph1", { defaultValue: "The Better i18n CLI scans your .tsx and .jsx components to extract translation keys automatically. It works the same way on mobile components as it does on web — no configuration changes needed when you add React Native to an existing project." })}
+                {t("integration.paragraph1", { defaultValue: "The Better I18N CLI scans your .tsx and .jsx components to extract translation keys automatically. It works the same way on mobile components as it does on web — no configuration changes needed when you add React Native to an existing project." })}
               </p>
               <p className="text-mist-700 leading-relaxed mb-4">
                 {t("integration.paragraph2", { defaultValue: "AI-powered translation understands mobile context. Button labels, push notification copy, and in-app messages are translated with the right tone and length constraints for small screens. Translations are delivered through a global CDN optimized for mobile bandwidth." })}
@@ -183,7 +183,7 @@ function ReactNativeLocalizationPage() {
                   <SpriteIcon name="sparkles-soft" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-mist-950 mb-1">{t("devExperience.fallback.title", { defaultValue: "Fallback Locale Handling" })}</h4>
-                    <p className="text-sm text-mist-600">{t("devExperience.fallback.description", { defaultValue: "When a user's device locale is not fully supported, Better i18n falls back gracefully — first to a regional variant, then to the base language, then to your default locale. No blank screens, ever." })}</p>
+                    <p className="text-sm text-mist-600">{t("devExperience.fallback.description", { defaultValue: "When a user's device locale is not fully supported, Better I18N falls back gracefully — first to a regional variant, then to the base language, then to your default locale. No blank screens, ever." })}</p>
                   </div>
                 </div>
               </div>
@@ -224,10 +224,10 @@ function ReactNativeLocalizationPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Better i18n: Mobile Localization Made Seamless" })}
+              {t("solution.title", { defaultValue: "Better I18N: Mobile Localization Made Seamless" })}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better i18n treats mobile as a first-class platform. The same CLI, dashboard, and AI translation engine that powers your web localization works identically for React Native and Expo — so your team manages all platforms from one place without duplicating effort." })}
+              {t("solution.content", { defaultValue: "Better I18N treats mobile as a first-class platform. The same CLI, dashboard, and AI translation engine that powers your web localization works identically for React Native and Expo — so your team manages all platforms from one place without duplicating effort." })}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
@@ -287,19 +287,19 @@ function ReactNativeLocalizationPage() {
             {t("cta.title", { defaultValue: "Localize Your Mobile App in Minutes" })}
           </h2>
           <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Better i18n gives React Native and Expo developers the tools to ship localized apps to every market — with OTA updates, offline support, and type-safe SDKs out of the box." })}
+            {t("cta.subtitle", { defaultValue: "Better I18N gives React Native and Expo developers the tools to ship localized apps to every market — with OTA updates, offline support, and type-safe SDKs out of the box." })}
           </p>
           <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <a
               href="https://dash.better-i18n.com"
-              aria-label="Start using Better i18n for React Native localization for free"
+              aria-label="Start using Better I18N for React Native localization for free"
               className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
             >
               {t("cta.primary", { defaultValue: "Get Started Free" })}
             </a>
             <a
               href="https://docs.better-i18n.com"
-              aria-label="Read the Better i18n documentation for mobile localization"
+              aria-label="Read the Better I18N documentation for mobile localization"
               className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
             >
               {t("cta.secondary", { defaultValue: "Read the Docs" })}

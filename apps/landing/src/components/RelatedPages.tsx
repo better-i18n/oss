@@ -29,9 +29,9 @@ const frameworkPages: PageLink[] = [
 ];
 
 const comparePages: PageLink[] = [
-  { href: "/$locale/compare/crowdin", titleKey: "compareCrowdin", descKey: "compareCrowdinDesc", titleFallback: "vs Crowdin", descFallback: "How Better i18n compares to Crowdin" },
-  { href: "/$locale/compare/lokalise", titleKey: "compareLokalise", descKey: "compareLokaliseDesc", titleFallback: "vs Lokalise", descFallback: "How Better i18n compares to Lokalise" },
-  { href: "/$locale/compare/phrase", titleKey: "comparePhrase", descKey: "comparePhraseDesc", titleFallback: "vs Phrase", descFallback: "How Better i18n compares to Phrase" },
+  { href: "/$locale/compare/crowdin", titleKey: "compareCrowdin", descKey: "compareCrowdinDesc", titleFallback: "vs Crowdin", descFallback: "How Better I18N compares to Crowdin" },
+  { href: "/$locale/compare/lokalise", titleKey: "compareLokalise", descKey: "compareLokaliseDesc", titleFallback: "vs Lokalise", descFallback: "How Better I18N compares to Lokalise" },
+  { href: "/$locale/compare/phrase", titleKey: "comparePhrase", descKey: "comparePhraseDesc", titleFallback: "vs Phrase", descFallback: "How Better I18N compares to Phrase" },
 ];
 
 const educationalPages: PageLink[] = [
