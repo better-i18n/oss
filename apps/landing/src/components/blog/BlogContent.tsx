@@ -1,10 +1,32 @@
 import * as React from "react";
-import parse, {
-  DOMNode,
-  Element,
-  HTMLReactParserOptions,
-  domToReact,
-} from "html-react-parser";
+// `html-react-parser` ships as CJS. Vite's client pre-bundler is told to
+// EXCLUDE it (vite.config.ts) to keep its DOM-based browser build out of
+// the SSR import graph. As a side-effect, the client gets the raw CJS
+// module whose ESM `default` export isn't synthesized — `import parse from`
+// throws "does not provide an export named 'default'".
+//
+// Workaround: namespace import + manual default unwrap. Works on both
+// SSR (real ESM via noExternal) and client (CJS namespace).
+import * as htmlReactParser from "html-react-parser";
+import type { DOMNode, HTMLReactParserOptions } from "html-react-parser";
+type HRPElement = import("html-react-parser").Element;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const parserModule = htmlReactParser as any;
+const parse: (
+  html: string,
+  options?: HTMLReactParserOptions,
+) => React.ReactNode = parserModule.default ?? parserModule;
+const domToReact: typeof import("html-react-parser").domToReact =
+  parserModule.domToReact ?? parserModule.default?.domToReact;
+// `Element` is a runtime constructor used in instanceof checks. Renamed
+// to `HRPElementCtor` to avoid colliding with lib.dom's global `Element`.
+const HRPElementCtor = (parserModule.Element ??
+  parserModule.default?.Element) as new (...args: unknown[]) => HRPElement;
+
+function isHRPElement(node: unknown): node is HRPElement {
+  return node instanceof HRPElementCtor;
+}
 
 /**
  * Convert a text string into a URL-friendly slug for anchor linking.
@@ -126,7 +148,7 @@ export default function BlogContent({ html, className, locale }: BlogContentProp
   const parserOptions: HTMLReactParserOptions = {
     replace: (domNode) => {
       // Only process element nodes
-      if (!(domNode instanceof Element)) {
+      if (!isHRPElement(domNode)) {
         return;
       }
 
@@ -189,12 +211,12 @@ export default function BlogContent({ html, className, locale }: BlogContentProp
       // Find <pre> tags that contain <code> tags
       if (domNode.name === "pre") {
         const codeNode = domNode.children.find(
-          (child): child is Element =>
-            child instanceof Element && child.name === "code",
+          (child): child is HRPElement =>
+            isHRPElement(child) && child.name === "code",
         );
 
         if (codeNode) {
-          const codeContent = getTextContent(codeNode);
+          const codeContent = getTextContent(codeNode as DOMNode);
 
           return <BlogCodeBlock code={codeContent} />;
         }
