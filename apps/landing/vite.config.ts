@@ -71,18 +71,17 @@ export default defineConfig(async ({ mode }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
-    // Ensure react-dom/server CJS module is properly handled during
-    // Vite's pre-bundling. TanStack Router imports it with ESM default
-    // import syntax but the package is CJS — Vite needs to CJS-interop it.
+    // Ensure CJS modules are properly handled during Vite's pre-bundling.
+    // - react-dom/server: TanStack Router imports it with ESM default-import
+    //   syntax but the package is CJS — Vite needs to synthesize the default.
+    // - html-react-parser / html-dom-parser: Same CJS+default-import pattern.
+    //   The previous "exclude" approach broke the client build because Vite
+    //   served raw CJS that the browser couldn't `import parse from`.
+    //   Pre-bundling synthesizes the default export and the browser build
+    //   stays isolated from the SSR import graph (Vite uses separate build
+    //   pipelines for client and SSR — pre-bundle output never reaches SSR).
     optimizeDeps: {
-      include: ["react-dom/server"],
-      // html-react-parser's transitive dep `html-dom-parser` exposes a
-      // "browser" condition in its package.json exports that resolves to a
-      // DOM-based parser (uses `document.implementation.createHTMLDocument`).
-      // If Vite pre-bundles it for the client, the browser build leaks into
-      // the SSR import graph even after ssr.resolve.conditions is tightened.
-      // Exclude both packages from pre-bundling so SSR resolves them itself.
-      exclude: ["html-dom-parser", "html-react-parser"],
+      include: ["react-dom/server", "html-react-parser", "html-dom-parser"],
     },
     // SSR build (Cloudflare Workers target). TanStack Start's worker pipeline
     // activates the "browser" condition during dependency resolution, which
