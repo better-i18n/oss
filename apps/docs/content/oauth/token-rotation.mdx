@@ -1,0 +1,86 @@
+---
+title: Token Rotation
+description: Refresh expired tokens and handle the rotation lifecycle.
+---
+
+## Refresh flow
+
+```
+access_token expired
+  → POST /api/auth/mcp/token (grant_type=refresh_token)
+  → new access_token (30m), same refresh_token
+
+installation_token expired
+  → POST /installations/:grantId/tokens
+  → new bi_oat_... (1h)
+```
+
+## Refresh the access token
+
+```bash
+curl -X POST https://api.better-i18n.com/api/auth/mcp/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  --data-urlencode "grant_type=refresh_token" \
+  --data-urlencode "refresh_token=<your_refresh_token>" \
+  --data-urlencode "client_id=<your_client_id>"
+```
+
+### Response
+
+```json
+{
+  "access_token": "eyJhbGciOi...",
+  "refresh_token": "rt_...",
+  "expires_in": 1800
+}
+```
+
+<Callout type="info">
+The refresh token may rotate on each use. Always persist the **latest** `refresh_token` from the response, even if it looks the same.
+</Callout>
+
+## When refresh fails
+
+If the refresh returns `invalid_grant`, the user has **revoked your app**. Stop retrying and surface a "Reconnect" prompt — they need to re-authorize from scratch.
+
+```json
+HTTP/1.1 400 Bad Request
+{ "error": "invalid_grant" }
+```
+
+## Practical token lifecycle
+
+```ts title="lib/token-manager.ts"
+async function ensureAccessToken(conn: Connection): Promise<string> {
+  // Access token still valid?
+  if (conn.accessTokenExpiresAt > Date.now() + 60_000) {
+    return conn.accessToken;
+  }
+
+  // Refresh it
+  const res = await fetch("https://api.better-i18n.com/api/auth/mcp/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: conn.refreshToken,
+      client_id: CLIENT_ID,
+    }),
+  });
+
+  if (!res.ok) {
+    // User revoked us
+    await markConnectionRevoked(conn.id);
+    throw new ConnectionRevokedError();
+  }
+
+  const tok = await res.json();
+  await updateConnection(conn.id, {
+    accessToken: tok.access_token,
+    refreshToken: tok.refresh_token,
+    accessTokenExpiresAt: Date.now() + tok.expires_in * 1000,
+  });
+
+  return tok.access_token;
+}
+```

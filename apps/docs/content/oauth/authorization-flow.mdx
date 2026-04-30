@@ -1,0 +1,126 @@
+---
+title: Authorization Flow
+description: Step-by-step OAuth 2.0 authorization code flow with PKCE.
+---
+
+## 1. Build the authorize URL
+
+Redirect the user to Better i18n's authorization endpoint:
+
+```
+https://api.better-i18n.com/api/auth/mcp/authorize
+  ?response_type=code
+  &client_id=<your_client_id>
+  &redirect_uri=<urlencoded_redirect_uri>
+  &scope=org:read+projects:read+keys:read+keys:write+translations:write
+  &state=<csrf_token>
+  &code_challenge=<base64url_sha256_of_verifier>
+  &code_challenge_method=S256
+```
+
+<Callout type="info">
+Use the **narrowest scope set** you need. Destructive scopes (`translations:publish`, `projects:write`, `glossary:write`) require an explicit user click and show a yellow warning on the consent screen.
+</Callout>
+
+## 2. User consents
+
+The user sees our consent screen where they:
+
+- Pick **one organization** (each org creates a separate grant)
+- Optionally narrow scope to specific projects
+- Toggle individual permissions on/off
+- Click **Authorize**
+
+After consenting, the user lands on a "Connection complete" screen with a **Continue to your app** button. When they click it, we redirect to your `redirect_uri` with `?code=...&state=...`.
+
+## 3. Exchange code for tokens
+
+```bash
+curl -X POST https://api.better-i18n.com/api/auth/mcp/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  --data-urlencode "grant_type=authorization_code" \
+  --data-urlencode "code=<the_code>" \
+  --data-urlencode "redirect_uri=<same_as_step_1>" \
+  --data-urlencode "client_id=<your_client_id>" \
+  --data-urlencode "code_verifier=<your_pkce_verifier>"
+```
+
+### Response
+
+```json
+{
+  "access_token":  "eyJhbGciOi...",
+  "token_type":    "Bearer",
+  "expires_in":    1800,
+  "refresh_token": "rt_...",
+  "grant_id":      "grt_8f3c..."
+}
+```
+
+<Callout type="warn">
+**Persist the `grant_id`.** You need it for every installation token mint and every revoke. Store it alongside the `refresh_token` in your database.
+</Callout>
+
+## Full Node.js example
+
+```ts title="routes/connect.ts"
+// Start the flow
+app.get("/connect/start", async (c) => {
+  const state = crypto.randomUUID();
+  const verifier = crypto.randomUUID() + crypto.randomUUID();
+  const challenge = base64UrlSha256(verifier);
+
+  await kv.set(`pkce:${state}`, { verifier, userId: c.user.id }, {
+    expirationTtl: 600,
+  });
+
+  const url = new URL(
+    "https://api.better-i18n.com/api/auth/mcp/authorize",
+  );
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("client_id", env.BETTER_I18N_CLIENT_ID);
+  url.searchParams.set("redirect_uri", `${env.PUBLIC_URL}/connect/callback`);
+  url.searchParams.set("scope", "org:read projects:read keys:write translations:write");
+  url.searchParams.set("state", state);
+  url.searchParams.set("code_challenge", challenge);
+  url.searchParams.set("code_challenge_method", "S256");
+  return c.redirect(url.toString());
+});
+
+// Handle callback
+app.get("/connect/callback", async (c) => {
+  const code = c.req.query("code");
+  const state = c.req.query("state");
+  const pkce = await kv.get(`pkce:${state}`);
+  if (!code || !pkce) return c.text("Invalid state", 400);
+  await kv.delete(`pkce:${state}`);
+
+  const res = await fetch(
+    "https://api.better-i18n.com/api/auth/mcp/token",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: `${env.PUBLIC_URL}/connect/callback`,
+        client_id: env.BETTER_I18N_CLIENT_ID,
+        code_verifier: pkce.verifier,
+      }),
+    },
+  );
+
+  const tok = await res.json();
+  await db.insert("connections", {
+    userId: pkce.userId,
+    grantId: tok.grant_id,
+    refreshToken: tok.refresh_token,
+  });
+
+  return c.redirect("/settings?connected=better-i18n");
+});
+```
+
+## Next step
+
+Now [mint an installation token](/oauth/installation-tokens) to start calling APIs.

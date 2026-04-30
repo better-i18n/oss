@@ -1,0 +1,48 @@
+---
+title: Revocation
+description: How users and partners revoke OAuth grants.
+---
+
+## User-initiated revoke
+
+Users can revoke your app from **Settings → Connected apps** in the Better i18n dashboard. The cascade:
+
+1. Grant marked `revokedAt`
+2. Latest installation token disabled immediately
+3. Refresh tokens deleted — no silent re-mint
+
+## Partner-initiated revoke
+
+Your app can revoke its own grant when uninstalling:
+
+```bash
+curl -X DELETE \
+  https://api.better-i18n.com/api/oauth-client/installations/<grant_id> \
+  -H "Authorization: Bearer <access_token>"
+```
+
+Same cascade applies. Useful when the user disconnects on your side and you want their tokens cleaned up immediately.
+
+## What happens to in-flight tokens
+
+When a grant is revoked, the **latest installation token is disabled instantly**. Any cached `bi_oat_` token in your application will start returning:
+
+```json
+HTTP/1.1 410 Gone
+{ "error": "grant_revoked" }
+```
+
+The next `refresh_token` exchange will also fail with `invalid_grant`.
+
+## After a revoke
+
+The user must re-authorize from scratch to reconnect:
+- New consent flow
+- New `grant_id`
+- New tokens
+
+Your integration should:
+
+1. Mark the connection as `disconnected` in your database
+2. Surface a "Reconnect" prompt in your UI
+3. **Never** retry silently — it won't work

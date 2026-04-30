@@ -1,0 +1,68 @@
+---
+title: OAuth 2.0 Integration
+description: Build third-party apps that access Better i18n on behalf of users — scoped, consent-driven, agent-ready.
+---
+
+Better i18n supports **OAuth 2.0 Authorization Code with PKCE** for third-party integrations. If you're building a platform, IDE plugin, or any app that needs to manage translations on behalf of your users, this is how you connect.
+
+## How it works
+
+```
+Your App                        Better i18n
+────────                        ───────────
+1. Redirect user          →     Consent screen
+                                (org + scope selection)
+2. Receive auth code      ←     Redirect back with ?code=
+
+3. Exchange code          →     /api/auth/mcp/token
+   for tokens             ←     access_token + refresh_token + grant_id
+
+4. Mint installation      →     POST /installations/:grantId/tokens
+   token                  ←     bi_oat_... (1h, scoped)
+
+5. Call resource APIs     →     GET /v1/keys (Bearer bi_oat_...)
+                          ←     Translation data
+```
+
+## Token model
+
+| Token | Lifetime | Purpose |
+|-------|----------|---------|
+| Authorization code | 10 min | One-time exchange |
+| Access token | 30 min | Mint installation tokens only |
+| Refresh token | 30 days | Renew access tokens |
+| Installation token (`bi_oat_...`) | 1 hour | All resource API calls |
+
+<Callout type="warn">
+All tokens are **secret — server-side only**. Never embed them in browser bundles, mobile binaries, or public repos. The `bi_oat_` prefix is distinct from `bi_pub_` (public Content API keys) so leaked credentials can be identified at a glance.
+</Callout>
+
+## Why two layers?
+
+The **access token** can mint installation tokens but cannot read resources. The **installation token** can read/write resources but cannot mint more tokens. This means:
+
+- A leaked installation token expires in ≤ 1 hour with no path to escalation
+- The user can revoke one partner-org pair without affecting others
+- Partners get fine-grained, per-organization, per-project scoping
+
+## Three channels, one token
+
+Once you have a `bi_oat_` token, you can use it across:
+
+| Channel | How | Use case |
+|---------|-----|----------|
+| **REST API** | `Authorization: Bearer bi_oat_...` | Backend automation |
+| **MCP Server** | `BETTER_I18N_API_KEY=bi_oat_...` | AI agents (Cursor, Claude Code) |
+| **CDN** | No auth needed | Runtime translation delivery |
+
+The same scope enforcement applies everywhere — a token without `translations:publish` can't publish via REST or MCP.
+
+## Quick links
+
+- [Register your app](/oauth/register-app) — Get a `client_id`
+- [Authorization flow](/oauth/authorization-flow) — PKCE, consent, code exchange
+- [Installation tokens](/oauth/installation-tokens) — Mint and cache `bi_oat_` keys
+- [Calling APIs](/oauth/calling-apis) — Use installation tokens with `/v1/*` endpoints
+- [Scopes](/oauth/scopes) — What each scope grants
+- [MCP integration](/oauth/mcp-integration) — Use your token with AI agents
+- [Error reference](/oauth/errors) — Status codes and error bodies

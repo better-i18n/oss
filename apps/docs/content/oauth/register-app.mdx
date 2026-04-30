@@ -1,0 +1,33 @@
+---
+title: Register Your App
+description: Get a client_id to start integrating with Better i18n OAuth 2.0.
+---
+
+## Create an OAuth application
+
+1. Sign in to [Better i18n](https://app.better-i18n.com)
+2. Go to **Developer Settings → OAuth Applications → Register new app**
+3. Fill in:
+
+| Field | Description |
+|-------|-------------|
+| **Name** | What users see on the consent screen |
+| **Icon URL** | Square PNG or SVG, ≥ 64×64 |
+| **Redirect URIs** | Comma-separated. HTTPS only in production; `http://localhost` allowed for dev |
+| **Application type** | `web`, `native`, or `spa` |
+
+4. You'll receive a `client_id`. There is **no client secret** for `native`/`spa` types — they must use PKCE.
+
+## What you'll need
+
+- A server-side backend to handle the callback and store tokens
+- The `client_id` from registration
+- A redirect URI that matches one of the registered URIs exactly
+
+<Callout type="info">
+**Local development**: Register `http://localhost:3000/oauth/callback` (or whatever port you use) as a redirect URI. We allow `http://localhost` without HTTPS for development.
+</Callout>
+
+## Next step
+
+Once registered, [start the authorization flow](/oauth/authorization-flow).

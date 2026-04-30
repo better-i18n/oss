@@ -1,0 +1,85 @@
+---
+title: Installation Tokens
+description: Mint short-lived bi_oat_ tokens for scoped API access.
+---
+
+The access token from the authorization flow **cannot read resources directly**. To call any `/v1/*` endpoint, exchange it for a 1-hour installation token:
+
+## Mint a token
+
+```bash
+curl -X POST \
+  https://api.better-i18n.com/api/oauth-client/installations/<grant_id>/tokens \
+  -H "Authorization: Bearer <access_token>"
+```
+
+### Response
+
+```json
+{
+  "installation_token": "bi_oat_d7ab12...",
+  "token_type": "Bearer",
+  "expires_at": "2026-04-30T12:00:00.000Z",
+  "expires_in": 3600,
+  "organization_id": "org_...",
+  "project_ids": [],
+  "scopes": ["org:read", "keys:read", "keys:write", "translations:write"]
+}
+```
+
+`project_ids: []` means **all projects in this organization**. A non-empty array restricts access to those specific projects.
+
+## Caching strategy
+
+Mint a new token **only when the cached one is within ~60 seconds of expiring**:
+
+```ts title="lib/better-i18n.ts"
+let cache: { token: string; expiresAt: number } | null = null;
+
+async function getInstallationToken(
+  grantId: string,
+  accessToken: string,
+): Promise<string> {
+  if (cache && cache.expiresAt - Date.now() > 60_000) {
+    return cache.token;
+  }
+
+  const res = await fetch(
+    `https://api.better-i18n.com/api/oauth-client/installations/${grantId}/tokens`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+  const data = await res.json();
+  cache = {
+    token: data.installation_token,
+    expiresAt: new Date(data.expires_at).getTime(),
+  };
+  return cache.token;
+}
+```
+
+<Callout type="warn">
+**Do not mint per request.** Every mint is logged in the audit trail and rate-limited. In practice you need 1-2 mints per hour.
+</Callout>
+
+## What's inside the token
+
+The installation token is a Better i18n API key (`apikey` table row) with embedded permissions:
+
+```json
+{
+  "type": "installation",
+  "grantId": "grt_...",
+  "organizationId": "org_...",
+  "projectIds": [],
+  "scopes": ["keys:read", "keys:write"]
+}
+```
+
+The middleware reads these permissions on every request — no additional lookup needed.
+
+## Next step
+
+Use the installation token to [call resource APIs](/oauth/calling-apis).

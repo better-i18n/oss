@@ -1,0 +1,23 @@
+{
+  "title": "OAuth 2.0",
+  "description": "Partner integrations with scoped OAuth 2.0 tokens",
+  "icon": "KeyRound",
+  "root": true,
+  "pages": [
+    "index",
+    "---Getting Started---",
+    "register-app",
+    "authorization-flow",
+    "installation-tokens",
+    "---Using the API---",
+    "calling-apis",
+    "scopes",
+    "---Management---",
+    "token-rotation",
+    "revocation",
+    "mcp-integration",
+    "---Reference---",
+    "errors",
+    "best-practices"
+  ]
+}
