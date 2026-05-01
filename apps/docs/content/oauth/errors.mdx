@@ -8,7 +8,7 @@ description: HTTP status codes and error bodies returned by the OAuth 2.0 API.
 | Status | Error | Meaning |
 |--------|-------|---------|
 | `400` | `invalid_request` | Missing or malformed parameter |
-| `400` | `invalid_grant` | Code expired, redirect_uri mismatch, or refresh token revoked |
+| `401` | `invalid_grant` | Code expired/used, redirect_uri mismatch, PKCE verification failed, or refresh token revoked |
 | `401` | `invalid_token` | Access or installation token expired or wrong type |
 | `403` | `missing_scope` | Token is valid but the route needs a scope you don't hold |
 | `403` | `wrong_organization` | Token's grant org doesn't match the resource's org |
@@ -31,9 +31,15 @@ The `required` field is only present for `missing_scope` errors.
 
 ## How to handle each error
 
-### `400 invalid_grant`
+### `401 invalid_grant`
 
-The user revoked your app, or the authorization code expired. **Stop retrying.** Surface a "Reconnect" prompt in your UI.
+One of:
+- The authorization code expired (default 10 minutes) or was already exchanged
+- `redirect_uri` doesn't byte-for-byte match what you sent in step 1 of the authorize flow
+- PKCE `code_verifier` doesn't match the `code_challenge` you sent in step 1
+- The refresh token was revoked
+
+**Stop retrying.** For an expired code, restart the authorize flow. For a refresh-token revoke, mark the connection dead and surface a "Reconnect" prompt.
 
 ### `401 invalid_token`
 

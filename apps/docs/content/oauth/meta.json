@@ -18,6 +18,7 @@
     "mcp-integration",
     "---Reference---",
     "errors",
-    "best-practices"
+    "best-practices",
+    "local-development"
   ]
 }

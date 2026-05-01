@@ -120,6 +120,89 @@ app.get("/connect/callback", async (c) => {
 });
 ```
 
+## SPA-only PKCE flow
+
+If your app has no server (browser-only SPA, Electron, etc.), run the entire exchange in the browser. PKCE makes this safe — the `code_verifier` never leaves the popup, and the access token is short-lived.
+
+```ts title="lib/oauth.ts"
+const BASE_URL = import.meta.env.VITE_BETTER_I18N_URL ?? "https://dash.better-i18n.com";
+const CLIENT_ID = import.meta.env.VITE_BETTER_I18N_CLIENT_ID;
+
+// 1. Generate PKCE pair, persist verifier across the popup round-trip
+async function buildAuthUrl(): Promise<string> {
+  const verifier = crypto.randomUUID() + crypto.randomUUID();
+  const challenge = await sha256Base64Url(verifier);
+  const state = crypto.randomUUID();
+
+  localStorage.setItem("pkce", JSON.stringify({ verifier, state }));
+
+  const params = new URLSearchParams({
+    response_type: "code",
+    client_id: CLIENT_ID,
+    redirect_uri: `${window.location.origin}/oauth/callback`,
+    scope: "org:read projects:read keys:read keys:write translations:write",
+    state,
+    code_challenge: challenge,
+    code_challenge_method: "S256",
+  });
+  return `${BASE_URL}/api/auth/mcp/authorize?${params}`;
+}
+
+// 2. Open the popup
+function startConnect() {
+  const url = await buildAuthUrl();
+  window.open(url, "better-i18n-oauth", "width=520,height=720");
+}
+
+// 3. Handle callback at /oauth/callback (popup page)
+async function handleCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  const state = params.get("state");
+
+  const stored = JSON.parse(localStorage.getItem("pkce") ?? "{}");
+  localStorage.removeItem("pkce");
+  if (!code || state !== stored.state) {
+    window.opener?.postMessage({ type: "oauth-error", error: "state_mismatch" }, window.location.origin);
+    return;
+  }
+
+  const res = await fetch(`${BASE_URL}/api/auth/mcp/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: `${window.location.origin}/oauth/callback`,
+      client_id: CLIENT_ID,
+      code_verifier: stored.verifier,
+    }),
+  });
+
+  if (!res.ok) {
+    window.opener?.postMessage({ type: "oauth-error", error: "exchange_failed" }, window.location.origin);
+    return;
+  }
+
+  const tokens = await res.json();
+  // Send tokens to the parent window (same-origin postMessage), then close
+  window.opener?.postMessage({ type: "oauth-success", tokens }, window.location.origin);
+  window.close();
+}
+
+async function sha256Base64Url(input: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
+  return btoa(String.fromCharCode(...new Uint8Array(buf)))
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+```
+
+<Callout type="warn">
+**Pin `postMessage` to your own origin** — `window.opener.postMessage(data, window.location.origin)`. A wildcard target (`"*"`) leaks tokens to whatever site is currently in the opener tab.
+</Callout>
+
+In the parent window, listen for the popup's message and ship the `refresh_token` + `grant_id` to your backend. Don't keep them in `localStorage` long-term; persist server-side and treat anything in the browser as ephemeral.
+
 ## Next step
 
 Now [mint an installation token](/oauth/installation-tokens) to start calling APIs.
