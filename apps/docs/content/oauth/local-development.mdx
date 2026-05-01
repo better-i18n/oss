@@ -1,0 +1,94 @@
+---
+title: Local Development
+description: Run the full OAuth flow against a local Better i18n dashboard.
+---
+
+You can run the OAuth flow end-to-end against `localhost` while you build your integration. The trick is knowing which Better i18n host to point at — pick the wrong one and the popup lands on a 404 page.
+
+## Two prod hosts, two dev hosts
+
+| Concern | Production | Local development |
+|---------|-----------|-------------------|
+| User-facing pages (login, consent, success) | `https://dash.better-i18n.com` | `http://localhost:5173` |
+| Server-to-server API (token, mint, REST) | `https://api.better-i18n.com` | `http://localhost:52490` |
+
+In production both hosts route to the same Cloudflare Worker, so a single base URL works for everything. In local development the dashboard runs in Vite (port `5173`) and the API runs in Wrangler (port `52490`) as two separate processes — but the dashboard's Vite dev server **proxies `/api/*`** to the API. That makes `http://localhost:5173` the right base URL for everything during dev.
+
+## Configure your integration
+
+```env title=".env.local"
+# Point at the dashboard host. Vite proxies /api/* to the API for you.
+BETTER_I18N_BASE_URL=http://localhost:5173
+
+# Your client_id from partner onboarding (see Register Your App)
+BETTER_I18N_CLIENT_ID=...
+```
+
+```ts title="lib/better-i18n.ts"
+const BASE_URL = process.env.BETTER_I18N_BASE_URL ?? "https://dash.better-i18n.com";
+
+const authorizeUrl = `${BASE_URL}/api/auth/mcp/authorize?...`;
+const tokenUrl     = `${BASE_URL}/api/auth/mcp/token`;
+const meUrl        = `${BASE_URL}/api/oauth-client/me`;
+const mintUrl      = `${BASE_URL}/api/oauth-client/installations/${grantId}/tokens`;
+```
+
+The same `BASE_URL` works for popup redirects (must be a host the user's browser can reach) and for server-to-server fetches (proxied through Vite to the API).
+
+## Register dev redirect URIs
+
+Tell us your dev callback URL during partner onboarding. Common patterns:
+
+```
+http://localhost:3000/oauth/callback     # Most server-side frameworks
+http://localhost:5173/oauth/callback     # Vite + same-origin SPA
+http://localhost:5174/oauth/callback     # Vite SPA on a non-default port
+```
+
+We add them to your application's `redirect_urls` list. The `redirect_uri` you pass at authorize time must **byte-for-byte match** one of the registered entries — protocol, host, port, path. A trailing slash counts.
+
+## Common dev pitfalls
+
+### "404 Not Found" on `localhost:52490/login`
+
+Your `BETTER_I18N_BASE_URL` is pointing at the API host (`52490`) instead of the dashboard host (`5173`). The popup tries to render `/login` but the API has no such route. Switch to `http://localhost:5173`.
+
+### "Invalid redirect URI"
+
+Your dev callback URL isn't on the registered `redirect_urls` list, or it doesn't byte-for-byte match (e.g. registered `http://localhost:3000/oauth/callback` but sent `http://localhost:3000/oauth/callback/`). Ping us with the exact URL you're sending.
+
+### "Authorization link expired"
+
+The user took longer than 10 minutes between authorize and consent, or your local dev server restarted between popup open and exchange (PKCE state in `localStorage` survives, but better-auth's verification record may have expired). Click "Connect" again to get a fresh code.
+
+### Popup keeps reloading the dashboard host
+
+You probably ran the OAuth flow once, hit a quick error, and then the second click reuses a stale `code_verifier` from `localStorage`. Clear the storage:
+
+```js
+Object.keys(localStorage)
+  .filter(k => k.includes("pkce") || k.includes("oauth"))
+  .forEach(k => localStorage.removeItem(k));
+```
+
+Then try again.
+
+## Hitting the API directly (not through the dashboard)
+
+If you're testing token exchange or `/me` from a server-side script, you can hit the API host directly. Both routes work in production; the dashboard host is only required for browser-facing redirects.
+
+```bash
+# Both work in production:
+curl https://api.better-i18n.com/api/auth/mcp/token   ...
+curl https://dash.better-i18n.com/api/auth/mcp/token  ...
+
+# Locally only the dashboard host works (52490 is for direct curl):
+curl http://localhost:52490/api/auth/mcp/token        ...   # OK from server
+curl http://localhost:5173/api/auth/mcp/token         ...   # OK (Vite proxies)
+```
+
+For browser-initiated requests stick with the dashboard host so PKCE and the consent flow stay on a single origin.
+
+## Next step
+
+Once your local flow works, the same code paths work in production with a single env-var swap. See the [authorization flow](/oauth/authorization-flow) for the full request reference.

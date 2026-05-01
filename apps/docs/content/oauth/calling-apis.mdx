@@ -78,9 +78,11 @@ If your token is missing the required scope, you'll get:
 
 ## Identity endpoint
 
-`/api/oauth-client/me` is the only endpoint callable with the **access token**
-directly. Organization, project, and resource endpoints require the
-installation token.
+`/api/oauth-client/me` accepts **either** the OAuth access token or a `bi_oat_`
+installation token in the `Authorization` header — it doesn't require any
+scope. All other resource endpoints (organizations, projects, keys, etc.)
+require an installation token. Use `/me` right after exchange to confirm the
+connection succeeded before minting an installation token.
 
 ## Handling revocation
 

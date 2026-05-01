@@ -17,22 +17,22 @@ OAuth applications are registered by the Better i18n team during partner onboard
 |-------|-------------|
 | **App name** | What users see on the consent screen |
 | **Icon URL** | Square PNG or SVG, ≥ 64×64 (optional but recommended) |
-| **Redirect URIs** | Where we send users after authorization. HTTPS required in production; `http://localhost` is allowed for development |
-| **Application type** | `web` (server-side), `native` (desktop/mobile), or `spa` (browser-only) |
+| **Redirect URIs** | Where we send users after authorization. Byte-for-byte match required at exchange time. HTTPS required in production; `http://localhost` is allowed for development. Send the full list (prod + every dev port). |
+| **Application type** | `web` (server-side), `native` (desktop/mobile), or `spa` (browser-only). All types use PKCE; the field is informational only. |
 
 ## What you'll receive
 
 - A `client_id` — your app's unique identifier
-- No `client_secret` for `native`/`spa` types — they use PKCE exclusively
-- For `web` type, a `client_secret` if your auth scheme requires it
+- **No `client_secret`** — Better i18n issues PKCE-only public clients regardless of application type. PKCE replaces the static secret with a per-flow `code_verifier`/`code_challenge` pair that's safe to ship in browsers, mobile apps, and server backends alike.
 
 ## What you'll need on your side
 
-- A server-side backend to handle the OAuth callback and store tokens securely
 - A redirect URI endpoint (e.g., `https://yourapp.com/oauth/callback`)
+- For server-side flows: a backend to handle the callback and store `refresh_token`/`grant_id` securely
+- For SPA flows: a callback page that exchanges the code in the browser and posts tokens to your backend (see [the SPA section in the authorization flow](/oauth/authorization-flow#spa-only-pkce-flow))
 
 <Callout type="info">
-**Local development**: Include `http://localhost:3000/oauth/callback` (or your dev port) in your redirect URIs. We allow HTTP without TLS for localhost.
+**Local development**: Include the **dev callback for your app** in your redirect URIs (e.g., `http://localhost:3000/oauth/callback`). HTTP without TLS is allowed for `localhost` only. The Better i18n side you're calling against is `http://localhost:5173` if you're running our dashboard locally — see [Local development](/oauth/local-development).
 </Callout>
 
 ## Dynamic Client Registration (advanced)
