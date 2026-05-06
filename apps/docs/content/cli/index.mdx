@@ -1,177 +1,165 @@
 ---
 title: Introduction
-description: Detect and sync translation keys in your React/Next.js apps
+description: CLI for managing translation keys, syncing translations, and publishing to CDN
 icon: BookOpen
 ---
 
-Better i18n CLI helps you manage the entire lifecycle of your translation keys — from detecting hardcoded strings to auditing remote sync status. Run a single command to get a full health report, or use focused commands for specific tasks.
+Better i18n CLI is a full-featured command-line tool for managing your localization workflow. Authenticate once, then manage translation keys, set translations, publish to CDN, and audit your i18n health — all from the terminal.
+
+When MCP tools aren't available (CI/CD pipelines, headless environments, AI agents without MCP), the CLI provides the same capabilities with `--json` output for machine consumption.
+
+## Quick Start
+
+```bash
+# Install
+npm install -g @better-i18n/cli
+
+# Authenticate (opens browser)
+better-i18n login
+
+# List your projects
+better-i18n projects
+
+# List keys in a project
+better-i18n keys list -p acme/dashboard
+
+# Create keys
+better-i18n keys create -p acme/dashboard --key "auth.title" --value "Login"
+
+# Publish to CDN
+better-i18n publish -p acme/dashboard
+```
+
+## Authentication
+
+The CLI uses the same API keys as the MCP server. Three ways to authenticate:
+
+```bash
+# Option 1: Browser login (recommended for developers)
+better-i18n login
+
+# Option 2: API key flag (for CI/agents)
+better-i18n login --api-key bi-your-key
+
+# Option 3: Environment variable (for CI/CD)
+export BETTER_I18N_API_KEY=bi-your-key
+```
+
+Auth resolution priority: `--api-key` flag → `BETTER_I18N_API_KEY` env → `~/.better-i18n/auth.json` (from login).
+
+[View full authentication docs →](/cli/auth)
+
+---
 
 ## Commands
 
-### `doctor` — Full i18n health report
+### Auth
 
-The most powerful command. Runs five analysis layers in a single pass and gives your project a health score from 0–100.
+| Command | Description |
+|---------|-------------|
+| [`login`](/cli/auth) | Authenticate via browser or API key |
+| [`logout`](/cli/auth) | Remove stored credentials |
+| [`whoami`](/cli/auth) | Show current authenticated user |
 
-```bash
-better-i18n doctor
-```
+### Translation Management
 
-```text
-╭──────────────────────────────────────────────╮
-│                                              │
-│   🌐 better-i18n  ·  i18n Doctor Report  │
-│   hello · hola · 你好 · こんにちは · 안녕    │
-│                                              │
-├──────────────────────────────────────────────┤
-│  ████████████████░░░░ 82 / 100 A       │
-│  PASSED (threshold: 70)           │
-╰──────────────────────────────────────────────╯
+| Command | Description |
+|---------|-------------|
+| [`projects`](/cli/projects) | List all projects |
+| [`project`](/cli/projects) | Show project details (languages, namespaces, coverage) |
+| [`keys list`](/cli/keys) | Browse and search translation keys |
+| [`keys create`](/cli/keys) | Create keys (flags or stdin JSON) |
+| [`keys delete`](/cli/keys) | Delete keys by UUID |
+| [`translations`](/cli/translations) | Get translations with full text content |
+| [`translate`](/cli/translate) | Set translations for existing keys |
 
-Category Scores:
-  Coverage       95 (3 issues)
-  Quality        88 (2 issues)
-  Code           72 (8 issues)
-  Structure     100 (clean)
-  Performance    91 (1 issues)
-```
+### Publishing
 
-What `doctor` checks:
+| Command | Description |
+|---------|-------------|
+| [`publish`](/cli/publish) | Publish pending changes to CDN |
+| [`publish:status`](/cli/publish) | Show pending changes before publishing |
+| [`syncs list`](/cli/syncs) | View sync/publish job history |
+| [`syncs get`](/cli/syncs) | Get sync job details |
+| [`syncs cancel`](/cli/syncs) | Cancel a pending sync job |
 
-| Category | What it finds |
-|----------|---------------|
-| **Code** | Hardcoded strings not wrapped in `t()` |
-| **Coverage** | Keys missing from target locales |
-| **Quality** | Placeholder mismatches across locales |
-| **Performance** | Orphan keys that exist in translations but are unused in code |
-| **Sync** | Keys missing from or extra in the remote CDN |
+### Languages
 
-Use `--ci` to fail the build when the score drops below the pass threshold. Use `--report` to upload results to the Better i18n dashboard for tracking over time.
+| Command | Description |
+|---------|-------------|
+| [`languages add`](/cli/languages) | Add target languages to project |
+| [`languages edit`](/cli/languages) | Change language status (active/draft/archived) |
 
-[View full `doctor` documentation →](/cli/doctor)
+### Code Analysis
 
----
-
-### `scan` — Hardcoded string detection
-
-Find user-facing strings that are not yet wrapped in `t()`. Supports `--staged` for pre-commit hooks.
-
-```bash
-better-i18n scan
-```
-
-```text
-components/sign-up.tsx (3)
-  24:13  missing  "Create an account"  i18n/jsx-text
-  32:22  missing  "Name"               i18n/jsx-text
-
-✖ 87 problems (87 missing translations)
-```
-
-[View full `scan` documentation →](/cli/scan)
+| Command | Description |
+|---------|-------------|
+| [`doctor`](/cli/doctor) | Full i18n health report (score 0–100) |
+| [`scan`](/cli/scan) | Find hardcoded strings not wrapped in `t()` |
+| [`check`](/cli/check) | Interactive missing/unused key checker |
+| [`sync`](/cli/sync) | Compare local keys with remote CDN |
+| [`pull`](/cli/pull) | Download translations for offline fallback |
+| [`content:types`](/cli/content-types) | Generate TypeScript types from content models |
 
 ---
 
-### `check` — Interactive key checker
+## Agent / CI Usage
 
-Focused, interactive checker for missing or unused translation keys. Guides you through what to check with prompts.
+Every command supports `--json` for machine-readable output and `--yes` to skip confirmations. Pipe JSON via stdin for bulk operations:
 
 ```bash
-better-i18n check
+# Agent creates keys
+echo '[{"n":"auth.title","v":"Login"},{"n":"auth.subtitle","v":"Welcome"}]' \
+  | better-i18n keys create -p acme/dashboard --json --yes
 
-? What would you like to check?
-  ❯ Missing translation keys
-    Unused translation keys
-    Both (Full Comparison)
+# Agent sets translations
+echo '[{"id":"<uuid>","t":{"tr":"Giriş","de":"Anmelden"}}]' \
+  | better-i18n translate -p acme/dashboard --json --yes
+
+# Agent publishes
+better-i18n publish -p acme/dashboard --json --yes
 ```
 
-[View full `check` documentation →](/cli/check)
+JSON output follows a consistent contract:
+
+```json
+// Success
+{"ok": true, "data": { ... }}
+
+// Error
+{"ok": false, "error": "message", "code": "AUTH_FAILED"}
+```
 
 ---
 
-### `sync` — Full local ↔ remote comparison
+## Configuration
 
-Compare all `t()` calls in your code against the Better i18n remote and see both missing and unused keys at once. Best for CI or full audits.
+The CLI reads project settings from `i18n.config.ts` (auto-detected). You can override with `-p org/project` on any command.
 
-```bash
-better-i18n sync
+```typescript
+// i18n.config.ts
+export default {
+  project: "acme/dashboard",
+  defaultLocale: "en",
+};
 ```
 
-[View full `sync` documentation →](/cli/sync)
-
----
-
-### `content:types` — Generate TypeScript from content models
-
-Generate typed interfaces from your Content CMS models — like `supabase gen types typescript`. Auto-loads API key from `.env`.
-
-```bash
-better-i18n content:types
-```
-
-```text
-✓ Project: acme/landing
-✓ Found 3 content model(s)
-✓ Content types generated
-  Output: src/content-types.ts
-  Models: blog-posts, changelog, pricing-plans
-```
-
-[View full `content:types` documentation →](/cli/content-types)
-
----
-
-### `pull` — Download translations for offline fallback
-
-Download translations from CDN to local JSON files. Essential for mobile apps (Expo, React Native) where bundled translations ensure the app works even when the CDN is unreachable — including during App Store Review.
-
-```bash
-better-i18n pull
-```
-
-```text
-✔ Project: acme/my-app
-✔ Manifest: 3 languages (en, de, tr)
-✔ Downloaded 3 locale(s) to locales/
-
-  ✓ en      1867 keys  145.8 KB
-  ✓ de      1742 keys  146.3 KB
-  ✓ tr      1741 keys  131.0 KB
-```
-
-[View full `pull` documentation →](/cli/pull)
-
----
-
-## When to use which command
-
-| I want to… | Command |
-|------------|---------|
-| Get a full project health score | `doctor` |
-| Download translations for mobile offline fallback | `pull` |
-| Block CI on i18n regressions | `doctor --ci` |
-| Catch hardcoded strings before commit | `scan --staged --ci` |
-| Quickly check if new keys are uploaded | `check:missing` |
-| Clean up unused translations | `check:unused` |
-| See full missing + unused comparison | `sync` |
-| Generate types for Content CMS models | `content:types` |
+Credentials are stored in `~/.better-i18n/auth.json` after running `better-i18n login`.
 
 ## Installation
 
 ```bash
-# With npx (no install needed)
+# npm
+npm install -g @better-i18n/cli
+
+# npx (no install)
 npx @better-i18n/cli doctor
 
-# Or install globally
-npm install -g @better-i18n/cli
+# pnpm
+pnpm add -g @better-i18n/cli
+
+# bun
+bun add -g @better-i18n/cli
 ```
 
-## Features
-
-- ✅ **Health Score** — Single 0–100 score with per-category breakdown and CI pass/fail threshold.
-- ✅ **Lexical Scope Tracking** — Smart namespace detection for both `useTranslations` and `getTranslations`.
-- ✅ **Server Component Support** — Full support for Next.js App Router async server functions.
-- ✅ **CI/CD Ready** — Enforce key coverage and health score in your pipeline.
-- ✅ **Smart Filtering** — Automatically ignores CSS, URLs, and developer constants.
-- ✅ **Verbose Audit Log** — Deep transparency with `--verbose` on any command.
-
-**Cmd+Click** on any file path in the terminal to jump directly to the code in VS Code!
+Requires Node.js 18+.

@@ -295,7 +295,9 @@ export async function contentTypesCommand(
 
   // Resolve project from config or CLI flag
   let project = options.project;
-  const apiKey = options.apiKey || process.env.BETTER_I18N_API_KEY;
+  const { resolveAuth } = await import("../utils/auth.js");
+  const auth = resolveAuth({ apiKey: options.apiKey });
+  const apiKey = auth?.apiKey;
 
   if (!project) {
     const rootDir = resolve(options.dir || process.cwd());
@@ -315,7 +317,7 @@ export async function contentTypesCommand(
 
   if (!apiKey) {
     spinner.fail(
-      "API key required. Use --api-key <key> or set BETTER_I18N_API_KEY env var",
+      "Not authenticated. Run `better-i18n login` or set BETTER_I18N_API_KEY env var.",
     );
     process.exit(1);
   }

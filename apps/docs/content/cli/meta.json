@@ -1,17 +1,30 @@
 {
   "title": "CLI",
-  "description": "Detect and sync translation keys",
+  "description": "Manage translations from the command line",
   "icon": "Terminal",
   "root": true,
   "pages": [
     "index",
-    "---Commands---",
-    "pull",
+    "---Authentication---",
+    "auth",
+    "---Translation Management---",
+    "projects",
+    "keys",
+    "translations",
+    "translate",
+    "---Publishing---",
+    "publish",
+    "syncs",
+    "---Languages---",
+    "languages",
+    "---Code Analysis---",
     "scan",
     "check",
     "sync",
     "doctor",
+    "pull",
     "---Setup---",
-    "configuration"
+    "configuration",
+    "content-types"
   ]
 }

@@ -1,0 +1,118 @@
+---
+title: keys
+description: List, create, and delete translation keys
+icon: Key
+---
+
+Manage translation keys in your project. All commands support `--json` for machine-readable output and stdin JSON for bulk operations.
+
+## keys list
+
+Browse and search translation keys with pagination.
+
+```bash
+better-i18n keys list -p acme/dashboard
+better-i18n keys list -p acme/dashboard --search "auth"
+better-i18n keys list -p acme/dashboard --namespace common
+better-i18n keys list -p acme/dashboard --missing tr
+better-i18n keys list -p acme/dashboard --page 2 --limit 20
+```
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <org/name>` | Project identifier |
+| `-s, --search <query>` | Search keys by name (partial match) |
+| `-n, --namespace <ns>` | Filter by namespace (comma-separated) |
+| `-m, --missing <lang>` | Show keys missing translation for this language |
+| `--page <n>` | Page number (default: 1) |
+| `--limit <n>` | Keys per page (default: 50, max: 100) |
+| `--json` | JSON output |
+
+### Example Output
+
+```text
+  262 keys total (showing 10)
+
+  [nav] about → "About"
+  [auth] login.title → "Log in to your account"
+  [common] save → "Save"
+
+  Page 1/27 — use --page 2 for more
+```
+
+---
+
+## keys create
+
+Create one or more translation keys. Supports inline flags and stdin JSON for bulk operations.
+
+### Inline (few keys)
+
+```bash
+better-i18n keys create -p acme/dashboard \
+  --key "auth.title" --value "Login" \
+  --key "auth.subtitle" --value "Welcome back" \
+  --namespace auth
+```
+
+### Stdin JSON (bulk / agents)
+
+```bash
+echo '[
+  {"n": "auth.title", "v": "Login", "ns": "auth"},
+  {"n": "auth.subtitle", "v": "Welcome back", "ns": "auth"},
+  {"n": "common.save", "v": "Save"}
+]' | better-i18n keys create -p acme/dashboard --json --yes
+```
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <org/name>` | Project identifier |
+| `-k, --key <name...>` | Key name(s) to create |
+| `-v, --value <text...>` | Source text for each key |
+| `-n, --namespace <ns>` | Namespace (default: `default`) |
+| `-y, --yes` | Skip confirmation prompt |
+| `--json` | JSON output |
+
+### JSON Input Schema
+
+Each key in the stdin array:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `n` | string | yes | Key name (e.g. `auth.login.title`) |
+| `v` | string | no | Source language text |
+| `ns` | string | no | Namespace (default: `default`) |
+| `t` | object | no | Initial translations `{ lang: text }` |
+
+---
+
+## keys delete
+
+Delete keys by UUID. Keys are soft-deleted and permanently removed on next publish.
+
+```bash
+# Single key
+better-i18n keys delete -p acme/dashboard --ids <uuid>
+
+# Bulk via stdin
+echo '["uuid-1", "uuid-2", "uuid-3"]' \
+  | better-i18n keys delete -p acme/dashboard --json --yes
+```
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <org/name>` | Project identifier |
+| `--ids <uuid...>` | Key UUIDs to delete |
+| `-y, --yes` | Skip confirmation |
+| `--json` | JSON output |
+
+<Callout type="warn">
+Deleted keys are permanently removed from CDN after `better-i18n publish`. This cannot be undone.
+</Callout>

@@ -1,0 +1,55 @@
+---
+title: translate
+description: Set translations for existing keys
+icon: Languages
+---
+
+Write translations for existing keys in bulk. Pipe translation data via stdin — designed for AI agents and automation scripts.
+
+## Usage
+
+```bash
+echo '[
+  {"id": "<uuid>", "t": {"tr": "Giriş yap", "de": "Anmelden"}},
+  {"id": "<uuid>", "t": {"tr": "Hoş geldin", "de": "Willkommen"}}
+]' | better-i18n translate -p acme/dashboard --json --yes
+```
+
+## Options
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <org/name>` | Project identifier |
+| `-y, --yes` | Skip confirmation prompt |
+| `--json` | JSON output |
+
+## JSON Input Schema
+
+Pipe a JSON array via stdin. Each item:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | string (UUID) | yes | Translation key UUID (from `keys list --json`) |
+| `t` | object | yes | Map of `{ languageCode: translationText }` |
+
+## Workflow
+
+```bash
+# 1. Find keys that need Turkish translation
+better-i18n keys list -p acme/dashboard --missing tr --json
+
+# 2. Generate translations (your AI or script)
+# 3. Write translations
+echo '[{"id":"<uuid>","t":{"tr":"..."}}]' \
+  | better-i18n translate -p acme/dashboard --json --yes
+
+# 4. Publish to CDN
+better-i18n publish -p acme/dashboard --yes
+```
+
+## Notes
+
+- All writes land at `status=approved`
+- Source language entries are silently ignored — use `keys update` for source text
+- Max 500 keys per call
+- Language codes are normalized to lowercase (e.g. `zh-Hans` → `zh-hans`)

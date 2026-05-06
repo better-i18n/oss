@@ -1,0 +1,96 @@
+---
+title: Authentication
+description: Login, logout, and manage CLI credentials
+icon: Lock
+---
+
+The CLI authenticates with the same API keys used by the MCP server. Credentials persist in `~/.better-i18n/auth.json` so you only need to authenticate once.
+
+## Login
+
+### Browser login (recommended)
+
+Opens your default browser to authenticate via your Better i18n account (Google, GitHub, or email).
+
+```bash
+better-i18n login
+```
+
+The CLI starts a local callback server on port 9876, opens the dashboard login page, and waits for the authentication to complete. An API key is automatically created and stored locally.
+
+### API key login (CI/agents)
+
+Authenticate directly with an API key — no browser needed.
+
+```bash
+better-i18n login --api-key bi-your-key-here
+```
+
+Get your API key from [Settings → API Keys](https://dash.better-i18n.com/settings/api-keys) in the dashboard.
+
+### Environment variable
+
+Set `BETTER_I18N_API_KEY` in your environment. The CLI will use it automatically — no `login` required.
+
+```bash
+export BETTER_I18N_API_KEY=bi-your-key-here
+better-i18n projects  # works immediately
+```
+
+## Auth Resolution Order
+
+When the CLI needs authentication, it checks these sources in order:
+
+1. `--api-key` flag (highest priority)
+2. `BETTER_I18N_API_KEY` environment variable
+3. `~/.better-i18n/auth.json` (from `better-i18n login`)
+4. `i18n.config.ts` project config
+
+## Logout
+
+Remove stored credentials from your machine.
+
+```bash
+better-i18n logout
+```
+
+## Whoami
+
+Check which account you're authenticated as.
+
+```bash
+better-i18n whoami
+```
+
+```text
+  Better i18n CLI
+
+  Email:    osman@acme.com
+  Name:     Ali Osman
+  Auth:     ~/.better-i18n/auth.json
+  API:      https://dash.better-i18n.com
+```
+
+## Options
+
+| Option | Description |
+|--------|-------------|
+| `--api-key <key>` | API key for direct authentication |
+| `--api-url <url>` | Custom API URL (for self-hosted or local dev) |
+| `--json` | Machine-readable JSON output |
+
+## Credential Storage
+
+Credentials are stored as plain JSON in `~/.better-i18n/auth.json`:
+
+```json
+{
+  "apiKey": "bi-...",
+  "email": "you@example.com",
+  "userId": "...",
+  "apiUrl": "https://dash.better-i18n.com",
+  "createdAt": "2026-05-06T..."
+}
+```
+
+The file is created by `login` and removed by `logout`. It is **not** committed to git — add `~/.better-i18n/` to your global `.gitignore` if needed.
