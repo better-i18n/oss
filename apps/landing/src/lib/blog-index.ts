@@ -2,13 +2,13 @@
  * Runtime loader for the build-time blog index.
  *
  * The index is emitted as `public/blog-index-{locale}.json` by
- * `src/seo/generate-blog-indexes.ts`. Fetching a static asset is
- * cheap enough to run inside the CF Worker CPU budget, and the
- * prerender server resolves the same relative path from dist during
- * build.
+ * `src/seo/generate-blog-indexes.ts`. Uses absolute URL so the fetch
+ * works in both CF Worker SSR and Vite prerender contexts — relative
+ * URLs fail silently in both (no origin to resolve against).
  */
 
 import type { BlogPostListItem } from "@/lib/content";
+import { SITE_URL } from "@/seo/pages";
 
 export interface BlogIndex {
   readonly allPosts: readonly BlogPostListItem[];
@@ -26,7 +26,7 @@ const EMPTY_INDEX: BlogIndex = {
 
 export async function loadBlogIndex(locale: string): Promise<BlogIndex> {
   try {
-    const res = await fetch(`/blog-index-${locale}.json`);
+    const res = await fetch(`${SITE_URL}/blog-index-${locale}.json`);
     if (!res.ok) {
       console.warn(`[blog-index] ${locale} → ${res.status}, serving empty index`);
       return EMPTY_INDEX;
