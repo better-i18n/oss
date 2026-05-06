@@ -1,0 +1,83 @@
+---
+title: syncs
+description: View and manage sync/publish job history
+icon: RefreshCw
+---
+
+Monitor sync and publish jobs. Every `publish` command creates one or more sync jobs that process translations and upload to CDN.
+
+## syncs list
+
+View recent sync jobs for a project.
+
+```bash
+better-i18n syncs list -p acme/dashboard
+better-i18n syncs list -p acme/dashboard --limit 20
+```
+
+```text
+  5 recent syncs
+
+  ✓ 90df897e  5/6/2026, 1:49 AM  batch_publish
+  ✓ ca9be32c  5/6/2026, 1:45 AM  batch_publish
+  ✗ 56751f79  5/5/2026, 3:35 PM  sync · Upload failed
+  ⟳ a3b489ec  5/5/2026, 3:27 PM  sync
+  ○ 04d53125  5/4/2026, 11:36 PM  batch_publish
+```
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <org/name>` | Project identifier |
+| `--limit <n>` | Number of jobs to show (default: 10) |
+| `--json` | JSON output |
+
+---
+
+## syncs get
+
+Get details about a specific sync job. Use `--wait` to block until the job finishes (useful right after `publish`).
+
+```bash
+better-i18n syncs get <syncId>
+better-i18n syncs get <syncId> --wait
+```
+
+```text
+  Sync 90df897e-916e-4bec-a6a7-2d59857ac4b0
+
+  Status:  completed
+  Type:    batch_publish
+  Created: 5/6/2026, 1:49:45 AM
+  Done:    5/6/2026, 1:51:08 AM
+```
+
+The `--wait` flag blocks up to 15 seconds for the job to reach a terminal state (completed/failed/cancelled). Useful for CI scripts:
+
+```bash
+# Publish and wait for completion
+RESULT=$(better-i18n publish -p acme/dashboard --json --yes)
+SYNC_ID=$(echo $RESULT | jq -r '.data.syncJobIds[0]')
+better-i18n syncs get $SYNC_ID --wait --json
+```
+
+---
+
+## syncs cancel
+
+Cancel a sync job that hasn't started processing yet.
+
+```bash
+better-i18n syncs cancel <syncId> --yes
+```
+
+Only jobs in `pending` status can be cancelled. Once processing starts, the job runs to completion.
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `--wait` | Block until sync completes (max 15s) |
+| `-y, --yes` | Skip confirmation |
+| `--json` | JSON output |

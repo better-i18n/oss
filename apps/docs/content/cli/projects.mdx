@@ -1,0 +1,63 @@
+---
+title: projects
+description: List projects and view project details
+icon: FolderOpen
+---
+
+View all projects you have access to and inspect individual project details.
+
+## projects
+
+List all projects across all your organizations.
+
+```bash
+better-i18n projects
+```
+
+```text
+  39 projects
+
+  acme/dashboard      8 languages · source: en
+  acme/mobile         22 languages · source: en
+  acme/landing        3 languages · source: en
+```
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `--json` | JSON output |
+| `--api-key <key>` | API key |
+
+---
+
+## project
+
+Show detailed info for a specific project — languages, namespaces, and coverage.
+
+```bash
+better-i18n project -p acme/dashboard
+```
+
+```text
+  Acme Dashboard
+
+  Slug:       acme/dashboard
+  Source:     en
+  Keys:       262
+  Languages:  8
+  Namespaces: nav, auth, common, features, home, about
+
+  Languages:
+    █ tr       100%  Turkish
+    █ de        98%  German
+    ▓ fr        85%  French
+    ░ ja        42%  Japanese
+```
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <org/name>` | Project identifier (default: from i18n.config.ts) |
+| `--json` | JSON output |

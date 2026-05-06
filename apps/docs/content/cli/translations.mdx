@@ -1,0 +1,60 @@
+---
+title: translations
+description: Get translation text content with search and filtering
+icon: FileText
+---
+
+Fetch full translation text for keys — search across all languages, filter by status, or get specific keys by name.
+
+## Usage
+
+```bash
+# Search in all languages
+better-i18n translations -p acme/dashboard --search "login"
+
+# Get Turkish translations
+better-i18n translations -p acme/dashboard --languages tr
+
+# Find keys missing Turkish
+better-i18n translations -p acme/dashboard --languages tr --status missing
+
+# Get specific keys
+better-i18n translations -p acme/dashboard --keys "auth.title,auth.subtitle"
+```
+
+## Options
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <org/name>` | Project identifier |
+| `-s, --search <query>` | Search in key names and translation text |
+| `-l, --languages <codes>` | Comma-separated language codes to return |
+| `-n, --namespace <ns>` | Filter by namespace |
+| `--status <status>` | Filter: `missing`, `draft`, `published`, `all` |
+| `--keys <names>` | Comma-separated exact key names |
+| `--limit <n>` | Max keys to return (default: 100, max: 200) |
+| `--json` | JSON output |
+
+## Example Output
+
+```text
+  6 keys (showing 6)
+
+  [home] hero.line1
+    src: Internationalization that
+    ● tr: Gerçekten
+    ● de: Internationalisierung, die
+
+  [home] hero.subtitle
+    src: Ship multilingual apps in minutes
+    ● tr: Dakikalar içinde çok dilli uygulamalar gönderin
+    ○ de: (draft)
+```
+
+## When to Use
+
+| Need | Command |
+|------|---------|
+| Browse/search key names | `keys list` (faster, fewer tokens) |
+| Read actual translation text | `translations` (this command) |
+| Write translations | `translate` (stdin JSON) |

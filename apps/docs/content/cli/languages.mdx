@@ -1,0 +1,65 @@
+---
+title: languages
+description: Add and manage project target languages
+icon: Globe
+---
+
+Add target languages to a project or change their status.
+
+## languages add
+
+Add one or more target languages.
+
+```bash
+# Add individual languages
+better-i18n languages add -p acme/dashboard --lang fr --lang de --lang ja
+
+# Add as draft (not published to CDN)
+better-i18n languages add -p acme/dashboard --lang ko --status draft
+
+# Bulk via stdin
+echo '[{"languageCode":"fr"},{"languageCode":"de","status":"draft"}]' \
+  | better-i18n languages add -p acme/dashboard --json --yes
+```
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <org/name>` | Project identifier |
+| `-l, --lang <code...>` | Language codes (ISO 639-1 or BCP 47) |
+| `--status <status>` | Initial status: `active` (default) or `draft` |
+| `-y, --yes` | Skip confirmation |
+| `--json` | JSON output |
+
+---
+
+## languages edit
+
+Change the status of existing languages.
+
+```bash
+# Archive a language (remove from CDN)
+better-i18n languages edit -p acme/dashboard --lang ko --new-status archived
+
+# Reactivate
+better-i18n languages edit -p acme/dashboard --lang ko --new-status active
+```
+
+### Statuses
+
+| Status | CDN | Dashboard | Description |
+|--------|-----|-----------|-------------|
+| `active` | Published | Visible | Default. Translations are live on CDN. |
+| `draft` | Not published | Visible | Work in progress. Visible in editor but not deployed. |
+| `archived` | Not published | Hidden | Removed from editor and CDN. Data preserved. |
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <org/name>` | Project identifier |
+| `-l, --lang <code...>` | Language codes to edit |
+| `--new-status <status>` | New status: `active`, `draft`, or `archived` |
+| `-y, --yes` | Skip confirmation |
+| `--json` | JSON output |

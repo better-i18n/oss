@@ -1,0 +1,95 @@
+---
+title: publish
+description: Deploy translations to CDN and view sync history
+icon: Upload
+---
+
+Publish pending translation changes to the CDN. After creating or updating translations, changes are staged but not live until you publish.
+
+## publish
+
+Deploy all pending changes to CDN.
+
+```bash
+better-i18n publish -p acme/dashboard
+```
+
+Interactive mode shows a summary before publishing:
+
+```text
+  Pending changes in acme/dashboard:
+    + 12 translations
+    - 2 keys deleted
+
+  Publish to CDN? [Y/n]
+```
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <org/name>` | Project identifier |
+| `-y, --yes` | Skip confirmation |
+| `--json` | JSON output |
+
+---
+
+## publish:status
+
+Check what changes are pending before publishing.
+
+```bash
+better-i18n publish:status -p acme/dashboard
+```
+
+```text
+  2 pending changes
+    + 2 translations to publish
+    Languages: en
+
+  Run better-i18n publish to deploy.
+```
+
+---
+
+## syncs list
+
+View recent sync/publish job history.
+
+```bash
+better-i18n syncs list -p acme/dashboard
+better-i18n syncs list -p acme/dashboard --limit 20
+```
+
+```text
+  5 recent syncs
+
+  ✓ 90df897e  5/6/2026, 1:49 AM  batch_publish
+  ✓ ca9be32c  5/6/2026, 1:45 AM  batch_publish
+  ✗ 56751f79  5/5/2026, 3:35 PM  sync · R2 upload failed
+```
+
+---
+
+## syncs get
+
+Get details about a specific sync job.
+
+```bash
+better-i18n syncs get <syncId>
+better-i18n syncs get <syncId> --wait   # Block until done (max 15s)
+```
+
+---
+
+## syncs cancel
+
+Cancel a pending (not yet started) sync job.
+
+```bash
+better-i18n syncs cancel <syncId> --yes
+```
+
+<Callout type="info">
+Only sync jobs in `pending` status can be cancelled. Once a job starts processing, it runs to completion.
+</Callout>
