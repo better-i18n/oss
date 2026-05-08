@@ -22,7 +22,8 @@ curl -X POST https://dash.better-i18n.com/api/auth/mcp/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   --data-urlencode "grant_type=refresh_token" \
   --data-urlencode "refresh_token=<your_refresh_token>" \
-  --data-urlencode "client_id=<your_client_id>"
+  --data-urlencode "client_id=<your_client_id>" \
+  --data-urlencode "client_secret=<your_client_secret>"
 ```
 
 ### Response
@@ -65,6 +66,7 @@ async function ensureAccessToken(conn: Connection): Promise<string> {
       grant_type: "refresh_token",
       refresh_token: conn.refreshToken,
       client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
     }),
   });
 

@@ -41,8 +41,12 @@ curl -X POST https://dash.better-i18n.com/api/auth/mcp/token \
   --data-urlencode "code=<the_code>" \
   --data-urlencode "redirect_uri=<same_as_step_1>" \
   --data-urlencode "client_id=<your_client_id>" \
-  --data-urlencode "code_verifier=<your_pkce_verifier>"
+  --data-urlencode "client_secret=<your_client_secret>"
 ```
+
+<Callout type="warn">
+**`client_secret` is required** for all confidential (server-side) clients. The server rejects the exchange without it. If you're using a PKCE-only public client, send `code_verifier` instead — see the [SPA flow](#spa-only-pkce-flow) below.
+</Callout>
 
 ### Response
 
@@ -66,10 +70,8 @@ curl -X POST https://dash.better-i18n.com/api/auth/mcp/token \
 // Start the flow
 app.get("/connect/start", async (c) => {
   const state = crypto.randomUUID();
-  const verifier = crypto.randomUUID() + crypto.randomUUID();
-  const challenge = base64UrlSha256(verifier);
 
-  await kv.set(`pkce:${state}`, { verifier, userId: c.user.id }, {
+  await kv.set(`oauth_state:${state}`, { userId: c.user.id }, {
     expirationTtl: 600,
   });
 
@@ -81,8 +83,6 @@ app.get("/connect/start", async (c) => {
   url.searchParams.set("redirect_uri", `${env.PUBLIC_URL}/connect/callback`);
   url.searchParams.set("scope", "org:read projects:read keys:write translations:write");
   url.searchParams.set("state", state);
-  url.searchParams.set("code_challenge", challenge);
-  url.searchParams.set("code_challenge_method", "S256");
   return c.redirect(url.toString());
 });
 
@@ -90,9 +90,9 @@ app.get("/connect/start", async (c) => {
 app.get("/connect/callback", async (c) => {
   const code = c.req.query("code");
   const state = c.req.query("state");
-  const pkce = await kv.get(`pkce:${state}`);
-  if (!code || !pkce) return c.text("Invalid state", 400);
-  await kv.delete(`pkce:${state}`);
+  const stored = await kv.get(`oauth_state:${state}`);
+  if (!code || !stored) return c.text("Invalid state", 400);
+  await kv.delete(`oauth_state:${state}`);
 
   const res = await fetch(
     "https://dash.better-i18n.com/api/auth/mcp/token",
@@ -104,14 +104,14 @@ app.get("/connect/callback", async (c) => {
         code,
         redirect_uri: `${env.PUBLIC_URL}/connect/callback`,
         client_id: env.BETTER_I18N_CLIENT_ID,
-        code_verifier: pkce.verifier,
+        client_secret: env.BETTER_I18N_CLIENT_SECRET,
       }),
     },
   );
 
   const tok = await res.json();
   await db.insert("connections", {
-    userId: pkce.userId,
+    userId: stored.userId,
     grantId: tok.grant_id,
     refreshToken: tok.refresh_token,
   });
@@ -121,6 +121,10 @@ app.get("/connect/callback", async (c) => {
 ```
 
 ## SPA-only PKCE flow
+
+<Callout type="info">
+This section applies only to **public clients** (type `spa` or `native`) that cannot store a `client_secret`. Public clients must be explicitly requested during partner onboarding — the default is a confidential `web` client with a secret.
+</Callout>
 
 If your app has no server (browser-only SPA, Electron, etc.), run the entire exchange in the browser. PKCE makes this safe — the `code_verifier` never leaves the popup, and the access token is short-lived.
 

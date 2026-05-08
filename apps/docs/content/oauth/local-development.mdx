@@ -20,8 +20,9 @@ In production both hosts route to the same Cloudflare Worker, so a single base U
 # Point at the dashboard host. Vite proxies /api/* to the API for you.
 BETTER_I18N_BASE_URL=http://localhost:5173
 
-# Your client_id from partner onboarding (see Register Your App)
+# Your credentials from partner onboarding (see Register Your App)
 BETTER_I18N_CLIENT_ID=...
+BETTER_I18N_CLIENT_SECRET=...
 ```
 
 ```ts title="lib/better-i18n.ts"

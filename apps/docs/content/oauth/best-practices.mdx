@@ -5,7 +5,9 @@ description: Security, caching, and UX patterns for OAuth 2.0 integrations.
 
 ## Security
 
-- **Never store tokens client-side** — all tokens are server-side secrets. The `bi_oat_` prefix distinguishes OAuth tokens from `bi_pub_` public keys
+- **Protect your `client_secret`** — store it in environment variables or a secrets manager, never in source code, browser bundles, or client-side config. If leaked, contact us to rotate immediately
+- **Never store tokens client-side** — all tokens (`client_secret`, `refresh_token`, `bi_oat_`) are server-side secrets. The `bi_oat_` prefix distinguishes OAuth tokens from `bi_pub_` public keys
+- **`client_secret` is required** on both token exchange (`grant_type=authorization_code`) and refresh (`grant_type=refresh_token`). Requests without it return `401 Unauthorized`
 - **Use the narrowest scope set** — users approve fewer permissions more readily
 - **Handle `410 grant_revoked` as a first-class state** — don't show a generic error, show "Reconnect"
 - **Don't retry `403 missing_scope`** — the user must re-authorize with wider scope
@@ -49,6 +51,10 @@ interface BetterI18nConnection {
   projectIds: string[];     // [] = all projects
   disconnectedAt?: Date;    // Set on revoke
 }
+
+// Store separately — shared across all connections:
+// BETTER_I18N_CLIENT_ID    (env var)
+// BETTER_I18N_CLIENT_SECRET (env var or secrets manager)
 ```
 
 ## CDN delivery

@@ -22,14 +22,22 @@ OAuth applications are registered by the Better i18n team during partner onboard
 
 ## What you'll receive
 
-- A `client_id` — your app's unique identifier
-- **No `client_secret`** — Better i18n issues PKCE-only public clients regardless of application type. PKCE replaces the static secret with a per-flow `code_verifier`/`code_challenge` pair that's safe to ship in browsers, mobile apps, and server backends alike.
+- A **`client_id`** — your app's unique identifier
+- A **`client_secret`** — a secret key your server uses during token exchange and refresh
+
+<Callout type="warn">
+**Store your `client_secret` securely — server-side only.** Treat it like a database password. Never embed it in browser bundles, mobile binaries, environment files committed to Git, or public repos. If compromised, contact us immediately — we'll rotate it and invalidate existing tokens.
+</Callout>
+
+<Callout type="info">
+**SPA or native apps** that cannot safely store a secret may request a PKCE-only public client instead. Contact us during onboarding to discuss your architecture. Server-side applications always use `client_secret`.
+</Callout>
 
 ## What you'll need on your side
 
 - A redirect URI endpoint (e.g., `https://yourapp.com/oauth/callback`)
-- For server-side flows: a backend to handle the callback and store `refresh_token`/`grant_id` securely
-- For SPA flows: a callback page that exchanges the code in the browser and posts tokens to your backend (see [the SPA section in the authorization flow](/oauth/authorization-flow#spa-only-pkce-flow))
+- A backend to handle the callback and store `client_secret`, `refresh_token`, and `grant_id` securely
+- Your `client_secret` available as an environment variable (e.g., `BETTER_I18N_CLIENT_SECRET`)
 
 <Callout type="info">
 **Local development**: Include the **dev callback for your app** in your redirect URIs (e.g., `http://localhost:3000/oauth/callback`). HTTP without TLS is allowed for `localhost` only. The Better i18n side you're calling against is `http://localhost:5173` if you're running our dashboard locally — see [Local development](/oauth/local-development).
