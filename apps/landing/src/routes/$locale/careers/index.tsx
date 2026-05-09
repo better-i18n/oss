@@ -20,7 +20,7 @@ export const Route = createFileRoute("/$locale/careers/")({
       loadPositions({ data: { locale: params.locale } }),
       getMessages({ project: i18nConfig.project, locale: context.locale }),
     ]);
-    const messages = filterMessages(allMessages, ["careersPage", "page-titles", "page-descriptions"]);
+    const messages = filterMessages(allMessages, ["careersPage", "page-titles", "page-descriptions", "meta", "breadcrumbs"]);
     return { positions, messages, locale: params.locale };
   },
   head: ({ loaderData }) => {

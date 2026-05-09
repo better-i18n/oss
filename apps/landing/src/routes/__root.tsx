@@ -403,7 +403,7 @@ function RootComponent() {
             locale={locale}
             messages={messages}
             timeZone="UTC"
-            persistLocale
+            localeCookie="preferred-locale"
             onLocaleChange={handleLocaleChange}
             getMessageFallback={({ key }) => {
               const lastSegment = key.split(".").pop() || key;

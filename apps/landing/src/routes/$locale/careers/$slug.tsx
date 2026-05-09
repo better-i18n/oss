@@ -23,7 +23,7 @@ export const Route = createFileRoute("/$locale/careers/$slug")({
     const { i18nConfig } = await import("@/i18n.config");
     const { filterMessages } = await import("@/lib/page-namespaces");
     const allMessages = await getMessages({ project: i18nConfig.project, locale: context.locale });
-    const messages = filterMessages(allMessages, ["careersPage"]);
+    const messages = filterMessages(allMessages, ["careersPage", "meta", "breadcrumbs"]);
     return { position, messages, locale: params.locale };
   },
   head: ({ loaderData }) => {
@@ -45,6 +45,12 @@ export const Route = createFileRoute("/$locale/careers/$slug")({
       locale,
       pageKey: "careers",
       pathname,
+      metaFallback: {
+        title: `${position.title} — Better I18N Careers`,
+        description: position.summary || `Join Better I18N as ${position.title}. ${position.location} · ${position.type}.`,
+        ogTitle: `${position.title} — Better I18N`,
+        ogDescription: position.summary || `Join Better I18N as ${position.title}. ${position.location} · ${position.type}.`,
+      },
       customStructuredData: getCareersPageStructuredData([{
         title: position.title,
         description: position.summary,
