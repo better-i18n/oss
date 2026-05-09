@@ -542,9 +542,6 @@ export async function fetchSeoData(options: {
       status: "published",
       sort: "publishedAt",
       order: "desc",
-      // Only fetch fields needed for sitemap — exclude `body` to avoid OOM
-      // when paginating 200+ entries with full markdown content per language.
-      fields: ["slug", "title", "publishedAt", "excerpt", "langs"],
     }),
     client.getEntries("marketing-pages", {
       status: "published",
