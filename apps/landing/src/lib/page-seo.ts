@@ -172,21 +172,29 @@ export function getPageHead(options: PageSEOOptions) {
     locale,
     pathname,
   });
+
+  // Auto-derive fallback title from pageKey when no i18n translation found
+  // (e.g., during client hydration when messages haven't streamed yet).
+  // "compareCrowdin" → "Compare Crowdin — Better I18N"
+  const autoTitle = pageKey
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (c) => c.toUpperCase())
+    .trim();
+  const fallbackTitle = options.metaFallback?.title ?? `${autoTitle} — ${SITE_NAME}`;
+  const fallbackDesc = options.metaFallback?.description ?? "";
+
   const resolvedMeta = {
     ...meta,
-    title:
-      meta.title === SITE_NAME && options.metaFallback?.title
-        ? options.metaFallback.title
-        : meta.title,
-    description: meta.description || options.metaFallback?.description || "",
+    title: meta.title === SITE_NAME ? fallbackTitle : meta.title,
+    description: meta.description || fallbackDesc,
     ogTitle:
       meta.ogTitle === SITE_NAME
-        ? options.metaFallback?.ogTitle || options.metaFallback?.title || meta.ogTitle
+        ? options.metaFallback?.ogTitle || fallbackTitle
         : meta.ogTitle,
     ogDescription:
       meta.ogDescription ||
       options.metaFallback?.ogDescription ||
-      options.metaFallback?.description ||
+      fallbackDesc ||
       "",
   };
 
