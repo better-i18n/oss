@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "@better-i18n/core": "workspace:*",
-    "use-intl": ">=4.0.0"
+    "use-intl": ">=4.11.1"
   },
   "peerDependencies": {
     "hono": ">=4.0.0"
@@ -75,8 +75,8 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "hono": "^4.0.0",
+    "@types/node": "^20.19.40",
+    "hono": "^4.12.18",
     "typescript": "~5.9.2",
     "vitest": "^3.0.0"
   }
