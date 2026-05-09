@@ -6,7 +6,6 @@ import {
   getBlogPost,
   getRelatedPosts,
   formatPostDate,
-  getTagColor,
 } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -18,11 +17,12 @@ import TableOfContents from "@/components/blog/TableOfContents";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 import InlineCTA from "@/components/blog/InlineCTA";
 import FloatingCTA from "@/components/blog/FloatingCTA";
+import CommentSection from "@/components/blog/CommentSection";
 import { getBlogCTA } from "@/lib/blog-ctas";
 import { trackBlogView } from "@/lib/analytics-events";
 import { useEngagedTime } from "@/hooks/use-engaged-time";
 import { getRelatedPages } from "@/seo/internal-links";
-import Breadcrumb from "@/components/blog/Breadcrumb";
+// Breadcrumb removed from UI but kept for SEO structured data
 import ShareButtons from "@/components/blog/ShareButtons";
 import { IconArrowLeft, IconCircleInfo } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import {
@@ -242,81 +242,55 @@ function BlogPostPage() {
       <ReadingProgress slug={post.slug} />
       <Header className="bg-white" />
       <main>
-        {/* Article header - centered, generous spacing */}
-        <div className="mx-auto max-w-3xl px-6 lg:px-10 pt-12 pb-10">
-          <Breadcrumb locale={locale} title={post.title} />
+        {/* Article header */}
+        <div className="mx-auto max-w-4xl px-6 lg:px-10 pt-10 pb-8">
+          {/* Meta row: category + date + read time */}
+          <div className="flex items-center gap-3 text-[13px] text-mist-400 mb-4">
+            {post.category && (
+              <span className="text-mist-500">{post.category}</span>
+            )}
+            {post.publishedAt && (
+              <>
+                <span className="text-mist-300">/</span>
+                <time dateTime={post.publishedAt}>
+                  {formatPostDate(post.publishedAt, locale)}
+                </time>
+              </>
+            )}
+            {post.readTime && (
+              <>
+                <span className="text-mist-300">/</span>
+                <span>{t("minRead", { defaultValue: "{count} min read", count: post.readTime })}</span>
+              </>
+            )}
+          </div>
 
-          {post.category && (
-            <span
-              className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full mb-5 ${getTagColor(post.category)}`}
-            >
-              {post.category}
-            </span>
-          )}
-
-          <h1 className="font-display text-4xl/[1.15] font-medium tracking-[-0.025em] text-mist-950 sm:text-5xl/[1.1] text-balance">
+          <h1 className="text-[28px]/[1.2] font-semibold tracking-[-0.03em] text-mist-950 sm:text-[40px]/[1.12] text-balance">
             {post.title}
           </h1>
 
-          {/* Author & meta row */}
-          <div className="mt-8 flex items-center justify-between">
-            <div className="flex items-center gap-3.5">
+          {/* Author + share */}
+          <div className="mt-6 flex items-center justify-between border-b border-mist-200/50 pb-6">
+            <div className="flex items-center gap-2.5">
+              {post.authorAvatar ? (
+                <img
+                  src={post.authorAvatar}
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="size-7 rounded-full object-cover [image-orientation:from-image]"
+                />
+              ) : post.authorName ? (
+                <div className="size-7 rounded-full bg-mist-200 flex items-center justify-center text-[10px] font-semibold text-mist-600">
+                  {post.authorName.charAt(0).toUpperCase()}
+                </div>
+              ) : null}
               {post.authorName && (
-                <div className="flex-shrink-0">
-                  {post.authorAvatar ? (
-                    <img
-                      src={post.authorAvatar}
-                      alt={post.authorName}
-                      width={44}
-                      height={44}
-                      className="w-11 h-11 rounded-full object-cover ring-2 ring-mist-100 [image-orientation:from-image]"
-                    />
-                  ) : (
-                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-mist-200 to-mist-300 flex items-center justify-center text-sm font-semibold text-mist-700">
-                      {post.authorName.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
+                <span className="text-[14px] text-mist-600">{post.authorName}</span>
               )}
-              <div className="flex flex-col">
-                {post.authorName && (
-                  <span className="text-sm font-medium text-mist-950">
-                    {post.authorName}
-                  </span>
-                )}
-                <div className="flex items-center gap-2 text-sm text-mist-500">
-                  {post.publishedAt && (
-                    <time dateTime={post.publishedAt}>
-                      {formatPostDate(post.publishedAt, locale)}
-                    </time>
-                  )}
-                  {post.readTime && (
-                    <>
-                      <span className="text-mist-300">&middot;</span>
-                      <span>{t("minRead", { defaultValue: "{count} min read", count: post.readTime })}</span>
-                    </>
-                  )}
-                </div>
-              </div>
             </div>
             <ShareButtons url={canonicalUrl} title={post.title} slug={post.slug} />
           </div>
-
-          {/* Hero banner image */}
-          <div className="mt-10 aspect-[1200/630] rounded-xl overflow-hidden bg-mist-50">
-            <img
-              src={heroBannerUrl}
-              alt={post.title}
-              className="w-full h-full object-cover"
-              loading="eager"
-              fetchPriority="high"
-            />
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div className="mx-auto max-w-3xl px-6 lg:px-10">
-          <div className="border-t border-mist-100" />
         </div>
 
         {/* Content area with TOC on the right */}
@@ -383,6 +357,8 @@ function BlogPostPage() {
                     </ul>
                   </nav>
                 )}
+                {/* Comments */}
+                <CommentSection slug={post.slug} />
               </article>
 
               {/* TOC sidebar - desktop only, right side */}

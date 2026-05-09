@@ -40,6 +40,7 @@ export interface BlogPostListItem {
   readonly category: string | null;
   readonly authorName: string | null;
   readonly authorAvatar: string | null;
+  readonly cover: { type: string; params: Record<string, unknown> } | null;
 }
 
 export interface BlogIndex {
@@ -87,6 +88,14 @@ function hasLanguage(item: RawEntry, locale: string): boolean {
   });
 }
 
+function parseCover(raw: unknown): { type: string; params: Record<string, unknown> } | null {
+  if (!raw || typeof raw !== "string") return null;
+  try {
+    const parsed = JSON.parse(raw) as { type?: unknown; params?: unknown };
+    return typeof parsed.type === "string" ? { type: parsed.type, params: (parsed.params ?? {}) as Record<string, unknown> } : null;
+  } catch { return null; }
+}
+
 function mapEntry(entry: RawEntry): BlogPostListItem {
   return {
     slug: entry.slug,
@@ -99,6 +108,7 @@ function mapEntry(entry: RawEntry): BlogPostListItem {
     category: entry.relations?.category?.name ?? null,
     authorName: entry.relations?.author?.title ?? null,
     authorAvatar: entry.relations?.author?.avatar ?? null,
+    cover: parseCover(entry.cover),
   };
 }
 
@@ -116,7 +126,7 @@ async function fetchPage(
     limit: String(PAGE_SIZE),
     page: String(page),
     expand: "author,category",
-    fields: "slug,title,excerpt,publishedAt,read_time,featured,banner_image,langs",
+    fields: "slug,title,excerpt,publishedAt,read_time,featured,banner_image,cover,langs",
   });
   const url = `${API_BASE}/${project}/models/blog-posts/entries?${params}`;
   const res = await fetch(url, {

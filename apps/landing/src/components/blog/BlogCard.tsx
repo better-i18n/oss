@@ -1,88 +1,67 @@
 import { Link } from "@tanstack/react-router";
 import type { BlogPostListItem } from "@/lib/content";
-import { formatPostDate, getTagColor } from "@/lib/content";
-import { buildOgImageUrl } from "@/lib/meta";
 
 interface BlogCardProps {
   post: BlogPostListItem;
   locale: string;
-  /** Mark as LCP candidate — disables lazy loading and sets fetchpriority="high" */
   priority?: boolean;
 }
 
-export default function BlogCard({ post, locale, priority = false }: BlogCardProps) {
-  // Prefer CMS banner image, fall back to dynamic OG service
-  const bannerUrl = post.bannerImage ?? buildOgImageUrl("og/blog", {
-    title: post.title,
-    author: post.authorName ?? undefined,
-    authorImage: post.authorAvatar ?? undefined,
-    tag: post.category ?? undefined,
-    date: post.publishedAt
-      ? new Date(post.publishedAt).toLocaleDateString(locale, {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })
-      : undefined,
+function formatShortDate(dateStr: string, locale: string): string {
+  return new Date(dateStr).toLocaleDateString(locale, {
+    month: "short",
+    day: "numeric",
   });
+}
 
+export default function BlogCard({ post, locale }: BlogCardProps) {
   return (
     <Link
       to="/$locale/blog/$slug"
       params={{ locale, slug: post.slug }}
-      className="group flex flex-col rounded-xl bg-mist-950/[0.025] p-5 hover:bg-mist-950/[0.05] transition-colors"
+      className="group flex flex-col py-7"
     >
-      {/* Banner Image */}
-      <div className="aspect-[1200/630] mb-4 rounded-lg overflow-hidden bg-mist-950/5">
-        <img
-          src={bannerUrl}
-          alt={post.title}
-          className="w-full h-full object-cover"
-          loading={priority ? "eager" : "lazy"}
-          {...(priority ? { fetchPriority: "high" } : {})}
-        />
-      </div>
-
-      {/* Meta: Category + Date */}
-      <div className="flex items-center gap-3 text-mist-500 mb-3">
-        {post.category && (
-          <span
-            className={`text-xs font-medium px-2 py-0.5 rounded ${getTagColor(post.category)}`}
-          >
-            {post.category}
-          </span>
-        )}
+      {/* Category + Date */}
+      <div className="flex items-center justify-between mb-3">
+        {post.category ? (
+          <span className="text-[13px]/[1.4] text-mist-500">{post.category}</span>
+        ) : <span />}
         {post.publishedAt && (
-          <time className="text-sm" dateTime={post.publishedAt}>
-            {formatPostDate(post.publishedAt, locale)}
+          <time className="text-[13px]/[1.4] text-mist-400" dateTime={post.publishedAt}>
+            {formatShortDate(post.publishedAt, locale)}
           </time>
         )}
       </div>
 
       {/* Title */}
-      <h3 className="text-base/7 font-medium text-mist-950 group-hover:text-mist-700 transition-colors">
+      <h2 className="text-[16px]/[1.35] font-semibold tracking-[-0.015em] text-mist-950 group-hover:text-mist-600 transition-colors md:text-[18px]/[1.3]">
         {post.title}
-      </h3>
+      </h2>
+
+      {/* Excerpt */}
+      {post.excerpt && (
+        <p className="mt-2.5 text-[14px]/[1.6] text-mist-500 line-clamp-3">
+          {post.excerpt}
+        </p>
+      )}
 
       {/* Author */}
       {post.authorName && (
-        <div className="mt-auto pt-4 flex items-center gap-2 text-sm text-mist-500">
-          <div className="flex-shrink-0">
-            {post.authorAvatar ? (
-              <img
-                src={post.authorAvatar}
-                alt={post.authorName}
-                width={24}
-                height={24}
-                className="w-6 h-6 rounded-full object-cover [image-orientation:from-image]"
-              />
-            ) : (
-              <div className="w-6 h-6 rounded-full bg-mist-200 flex items-center justify-center text-[10px] font-semibold text-mist-600">
-                {post.authorName.charAt(0).toUpperCase()}
-              </div>
-            )}
-          </div>
-          <span className="font-medium text-mist-700">{post.authorName}</span>
+        <div className="flex items-center gap-2 mt-auto pt-4">
+          {post.authorAvatar ? (
+            <img
+              src={post.authorAvatar}
+              alt=""
+              width={20}
+              height={20}
+              className="size-5 rounded-full object-cover [image-orientation:from-image]"
+            />
+          ) : (
+            <div className="size-5 rounded-full bg-mist-200 flex items-center justify-center text-[9px] font-semibold text-mist-600">
+              {post.authorName.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <span className="text-[13px]/[1.4] text-mist-500">{post.authorName}</span>
         </div>
       )}
     </Link>

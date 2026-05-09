@@ -42,6 +42,8 @@ export interface BlogPostListItem {
   category: string | null;
   authorName: string | null;
   authorAvatar: string | null;
+  /** CMS cover block JSON — { type: "cover-preview-dashboard", params: { ... } } */
+  cover: { type: string; params: Record<string, unknown> } | null;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────
@@ -74,7 +76,7 @@ export function getContentClient(): ContentClient {
 
 /** Simple in-memory TTL cache for Content API responses on CF Workers. */
 const contentCache = new Map<string, { data: unknown; expiresAt: number }>();
-const CONTENT_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const CONTENT_CACHE_TTL_MS = import.meta.env.DEV ? 5_000 : 5 * 60 * 1000; // 5s in dev, 5min in prod
 
 function getCached<T>(key: string): T | undefined {
   const entry = contentCache.get(key);
@@ -172,6 +174,16 @@ function mapEntryBase(entry: {
   relations?: Record<string, RelationValue | null | undefined>;
   [key: string]: unknown;
 }) {
+  let cover: { type: string; params: Record<string, unknown> } | null = null;
+  const rawCover = entry.cover as string | null | undefined;
+  if (rawCover) {
+    try {
+      const parsed = JSON.parse(rawCover) as { type?: unknown; params?: unknown };
+      if (typeof parsed.type === "string") cover = { type: parsed.type, params: (parsed.params ?? {}) as Record<string, unknown> };
+    } catch { /* malformed JSON → null */ }
+  }
+  if (import.meta.env.DEV && rawCover) console.log("[cover]", entry.slug, cover?.type ?? "parse-failed");
+
   return {
     readTime: (entry.read_time as string | null) ?? null,
     featured: entry.featured === "true",
@@ -179,6 +191,7 @@ function mapEntryBase(entry: {
     category: entry.relations?.category?.name ?? null,
     authorName: entry.relations?.author?.title ?? null,
     authorAvatar: entry.relations?.author?.avatar ?? null,
+    cover,
   };
 }
 
@@ -715,4 +728,81 @@ export async function getMarketingPage(
   } catch {
     return null;
   }
+}
+
+// ─── Job Positions ──────────────────────────────────────────────────
+
+export interface JobPosition {
+  id: string;
+  slug: string;
+  title: string;
+  department: string;
+  type: string;
+  location: string;
+  salaryMin: number;
+  salaryMax: number;
+  summary: string;
+  about: string;
+  responsibilities: string[];
+  requirements: string[];
+  niceToHave: string[];
+  active: boolean;
+  sortOrder: number;
+}
+
+function parseNewlineList(text: string | null | undefined): string[] {
+  if (!text) return [];
+  return text.split("\n").map((l) => l.trim()).filter(Boolean);
+}
+
+export async function getJobPositions(locale: string): Promise<JobPosition[]> {
+  const cacheKey = `jobs:${locale}`;
+  const cached = getCached<JobPosition[]>(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const { data, error } = await getContentClient()
+      .from("job-positions")
+      .language(locale)
+      .limit(50);
+
+    if (error || !data) {
+      console.error("[content] Job positions API error:", error);
+      return setCache(cacheKey, []);
+    }
+
+    const positions: JobPosition[] = data
+      .map((entry) => {
+        const e = entry as unknown as Record<string, unknown>;
+        return {
+          id: e.id as string,
+          slug: e.slug as string,
+          title: e.title as string,
+          department: (e.department as string) ?? "general",
+          type: (e.type as string) ?? "full-time",
+          location: (e.location as string) ?? "Remote",
+          salaryMin: e.salary_min ? Number(e.salary_min) : 0,
+          salaryMax: e.salary_max ? Number(e.salary_max) : 0,
+          summary: (e.summary as string) ?? "",
+          about: (e.about as string) ?? "",
+          responsibilities: parseNewlineList(e.responsibilities as string),
+          requirements: parseNewlineList(e.requirements as string),
+          niceToHave: parseNewlineList(e.nice_to_have as string),
+          active: e.active !== false && e.active !== "false",
+          sortOrder: e.sort_order ? Number(e.sort_order) : 99,
+        };
+      })
+      .filter((p: JobPosition) => p.active)
+      .sort((a: JobPosition, b: JobPosition) => a.sortOrder - b.sortOrder);
+
+    return setCache(cacheKey, positions);
+  } catch (err) {
+    console.error("[content] Failed to fetch job positions:", err);
+    return [];
+  }
+}
+
+export async function getJobPosition(slug: string, locale: string): Promise<JobPosition | null> {
+  const positions = await getJobPositions(locale);
+  return positions.find((p) => p.slug === slug) ?? null;
 }

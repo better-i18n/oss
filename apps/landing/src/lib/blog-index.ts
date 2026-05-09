@@ -25,6 +25,18 @@ const EMPTY_INDEX: BlogIndex = {
 };
 
 export async function loadBlogIndex(locale: string): Promise<BlogIndex> {
+  // Dev: read local file directly (production JSON lacks latest fields)
+  if (import.meta.env.DEV) {
+    try {
+      const { readFileSync } = await import("node:fs");
+      const { join } = await import("node:path");
+      const filePath = join(process.cwd(), "public", `blog-index-${locale}.json`);
+      return JSON.parse(readFileSync(filePath, "utf-8")) as BlogIndex;
+    } catch (error) {
+      console.warn(`[blog-index] DEV local read failed for ${locale}:`, error);
+    }
+  }
+
   try {
     const res = await fetch(`${SITE_URL}/blog-index-${locale}.json`);
     if (!res.ok) {

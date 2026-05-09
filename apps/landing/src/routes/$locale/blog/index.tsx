@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { SpriteIcon } from "@/components/SpriteIcon";
+import { createFileRoute } from "@tanstack/react-router";
 import { POSTS_PER_PAGE, type BlogPostListItem } from "@/lib/content";
 import { loadBlogIndex } from "@/lib/blog-index";
 import Header from "@/components/Header";
@@ -115,72 +114,53 @@ function BlogPage() {
   return (
     <div className="bg-white">
       <Header className="bg-white" />
-      <main className="py-16">
+      <main className="pt-10 pb-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-12">
-            <div className="max-w-2xl">
-              <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-                {t("title", { defaultValue: "Blog" })}
-              </h1>
-              <p className="mt-4 text-lg/8 text-mist-700">
-                {t("subtitle", {
-                  defaultValue:
-                    "Tutorials, guides, and best practices for internationalization.",
-                })}
-              </p>
-            </div>
-            <Link
-              to="/$locale/"
-              params={{ locale }}
-              className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950 shrink-0"
-            >
-              {t("backToHome", { defaultValue: "Back to home" })}
-              <SpriteIcon name="arrow-right" className="w-4 h-4" />
-            </Link>
+          <div className="mb-6">
+            <h1 className="text-[28px]/[1.2] font-semibold tracking-[-0.03em] text-mist-950 sm:text-[32px]/[1.15]">
+              {t("title", { defaultValue: "Blog" })}
+            </h1>
+            <p className="mt-1.5 text-[14px]/[1.5] text-mist-400">
+              {t("subtitle", {
+                defaultValue:
+                  "Insights and updates from our team.",
+              })}
+            </p>
           </div>
 
-          {/* Category Filter Pills */}
+          {/* Category Navigation */}
           {categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-10">
+            <nav className="flex items-center gap-6 border-b border-mist-200/60 pb-3 mb-0 overflow-x-auto">
               <button
                 onClick={() => handleCategoryClick(null)}
-                className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                className={`whitespace-nowrap text-[14px] font-medium transition-colors ${
                   selectedCategory === null
-                    ? "bg-mist-950 text-white"
-                    : "bg-mist-100 text-mist-700 hover:bg-mist-200"
+                    ? "text-mist-950"
+                    : "text-mist-400 hover:text-mist-700"
                 }`}
               >
-                {t("allPosts", { defaultValue: "All" })}
-                <span className={`ml-1.5 text-xs ${selectedCategory === null ? "text-mist-300" : "text-mist-500"}`}>
-                  {allPosts.length}
-                </span>
+                {t("allPosts", { defaultValue: "All Posts" })}
               </button>
-              {categories.map((category) => {
-                const count = (allPosts ?? []).filter((p: BlogPostListItem) => p.category === category).length;
-                return (
-                  <button
-                    key={category}
-                    onClick={() => handleCategoryClick(category)}
-                    className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                      selectedCategory === category
-                        ? "bg-mist-950 text-white"
-                        : "bg-mist-100 text-mist-700 hover:bg-mist-200"
-                    }`}
-                  >
-                    {category}
-                    <span className={`ml-1.5 text-xs ${selectedCategory === category ? "text-mist-300" : "text-mist-500"}`}>
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => handleCategoryClick(category)}
+                  className={`whitespace-nowrap text-[14px] font-medium transition-colors ${
+                    selectedCategory === category
+                      ? "text-mist-950"
+                      : "text-mist-400 hover:text-mist-700"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </nav>
           )}
 
           {/* Posts Grid */}
           {paginatedPosts?.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y divide-mist-200/50 md:divide-y-0 md:[&>a]:border-b md:[&>a]:border-mist-200/50 border-t border-mist-200/50 lg:divide-x lg:divide-mist-200/50 lg:[&>a]:px-6 lg:[&>a:first-child]:pl-0 lg:[&>a:nth-child(3n+1)]:pl-0 lg:[&>a:nth-child(3n)]:pr-0 md:max-lg:divide-x md:max-lg:divide-mist-200/50 md:max-lg:[&>a]:px-5 md:max-lg:[&>a:nth-child(odd)]:pl-0 md:max-lg:[&>a:nth-child(even)]:pr-0">
               {paginatedPosts.map((post: BlogPostListItem, index: number) => (
                 <BlogCard key={post.slug} post={post} locale={locale} priority={index === 0} />
               ))}
