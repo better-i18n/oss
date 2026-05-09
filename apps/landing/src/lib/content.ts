@@ -42,8 +42,6 @@ export interface BlogPostListItem {
   category: string | null;
   authorName: string | null;
   authorAvatar: string | null;
-  /** CMS cover block JSON — { type: "cover-preview-dashboard", params: { ... } } */
-  cover: { type: string; params: Record<string, unknown> } | null;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────
@@ -174,16 +172,6 @@ function mapEntryBase(entry: {
   relations?: Record<string, RelationValue | null | undefined>;
   [key: string]: unknown;
 }) {
-  let cover: { type: string; params: Record<string, unknown> } | null = null;
-  const rawCover = entry.cover as string | null | undefined;
-  if (rawCover) {
-    try {
-      const parsed = JSON.parse(rawCover) as { type?: unknown; params?: unknown };
-      if (typeof parsed.type === "string") cover = { type: parsed.type, params: (parsed.params ?? {}) as Record<string, unknown> };
-    } catch { /* malformed JSON → null */ }
-  }
-  if (import.meta.env.DEV && rawCover) console.log("[cover]", entry.slug, cover?.type ?? "parse-failed");
-
   return {
     readTime: (entry.read_time as string | null) ?? null,
     featured: entry.featured === "true",
@@ -191,7 +179,6 @@ function mapEntryBase(entry: {
     category: entry.relations?.category?.name ?? null,
     authorName: entry.relations?.author?.title ?? null,
     authorAvatar: entry.relations?.author?.avatar ?? null,
-    cover,
   };
 }
 

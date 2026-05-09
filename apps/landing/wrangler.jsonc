@@ -45,6 +45,22 @@
   "vars": {
     "ENVIRONMENT": "production",
     "APP_ORIGIN": "https://better-i18n.com",
-    "CDN_URL": "https://cdn.better-i18n.com"
-  }
+    "CDN_URL": "https://cdn.better-i18n.com",
+    "NOTIFICATION_EMAIL": "tech@better-i18n.com"
+  },
+  // D1 database for applications + blog comments
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "betteri18n-landing-db",
+      "database_id": "a1bd2dd6-0a2e-4047-b02c-0a0a5dc7fdd2"
+    }
+  ],
+  // R2 bucket for CV/resume file uploads
+  "r2_buckets": [
+    {
+      "binding": "UPLOADS",
+      "bucket_name": "betteri18n-applications"
+    }
+  ]
 }

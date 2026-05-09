@@ -83,8 +83,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     const locale = loaderData?.locale || "en";
     const pathname = `/blog/${post?.slug || ""}`;
 
-    // Prefer CMS banner image for OG meta, fall back to dynamic OG service
-    const dynamicOgImage = post?.bannerImage ?? buildOgImageUrl("og/blog", {
+    const dynamicOgImage = buildOgImageUrl("og/blog", {
       title: post?.title || "Blog Post",
       author: post?.authorName ?? undefined,
       authorImage: post?.authorAvatar ?? undefined,
@@ -221,21 +220,6 @@ function BlogPostPage() {
     });
   }, [post.slug]);
   useEngagedTime("blog", post.slug);
-
-  // Prefer CMS banner image for hero, fall back to dynamic OG service
-  const heroBannerUrl = post.bannerImage ?? buildOgImageUrl("og/blog", {
-    title: post.title,
-    author: post.authorName ?? undefined,
-    authorImage: post.authorAvatar ?? undefined,
-    tag: post.category ?? undefined,
-    date: post.publishedAt
-      ? new Date(post.publishedAt).toLocaleDateString(locale, {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })
-      : undefined,
-  });
 
   return (
     <div className="bg-white">

@@ -129,9 +129,13 @@ function getSeoRedirect(pathname: string): string | null {
   return `/${locale}/${target}/`;
 }
 
-/** ASSETS binding type from wrangler.jsonc */
+/** Binding types from wrangler.jsonc */
 interface Env {
   ASSETS: { fetch: (request: Request | string) => Promise<Response> };
+  DB: D1Database;
+  UPLOADS: R2Bucket;
+  NOTIFICATION_EMAIL?: string;
+  BREVO_API_KEY?: string;
   [key: string]: unknown;
 }
 
@@ -183,6 +187,229 @@ const HTML_RESPONSE_HEADERS: ReadonlyArray<readonly [string, string]> = [
     ].join(", "),
   ],
 ] as const;
+
+const API_CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+} as const;
+
+function jsonResponse(data: unknown, status = 200): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json", ...API_CORS_HEADERS },
+  });
+}
+
+const MAX_CV_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_CV_TYPES = new Set([
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]);
+
+async function handleApiRoute(
+  request: Request,
+  url: URL,
+  env: Env,
+  ctx: ExecutionContext,
+): Promise<Response> {
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: API_CORS_HEADERS });
+  }
+
+  const path = url.pathname;
+
+  // POST /api/apply — job application submission
+  if (path === "/api/apply" && request.method === "POST") {
+    return handleApplication(request, env, ctx);
+  }
+
+  // GET /api/comments?slug=xxx — approved comments for a blog post
+  if (path === "/api/comments" && request.method === "GET") {
+    const slug = url.searchParams.get("slug");
+    if (!slug) return jsonResponse({ error: "slug parameter required" }, 400);
+    return handleGetComments(slug, env);
+  }
+
+  // POST /api/comments — submit a new comment
+  if (path === "/api/comments" && request.method === "POST") {
+    return handlePostComment(request, env);
+  }
+
+  return jsonResponse({ error: "Not found" }, 404);
+}
+
+async function handleApplication(
+  request: Request,
+  env: Env,
+  ctx: ExecutionContext,
+): Promise<Response> {
+  try {
+    const formData = await request.formData();
+    const name = formData.get("name")?.toString()?.trim();
+    const email = formData.get("email")?.toString()?.trim();
+    const role = formData.get("role")?.toString()?.trim();
+    const linkedin = formData.get("linkedin")?.toString()?.trim() || null;
+    const message = formData.get("message")?.toString()?.trim() || null;
+    const honeypot = formData.get("website")?.toString(); // spam trap
+    const cv = formData.get("cv") as File | null;
+
+    if (honeypot) return jsonResponse({ ok: true }); // silent reject bots
+    if (!name || !email || !role) {
+      return jsonResponse({ error: "name, email, and role are required" }, 400);
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return jsonResponse({ error: "Invalid email" }, 400);
+    }
+
+    let r2Key: string | null = null;
+    let filename: string | null = null;
+
+    if (cv && cv.size > 0) {
+      if (cv.size > MAX_CV_SIZE) {
+        return jsonResponse({ error: "CV must be under 5MB" }, 400);
+      }
+      if (!ALLOWED_CV_TYPES.has(cv.type)) {
+        return jsonResponse({ error: "CV must be PDF or DOCX" }, 400);
+      }
+      const ext = cv.name.split(".").pop() || "pdf";
+      r2Key = `cv/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+      filename = cv.name;
+      await env.UPLOADS.put(r2Key, cv.stream(), {
+        httpMetadata: { contentType: cv.type },
+        customMetadata: { applicantName: name, role },
+      });
+    }
+
+    const ip = request.headers.get("CF-Connecting-IP") || null;
+    const country =
+      (request as unknown as { cf?: { country?: string } }).cf?.country || null;
+
+    await env.DB.prepare(
+      `INSERT INTO applications (role, name, email, linkedin, message, r2_key, filename, ip, country)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    )
+      .bind(role, name, email, linkedin, message, r2Key, filename, ip, country)
+      .run();
+
+    // Fire-and-forget email notification
+    if (env.BREVO_API_KEY && env.NOTIFICATION_EMAIL) {
+      ctx.waitUntil(
+        sendNotificationEmail(env, { name, email, role, linkedin, message, cvFilename: filename, cvR2Key: r2Key }),
+      );
+    }
+
+    return jsonResponse({ ok: true });
+  } catch (err) {
+    console.error("Application submission error:", err);
+    return jsonResponse({ error: "Internal error" }, 500);
+  }
+}
+
+async function sendNotificationEmail(
+  env: Env,
+  app: {
+    name: string;
+    email: string;
+    role: string;
+    linkedin: string | null;
+    message: string | null;
+    cvFilename: string | null;
+    cvR2Key: string | null;
+  },
+): Promise<void> {
+  try {
+    const textContent = [
+      `Name: ${app.name}`,
+      `Email: ${app.email}`,
+      `Role: ${app.role}`,
+      app.linkedin ? `LinkedIn: ${app.linkedin}` : null,
+      app.cvFilename ? `Resume: ${app.cvFilename} (R2: ${app.cvR2Key})` : "Resume: not uploaded",
+      app.message ? `\nMessage:\n${app.message}` : null,
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": env.BREVO_API_KEY!,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: "Better i18n Hiring", email: "noreply@better-i18n.com" },
+        to: [{ email: env.NOTIFICATION_EMAIL }],
+        subject: `New application: ${app.role} — ${app.name}`,
+        textContent,
+        htmlContent: `<pre style="font-family:monospace;white-space:pre-wrap">${textContent}</pre>`,
+        replyTo: { email: app.email, name: app.name },
+      }),
+    });
+  } catch {
+    console.error("Failed to send notification email");
+  }
+}
+
+async function handleGetComments(
+  slug: string,
+  env: Env,
+): Promise<Response> {
+  const { results } = await env.DB.prepare(
+    `SELECT id, name, body, created_at, parent_id
+     FROM comments
+     WHERE post_slug = ? AND approved = 1
+     ORDER BY created_at ASC`,
+  )
+    .bind(slug)
+    .all();
+
+  return jsonResponse({ comments: results || [] });
+}
+
+async function handlePostComment(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  try {
+    const body = await request.json<{
+      slug?: string;
+      name?: string;
+      email?: string;
+      body?: string;
+      parentId?: number;
+      website?: string; // honeypot
+    }>();
+
+    if (body.website) return jsonResponse({ ok: true }); // bot trap
+
+    const { slug, name, email, body: commentBody, parentId } = body;
+    if (!slug || !name || !commentBody) {
+      return jsonResponse(
+        { error: "slug, name, and body are required" },
+        400,
+      );
+    }
+    if (commentBody.length > 2000) {
+      return jsonResponse({ error: "Comment too long (max 2000 chars)" }, 400);
+    }
+
+    const ip = request.headers.get("CF-Connecting-IP") || null;
+
+    await env.DB.prepare(
+      `INSERT INTO comments (post_slug, name, email, body, parent_id, ip)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+    )
+      .bind(slug, name, email || null, commentBody, parentId || null, ip)
+      .run();
+
+    return jsonResponse({ ok: true, message: "Comment submitted for review" });
+  } catch (err) {
+    console.error("Comment submission error:", err);
+    return jsonResponse({ error: "Internal error" }, 500);
+  }
+}
 
 export default {
   async fetch(
@@ -271,6 +498,12 @@ export default {
     // 304 Not Modified and other non-200 statuses propagate correctly.
     if (STATIC_FILE_RE.test(url.pathname)) {
       return env.ASSETS.fetch(request);
+    }
+
+    // 4a. API routes — D1/R2-backed endpoints for applications + comments.
+    // Handled before prerender passthrough so /api/* never hits SSR/SSG.
+    if (url.pathname.startsWith("/api/")) {
+      return handleApiRoute(request, url, env, ctx);
     }
 
     // 4b. Prerender passthrough — if the build produced a static index.html

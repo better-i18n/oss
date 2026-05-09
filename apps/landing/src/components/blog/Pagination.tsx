@@ -68,31 +68,31 @@ export default function Pagination({
   return (
     <nav
       aria-label="Blog pagination"
-      className="mt-12 flex items-center justify-center gap-1"
+      className="mt-12 flex items-center justify-center"
     >
-      {/* Previous */}
-      {hasPrev ? (
-        <Link
-          to={getPageUrl(locale, currentPage - 1)}
-          className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors"
-        >
-          <span aria-hidden="true">&larr;</span>
-          <span>{t("pagination.previous", { defaultValue: "Previous" })}</span>
-        </Link>
-      ) : (
-        <span className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-mist-300 cursor-not-allowed">
-          <span aria-hidden="true">&larr;</span>
-          <span>{t("pagination.previous", { defaultValue: "Previous" })}</span>
-        </span>
-      )}
+      <div className="inline-flex items-center divide-x divide-mist-200 rounded-lg border border-mist-200 bg-white text-sm">
+        {/* Previous */}
+        {hasPrev ? (
+          <Link
+            to={getPageUrl(locale, currentPage - 1)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-mist-700 hover:bg-mist-50 transition-colors rounded-l-lg"
+          >
+            <span aria-hidden="true" className="text-xs">&larr;</span>
+            <span className="hidden sm:inline">{t("pagination.previous", { defaultValue: "Previous" })}</span>
+          </Link>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-2 text-mist-300 cursor-not-allowed rounded-l-lg">
+            <span aria-hidden="true" className="text-xs">&larr;</span>
+            <span className="hidden sm:inline">{t("pagination.previous", { defaultValue: "Previous" })}</span>
+          </span>
+        )}
 
-      {/* Page numbers */}
-      <div className="flex items-center gap-1">
+        {/* Page numbers */}
         {pageNumbers.map((pageNum, idx) =>
           pageNum === -1 ? (
             <span
               key={`ellipsis-${idx}`}
-              className="px-2 py-2 text-sm text-mist-400"
+              className="hidden sm:inline-flex items-center justify-center w-10 py-2 text-mist-400 select-none"
               aria-hidden="true"
             >
               &hellip;
@@ -100,7 +100,7 @@ export default function Pagination({
           ) : pageNum === currentPage ? (
             <span
               key={pageNum}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-mist-950 text-sm font-medium text-white"
+              className="inline-flex items-center justify-center w-10 py-2 font-medium text-mist-950 bg-mist-50"
               aria-current="page"
             >
               {pageNum}
@@ -109,29 +109,29 @@ export default function Pagination({
             <Link
               key={pageNum}
               to={getPageUrl(locale, pageNum)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors"
+              className="hidden sm:inline-flex items-center justify-center w-10 py-2 text-mist-500 hover:bg-mist-50 hover:text-mist-950 transition-colors"
             >
               {pageNum}
             </Link>
           ),
         )}
-      </div>
 
-      {/* Next */}
-      {hasNext ? (
-        <Link
-          to={getPageUrl(locale, currentPage + 1)}
-          className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors"
-        >
-          <span>{t("pagination.next", { defaultValue: "Next" })}</span>
-          <span aria-hidden="true">&rarr;</span>
-        </Link>
-      ) : (
-        <span className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-mist-300 cursor-not-allowed">
-          <span>{t("pagination.next", { defaultValue: "Next" })}</span>
-          <span aria-hidden="true">&rarr;</span>
-        </span>
-      )}
+        {/* Next */}
+        {hasNext ? (
+          <Link
+            to={getPageUrl(locale, currentPage + 1)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-mist-700 hover:bg-mist-50 transition-colors rounded-r-lg"
+          >
+            <span className="hidden sm:inline">{t("pagination.next", { defaultValue: "Next" })}</span>
+            <span aria-hidden="true" className="text-xs">&rarr;</span>
+          </Link>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-2 text-mist-300 cursor-not-allowed rounded-r-lg">
+            <span className="hidden sm:inline">{t("pagination.next", { defaultValue: "Next" })}</span>
+            <span aria-hidden="true" className="text-xs">&rarr;</span>
+          </span>
+        )}
+      </div>
     </nav>
   );
 }

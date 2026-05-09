@@ -775,6 +775,23 @@ export interface CompactCreateKeysResponse {
     /** Other namespaces where same key name exists */
     other: string[];
   }>;
+  /**
+   * Keys rejected by strict duplicate policy (`project.duplicatePolicy = "block"`).
+   * AI agents should reuse one of `reuse[]` instead of creating a new key,
+   * or pass `force: true` to override.
+   */
+  blocked?: Array<{
+    /** Requested key name (not created) */
+    k: string;
+    /** Requested namespace */
+    ns: string;
+    /** Source text that triggered the block */
+    src: string;
+    /** Existing keys with the same source_text — candidates for reuse */
+    reuse: Array<{ ns: string; k: string; id: string }>;
+    /** Reason string for the AI */
+    why: string;
+  }>;
   /** Pending publish hint */
   pub?: CompactPendingPublishHint;
   /** Contextual hint for AI */

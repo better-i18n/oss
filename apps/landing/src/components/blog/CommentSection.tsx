@@ -105,7 +105,7 @@ export default function CommentSection({ slug }: { slug: string }) {
         <form
           ref={formRef}
           onSubmit={handleSubmit}
-          className="space-y-5"
+          className="space-y-5 rounded-xl border border-mist-100 bg-mist-50/60 p-5 sm:p-6"
         >
           <input type="text" name="website" tabIndex={-1} autoComplete="off" className="absolute -left-[9999px] opacity-0" aria-hidden="true" />
 
@@ -121,7 +121,7 @@ export default function CommentSection({ slug }: { slug: string }) {
                 name="name"
                 required
                 placeholder={t("comments.namePlaceholder", "Your name")}
-                className="block w-full rounded-md border border-mist-200 px-3 py-2 text-[14px] text-mist-950 placeholder:text-mist-300 focus:border-mist-400 focus:ring-1 focus:ring-mist-200 focus:outline-none transition-colors"
+                className="block w-full rounded-md border border-mist-200 bg-white px-3 py-2 text-[14px] text-mist-950 placeholder:text-mist-300 focus:border-mist-400 focus:ring-1 focus:ring-mist-200 focus:outline-none transition-colors"
               />
             </div>
             <div>
@@ -134,7 +134,7 @@ export default function CommentSection({ slug }: { slug: string }) {
                 type="email"
                 name="email"
                 placeholder={t("comments.emailPlaceholder", "you@example.com")}
-                className="block w-full rounded-md border border-mist-200 px-3 py-2 text-[14px] text-mist-950 placeholder:text-mist-300 focus:border-mist-400 focus:ring-1 focus:ring-mist-200 focus:outline-none transition-colors"
+                className="block w-full rounded-md border border-mist-200 bg-white px-3 py-2 text-[14px] text-mist-950 placeholder:text-mist-300 focus:border-mist-400 focus:ring-1 focus:ring-mist-200 focus:outline-none transition-colors"
               />
             </div>
           </div>
@@ -151,7 +151,7 @@ export default function CommentSection({ slug }: { slug: string }) {
               rows={4}
               maxLength={2000}
               placeholder={t("comments.bodyPlaceholder", "Share your thoughts...")}
-              className="block w-full rounded-md border border-mist-200 px-3 py-2 text-[14px] text-mist-950 placeholder:text-mist-300 focus:border-mist-400 focus:ring-1 focus:ring-mist-200 focus:outline-none transition-colors resize-none"
+              className="block w-full rounded-md border border-mist-200 bg-white px-3 py-2 text-[14px] text-mist-950 placeholder:text-mist-300 focus:border-mist-400 focus:ring-1 focus:ring-mist-200 focus:outline-none transition-colors resize-none"
             />
           </div>
 

@@ -18,13 +18,13 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
         {t("relatedPosts", "Related")}
       </h2>
 
-      <div className="grid gap-px grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-mist-200/50">
+      <div className="divide-y sm:divide-y-0 sm:divide-x divide-mist-200/50 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-mist-200/50">
         {posts.map((post) => (
           <Link
             key={post.slug}
             to="/$locale/blog/$slug/"
             params={{ locale, slug: post.slug }}
-            className="group flex flex-col gap-2 py-5 sm:pr-5 border-b border-mist-200/50 sm:border-r sm:last:border-r-0"
+            className="group flex flex-col gap-2.5 py-5 sm:px-5 first:sm:pl-0 last:sm:pr-0"
           >
             <div className="flex items-center justify-between">
               {post.category && (

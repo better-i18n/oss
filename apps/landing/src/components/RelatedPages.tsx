@@ -11,62 +11,62 @@ type PageLink = {
 };
 
 const forPages: PageLink[] = [
-  { href: "/$locale/for-developers", titleKey: "forDevelopers", descKey: "forDevelopersDesc", titleFallback: "For Developers", descFallback: "Type-safe SDKs, Git integration, and CLI tools" },
-  { href: "/$locale/for-translators", titleKey: "forTranslators", descKey: "forTranslatorsDesc", titleFallback: "For Translators", descFallback: "AI-powered translation with contextual review" },
-  { href: "/$locale/for-product-teams", titleKey: "forProductTeams", descKey: "forProductTeamsDesc", titleFallback: "For Product Teams", descFallback: "Ship globally without the localization headaches" },
+  { href: "/$locale/for-developers/", titleKey: "forDevelopers", descKey: "forDevelopersDesc", titleFallback: "For Developers", descFallback: "Type-safe SDKs, Git integration, and CLI tools" },
+  { href: "/$locale/for-translators/", titleKey: "forTranslators", descKey: "forTranslatorsDesc", titleFallback: "For Translators", descFallback: "AI-powered translation with contextual review" },
+  { href: "/$locale/for-product-teams/", titleKey: "forProductTeams", descKey: "forProductTeamsDesc", titleFallback: "For Product Teams", descFallback: "Ship globally without the localization headaches" },
 ];
 
 const resourcePages: PageLink[] = [
   { href: "/$locale/features/", titleKey: "features", descKey: "featuresDesc", titleFallback: "Features", descFallback: "Everything you need to ship globally" },
-  { href: "/$locale/pricing", titleKey: "pricing", descKey: "pricingDesc", titleFallback: "Pricing", descFallback: "Simple, transparent pricing for every team" },
-  { href: "/$locale/i18n/best-tms", titleKey: "bestTms", descKey: "bestTmsDesc", titleFallback: "Best TMS", descFallback: "Compare translation management systems" },
+  { href: "/$locale/pricing/", titleKey: "pricing", descKey: "pricingDesc", titleFallback: "Pricing", descFallback: "Simple, transparent pricing for every team" },
+  { href: "/$locale/i18n/best-tms/", titleKey: "bestTms", descKey: "bestTmsDesc", titleFallback: "Best TMS", descFallback: "Compare translation management systems" },
 ];
 
 const frameworkPages: PageLink[] = [
-  { href: "/$locale/i18n/react", titleKey: "react", descKey: "reactDesc", titleFallback: "React i18n", descFallback: "Internationalize your React application" },
-  { href: "/$locale/i18n/nextjs", titleKey: "nextjs", descKey: "nextjsDesc", titleFallback: "Next.js i18n", descFallback: "Full-stack i18n for Next.js apps" },
-  { href: "/$locale/i18n/vue", titleKey: "vue", descKey: "vueDesc", titleFallback: "Vue i18n", descFallback: "Localize your Vue.js application" },
+  { href: "/$locale/i18n/react/", titleKey: "react", descKey: "reactDesc", titleFallback: "React i18n", descFallback: "Internationalize your React application" },
+  { href: "/$locale/i18n/nextjs/", titleKey: "nextjs", descKey: "nextjsDesc", titleFallback: "Next.js i18n", descFallback: "Full-stack i18n for Next.js apps" },
+  { href: "/$locale/i18n/vue/", titleKey: "vue", descKey: "vueDesc", titleFallback: "Vue i18n", descFallback: "Localize your Vue.js application" },
 ];
 
 const comparePages: PageLink[] = [
-  { href: "/$locale/compare/crowdin", titleKey: "compareCrowdin", descKey: "compareCrowdinDesc", titleFallback: "vs Crowdin", descFallback: "How Better I18N compares to Crowdin" },
-  { href: "/$locale/compare/lokalise", titleKey: "compareLokalise", descKey: "compareLokaliseDesc", titleFallback: "vs Lokalise", descFallback: "How Better I18N compares to Lokalise" },
-  { href: "/$locale/compare/phrase", titleKey: "comparePhrase", descKey: "comparePhraseDesc", titleFallback: "vs Phrase", descFallback: "How Better I18N compares to Phrase" },
+  { href: "/$locale/compare/crowdin/", titleKey: "compareCrowdin", descKey: "compareCrowdinDesc", titleFallback: "vs Crowdin", descFallback: "How Better I18N compares to Crowdin" },
+  { href: "/$locale/compare/lokalise/", titleKey: "compareLokalise", descKey: "compareLokaliseDesc", titleFallback: "vs Lokalise", descFallback: "How Better I18N compares to Lokalise" },
+  { href: "/$locale/compare/phrase/", titleKey: "comparePhrase", descKey: "comparePhraseDesc", titleFallback: "vs Phrase", descFallback: "How Better I18N compares to Phrase" },
 ];
 
 const educationalPages: PageLink[] = [
-  { href: "/$locale/what-is-internationalization", titleKey: "whatIsI18n", descKey: "whatIsI18nDesc", titleFallback: "What is i18n?", descFallback: "A complete guide to internationalization" },
-  { href: "/$locale/what-is-localization", titleKey: "whatIsL10n", descKey: "whatIsL10nDesc", titleFallback: "What is Localization?", descFallback: "Understanding localization and its processes" },
-  { href: "/$locale/i18n/best-library", titleKey: "bestLibrary", descKey: "bestLibraryDesc", titleFallback: "Best i18n Library", descFallback: "Compare the top i18n libraries" },
+  { href: "/$locale/what-is-internationalization/", titleKey: "whatIsI18n", descKey: "whatIsI18nDesc", titleFallback: "What is i18n?", descFallback: "A complete guide to internationalization" },
+  { href: "/$locale/what-is-localization/", titleKey: "whatIsL10n", descKey: "whatIsL10nDesc", titleFallback: "What is Localization?", descFallback: "Understanding localization and its processes" },
+  { href: "/$locale/i18n/best-library/", titleKey: "bestLibrary", descKey: "bestLibraryDesc", titleFallback: "Best i18n Library", descFallback: "Compare the top i18n libraries" },
 ];
 
 const contentPages: PageLink[] = [
-  { href: "/$locale/i18n/localization-software", titleKey: "localizationSoftware", descKey: "localizationSoftwareDesc", titleFallback: "Localization Software", descFallback: "Top localization software platforms compared" },
-  { href: "/$locale/i18n/translation-management-system", titleKey: "translationManagement", descKey: "translationManagementDesc", titleFallback: "Translation Management", descFallback: "Modern translation management systems" },
-  { href: "/$locale/i18n/multilingual-seo", titleKey: "multilingualSeo", descKey: "multilingualSeoDesc", titleFallback: "Multilingual SEO", descFallback: "Optimize your site for multiple languages" },
-  { href: "/$locale/i18n/international-seo", titleKey: "internationalSeo", descKey: "internationalSeoDesc", titleFallback: "International SEO", descFallback: "Reach global audiences with SEO" },
+  { href: "/$locale/i18n/localization-software/", titleKey: "localizationSoftware", descKey: "localizationSoftwareDesc", titleFallback: "Localization Software", descFallback: "Top localization software platforms compared" },
+  { href: "/$locale/i18n/translation-management-system/", titleKey: "translationManagement", descKey: "translationManagementDesc", titleFallback: "Translation Management", descFallback: "Modern translation management systems" },
+  { href: "/$locale/i18n/multilingual-seo/", titleKey: "multilingualSeo", descKey: "multilingualSeoDesc", titleFallback: "Multilingual SEO", descFallback: "Optimize your site for multiple languages" },
+  { href: "/$locale/i18n/international-seo/", titleKey: "internationalSeo", descKey: "internationalSeoDesc", titleFallback: "International SEO", descFallback: "Reach global audiences with SEO" },
 ];
 
 type AllowedRoute =
-  | "/$locale/for-developers"
-  | "/$locale/for-translators"
-  | "/$locale/for-product-teams"
+  | "/$locale/for-developers/"
+  | "/$locale/for-translators/"
+  | "/$locale/for-product-teams/"
   | "/$locale/features/"
-  | "/$locale/pricing"
-  | "/$locale/i18n/best-tms"
-  | "/$locale/i18n/react"
-  | "/$locale/i18n/nextjs"
-  | "/$locale/i18n/vue"
-  | "/$locale/compare/crowdin"
-  | "/$locale/compare/lokalise"
-  | "/$locale/compare/phrase"
-  | "/$locale/what-is-internationalization"
-  | "/$locale/what-is-localization"
-  | "/$locale/i18n/best-library"
-  | "/$locale/i18n/localization-software"
-  | "/$locale/i18n/translation-management-system"
-  | "/$locale/i18n/multilingual-seo"
-  | "/$locale/i18n/international-seo";
+  | "/$locale/pricing/"
+  | "/$locale/i18n/best-tms/"
+  | "/$locale/i18n/react/"
+  | "/$locale/i18n/nextjs/"
+  | "/$locale/i18n/vue/"
+  | "/$locale/compare/crowdin/"
+  | "/$locale/compare/lokalise/"
+  | "/$locale/compare/phrase/"
+  | "/$locale/what-is-internationalization/"
+  | "/$locale/what-is-localization/"
+  | "/$locale/i18n/best-library/"
+  | "/$locale/i18n/localization-software/"
+  | "/$locale/i18n/translation-management-system/"
+  | "/$locale/i18n/multilingual-seo/"
+  | "/$locale/i18n/international-seo/";
 
 type RelatedPagesProps = {
   currentPage: string;
@@ -99,42 +99,29 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
   if (pages.length === 0) return null;
 
   return (
-    <section className="py-14">
+    <section className="border-t border-mist-200/50 py-12">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="mb-8 max-w-2xl">
-          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-mist-500">
-            {t("eyebrow", { defaultValue: "Discover" })}
-          </p>
-          <h2 className="mt-2 font-display text-2xl/[1.08] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.04]">
-            {t("title", { defaultValue: "Explore More" })}
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-mist-600">
-            {t("subtitle", {
-              defaultValue: "Keep moving through product pages, framework guides, and high-intent localization content.",
-            })}
-          </p>
-        </div>
+        <h2 className="text-[14px] font-semibold text-mist-950 mb-6">
+          {t("title", { defaultValue: "Explore More" })}
+        </h2>
 
-        <div className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-mist-200/50 border-t border-mist-200/50">
           {pages.map((page) => (
             <Link
               key={page.href}
               to={page.href as AllowedRoute}
               params={{ locale }}
-              className="group flex h-full flex-col justify-between rounded-2xl border border-mist-200 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-mist-300 hover:shadow-md"
+              className="group flex flex-col gap-2 py-5 sm:px-5 first:sm:pl-0 last:sm:pr-0"
             >
-              <div>
-                <h3 className="text-sm font-medium text-mist-950">
-                  {t(page.titleKey, { defaultValue: page.titleFallback })}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-mist-500">
-                  {t(page.descKey, { defaultValue: page.descFallback })}
-                </p>
-              </div>
-              <div className="mt-5 flex items-center text-sm font-medium text-mist-700">
-                <span>{t("openPage", { defaultValue: "Open page" })}</span>
-                <SpriteIcon name="arrow-right" className="ml-2 h-4 w-4 text-mist-400 transition-all group-hover:translate-x-1 group-hover:text-mist-600" aria-hidden="true" />
-              </div>
+              <h3 className="text-[14px]/[1.4] font-medium text-mist-950 group-hover:text-mist-600 transition-colors">
+                {t(page.titleKey, { defaultValue: page.titleFallback })}
+              </h3>
+              <p className="text-[13px] leading-relaxed text-mist-500 line-clamp-2">
+                {t(page.descKey, { defaultValue: page.descFallback })}
+              </p>
+              <span className="mt-auto flex items-center gap-1 text-[12px] text-mist-400 group-hover:text-mist-600 transition-colors">
+                <SpriteIcon name="arrow-right" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+              </span>
             </Link>
           ))}
         </div>

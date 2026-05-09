@@ -270,8 +270,8 @@ const compactCreateKeyItem = z.object({
 export const createKeysInput = projectIdentifierSchema.extend({
   /** Array of keys to create */
   k: z.preprocess(coerceJsonArray, z.array(compactCreateKeyItem).min(1)).describe("Array of keys to create"),
-  /** Force creation even if path collisions are detected (leaf↔object conflicts) */
-  force: z.boolean().optional().default(false).describe("Force creation despite path collisions. Without this, keys that would cause leaf↔object conflicts in JSON output are rejected."),
+  /** Force creation even if path collisions are detected OR strict duplicate-policy would block */
+  force: z.boolean().optional().default(false).describe("Force creation despite path collisions OR strict duplicate-policy blocks. Without this: (1) keys causing leaf↔object JSON conflicts are rejected, (2) when project.duplicatePolicy='block', keys whose source_text already exists elsewhere are returned in 'blocked[]' instead of being created. Use force:true only for trusted bulk imports."),
 });
 export type CreateKeysOutput = z.infer<typeof createKeysInput>;
 export type CreateKeysInput = z.input<typeof createKeysInput>;

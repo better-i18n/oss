@@ -131,7 +131,7 @@ export default function Header({ className }: { className?: string }) {
   const isStatusOk = !statusData || statusData.status === "operational";
 
   return (
-    <header className={cn("sticky top-0 z-10 bg-mist-100", className)}>
+    <header className={cn("sticky top-0 z-40 bg-mist-100", className)}>
       <nav aria-label="Main navigation">
         <div className="mx-auto flex h-[5.25rem] max-w-7xl items-center gap-4 px-6 lg:px-10">
           <div className="flex flex-1 items-center">
@@ -277,12 +277,12 @@ export default function Header({ className }: { className?: string }) {
                 />
               </MegaMenuPanel>
             </MegaMenu>
-            {/* Developers Mega Menu */}
-            <MegaMenu label={t("developers.title", { defaultValue: "Developers" })}>
-              <MegaMenuPanel widthClass="w-[560px]">
+            {/* Integrations Mega Menu (merged Developers + Integrations) */}
+            <MegaMenu label={t("integrations.title", { defaultValue: "Integrations" })}>
+              <MegaMenuPanel widthClass="w-[680px]">
                 <MegaMenuSection
-                  label={t("developers.frameworkGuides", {
-                    defaultValue: "Framework Guides",
+                  label={t("integrations.frameworkSdks", {
+                    defaultValue: "Framework SDKs",
                   })}
                   noDivider
                   layoutClass="grid grid-cols-3 gap-1"
@@ -352,43 +352,14 @@ export default function Header({ className }: { className?: string }) {
                   />
                 </MegaMenuSection>
 
-                <MegaMenuFooter
-                  primary={
-                    <a
-                      href="https://docs.better-i18n.com/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 hover:text-mist-700 transition-colors"
-                    >
-                      <SpriteIcon name="book" className="size-3.5" />
-                      {t("documentation", { defaultValue: "Documentation" })}
-                    </a>
-                  }
-                  secondary={
-                    <a
-                      href="https://docs.better-i18n.com/api"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-mist-950 transition-colors"
-                    >
-                      {t("apiReference", { defaultValue: "API Reference" })}
-                    </a>
-                  }
-                />
-              </MegaMenuPanel>
-            </MegaMenu>
-            {/* Integrations Mega Menu */}
-            <MegaMenu label={t("integrations.title", { defaultValue: "Integrations" })}>
-              <MegaMenuPanel widthClass="w-[600px]">
                 <MegaMenuSection
-                  label={t("integrations.featuredLabel", {
-                    defaultValue: "Featured",
+                  label={t("integrations.aiTranslation", {
+                    defaultValue: "AI & Machine Translation",
                   })}
-                  noDivider
                   layoutClass="grid grid-cols-2 gap-1"
                 >
                   <MegaMenuCard
-                    index={0}
+                    index={9}
                     to="/$locale/integrations/$slug/"
                     params={{ locale: locale || "en", slug: "mcp-server" }}
                     icon={<IconModelcontextprotocol className="size-5" />}
@@ -400,59 +371,50 @@ export default function Header({ className }: { className?: string }) {
                     })}
                   />
                   <MegaMenuCard
-                    index={1}
+                    index={10}
                     to="/$locale/integrations/$slug/"
-                    params={{ locale: locale || "en", slug: "github" }}
-                    icon={<IconGithub className="size-5" />}
-                    title={t("integrations.featured.github.name", {
-                      defaultValue: "GitHub Sync",
+                    params={{ locale: locale || "en", slug: "ai-translation" }}
+                    icon={<IconAiTranslate className="size-5" />}
+                    title={t("integrations.featured.ai-translation.name", {
+                      defaultValue: "AI Translation",
                     })}
-                    description={t("integrations.featured.github.description", {
-                      defaultValue: "PR-based i18n workflow",
+                    description={t("integrations.featured.ai-translation.description", {
+                      defaultValue: "Multi-provider LLM translation pipeline",
                     })}
                   />
                 </MegaMenuSection>
 
                 <MegaMenuSection
-                  label={t("integrations.byCategory", {
-                    defaultValue: "By category",
+                  label={t("integrations.devTools", {
+                    defaultValue: "Developer Tools",
                   })}
-                  layoutClass="grid grid-cols-2 gap-1"
+                  layoutClass="grid grid-cols-3 gap-1"
                 >
                   <MegaMenuPill
-                    index={2}
+                    index={11}
                     to="/$locale/integrations/$slug/"
-                    params={{ locale: locale || "en", slug: "global-cdn" }}
-                    icon={<IconCloudySparkle className="size-4" />}
-                    label={t("integrations.featured.global-cdn.name", {
-                      defaultValue: "Global CDN",
+                    params={{ locale: locale || "en", slug: "github" }}
+                    icon={<IconGithub className="size-4" />}
+                    label={t("integrations.featured.github.name", {
+                      defaultValue: "GitHub Sync",
                     })}
                   />
                   <MegaMenuPill
-                    index={3}
-                    to="/$locale/integrations/$slug/"
-                    params={{ locale: locale || "en", slug: "ai-translation" }}
-                    icon={<IconAiTranslate className="size-4" />}
-                    label={t("integrations.featured.ai-translation.name", {
-                      defaultValue: "AI Translation",
-                    })}
-                  />
-                  <MegaMenuPill
-                    index={4}
-                    to="/$locale/integrations/$slug/"
-                    params={{ locale: locale || "en", slug: "nextjs" }}
-                    icon={<NextjsIcon className="size-4" />}
-                    label={t("integrations.featured.nextjs.name", {
-                      defaultValue: "Next.js",
-                    })}
-                  />
-                  <MegaMenuPill
-                    index={5}
+                    index={12}
                     to="/$locale/integrations/$slug/"
                     params={{ locale: locale || "en", slug: "cli" }}
                     icon={<IconConsoleSimple className="size-4" />}
                     label={t("integrations.featured.cli.name", {
                       defaultValue: "CLI",
+                    })}
+                  />
+                  <MegaMenuPill
+                    index={13}
+                    to="/$locale/integrations/$slug/"
+                    params={{ locale: locale || "en", slug: "global-cdn" }}
+                    icon={<IconCloudySparkle className="size-4" />}
+                    label={t("integrations.featured.global-cdn.name", {
+                      defaultValue: "Global CDN",
                     })}
                   />
                 </MegaMenuSection>
@@ -471,11 +433,15 @@ export default function Header({ className }: { className?: string }) {
                     </Link>
                   }
                   secondary={
-                    <span>
-                      {t("integrations.count", {
-                        defaultValue: "20+ integrations",
-                      })}
-                    </span>
+                    <a
+                      href="https://docs.better-i18n.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 hover:text-mist-950 transition-colors"
+                    >
+                      <SpriteIcon name="book" className="size-3.5" />
+                      {t("documentation", { defaultValue: "Documentation" })}
+                    </a>
                   }
                 />
               </MegaMenuPanel>
@@ -615,6 +581,14 @@ export default function Header({ className }: { className?: string }) {
                 />
               </MegaMenuPanel>
             </MegaMenu>
+            <Link
+              to="/$locale/careers/"
+              params={{ locale: locale || "en" }}
+              className="text-sm/7 font-medium text-mist-950 hover:text-mist-600 inline-flex items-center gap-1.5"
+            >
+              {t("hiring", { defaultValue: "Hiring" })}
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            </Link>
           </div>
           <div className="hidden lg:flex flex-1 items-center justify-end gap-4">
             <LanguageSwitcher />

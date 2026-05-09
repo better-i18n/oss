@@ -6,6 +6,7 @@ import viteTsConfigPaths from "vite-tsconfig-paths";
 import { fileURLToPath, URL } from "url";
 import tailwindcss from "@tailwindcss/vite";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
+import { apiDevPlugin } from "./vite-api-plugin";
 
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -105,6 +106,7 @@ export default defineConfig(async ({ mode }) => {
       },
     },
     plugins: [
+      apiDevPlugin(),
       // Workaround: TanStack Router/Start SSR utilities import Node.js
       // builtins (node:stream, node:async_hooks) with named exports.
       // Vite's default __vite-browser-external shim is `export default {}`

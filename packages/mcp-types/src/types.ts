@@ -269,6 +269,24 @@ export interface CreateKeysResponse {
     namespace: string;
     existsIn: string[];
   }>;
+  /**
+   * Keys rejected by strict duplicate policy (`project.duplicatePolicy = "block"`).
+   * Each blocked item lists the existing keys (across all namespaces) that share
+   * the same source_text — AI agents should reuse one of these instead of creating
+   * a new key. Override available via `force: true`.
+   */
+  blocked?: Array<{
+    /** Requested key name that was rejected */
+    key: string;
+    /** Requested namespace */
+    namespace: string;
+    /** The source text that triggered the block */
+    sourceText: string;
+    /** Existing keys with the same source_text — candidates for reuse */
+    existingKeys: Array<{ namespace: string; key: string; keyId: string }>;
+    /** Human-readable explanation for the AI */
+    reason: string;
+  }>;
   /** Pending publish hint - reminds AI to call publish */
   pendingPublish?: PendingPublishHint;
   /** Contextual hint for AI when result is ambiguous */
