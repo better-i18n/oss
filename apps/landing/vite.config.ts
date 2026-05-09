@@ -4,6 +4,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import { fileURLToPath, URL } from "url";
+import { join } from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { apiDevPlugin } from "./vite-api-plugin";
@@ -22,15 +23,44 @@ export default defineConfig(async ({ mode }) => {
       const { fetchSeoData, generatePages } = await import("./src/seo/generate-pages");
       const { generateAllLlmsTxtFiles } = await import("./src/seo/llms-txt");
       const { generateBlogIndexes } = await import("./src/seo/generate-blog-indexes");
+      const { readFileSync } = await import("node:fs");
+
+      // 1. Generate blog indexes FIRST (uses direct REST API with cache bypass).
+      //    The SDK client's edge cache returns stale data (1 of 255 posts), so
+      //    blog indexes are the authoritative source for the full post list.
+      const publicDir = fileURLToPath(new URL("./public", import.meta.url));
       const data = await fetchSeoData({ project, apiKey });
+      await generateBlogIndexes(data.locales, publicDir, { project, apiKey });
+
+      // 2. Build availableLanguages map from all locale indexes, then
+      //    read the English index as the canonical post list for sitemap.
+      //    This replaces the SDK-fetched blogPosts (stale cache returns only 1 post).
+      try {
+        const slugLocales = new Map<string, string[]>();
+        for (const locale of data.locales) {
+          try {
+            const idx = JSON.parse(readFileSync(join(publicDir, `blog-index-${locale}.json`), "utf-8"));
+            for (const p of idx.allPosts ?? []) {
+              if (!slugLocales.has(p.slug)) slugLocales.set(p.slug, []);
+              slugLocales.get(p.slug)!.push(locale);
+            }
+          } catch { /* locale index missing — skip */ }
+        }
+        const enIndex = JSON.parse(readFileSync(join(publicDir, "blog-index-en.json"), "utf-8"));
+        const blogPostsFromIndex = (enIndex.allPosts as any[]).map((p: any) => ({
+          slug: p.slug,
+          title: p.title,
+          publishedAt: p.publishedAt,
+          availableLanguages: slugLocales.get(p.slug) ?? ["en"],
+        }));
+        (data as any).blogPosts = blogPostsFromIndex;
+        console.log(`[SEO] Blog posts from index: ${blogPostsFromIndex.length} (SDK returned ${data.blogPosts.length})`);
+      } catch (e) {
+        console.warn("[SEO] Failed to read blog indexes, using SDK data:", e);
+      }
+
       pages = generatePages(data);
       llmsFiles = generateAllLlmsTxtFiles(data.blogPosts, data.locales, data.i18nMessages);
-      console.log(`[SEO] Generated ${llmsFiles.size} llms.txt files`);
-      // Emit static blog index JSON per locale BEFORE prerender runs so
-      // the route loader can fetch them from `public/` during build and
-      // at runtime on SPA navigation.
-      const publicDir = fileURLToPath(new URL("./public", import.meta.url));
-      await generateBlogIndexes(data.locales, publicDir, { project, apiKey });
     } catch (error) {
       console.error("[SEO] Build-time generation failed:", error);
     }
