@@ -308,7 +308,7 @@ function NotFoundPage() {
             })}
           </p>
           <Link
-            to="/$locale"
+            to="/$locale/"
             params={{ locale }}
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
           >

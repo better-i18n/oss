@@ -3,9 +3,13 @@ import type { ComponentProps } from "react";
 import type { IntlProvider } from "use-intl";
 
 /**
- * Messages type (compatible with use-intl)
+ * Messages object — flat or nested key-value map.
+ * Defined as `Record<string, any>` for broad compatibility with
+ * use-intl's IntlProvider and TanStack Router's type inference
+ * (avoids DeepPartial<unknown> → {} mismatch).
  */
-export type Messages = ComponentProps<typeof IntlProvider>["messages"];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Messages = Record<string, any>;
 
 /**
  * Configuration for BetterI18nProvider

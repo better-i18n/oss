@@ -47,7 +47,7 @@ type PageType = "default" | "home" | "pricing" | "comparison" | "framework" | "e
 
 interface PageSEOOptions {
   /** i18n messages object */
-  messages: Record<string, string>;
+  messages: Record<string, any>;
   /** Current locale */
   locale: string;
   /** Page key for meta namespace (e.g., "features", "pricing") */

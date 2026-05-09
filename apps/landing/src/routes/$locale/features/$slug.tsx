@@ -74,7 +74,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
       url: canonicalUrl,
     });
 
-    const msgs = (loaderData?.messages ?? {}) as Record<string, string>;
+    const msgs = (loaderData?.messages ?? {}) as Record<string, any>;
     const breadcrumbScripts = formatStructuredData(
       getBreadcrumbSchema([
         { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },

@@ -142,7 +142,7 @@ export const Route = createFileRoute("/$locale/changelog/$slug")({
       locale,
     });
 
-    const msgs = (loaderData?.messages ?? {}) as Record<string, string>;
+    const msgs = (loaderData?.messages ?? {}) as Record<string, any>;
     const breadcrumbSchema = getBreadcrumbSchema([
       { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },
       { name: msgs["breadcrumbs.changelog"] ?? "Changelog", url: `${SITE_URL}/${locale}/changelog/` },

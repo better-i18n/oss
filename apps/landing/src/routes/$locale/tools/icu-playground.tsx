@@ -412,7 +412,7 @@ function ICUPlaygroundPage() {
     [activeCodeTab, message, syncedValues],
   );
 
-  const breadcrumbs = getBreadcrumbItems("/tools/icu-playground", messages as unknown as Record<string, string>);
+  const breadcrumbs = getBreadcrumbItems("/tools/icu-playground", messages as Record<string, any>);
 
   return (
     <ToolLayout

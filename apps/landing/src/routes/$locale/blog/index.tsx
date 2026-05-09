@@ -57,7 +57,7 @@ export const Route = createFileRoute("/$locale/blog/")({
       }),
     });
 
-    const msgs = (loaderData?.messages ?? {}) as Record<string, string>;
+    const msgs = (loaderData?.messages ?? {}) as Record<string, any>;
     const breadcrumbSchema = getBreadcrumbSchema([
       { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },
       { name: msgs["breadcrumbs.blog"] ?? "Blog", url: `${SITE_URL}/${locale}/blog/` },
