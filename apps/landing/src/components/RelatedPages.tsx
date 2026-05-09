@@ -102,7 +102,7 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
           {t("title", { defaultValue: "Explore More" })}
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-mist-200/50 border-t border-mist-200/50">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-mist-200/50">
           {pages.map((page) => (
             <Link
               key={page.href}

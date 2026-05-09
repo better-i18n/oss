@@ -160,7 +160,7 @@ function BlogPage() {
 
           {/* Posts Grid */}
           {paginatedPosts?.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y divide-mist-200/50 md:divide-y-0 md:[&>a]:border-b md:[&>a]:border-mist-200/50 border-t border-mist-200/50 lg:divide-x lg:divide-mist-200/50 lg:[&>a]:px-6 lg:[&>a:first-child]:pl-0 lg:[&>a:nth-child(3n+1)]:pl-0 lg:[&>a:nth-child(3n)]:pr-0 md:max-lg:divide-x md:max-lg:divide-mist-200/50 md:max-lg:[&>a]:px-5 md:max-lg:[&>a:nth-child(odd)]:pl-0 md:max-lg:[&>a:nth-child(even)]:pr-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y divide-mist-200/50 md:divide-y-0 md:[&>a]:border-b md:[&>a]:border-mist-200/50 md:[&>a:nth-last-child(-n+2)]:border-b-0 lg:[&>a:nth-last-child(-n+3)]:border-b-0 border-t border-mist-200/50 lg:divide-x lg:divide-mist-200/50 lg:[&>a]:px-6 lg:[&>a:first-child]:pl-0 lg:[&>a:nth-child(3n+1)]:pl-0 lg:[&>a:nth-child(3n)]:pr-0 md:max-lg:divide-x md:max-lg:divide-mist-200/50 md:max-lg:[&>a]:px-5 md:max-lg:[&>a:nth-child(odd)]:pl-0 md:max-lg:[&>a:nth-child(even)]:pr-0">
               {paginatedPosts.map((post: BlogPostListItem, index: number) => (
                 <BlogCard key={post.slug} post={post} locale={locale} priority={index === 0} />
               ))}
