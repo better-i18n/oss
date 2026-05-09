@@ -37,6 +37,19 @@ export async function loadBlogIndex(locale: string): Promise<BlogIndex> {
     }
   }
 
+  // CF Worker SSR: read from ASSETS binding directly (avoids worker-to-self fetch loop)
+  const cfAssets = (globalThis as any).__cf_assets as { fetch: (req: Request | string) => Promise<Response> } | undefined;
+  if (cfAssets) {
+    try {
+      const res = await cfAssets.fetch(new Request(`${SITE_URL}/blog-index-${locale}.json`));
+      if (res.ok) return (await res.json()) as BlogIndex;
+      console.warn(`[blog-index] ASSETS ${locale} → ${res.status}`);
+    } catch (error) {
+      console.warn(`[blog-index] ASSETS ${locale} failed:`, error);
+    }
+  }
+
+  // Fallback: HTTP fetch (browser client-side, non-CF environments)
   try {
     const res = await fetch(`${SITE_URL}/blog-index-${locale}.json`);
     if (!res.ok) {

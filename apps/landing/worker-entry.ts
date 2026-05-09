@@ -418,6 +418,9 @@ export default {
     env: Env,
     ctx: ExecutionContext,
   ): Promise<Response> {
+    // Expose ASSETS binding so SSR loaders can read static files without self-fetch
+    (globalThis as any).__cf_assets = env.ASSETS;
+
     const url = new URL(request.url);
 
     // 1. Handle SEO redirects before hitting TanStack — instant 301 at edge.
