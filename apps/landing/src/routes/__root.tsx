@@ -172,7 +172,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       const targetPath = location.pathname === "/" ? "" : location.pathname;
       throw redirect({
         href: `/${detectedLocale}${targetPath}${search}${hash}`,
-        statusCode: 301,
+        // 302 (not 301) — locale redirect is personalized (cookie + geo).
+        // A 301 is cached indefinitely by browsers, so users who first landed
+        // on /tr/ would never get re-detected after switching to /en/.
+        statusCode: 302,
       });
     }
 
@@ -312,7 +315,7 @@ function NotFoundPage() {
             params={{ locale }}
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
           >
-            <IconArrowLeft className="w-4 h-4" />
+            <IconArrowLeft className="size-4" />
             {t("notFound.backHome", { defaultValue: "Back to Home" })}
           </Link>
         </div>
