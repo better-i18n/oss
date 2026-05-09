@@ -321,7 +321,6 @@ function NotFoundPage() {
   );
 }
 
-
 function RootComponent() {
   const { locale, locales, requestId } = Route.useRouteContext();
   const router = useRouter();

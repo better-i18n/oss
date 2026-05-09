@@ -74,27 +74,24 @@ type RelatedPagesProps = {
   variant?: "for" | "resources" | "frameworks" | "compare" | "educational" | "content" | "mixed";
 };
 
+const PAGE_POOL: Record<string, PageLink[]> = {
+  for: forPages,
+  resources: resourcePages,
+  frameworks: frameworkPages,
+  compare: comparePages,
+  educational: educationalPages,
+  content: contentPages,
+};
+
 export function RelatedPages({ currentPage, locale, variant = "mixed" }: RelatedPagesProps) {
   const t = useTranslations("relatedPages");
 
-  let pages: PageLink[] = [];
+  const pool = variant === "mixed"
+    ? [...forPages, ...resourcePages, ...contentPages]
+    : (PAGE_POOL[variant] ?? []);
 
-  if (variant === "for") {
-    pages = forPages.filter(p => !p.href.includes(currentPage));
-  } else if (variant === "resources") {
-    pages = resourcePages.filter(p => !p.href.includes(currentPage));
-  } else if (variant === "frameworks") {
-    pages = frameworkPages.filter(p => !p.href.includes(currentPage));
-  } else if (variant === "compare") {
-    pages = comparePages.filter(p => !p.href.includes(currentPage));
-  } else if (variant === "educational") {
-    pages = educationalPages.filter(p => !p.href.includes(currentPage));
-  } else if (variant === "content") {
-    pages = contentPages.filter(p => !p.href.includes(currentPage));
-  } else {
-    // mixed: combine for pages, resources, and top content pages
-    pages = [...forPages, ...resourcePages, ...contentPages].filter(p => !p.href.includes(currentPage)).slice(0, 4);
-  }
+  const filtered = pool.filter((p) => !p.href.includes(currentPage));
+  const pages = variant === "mixed" ? filtered.slice(0, 4) : filtered;
 
   if (pages.length === 0) return null;
 

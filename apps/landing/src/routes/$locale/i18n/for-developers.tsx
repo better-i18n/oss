@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { SpriteIcon } from "@/components/SpriteIcon";
+import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
@@ -84,7 +84,7 @@ function ForDevelopersSeoPage() {
                 className="rounded-2xl border border-mist-200 bg-white p-6"
               >
                 <div className="w-10 h-10 rounded-lg bg-mist-100 flex items-center justify-center mb-4">
-                  <SpriteIcon name={feature.icon} className="w-5 h-5 text-mist-600" />
+                  <SpriteIcon name={feature.icon as SpriteIconName} className="w-5 h-5 text-mist-600" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950">{feature.title}</h3>
                 <p className="mt-2 text-sm text-mist-600">{feature.description}</p>

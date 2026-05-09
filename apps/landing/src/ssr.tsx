@@ -1,8 +1,6 @@
-import { createStart } from "@tanstack/react-start";
-import { getRouter } from "./router";
-import { i18nMiddleware } from "./middleware/i18n";
+import {
+  createStartHandler,
+  defaultStreamHandler,
+} from "@tanstack/react-start/server";
 
-export default createStart({
-  router: getRouter,
-  middleware: [i18nMiddleware],
-});
+export default { fetch: createStartHandler(defaultStreamHandler) };

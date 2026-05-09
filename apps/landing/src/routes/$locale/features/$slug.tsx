@@ -1,6 +1,6 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { getMarketingPage, getMarketingPages } from "@/lib/content";
+import { getMarketingPage, getMarketingPages, type MarketingPageListItem } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { RelatedPages } from "@/components/RelatedPages";
@@ -167,7 +167,7 @@ function FeaturePageComponent() {
               {t("exploreMore", "Explore more features")}
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {relatedFeatures.map((feature) => (
+              {relatedFeatures.map((feature: MarketingPageListItem) => (
                 <Link
                   key={feature.slug}
                   to="/$locale/features/$slug"

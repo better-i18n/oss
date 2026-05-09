@@ -14,14 +14,13 @@ import {
   type PricingRow,
   type DxComparisonItem,
 } from "@/components/ComparisonTable";
-import { getPageHead } from "@/lib/page-seo";
+import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 
+const pageLoader = createPageLoader();
+
 export const Route = createFileRoute("/$locale/compare/crowdin-vs-lokalise")({
-  loader: ({ context }) => ({
-    messages: context.messages,
-    locale: context.locale,
-  }),
+  loader: pageLoader,
   head: ({ loaderData }) => {
     return getPageHead({
       messages: loaderData?.messages || {},

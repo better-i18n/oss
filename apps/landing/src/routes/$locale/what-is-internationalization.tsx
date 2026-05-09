@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { SpriteIcon } from "@/components/SpriteIcon";
+import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
@@ -116,7 +116,7 @@ function WhatIsInternationalizationPage() {
             {keyPrinciples.map((principle) => (
               <div key={principle.titleKey} className="p-8 rounded-2xl bg-white border border-mist-200">
                 <div className="size-12 rounded-xl bg-mist-100 flex items-center justify-center text-mist-700 mb-5">
-                  {typeof principle.icon === "string" ? <SpriteIcon name={principle.icon} className="size-6" /> : <principle.icon className="size-6" />}
+                  {typeof principle.icon === "string" ? <SpriteIcon name={principle.icon as SpriteIconName} className="size-6" /> : <principle.icon className="size-6" />}
                 </div>
                 <h3 className="text-lg font-medium text-mist-950 mb-3">{t(principle.titleKey)}</h3>
                 <p className="text-mist-700 leading-relaxed">{t(principle.descKey)}</p>

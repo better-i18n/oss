@@ -650,7 +650,7 @@ export interface FileRoutesByFullPath {
   '/$locale/what-is-localization': typeof LocaleWhatIsLocalizationRoute
   '/api/changelog': typeof ApiChangelogRoute
   '/api/status': typeof ApiStatusRoute
-  '/$locale': typeof LocaleIndexRoute
+  '/$locale/': typeof LocaleIndexRoute
   '/$locale/blog/$slug': typeof LocaleBlogSlugRoute
   '/$locale/careers/$slug': typeof LocaleCareersSlugRoute
   '/$locale/changelog/$slug': typeof LocaleChangelogSlugRoute
@@ -703,17 +703,17 @@ export interface FileRoutesByFullPath {
   '/$locale/tools/icu-playground': typeof LocaleToolsIcuPlaygroundRoute
   '/$locale/tools/locale-explorer': typeof LocaleToolsLocaleExplorerRouteWithChildren
   '/$locale/tools/translation-file-converter': typeof LocaleToolsTranslationFileConverterRouteWithChildren
-  '/$locale/blog': typeof LocaleBlogIndexRoute
-  '/$locale/careers': typeof LocaleCareersIndexRoute
-  '/$locale/changelog': typeof LocaleChangelogIndexRoute
-  '/$locale/compare': typeof LocaleCompareIndexRoute
+  '/$locale/blog/': typeof LocaleBlogIndexRoute
+  '/$locale/careers/': typeof LocaleCareersIndexRoute
+  '/$locale/changelog/': typeof LocaleChangelogIndexRoute
+  '/$locale/compare/': typeof LocaleCompareIndexRoute
   '/$locale/features/': typeof LocaleFeaturesIndexRoute
-  '/$locale/i18n': typeof LocaleI18nIndexRoute
-  '/$locale/tools': typeof LocaleToolsIndexRoute
+  '/$locale/i18n/': typeof LocaleI18nIndexRoute
+  '/$locale/tools/': typeof LocaleToolsIndexRoute
   '/$locale/blog/page/$page': typeof LocaleBlogPagePageRoute
   '/$locale/tools/locale-explorer/$localeCode': typeof LocaleToolsLocaleExplorerLocaleCodeRoute
   '/$locale/tools/translation-file-converter/$pair': typeof LocaleToolsTranslationFileConverterPairRoute
-  '/$locale/blog/page': typeof LocaleBlogPageIndexRoute
+  '/$locale/blog/page/': typeof LocaleBlogPageIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -949,7 +949,7 @@ export interface FileRouteTypes {
     | '/$locale/what-is-localization'
     | '/api/changelog'
     | '/api/status'
-    | '/$locale'
+    | '/$locale/'
     | '/$locale/blog/$slug'
     | '/$locale/careers/$slug'
     | '/$locale/changelog/$slug'
@@ -1002,17 +1002,17 @@ export interface FileRouteTypes {
     | '/$locale/tools/icu-playground'
     | '/$locale/tools/locale-explorer'
     | '/$locale/tools/translation-file-converter'
-    | '/$locale/blog'
-    | '/$locale/careers'
-    | '/$locale/changelog'
-    | '/$locale/compare'
+    | '/$locale/blog/'
+    | '/$locale/careers/'
+    | '/$locale/changelog/'
+    | '/$locale/compare/'
     | '/$locale/features/'
-    | '/$locale/i18n'
-    | '/$locale/tools'
+    | '/$locale/i18n/'
+    | '/$locale/tools/'
     | '/$locale/blog/page/$page'
     | '/$locale/tools/locale-explorer/$localeCode'
     | '/$locale/tools/translation-file-converter/$pair'
-    | '/$locale/blog/page'
+    | '/$locale/blog/page/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1389,7 +1389,7 @@ declare module '@tanstack/react-router' {
     '/$locale/': {
       id: '/$locale/'
       path: '/$locale'
-      fullPath: '/$locale'
+      fullPath: '/$locale/'
       preLoaderRoute: typeof LocaleIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -1550,14 +1550,14 @@ declare module '@tanstack/react-router' {
     '/$locale/tools/': {
       id: '/$locale/tools/'
       path: '/$locale/tools'
-      fullPath: '/$locale/tools'
+      fullPath: '/$locale/tools/'
       preLoaderRoute: typeof LocaleToolsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/i18n/': {
       id: '/$locale/i18n/'
       path: '/$locale/i18n'
-      fullPath: '/$locale/i18n'
+      fullPath: '/$locale/i18n/'
       preLoaderRoute: typeof LocaleI18nIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -1571,28 +1571,28 @@ declare module '@tanstack/react-router' {
     '/$locale/compare/': {
       id: '/$locale/compare/'
       path: '/$locale/compare'
-      fullPath: '/$locale/compare'
+      fullPath: '/$locale/compare/'
       preLoaderRoute: typeof LocaleCompareIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/changelog/': {
       id: '/$locale/changelog/'
       path: '/$locale/changelog'
-      fullPath: '/$locale/changelog'
+      fullPath: '/$locale/changelog/'
       preLoaderRoute: typeof LocaleChangelogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/careers/': {
       id: '/$locale/careers/'
       path: '/$locale/careers'
-      fullPath: '/$locale/careers'
+      fullPath: '/$locale/careers/'
       preLoaderRoute: typeof LocaleCareersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/blog/': {
       id: '/$locale/blog/'
       path: '/$locale/blog'
-      fullPath: '/$locale/blog'
+      fullPath: '/$locale/blog/'
       preLoaderRoute: typeof LocaleBlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -1963,7 +1963,7 @@ declare module '@tanstack/react-router' {
     '/$locale/blog/page/': {
       id: '/$locale/blog/page/'
       path: '/$locale/blog/page'
-      fullPath: '/$locale/blog/page'
+      fullPath: '/$locale/blog/page/'
       preLoaderRoute: typeof LocaleBlogPageIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -2147,12 +2147,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

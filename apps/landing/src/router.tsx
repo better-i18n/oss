@@ -10,6 +10,7 @@ export const getRouter = () => {
     context: {
       locale: undefined!, // Set by root route beforeLoad
       locales: undefined!, // Set by root route beforeLoad
+      requestId: undefined!, // Set by root route beforeLoad
     },
     trailingSlash: "always",
     scrollRestoration: true,

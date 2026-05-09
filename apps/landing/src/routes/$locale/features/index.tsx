@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { SpriteIcon } from "@/components/SpriteIcon";
+import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
 import { createServerFn } from "@tanstack/react-start";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
@@ -293,7 +293,7 @@ function FeaturesPage() {
                 className="rounded-2xl border border-mist-200 bg-white p-6 transition-colors hover:border-mist-300"
               >
                 <div className="flex size-11 items-center justify-center rounded-xl border border-mist-100 bg-white text-mist-700 shadow-sm">
-                  <SpriteIcon name={card.icon} className="size-5" />
+                  <SpriteIcon name={card.icon as SpriteIconName} className="size-5" />
                 </div>
                 <h3 className="mt-5 text-base font-medium text-mist-950">
                   {card.title}
@@ -317,7 +317,7 @@ function FeaturesPage() {
                 <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
                   <div className={index % 2 === 1 ? "lg:order-2" : undefined}>
                     <div className="flex size-12 items-center justify-center rounded-xl border border-mist-100 bg-mist-50 text-mist-700 shadow-sm">
-                      <SpriteIcon name={capability.icon} className="size-5" />
+                      <SpriteIcon name={capability.icon as SpriteIconName} className="size-5" />
                     </div>
                     <div className="mt-5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-mist-500">
                       <span>{capability.step}</span>

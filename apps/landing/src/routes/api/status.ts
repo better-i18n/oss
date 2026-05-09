@@ -8,7 +8,7 @@ export const Route = createFileRoute("/api/status")({
       GET: async () => {
         try {
           const res = await fetch(BETTERSTACK_URL)
-          const json = await res.json()
+          const json = await res.json() as { data?: { attributes?: { aggregate_state?: string } } }
           const status = json?.data?.attributes?.aggregate_state ?? "operational"
           return Response.json(
             { status },

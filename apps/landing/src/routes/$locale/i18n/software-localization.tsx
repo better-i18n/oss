@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { SpriteIcon } from "@/components/SpriteIcon";
+import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
@@ -171,7 +171,7 @@ function SoftwareLocalizationPage() {
             {localizationTypes.map((type) => (
               <div key={type.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-full bg-mist-100 flex items-center justify-center mb-4">
-                  <SpriteIcon name={type.icon} className="size-5 text-mist-700" />
+                  <SpriteIcon name={type.icon as SpriteIconName} className="size-5 text-mist-700" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(type.titleKey, { defaultValue: type.defaultTitle })}
@@ -203,7 +203,7 @@ function SoftwareLocalizationPage() {
                   <div className="size-8 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium">
                     {index + 1}
                   </div>
-                  <SpriteIcon name={step.icon} className="size-5 text-mist-600" />
+                  <SpriteIcon name={step.icon as SpriteIconName} className="size-5 text-mist-600" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(step.titleKey, { defaultValue: step.defaultTitle })}
@@ -284,7 +284,7 @@ function SoftwareLocalizationPage() {
             {toolCategories.map((tool) => (
               <div key={tool.titleKey} className="p-6 rounded-xl bg-mist-50 border border-mist-200">
                 <div className="size-10 rounded-full bg-mist-100 flex items-center justify-center mb-4">
-                  <SpriteIcon name={tool.icon} className="size-5 text-mist-700" />
+                  <SpriteIcon name={tool.icon as SpriteIconName} className="size-5 text-mist-700" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(tool.titleKey, { defaultValue: tool.defaultTitle })}

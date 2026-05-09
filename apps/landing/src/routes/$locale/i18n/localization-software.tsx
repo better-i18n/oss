@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { SpriteIcon } from "@/components/SpriteIcon";
+import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
@@ -140,7 +140,7 @@ function LocalizationSoftwarePage() {
             {keyFeatures.map((feature) => (
               <div key={feature.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
                 <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <SpriteIcon name={feature.icon} className="size-5" />
+                  <SpriteIcon name={feature.icon as SpriteIconName} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
                   {t(feature.titleKey, { defaultValue: feature.defaultTitle })}

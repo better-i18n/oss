@@ -24,6 +24,7 @@ interface ToolLayoutProps {
   readonly title: string;
   readonly titleHighlight?: string;
   readonly description: string;
+  readonly subtitle?: string;
   readonly eyebrow?: string;
   readonly currentSlug: string;
   readonly locale: string;
@@ -38,6 +39,7 @@ export function ToolLayout({
   title,
   titleHighlight,
   description,
+  subtitle,
   eyebrow,
   currentSlug,
   locale,
@@ -57,6 +59,7 @@ export function ToolLayout({
           title={title}
           titleHighlight={titleHighlight}
           description={description}
+          subtitle={subtitle}
           eyebrow={eyebrow}
         />
       </div>

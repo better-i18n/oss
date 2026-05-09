@@ -142,7 +142,7 @@ function BlogPage() {
               >
                 {t("allPosts", { defaultValue: "All Posts" })}
               </button>
-              {categories.map((category) => (
+              {categories.map((category: string) => (
                 <button
                   key={category}
                   onClick={() => handleCategoryClick(category)}

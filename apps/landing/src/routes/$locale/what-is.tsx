@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SpriteIcon } from "@/components/SpriteIcon";
+import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, getEducationalPageStructuredData, formatStructuredData, createPageLoader } from "@/lib/page-seo";
 import { getHowToSchema } from "@/lib/structured-data";
@@ -285,7 +285,7 @@ function WhatIsPage() {
                     className="p-5 rounded-xl bg-mist-50 border border-mist-100 flex items-start gap-4"
                   >
                     <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 shrink-0">
-                      {typeof benefit.icon === "string" ? <SpriteIcon name={benefit.icon} className="size-5" /> : <benefit.icon className="size-5" />}
+                      <SpriteIcon name={benefit.icon as SpriteIconName} className="size-5" />
                     </div>
                     <div>
                       <h3 className="text-base font-medium text-mist-950">
