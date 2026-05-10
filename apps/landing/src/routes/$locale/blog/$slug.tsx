@@ -79,9 +79,6 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     return { post, locale: params.locale, relatedPosts, messages };
   },
   head: ({ loaderData }) => {
-    if (typeof document !== "undefined" && !loaderData?.post) {
-      return { meta: [], links: [], scripts: [] };
-    }
     const post = loaderData?.post;
     const locale = loaderData?.locale || "en";
     const pathname = `/blog/${post?.slug || ""}`;

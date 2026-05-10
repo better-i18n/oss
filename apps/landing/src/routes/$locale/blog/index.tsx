@@ -45,9 +45,6 @@ export const Route = createFileRoute("/$locale/blog/")({
     };
   },
   head: ({ loaderData }) => {
-    if (typeof document !== "undefined" && !loaderData?.messages) {
-      return { meta: [{ title: "Blog — Better I18N" }], links: [], scripts: [] };
-    }
     const locale = loaderData?.locale || "en";
     const pathname = "/blog";
     const meta = getLocalizedMeta(loaderData?.messages || {}, "blog", {

@@ -71,9 +71,6 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
     };
   },
   head: ({ loaderData }) => {
-    if (typeof document !== "undefined" && !loaderData?.locale) {
-      return { meta: [], links: [], scripts: [] };
-    }
     const locale = loaderData?.locale || "en";
     const currentPage = loaderData?.currentPage ?? 2;
     const totalPages = loaderData?.totalPages ?? 1;

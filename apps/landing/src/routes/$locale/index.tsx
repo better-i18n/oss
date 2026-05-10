@@ -135,13 +135,7 @@ export const Route = createFileRoute("/$locale/")({
     };
   },
   head: ({ loaderData }) =>
-    loaderData?.headData ?? {
-      meta: [
-        { title: "Better I18N — Localization Infrastructure for Modern Teams" },
-        { name: "description", content: "Ship multilingual apps faster with AI-powered translation, Git sync, CDN delivery, and framework SDKs." },
-      ],
-      links: [],
-      scripts: [],
+    loaderData?.headData ?? { meta: [], links: [], scripts: [],
     },
   component: LandingPage,
 });
