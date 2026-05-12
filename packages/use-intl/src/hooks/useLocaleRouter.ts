@@ -110,14 +110,14 @@ export function useLocaleRouter(): UseLocaleRouterReturn {
   let location: ReturnType<typeof useLocation> | null = null;
 
   try {
-     
-    router = useRouter();
+    // warn: false suppresses the "must be used inside <RouterProvider>" console.warn
+    // from tiny-warning when no TanStack Router context exists (e.g. react-router-dom apps).
+    router = useRouter({ warn: false });
   } catch {
     // No TanStack Router context — will use context-based navigation
   }
 
   try {
-     
     location = useLocation();
   } catch {
     // No TanStack Router context
