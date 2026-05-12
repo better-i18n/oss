@@ -1,5 +1,11 @@
 # @better-i18n/use-intl
 
+## 0.9.1
+
+### Patch Changes
+
+- 34e466f: Suppress "useRouter must be used inside RouterProvider" console warning in non-TanStack Router apps (e.g. react-router-dom). Pass `{ warn: false }` to TanStack Router's `useRouter()` — the try/catch fallback already handles missing context gracefully.
+
 ## 0.9.0
 
 ### Minor Changes
