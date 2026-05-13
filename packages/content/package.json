@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/content",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Content Analytics SDK for Better i18n — explicit tracking with framework adapters (Next.js, React, Expo, Svelte, Vue, vanilla)",
   "type": "module",
   "sideEffects": false,
@@ -76,10 +76,18 @@
     "vue": ">=3.3.0"
   },
   "peerDependenciesMeta": {
-    "react": { "optional": true },
-    "react-native": { "optional": true },
-    "svelte": { "optional": true },
-    "vue": { "optional": true }
+    "react": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/react": "^19.1.12",
