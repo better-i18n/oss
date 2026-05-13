@@ -424,8 +424,8 @@ function RootComponent() {
           >
             <ContentProvider
               config={{
-                projectId: "72c08291-d629-4e91-ba41-bfe137e672d2",
-                apiKey: "bi_pub_qTAlGgAuPFJLrdCHaYIAOSgjREecULsZMLuzbOhlZREWNsKgXRWToCIdCFWeKGyf",
+                projectId: "7cf66f9c-a30b-4376-bab2-51f496b83d4a",
+                apiKey: "bi_pub_qJLePAhVnKMPVpLevSMlQaGqxWQoHGMCAOFWSfoCabCHJjMNFxZxLGeFUmIBetyB",
                 analytics: { debug: import.meta.env.DEV },
               }}
             >
