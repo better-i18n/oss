@@ -1,0 +1,227 @@
+---
+title: Analytics API Reference
+description: Full API surface for @better-i18n/content — exports, hooks, options
+icon: Code
+---
+
+The full public API of `@better-i18n/content`. All exports are tree-shakeable (`sideEffects: false`).
+
+## Imports
+
+The package uses subpath exports — one entry per adapter, plus core.
+
+```ts
+// Framework-agnostic core (Node, Workers, Deno)
+import { createTracker } from '@better-i18n/content'
+
+// React (generic)
+import { ContentProvider, useTrack, useTrackView } from '@better-i18n/content/adapters/react'
+
+// Next.js (re-exports React adapter with 'use client')
+import { ContentProvider, useTrack, useTrackView } from '@better-i18n/content/adapters/nextjs'
+
+// Expo / React Native
+import { ContentProvider, useTrack, useTrackView } from '@better-i18n/content/adapters/expo'
+
+// Vue
+import { provideContent, useContent, useTrack } from '@better-i18n/content/adapters/vue'
+
+// Svelte
+import { initContent, track, reset } from '@better-i18n/content/adapters/svelte'
+
+// Vanilla / UMD
+import { init, track, reset } from '@better-i18n/content/adapters/vanilla'
+
+// Test utilities
+import { createFakeCollector, createMockConfig } from '@better-i18n/content/test'
+
+// Types only
+import type { ContentConfig, TrackOptions } from '@better-i18n/content/types'
+```
+
+## `createTracker(config)`
+
+Factory that creates a tracker instance. Runtime-agnostic — works in browsers, Node.js, Cloudflare Workers, Deno.
+
+```ts
+function createTracker(config: ContentConfig): {
+  track: (eventName: string, properties?: EventProperties, options?: TrackOptions) => void
+  reset: () => void
+}
+```
+
+### `ContentConfig`
+
+| Property | Type | Required | Description |
+|---|---|---|---|
+| `projectId` | `string` | ✅ | Your Better i18n project ID |
+| `apiKey` | `string` | ✅ | Public key (`bi_pub_*`) |
+| `analytics.enabled` | `boolean` | | Default `true`. Set `false` to no-op all calls. |
+| `analytics.endpoint` | `string` | | Override the ingestion URL. Default `https://content.better-i18n.com/v1/track`. |
+| `analytics.debug` | `boolean` | | Logs transport failures to console. |
+
+## `track(eventName, properties?, options?)`
+
+Send a single event.
+
+```ts
+track(
+  eventName: string,
+  properties?: Record<string, string | number | boolean | null>,
+  options?: TrackOptions,
+): void
+```
+
+### `TrackOptions`
+
+| Property | Type | Description |
+|---|---|---|
+| `identity.userId` | `string` | Stable user ID (hashed before storage) |
+| `identity.email` | `string` | User email (not stored, used only for routing) |
+| `identity.anonymousId` | `string` | Pre-login session ID |
+| `allowServer` | `boolean` | Allow calling from server runtime (Node/Workers). Default `false`. |
+
+### Reserved property names
+
+These property keys are extracted and mapped to specific AE columns:
+
+| Property | Description |
+|---|---|
+| `entryId` | UUID of the content entry |
+| `contentModelSlug` | Slug of the model (e.g. `blog`, `faq`) |
+| `entrySlug` (or `slug`) | Human-readable entry slug |
+| `language` | Locale code (`en`, `tr`, ...) |
+| `framework` | SDK adapter (`nextjs`, `react`, `expo`, ...) — set automatically by adapter |
+| `sdkVersion` | Set automatically |
+| `hostname` | Defaults to `window.location.hostname` if not provided |
+| `path` | Defaults to `window.location.pathname` if not provided |
+| `referrer` | Defaults to `document.referrer` if not provided |
+| `environment` | `production` / `preview` / `development` |
+| `loadTimeMs` | Numeric — content render time |
+
+All other properties are accepted but stored as a JSON blob (Phase 2 — currently dropped).
+
+## React hooks
+
+### `useContent()`
+
+Returns the tracker context. Throws if used outside `<ContentProvider>`.
+
+```ts
+const { track, reset, config } = useContent()
+```
+
+### `useTrack()`
+
+Shortcut for `useContent().track`.
+
+```ts
+const track = useTrack()
+track('content.view', { entryId: 'abc' })
+```
+
+### `useTrackView(eventName?, properties?)`
+
+Fires a single event on mount. De-duped — won't refire on re-render.
+
+```ts
+useTrackView('content.view', {
+  entryId: post.id,
+  contentModel: 'blog',
+})
+```
+
+Default event name is `'content.view'`. Properties update fires a new event when shallow-changed.
+
+## Vue API
+
+### `provideContent(config)`
+
+Provides the tracker to all descendants. Call once in your root component.
+
+```ts
+provideContent({ projectId, apiKey })
+```
+
+### `useTrack()` / `useContent()`
+
+Inject the tracker. Throws if `provideContent()` wasn't called.
+
+```ts
+const track = useTrack()
+track('content.view', { entryId: 'abc' })
+```
+
+## Svelte API
+
+### `initContent(config)`
+
+Initializes the global tracker. Call once at app load.
+
+```ts
+initContent({ projectId, apiKey })
+```
+
+### `track()` / `reset()`
+
+Module-level functions. Warns if `initContent()` wasn't called.
+
+## Vanilla API
+
+```ts
+// One-time init
+init({ projectId, apiKey })
+
+// Anywhere
+track('content.view', { entryId: 'abc' })
+
+// Or via window global (after init):
+window.betterContent.track('content.view', { entryId: 'abc' })
+```
+
+## Test utilities
+
+For unit testing your code that uses the SDK:
+
+```ts
+import { createFakeCollector, createMockConfig } from '@better-i18n/content/test'
+
+const collector = createFakeCollector()
+const config = createMockConfig({ projectId: 'test' })
+
+// Inject collector.track instead of the real track function
+collector.track('content.view', { entryId: 'abc' })
+
+expect(collector.getEvents()).toHaveLength(1)
+expect(collector.getLastEvent()?.eventName).toBe('content.view')
+```
+
+## Type exports
+
+```ts
+import type {
+  ContentConfig,
+  AnalyticsConfig,
+  TrackOptions,
+  IdentityOptions,
+  EventProperties,
+  TrackEvent,
+} from '@better-i18n/content/types'
+```
+
+## Bundle size
+
+| Entry | Min + gzip |
+|---|---|
+| `@better-i18n/content` (core) | ~1.1 KB |
+| `/adapters/nextjs` | ~1.6 KB |
+| `/adapters/react` | ~1.6 KB |
+| `/adapters/expo` | ~2.0 KB |
+| `/adapters/vanilla` | ~0.9 KB |
+
+No runtime dependencies. Tree-shakeable.
+
+## Next steps
+
+- [Analytics overview](/content/analytics) — concepts, transport, safety
+- [Data Model](/content/analytics-data-model) — AE schema, what's stored where

@@ -1,0 +1,149 @@
+---
+title: REST API
+description: Fetch localized content entries from any framework via a CDN-backed REST endpoint
+icon: Globe
+---
+
+The Content REST API serves your published content from `content.better-i18n.com` — KV-cached at the edge, language-aware, framework-agnostic.
+
+## Base URL
+
+```
+https://content.better-i18n.com
+```
+
+## Authentication
+
+Every request requires an `x-api-key` header. Use a **public** key (`bi_pub_*`) for read operations — these are safe to embed in frontend code.
+
+```bash title="curl"
+curl https://content.better-i18n.com/v1/content/acme/blog/models \
+  -H "x-api-key: bi_pub_xxxxxxxxxxxx"
+```
+
+<Callout type="warn">
+`bi_sec_*` keys are server-only and have write access. Never embed them in client-side code.
+</Callout>
+
+## Endpoints
+
+<Tabs items={['List models', 'List entries', 'Get entry']}>
+<Tab value="List models">
+
+```
+GET /v1/content/:org/:project/models
+```
+
+Lists all content models for a project. Returns model metadata, fields, and counts.
+
+```ts
+const res = await fetch(
+  `https://content.better-i18n.com/v1/content/acme/blog/models`,
+  { headers: { 'x-api-key': process.env.BETTER_I18N_KEY! } }
+)
+const { models } = await res.json()
+```
+
+</Tab>
+<Tab value="List entries">
+
+```
+GET /v1/content/:org/:project/models/:modelSlug/entries
+```
+
+| Query param | Type | Description |
+|---|---|---|
+| `language` | `string` | Returns entries with that locale's values (e.g. `en`, `tr`) |
+| `page` | `number` | 1-indexed page number |
+| `limit` | `number` | Page size (max 100) |
+| `status` | `'published' \| 'draft'` | Filter by publish status |
+| `sort` | `string` | Field to sort by |
+| `order` | `'asc' \| 'desc'` | Sort direction |
+| `fields` | `string` | Comma-separated field whitelist |
+| `expand` | `string` | Comma-separated reference fields to inline |
+| `search` | `string` | Full-text search across localized fields |
+| `filter[field]` | `string` | Filter by custom field value |
+
+```ts
+const params = new URLSearchParams({
+  language: 'tr',
+  status: 'published',
+  page: '1',
+  limit: '20',
+})
+
+const res = await fetch(
+  `https://content.better-i18n.com/v1/content/acme/blog/models/post/entries?${params}`,
+  { headers: { 'x-api-key': key } }
+)
+```
+
+</Tab>
+<Tab value="Get entry">
+
+```
+GET /v1/content/:org/:project/models/:modelSlug/entries/:entrySlug
+```
+
+| Query param | Description |
+|---|---|
+| `language` | Locale to resolve (e.g. `en`, `tr`) |
+| `fields` | Field whitelist |
+| `expand` | Inline references |
+
+```ts
+const res = await fetch(
+  `https://content.better-i18n.com/v1/content/acme/blog/models/post/entries/getting-started?language=en`,
+  { headers: { 'x-api-key': key } }
+)
+const entry = await res.json()
+```
+
+</Tab>
+</Tabs>
+
+## Caching
+
+| Layer | TTL | Purged on |
+|---|---|---|
+| KV cache | 60s | Entry publish, model update |
+| `Cache-Control` header | `s-maxage=60, stale-while-revalidate=120` | — |
+
+Reads are globally consistent (KV is the single source). When you publish in the dashboard, an invalidation runs across all POPs.
+
+## Status codes
+
+| Code | Meaning |
+|---|---|
+| `200` | Success |
+| `401` | Missing `x-api-key` |
+| `403` | Invalid key, expired, or wrong scope |
+| `404` | Model or entry doesn't exist |
+| `429` | Rate limit exceeded |
+
+## Next.js example
+
+```tsx title="app/blog/[slug]/page.tsx"
+async function getEntry(slug: string, locale: string) {
+  const res = await fetch(
+    `https://content.better-i18n.com/v1/content/acme/blog/models/post/entries/${slug}?language=${locale}`,
+    {
+      headers: { 'x-api-key': process.env.BETTER_I18N_KEY! },
+      next: { revalidate: 60 },
+    },
+  )
+  if (!res.ok) return null
+  return res.json()
+}
+
+export default async function Page({ params }: { params: { slug: string } }) {
+  const entry = await getEntry(params.slug, 'en')
+  if (!entry) return notFound()
+  return <article>{entry.body}</article>
+}
+```
+
+## Next steps
+
+- [Analytics](/content/analytics) — track which entries get viewed
+- [Models](/content/models) — define your content schema

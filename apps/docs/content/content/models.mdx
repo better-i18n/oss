@@ -1,0 +1,66 @@
+---
+title: Content Models
+description: Define structured, localized content models with fields, types, and relations
+icon: Box
+---
+
+A **content model** is the schema for a type of content — a blog post, a product page, a FAQ entry. You define the fields once in the dashboard, and every entry created from that model conforms to it.
+
+## Anatomy of a model
+
+| Property | Description |
+|---|---|
+| `slug` | Universal identifier across all locales (e.g. `blog`, `product-page`) |
+| `name` | Human-readable label shown in the dashboard |
+| `kind` | `collection` (many entries) or `singleton` (one entry, like a homepage) |
+| `includeBody` | Whether entries have a long-form rich-text body |
+| `fields[]` | Custom fields (text, number, boolean, date, image, reference, JSON) |
+
+## Field types
+
+| Type | Use for | Localized? |
+|---|---|---|
+| `text` | Short strings — titles, names | Yes |
+| `richtext` | Long-form content with formatting | Yes |
+| `number` | Counts, prices, ratings | No (usually) |
+| `boolean` | Toggle flags — featured, archived | No |
+| `date` | Publish date, event start | No |
+| `image` | Media reference | No |
+| `reference` | Link to another entry | No |
+| `json` | Free-form structured data | Optional |
+
+## Localized vs. universal fields
+
+A field with `localized: true` stores a separate value per language. Updating English doesn't affect Turkish.
+
+A field with `localized: false` (the default for non-text fields) is shared — one value across all locales.
+
+<Callout type="info">
+The top-level entry `slug` is **always universal**. If you need per-language URL slugs (e.g. `/en/about` vs `/tr/hakkimizda`), add a custom field with `localized: true` (typically `localized_slug`).
+</Callout>
+
+## Slug vs localized slug
+
+| Path | Universal slug | Localized slug |
+|---|---|---|
+| Dashboard identifier | ✅ | ❌ |
+| URL routing | ❌ | ✅ |
+| Cross-language reference | ✅ | ❌ |
+
+```ts
+// Universal slug — same for all languages
+entry.slug // "getting-started"
+
+// Localized slug from a custom field
+entry.translations.en.customFields.localized_slug // "getting-started"
+entry.translations.tr.customFields.localized_slug // "baslangic"
+```
+
+## Working with models
+
+Models are defined in the dashboard. For programmatic access via the MCP server, see [Content MCP](/mcp/tool-reference).
+
+## Next steps
+
+- [REST API](/content/rest-api) — fetch entries from any framework
+- [Analytics](/content/analytics) — track entry views

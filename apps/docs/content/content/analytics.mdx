@@ -1,0 +1,227 @@
+---
+title: Analytics SDK
+description: Track which content your users view, in which language, and from where — with sendBeacon-first transport and framework adapters
+icon: BarChart3
+---
+
+The `@better-i18n/content` SDK is a lightweight tracking client for Better i18n Content. Drop it into any frontend, call `track()` or `useTrackView()`, and your dashboard fills with views, languages, models, and countries — automatically.
+
+## What gets tracked
+
+By default, only what you explicitly track. There's no auto-pageview, no fingerprinting, no cookies.
+
+Every `track()` call sends one event with:
+
+- Project + organization context (resolved from your API key)
+- Event name (e.g. `content.view`)
+- Custom properties you pass (`entryId`, `language`, `framework`, ...)
+- Country code (from Cloudflare's edge metadata — never IP)
+- Timestamp
+
+See [Data Model](/content/analytics-data-model) for the full schema.
+
+## Install
+
+<Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
+<Tab value="npm">```bash npm install @better-i18n/content ```</Tab>
+<Tab value="yarn">```bash yarn add @better-i18n/content ```</Tab>
+<Tab value="pnpm">```bash pnpm add @better-i18n/content ```</Tab>
+<Tab value="bun">```bash bun add @better-i18n/content ```</Tab>
+</Tabs>
+
+## Quick start (Next.js)
+
+<Steps>
+<Step>
+
+### Wrap your app
+
+```tsx title="app/providers.tsx"
+'use client'
+import { ContentProvider } from '@better-i18n/content/adapters/nextjs'
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <ContentProvider
+      config={{
+        projectId: process.env.NEXT_PUBLIC_BETTER_I18N_PROJECT_ID!,
+        apiKey: process.env.NEXT_PUBLIC_BETTER_I18N_KEY!,
+      }}
+    >
+      {children}
+    </ContentProvider>
+  )
+}
+```
+
+</Step>
+<Step>
+
+### Track views on content pages
+
+```tsx title="app/blog/[slug]/page.tsx"
+'use client'
+import { useTrackView } from '@better-i18n/content/adapters/nextjs'
+
+export default function BlogPost({ post }: { post: Post }) {
+  useTrackView('content.view', {
+    entryId: post.id,
+    contentModel: 'blog',
+    entrySlug: post.slug,
+    language: post.locale,
+  })
+
+  return <article>{post.body}</article>
+}
+```
+
+</Step>
+<Step>
+
+### See the data
+
+Open your project in the dashboard — within seconds, the **Content Analytics** section fills in. Total views, top entries, language breakdown, country map.
+
+</Step>
+</Steps>
+
+## Why a public API key is safe
+
+The SDK uses your `bi_pub_*` key — designed to be embedded in client-side code. Track events are **write-only**:
+
+- Can't read content data
+- Can't read other projects' analytics
+- Server-side rate-limited per IP and per project
+
+This is the same model PostHog, Mixpanel, and Vercel Analytics use. Stolen keys can spam your events, but they can't exfiltrate anything.
+
+See [Why is my API key safe?](#why-is-my-api-key-safe) below for the threat model.
+
+## Transport: never block your page
+
+The SDK tries three transports in order and silently drops failures:
+
+```
+sendBeacon  →  fetch(keepalive)  →  fetch
+   │              │                    │
+   │              └─ < 51.2 KB body    └─ regular POST
+   └─ fire-and-forget at page unload
+```
+
+`sendBeacon` survives navigation and tab close — events never get lost when users leave. `fetch keepalive` handles the rest under the body limit. Plain `fetch` is the last resort.
+
+All three are wrapped in try/catch. A failed event is dropped silently — never thrown to your app.
+
+## SSR & build-time safety
+
+The SDK has three guards:
+
+- **`isBuildTime()`** — Detects `NEXT_PHASE=phase-production-build`, `GATSBY_BUILD_STAGE`, `ASTRO_BUILD`. Calls during build log a warning and skip.
+- **`isBrowser()`** — Calls from a server (Node.js, edge runtime) skip unless `options.allowServer: true`.
+- **`useEffect`-based init** — `ContentProvider` initializes the tracker inside `useEffect`, not `useMemo`. SSR renders never instantiate.
+
+You can call `track()` in any render path — it's safe.
+
+## Other frameworks
+
+<Tabs items={['React', 'Expo', 'Vue', 'Svelte', 'Vanilla']}>
+<Tab value="React">
+
+```tsx
+import { ContentProvider, useTrackView } from '@better-i18n/content/adapters/react'
+
+<ContentProvider config={{ projectId, apiKey }}>
+  <App />
+</ContentProvider>
+```
+
+</Tab>
+<Tab value="Expo">
+
+```tsx
+import { ContentProvider, useTrackView } from '@better-i18n/content/adapters/expo'
+
+// Auto-flushes when app goes to background via AppState
+<ContentProvider config={{ projectId, apiKey }}>
+  <App />
+</ContentProvider>
+```
+
+Note: Expo uses `fetch` (no `sendBeacon` on React Native).
+
+</Tab>
+<Tab value="Vue">
+
+```ts
+import { provideContent, useTrack } from '@better-i18n/content/adapters/vue'
+
+// In your root component
+provideContent({ projectId, apiKey })
+
+// In any child component
+const track = useTrack()
+track('content.view', { entryId: 'abc' })
+```
+
+</Tab>
+<Tab value="Svelte">
+
+```ts
+import { initContent, track } from '@better-i18n/content/adapters/svelte'
+
+// On app load
+initContent({ projectId, apiKey })
+
+// Anywhere
+track('content.view', { entryId: 'abc' })
+```
+
+</Tab>
+<Tab value="Vanilla">
+
+```html
+<script type="module">
+  import { init, track } from 'https://esm.sh/@better-i18n/content/adapters/vanilla'
+
+  init({ projectId: '...', apiKey: '...' })
+  track('content.view', { entryId: 'abc' })
+</script>
+```
+
+Or via `window.betterContent.track(...)` after `init()`.
+
+</Tab>
+</Tabs>
+
+## Property validation
+
+Properties must be primitive: `string`, `number`, `boolean`, or `null`. Nested objects and arrays are rejected:
+
+- **Development** (`NODE_ENV !== 'production'`): throws `Error("Invalid property...")`
+- **Production**: silently strips the invalid property and warns in debug mode
+
+This catches bugs early without breaking your app in prod.
+
+```ts
+// ✅ OK
+track('content.view', { entryId: 'abc', count: 1, featured: true })
+
+// ❌ Throws in dev, stripped in prod
+track('content.view', { entryId: 'abc', author: { id: '1' } })
+```
+
+## Why is my API key safe?
+
+| Concern | Mitigation |
+|---|---|
+| Key extracted from JS bundle | Key is write-only — can't read content or analytics |
+| Spam events from stolen key | Server-side rate limit (per IP, per project) + CF WAF |
+| Cross-project access | Key scoped to a single `projectId` at validation time |
+| Sensitive PII in properties | You control payload — never log emails, only IDs |
+
+Phase 1 mitigations: KV-cached key validation (1h TTL), CF Workers CPU/memory limits, server-side validation rejects malformed payloads.
+
+## Next steps
+
+- [API Reference](/content/analytics-api) — full surface area: `track()`, `useTrackView()`, options
+- [Data Model](/content/analytics-data-model) — blob/double mapping, what's stored where

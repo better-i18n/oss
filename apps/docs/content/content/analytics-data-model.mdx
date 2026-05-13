@@ -1,0 +1,141 @@
+---
+title: Data Model
+description: How content views are stored in Cloudflare Analytics Engine — blob and double mappings, query patterns, retention
+icon: Database
+---
+
+Content analytics events are written to **Cloudflare Analytics Engine** (`contentAnalytics` dataset). This page explains the schema so you understand what's stored, what's queryable, and what's not.
+
+## Why CF Analytics Engine?
+
+| Feature | Benefit |
+|---|---|
+| Fire-and-forget writes | `writeDataPoint()` is non-blocking — ingestion never slows down responses |
+| Built-in sampling | High-volume events get statistically sampled (still accurate via `SUM(_sample_interval)`) |
+| 90-day retention | Free tier; we archive older data to R2 |
+| SQL via REST API | Same queries we use power your dashboard charts |
+| No schema migrations | Adding new dimensions = adding a new blob slot |
+
+The trade-off: AE is **append-only**. Events can't be edited or deleted. This is fine for analytics but means you can't "fix" a past event.
+
+## Schema
+
+The `contentAnalytics` dataset uses 1 index, 14 blobs (strings), 2 doubles (numbers).
+
+### Indexes
+
+| Slot | Field | Notes |
+|---|---|---|
+| `index1` | `orgId` | Partition key — max 32 bytes. Queries by `orgId` are fast partitioned scans. |
+
+### Blobs (strings)
+
+| Slot | Field | Source |
+|---|---|---|
+| `blob1` | `projectId` | From API key validation |
+| `blob2` | `eventName` | e.g. `content.view`, `content.click` |
+| `blob3` | `entryId` | From `properties.entryId` |
+| `blob4` | `contentModelSlug` | From `properties.contentModelSlug` |
+| `blob5` | `entrySlug` | From `properties.entrySlug` (or `properties.slug`) |
+| `blob6` | `language` | From `properties.language` |
+| `blob7` | `framework` | From `properties.framework` (set by adapter) |
+| `blob8` | `countryCode` | From `request.cf.country` (edge metadata, not IP) |
+| `blob9` | `sdkVersion` | From `properties.sdkVersion` |
+| `blob10` | `hostname` | From `properties.hostname` or `window.location.hostname` |
+| `blob11` | `path` | From `properties.path` or `window.location.pathname` |
+| `blob12` | `referrer` | From `properties.referrer` or `document.referrer` |
+| `blob13` | `userId` | From `identity.userId` or `identity.anonymousId` |
+| `blob14` | `environment` | `production` / `preview` / `development` |
+
+### Doubles (numbers)
+
+| Slot | Field | Notes |
+|---|---|---|
+| `double1` | `count` | Always `1`. Sum across rows for total event count (sampling-aware via `SUM(_sample_interval)`). |
+| `double2` | `loadTimeMs` | Numeric — content render time, if provided |
+
+### What's NOT stored
+
+- **IP addresses** — only country code from CF edge metadata
+- **User agent** — not collected (Phase 1)
+- **Email addresses** — `identity.email` is used for routing but never persisted
+- **Arbitrary properties** — only the reserved property names map to AE columns. Phase 2 will support a free-form JSON blob.
+
+## Query patterns
+
+All reads go through `POST /api/trpc/contentAnalytics.getContentStats`. Internally, six AE SQL queries run in parallel:
+
+```sql
+-- Overview: total views + unique entries
+SELECT
+  SUM(_sample_interval) AS total_views,
+  COUNT(DISTINCT blob3) AS unique_entries
+FROM contentAnalytics
+WHERE index1 = '{orgId}'
+  AND blob1 = '{projectId}'
+  AND blob2 = 'content.view'
+  AND timestamp > NOW() - INTERVAL '7' DAY
+```
+
+```sql
+-- Top entries
+SELECT blob3 AS entry_id, blob5 AS entry_slug, blob4 AS model_slug,
+       SUM(_sample_interval) AS views
+FROM contentAnalytics
+WHERE index1 = '{orgId}' AND blob1 = '{projectId}'
+  AND blob2 = 'content.view'
+  AND timestamp > NOW() - INTERVAL '7' DAY
+GROUP BY entry_id, entry_slug, model_slug
+ORDER BY views DESC
+LIMIT 20
+```
+
+```sql
+-- Time series — hourly for 24h, daily for 7d/30d
+SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS ts,
+       SUM(_sample_interval) AS views
+FROM contentAnalytics
+WHERE index1 = '{orgId}' AND blob1 = '{projectId}'
+  AND blob2 = 'content.view'
+  AND timestamp > NOW() - INTERVAL '7' DAY
+GROUP BY ts
+ORDER BY ts ASC
+```
+
+Results are cached in KV: 5 min (24h period), 15 min (7d), 1 hour (30d).
+
+## SQL gotchas
+
+If you query AE directly via the REST API, watch for:
+
+- **All numeric values come back as strings** — always `Number()` cast on the client
+- **No `COALESCE`** — empty time buckets must be filled in JS
+- **No `OFFSET`** — pagination is `LIMIT n` then `.slice()` in JS
+- **No parameterized queries** — escape interpolated values yourself (we whitelist `[a-zA-Z0-9-]` for IDs)
+- **`SUM(_sample_interval)` for counts**, not `COUNT(*)` — respects sampling
+
+## Retention
+
+| Layer | Duration |
+|---|---|
+| Hot (queryable AE) | 90 days |
+| Cold (R2 archive) | Roadmap: indefinite, daily Apache Arrow exports |
+
+After 90 days, AE drops events. We'll mirror Counterscale's pattern: a daily cron exports the previous day's data to R2 as Apache Arrow IPC files for long-term analysis.
+
+## Capacity & limits
+
+| Limit | Value |
+|---|---|
+| Max `writeDataPoint` calls per Worker invocation | 250 |
+| Max blob size per data point | 16 KB total |
+| Max blobs per data point | 20 (we use 14) |
+| Max doubles per data point | 20 (we use 2) |
+| Per-dataset write rate | No documented hard limit — CF auto-throttles at infrastructure level |
+
+Phase 2 mitigations on top: per-IP rate limit (~50 req/s burst), per-project quota tied to plan, datacenter IP and bot-UA drop.
+
+## Next steps
+
+- [Analytics overview](/content/analytics) — concepts, transport, safety
+- [API Reference](/content/analytics-api) — full SDK surface
