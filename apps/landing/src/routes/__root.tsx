@@ -14,6 +14,7 @@ import {
   getLocaleFromPath,
   useTranslations,
 } from "@better-i18n/use-intl";
+import { ContentProvider } from "@better-i18n/content/adapters/react";
 import type { Messages } from "@better-i18n/use-intl";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { detectLocale } from "@better-i18n/core";
@@ -421,9 +422,17 @@ function RootComponent() {
                 .trim();
             }}
           >
-            <Outlet />
-            <CookieBanner />
-            <WebMcpRegistrar locale={locale} />
+            <ContentProvider
+              config={{
+                projectId: "72c08291-d629-4e91-ba41-bfe137e672d2",
+                apiKey: "bi_pub_qTAlGgAuPFJLrdCHaYIAOSgjREecULsZMLuzbOhlZREWNsKgXRWToCIdCFWeKGyf",
+                analytics: { debug: import.meta.env.DEV },
+              }}
+            >
+              <Outlet />
+              <CookieBanner />
+              <WebMcpRegistrar locale={locale} />
+            </ContentProvider>
           </BetterI18nProvider>
         </QueryClientProvider>
         <Scripts />

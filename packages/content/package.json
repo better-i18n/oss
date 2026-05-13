@@ -1,0 +1,99 @@
+{
+  "name": "@better-i18n/content",
+  "version": "0.1.0",
+  "description": "Content Analytics SDK for Better i18n — explicit tracking with framework adapters (Next.js, React, Expo, Svelte, Vue, vanilla)",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    },
+    "./adapters/nextjs": {
+      "types": "./dist/adapters/nextjs/index.d.ts",
+      "default": "./dist/adapters/nextjs/index.js"
+    },
+    "./adapters/react": {
+      "types": "./dist/adapters/react/index.d.ts",
+      "default": "./dist/adapters/react/index.js"
+    },
+    "./adapters/expo": {
+      "types": "./dist/adapters/expo/index.d.ts",
+      "default": "./dist/adapters/expo/index.js"
+    },
+    "./adapters/svelte": {
+      "types": "./dist/adapters/svelte/index.d.ts",
+      "default": "./dist/adapters/svelte/index.js"
+    },
+    "./adapters/vue": {
+      "types": "./dist/adapters/vue/index.d.ts",
+      "default": "./dist/adapters/vue/index.js"
+    },
+    "./adapters/vanilla": {
+      "types": "./dist/adapters/vanilla/index.d.ts",
+      "default": "./dist/adapters/vanilla/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.js"
+    },
+    "./test": {
+      "types": "./dist/test/index.d.ts",
+      "default": "./dist/test/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -b --force",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf dist .tsbuildinfo tsconfig.tsbuildinfo",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "analytics",
+    "content",
+    "tracking",
+    "better-i18n",
+    "cloudflare-analytics-engine",
+    "react",
+    "nextjs",
+    "expo"
+  ],
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.72.0",
+    "svelte": ">=4.0.0",
+    "vue": ">=3.3.0"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": true },
+    "react-native": { "optional": true },
+    "svelte": { "optional": true },
+    "vue": { "optional": true }
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.12",
+    "jsdom": "^26.1.0",
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/better-i18n/oss",
+    "directory": "packages/content"
+  }
+}

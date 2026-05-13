@@ -7,12 +7,13 @@
     "build": "vite build && bun scripts/fix-sitemap.ts && bun scripts/build-agent-skills-index.ts && bun scripts/compress-html.ts && bun run build:worker",
     "build:worker": "esbuild worker-entry.ts --outfile=dist/worker-entry.js --format=esm --platform=neutral --log-override:ignored-bare-import=silent",
     "preview": "wrangler dev --port 8990",
-    "prebuild": "bun run --filter @better-i18n/core build && bun run --filter @better-i18n/use-intl build",
+    "prebuild": "bun run --filter @better-i18n/core build && bun run --filter @better-i18n/use-intl build && bun run --filter @better-i18n/content build",
     "deploy": "bun run build && wrangler deploy",
     "logs": "wrangler tail",
     "test": "vitest run"
   },
   "dependencies": {
+    "@better-i18n/content": "workspace:*",
     "@better-i18n/core": "workspace:*",
     "@better-i18n/schemas": "workspace:*",
     "@better-i18n/sdk": "^3.3.0",

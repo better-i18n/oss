@@ -21,6 +21,7 @@ import CommentSection from "@/components/blog/CommentSection";
 import { getBlogCTA } from "@/lib/blog-ctas";
 import { trackBlogView } from "@/lib/analytics-events";
 import { useEngagedTime } from "@/hooks/use-engaged-time";
+import { useTrackView } from "@better-i18n/content/adapters/react";
 import { getRelatedPages } from "@/seo/internal-links";
 // Breadcrumb removed from UI but kept for SEO structured data
 import ShareButtons from "@/components/blog/ShareButtons";
@@ -220,6 +221,15 @@ function BlogPostPage() {
     });
   }, [post.slug]);
   useEngagedTime("blog", post.slug);
+
+  // Better i18n Content Analytics — tracks per-entry views by locale
+  useTrackView("content.view", {
+    entryId: post.id,
+    contentModelSlug: "blog-posts",
+    entrySlug: post.slug,
+    language: locale,
+    framework: "tanstack-start",
+  });
 
   return (
     <div className="bg-white">
