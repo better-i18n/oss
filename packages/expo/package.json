@@ -77,7 +77,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.19.41",
     "@types/react": "^18.0.0",
     "i18next": "^24.0.0",
     "typescript": "~5.9.2"
