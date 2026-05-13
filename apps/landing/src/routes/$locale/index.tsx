@@ -45,6 +45,7 @@ import {
 import { getHomePageStructuredData, getFAQSchema, formatStructuredData } from "@/lib/structured-data";
 import { getChangelogsMeta } from "@/lib/changelog";
 import { withTimeout } from "@/lib/fetch-utils";
+import { readMessages } from "@/lib/ssr-messages";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 import { getPricingPlans, type PricingPlan } from "@/lib/content";
@@ -69,11 +70,13 @@ type HomeLoaderData = {
 export const Route = createFileRoute("/$locale/")({
   loader: async ({ context, params }): Promise<HomeLoaderData> => {
     const locale = params.locale as string;
-    // Use metadata-only fetch (single API call) instead of full content (N+1 calls)
-    // to keep homepage load time within crawler timeout limits.
-    // Wrap with 3s timeout so the page renders even if the API is slow.
-    const [allMessages, releases, plans] = await Promise.all([
-      getMessages({ project: i18nConfig.project, locale: context.locale }),
+    // Messages come from root's beforeLoad (sequential, guaranteed populated).
+    // readMessages returns the same data root loaded — no separate CDN call.
+    const allMessages = readMessages(context.requestId) ?? await getMessages({
+      project: i18nConfig.project,
+      locale: context.locale,
+    });
+    const [releases, plans] = await Promise.all([
       withTimeout(getChangelogsMeta(locale), 3000, []),
       getPricingPlans(context.locale),
     ]);
