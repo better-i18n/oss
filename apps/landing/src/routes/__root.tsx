@@ -20,6 +20,7 @@ import { detectLocale } from "@better-i18n/core";
 import { getRequestHeader } from "@tanstack/react-start/server";
 import { i18nConfig } from "../i18n.config";
 import { filterMessagesByPath, getCdnNamespacesForPage, extractPagePath } from "../lib/page-namespaces";
+import { storeMessages, readMessages } from "../lib/ssr-messages";
 import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
@@ -182,14 +183,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const locale = getLocaleFromPath(location.pathname, localeConfig);
     const requestId = crypto.randomUUID();
 
-    return { locale, locales, requestId };
-  },
-
-  loader: async ({ context, location }) => {
-    // Selective namespace loading: only fetch CDN namespace files this page needs
-    // instead of all 103 namespaces (103 fetches → ~10 fetches).
-    // getCdnNamespacesForPage resolves dot-path specs (e.g., "marketing.compare.crowdin")
-    // to CDN file names ("marketing"), since CDN has one file per top-level namespace.
+    // Load messages ONCE here (beforeLoad runs sequentially parent→child).
+    // Child loaders read from the shared Map via requestId — zero race condition.
     const pagePath = extractPagePath(location.pathname);
     const cdnNamespaces = getCdnNamespacesForPage(pagePath) ?? undefined;
 
@@ -199,8 +194,19 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
     const allMessages = await getMessages({
       project: i18nConfig.project,
-      locale: context.locale,
+      locale,
       namespaces: cdnNamespaces,
+    });
+    storeMessages(requestId, allMessages);
+
+    return { locale, locales, requestId };
+  },
+
+  loader: async ({ context, location }) => {
+    const allMessages = readMessages(context.requestId) ?? await getMessages({
+      project: i18nConfig.project,
+      locale: context.locale,
+      namespaces: getCdnNamespacesForPage(extractPagePath(location.pathname)) ?? undefined,
     });
     const messages = filterMessagesByPath(allMessages, location.pathname);
 
