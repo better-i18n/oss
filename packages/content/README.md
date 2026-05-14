@@ -8,6 +8,23 @@ Content Analytics SDK for Better i18n. Track which content your users view, in w
 npm install @better-i18n/content
 ```
 
+## Configure
+
+Get two values from your Better i18n dashboard:
+
+| Value | Where to find it |
+|---|---|
+| **Project ID** | Settings → General → Project ID (format: `your-org/your-project`) |
+| **API Key** | Settings → API Keys → Public Key (starts with `bi_pub_`) |
+
+The Project ID is the same `org/project` slug shown in your dashboard URL — `dash.better-i18n.com/your-org/your-project` → `"your-org/your-project"`. Pass this exact string as `projectId`.
+
+```bash
+# .env.local
+NEXT_PUBLIC_BETTER_I18N_PROJECT_ID=your-org/your-project
+NEXT_PUBLIC_BETTER_I18N_KEY=bi_pub_xxxxx
+```
+
 ## Quick start (Next.js)
 
 ```tsx
@@ -60,9 +77,10 @@ export default function BlogPost({ post }) {
 
 ## Documentation
 
-- [Analytics SDK overview](https://docs.better-i18n.com/content/analytics)
-- [API Reference](https://docs.better-i18n.com/content/analytics-api)
-- [Data Model](https://docs.better-i18n.com/content/analytics-data-model)
+- [Analytics overview](https://docs.better-i18n.com/sdk/analytics)
+- [API Reference](https://docs.better-i18n.com/sdk/analytics-api)
+- [Data Model](https://docs.better-i18n.com/sdk/analytics-data-model)
+- [Framework adapters](https://docs.better-i18n.com/sdk/nextjs)
 
 ## License
 
