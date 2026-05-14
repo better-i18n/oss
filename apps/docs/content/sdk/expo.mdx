@@ -31,6 +31,19 @@ The Expo adapter wraps the React Native API and flushes pending events when the 
   </Tab>
 </Tabs>
 
+## Configure
+
+Add your Project ID and API key to `app.config.ts` (or `app.json`). Find both in the dashboard under **Settings → General** and **Settings → API Keys**.
+
+```ts title="app.config.ts"
+export default {
+  extra: {
+    betterI18nProjectId: 'your-org/your-project',
+    betterI18nKey: process.env.BETTER_I18N_KEY,
+  },
+}
+```
+
 ## Setup
 
 ```tsx title="App.tsx"

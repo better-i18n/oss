@@ -20,6 +20,26 @@ Every `track()` call sends one event with:
 
 See [Data Model](/sdk/analytics-data-model) for the full schema.
 
+## Configure
+
+You need two values from the dashboard:
+
+| Value | Where to find it |
+|---|---|
+| **Project ID** | Settings → General → Project ID (format: `your-org/your-project`) |
+| **API Key** | Settings → API Keys → Public Key (starts with `bi_pub_`) |
+
+<Callout type="info">
+  The Project ID is the same `org/project` slug shown in your dashboard URL — `dash.better-i18n.com/your-org/your-project` → `"your-org/your-project"`. Pass this exact string to the SDK as `projectId`. The Content SDK and Analytics SDK both accept this format.
+</Callout>
+
+Set them in your `.env.local`:
+
+```bash title=".env.local"
+NEXT_PUBLIC_BETTER_I18N_PROJECT_ID=your-org/your-project
+NEXT_PUBLIC_BETTER_I18N_KEY=bi_pub_xxxxx
+```
+
 ## Install
 
 <Tabs items={['npm', 'bun', 'pnpm', 'yarn']}>

@@ -31,6 +31,15 @@ The Vue adapter uses `provide`/`inject` to share the tracker across your compone
   </Tab>
 </Tabs>
 
+## Configure
+
+Add your Project ID and API key to `.env`. Find both in the dashboard under **Settings → General** and **Settings → API Keys**.
+
+```bash title=".env"
+VITE_BETTER_I18N_PROJECT_ID=your-org/your-project
+VITE_BETTER_I18N_KEY=bi_pub_xxxxx
+```
+
 ## Setup (Vue 3)
 
 ```ts title="src/main.ts"

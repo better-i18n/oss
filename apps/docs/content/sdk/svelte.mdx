@@ -31,6 +31,15 @@ The Svelte adapter is initialized once at app boot and exposes a `track()` funct
   </Tab>
 </Tabs>
 
+## Configure
+
+Add your Project ID and API key to `.env`. Find both in the dashboard under **Settings → General** and **Settings → API Keys**.
+
+```bash title=".env"
+PUBLIC_BETTER_I18N_PROJECT_ID=your-org/your-project
+PUBLIC_BETTER_I18N_KEY=bi_pub_xxxxx
+```
+
 ## Setup
 
 ```ts title="src/routes/+layout.ts"

@@ -31,6 +31,15 @@ The Next.js adapter wraps your app in a `ContentProvider` and exposes a `useTrac
   </Tab>
 </Tabs>
 
+## Configure
+
+Add your Project ID and API key to `.env.local`. Find both in the dashboard under **Settings → General** and **Settings → API Keys**.
+
+```bash title=".env.local"
+NEXT_PUBLIC_BETTER_I18N_PROJECT_ID=your-org/your-project
+NEXT_PUBLIC_BETTER_I18N_KEY=bi_pub_xxxxx
+```
+
 ## Setup
 
 Wrap your app with `ContentProvider` in a client component:
