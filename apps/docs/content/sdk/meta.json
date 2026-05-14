@@ -9,10 +9,7 @@
     "models",
     "models-and-entries",
     "rest-api",
-    "api-reference",
     "analytics",
-    "analytics-api",
-    "analytics-data-model",
     "caching",
     "typescript",
     "---Frameworks---",
@@ -21,6 +18,10 @@
     "expo",
     "svelte",
     "vue",
-    "vanilla"
+    "vanilla",
+    "---Reference---",
+    "api-reference",
+    "analytics-api",
+    "analytics-data-model"
   ]
 }
