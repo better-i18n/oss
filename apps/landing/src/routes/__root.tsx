@@ -424,7 +424,7 @@ function RootComponent() {
           >
             <ContentProvider
               config={{
-                projectId: "7cf66f9c-a30b-4376-bab2-51f496b83d4a",
+                projectId: "better-i18n/landing",
                 apiKey: "bi_pub_qJLePAhVnKMPVpLevSMlQaGqxWQoHGMCAOFWSfoCabCHJjMNFxZxLGeFUmIBetyB",
                 analytics: { debug: import.meta.env.DEV },
               }}
