@@ -1,0 +1,52 @@
+---
+title: Svelte
+description: Content analytics for SvelteKit and standalone Svelte
+icon: Flame
+---
+
+The Svelte adapter is initialized once at app boot and exposes a `track()` function plus an auto-view tracker for routes.
+
+## Install
+
+```bash
+npm install @better-i18n/content
+```
+
+## Setup
+
+```ts title="src/routes/+layout.ts"
+import { initContent } from '@better-i18n/content/adapters/svelte'
+import { PUBLIC_BETTER_I18N_PROJECT_ID, PUBLIC_BETTER_I18N_KEY } from '$env/static/public'
+
+initContent({
+  projectId: PUBLIC_BETTER_I18N_PROJECT_ID,
+  apiKey: PUBLIC_BETTER_I18N_KEY,
+})
+```
+
+## Track a view
+
+```svelte title="src/routes/blog/[slug]/+page.svelte"
+<script lang="ts">
+  import { onMount } from 'svelte'
+  import { track } from '@better-i18n/content/adapters/svelte'
+
+  export let data
+
+  onMount(() => {
+    track('content.view', {
+      entryId: data.post.id,
+      contentModel: 'blog',
+      entrySlug: data.post.slug,
+      language: data.post.locale,
+    })
+  })
+</script>
+
+<article>{@html data.post.body}</article>
+```
+
+## Next steps
+
+- [Analytics API Reference](/sdk/analytics-api)
+- [Analytics Overview](/sdk/analytics)

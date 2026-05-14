@@ -1,0 +1,59 @@
+---
+title: Expo
+description: Content analytics for React Native and Expo, with AppState-aware flushing
+icon: Smartphone
+---
+
+The Expo adapter wraps the React Native API and flushes pending events when the app goes to background. It uses `fetch` (React Native has no `sendBeacon`).
+
+## Install
+
+```bash
+npx expo install @better-i18n/content
+```
+
+## Setup
+
+```tsx title="App.tsx"
+import { ContentProvider } from '@better-i18n/content/adapters/expo'
+import Constants from 'expo-constants'
+
+export default function App() {
+  return (
+    <ContentProvider
+      config={{
+        projectId: Constants.expoConfig?.extra?.betterI18nProjectId,
+        apiKey: Constants.expoConfig?.extra?.betterI18nKey,
+      }}
+    >
+      <Navigation />
+    </ContentProvider>
+  )
+}
+```
+
+## Track a view
+
+```tsx title="screens/BlogPost.tsx"
+import { useTrackView } from '@better-i18n/content/adapters/expo'
+
+export function BlogPostScreen({ post }) {
+  useTrackView('content.view', {
+    entryId: post.id,
+    contentModel: 'blog',
+    entrySlug: post.slug,
+    language: post.locale,
+  })
+
+  return <View>...</View>
+}
+```
+
+## AppState flushing
+
+When the app transitions to `background` or `inactive`, the SDK flushes any pending events via `AppState.addEventListener`. You don't need to wire this up — `ContentProvider` handles it.
+
+## Next steps
+
+- [Analytics API Reference](/sdk/analytics-api)
+- [Analytics Overview](/sdk/analytics)

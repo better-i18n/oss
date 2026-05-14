@@ -1,0 +1,70 @@
+---
+title: React
+description: Content analytics for vanilla React (Vite, CRA, Remix client, etc.)
+icon: Atom
+---
+
+The React adapter is framework-agnostic — use it with Vite, CRA, Remix client routes, or any React setup that isn't Next.js, Expo, or RSC.
+
+## Install
+
+```bash
+npm install @better-i18n/content
+```
+
+## Setup
+
+```tsx title="src/main.tsx"
+import { ContentProvider } from '@better-i18n/content/adapters/react'
+import App from './App'
+
+createRoot(document.getElementById('root')!).render(
+  <ContentProvider
+    config={{
+      projectId: import.meta.env.VITE_BETTER_I18N_PROJECT_ID,
+      apiKey: import.meta.env.VITE_BETTER_I18N_KEY,
+    }}
+  >
+    <App />
+  </ContentProvider>
+)
+```
+
+## Track a view
+
+```tsx title="src/routes/blog-post.tsx"
+import { useTrackView } from '@better-i18n/content/adapters/react'
+
+export function BlogPost({ post }: { post: Post }) {
+  useTrackView('content.view', {
+    entryId: post.id,
+    contentModel: 'blog',
+    entrySlug: post.slug,
+    language: post.locale,
+  })
+
+  return <article>{post.body}</article>
+}
+```
+
+## Imperative tracking
+
+For non-view events (clicks, conversions), use the `useTrack` hook:
+
+```tsx
+import { useTrack } from '@better-i18n/content/adapters/react'
+
+function CtaButton({ entryId }: { entryId: string }) {
+  const track = useTrack()
+  return (
+    <button onClick={() => track('content.cta_click', { entryId })}>
+      Sign up
+    </button>
+  )
+}
+```
+
+## Next steps
+
+- [Analytics API Reference](/sdk/analytics-api)
+- [Analytics Overview](/sdk/analytics)

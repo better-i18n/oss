@@ -1,65 +1,71 @@
 ---
-title: Introduction
-description: Headless CMS client for Better i18n content
-icon: BookOpen
+title: Overview
+description: Better i18n Content — headless content management with localized REST delivery and built-in view analytics
+icon: FileText
 ---
 
-The Better i18n Content SDK (`@better-i18n/sdk`) is a lightweight TypeScript client for fetching content models and entries from your Better i18n project. It connects to the REST API using an API key and returns fully typed responses.
+Better i18n Content lets you ship localized content — blog posts, marketing pages, FAQs, anything structured — from a single source of truth to every framework you use, with view analytics out of the box.
 
-## Why use the SDK?
+## What you get
 
-- **Zero dependencies** — Uses native `fetch()`, works in any JavaScript runtime
-- **Type-safe** — Full TypeScript types with generic custom fields support
-- **Language-aware** — Fetch localized content by language code with automatic fallback
-- **Pagination** — Built-in pagination with total count and `hasMore` indicator
-- **Chainable API** — Supabase-style `from()` query builder with filtering & sorting
+- **Content models** — Define your shape once (fields, types, relations). Use it everywhere.
+- **Localized entries** — Each entry stores per-language translations alongside source values.
+- **REST delivery** — Public CDN-backed API at `content.better-i18n.com`. Cache-Control + KV-backed responses.
+- **View analytics** — `@better-i18n/content` SDK tracks `content.view` events with framework adapters for Next.js, React, Expo, Svelte, Vue, and vanilla JS.
 
-## Quick Example
+## Architecture
 
-```typescript
-import { createClient } from "@better-i18n/sdk";
-
-const client = createClient({
-  project: "acme/web-app",
-  apiKey: process.env.BETTER_I18N_API_KEY!,
-});
-
-// List content models
-const models = await client.getModels();
-
-// Get published blog posts // [!code highlight]
-const { data: posts, total } = await client // [!code highlight]
-  .from("blog-posts") // [!code highlight]
-  .eq("status", "published") // [!code highlight]
-  .order("publishedAt", { ascending: false }) // [!code highlight]
-  .limit(10); // [!code highlight]
-
-// Get a single entry in French // [!code highlight]
-const { data: post } = await client // [!code highlight]
-  .from("blog-posts") // [!code highlight]
-  .language("fr") // [!code highlight]
-  .single("hello-world"); // [!code highlight]
-
-console.log(post.title, post.body);
+```
+Dashboard (define models + entries)
+   │
+   ▼
+Content API (content.better-i18n.com)
+   │              │
+   │              └─►  POST /v1/track ──► CF Analytics Engine
+   ▼                                         │
+GET /v1/content/...                          ▼
+   │                                   Dashboard charts
+   ▼                                   (views, languages, top entries)
+Your app (Next.js, React, Expo, ...)
 ```
 
-## Next Steps
+Reads are cached at the edge (KV, 60s TTL). Writes from the SDK are fire-and-forget — `sendBeacon` first, `fetch keepalive` fallback. Never blocks page renders.
 
-<Cards>
-  <Card title="Getting Started" href="/sdk/getting-started">
-    Install the SDK and fetch your first content
-  </Card>
-  <Card title="Models & Entries" href="/sdk/models-and-entries">
-    Query content with the chainable from() API
-  </Card>
-  <Card title="API Reference" href="/sdk/api-reference">
-    Complete method and type reference
-  </Card>
-  <Card title="TypeScript" href="/sdk/typescript">
-    Generic custom fields and advanced typing
-  </Card>
-</Cards>
+## Quick start
 
-<Callout type="tip">
-  For AI-powered content management (create, edit, publish), see the [MCP Content Server](/mcp) instead.
-</Callout>
+<Steps>
+<Step>
+
+### Create a content model
+
+In the dashboard, define a model (e.g. `blog`) with the fields you need — title, body, slug, hero image. Mark which fields are localized.
+
+</Step>
+<Step>
+
+### Add entries
+
+Create entries, fill in source values, and let the AI translate the localized fields. Publish when you're ready.
+
+</Step>
+<Step>
+
+### Read from your app
+
+Fetch entries from the REST API with your `bi_pub_` key. See [REST API](/sdk/rest-api).
+
+</Step>
+<Step>
+
+### Track views
+
+Install the SDK and call `useTrackView()` on your content pages. See [Analytics](/sdk/analytics).
+
+</Step>
+</Steps>
+
+## Next steps
+
+- [Content Models](/sdk/models) — define your schema
+- [REST API](/sdk/rest-api) — fetch entries from any framework
+- [Analytics SDK](/sdk/analytics) — track which content gets viewed

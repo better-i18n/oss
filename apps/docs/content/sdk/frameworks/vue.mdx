@@ -1,0 +1,75 @@
+---
+title: Vue
+description: Content analytics for Vue 3 and Nuxt
+icon: Layers
+---
+
+The Vue adapter uses `provide`/`inject` to share the tracker across your component tree.
+
+## Install
+
+```bash
+npm install @better-i18n/content
+```
+
+## Setup (Vue 3)
+
+```ts title="src/main.ts"
+import { createApp } from 'vue'
+import { provideContent } from '@better-i18n/content/adapters/vue'
+import App from './App.vue'
+
+const app = createApp(App)
+
+app.provide('content', provideContent({
+  projectId: import.meta.env.VITE_BETTER_I18N_PROJECT_ID,
+  apiKey: import.meta.env.VITE_BETTER_I18N_KEY,
+}))
+
+app.mount('#app')
+```
+
+## Setup (Nuxt)
+
+Create a plugin in `plugins/content.client.ts` so it only runs in the browser:
+
+```ts title="plugins/content.client.ts"
+import { provideContent } from '@better-i18n/content/adapters/vue'
+
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.provide('content', provideContent({
+    projectId: useRuntimeConfig().public.betterI18nProjectId,
+    apiKey: useRuntimeConfig().public.betterI18nKey,
+  }))
+})
+```
+
+## Track a view
+
+```vue title="pages/blog/[slug].vue"
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import { useTrack } from '@better-i18n/content/adapters/vue'
+
+const props = defineProps<{ post: Post }>()
+const track = useTrack()
+
+onMounted(() => {
+  track('content.view', {
+    entryId: props.post.id,
+    contentModel: 'blog',
+    entrySlug: props.post.slug,
+    language: props.post.locale,
+  })
+})
+</script>
+
+<template>
+  <article v-html="post.body" />
+</template>
+```
+
+## Next steps
+
+- [Analytics API Reference](/sdk/analytics-api)
+- [Analytics Overview](/sdk/analytics)

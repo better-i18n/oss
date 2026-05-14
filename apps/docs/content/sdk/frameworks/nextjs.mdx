@@ -1,0 +1,78 @@
+---
+title: Next.js
+description: Content analytics for Next.js App Router and Pages Router
+icon: Triangle
+---
+
+The Next.js adapter wraps your app in a `ContentProvider` and exposes a `useTrackView` hook that's SSR-safe. It detects build-time and skips emission automatically.
+
+## Install
+
+```bash
+npm install @better-i18n/content
+```
+
+## Setup
+
+Wrap your app with `ContentProvider` in a client component:
+
+```tsx title="app/providers.tsx"
+'use client'
+import { ContentProvider } from '@better-i18n/content/adapters/nextjs'
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <ContentProvider
+      config={{
+        projectId: process.env.NEXT_PUBLIC_BETTER_I18N_PROJECT_ID!,
+        apiKey: process.env.NEXT_PUBLIC_BETTER_I18N_KEY!,
+      }}
+    >
+      {children}
+    </ContentProvider>
+  )
+}
+```
+
+Mount it in your root layout:
+
+```tsx title="app/layout.tsx"
+import { Providers } from './providers'
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  )
+}
+```
+
+## Track a view
+
+```tsx title="app/blog/[slug]/page.tsx"
+'use client'
+import { useTrackView } from '@better-i18n/content/adapters/nextjs'
+
+export default function BlogPost({ post }: { post: Post }) {
+  useTrackView('content.view', {
+    entryId: post.id,
+    contentModel: 'blog',
+    entrySlug: post.slug,
+    language: post.locale,
+  })
+
+  return <article>{post.body}</article>
+}
+```
+
+## SSR safety
+
+`ContentProvider` initializes inside `useEffect`, so it never instantiates on the server. `useTrackView` is a no-op during SSR and during the Next.js build phase (`NEXT_PHASE=phase-production-build`).
+
+## Next steps
+
+- [Analytics API Reference](/sdk/analytics-api)
+- [Analytics Overview](/sdk/analytics)
