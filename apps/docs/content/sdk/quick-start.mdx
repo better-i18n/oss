@@ -77,12 +77,12 @@ Reads are cached at the edge (KV, 60s TTL). Writes from the SDK are fire-and-for
     import { createClient } from "@better-i18n/sdk";
 
     export const content = createClient({
-      project: "your-org/your-project",
+      projectId: "your-org/your-project",
       apiKey: process.env.BETTER_I18N_API_KEY!,
     });
     ```
 
-    Find your project identifier in the dashboard URL: `dash.better-i18n.com/{org}/{project}`
+    Find your project ID in **Settings → General → Project ID**, or read it off the dashboard URL: `dash.better-i18n.com/{org}/{project}`.
   </Step>
 
   <Step>
@@ -133,10 +133,14 @@ BETTER_I18N_PROJECT=acme/web-app
 
 | Option | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `project` | `string` | Yes | — | Project identifier in `org/project` format |
+| `projectId` | `string` | Yes | — | Project ID in `org/project` slug format |
 | `apiKey` | `string` | Yes | — | API key for authentication |
 | `apiBase` | `string` | No | `https://content.better-i18n.com` | Custom API base URL |
 | `debug` | `boolean` | No | `false` | Log request URLs and responses to console |
+
+<Callout type="info">
+  `project` is still accepted as a legacy alias for `projectId` — existing integrations keep working. New code should use `projectId` for consistency with the Analytics SDK and dashboard.
+</Callout>
 
 ## Debugging
 
@@ -144,7 +148,7 @@ Enable debug mode to see exactly what the SDK is doing:
 
 ```typescript
 const client = createClient({
-  project: "acme/web-app",
+  projectId: "acme/web-app",
   apiKey: process.env.BETTER_I18N_API_KEY!,
   debug: true,
 });

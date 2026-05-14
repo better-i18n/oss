@@ -2,8 +2,23 @@
 
 /** Configuration for creating a Better i18n content client. */
 export interface ClientConfig {
-  /** Project identifier in `org/project` format (e.g., "acme-corp/web-app"). Same as the dashboard URL path. */
-  project: string;
+  /**
+   * Project identifier in `org/project` slug format (e.g., "acme-corp/web-app").
+   * Same as the dashboard URL path. The slug is a **stable identifier** —
+   * renaming the project's display name in the dashboard does not change it.
+   *
+   * Canonical field. Use `projectId` in new code.
+   *
+   * Either `projectId` or `project` (legacy alias) must be set.
+   */
+  projectId?: string;
+  /**
+   * Legacy alias for `projectId`. Kept for backward compatibility with
+   * integrations that shipped before 0.4.x.
+   *
+   * @deprecated Use `projectId` instead.
+   */
+  project?: string;
   /** API key for authenticating content requests. Required. */
   apiKey: string;
   /** REST API base URL. Defaults to `https://content.better-i18n.com`. */

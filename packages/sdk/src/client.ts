@@ -38,10 +38,22 @@ const DEFAULT_API_BASE = "https://content.better-i18n.com";
 export function createClient(config: ClientConfig): ContentClient {
   const apiBase = (config.apiBase || DEFAULT_API_BASE).replace(/\/$/, "");
 
-  const parts = config.project.split("/");
+  // Resolve canonical `projectId` with legacy `project` alias for backward
+  // compatibility. `projectId` is the preferred name in new code; `project`
+  // continues to work for integrations that shipped before 0.4.x.
+  const projectSlug = config.projectId ?? config.project;
+  if (!projectSlug) {
+    throw new Error(
+      'projectId is required.\n' +
+        "Set it in your client config:\n\n" +
+        '  createClient({ projectId: "acme/web-app", apiKey: "bi18n_..." })',
+    );
+  }
+
+  const parts = projectSlug.split("/");
   if (parts.length !== 2 || !parts[0] || !parts[1]) {
     throw new Error(
-      `Invalid project format "${config.project}". Expected "org/project" (e.g., "acme/web-app").`,
+      `Invalid projectId format "${projectSlug}". Expected "org/project" (e.g., "acme/web-app").`,
     );
   }
   const [org, project] = parts;
@@ -50,7 +62,7 @@ export function createClient(config: ClientConfig): ContentClient {
     throw new Error(
       "API key is required for content API access.\n" +
         "Set apiKey in your client config:\n\n" +
-        '  createClient({ project: "acme/web-app", apiKey: "bi18n_..." })',
+        '  createClient({ projectId: "acme/web-app", apiKey: "bi18n_..." })',
     );
   }
 
