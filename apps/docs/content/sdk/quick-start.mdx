@@ -1,0 +1,149 @@
+---
+title: Quick Start
+description: Get Better i18n Content running in your app in under 5 minutes
+icon: Rocket
+---
+
+Better i18n Content lets you ship localized content — blog posts, marketing pages, FAQs, anything structured — from a single source of truth to every framework you use, with view analytics out of the box.
+
+## What you get
+
+- **Content models** — Define your shape once (fields, types, relations). Use it everywhere.
+- **Localized entries** — Each entry stores per-language translations alongside source values.
+- **REST delivery** — Public CDN-backed API at `content.better-i18n.com`. Cache-Control + KV-backed responses.
+- **View analytics** — `@better-i18n/content` SDK tracks `content.view` events with framework adapters for Next.js, React, Expo, Svelte, Vue, and vanilla JS.
+
+```
+Dashboard (define models + entries)
+   │
+   ▼
+Content API (content.better-i18n.com)
+   │              │
+   │              └─►  POST /v1/track ──► CF Analytics Engine
+   ▼                                         │
+GET /v1/content/...                          ▼
+   │                                   Dashboard charts
+   ▼                                   (views, languages, top entries)
+Your app (Next.js, React, Expo, ...)
+```
+
+Reads are cached at the edge (KV, 60s TTL). Writes from the SDK are fire-and-forget — `sendBeacon` first, `fetch keepalive` fallback. Never blocks page renders.
+
+## Install
+
+<Tabs items={['npm', 'bun', 'pnpm', 'yarn']}>
+  <Tab value="npm">```bash npm install @better-i18n/sdk ```</Tab>
+  <Tab value="bun">```bash bun add @better-i18n/sdk ```</Tab>
+  <Tab value="pnpm">```bash pnpm add @better-i18n/sdk ```</Tab>
+  <Tab value="yarn">```bash yarn add @better-i18n/sdk ```</Tab>
+</Tabs>
+
+## Add your first model
+
+<Steps>
+  <Step>
+    ### Get your API Key
+
+    1. Go to [dash.better-i18n.com](https://dash.better-i18n.com)
+    2. Navigate to **Settings** → **API Keys**
+    3. Select **Content** as the type
+    4. Create and copy your API key
+
+    <Callout type="warning">
+      Keep your API key secret. Never commit it to version control. Use environment variables instead.
+    </Callout>
+  </Step>
+
+  <Step>
+    ### Create a client
+
+    ```typescript title="lib/content.ts"
+    import { createClient } from "@better-i18n/sdk";
+
+    export const content = createClient({
+      project: "your-org/your-project",
+      apiKey: process.env.BETTER_I18N_API_KEY!,
+    });
+    ```
+
+    Find your project identifier in the dashboard URL: `dash.better-i18n.com/{org}/{project}`
+  </Step>
+
+  <Step>
+    ### Fetch content
+
+    ```typescript
+    import { content } from "./lib/content";
+
+    // List all content models
+    const models = await content.getModels();
+
+    // List published entries (chainable API)
+    const { data: posts, total } = await content
+      .from("blog-posts")
+      .eq("status", "published")
+      .limit(10);
+
+    // Get a single entry in French
+    const { data: post } = await content
+      .from("blog-posts")
+      .language("fr")
+      .single("hello-world");
+
+    console.log(post.title, post.body);
+    ```
+  </Step>
+
+  <Step>
+    ### Track views
+
+    Install the analytics SDK and call `useTrackView()` on your content pages. See [Analytics](/sdk/analytics).
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash title=".env"
+BETTER_I18N_API_KEY=bi_your-api-key
+BETTER_I18N_PROJECT=acme/web-app
+```
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `BETTER_I18N_API_KEY` | Yes | Your API key from the dashboard |
+| `BETTER_I18N_PROJECT` | Yes | Project identifier in `org/project` format |
+
+## Configuration options
+
+| Option | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `project` | `string` | Yes | — | Project identifier in `org/project` format |
+| `apiKey` | `string` | Yes | — | API key for authentication |
+| `apiBase` | `string` | No | `https://content.better-i18n.com` | Custom API base URL |
+| `debug` | `boolean` | No | `false` | Log request URLs and responses to console |
+
+## Debugging
+
+Enable debug mode to see exactly what the SDK is doing:
+
+```typescript
+const client = createClient({
+  project: "acme/web-app",
+  apiKey: process.env.BETTER_I18N_API_KEY!,
+  debug: true,
+});
+```
+
+This logs all requests and responses to the console:
+
+```
+[better-i18n] Client initialized { apiBase: "https://content.better-i18n.com", org: "acme", project: "web-app" }
+[better-i18n] → getEntries(blog-posts) https://content.better-i18n.com/v1/content/acme/web-app/models/blog-posts/entries?status=published
+[better-i18n] ← 200 OK
+```
+
+## Next steps
+
+- [Models & Entries](/sdk/models-and-entries) — query the chainable `from()` API
+- [REST API](/sdk/rest-api) — raw HTTP for any framework
+- [Analytics](/sdk/analytics) — track which content gets viewed
