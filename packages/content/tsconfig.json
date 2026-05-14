@@ -22,6 +22,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "peer-shims.d.ts"],
   "exclude": ["src/__tests__/**", "node_modules", "dist"]
 }
