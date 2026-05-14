@@ -1,10 +1,10 @@
 ---
-title: Content Models
-description: Define structured, localized content models with fields, types, and relations
+title: Models & Entries
+description: Define content models in the dashboard and query them with the chainable from() API
 icon: Box
 ---
 
-A **content model** is the schema for a type of content — a blog post, a product page, a FAQ entry. You define the fields once in the dashboard, and every entry created from that model conforms to it.
+Better i18n's headless CMS organizes content into **models** and **entries**. Models define the structure (like a database table), and entries are the individual pieces of content (like rows). You define each model once in the dashboard, then query entries from your app with the SDK's chainable query builder.
 
 ## Anatomy of a model
 
@@ -39,28 +39,236 @@ A field with `localized: false` (the default for non-text fields) is shared — 
 The top-level entry `slug` is **always universal**. If you need per-language URL slugs (e.g. `/en/about` vs `/tr/hakkimizda`), add a custom field with `localized: true` (typically `localized_slug`).
 </Callout>
 
-## Slug vs localized slug
+## Listing models
 
-| Path | Universal slug | Localized slug |
-|---|---|---|
-| Dashboard identifier | ✅ | ❌ |
-| URL routing | ❌ | ✅ |
-| Cross-language reference | ✅ | ❌ |
+```typescript
+const models = await client.getModels();
+```
+
+**Response:**
+
+```json
+[
+  {
+    "slug": "blog-posts",
+    "displayName": "Blog Posts",
+    "kind": "collection",
+    "entryCount": 24
+  },
+  {
+    "slug": "homepage",
+    "displayName": "Homepage",
+    "kind": "singleton",
+    "entryCount": 1
+  }
+]
+```
+
+## Query builder
+
+`client.from(modelSlug)` starts a chainable query builder. Every method returns a **new immutable builder** — calls never mutate the original — so you can safely branch and reuse base queries.
+
+The builder is **thenable**: `await` it directly to execute the query. You do not need to call a separate `.execute()` or `.get()` method.
+
+```typescript
+const { data, error, total, hasMore } = await client
+  .from("blog-posts")
+  .eq("status", "published")
+  .order("publishedAt", { ascending: false })
+  .limit(10);
+```
+
+**List result shape:**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `data` | `ContentEntryListItem[] \| null` | Array of entries, or `null` on error |
+| `error` | `Error \| null` | Error object if the request failed, otherwise `null` |
+| `total` | `number` | Total matching entries across all pages |
+| `hasMore` | `boolean` | Whether more pages exist beyond the current page |
+
+## Filtering
+
+### By status
+
+```typescript
+const { data: published } = await client
+  .from("blog-posts")
+  .eq("status", "published");
+```
+
+Valid statuses: `published`, `draft`, `archived`.
+
+### By custom field
+
+```typescript
+const { data: engineering } = await client
+  .from("blog-posts")
+  .eq("status", "published")
+  .filter("category", "engineering");
+```
+
+### Full-text search
+
+```typescript
+const { data: results } = await client
+  .from("blog-posts")
+  .search("kubernetes");
+```
+
+## Sorting
+
+Use `.order(field, options?)`. Valid fields: `publishedAt`, `createdAt`, `updatedAt`, `title`.
+
+```typescript
+await client.from("blog-posts").order("publishedAt", { ascending: false });
+await client.from("blog-posts").order("title", { ascending: true });
+```
+
+## Pagination
+
+`.limit(n)` sets entries per page; `.page(n)` selects the page (1-based).
+
+```typescript
+let page = 1;
+let hasMore = true;
+
+while (hasMore) {
+  const result = await client
+    .from("blog-posts")
+    .eq("status", "published")
+    .limit(20)
+    .page(page);
+
+  hasMore = result.hasMore;
+  page++;
+}
+```
+
+## Field selection
+
+Use `.select(...fields)` to request only specific fields. `slug` and `publishedAt` are always included.
+
+```typescript
+const { data } = await client
+  .from("blog-posts")
+  .select("title", "category")
+  .eq("status", "published");
+```
+
+## Single entry
+
+`.single(slug)` fetches one entry by slug. Also thenable.
+
+```typescript
+const { data: post, error } = await client
+  .from("blog-posts")
+  .single("hello-world");
+```
+
+**Response shape (excerpt):**
+
+```json
+{
+  "slug": "hello-world",
+  "status": "published",
+  "title": "Hello World",
+  "body": "## Welcome\n\n...",
+  "bodyHtml": "<h2>Welcome</h2><p>...</p>",
+  "availableLanguages": ["en", "tr", "de"],
+  "translationStatus": { "en": "published", "tr": "draft" }
+}
+```
+
+The `body` field is always Markdown. Use `bodyHtml` when you need pre-rendered HTML.
+
+## Slug vs localized slug
 
 ```ts
 // Universal slug — same for all languages
 entry.slug // "getting-started"
 
-// Localized slug from a custom field
+// Localized slug from a custom field (when configured)
 entry.translations.en.customFields.localized_slug // "getting-started"
 entry.translations.tr.customFields.localized_slug // "baslangic"
 ```
 
-## Working with models
+## Custom fields
 
-Models are defined in the dashboard. For programmatic access via the MCP server, see [Content MCP](/mcp/tool-reference).
+Custom field values are **spread directly onto the entry object** — there is no nested `customFields` wrapper.
 
-## Next steps
+```typescript
+const { data: post } = await client
+  .from("blog-posts")
+  .single("hello-world");
 
-- [REST API](/sdk/rest-api) — fetch entries from any framework
-- [Analytics](/sdk/analytics) — track entry views
+console.log(post.readingTime); // "5 min"
+console.log(post.category);    // "Engineering"
+```
+
+<Callout type="tip">
+  For type-safe access to custom fields, see [TypeScript](/sdk/typescript).
+</Callout>
+
+## Relations
+
+Use `.expand(...fields)` to resolve relation references inline. Without `.expand()`, relation fields are omitted from the response.
+
+```typescript
+const { data: posts } = await client
+  .from("blog-posts")
+  .eq("status", "published")
+  .expand("author", "category");
+```
+
+When `.expand()` is used, a `relations` key appears on each entry:
+
+```json
+{
+  "slug": "hello-world",
+  "title": "Hello World",
+  "relations": {
+    "author": { "slug": "alice-johnson", "title": "Alice Johnson" },
+    "category": { "slug": "engineering", "title": "Engineering" }
+  }
+}
+```
+
+## Language
+
+Use `.language(code)` to request localized content. Falls back to the source language automatically when a translation doesn't exist.
+
+```typescript
+const { data: post } = await client
+  .from("blog-posts")
+  .language("fr")
+  .single("hello-world");
+```
+
+Check `availableLanguages` and `translationStatus` on single-entry responses to verify a translation exists before redirecting:
+
+```typescript
+const hasFrench = post.availableLanguages.includes("fr");
+const isFrPublished = post.translationStatus?.["fr"] === "published";
+```
+
+## Error handling
+
+Every query returns `{ data, error }`. Check `error` before using `data`:
+
+```typescript
+const { data: post, error } = await client
+  .from("blog-posts")
+  .single("hello-world");
+
+if (error) {
+  console.error("Failed to fetch:", error.message);
+  return null;
+}
+
+console.log(post.title);
+```
+
+## Legacy methods
+
+`getEntries()` and `getEntry()` still work but are deprecated. Use `from()` for all new code — see [API Reference](/sdk/api-reference#legacy-methods).
