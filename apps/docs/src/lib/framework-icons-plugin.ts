@@ -3,9 +3,12 @@ import {
   ExpoIcon,
   FlutterIcon,
   NextjsIcon,
+  ReactIcon,
   RemixIcon,
+  SvelteIcon,
   TanStackIcon,
   ViteIcon,
+  VueIcon,
 } from '@/components/icons/framework-icons';
 
 const BRAND_ICONS: Record<string, React.FC> = {
@@ -15,6 +18,9 @@ const BRAND_ICONS: Record<string, React.FC> = {
   RemixIcon,
   ExpoIcon,
   FlutterIcon,
+  ReactIcon,
+  SvelteIcon,
+  VueIcon,
 };
 
 function resolveIcon<T extends { icon?: unknown }>(node: T): T {
