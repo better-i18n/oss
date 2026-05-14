@@ -23,7 +23,7 @@ The main entry point. Creates a singleton i18n instance for server-side use.
 import { createRemixI18n } from "@better-i18n/remix";
 
 const i18n = createRemixI18n({
-  project: "my-company/web-app",
+  projectId: "my-company/web-app",
   defaultLocale: "en",
 });
 ```
@@ -438,7 +438,7 @@ Builds a complete i18next-compatible configuration from CDN translations and man
 import { createRemixI18n } from "@better-i18n/remix";
 import { buildI18nextConfig } from "@better-i18n/remix/i18next";
 
-const i18n = createRemixI18n({ project: "acme/store", defaultLocale: "en" });
+const i18n = createRemixI18n({ projectId: "acme/store", defaultLocale: "en" });
 const config = await buildI18nextConfig({ i18n });
 
 // config.resources      — { en: { common: {...}, nav: {...} }, tr: {...} }

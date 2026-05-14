@@ -23,9 +23,24 @@ export interface TranslationStorage {
  */
 export interface I18nCoreConfig {
   /**
-   * Project identifier in format "org/project" (e.g., "acme/dashboard")
+   * Project ID in `org/project` slug format (e.g., "acme/dashboard").
+   *
+   * Find it in the dashboard under **Settings → General → Project ID**, or
+   * read it off the dashboard URL: `dash.better-i18n.com/{org}/{project}`.
+   *
+   * Canonical field. Use `projectId` in new code.
+   *
+   * Either `projectId` or `project` (legacy alias) must be set.
    */
-  project: string;
+  projectId?: string;
+
+  /**
+   * Legacy alias for `projectId`. Kept for backward compatibility with
+   * integrations that shipped before 0.x.
+   *
+   * @deprecated Use `projectId` instead.
+   */
+  project?: string;
 
   /**
    * Default locale to use when no locale is specified
@@ -125,6 +140,8 @@ export interface ParsedProject {
  * Normalized configuration with all defaults applied
  */
 export interface NormalizedConfig extends I18nCoreConfig, ParsedProject {
+  /** Resolved project slug (always set post-normalization, from `projectId` or legacy `project` input) */
+  project: string;
   cdnBaseUrl: string;
   manifestCacheTtlMs: number;
   /** Separate TTL for translation messages cache (dev=0, prod=5min by default) */

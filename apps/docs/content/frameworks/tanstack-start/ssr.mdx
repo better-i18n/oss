@@ -28,7 +28,7 @@ export const Route = createRootRouteWithContext<{ locale: string }>()({
   staleTime: 0, // re-run loader on locale switch // [!code highlight]
   loader: async ({ context }) => { // [!code highlight]
     const messages = await getMessages({ // [!code ++]
-      project: "org/project", // [!code ++]
+      projectId: "org/project", // [!code ++]
       locale: context.locale || "en", // [!code ++]
     }) // [!code ++]
 
@@ -125,7 +125,7 @@ export const Route = createFileRoute("/dashboard")({
   loader: async ({ context }) => {
     // Dashboard-specific translations
     const dashboardMessages = await getMessages({
-      project: "org/project",
+      projectId: "org/project",
       locale: context.locale,
       namespace: "dashboard",  // Load only dashboard namespace
     })
@@ -145,7 +145,7 @@ import { getMessages, createServerTranslator } from "@better-i18n/use-intl/serve
 export const Route = createFileRoute("/about")({
   loader: async ({ context }) => {
     const messages = await getMessages({
-      project: "org/project",
+      projectId: "org/project",
       locale: context.locale,
     })
 
@@ -193,7 +193,7 @@ const messageCache = new Map<string, Messages>()
 async function getCachedMessages(locale: string) {
   if (!messageCache.has(locale)) {
     messageCache.set(locale, await getMessages({
-      project: "org/project",
+      projectId: "org/project",
       locale,
     }))
   }
@@ -207,7 +207,7 @@ Enable debug logging to troubleshoot SSR issues:
 
 ```tsx
 const messages = await getMessages({
-  project: "org/project",
+  projectId: "org/project",
   locale: context.locale,
   debug: true,  // Logs CDN requests
 })
@@ -248,7 +248,7 @@ loader: async ({ context }) => {
 export const Route = createRootRouteWithContext<RouterContext>()({
   staleTime: 0, // [!code highlight]
   loader: async ({ context }) => {
-    const messages = await getMessages({ project: "org/project", locale: context.locale })
+    const messages = await getMessages({ projectId: "org/project", locale: context.locale })
     return { messages, locale: context.locale }
   },
 })
@@ -265,7 +265,7 @@ With `staleTime: Infinity` (or any high value), TanStack Router considers the SS
 ```tsx
 // middleware/i18n.ts
 export const i18nMiddleware = createBetterI18nMiddleware({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
 })
 ```

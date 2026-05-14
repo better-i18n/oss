@@ -15,7 +15,7 @@ Set `namespaces` on `createI18n` and every `getMessages` call uses that list:
 import { createI18n } from "@better-i18n/next";
 
 export const i18n = createI18n({
-  project: "acme/app",
+  projectId: "acme/app",
   defaultLocale: "en",
   // Every getMessages() call will fetch only these namespaces
   namespaces: ["common", "navigation", "auth"],

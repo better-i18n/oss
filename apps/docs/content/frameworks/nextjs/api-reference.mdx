@@ -27,14 +27,14 @@ import { NextResponse } from "next/server";
 
 // Simple usage (no callback)
 export default createBetterI18nMiddleware({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
   localePrefix: "always",
 });
 
 // With callback (recommended for auth)
 export default createBetterI18nMiddleware({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
   localePrefix: "always",
 }, async (request, { locale, response }) => {
@@ -114,7 +114,7 @@ The main entry point for the SDK. Returns an object with everything needed for N
 import { createI18n } from "@better-i18n/next";
 
 const i18n = createI18n({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
   // Optional
   localePrefix: "as-needed", // "as-needed" | "always" | "never"
@@ -227,7 +227,7 @@ Low-level factory that wraps `@better-i18n/core` with Next.js ISR support. Use t
 import { createNextI18nCore } from "@better-i18n/next";
 
 const i18nCore = createNextI18nCore({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
   manifestRevalidateSeconds: 3600,
   messagesRevalidateSeconds: 30,
@@ -265,7 +265,7 @@ Creates a `next-intl` request config with Better i18n CDN.
 import { createNextIntlRequestConfig } from "@better-i18n/next/server";
 
 export default createNextIntlRequestConfig({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
 });
 ```
@@ -280,13 +280,13 @@ import { getMessages } from "@better-i18n/next/server";
 
 // Full fetch
 const messages = await getMessages(
-  { project: "org/project", defaultLocale: "en" },
+  { projectId: "org/project", defaultLocale: "en" },
   "tr"
 );
 
 // Selective — only fetch these namespaces
 const subset = await getMessages(
-  { project: "org/project", defaultLocale: "en" },
+  { projectId: "org/project", defaultLocale: "en" },
   "tr",
   { namespaces: ["common", "pricing"] }
 );
@@ -301,7 +301,7 @@ Standalone function to fetch available locales.
 import { getLocales } from "@better-i18n/next/server";
 
 const locales = await getLocales({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
 });
 ```
@@ -315,7 +315,7 @@ Get languages with full metadata (name, native name, flag URL).
 import { getManifestLanguages } from "@better-i18n/next/server";
 
 const languages = await getManifestLanguages({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
 });
 // [{ code: "tr", name: "Turkish", nativeName: "Türkçe", flagUrl: "..." }]
@@ -392,7 +392,7 @@ import { useManifestLanguages } from "@better-i18n/next/client";
 
 function LanguageSwitcher() {
   const { languages, isLoading, error } = useManifestLanguages({
-    project: "org/project",
+    projectId: "org/project",
     defaultLocale: "en",
   });
 

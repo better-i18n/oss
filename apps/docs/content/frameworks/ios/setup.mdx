@@ -50,7 +50,7 @@ struct MyApp: App {
     var body: some Scene {
         WindowGroup {
             I18nProvider(core: BetterI18n(config: I18nConfig(
-                project: "my-org/my-app",
+                projectId: "my-org/my-app",
                 defaultLocale: "en"
             ))) {
                 ContentView()

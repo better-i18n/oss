@@ -15,7 +15,7 @@ Factory function that creates a server-side i18n instance. Call this **once at m
 import { createServerI18n } from "@better-i18n/server";
 
 export const i18n = createServerI18n({
-  project: "my-org/api",
+  projectId: "my-org/api",
   defaultLocale: "en",
 });
 ```
@@ -232,7 +232,7 @@ Configuration for `createServerI18n`. Mirrors `I18nCoreConfig` from `@better-i18
 import type { ServerI18nConfig } from "@better-i18n/server";
 
 const config: ServerI18nConfig = {
-  project: "my-org/api",
+  projectId: "my-org/api",
   defaultLocale: "en",
   cdnBaseUrl: "https://cdn.better-i18n.com", // optional
   fetchTimeout: 10000,                         // optional

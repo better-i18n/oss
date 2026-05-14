@@ -43,7 +43,7 @@ Create `app/i18n.server.ts` at module scope. This ensures a single `TtlCache` in
 import { createRemixI18n } from "@better-i18n/remix";
 
 export const i18n = createRemixI18n({
-  project: "my-company/web-app", // Your project identifier // [!code highlight]
+  projectId: "my-company/web-app", // Your project identifier // [!code highlight]
   defaultLocale: "en", // [!code highlight]
 });
 ```
@@ -278,7 +278,7 @@ import { createRemixI18n } from "@better-i18n/remix";
 import { buildI18nextConfig } from "@better-i18n/remix/i18next";
 import { createI18nextMiddleware } from "remix-i18next/middleware";
 
-const i18n = createRemixI18n({ project: "my-company/web-app", defaultLocale: "en" });
+const i18n = createRemixI18n({ projectId: "my-company/web-app", defaultLocale: "en" });
 const config = await buildI18nextConfig({ i18n });
 
 export const [i18nextMiddleware, getLocale, getInstance] =

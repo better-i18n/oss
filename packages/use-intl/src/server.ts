@@ -56,16 +56,8 @@ export async function getLocales(
   config: Omit<I18nCoreConfig, "defaultLocale"> & { defaultLocale?: string },
 ): Promise<string[]> {
   const i18n = createI18nCore({
-    project: config.project,
+    ...config,
     defaultLocale: config.defaultLocale || "en",
-    cdnBaseUrl: config.cdnBaseUrl,
-    debug: config.debug,
-    logLevel: config.logLevel,
-    fetch: config.fetch,
-    storage: config.storage,
-    staticData: config.staticData,
-    fetchTimeout: config.fetchTimeout,
-    retryCount: config.retryCount,
   });
 
   return i18n.getLocales();
@@ -78,16 +70,8 @@ export async function getLanguages(
   config: Omit<I18nCoreConfig, "defaultLocale"> & { defaultLocale?: string },
 ): Promise<LanguageOption[]> {
   const i18n = createI18nCore({
-    project: config.project,
+    ...config,
     defaultLocale: config.defaultLocale || "en",
-    cdnBaseUrl: config.cdnBaseUrl,
-    debug: config.debug,
-    logLevel: config.logLevel,
-    fetch: config.fetch,
-    storage: config.storage,
-    staticData: config.staticData,
-    fetchTimeout: config.fetchTimeout,
-    retryCount: config.retryCount,
   });
 
   return i18n.getLanguages();

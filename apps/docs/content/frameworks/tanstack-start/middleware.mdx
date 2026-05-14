@@ -37,7 +37,7 @@ export default createStart({
 ```ts
 export const i18nMiddleware = createBetterI18nMiddleware({
   // Required
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
 
   // Optional detection settings
@@ -97,7 +97,7 @@ To disable cookie-based persistence:
 
 ```ts
 export const i18nMiddleware = createBetterI18nMiddleware({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
   detection: {
     cookie: false,
@@ -112,7 +112,7 @@ To ignore Accept-Language header:
 
 ```ts
 export const i18nMiddleware = createBetterI18nMiddleware({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
   detection: {
     cookie: true,
@@ -179,7 +179,7 @@ export const Route = createRootRouteWithContext<{ locale: string }>()({
     console.log("Detected locale:", context.locale)
 
     const messages = await getMessages({
-      project: "org/project",
+      projectId: "org/project",
       locale: context.locale,
     })
 

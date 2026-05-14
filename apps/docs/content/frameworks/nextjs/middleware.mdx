@@ -13,7 +13,7 @@ Define your i18n config once, use it everywhere:
 import { createI18n } from "@better-i18n/next";
 
 export const i18n = createI18n({
-  project: "your-org/your-project",
+  projectId: "your-org/your-project",
   defaultLocale: "en",
   localePrefix: "always",
 });
@@ -54,7 +54,7 @@ If you prefer standalone middleware without the unified config:
 import { createBetterI18nMiddleware } from "@better-i18n/next";
 
 export default createBetterI18nMiddleware({
-  project: "your-org/your-project",
+  projectId: "your-org/your-project",
   defaultLocale: "en",
   localePrefix: "always", // "always" | "as-needed" | "never"
 });
@@ -85,7 +85,7 @@ import { createBetterI18nMiddleware } from "@better-i18n/next";
 import { NextResponse } from "next/server";
 
 export default createBetterI18nMiddleware({
-  project: "acme/dashboard",
+  projectId: "acme/dashboard",
   defaultLocale: "en",
   localePrefix: "always",
 }, async (request, { locale, response }) => { // [!code highlight]
@@ -135,7 +135,7 @@ import { NextResponse } from "next/server";
 const protectedRoutes = ["/dashboard", "/settings", "/profile"];
 
 export default createBetterI18nMiddleware({
-  project: "acme/app",
+  projectId: "acme/app",
   defaultLocale: "en",
   localePrefix: "always",
 }, async (request, { locale }) => {
@@ -161,7 +161,7 @@ import { NextResponse } from "next/server";
 const publicRoutes = ["/", "/login", "/register", "/forgot-password"];
 
 export default createBetterI18nMiddleware({
-  project: "acme/app",
+  projectId: "acme/app",
   defaultLocale: "en",
   localePrefix: "always",
 }, async (request, { locale }) => {
@@ -278,7 +278,7 @@ If you're migrating from next-intl, set `cookieName: "NEXT_LOCALE"` to preserve 
 
 ```ts title="i18n/config.ts"
 createI18n({
-  project: "acme/app",
+  projectId: "acme/app",
   defaultLocale: "en",
   localePrefix: "never",
   cookieName: "NEXT_LOCALE", // Preserve next-intl cookies during migration // [!code highlight]
@@ -362,7 +362,7 @@ export default composeMiddleware(i18n, auth); // [!code --]
 import { createBetterI18nMiddleware } from "@better-i18n/next"; // [!code ++]
 
 export default createBetterI18nMiddleware({ // [!code ++]
-  project: "acme/app", // [!code ++]
+  projectId: "acme/app", // [!code ++]
   defaultLocale: "en", // [!code ++]
 }, async (request, { locale, response }) => { // [!code ++]
   // Auth logic here - headers are ALWAYS preserved! // [!code ++]
@@ -389,7 +389,7 @@ If you are using the legacy `i18n.middleware` property:
 import { createI18n } from "@better-i18n/next";
 
 export const i18n = createI18n({
-  project: "my-project",
+  projectId: "my-project",
   defaultLocale: "en",
 });
 ```

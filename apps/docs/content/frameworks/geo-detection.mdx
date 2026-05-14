@@ -48,7 +48,7 @@ Pass the country code from your edge platform and the map:
 
 ```ts
 const result = detectLocale({
-  project: "acme/web",
+  projectId: "acme/web",
   defaultLocale: "en",
   availableLocales: languages.map(l => l.code),
   countryCode: "TR",              // from edge platform
@@ -96,7 +96,7 @@ export async function handleRequest(request: Request) {
   if (!countryMap) countryMap = buildCountryLocaleMap(languages);
 
   const result = detectLocale({
-    project: "acme/web",
+    projectId: "acme/web",
     defaultLocale: "en",
     availableLocales: languages.map(l => l.code),
     pathLocale: getLocaleFromPath(new URL(request.url).pathname),
@@ -131,7 +131,7 @@ const countryMap = buildCountryLocaleMap(yourLanguages);
 
 export function middleware(request: NextRequest) {
   const result = detectLocale({
-    project: "acme/web",
+    projectId: "acme/web",
     defaultLocale: "en",
     availableLocales: ["en", "tr", "de", "fr", "ja"],
     pathLocale: getLocaleFromPath(request.nextUrl.pathname),
@@ -170,7 +170,7 @@ const languages = await i18n.getLanguages();
 const countryMap = buildCountryLocaleMap(languages);
 
 const result = detectLocale({
-  project: "acme/web",
+  projectId: "acme/web",
   defaultLocale: "en",
   availableLocales: languages.map(l => l.code),
   countryCode,

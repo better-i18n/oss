@@ -42,21 +42,29 @@ export const parseProject = (project: string): ParsedProject => {
  * Normalize config with defaults
  */
 export const normalizeConfig = (config: I18nCoreConfig): NormalizedConfig => {
-  if (!config.project?.trim()) {
-    throw new Error("[better-i18n] project is required");
+  // Resolve canonical projectId with legacy `project` alias. The internal
+  // `.project` field on NormalizedConfig is preserved so downstream packages
+  // reading `normalized.project` keep working with no changes.
+  const projectSlug = config.projectId ?? config.project;
+  if (!projectSlug?.trim()) {
+    throw new Error(
+      "[better-i18n] projectId is required (in `org/project` format)",
+    );
   }
   if (!config.defaultLocale?.trim()) {
     throw new Error("[better-i18n] defaultLocale is required");
   }
 
-  const { workspaceId, projectSlug } = parseProject(config.project);
+  const { workspaceId, projectSlug: parsedProjectSlug } =
+    parseProject(projectSlug);
 
   const devMode = isDevMode();
 
   return {
     ...config,
+    project: projectSlug,
     workspaceId,
-    projectSlug,
+    projectSlug: parsedProjectSlug,
     cdnBaseUrl: config.cdnBaseUrl?.replace(/\/$/, "") || DEFAULT_CDN_BASE_URL,
     // Manifest: 30s in dev (rarely changes), 5min in prod
     manifestCacheTtlMs:
