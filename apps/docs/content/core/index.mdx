@@ -51,7 +51,7 @@ Create an i18n core instance and start fetching translations:
 import { createI18nCore } from "@better-i18n/core";
 
 const i18n = createI18nCore({
-  project: "my-company/web-app",
+  projectId: "my-company/web-app",
   defaultLocale: "en",
 });
 
@@ -82,7 +82,7 @@ The most common use case — building a language switcher or listing available t
 import { createI18nCore } from "@better-i18n/core";
 
 const i18n = createI18nCore({
-  project: "my-company/web-app",
+  projectId: "my-company/web-app",
   defaultLocale: "en",
 });
 
@@ -130,7 +130,7 @@ const allMessages = await Promise.all(
 ```ts
 const i18n = createI18nCore({
   // Required
-  project: "org/project",       // Project identifier
+  projectId: "org/project",     // Project identifier
   defaultLocale: "en",          // Fallback locale
 
   // Optional
@@ -144,7 +144,7 @@ const i18n = createI18nCore({
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `project` | `string` | Required | Project identifier in `org/project` format |
+| `projectId` | `string` | Required | Project ID — accepts `org/project` slug or canonical UUID |
 | `defaultLocale` | `string` | Required | Fallback locale code |
 | `cdnBaseUrl` | `string` | `"https://cdn.better-i18n.com"` | CDN base URL |
 | `manifestCacheTtlMs` | `number` | `300000` (5 min) | Manifest cache TTL in ms |

@@ -50,7 +50,7 @@ import { betterI18n } from '@better-i18n/vite' // [!code ++]
 
 export default defineConfig({
   plugins: [
-    betterI18n({ project: 'your-org/your-project' }), // [!code ++]
+    betterI18n({ projectId: 'your-org/your-project' }), // [!code ++]
     react(),
   ],
 })
@@ -79,7 +79,7 @@ import { BetterI18nProvider } from '@better-i18n/use-intl' // [!code ++]
 function App() {
   return (
     <BetterI18nProvider // [!code ++]
-      project="your-org/your-project" // [!code ++]
+      projectId="your-org/your-project" // [!code ++]
       locale="en" // [!code ++]
     > // [!code ++]
       <YourApp />

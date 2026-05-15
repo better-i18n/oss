@@ -17,7 +17,7 @@ import { initBetterI18n } from '@better-i18n/expo';
 i18n.use(initReactI18next);
 
 const { languages, core } = await initBetterI18n({
-  project: 'acme/my-app',
+  projectId: 'acme/my-app',
   i18n,
   defaultLocale: 'en',
   useDeviceLocale: true,
@@ -40,7 +40,7 @@ const { languages, core } = await initBetterI18n({
 
 ```ts
 interface InitBetterI18nOptions {
-  project: string;
+  projectId: string;
   i18n?: i18n;
   defaultLocale?: string;
   storage?: TranslationStorage;
@@ -55,7 +55,7 @@ interface InitBetterI18nOptions {
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `project` | `string` | Required | Project identifier in `org/project` format |
+| `projectId` | `string` | Required | Project ID — `org/project` slug or canonical UUID |
 | `i18n` | `i18n` | Global singleton | i18next instance (call `.use(initReactI18next)` before passing). Defaults to the global `import i18next from 'i18next'` singleton — safe to omit in React Native. |
 | `defaultLocale` | `string` | `"en"` | Fallback locale |
 | `storage` | `TranslationStorage` | In-memory | Persistent storage adapter — use `storageAdapter(mmkv)` or `storageAdapter(AsyncStorage)` |
@@ -235,7 +235,7 @@ import { createMemoryStorage } from '@better-i18n/expo';
 const storage = createMemoryStorage();
 
 await initBetterI18n({
-  project: 'acme/app',
+  projectId: 'acme/app',
   i18n,
   storage,
 });

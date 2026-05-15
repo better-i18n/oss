@@ -80,7 +80,7 @@ i18n.use(initReactI18next); // [!code highlight]
 
 // Start at module level — the promise is cached, so multiple imports won't re-run init
 export const i18nReady = initBetterI18n({ // [!code highlight]
-  project: 'your-org/your-project', // [!code highlight]
+  projectId: 'your-org/your-project', // [!code highlight]
   i18n,
   defaultLocale: 'en',
   debug: __DEV__,
@@ -110,7 +110,7 @@ const mmkv = new MMKV({ id: 'app' });
 i18n.use(initReactI18next);
 
 export const i18nReady = initBetterI18n({
-  project: 'your-org/your-project',
+  projectId: 'your-org/your-project',
   i18n,
   storage: storageAdapter(mmkv, { localeKey: '@app:locale' }), // [!code highlight]
   defaultLocale: 'en',
@@ -130,7 +130,7 @@ import { initBetterI18n, storageAdapter } from '@better-i18n/expo'; // [!code hi
 i18n.use(initReactI18next);
 
 export const i18nReady = initBetterI18n({
-  project: 'your-org/your-project',
+  projectId: 'your-org/your-project',
   i18n,
   storage: storageAdapter(AsyncStorage, { localeKey: '@app:locale' }), // [!code highlight]
   defaultLocale: 'en',

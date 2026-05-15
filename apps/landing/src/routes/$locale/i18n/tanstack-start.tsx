@@ -53,7 +53,7 @@ import { getMessages } from '@better-i18n/use-intl/server';
 export const Route = createRootRoute({
   loader: async ({ context }) => {
     const messages = await getMessages({
-      project: 'your-org/your-project',
+      projectId: 'your-org/your-project',
       locale: context.locale ?? 'en',
     });
     return { messages, locale: context.locale ?? 'en' };

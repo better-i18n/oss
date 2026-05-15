@@ -52,7 +52,7 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(
     BetterI18nProvider(
-      project: 'your-org/your-project', // [!code highlight]
+      projectId: 'your-org/your-project', // [!code highlight]
       defaultLocale: 'en',
       child: const MyApp(),
     ),
@@ -161,7 +161,7 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(
     BetterI18nProvider(
-      project: 'your-org/your-project',
+      projectId: 'your-org/your-project',
       defaultLocale: 'en',
       storage: SharedPrefsStorage(), // [!code highlight]
       loadingBuilder: (_) => const MaterialApp( // [!code highlight]

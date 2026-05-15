@@ -95,13 +95,13 @@ import { getMessages } from '@better-i18n/use-intl/server';
 
 export default async function RootLayout({ children, params }) {
   const messages = await getMessages({
-    project: 'your-org/your-project',
+    projectId: 'your-org/your-project',
     locale: params.locale,
   });
   return (
     <html lang={params.locale}>
       <body>
-        <BetterI18nProvider messages={messages} locale={params.locale} project="your-org/your-project">
+        <BetterI18nProvider messages={messages} locale={params.locale} projectId="your-org/your-project">
           {children}
         </BetterI18nProvider>
       </body>
@@ -159,7 +159,7 @@ export default async function LocaleLayout({
   params: { locale: string };
 }) {
   const messages = await getMessages({
-    project: 'your-org/your-project',
+    projectId: 'your-org/your-project',
     locale: params.locale,
   });
 
@@ -189,7 +189,7 @@ export default async function Page({
   params: { locale: string; slug: string };
 }) {
   const t = await getMessages({
-    project: 'your-org/your-project',
+    projectId: 'your-org/your-project',
     locale: params.locale,
     namespace: 'blog',
   });
@@ -397,8 +397,8 @@ export default async function DashboardLayout({
 }) {
   // Load dashboard-specific namespace alongside common messages
   const [commonMessages, dashMessages] = await Promise.all([
-    getMessages({ project: 'your-org/your-project', locale: params.locale, namespace: 'common' }),
-    getMessages({ project: 'your-org/your-project', locale: params.locale, namespace: 'dashboard' }),
+    getMessages({ projectId: 'your-org/your-project', locale: params.locale, namespace: 'common' }),
+    getMessages({ projectId: 'your-org/your-project', locale: params.locale, namespace: 'dashboard' }),
   ]);
 
   const messages = { ...commonMessages, ...dashMessages };

@@ -30,7 +30,7 @@ import { BetterI18nProvider } from '@better-i18n/use-intl'
 function App() {
   return (
     <BetterI18nProvider
-      project="your-org/your-project"
+      projectId="your-org/your-project"
       locale="en"
     >
       <YourApp />
@@ -70,7 +70,7 @@ function App() {
 
   return (
     <BetterI18nProvider
-      project="org/project"
+      projectId="org/project"
       locale={locale}
       onLocaleChange={setLocale}
     >
@@ -93,13 +93,13 @@ import { getMessages } from '@better-i18n/use-intl/server'
 
 // In your loader
 const messages = await getMessages({
-  project: 'org/project',
+  projectId: 'org/project',
   locale: 'en',
 })
 
 // In your component
 <BetterI18nProvider
-  project="org/project"
+  projectId="org/project"
   locale="en"
   messages={messages} // [!code highlight]
   timeZone="UTC" // [!code highlight]
@@ -118,7 +118,7 @@ Use the `localeCookie` prop to persist the user's language choice across page re
 
 ```tsx
 <BetterI18nProvider
-  project="org/project"
+  projectId="org/project"
   localeCookie // [!code highlight]
 >
   <App />
@@ -176,7 +176,7 @@ Handle missing translations gracefully:
 
 ```tsx
 <BetterI18nProvider
-  project="org/project"
+  projectId="org/project"
   locale="en"
   onError={(error) => {
     if (process.env.NODE_ENV === 'development') {
@@ -195,7 +195,7 @@ Enable debug logging during development:
 
 ```tsx
 <BetterI18nProvider
-  project="org/project"
+  projectId="org/project"
   locale="en"
   debug={process.env.NODE_ENV === 'development'}
   logLevel="debug"
@@ -216,7 +216,7 @@ For enterprise or self-hosted deployments:
 
 ```tsx
 <BetterI18nProvider
-  project="org/project"
+  projectId="org/project"
   locale="en"
   cdnBaseUrl="https://cdn.your-company.com"
 >
@@ -228,7 +228,7 @@ For enterprise or self-hosted deployments:
 
 ```ts
 interface BetterI18nProviderConfig {
-  project: string
+  projectId: string
   locale: string
   messages?: Messages
   timeZone?: string

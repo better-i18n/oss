@@ -87,7 +87,7 @@ export default function App() {
 
 ## Without Vite Plugin
 
-If you're not using the Vite plugin, pass `project` and `locale` as props manually.
+If you're not using the Vite plugin, pass `projectId` and `locale` as props manually.
 
 ### URL Structure
 
@@ -139,7 +139,7 @@ export function LocalizedApp() {
 
   return (
     <BetterI18nProvider // [!code highlight]
-      project={i18nConfig.project}
+      projectId={i18nConfig.projectId}
       locale={locale || i18nConfig.defaultLocale}
       onLocaleChange={handleLocaleChange}
     >

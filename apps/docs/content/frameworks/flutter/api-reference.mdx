@@ -11,7 +11,7 @@ The top-level widget. Manages the `BetterI18nController` lifecycle and provides 
 
 ```dart
 BetterI18nProvider(
-  project: 'acme/app',
+  projectId: 'acme/app',
   defaultLocale: 'en',
   storage: SharedPrefsStorage(),
   loadingBuilder: (_) => const CircularProgressIndicator(),
@@ -23,7 +23,7 @@ BetterI18nProvider(
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| `project` | `String` | Yes | — | Project identifier in `"org/project"` format |
+| `projectId` | `String` | Yes | — | Project ID — `"org/project"` slug or canonical UUID |
 | `defaultLocale` | `String` | Yes | — | Fallback locale used when no locale is set |
 | `child` | `Widget` | Yes | — | Root widget of your app |
 | `locale` | `String?` | No | `null` | Externally controlled locale (e.g., from a Cubit/BLoC) |
@@ -141,7 +141,7 @@ Manages i18n state — locale, messages, and languages. Extends `ChangeNotifier`
 ```dart
 final controller = BetterI18nController(
   config: const I18nConfig(
-    project: 'acme/app',
+    projectId: 'acme/app',
     defaultLocale: 'en',
   ),
   initialLocale: 'tr',
@@ -216,7 +216,7 @@ The pure Dart core engine — no Flutter dependency. Implements the 4-tier fallb
 ```dart
 final core = I18nCore(
   config: NormalizedConfig(
-    project: 'acme/app',
+    projectId: 'acme/app',
     defaultLocale: 'en',
     cdnBaseUrl: 'https://cdn.better-i18n.com',
     manifestCacheTtlMs: 300000,
@@ -447,7 +447,7 @@ Persistent storage adapter backed by `shared_preferences`. The recommended choic
 import 'package:better_i18n/better_i18n.dart';
 
 BetterI18nProvider(
-  project: 'acme/app',
+  projectId: 'acme/app',
   defaultLocale: 'en',
   storage: SharedPrefsStorage(),
   child: const MyApp(),
@@ -478,7 +478,7 @@ testWidgets('renders translated welcome text', (tester) async {
 
   final controller = BetterI18nController(
     config: const I18nConfig(
-      project: 'test/app',
+      projectId: 'test/app',
       defaultLocale: 'en',
       staticData: {
         'en': {

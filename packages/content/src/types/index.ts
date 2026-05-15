@@ -1,4 +1,13 @@
 export interface ContentConfig {
+  /**
+   * Project identifier in `org/project` slug format (e.g. `"acme/web-app"`).
+   *
+   * Find it in the dashboard under Settings → General → Project ID, or read
+   * it off the dashboard URL: `dash.better-i18n.com/{org}/{project}`.
+   *
+   * The value is a stable identifier — even when you rename the project's
+   * display name in the dashboard, this slug stays the same.
+   */
   projectId: string
   apiKey: string
   analytics?: AnalyticsConfig

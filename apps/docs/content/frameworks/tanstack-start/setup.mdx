@@ -45,7 +45,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const locale = context.locale || i18nConfig.defaultLocale
 
     const messages = await getMessages({ // [!code ++]
-      project: i18nConfig.project, // [!code ++]
+      projectId: i18nConfig.projectId, // [!code ++]
       locale, // [!code ++]
     }) // [!code ++]
 
@@ -65,7 +65,7 @@ function RootComponent() {
       </head>
       <body>
         <BetterI18nProvider // [!code ++]
-          project={i18nConfig.project} // [!code ++]
+          projectId={i18nConfig.projectId} // [!code ++]
           locale={locale} // [!code ++]
           messages={messages} // [!code ++]
           timeZone="UTC" // [!code highlight]

@@ -50,7 +50,7 @@ import { initBetterI18n } from '@better-i18n/expo'; // [!code highlight]
 i18n.use(initReactI18next); // [!code highlight]
 
 export const { languages } = await initBetterI18n({ // [!code highlight]
-  project: 'your-org/your-project', // [!code highlight]
+  projectId: 'your-org/your-project', // [!code highlight]
   i18n,
   defaultLocale: 'en',
   debug: __DEV__,
@@ -92,7 +92,7 @@ const mmkv = new MMKV({ id: 'i18n' });
 i18n.use(initReactI18next);
 
 export const i18nReady = initBetterI18n({
-  project: 'your-org/your-project',
+  projectId: 'your-org/your-project',
   i18n,
   defaultLocale: 'en',
   useDeviceLocale: true,

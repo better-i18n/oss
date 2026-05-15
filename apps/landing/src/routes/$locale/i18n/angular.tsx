@@ -67,7 +67,7 @@ function AngularI18nPage() {
 @NgModule({
   imports: [
     BetterI18nModule.forRoot({
-      project: 'your-org/your-project',
+      projectId: 'your-org/your-project',
       defaultLocale: 'en',
     }),
   ],

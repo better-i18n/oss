@@ -51,7 +51,7 @@ function NuxtI18nPage() {
 export default defineNuxtConfig({
   modules: ['@better-i18n/nuxt'],
   betterI18n: {
-    project: 'my-org/my-project',
+    projectId: 'my-org/my-project',
     defaultLocale: 'en',
     locales: ['en', 'tr', 'de']
   }

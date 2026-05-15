@@ -431,7 +431,7 @@ Main configuration type for `createI18n` and server utilities.
 ```ts
 interface I18nConfig {
   // Required
-  project: string; // "org/project" format
+  projectId: string; // "org/project" slug or canonical UUID
   defaultLocale: string; // Fallback locale
 
   // Optional - CDN
@@ -470,7 +470,7 @@ Configuration for `createBetterI18nMiddleware`.
 
 ```ts
 interface I18nMiddlewareConfig {
-  project: string;
+  projectId: string;
   defaultLocale: string;
   /** URL locale prefix behavior (passed to next-intl) */
   localePrefix?: "as-needed" | "always" | "never"; // Default: "as-needed"

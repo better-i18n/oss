@@ -61,7 +61,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       }) // [!code highlight]
 
       // Cache warm-up: preload before redirect so the loader hits TtlCache instantly
-      await getMessages({ project: i18nConfig.project, locale: detectedLocale }).catch(() => {}) // [!code highlight]
+      await getMessages({ projectId: i18nConfig.projectId, locale: detectedLocale }).catch(() => {}) // [!code highlight]
 
       throw redirect({
         href: `/${detectedLocale}${location.pathname}`,
@@ -97,7 +97,7 @@ export const Route = createRootRouteWithContext<{ locale: string }>()({
       : context.locale || i18nConfig.defaultLocale // [!code ++]
 
     const messages = await getMessages({
-      project: i18nConfig.project,
+      projectId: i18nConfig.projectId,
       locale,
     })
 

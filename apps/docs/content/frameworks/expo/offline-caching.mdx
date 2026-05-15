@@ -53,7 +53,7 @@ const mmkv = new MMKV({ id: 'i18n' });
 i18n.use(initReactI18next);
 
 export const i18nReady = initBetterI18n({
-  project: 'acme/my-app',
+  projectId: 'acme/my-app',
   i18n,
   storage: storageAdapter(mmkv, { localeKey: '@app:locale' }), // [!code highlight]  Layer 2
   staticData: { en, tr }, // [!code highlight]  Layer 3
@@ -131,7 +131,7 @@ import { initBetterI18n, storageAdapter } from '@better-i18n/expo';
 const mmkv = new MMKV({ id: 'app' });
 
 await initBetterI18n({
-  project: 'acme/app',
+  projectId: 'acme/app',
   i18n,
   storage: storageAdapter(mmkv, { localeKey: '@app:locale' }),
 });
@@ -143,7 +143,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initBetterI18n, storageAdapter } from '@better-i18n/expo';
 
 await initBetterI18n({
-  project: 'acme/app',
+  projectId: 'acme/app',
   i18n,
   storage: storageAdapter(AsyncStorage, { localeKey: '@app:locale' }),
 });
@@ -162,7 +162,7 @@ For a fully custom store, implement the `TranslationStorage` interface directly:
 
 ```ts
 await initBetterI18n({
-  project: 'acme/app',
+  projectId: 'acme/app',
   i18n,
   storage: {
     getItem: async (key: string) => /* ... */,
@@ -228,7 +228,7 @@ The SDK detects the device language on first launch, then persists the user's ch
 
 ```ts
 await initBetterI18n({
-  project: 'acme/app',
+  projectId: 'acme/app',
   i18n,
   useDeviceLocale: true, // [!code highlight]
   storage: storageAdapter(mmkv, { localeKey: '@app:locale' }), // [!code highlight]
@@ -245,7 +245,7 @@ Your app handles locale detection and persistence. Pass the resolved locale as `
 const locale = myStorage.getLanguage() || getDeviceLanguage() || 'en';
 
 await initBetterI18n({
-  project: 'acme/app',
+  projectId: 'acme/app',
   i18n,
   useDeviceLocale: false, // [!code highlight]
   defaultLocale: locale, // [!code highlight]

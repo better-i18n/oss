@@ -53,7 +53,7 @@ function ServerI18nPage() {
       code: `import { createServerI18n } from '@better-i18n/server';
 
 export const i18n = createServerI18n({
-  project: 'your-org/your-api',
+  projectId: 'your-org/your-api',
   defaultLocale: 'en',
 });`,
       fileName: "i18n.ts",

@@ -67,7 +67,7 @@ Add a `pull` section to your `i18n.config.ts` to set defaults:
 
 ```ts title="i18n.config.ts"
 export const i18nConfig = {
-  project: "acme/my-app",
+  projectId: "acme/my-app",
   defaultLocale: "en",
   pull: { // [!code highlight]
     output: "./locales", // [!code highlight]
@@ -89,7 +89,7 @@ import en from './locales/en.json';
 import tr from './locales/tr.json';
 
 await initBetterI18n({
-  project: 'acme/my-app',
+  projectId: 'acme/my-app',
   i18n,
   storage: storageAdapter(new MMKV()),
   staticData: { en, tr }, // [!code highlight]
@@ -116,4 +116,4 @@ The `pull` command finds your project in this order:
 2. `i18n.config.ts` in the target directory
 3. Source file scan for `initBetterI18n()` or `createI18n()` calls
 
-This means Expo projects work without a config file — the CLI finds `project: 'acme/my-app'` from your `initBetterI18n()` call automatically.
+This means Expo projects work without a config file — the CLI finds `projectId: 'acme/my-app'` from your `initBetterI18n()` call automatically.

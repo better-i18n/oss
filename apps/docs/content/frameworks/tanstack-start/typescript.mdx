@@ -90,7 +90,7 @@ import type { Messages } from '@better-i18n/use-intl'
 export const Route = createRootRouteWithContext<RouterContext>()({
   loader: async ({ context }): Promise<{ messages: Messages; locale: string }> => {
     const locale = context.locale || 'en'
-    const messages = await getMessages({ project: 'org/project', locale })
+    const messages = await getMessages({ projectId: 'org/project', locale })
     return { messages, locale }
   },
 })

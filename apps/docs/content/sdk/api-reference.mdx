@@ -12,7 +12,7 @@ Creates a content client for fetching models and entries.
 import { createClient } from "@better-i18n/sdk";
 
 const client = createClient({
-  project: "acme/web-app",
+  projectId: "acme/web-app",
   apiKey: "bi-your-api-key",
 });
 ```
@@ -21,7 +21,7 @@ const client = createClient({
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `project` | `string` | Yes | Project identifier in `org/project` format |
+| `projectId` | `string` | Yes | Project ID — `org/project` slug or canonical UUID |
 | `apiKey` | `string` | Yes | API key (prefix: `bi-`) |
 | `apiBase` | `string` | No | API URL. Default: `https://content.better-i18n.com` |
 | `debug` | `boolean` | No | Log request URLs and responses to console |

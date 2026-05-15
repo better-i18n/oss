@@ -13,7 +13,7 @@ Creates an i18n core instance for fetching translations, languages, and manifest
 import { createI18nCore } from "@better-i18n/core";
 
 const i18n = createI18nCore({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
 });
 ```
@@ -261,7 +261,7 @@ Normalizes user configuration by applying defaults and validating required field
 import { normalizeConfig } from "@better-i18n/core";
 
 const config = normalizeConfig({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
 });
 
@@ -271,7 +271,7 @@ console.log(config.workspaceId);        // "org"
 console.log(config.projectSlug);        // "project"
 ```
 
-**Throws** if `project` or `defaultLocale` is empty or invalid format.
+**Throws** if `projectId` or `defaultLocale` is empty or invalid format.
 
 </AccordionItem>
 
@@ -295,7 +295,7 @@ Builds the full CDN base URL for a project.
 ```ts
 import { normalizeConfig, getProjectBaseUrl } from "@better-i18n/core";
 
-const config = normalizeConfig({ project: "acme/dashboard", defaultLocale: "en" });
+const config = normalizeConfig({ projectId: "acme/dashboard", defaultLocale: "en" });
 const url = getProjectBaseUrl(config);
 // "https://cdn.better-i18n.com/acme/dashboard"
 ```
@@ -325,7 +325,7 @@ Creates a namespaced logger instance with level filtering.
 import { createLogger, normalizeConfig } from "@better-i18n/core";
 
 const config = normalizeConfig({
-  project: "org/project",
+  projectId: "org/project",
   defaultLocale: "en",
   debug: true,
 });
@@ -397,7 +397,8 @@ User-provided configuration for `createI18nCore`.
 
 ```ts
 interface I18nCoreConfig {
-  project: string;                // "org/project" format (required)
+  projectId: string;              // "org/project" slug or canonical UUID (required)
+  project?: string;               // @deprecated — use projectId (kept for backward compat)
   defaultLocale: string;          // Fallback locale (required)
   cdnBaseUrl?: string;            // Default: "https://cdn.better-i18n.com"
   manifestCacheTtlMs?: number;    // Default: 300000 (5 min)
@@ -406,6 +407,8 @@ interface I18nCoreConfig {
   fetch?: typeof fetch;           // Custom fetch function
 }
 ```
+
+`projectId` accepts either an `org/project` slug or a canonical UUID (e.g., `"2cc52ff1-5eb4-41a5-85d6-34ad6fade788"`). Passing the UUID makes CDN URLs stable across slug renames — find it in dashboard Settings → General → Project ID.
 
 </AccordionItem>
 

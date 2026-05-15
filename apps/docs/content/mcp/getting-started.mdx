@@ -23,13 +23,13 @@ Set up the local MCP server for coding agents like Cursor, Claude Code, Windsurf
 <Step>
 ### Configure Project Context
 
-The MCP server needs to know which project to manage. It looks for a `project` identifier in your `i18n.config.ts`.
+The MCP server needs to know which project to manage. It reads the `projectId` field from your `i18n.config.ts`.
 
 ```ts title="i18n.config.ts"
 import { createI18n } from "@better-i18n/next";
 
 export const i18n = createI18n({
-  project: "your-org/your-project", // MCP uses this ID // [!code highlight]
+  projectId: "your-org/your-project", // MCP uses this ID // [!code highlight]
   defaultLocale: "en",
 });
 ```

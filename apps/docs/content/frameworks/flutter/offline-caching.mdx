@@ -76,7 +76,7 @@ Bundle translations directly in your app binary as a last-resort fallback:
 
 ```dart title="lib/main.dart"
 BetterI18nProvider(
-  project: 'acme/app',
+  projectId: 'acme/app',
   defaultLocale: 'en',
   staticData: { // [!code highlight]
     'en': { // [!code highlight]
@@ -103,7 +103,7 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(
     BetterI18nProvider(
-      project: 'acme/app',
+      projectId: 'acme/app',
       defaultLocale: 'en',
       storage: SharedPrefsStorage(), // [!code highlight]
       child: const MyApp(),
@@ -146,7 +146,7 @@ Then pass it to `BetterI18nProvider`:
 
 ```dart
 BetterI18nProvider(
-  project: 'acme/app',
+  projectId: 'acme/app',
   defaultLocale: 'en',
   storage: MyCustomStorage(),
   child: const MyApp(),
@@ -159,7 +159,7 @@ Handle loading and error states with `loadingBuilder` and `errorBuilder`:
 
 ```dart title="lib/main.dart"
 BetterI18nProvider(
-  project: 'acme/app',
+  projectId: 'acme/app',
   defaultLocale: 'en',
   storage: SharedPrefsStorage(),
   loadingBuilder: (_) => const MaterialApp( // [!code highlight]
@@ -206,7 +206,7 @@ testWidgets('shows translated text', (tester) async {
   // Create a controller with mock data
   final controller = BetterI18nController(
     config: const I18nConfig(
-      project: 'test/app',
+      projectId: 'test/app',
       defaultLocale: 'en',
       staticData: {
         'en': {'common': {'welcome': 'Welcome'}},

@@ -38,7 +38,7 @@ Fetch translation messages for a locale from the CDN. Use this in server loaders
 import { getMessages } from '@better-i18n/use-intl/server'
 
 const messages = await getMessages({
-  project: 'org/project',
+  projectId: 'org/project',
   locale: 'en',
 })
 ```
@@ -47,7 +47,7 @@ const messages = await getMessages({
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| `project` | `string` | ✅ | Project identifier in `org/project` format |
+| `projectId` | `string` | ✅ | Project ID — `org/project` slug or canonical UUID |
 | `locale` | `string` | ✅ | Locale to fetch messages for |
 | `cdnBaseUrl` | `string` | | Custom CDN URL |
 | `debug` | `boolean` | | Enable debug logging |
@@ -64,7 +64,7 @@ import { getMessages } from '@better-i18n/use-intl/server' // [!code highlight]
 export const Route = createRootRouteWithContext<{ locale: string }>()({
   loader: async ({ context }) => {
     const messages = await getMessages({ // [!code highlight]
-      project: 'org/project',
+      projectId: 'org/project',
       locale: context.locale || 'en',
     }) // [!code highlight]
 
@@ -76,7 +76,7 @@ export const Route = createRootRouteWithContext<{ locale: string }>()({
 
     return (
       <BetterI18nProvider
-        project="org/project"
+        projectId="org/project"
         locale={locale}
         messages={messages} // [!code highlight]
         timeZone="UTC" // [!code highlight]
@@ -102,7 +102,7 @@ loader: async ({ context, location }) => {
     : context.locale || 'en'
 
   const messages = await getMessages({
-    project: 'org/project',
+    projectId: 'org/project',
     locale,
   })
 
@@ -117,7 +117,7 @@ Handle fetch failures gracefully:
 ```ts
 try {
   const messages = await getMessages({
-    project: 'org/project',
+    projectId: 'org/project',
     locale,
   })
   return { messages, locale }
@@ -126,7 +126,7 @@ try {
 
   // Fallback to default locale
   const fallbackMessages = await getMessages({
-    project: 'org/project',
+    projectId: 'org/project',
     locale: 'en',
   })
 
@@ -144,7 +144,7 @@ Get available locale codes from the manifest:
 import { getLocales } from '@better-i18n/use-intl/server'
 
 const locales = await getLocales({
-  project: 'org/project',
+  projectId: 'org/project',
 })
 // ['en', 'tr', 'de', 'es']
 ```
@@ -159,7 +159,7 @@ Get languages with full metadata:
 import { getLanguages } from '@better-i18n/use-intl/server'
 
 const languages = await getLanguages({
-  project: 'org/project',
+  projectId: 'org/project',
 })
 // [
 //   { code: 'en', name: 'English', nativeName: 'English', flagUrl: '...' },
@@ -179,7 +179,7 @@ Create a translator function for use outside React components. Perfect for route
 import { getMessages, createServerTranslator } from '@better-i18n/use-intl/server'
 
 const messages = await getMessages({
-  project: 'org/project',
+  projectId: 'org/project',
   locale: 'en',
 })
 
@@ -215,7 +215,7 @@ import { getMessages, createServerTranslator } from '@better-i18n/use-intl/serve
 export const Route = createFileRoute('/about')({
   loader: async ({ context }) => {
     const messages = await getMessages({
-      project: 'org/project',
+      projectId: 'org/project',
       locale: context.locale,
     })
 
@@ -257,7 +257,7 @@ export async function loader({ request }) {
   const locale = request.headers.get('accept-language')?.split(',')[0] || 'en'
 
   const messages = await getMessages({
-    project: 'org/project',
+    projectId: 'org/project',
     locale,
   })
 
@@ -283,7 +283,7 @@ import { getMessages, createServerTranslator } from '@better-i18n/use-intl/serve
 
 export async function generateWelcomeEmail(user: User) {
   const messages = await getMessages({
-    project: 'org/project',
+    projectId: 'org/project',
     locale: user.locale,
   })
 
@@ -312,7 +312,7 @@ import { getMessages, createServerTranslator } from '@better-i18n/use-intl/serve
 export async function sendDailyDigest(users: User[]) {
   for (const user of users) {
     const messages = await getMessages({
-      project: 'org/project',
+      projectId: 'org/project',
       locale: user.locale,
     })
 
@@ -368,7 +368,7 @@ async function getCachedMessages(locale: string) {
 
   if (!messageCache.has(key)) {
     messageCache.set(key, getMessages({
-      project: 'org/project',
+      projectId: 'org/project',
       locale,
     }))
   }

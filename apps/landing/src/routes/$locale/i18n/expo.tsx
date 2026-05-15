@@ -55,7 +55,7 @@ import { initBetterI18n } from '@better-i18n/expo';
 i18n.use(initReactI18next);
 
 export const { languages } = await initBetterI18n({
-  project: 'your-org/your-project',
+  projectId: 'your-org/your-project',
   i18n,
   defaultLocale: 'en',
   debug: __DEV__,

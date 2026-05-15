@@ -133,10 +133,14 @@ BETTER_I18N_PROJECT=acme/web-app
 
 | Option | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `projectId` | `string` | Yes | — | Project ID in `org/project` slug format |
+| `projectId` | `string` | Yes | — | Project ID — accepts `org/project` slug or canonical UUID. Find both in dashboard Settings → General → Project ID. |
 | `apiKey` | `string` | Yes | — | API key for authentication |
 | `apiBase` | `string` | No | `https://content.better-i18n.com` | Custom API base URL |
 | `debug` | `boolean` | No | `false` | Log request URLs and responses to console |
+
+<Callout type="tip">
+  **UUID vs slug** — passing the project UUID instead of the slug makes your CDN URLs immune to dashboard slug renames. Recommended for production deployments where the slug might evolve. The UUID is shown in dashboard Settings → General → Project ID.
+</Callout>
 
 <Callout type="info">
   `project` is still accepted as a legacy alias for `projectId` — existing integrations keep working. New code should use `projectId` for consistency with the Analytics SDK and dashboard.
