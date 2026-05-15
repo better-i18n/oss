@@ -11,7 +11,14 @@ interface ContentTrackerValue {
   reset: () => void
 }
 
+const NO_OP_TRACKER: ContentTrackerValue = {
+  track: () => {},
+  reset: () => {},
+}
+
 const CONTENT_KEY: InjectionKey<ContentTrackerValue> = Symbol('better-content')
+
+let warnedNoProvider = false
 
 export function provideContent(config: ContentConfig) {
   const tracker = createTracker(config)
@@ -24,21 +31,19 @@ export function provideContent(config: ContentConfig) {
 }
 
 export function useTrack() {
-  const ctx = inject(CONTENT_KEY)
-  if (!ctx) {
-    throw new Error(
-      '[better-i18n/content] useTrack must be used within a component that called provideContent()',
-    )
-  }
-  return ctx.track
+  return useContent().track
 }
 
 export function useContent() {
   const ctx = inject(CONTENT_KEY)
   if (!ctx) {
-    throw new Error(
-      '[better-i18n/content] useContent must be used within a component that called provideContent()',
-    )
+    if (!warnedNoProvider && typeof console !== 'undefined') {
+      warnedNoProvider = true
+      console.warn(
+        '[better-i18n/content] useContent called without provideContent(). Tracking will be disabled.',
+      )
+    }
+    return NO_OP_TRACKER
   }
   return ctx
 }

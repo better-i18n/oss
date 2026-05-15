@@ -23,6 +23,12 @@ interface ContentContextValue {
   config: ContentConfig
 }
 
+const NO_OP_CONTEXT: ContentContextValue = {
+  track: () => {},
+  reset: () => {},
+  config: { projectId: '', apiKey: '' },
+}
+
 const ContentContext = createContext<ContentContextValue | null>(null)
 
 export interface ExpoContentProviderProps {
@@ -73,12 +79,18 @@ export function ContentProvider({ config, children }: ExpoContentProviderProps) 
   return <ContentContext value={value}>{children}</ContentContext>
 }
 
+let warnedNoProvider = false
+
 export function useContent(): ContentContextValue {
   const ctx = useContext(ContentContext)
   if (!ctx) {
-    throw new Error(
-      '[better-i18n/content] useContent must be used within a ContentProvider',
-    )
+    if (!warnedNoProvider && typeof console !== 'undefined') {
+      warnedNoProvider = true
+      console.warn(
+        '[better-i18n/content] useContent called outside ContentProvider. Tracking will be disabled.',
+      )
+    }
+    return NO_OP_CONTEXT
   }
   return ctx
 }
