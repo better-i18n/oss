@@ -31,17 +31,16 @@ export interface ExpoContentProviderProps {
 }
 
 export function ContentProvider({ config, children }: ExpoContentProviderProps) {
-  const initRef = useRef<{ apiKey: string; projectId: string } | null>(null)
-  const [tracker, setTracker] = useState<ReturnType<typeof createTracker> | null>(null)
+  const configRef = useRef({ apiKey: config.apiKey, projectId: config.projectId })
+  const [tracker, setTracker] = useState(() => createTracker(config))
 
   useEffect(() => {
-    const key = { apiKey: config.apiKey, projectId: config.projectId }
     if (
-      initRef.current?.apiKey === key.apiKey &&
-      initRef.current?.projectId === key.projectId
+      configRef.current.apiKey === config.apiKey &&
+      configRef.current.projectId === config.projectId
     ) return
 
-    initRef.current = key
+    configRef.current = { apiKey: config.apiKey, projectId: config.projectId }
     setTracker(createTracker(config))
   }, [config])
 
@@ -65,9 +64,11 @@ export function ContentProvider({ config, children }: ExpoContentProviderProps) 
     return () => subscription?.remove()
   }, [])
 
-  const value: ContentContextValue | null = tracker
-    ? { track: tracker.track, reset: tracker.reset, config }
-    : null
+  const value: ContentContextValue = {
+    track: tracker.track,
+    reset: tracker.reset,
+    config,
+  }
 
   return <ContentContext value={value}>{children}</ContentContext>
 }
