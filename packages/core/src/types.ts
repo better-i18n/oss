@@ -129,11 +129,31 @@ export interface I18nCoreConfig {
 }
 
 /**
- * Parsed project identifier
+ * Parsed project identifier.
+ *
+ * Two input shapes are accepted:
+ *
+ *   1. `"org/project"` slug — `workspaceId` and `projectSlug` carry the split
+ *      parts, `pathSegment` is `"org/project"`, `isUuid` is false.
+ *   2. Project UUID (canonical 36-char form) — `workspaceId` and `projectSlug`
+ *      are empty strings (no meaningful split), `pathSegment` is the
+ *      lowercase UUID, `isUuid` is true.
+ *
+ * URL construction MUST use `pathSegment` so both shapes route correctly to
+ * the CDN. Code paths that read `workspaceId` / `projectSlug` directly will
+ * only work in slug mode — guard with `isUuid` if both modes need to be
+ * supported.
  */
 export interface ParsedProject {
   workspaceId: string;
   projectSlug: string;
+  /**
+   * CDN path segment — `"org/project"` for slug input, the UUID for UUID
+   * input. Always populated post-normalization.
+   */
+  pathSegment: string;
+  /** True when the project identifier was a canonical UUID, not a slug. */
+  isUuid: boolean;
 }
 
 /**

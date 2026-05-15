@@ -23,18 +23,51 @@ const isDevMode = (): boolean => {
 };
 
 /**
- * Parse project string "org/slug" into workspaceId and projectSlug
+ * Canonical UUID v4 format (case-insensitive). Customers can pass a project
+ * UUID instead of `"org/project"` slug to get a CDN URL that's immune to
+ * slug renames — `cdn.../{uuid}/...` instead of `cdn.../{org}/{project}/...`.
+ * The CDN worker resolves UUID → current slug pair internally; R2 storage
+ * stays slug-keyed.
+ */
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/**
+ * Parse a project identifier into URL-buildable pieces. Accepts either:
+ *
+ *   - `"org/project"` slug (e.g., `"acme/dashboard"`) — populates
+ *     `workspaceId` + `projectSlug` from the split.
+ *   - Canonical UUID (e.g., `"01234567-89ab-4cde-9012-3456789abcde"`) —
+ *     `workspaceId` + `projectSlug` are empty; `pathSegment` is the
+ *     lowercase UUID.
+ *
+ * Use `pathSegment` for CDN URLs (`${cdnBaseUrl}/${pathSegment}/...`) so
+ * both shapes route correctly.
  */
 export const parseProject = (project: string): ParsedProject => {
-  const parts = project.split("/");
+  const trimmed = project.trim();
+
+  if (UUID_PATTERN.test(trimmed)) {
+    const lower = trimmed.toLowerCase();
+    return {
+      workspaceId: "",
+      projectSlug: "",
+      pathSegment: lower,
+      isUuid: true,
+    };
+  }
+
+  const parts = trimmed.split("/");
   if (parts.length !== 2 || !parts[0] || !parts[1]) {
     throw new Error(
-      `[better-i18n] Invalid project format "${project}". Expected "org/project" (e.g., "acme/dashboard")`
+      `[better-i18n] Invalid project identifier "${project}". Expected "org/project" slug (e.g., "acme/dashboard") or a canonical UUID.`
     );
   }
   return {
     workspaceId: parts[0],
     projectSlug: parts[1],
+    pathSegment: `${parts[0]}/${parts[1]}`,
+    isUuid: false,
   };
 };
 
@@ -55,16 +88,17 @@ export const normalizeConfig = (config: I18nCoreConfig): NormalizedConfig => {
     throw new Error("[better-i18n] defaultLocale is required");
   }
 
-  const { workspaceId, projectSlug: parsedProjectSlug } =
-    parseProject(projectSlug);
+  const parsed = parseProject(projectSlug);
 
   const devMode = isDevMode();
 
   return {
     ...config,
     project: projectSlug,
-    workspaceId,
-    projectSlug: parsedProjectSlug,
+    workspaceId: parsed.workspaceId,
+    projectSlug: parsed.projectSlug,
+    pathSegment: parsed.pathSegment,
+    isUuid: parsed.isUuid,
     cdnBaseUrl: config.cdnBaseUrl?.replace(/\/$/, "") || DEFAULT_CDN_BASE_URL,
     // Manifest: 30s in dev (rarely changes), 5min in prod
     manifestCacheTtlMs:
@@ -78,7 +112,12 @@ export const normalizeConfig = (config: I18nCoreConfig): NormalizedConfig => {
 };
 
 /**
- * Build the project base URL on CDN
+ * Build the project base URL on CDN.
+ *
+ * For slug-mode configs, this produces `${cdnBaseUrl}/org/project`. For
+ * UUID-mode configs (customer passed a UUID as `projectId`), it produces
+ * `${cdnBaseUrl}/{uuid}` — a single-segment URL that the CDN worker resolves
+ * to the same R2 file, surviving slug renames.
  */
 export const getProjectBaseUrl = (config: NormalizedConfig): string =>
-  `${config.cdnBaseUrl}/${config.workspaceId}/${config.projectSlug}`;
+  `${config.cdnBaseUrl}/${config.pathSegment}`;
