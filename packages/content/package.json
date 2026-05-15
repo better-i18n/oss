@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/content",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Content Analytics SDK for Better i18n — explicit tracking with framework adapters (Next.js, React, Expo, Svelte, Vue, vanilla)",
   "type": "module",
   "sideEffects": false,
