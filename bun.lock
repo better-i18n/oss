@@ -219,7 +219,7 @@
     },
     "packages/content": {
       "name": "@better-i18n/content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "devDependencies": {
         "@types/react": "^19.1.12",
         "jsdom": "^26.1.0",
