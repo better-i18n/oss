@@ -38,6 +38,7 @@ export interface TrackEvent {
   identity?: IdentityOptions
   timestamp: string
   projectId: string
+  apiKey: string
 }
 
 export type EventProperties = Record<string, string | number | boolean | null>

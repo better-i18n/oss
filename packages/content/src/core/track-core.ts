@@ -73,6 +73,7 @@ export function createTracker(config: ContentConfig) {
       identity: options?.identity ?? undefined,
       timestamp: new Date().toISOString(),
       projectId: config.projectId,
+      apiKey: config.apiKey,
     }
 
     sendEvent(event, { endpoint, debug }).catch(() => {

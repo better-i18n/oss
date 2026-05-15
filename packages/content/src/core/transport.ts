@@ -10,15 +10,21 @@ export async function sendEvent(
   const payload = JSON.stringify(event)
   const blob = new Blob([payload], { type: 'application/json' })
 
+  // sendBeacon cannot set custom headers — apiKey is in the body
   const sent = trySendBeacon(options.endpoint, blob)
   if (sent) return
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  if (event.apiKey) headers['x-api-key'] = event.apiKey
 
   if (payload.length < BEACON_BODY_LIMIT) {
     try {
       await fetch(options.endpoint, {
         method: 'POST',
         body: payload,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         keepalive: true,
       })
       return
@@ -31,7 +37,7 @@ export async function sendEvent(
     await fetch(options.endpoint, {
       method: 'POST',
       body: payload,
-      headers: { 'Content-Type': 'application/json' },
+      headers,
     })
   } catch (err) {
     if (options.debug) {
