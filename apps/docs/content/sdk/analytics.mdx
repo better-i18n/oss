@@ -154,9 +154,19 @@ The SDK has three guards:
 
 - **`isBuildTime()`** — Detects `NEXT_PHASE=phase-production-build`, `GATSBY_BUILD_STAGE`, `ASTRO_BUILD`. Calls during build log a warning and skip.
 - **`isBrowser()`** — Calls from a server (Node.js, edge runtime) skip unless `options.allowServer: true`.
-- **`useEffect`-based init** — `ContentProvider` initializes the tracker inside `useEffect`, not `useMemo`. SSR renders never instantiate.
+- **Synchronous init** — `ContentProvider` creates the tracker synchronously during the first render. The tracker itself is SSR-safe: `track()` checks `isBrowser()` internally and becomes a no-op on the server.
 
 You can call `track()` in any render path — it's safe.
+
+## Graceful degradation
+
+If `useTrackView()` or `useContent()` is called outside of a `ContentProvider`, the SDK logs a one-time warning and silently disables tracking — your app never crashes.
+
+```
+[better-i18n/content] useContent called outside ContentProvider. Tracking will be disabled.
+```
+
+This matches the behavior of PostHog, Segment, and other production analytics SDKs.
 
 ## Other frameworks
 

@@ -98,7 +98,9 @@ export default function BlogPost({ post }: { post: Post }) {
 
 ## SSR safety
 
-`ContentProvider` initializes inside `useEffect`, so it never instantiates on the server. `useTrackView` is a no-op during SSR and during the Next.js build phase (`NEXT_PHASE=phase-production-build`).
+`ContentProvider` creates the tracker synchronously, but `track()` is inherently SSR-safe — it checks `isBrowser()` internally and becomes a no-op on the server. `useTrackView` is also a no-op during SSR and during the Next.js build phase (`NEXT_PHASE=phase-production-build`).
+
+If `useTrackView` or `useContent` is used outside of a `ContentProvider`, the SDK logs a one-time warning and disables tracking — it never throws or crashes your app.
 
 ## Next steps
 

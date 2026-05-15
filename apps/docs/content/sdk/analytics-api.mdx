@@ -105,7 +105,7 @@ All other properties are accepted but stored as a JSON blob (Phase 2 — current
 
 ### `useContent()`
 
-Returns the tracker context. Throws if used outside `<ContentProvider>`.
+Returns the tracker context. If called outside `<ContentProvider>`, logs a one-time warning and returns a no-op context — your app never crashes, tracking is simply disabled.
 
 ```ts
 const { track, reset, config } = useContent()
@@ -145,7 +145,7 @@ provideContent({ projectId, apiKey })
 
 ### `useTrack()` / `useContent()`
 
-Inject the tracker. Throws if `provideContent()` wasn't called.
+Inject the tracker. If `provideContent()` wasn't called, logs a one-time warning and returns a no-op tracker.
 
 ```ts
 const track = useTrack()
