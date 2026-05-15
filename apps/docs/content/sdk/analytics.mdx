@@ -267,6 +267,133 @@ track('content.view', { entryId: 'abc', author: { id: '1' } })
 
 Phase 1 mitigations: KV-cached key validation (1h TTL), CF Workers CPU/memory limits, server-side validation rejects malformed payloads.
 
+## Proxy to avoid ad blockers
+
+Ad blockers may block requests to `content.better-i18n.com`. Proxy the track endpoint through your own domain so the browser only sees first-party requests.
+
+<Tabs items={['Next.js rewrites', 'Next.js middleware', 'Cloudflare Worker', 'Nginx / Caddy']}>
+<Tab value="Next.js rewrites">
+
+The simplest option for Next.js apps. Add a rewrite rule in `next.config.js`:
+
+```js title="next.config.js"
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: '/api/ca/:path*',
+        destination: 'https://content.better-i18n.com/:path*',
+      },
+    ]
+  },
+}
+
+export default nextConfig
+```
+
+Then point the SDK to your proxy:
+
+```tsx
+<ContentProvider
+  config={{
+    projectId: process.env.NEXT_PUBLIC_BETTER_I18N_PROJECT_ID!,
+    apiKey: process.env.NEXT_PUBLIC_BETTER_I18N_KEY!,
+    analytics: {
+      endpoint: '/api/ca/v1/track',
+    },
+  }}
+>
+```
+
+</Tab>
+<Tab value="Next.js middleware">
+
+If rewrites cause issues on your host, use a middleware (Next.js 16: `proxy.js`, 15 and earlier: `middleware.js`):
+
+```ts title="middleware.ts"
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith('/api/ca/')) {
+    const url = new URL(
+      request.nextUrl.pathname.replace('/api/ca', ''),
+      'https://content.better-i18n.com',
+    )
+    url.search = request.nextUrl.search
+    return NextResponse.rewrite(url)
+  }
+}
+
+export const config = {
+  matcher: '/api/ca/:path*',
+}
+```
+
+</Tab>
+<Tab value="Cloudflare Worker">
+
+Zero egress fees and 100K free requests/day. Deploy a Worker on your domain:
+
+```ts title="worker.ts"
+export default {
+  async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url)
+    if (!url.pathname.startsWith('/api/ca/')) {
+      return new Response('Not found', { status: 404 })
+    }
+
+    const target = new URL(
+      url.pathname.replace('/api/ca', ''),
+      'https://content.better-i18n.com',
+    )
+    target.search = url.search
+
+    const headers = new Headers(request.headers)
+    headers.set('host', 'content.better-i18n.com')
+
+    return fetch(target.toString(), {
+      method: request.method,
+      headers,
+      body: request.body,
+    })
+  },
+}
+```
+
+Add a route in your `wrangler.toml` matching `/api/ca/*` on your domain.
+
+</Tab>
+<Tab value="Nginx / Caddy">
+
+**Nginx:**
+
+```nginx
+location /api/ca/ {
+    proxy_pass https://content.better-i18n.com/;
+    proxy_set_header Host content.better-i18n.com;
+    proxy_ssl_server_name on;
+}
+```
+
+**Caddy:**
+
+```caddy
+handle_path /api/ca/* {
+    reverse_proxy https://content.better-i18n.com {
+        header_up Host content.better-i18n.com
+    }
+}
+```
+
+</Tab>
+</Tabs>
+
+<Callout type="info">
+  Pick any path you like — `/api/ca/` is just a suggestion. Avoid obvious names like `/api/analytics` or `/api/track` that ad blockers might pattern-match.
+</Callout>
+
 ## Next steps
 
 - [API Reference](/sdk/analytics-api) — full surface area: `track()`, `useTrackView()`, options
