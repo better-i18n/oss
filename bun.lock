@@ -31,7 +31,7 @@
     },
     "apps/docs": {
       "name": "docs",
-      "version": "0.0.9",
+      "version": "0.0.10",
       "dependencies": {
         "@better-i18n/core": "workspace:^",
         "@orama/orama": "^3.1.18",
@@ -60,9 +60,9 @@
     "apps/help": {
       "name": "tanstack-help",
       "dependencies": {
-        "@better-i18n/sdk": "^3.3.0",
+        "@better-i18n/sdk": "^3.4.0",
         "@better-i18n/ui": "^0.2.0",
-        "@better-i18n/use-intl": "^0.9.1",
+        "@better-i18n/use-intl": "^0.9.2",
         "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.90",
         "@radix-ui/react-dialog": "^1.1.15",
         "@tailwindcss/vite": "^4.1.18",
@@ -96,7 +96,7 @@
     },
     "apps/hono-example": {
       "name": "hono-example",
-      "version": "0.0.20",
+      "version": "0.0.21",
       "dependencies": {
         "@better-i18n/server": "workspace:*",
         "@hono/zod-openapi": "^0.19.4",
@@ -112,7 +112,7 @@
     },
     "apps/hydrogen-demo": {
       "name": "hydrogen-demo",
-      "version": "0.0.16",
+      "version": "0.0.17",
       "dependencies": {
         "@better-i18n/remix": "workspace:*",
         "@better-i18n/sdk": "workspace:*",
@@ -150,7 +150,7 @@
         "@better-i18n/content": "workspace:*",
         "@better-i18n/core": "workspace:*",
         "@better-i18n/schemas": "workspace:*",
-        "@better-i18n/sdk": "^3.3.0",
+        "@better-i18n/sdk": "^3.4.0",
         "@better-i18n/ui": "^0.2.0",
         "@better-i18n/use-intl": "workspace:*",
         "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.90",
@@ -241,7 +241,7 @@
     },
     "packages/core": {
       "name": "@better-i18n/core",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "devDependencies": {
         "@types/node": "^20.0.0",
         "@types/react": "^19.2.10",
@@ -258,7 +258,7 @@
     },
     "packages/expo": {
       "name": "@better-i18n/expo",
-      "version": "0.8.6",
+      "version": "0.8.7",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
       },
@@ -327,7 +327,7 @@
     },
     "packages/next": {
       "name": "@better-i18n/next",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
         "@floating-ui/react": "^0.27.19",
@@ -348,7 +348,7 @@
     },
     "packages/remix": {
       "name": "@better-i18n/remix",
-      "version": "0.6.6",
+      "version": "0.6.7",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
         "@floating-ui/react": "^0.27.19",
@@ -383,14 +383,14 @@
     },
     "packages/sdk": {
       "name": "@better-i18n/sdk",
-      "version": "3.3.0",
+      "version": "3.4.0",
       "devDependencies": {
         "typescript": "~5.9.3",
       },
     },
     "packages/server": {
       "name": "@better-i18n/server",
-      "version": "0.4.5",
+      "version": "0.4.6",
       "dependencies": {
         "@better-i18n/core": "workspace:*",
         "use-intl": ">=4.0.0",
@@ -410,7 +410,7 @@
     },
     "packages/use-intl": {
       "name": "@better-i18n/use-intl",
-      "version": "0.9.1",
+      "version": "0.9.2",
       "dependencies": {
         "@better-i18n/core": "workspace:^",
         "@floating-ui/react": "^0.27.19",
@@ -433,7 +433,7 @@
     },
     "packages/vite": {
       "name": "@better-i18n/vite",
-      "version": "0.2.10",
+      "version": "0.2.11",
       "dependencies": {
         "@better-i18n/core": "workspace:^",
       },
@@ -447,7 +447,7 @@
     },
     "tests/expo-native": {
       "name": "expo-native",
-      "version": "1.0.30",
+      "version": "1.0.31",
       "dependencies": {
         "@better-i18n/expo": "workspace:*",
         "@expo/vector-icons": "^15.0.3",

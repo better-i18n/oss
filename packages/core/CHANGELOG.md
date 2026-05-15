@@ -1,5 +1,52 @@
 # @better-i18n/core
 
+## 0.12.0
+
+### Minor Changes
+
+- a2562b2: Accept `projectId` as the canonical field on `I18nCoreConfig`, with `project` retained as a legacy alias for backward compatibility.
+
+  **Why:** The dashboard, Analytics SDK (`@better-i18n/content`), and Content SDK (`@better-i18n/sdk`) all call this value "Project ID". `@better-i18n/core` (the foundation imported by `next`, `use-intl`, `expo`, `vite`, `remix`, and `server`) used `project`, causing copy-paste-from-docs friction.
+
+  All downstream framework adapters (`next`, `use-intl`, etc.) inherit `I18nCoreConfig`, so this change ripples through automatically — they all accept `projectId` now without their own changesets.
+
+  **Migration (optional, no urgency):**
+
+  ```ts
+  // Before
+  createI18n({ project: "acme/web-app", defaultLocale: "en" });
+
+  // After (recommended)
+  createI18n({ projectId: "acme/web-app", defaultLocale: "en" });
+  ```
+
+  The legacy `project` field continues to work indefinitely. Existing integrations require no changes.
+
+  Internal `NormalizedConfig.project` is preserved as the resolved canonical slug, so framework code reading `normalized.project` keeps working.
+
+- 61636a4: Accept project UUID as an alternative to the `org/project` slug. When `projectId` (or legacy `project`) is a canonical UUID, `getProjectBaseUrl` produces `${cdnBaseUrl}/{uuid}` instead of `${cdnBaseUrl}/{org}/{project}` — a single-segment URL the CDN worker resolves to the same R2 file. UUID URLs are immune to project slug renames; the customer's app keeps working when someone edits the dashboard slug.
+
+  How to opt in:
+
+  ```ts
+  // Slug (default) — same as before
+  createI18n({ projectId: "acme/dashboard", defaultLocale: "en" });
+
+  // UUID — new, immune to slug renames
+  createI18n({
+    projectId: "65d6ea91-7c00-44f3-a2a7-e864984f1cb3",
+    defaultLocale: "en",
+  });
+  ```
+
+  `parseProject` and `NormalizedConfig` gain two fields:
+  - `pathSegment: string` — `"org/project"` or the lowercase UUID, used for URL construction.
+  - `isUuid: boolean` — `true` when the input was a UUID.
+
+  `workspaceId` / `projectSlug` remain on `NormalizedConfig` but are empty strings in UUID mode. Existing slug-mode code paths continue to work unchanged.
+
+  Downstream packages (`@better-i18n/next`, `/use-intl`, `/expo`, `/vite`, `/remix`, `/server`) inherit the new behavior automatically through `I18nCoreConfig` and pick it up when consumers update `@better-i18n/core` via caret semver — no separate changesets needed.
+
 ## 0.11.0
 
 ### Minor Changes
