@@ -1,0 +1,44 @@
+---
+title: Keys
+description: Create, update, delete, and search translation keys
+---
+
+## List keys
+
+```ts
+const keys = await admin.keys.list()
+const filtered = await admin.keys.list({ search: 'auth.login' })
+```
+
+## Create keys
+
+```ts
+await admin.keys.create({
+  k: [
+    { n: 'auth.login.title', v: 'Sign In' },
+    { n: 'auth.login.button', v: 'Continue' }
+  ]
+})
+```
+
+## Update translations
+
+```ts
+await admin.keys.update({
+  t: [
+    { id: 'key-uuid', l: 'de', t: 'Anmelden' }
+  ]
+})
+```
+
+## Delete keys
+
+```ts
+await admin.keys.delete({
+  keyIds: ['key-uuid-1', 'key-uuid-2']
+})
+```
+
+<Callout type="warn">
+Always call `list()` before `create()` to check for existing keys. Creating duplicate keys is a common agent mistake — see [MCP safety rules](/mcp/tool-reference).
+</Callout>

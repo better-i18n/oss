@@ -1,0 +1,85 @@
+---
+title: Quick Start
+description: Get the Admin SDK running in under 2 minutes
+---
+
+## Install
+
+```bash
+npm install @better-i18n/admin
+```
+
+## Create a client
+
+```ts
+import { createAdminClient } from '@better-i18n/admin'
+
+const admin = createAdminClient({
+  apiKey: process.env.BETTER_I18N_API_KEY,
+  projectId: 'nomadvibe/packervibe' // Dashboard → Settings → Project ID
+})
+```
+
+<Callout type="info">
+The `projectId` uses slug format (`org/project`), the same value shown in your dashboard under **Settings → General → Project ID**. All SDK calls are automatically scoped to this project.
+</Callout>
+
+## API key
+
+Use the same API key you use for the MCP server or CLI. This is a **server-side secret key** (`bi-` prefix) — never expose it in client-side code.
+
+Find it in your dashboard: **Settings → API Keys → Create Key**.
+
+<Callout type="warn">
+Public keys (`bi_pub_` prefix) cannot access admin endpoints. They are designed for client-side content fetching only.
+</Callout>
+
+## Example: Next.js API route
+
+```ts title="app/api/analytics/route.ts"
+import { createAdminClient } from '@better-i18n/admin'
+
+const admin = createAdminClient({
+  apiKey: process.env.BETTER_I18N_API_KEY!,
+  projectId: process.env.BETTER_I18N_PROJECT_ID!
+})
+
+export async function GET() {
+  const views = await admin.analytics.views('blog-posts')
+  return Response.json(views)
+}
+```
+
+## Example: Express middleware
+
+```ts title="server.ts"
+import { createAdminClient } from '@better-i18n/admin'
+import express from 'express'
+
+const admin = createAdminClient({
+  apiKey: process.env.BETTER_I18N_API_KEY!,
+  projectId: 'nomadvibe/packervibe'
+})
+
+const app = express()
+
+app.get('/api/popular-posts', async (req, res) => {
+  const stats = await admin.analytics.stats('blog-posts', { period: '7d' })
+  const popular = stats.viewsByEntry.slice(0, 5)
+  res.json(popular)
+})
+```
+
+## Available namespaces
+
+| Namespace | Methods |
+|-----------|---------|
+| `admin.projects` | `list()`, `get()` |
+| `admin.keys` | `list()`, `create()`, `update()`, `delete()` |
+| `admin.translations` | `get()`, `set()`, `publish()`, `context()`, `pendingChanges()` |
+| `admin.content.models` | `list()`, `get()`, `create()`, `update()`, `delete()` |
+| `admin.content.fields` | `add()`, `update()`, `remove()`, `reorder()` |
+| `admin.content.entries` | `list()`, `get()`, `create()`, `update()`, `publish()`, `delete()`, `duplicate()`, `bulkCreate()`, `bulkUpdate()`, `bulkPublish()` |
+| `admin.analytics` | `views()`, `stats()` |
+| `admin.sync` | `list()`, `get()`, `cancel()` |
+| `admin.languages` | `add()`, `update()`, `delete()` |

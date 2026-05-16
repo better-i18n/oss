@@ -1,0 +1,41 @@
+---
+title: Translations
+description: Read, write, and publish translations
+---
+
+## Get translations
+
+```ts
+const translations = await admin.translations.get()
+const filtered = await admin.translations.get({ namespaces: ['common'] })
+```
+
+## Set translations (bulk)
+
+```ts
+await admin.translations.set({
+  t: [
+    { id: 'key-uuid', t: { de: 'Anmelden', fr: 'Connexion' } }
+  ]
+})
+```
+
+## Publish to CDN
+
+```ts
+await admin.translations.publish()
+```
+
+## Get translation context
+
+Retrieves glossary, instructions, and preferences for AI-assisted translation:
+
+```ts
+const context = await admin.translations.context()
+```
+
+## Check pending changes
+
+```ts
+const pending = await admin.translations.pendingChanges()
+```

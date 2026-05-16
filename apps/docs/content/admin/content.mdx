@@ -1,0 +1,59 @@
+---
+title: Content
+description: Manage content models, fields, and entries programmatically
+---
+
+The content namespace provides full CRUD for the Content CMS — models, fields, and entries.
+
+## Models
+
+```ts
+const models = await admin.content.models.list()
+const blog = await admin.content.models.get({ modelSlug: 'blog-posts' })
+
+await admin.content.models.create({
+  slug: 'faq',
+  displayName: 'FAQs',
+  kind: 'collection'
+})
+```
+
+## Fields
+
+```ts
+await admin.content.fields.add({
+  modelSlug: 'blog-posts',
+  name: 'author',
+  displayName: 'Author',
+  type: 'short_text',
+  required: true
+})
+```
+
+## Entries
+
+```ts
+// List
+const entries = await admin.content.entries.list({ modelSlug: 'blog-posts' })
+
+// Get
+const entry = await admin.content.entries.get({
+  modelSlug: 'blog-posts',
+  entrySlug: 'my-first-post'
+})
+
+// Create with translations
+await admin.content.entries.create({
+  modelSlug: 'blog-posts',
+  slug: 'new-post',
+  title: 'My New Post',
+  body: 'Content here...',
+  translations: {
+    de: { title: 'Mein neuer Beitrag', body: 'Inhalt hier...' }
+  }
+})
+
+// Bulk operations
+await admin.content.entries.bulkUpdate({ ... })
+await admin.content.entries.bulkPublish({ entryIds: ['id1', 'id2'] })
+```

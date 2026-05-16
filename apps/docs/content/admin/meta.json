@@ -1,0 +1,20 @@
+{
+  "title": "Admin SDK",
+  "description": "Server-side SDK for managing projects, keys, translations, content, and analytics",
+  "icon": "Shield",
+  "root": true,
+  "pages": [
+    "index",
+    "---Getting Started---",
+    "quick-start",
+    "authentication",
+    "---Namespaces---",
+    "projects",
+    "keys",
+    "translations",
+    "content",
+    "analytics",
+    "---Reference---",
+    "api-reference"
+  ]
+}

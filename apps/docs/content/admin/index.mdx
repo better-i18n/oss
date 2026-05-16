@@ -1,0 +1,65 @@
+---
+title: Introduction
+description: Server-side admin SDK for programmatic access to the Better i18n platform
+icon: BookOpen
+---
+
+`@better-i18n/admin` is a typed, server-side SDK that gives you programmatic access to the full Better i18n platform. Use it in your API routes, scripts, CI/CD pipelines, or admin dashboards.
+
+It provides the same capabilities as the MCP server and CLI, but as a TypeScript library you can import directly.
+
+## What you get
+
+- **Projects** — List and inspect your projects
+- **Keys** — Create, update, delete, and search translation keys
+- **Translations** — Read, write, and publish translations
+- **Content** — Full CRUD for content models, fields, and entries
+- **Analytics** — View counts, language breakdown, country stats, time series
+- **Sync** — Monitor and manage GitHub sync jobs
+- **Languages** — Add, update, and archive target languages
+
+## When to use Admin SDK vs other tools
+
+| Tool | Best for |
+|------|----------|
+| **Admin SDK** | Server-side automation, admin dashboards, custom integrations |
+| **MCP Server** | AI agents (Claude, Cursor, Copilot) |
+| **CLI** | CI/CD pipelines, terminal workflows |
+| **Content SDK** | Client-side content fetching + view tracking |
+
+## Quick example
+
+```ts
+import { createAdminClient } from '@better-i18n/admin'
+
+const admin = createAdminClient({
+  apiKey: process.env.BETTER_I18N_API_KEY,
+  projectId: 'nomadvibe/packervibe'
+})
+
+// List translation keys
+const keys = await admin.keys.list({ search: 'auth' })
+
+// Get content analytics with full breakdown
+const stats = await admin.analytics.stats('blog-posts', { period: '30d' })
+console.log(stats.viewsByLanguage)
+// [{ language: 'en', views: 6 }, { language: 'de', views: 1 }, ...]
+
+// Publish translations to CDN
+await admin.translations.publish()
+```
+
+## Architecture
+
+```
+Your server / script / CI
+        │
+        ▼
+@better-i18n/admin
+        │
+        ├── tRPC ──► api.better-i18n.com (keys, translations, content, sync)
+        │
+        └── REST ──► content.better-i18n.com/v1/analytics (views, stats)
+```
+
+All operations use your project API key (`bi-` prefix), which stays server-side. Client-side `bi_pub_` keys cannot access admin endpoints.

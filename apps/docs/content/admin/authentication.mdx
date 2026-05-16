@@ -1,0 +1,46 @@
+---
+title: Authentication
+description: API key types and security model
+---
+
+## Key types
+
+| Key prefix | Type | Use case | Admin SDK |
+|-----------|------|----------|-----------|
+| `bi-` | Secret | Server-side: admin SDK, MCP, CLI | Supported |
+| `bi_pub_` | Public | Client-side: content fetching, view tracking | Rejected (403) |
+
+## Security model
+
+The Admin SDK uses your project API key to authenticate against the platform API. This key:
+
+- Is scoped to your organization
+- Should only be used server-side (API routes, scripts, CI)
+- Must never be exposed in client bundles or frontend code
+- Is the same key used by the MCP server and CLI
+
+## Environment setup
+
+```bash title=".env"
+BETTER_I18N_API_KEY=bi-your-secret-key-here
+BETTER_I18N_PROJECT_ID=nomadvibe/packervibe
+```
+
+```ts
+const admin = createAdminClient({
+  apiKey: process.env.BETTER_I18N_API_KEY!,
+  projectId: process.env.BETTER_I18N_PROJECT_ID!
+})
+```
+
+## Custom API URL
+
+For self-hosted or development environments:
+
+```ts
+const admin = createAdminClient({
+  apiKey: process.env.BETTER_I18N_API_KEY!,
+  projectId: 'nomadvibe/packervibe',
+  apiUrl: 'http://localhost:8787' // Custom API endpoint
+})
+```

@@ -1,0 +1,130 @@
+---
+title: Analytics
+description: Read content view analytics — counts, language breakdown, country stats, time series
+---
+
+The analytics namespace lets you read back the view data tracked by `@better-i18n/content` SDK's `useTrackView()` hook.
+
+## View counts
+
+Get aggregate view counts per content entry:
+
+```ts
+const views = await admin.analytics.views('blog-posts')
+// {
+//   views: {
+//     "better-auth-localization-guide": 42,
+//     "digital-nomad-guide": 128
+//   },
+//   period: "30d",
+//   cachedAt: "2026-05-16T15:23:10.514Z"
+// }
+```
+
+### Single entry
+
+```ts
+const entry = await admin.analytics.views('blog-posts', 'digital-nomad-guide')
+// { views: 128, period: "30d", cachedAt: "..." }
+```
+
+### With period
+
+```ts
+const weekly = await admin.analytics.views('blog-posts', { period: '7d' })
+const daily = await admin.analytics.views('blog-posts', 'my-post', { period: '24h' })
+```
+
+Available periods: `24h`, `7d`, `30d` (default), `90d`.
+
+## Full stats breakdown
+
+Get a dashboard-grade analytics breakdown with 5 parallel queries:
+
+```ts
+const stats = await admin.analytics.stats('blog-posts', { period: '30d' })
+```
+
+Response:
+
+```json
+{
+  "overview": {
+    "totalViews": 256,
+    "uniqueEntries": 12
+  },
+  "viewsByEntry": [
+    { "slug": "digital-nomad-guide", "views": 128 },
+    { "slug": "better-auth-localization-guide", "views": 42 }
+  ],
+  "viewsByLanguage": [
+    { "language": "en", "views": 180 },
+    { "language": "de", "views": 40 },
+    { "language": "tr", "views": 36 }
+  ],
+  "viewsByCountry": [
+    { "country": "US", "views": 120 },
+    { "country": "DE", "views": 40 },
+    { "country": "TR", "views": 36 }
+  ],
+  "viewsOverTime": [
+    { "timestamp": "2026-05-01 00:00:00", "views": 8 },
+    { "timestamp": "2026-05-02 00:00:00", "views": 12 }
+  ],
+  "period": "30d",
+  "cachedAt": "2026-05-16T15:23:13.249Z"
+}
+```
+
+### Stats for a single entry
+
+```ts
+const entryStats = await admin.analytics.stats('blog-posts', {
+  period: '7d',
+  entrySlug: 'digital-nomad-guide'
+})
+```
+
+## Time series granularity
+
+| Period | Bucket size |
+|--------|------------|
+| `24h` | 1 hour |
+| `7d` | 1 day |
+| `30d` | 1 day |
+| `90d` | 1 day |
+
+## Caching
+
+All analytics responses are cached in KV with period-dependent TTL:
+
+| Period | Cache TTL |
+|--------|----------|
+| `24h` | 2 minutes |
+| `7d` | 5 minutes |
+| `30d` | 10 minutes |
+| `90d` | 10 minutes |
+
+## Use case: popular posts widget
+
+```ts title="app/api/popular/route.ts"
+import { createAdminClient } from '@better-i18n/admin'
+
+const admin = createAdminClient({
+  apiKey: process.env.BETTER_I18N_API_KEY!,
+  projectId: 'nomadvibe/packervibe'
+})
+
+export async function GET() {
+  const stats = await admin.analytics.stats('blog-posts', { period: '7d' })
+
+  const popular = stats.viewsByEntry.slice(0, 5).map(entry => ({
+    slug: entry.slug,
+    views: entry.views,
+  }))
+
+  return Response.json(popular, {
+    headers: { 'Cache-Control': 'public, max-age=300' }
+  })
+}
+```

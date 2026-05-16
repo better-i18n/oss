@@ -1,0 +1,20 @@
+---
+title: Projects
+description: List and inspect projects in your organization
+---
+
+## List all projects
+
+```ts
+const projects = await admin.projects.list()
+```
+
+Returns all projects accessible by your API key.
+
+## Get current project
+
+```ts
+const project = await admin.projects.get()
+```
+
+Returns details for the project set in `createAdminClient({ projectId })`.

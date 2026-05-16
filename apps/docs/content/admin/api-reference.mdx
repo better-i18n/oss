@@ -1,0 +1,92 @@
+---
+title: API Reference
+description: Complete method reference for all Admin SDK namespaces
+---
+
+## createAdminClient(config)
+
+```ts
+import { createAdminClient } from '@better-i18n/admin'
+
+const admin = createAdminClient({
+  apiKey: string,        // Required — server-side API key (bi- prefix)
+  projectId: string,     // Required — "org/project" slug format
+  apiUrl?: string,       // Optional — default: "https://api.better-i18n.com"
+  debug?: boolean,       // Optional — enable request logging
+  fetch?: typeof fetch,  // Optional — custom fetch implementation
+})
+```
+
+## admin.projects
+
+| Method | Returns |
+|--------|---------|
+| `list()` | All projects in org |
+| `get()` | Current project details |
+
+## admin.keys
+
+| Method | Input | Returns |
+|--------|-------|---------|
+| `list(opts?)` | `{ search?, namespace? }` | Key list |
+| `create(input)` | `{ k: [{ n, v, ns? }] }` | Created keys |
+| `update(input)` | `{ t: [{ id, l, t }] }` | Updated translations |
+| `delete(input)` | `{ keyIds: string[] }` | Deletion result |
+
+## admin.translations
+
+| Method | Input | Returns |
+|--------|-------|---------|
+| `get(opts?)` | `{ namespaces?, keys? }` | Translation data |
+| `set(input)` | `{ t: [{ id, t: { lang: text } }] }` | Set result |
+| `publish(opts?)` | `{ translations? }` | Publish result |
+| `context(opts?)` | `{ keyIds? }` | Glossary + instructions |
+| `pendingChanges()` | — | Pending changes |
+
+## admin.content.models
+
+| Method | Input | Returns |
+|--------|-------|---------|
+| `list(opts?)` | — | Model list |
+| `get(input)` | `{ modelSlug }` | Model detail |
+| `create(input)` | `{ slug, displayName, kind }` | Created model |
+| `update(input)` | `{ modelSlug, ... }` | Updated model |
+| `delete(input)` | `{ modelSlug }` | Deletion result |
+
+## admin.content.entries
+
+| Method | Input |
+|--------|-------|
+| `list(opts?)` | `{ modelSlug, language?, search? }` |
+| `get(input)` | `{ modelSlug, entrySlug }` |
+| `create(input)` | `{ modelSlug, slug, title, body?, translations? }` |
+| `update(input)` | `{ modelSlug, entrySlug, ... }` |
+| `publish(input)` | `{ modelSlug, entrySlug }` |
+| `delete(input)` | `{ modelSlug, entrySlug }` |
+| `duplicate(input)` | `{ modelSlug, entrySlug }` |
+| `bulkCreate(input)` | `{ modelSlug, entries: [...] }` |
+| `bulkUpdate(input)` | `{ entries: [...] }` |
+| `bulkPublish(input)` | `{ entryIds: [...] }` |
+
+## admin.analytics
+
+| Method | Input | Returns |
+|--------|-------|---------|
+| `views(model, entry?, opts?)` | `model: string`, `opts: { period? }` | `{ views, period, cachedAt }` |
+| `stats(model, opts?)` | `opts: { period?, entrySlug? }` | `{ overview, viewsByEntry, viewsByLanguage, viewsByCountry, viewsOverTime }` |
+
+## admin.sync
+
+| Method | Input |
+|--------|-------|
+| `list(opts?)` | `{ limit? }` |
+| `get(input)` | `{ syncId }` |
+| `cancel(input)` | `{ syncId }` |
+
+## admin.languages
+
+| Method | Input |
+|--------|-------|
+| `add(input)` | `{ languages: [{ code }] }` |
+| `update(input)` | `{ updates: [{ languageCode, status }] }` |
+| `delete(input)` | `{ languageCodes: [...] }` |
