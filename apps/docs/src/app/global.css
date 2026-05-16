@@ -81,6 +81,19 @@
   --color-fd-ring: hsl(220, 9%, 55%);
 }
 
+/* Admin SDK Theme - Teal */
+[data-docs-section="admin"] {
+  --color-fd-primary: hsl(173, 58%, 39%);
+  --color-fd-primary-foreground: hsl(0, 0%, 98%);
+  --color-fd-ring: hsl(173, 58%, 47%);
+}
+
+.dark[data-docs-section="admin"] {
+  --color-fd-primary: hsl(173, 58%, 55%);
+  --color-fd-primary-foreground: hsl(173, 58%, 12%);
+  --color-fd-ring: hsl(173, 58%, 45%);
+}
+
 /* OAuth Theme - Purple */
 [data-docs-section="oauth"] {
   --color-fd-primary: hsl(262, 60%, 50%);
@@ -106,6 +119,7 @@
   --color-sdk: hsl(24, 90%, 50%);
   --color-mcp: hsl(220, 9%, 42%);
   --color-cli: hsl(220, 9%, 46%);
+  --color-admin: hsl(173, 58%, 39%);
   --color-oauth: hsl(262, 60%, 50%);
 }
 
@@ -115,6 +129,7 @@
   --color-sdk: hsl(24, 90%, 65%);
   --color-mcp: hsl(220, 9%, 62%);
   --color-cli: hsl(220, 9%, 65%);
+  --color-admin: hsl(173, 58%, 55%);
   --color-oauth: hsl(262, 60%, 68%);
 }
 

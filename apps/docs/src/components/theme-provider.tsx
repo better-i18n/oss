@@ -3,32 +3,15 @@
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
-/**
- * ThemeSync component that sets a data attribute on the document
- * based on the current documentation section (Frameworks, SDK, MCP, CLI).
- * This enables CSS to apply section-specific theme colors.
- */
+const SECTIONS = ['core', 'frameworks', 'sdk', 'mcp', 'cli', 'admin', 'oauth', 'api'] as const;
+
 export function ThemeSync() {
   const pathname = usePathname();
 
   useEffect(() => {
     const root = document.documentElement;
-
-    // Determine the active section from the URL path
-    let section = 'default';
-    if (pathname.startsWith('/docs/core')) {
-      section = 'core';
-    } else if (pathname.startsWith('/docs/frameworks')) {
-      section = 'frameworks';
-    } else if (pathname.startsWith('/docs/sdk')) {
-      section = 'sdk';
-    } else if (pathname.startsWith('/docs/mcp')) {
-      section = 'mcp';
-    } else if (pathname.startsWith('/docs/cli')) {
-      section = 'cli';
-    }
-
-    // Set the data attribute for CSS targeting
+    const segments = pathname.split('/').filter(Boolean);
+    const section = SECTIONS.find(s => segments.includes(s)) ?? 'default';
     root.setAttribute('data-docs-section', section);
 
     return () => {
