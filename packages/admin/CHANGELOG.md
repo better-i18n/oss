@@ -1,5 +1,17 @@
 # @better-i18n/admin
 
+## 0.2.1
+
+### Patch Changes
+
+- ac22482: fix(analytics): make modelSlug optional in views() and stats()
+
+  SDK was always passing modelSlug in the URL path, but the content tracker
+  doesn't populate contentModelSlug (blob4 is empty in AE). This caused
+  all analytics queries to return 0 results.
+
+  Now modelSlug is optional — omit it to get all content.view events.
+
 ## 0.2.0
 
 ### Minor Changes
