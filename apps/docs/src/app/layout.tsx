@@ -67,6 +67,7 @@ const tabColors: Record<string, string> = {
   'root:sdk': 'var(--color-sdk)',
   'root:mcp': 'var(--color-mcp)',
   'root:cli': 'var(--color-cli)',
+  'root:admin': 'var(--color-admin)',
   'root:oauth': 'var(--color-oauth)',
 };
 
@@ -77,6 +78,7 @@ const tabDescriptions: Record<string, string> = {
   'root:sdk': 'Headless CMS client for fetching content',
   'root:mcp': 'AI-powered translation tools',
   'root:cli': 'Detect and sync translation keys',
+  'root:admin': 'Server-side SDK for managing projects, keys, translations, content, and analytics',
   'root:oauth': 'Partner integrations with scoped OAuth 2.0 tokens',
 };
 
@@ -86,6 +88,7 @@ const tabSectionAliases: Record<string, string> = {
   sdk: 'root:sdk',
   mcp: 'root:mcp',
   cli: 'root:cli',
+  admin: 'root:admin',
   oauth: 'root:oauth',
 };
 
