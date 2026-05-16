@@ -1,0 +1,58 @@
+import type { ViewsResponse, SingleViewResponse, EventsQueryOptions, EventsResponse } from "../types.js";
+import type { ProjectScope } from "../client.js";
+
+export interface AnalyticsClientConfig {
+  apiKey: string;
+  contentApiUrl?: string;
+}
+
+const DEFAULT_CONTENT_API = "https://content.better-i18n.com";
+
+export function createAnalyticsNamespace(config: AnalyticsClientConfig, scope: ProjectScope) {
+  const baseUrl = (config.contentApiUrl ?? DEFAULT_CONTENT_API).replace(/\/$/, "");
+
+  async function request<T>(path: string, params?: Record<string, string>): Promise<T> {
+    const url = new URL(`${baseUrl}${path}`);
+    if (params) {
+      for (const [k, v] of Object.entries(params)) {
+        if (v) url.searchParams.set(k, v);
+      }
+    }
+
+    const res = await fetch(url.toString(), {
+      headers: { "x-api-key": config.apiKey },
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) throw new Error("Invalid API key");
+      if (res.status === 403) throw new Error("Public keys cannot read analytics. Use your project API key.");
+      if (res.status === 404) throw new Error("Project or model not found");
+      const body = await res.text().catch(() => "");
+      throw new Error(`Analytics API error ${res.status}: ${body}`);
+    }
+
+    return res.json() as Promise<T>;
+  }
+
+  const { orgSlug, projectSlug } = scope;
+
+  return {
+    async views(modelSlug: string, entrySlug?: string): Promise<ViewsResponse | SingleViewResponse> {
+      const path = entrySlug
+        ? `/v1/analytics/views/${orgSlug}/${projectSlug}/${modelSlug}/${entrySlug}`
+        : `/v1/analytics/views/${orgSlug}/${projectSlug}/${modelSlug}`;
+      return request(path);
+    },
+
+    async events(modelSlug: string, options?: EventsQueryOptions): Promise<EventsResponse> {
+      const path = `/v1/analytics/events/${orgSlug}/${projectSlug}/${modelSlug}`;
+      return request<EventsResponse>(path, {
+        period: options?.period ?? "30d",
+        ...(options?.event && { event: options.event }),
+        ...(options?.entrySlug && { entry: options.entrySlug }),
+      });
+    },
+  };
+}
+
+export type AnalyticsNamespace = ReturnType<typeof createAnalyticsNamespace>;
