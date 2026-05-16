@@ -15,15 +15,21 @@ export interface ProjectScope {
 }
 
 const DEFAULT_API_URL = "https://api.better-i18n.com";
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export function parseProjectId(projectId: string): ProjectScope {
-  const parts = projectId.split("/");
-  if (parts.length !== 2 || !parts[0] || !parts[1]) {
-    throw new Error(
-      `Invalid projectId "${projectId}". Expected "org/project" format (e.g. "nomadvibe/packervibe").`,
-    );
+export function parseProjectId(projectId: string): ProjectScope | null {
+  if (projectId.includes("/")) {
+    const parts = projectId.split("/");
+    if (parts.length === 2 && parts[0] && parts[1]) {
+      return { orgSlug: parts[0], projectSlug: parts[1] };
+    }
   }
-  return { orgSlug: parts[0], projectSlug: parts[1] };
+  if (UUID_RE.test(projectId)) {
+    return null;
+  }
+  throw new Error(
+    `Invalid projectId "${projectId}". Use "org/project" slug (e.g. "nomadvibe/packervibe") or a project UUID.`,
+  );
 }
 
 export function createAPIClient(config: AdminClientConfig): APIClient {
@@ -37,12 +43,9 @@ export function createAPIClient(config: AdminClientConfig): APIClient {
     links: [
       httpBatchLink({
         url,
-        headers: () => {
-          const headers: Record<string, string> = {
-            "x-api-key": config.apiKey,
-          };
-          return headers;
-        },
+        headers: () => ({
+          "x-api-key": config.apiKey,
+        }),
         fetch: config.fetch ?? fetch,
       }),
     ],
