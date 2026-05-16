@@ -1,7 +1,7 @@
 {
   "title": "Admin SDK",
   "description": "Server-side SDK for managing projects, keys, translations, content, and analytics",
-  "icon": "SquareTerminal",
+  "icon": "Cog",
   "root": true,
   "pages": [
     "index",
