@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/admin",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Server-side admin SDK for Better i18n — manage projects, keys, translations, content, and analytics programmatically",
   "type": "module",
   "main": "dist/index.js",

@@ -202,7 +202,7 @@
     },
     "packages/admin": {
       "name": "@better-i18n/admin",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dependencies": {
         "@trpc/client": "^11.0.0",
       },
