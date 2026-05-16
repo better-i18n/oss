@@ -1,5 +1,7 @@
 export type { AdminClientConfig } from "./client.js";
 
+export type Period = "24h" | "7d" | "30d" | "90d";
+
 export interface ViewsResponse {
   views: Record<string, number>;
   period: string;
@@ -12,8 +14,22 @@ export interface SingleViewResponse {
   cachedAt: string;
 }
 
+export interface StatsResponse {
+  overview: { totalViews: number; uniqueEntries: number };
+  viewsByEntry: Array<{ slug: string; views: number }>;
+  viewsByLanguage: Array<{ language: string; views: number }>;
+  viewsByCountry: Array<{ country: string; views: number }>;
+  viewsOverTime: Array<{ timestamp: string; views: number }>;
+  period: string;
+  cachedAt: string;
+}
+
+export interface ViewsOptions {
+  period?: Period;
+}
+
 export interface EventsQueryOptions {
-  period?: "24h" | "7d" | "30d" | "90d";
+  period?: Period;
   event?: string;
   entrySlug?: string;
 }

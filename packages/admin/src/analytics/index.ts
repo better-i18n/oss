@@ -1,4 +1,4 @@
-import type { ViewsResponse, SingleViewResponse, EventsQueryOptions, EventsResponse } from "../types.js";
+import type { ViewsResponse, SingleViewResponse, StatsResponse, ViewsOptions } from "../types.js";
 import type { ProjectScope } from "../client.js";
 
 export interface AnalyticsClientConfig {
@@ -10,6 +10,7 @@ const DEFAULT_CONTENT_API = "https://content.better-i18n.com";
 
 export function createAnalyticsNamespace(config: AnalyticsClientConfig, scope: ProjectScope) {
   const baseUrl = (config.contentApiUrl ?? DEFAULT_CONTENT_API).replace(/\/$/, "");
+  const { orgSlug, projectSlug } = scope;
 
   async function request<T>(path: string, params?: Record<string, string>): Promise<T> {
     const url = new URL(`${baseUrl}${path}`);
@@ -34,23 +35,21 @@ export function createAnalyticsNamespace(config: AnalyticsClientConfig, scope: P
     return res.json() as Promise<T>;
   }
 
-  const { orgSlug, projectSlug } = scope;
-
   return {
-    async views(modelSlug: string, entrySlug?: string): Promise<ViewsResponse | SingleViewResponse> {
+    async views(modelSlug: string, entryOrOpts?: string | ViewsOptions, opts?: ViewsOptions): Promise<ViewsResponse | SingleViewResponse> {
+      const entrySlug = typeof entryOrOpts === "string" ? entryOrOpts : undefined;
+      const options = typeof entryOrOpts === "object" ? entryOrOpts : opts;
       const path = entrySlug
         ? `/v1/analytics/views/${orgSlug}/${projectSlug}/${modelSlug}/${entrySlug}`
         : `/v1/analytics/views/${orgSlug}/${projectSlug}/${modelSlug}`;
-      return request(path);
+      return request(path, options?.period ? { period: options.period } : undefined);
     },
 
-    async events(modelSlug: string, options?: EventsQueryOptions): Promise<EventsResponse> {
-      const path = `/v1/analytics/events/${orgSlug}/${projectSlug}/${modelSlug}`;
-      return request<EventsResponse>(path, {
-        period: options?.period ?? "30d",
-        ...(options?.event && { event: options.event }),
-        ...(options?.entrySlug && { entry: options.entrySlug }),
-      });
+    async stats(modelSlug: string, opts?: ViewsOptions & { entrySlug?: string }): Promise<StatsResponse> {
+      const path = opts?.entrySlug
+        ? `/v1/analytics/stats/${orgSlug}/${projectSlug}/${modelSlug}/${opts.entrySlug}`
+        : `/v1/analytics/stats/${orgSlug}/${projectSlug}/${modelSlug}`;
+      return request<StatsResponse>(path, opts?.period ? { period: opts.period } : undefined);
     },
   };
 }
