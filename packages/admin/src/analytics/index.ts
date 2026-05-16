@@ -11,6 +11,14 @@ const DEFAULT_CONTENT_API = "https://content.better-i18n.com";
 export function createAnalyticsNamespace(config: AnalyticsClientConfig, scope: ProjectScope) {
   const baseUrl = (config.contentApiUrl ?? DEFAULT_CONTENT_API).replace(/\/$/, "");
   const { orgSlug, projectSlug } = scope;
+  const base = `/v1/analytics`;
+
+  function buildPath(type: string, modelSlug?: string, entrySlug?: string): string {
+    let path = `${base}/${type}/${orgSlug}/${projectSlug}`;
+    if (modelSlug) path += `/${modelSlug}`;
+    if (entrySlug) path += `/${entrySlug}`;
+    return path;
+  }
 
   async function request<T>(path: string, params?: Record<string, string>): Promise<T> {
     const url = new URL(`${baseUrl}${path}`);
@@ -36,20 +44,20 @@ export function createAnalyticsNamespace(config: AnalyticsClientConfig, scope: P
   }
 
   return {
-    async views(modelSlug: string, entryOrOpts?: string | ViewsOptions, opts?: ViewsOptions): Promise<ViewsResponse | SingleViewResponse> {
+    async views(modelSlugOrOpts?: string | ViewsOptions, entryOrOpts?: string | ViewsOptions, opts?: ViewsOptions): Promise<ViewsResponse | SingleViewResponse> {
+      const modelSlug = typeof modelSlugOrOpts === "string" ? modelSlugOrOpts : undefined;
       const entrySlug = typeof entryOrOpts === "string" ? entryOrOpts : undefined;
-      const options = typeof entryOrOpts === "object" ? entryOrOpts : opts;
-      const path = entrySlug
-        ? `/v1/analytics/views/${orgSlug}/${projectSlug}/${modelSlug}/${entrySlug}`
-        : `/v1/analytics/views/${orgSlug}/${projectSlug}/${modelSlug}`;
+      const options = typeof modelSlugOrOpts === "object" ? modelSlugOrOpts
+        : typeof entryOrOpts === "object" ? entryOrOpts : opts;
+      const path = buildPath("views", modelSlug, entrySlug);
       return request(path, options?.period ? { period: options.period } : undefined);
     },
 
-    async stats(modelSlug: string, opts?: ViewsOptions & { entrySlug?: string }): Promise<StatsResponse> {
-      const path = opts?.entrySlug
-        ? `/v1/analytics/stats/${orgSlug}/${projectSlug}/${modelSlug}/${opts.entrySlug}`
-        : `/v1/analytics/stats/${orgSlug}/${projectSlug}/${modelSlug}`;
-      return request<StatsResponse>(path, opts?.period ? { period: opts.period } : undefined);
+    async stats(modelSlugOrOpts?: string | (ViewsOptions & { entrySlug?: string }), opts?: ViewsOptions & { entrySlug?: string }): Promise<StatsResponse> {
+      const modelSlug = typeof modelSlugOrOpts === "string" ? modelSlugOrOpts : undefined;
+      const options = typeof modelSlugOrOpts === "object" ? modelSlugOrOpts : opts;
+      const path = buildPath("stats", modelSlug, options?.entrySlug);
+      return request<StatsResponse>(path, options?.period ? { period: options.period } : undefined);
     },
   };
 }
