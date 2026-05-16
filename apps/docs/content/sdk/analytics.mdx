@@ -379,7 +379,7 @@ location /api/ca/ {
 
 **Caddy:**
 
-```caddy
+```txt
 handle_path /api/ca/* {
     reverse_proxy https://content.better-i18n.com {
         header_up Host content.better-i18n.com
