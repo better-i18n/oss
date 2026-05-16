@@ -20,9 +20,7 @@ import type {
   BulkUpdateEntriesInput,
   BulkPublishEntriesInput,
 } from "@better-i18n/mcp-types";
-import type { ProjectScope } from "../client.js";
-
-type WithoutScope<T> = Omit<T, "orgSlug" | "projectSlug">;
+import type { ProjectScope, WithoutScope } from "../client.js";
 
 export function createContentNamespace(client: APIClient, scope: ProjectScope) {
   return {

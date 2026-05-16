@@ -80,13 +80,16 @@ function buildLazyClient(
   getScope: () => Promise<ProjectScope>,
   config: AdminClientConfig,
 ): BetterAdminClient {
-  function lazy<T extends object>(factory: (scope: ProjectScope) => T): T {
+  type AnyFnRecord = Record<string, (...a: unknown[]) => unknown>;
+
+  // Wraps a flat namespace (all properties are async functions).
+  function lazyFlat<T extends object>(factory: (scope: ProjectScope) => T): T {
     return new Proxy({} as T, {
-      get(_, prop) {
+      get(_, prop: string) {
         return async (...args: unknown[]) => {
           const scope = await getScope();
-          const real = factory(scope);
-          const fn = (real as Record<string | symbol, unknown>)[prop];
+          const ns = factory(scope) as unknown as AnyFnRecord;
+          const fn = ns[prop];
           if (typeof fn === "function") return fn(...args);
           return fn;
         };
@@ -94,14 +97,33 @@ function buildLazyClient(
     });
   }
 
+  // Wraps a nested namespace (top-level properties are sub-objects of async functions).
+  function lazyNested<T extends object>(factory: (scope: ProjectScope) => T): T {
+    return new Proxy({} as T, {
+      get(_, group: string) {
+        return new Proxy({} as object, {
+          get(__, method: string) {
+            return async (...args: unknown[]) => {
+              const scope = await getScope();
+              const ns = (factory(scope) as unknown as Record<string, AnyFnRecord>)[group];
+              const fn = ns[method];
+              if (typeof fn === "function") return fn(...args);
+              return fn;
+            };
+          },
+        });
+      },
+    });
+  }
+
   return {
-    projects: lazy((s) => createProjectsNamespace(trpcClient, s)),
-    keys: lazy((s) => createKeysNamespace(trpcClient, s)),
-    translations: lazy((s) => createTranslationsNamespace(trpcClient, s)),
-    sync: lazy((s) => createSyncNamespace(trpcClient, s)),
-    languages: lazy((s) => createLanguagesNamespace(trpcClient, s)),
-    content: lazy((s) => createContentNamespace(trpcClient, s)) as ReturnType<typeof createContentNamespace>,
-    analytics: lazy((s) => createAnalyticsNamespace({ apiKey: config.apiKey }, s)),
+    projects: lazyFlat((s) => createProjectsNamespace(trpcClient, s)),
+    keys: lazyFlat((s) => createKeysNamespace(trpcClient, s)),
+    translations: lazyFlat((s) => createTranslationsNamespace(trpcClient, s)),
+    sync: lazyFlat((s) => createSyncNamespace(trpcClient, s)),
+    languages: lazyFlat((s) => createLanguagesNamespace(trpcClient, s)),
+    content: lazyNested((s) => createContentNamespace(trpcClient, s)),
+    analytics: lazyFlat((s) => createAnalyticsNamespace({ apiKey: config.apiKey }, s)),
   };
 }
 

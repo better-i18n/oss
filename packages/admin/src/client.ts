@@ -14,6 +14,8 @@ export interface ProjectScope {
   projectSlug: string;
 }
 
+export type WithoutScope<T> = Omit<T, "orgSlug" | "projectSlug">;
+
 const DEFAULT_API_URL = "https://api.better-i18n.com";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

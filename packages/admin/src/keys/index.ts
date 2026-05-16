@@ -1,13 +1,5 @@
-import type { APIClient } from "@better-i18n/mcp-types";
-import type {
-  ListKeysInput,
-  CreateKeysInput,
-  UpdateKeysInput,
-  DeleteKeysInput,
-} from "@better-i18n/mcp-types";
-import type { ProjectScope } from "../client.js";
-
-type WithoutScope<T> = Omit<T, "orgSlug" | "projectSlug">;
+import type { APIClient, ListKeysInput, CreateKeysInput, UpdateKeysInput, DeleteKeysInput } from "@better-i18n/mcp-types";
+import type { ProjectScope, WithoutScope } from "../client.js";
 
 export function createKeysNamespace(client: APIClient, scope: ProjectScope) {
   return {
