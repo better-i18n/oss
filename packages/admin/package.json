@@ -1,6 +1,6 @@
 {
   "name": "@better-i18n/admin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Server-side admin SDK for Better i18n — manage projects, keys, translations, content, and analytics programmatically",
   "type": "module",
   "main": "dist/index.js",
@@ -35,7 +35,10 @@
       "default": "./dist/sync/index.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -52,7 +55,14 @@
   "peerDependencies": {
     "@better-i18n/mcp-types": "workspace:*"
   },
-  "keywords": ["better-i18n", "admin", "sdk", "i18n", "cms", "analytics"],
+  "keywords": [
+    "better-i18n",
+    "admin",
+    "sdk",
+    "i18n",
+    "cms",
+    "analytics"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
