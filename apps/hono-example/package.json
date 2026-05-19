@@ -11,13 +11,13 @@
   "dependencies": {
     "@better-i18n/server": "workspace:*",
     "@hono/zod-openapi": "^0.19.4",
-    "@scalar/hono-api-reference": "^0.9.0",
-    "hono": "^4.0.0",
-    "use-intl": "^4.0.0",
+    "@scalar/hono-api-reference": "^0.10.16",
+    "hono": "^4.12.21",
+    "use-intl": "^4.12.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.19.41",
     "typescript": "~5.9.2"
   }
 }
