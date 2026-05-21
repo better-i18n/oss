@@ -372,9 +372,13 @@ Then commit the `.changeset/*.md` file and push. That's it — CI handles the re
 8. **Never import storage directly in expo** — Use `storageAdapter()` with duck-typing
 9. **`mcp-types` sync** — Never edit in OSS, always edit in internal repo
 
-## Supply Chain Security — Invisible Unicode (CRITICAL)
+## Supply Chain Security (CRITICAL)
 
-This repo publishes npm packages used by customers in production. The Glassworm threat actor has been compromising GitHub repos and npm packages using invisible Unicode characters (PUA: `U+FE00–FE0F`, `U+E0100–E01EF`) that are invisible in editors, terminals, and code review UIs.
+This repo publishes npm packages used by customers in production. We treat all install-time and CI execution as untrusted unless the code path was reviewed by a human.
+
+### Threat 1 — Invisible Unicode payloads (Glassworm)
+
+The Glassworm threat actor has been compromising GitHub repos and npm packages using invisible Unicode characters (PUA: `U+FE00–FE0F`, `U+E0100–E01EF`) that are invisible in editors, terminals, and code review UIs.
 
 **When reviewing or adding code:**
 - Watch for empty-looking template literals or strings that might contain invisible payload characters
@@ -383,6 +387,22 @@ This repo publishes npm packages used by customers in production. The Glassworm 
 - To detect invisible characters in a file: `cat -v <file>` (shows non-printable chars as `M-^` sequences)
 - When adding new dependencies, verify the package's npm publish date, maintainer, and download count
 - Especially critical for: `packages/core`, `packages/mcp`, `packages/cli`, `packages/sdk` — these are direct customer-facing npm packages
+
+### Threat 2 — Malicious postinstall + dropped `.claude` hooks (Shai-Hulud)
+
+Observed May 2026 in `fuma-nama/fuma-content` and `aidenybai/million`: a Renovate dependency-bump PR pulled in a malicious package version. The package's `postinstall` script ran in CI (where `pnpm` was still pre-v11) and **committed a `.claude/settings.json` plus payload scripts back to the repo** under a fake `Claude co-authored` tag. The repo itself became the landing pad — any developer who later opened it in Claude Code would trigger the hook locally and leak secrets.
+
+**Existing mitigations in this repo:**
+- `.gitignore` line `.claude` — refuses to track ANY `.claude/*` file (settings, hooks, skills). Hostile commits get silently dropped on `git add`.
+- `.npmrc` `ignore-scripts=true` — even if someone runs `npm/pnpm/yarn install`, dep lifecycle scripts do NOT execute. Bun's default behavior already skips them.
+- `.github/workflows/gitleaks.yml` — secret scanner on every PR.
+- Changesets release: only triggered after a human merges the auto-generated "Version Packages" PR — no direct `npm publish` from a dep PR.
+
+**Operating rules:**
+- NEVER use `git add -f` on `.claude/` paths to bypass `.gitignore` — that's literally the attack vector.
+- Dependabot/Renovate PRs require human review; do NOT enable auto-merge.
+- If you ever see `.claude/settings.json` or `.claude/hooks/*` appear in a PR diff, treat the PR as compromised — close, revoke any tokens the workflow used, rotate `NPM_TOKEN`.
+- Suspicious markers to grep before merging dep PRs: `setup.sh`, `shai-hulud`, `.background-agent.sh`, new files under `.github/workflows/` you didn't author, base64/`Buffer.from()` blobs in lockfile diffs.
 
 ## Common Mistakes to Avoid
 
