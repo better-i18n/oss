@@ -1,0 +1,32 @@
+# CODEOWNERS — supply-chain trust boundary.
+# Files listed here REQUIRE an explicit review from the listed owner before merge.
+# Branch protection rule "Require review from Code Owners" must be enabled.
+
+# CI / workflows — supply-chain entry point (publish.yml gates npm releases)
+.github/                        @aliosmandev
+.github/workflows/              @aliosmandev
+
+# Build config files — historical injection target (PolinRider class)
+**/postcss.config.*             @aliosmandev
+**/tailwind.config.*            @aliosmandev
+**/next.config.*                @aliosmandev
+**/vite.config.*                @aliosmandev
+**/eslint.config.*              @aliosmandev
+**/babel.config.*               @aliosmandev
+**/webpack.config.*             @aliosmandev
+**/svelte.config.*              @aliosmandev
+**/astro.config.*               @aliosmandev
+**/rollup.config.*              @aliosmandev
+
+# Lockfile drift = tampered dependency tree signal
+bun.lock                        @aliosmandev
+bun.lockb                       @aliosmandev
+package-lock.json               @aliosmandev
+pnpm-lock.yaml                  @aliosmandev
+yarn.lock                       @aliosmandev
+
+# Changesets config — controls what gets published to npm
+.changeset/config.json          @aliosmandev
+
+# Published npm packages — every change here ships to end users
+packages/                       @aliosmandev

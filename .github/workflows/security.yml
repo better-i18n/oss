@@ -1,0 +1,25 @@
+# Calls the org-level reusable security baseline (harden-runner audit +
+# PolinRider/Shai-Hulud IOC scan + SHA-pin enforcement).
+#
+# Security note: this file contains no run: steps and no github.event.*
+# interpolation. It only delegates to the reusable workflow via `uses:`.
+#
+# See: better-i18n/.github -> .github/workflows/security-baseline.yml
+# See: SECURITY.md (in better-i18n/.github) for the full policy.
+
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches: [main, development]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    uses: better-i18n/.github/.github/workflows/security-baseline.yml@main
+    with:
+      egress-policy: audit
