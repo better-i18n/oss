@@ -1,5 +1,11 @@
 # @better-i18n/mcp
 
+## 0.21.2
+
+### Patch Changes
+
+- b6ca650: Replace the leftover Helpway-shaped logo on the OAuth callback page with the actual Better i18n mark, theme-aware via `currentColor`.
+
 ## 0.21.1
 
 ### Patch Changes
