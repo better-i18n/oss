@@ -31,7 +31,7 @@
  */
 
 import { createRequire } from "node:module";
-import { createServer } from "node:http";
+import { createServer, type Server as HttpServer } from "node:http";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { UnauthorizedError } from "@modelcontextprotocol/sdk/client/auth.js";
@@ -49,7 +49,11 @@ const VERSION = pkg.version;
 
 const LOCAL_MCP_URL = "http://localhost:8788";
 const PROD_MCP_URL = "https://mcp.better-i18n.com";
-const DEFAULT_OAUTH_PORT = 8976;
+// Distinct from @helpway/mcp (8976) so users running both bridges don't
+// EADDRINUSE-collide. We additionally probe a small range when the
+// preferred port is occupied — see waitForAuthCode below.
+const DEFAULT_OAUTH_PORT = 8989;
+const OAUTH_PORT_RANGE = 16;
 
 function resolveConfig() {
   const argv = process.argv.slice(2);
@@ -139,13 +143,38 @@ function renderCallbackPage(
 }
 
 /**
- * Wait for the OAuth provider's loopback redirect, resolving with the
- * authorization code. Runs a one-shot HTTP server on the callback port.
+ * Try to bind the given HTTP server to `port`. Resolves cleanly when
+ * listening; rejects with the underlying error otherwise.
  */
-function waitForAuthCode(port: number): {
+function tryListen(server: HttpServer, port: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const onError = (err: Error) => {
+      server.off("listening", onListening);
+      reject(err);
+    };
+    const onListening = () => {
+      server.off("error", onError);
+      resolve();
+    };
+    server.once("error", onError);
+    server.once("listening", onListening);
+    server.listen(port);
+  });
+}
+
+/**
+ * Wait for the OAuth provider's loopback redirect, resolving with the
+ * authorization code. The callback HTTP server is bound BEFORE the OAuth
+ * dance starts so the actual port can be reflected in the OAuth client's
+ * `redirect_uri`. If the preferred port is busy (e.g. another bridge
+ * already running, or a stale Node process), we probe `OAUTH_PORT_RANGE`
+ * consecutive ports and use the first free one.
+ */
+async function waitForAuthCode(preferredPort: number): Promise<{
   promise: Promise<string>;
   close: () => void;
-} {
+  port: number;
+}> {
   let resolveCode!: (code: string) => void;
   let rejectCode!: (err: Error) => void;
   const promise = new Promise<string>((res, rej) => {
@@ -154,7 +183,7 @@ function waitForAuthCode(port: number): {
   });
 
   const server = createServer((req, res) => {
-    const url = new URL(req.url ?? "/", `http://localhost:${port}`);
+    const url = new URL(req.url ?? "/", `http://localhost:${preferredPort}`);
     if (url.pathname !== "/callback") {
       res.writeHead(404).end();
       return;
@@ -170,8 +199,30 @@ function waitForAuthCode(port: number): {
       rejectCode(new Error(error ?? "Authorization failed"));
     }
   });
-  server.listen(port);
-  return { promise, close: () => server.close() };
+
+  let boundPort = -1;
+  let lastError: Error | null = null;
+  for (let p = preferredPort; p < preferredPort + OAUTH_PORT_RANGE; p++) {
+    try {
+      await tryListen(server, p);
+      boundPort = p;
+      break;
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code === "EADDRINUSE" || code === "EACCES") continue;
+      throw err;
+    }
+  }
+  if (boundPort < 0) {
+    const range = `${preferredPort}..${preferredPort + OAUTH_PORT_RANGE - 1}`;
+    throw new Error(
+      `No free loopback port in range ${range} for OAuth callback` +
+        (lastError ? `: ${lastError.message}` : "") +
+        ` — set BETTER_I18N_OAUTH_PORT to an open port.`,
+    );
+  }
+  return { promise, close: () => server.close(), port: boundPort };
 }
 
 /**
@@ -200,27 +251,42 @@ async function connectRemote(
     return client;
   }
 
-  // OAuth mode: cached tokens → connect; otherwise interactive consent.
-  const redirectUrl = `http://localhost:${cfg.oauthPort}/callback`;
+  // OAuth mode. Bind the loopback callback server FIRST so we know the
+  // actual port (and can collision-recover via OAUTH_PORT_RANGE). The
+  // OAuth client's redirect_uri then reflects the real bound port,
+  // matching exactly what the browser will be told to call back to.
+  const callback = await waitForAuthCode(cfg.oauthPort);
+  if (callback.port !== cfg.oauthPort) {
+    log(
+      cfg.debug,
+      `loopback port ${cfg.oauthPort} unavailable; using ${callback.port}`,
+    );
+  }
+  const redirectUrl = `http://localhost:${callback.port}/callback`;
   const authProvider = new NodeOAuthProvider({ mcpUrl: cfg.mcpUrl, redirectUrl });
 
   const makeTransport = () =>
     new StreamableHTTPClientTransport(url, { authProvider });
 
+  // Cached-token path: tries to connect; if the server rejects, falls
+  // through to the interactive dance below.
   try {
     await client.connect(makeTransport());
+    callback.close();
     log(
       cfg.debug,
       `connected to ${cfg.mcpUrl}${cfg.local ? " (local)" : ""} via cached OAuth token`,
     );
     return client;
   } catch (err) {
-    if (!(err instanceof UnauthorizedError)) throw err;
+    if (!(err instanceof UnauthorizedError)) {
+      callback.close();
+      throw err;
+    }
   }
 
   // Interactive: provider already opened the browser via redirectToAuthorization
   // during the failed connect. Catch the loopback redirect, finish auth, reconnect.
-  const callback = waitForAuthCode(cfg.oauthPort);
   let code: string;
   try {
     code = await callback.promise;
