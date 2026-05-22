@@ -4,7 +4,11 @@ description: Configure MCP server for Cursor, Claude Code, Windsurf, Zed, Codex,
 icon: Rocket
 ---
 
-Set up the local MCP server for coding agents like Cursor, Claude Code, Windsurf, Zed, Codex, and Antigravity. This runs a local process via `npx` and authenticates with an API key.
+Connect coding agents like Cursor, Claude Code, Windsurf, Zed, Codex, and Antigravity to your translation workspace.
+
+<Callout type="info">
+  **Two ways to connect.** Agents that support **remote MCP** (Claude Code, Cursor) can use the hosted server at `https://mcp.better-i18n.com/mcp` and sign in via **OAuth — no API key needed**. Agents that only run local stdio servers use the `npx` bridge with an API key. Both are shown per-agent below.
+</Callout>
 
 <Callout type="info">
   For **ChatGPT**, **Claude** (web), or **Gemini**, use the [AI Assistants](/mcp/ai-assistants) guide instead — no installation required.
@@ -43,7 +47,16 @@ Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
 
 <Tabs items={['Cursor', 'Claude Code', 'Claude Desktop', 'Windsurf', 'Zed', 'Codex', 'Antigravity']}>
   <Tab value="Cursor">
-    Add this to your MCP settings in Cursor (`~/.cursor/mcp.json`):
+    **Recommended — OAuth, no API key.** Add the remote server in `Settings → MCP → Add new MCP server`, choose **Remote**, and paste:
+
+    ```
+    https://mcp.better-i18n.com/mcp
+    ```
+
+    Cursor opens your browser to sign in on first use — no key to manage.
+
+    **Alternative — API key** (`~/.cursor/mcp.json`):
+
     ```json title="~/.cursor/mcp.json"
     {
       "mcpServers": {
@@ -59,12 +72,21 @@ Pass your API key using the `BETTER_I18N_API_KEY` environment variable.
     ```
   </Tab>
   <Tab value="Claude Code">
-    Run this command in your terminal:
+    **Recommended — OAuth, no API key.** Add the remote server and sign in through your browser:
+
+    ```bash title="Terminal"
+    claude mcp add --transport http --scope user better-i18n https://mcp.better-i18n.com/mcp
+    ```
+
+    Then run `/mcp` inside Claude Code, pick **better-i18n → Authenticate**, and approve in your browser. No key to copy or rotate — the token refreshes automatically.
+
+    **Alternative — API key** (for offline / self-hosted setups):
+
     ```bash title="Terminal"
     claude mcp add better-i18n -s user -e BETTER_I18N_API_KEY=your-api-key -- npx -y @better-i18n/mcp@latest
     ```
 
-    Claude Code automatically manages the `.mcp.json` configuration. You can view and manage servers with `claude mcp list`.
+    Claude Code automatically manages the `.mcp.json` configuration. View and manage servers with `claude mcp list`.
   </Tab>
   <Tab value="Claude Desktop">
     Add this to your Claude Desktop config:
