@@ -300,7 +300,7 @@
     },
     "packages/mcp": {
       "name": "@better-i18n/mcp",
-      "version": "0.21.1",
+      "version": "0.21.2",
       "bin": {
         "better-i18n-mcp": "./dist/index.js",
       },
