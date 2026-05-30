@@ -1,6 +1,6 @@
 name: better_i18n
 description: Flutter SDK for better-i18n — runtime translation loading from CDN with offline fallback.
-version: 0.1.0
+version: 0.1.1
 homepage: https://better-i18n.com
 repository: https://github.com/better-i18n/better-i18n/tree/main/packages/flutter
 issue_tracker: https://github.com/better-i18n/better-i18n/issues
