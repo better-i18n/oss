@@ -40,6 +40,7 @@ You can also configure CLI-specific options (like linting rules and file exclusi
 | `manifestRevalidateSeconds` | `number` | `3600` | Next.js revalidate for manifest |
 | `messagesRevalidateSeconds` | `number` | `30` | Next.js revalidate for messages |
 | `cookieName` | `string` | `"locale"` | Name of the locale persistence cookie |
+| `explicitCookieName` | `string` | `` `${cookieName}_explicit` `` | Cookie written by `useSetLocale` to mark a deliberate choice (match middleware's `detection.explicitCookieName`) |
 | `timeZone` | `string` | System tz | IANA timezone. Set explicitly to avoid `ENVIRONMENT_FALLBACK` warnings and prevent SSR/client hydration mismatches. |
 | `storage` | `TranslationStorage` | — | Persistent storage adapter (offline fallback) |
 | `staticData` | `Record<string, Messages> \| (() => Promise<...>)` | — | Last-resort bundled translations for offline use |
