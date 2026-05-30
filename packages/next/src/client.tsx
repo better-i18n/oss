@@ -115,6 +115,7 @@ export function BetterI18nProvider({
     config.project,
     config.defaultLocale,
     config.cookieName,
+    config.explicitCookieName,
     config.cdnBaseUrl,
     config.storage,
     config.staticData,
@@ -145,8 +146,11 @@ export function BetterI18nProvider({
     async (newLocale: string) => {
       if (newLocale === locale) return;
 
-      // 1. Set cookie for server-side persistence
+      // 1. Set cookie for server-side persistence + mark it as an EXPLICIT
+      // user choice (the middleware never writes the explicit marker, so a
+      // callback can distinguish a deliberate pick from auto-detection).
       document.cookie = `${normalized.cookieName}=${newLocale}; path=/; max-age=31536000; samesite=lax`;
+      document.cookie = `${normalized.explicitCookieName}=${newLocale}; path=/; max-age=31536000; samesite=lax`;
 
       // 2. Fetch new messages with full fallback chain (CDN → Storage → StaticData)
       try {
@@ -168,7 +172,7 @@ export function BetterI18nProvider({
         window.location.reload();
       }
     },
-    [locale, normalized.cookieName, normalized.localePrefix, normalized.defaultLocale, i18nCore, router, pathname],
+    [locale, normalized.cookieName, normalized.explicitCookieName, normalized.localePrefix, normalized.defaultLocale, i18nCore, router, pathname],
   );
 
   return (
@@ -361,6 +365,7 @@ function useStandaloneSetLocale(config: I18nConfig) {
     config.project,
     config.defaultLocale,
     config.cookieName,
+    config.explicitCookieName,
     config.localePrefix,
   ]);
 
@@ -369,7 +374,9 @@ function useStandaloneSetLocale(config: I18nConfig) {
 
   return useCallback(
     (newLocale: string) => {
+      // Persist the choice + mark it as explicit (see provider setLocale above).
       document.cookie = `${normalized.cookieName}=${newLocale}; path=/; max-age=31536000; samesite=lax`;
+      document.cookie = `${normalized.explicitCookieName}=${newLocale}; path=/; max-age=31536000; samesite=lax`;
 
       if (normalized.localePrefix === "never") {
         router.refresh();
@@ -382,7 +389,7 @@ function useStandaloneSetLocale(config: I18nConfig) {
         router.replace(newPath);
       }
     },
-    [normalized.cookieName, normalized.localePrefix, normalized.defaultLocale, router, pathname],
+    [normalized.cookieName, normalized.explicitCookieName, normalized.localePrefix, normalized.defaultLocale, router, pathname],
   );
 }
 

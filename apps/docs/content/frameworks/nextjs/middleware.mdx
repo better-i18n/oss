@@ -75,6 +75,7 @@ export const config = {
 | `detection.cookie`          | `boolean` | `true`       | Use cookie for language persistence.              |
 | `detection.cookieName`      | `string`  | `"locale"`   | Name of the cookie to store preference.           |
 | `detection.cookieMaxAge`    | `number`  | `31536000`   | Cookie max age in seconds (default: 1 year).      |
+| `detection.explicitCookieName` | `string` | `"locale_explicit"` | Cookie that marks a *deliberate* user choice — written by `useSetLocale`, only **read** here. |
 
 ## Auth Integration (Clerk-style Pattern)
 
@@ -116,6 +117,8 @@ The callback receives two arguments:
 |----------|------|-------------|
 | `request` | `NextRequest` | The incoming Next.js request |
 | `context.locale` | `string` | The detected locale (e.g., `"en"`, `"tr"`) |
+| `context.detectedFrom` | `"path" \| "cookie" \| "geo" \| "header" \| "default"` | Where the locale was resolved from |
+| `context.isExplicit` | `boolean` | `true` when the explicit-marker cookie is present (the user chose via the switcher) |
 | `context.response` | `NextResponse` | The i18n response with headers already set |
 
 ### Return Values
@@ -124,6 +127,38 @@ The callback receives two arguments:
 |--------|----------|
 | `NextResponse` | Short-circuits and uses your response (e.g., redirect) |
 | `void` / `undefined` | Continues with the i18n response (headers preserved) |
+
+## Explicit choice vs. auto-detection
+
+The middleware writes the `locale` cookie even for an *auto-detected* locale (header/default), so that cookie alone can't tell you whether the user **deliberately** picked a language. For that, `useSetLocale()` additionally writes an **explicit-marker cookie** (`locale_explicit` by default) that the middleware only reads — never writes. `context.isExplicit` reflects its presence.
+
+Use it to apply a **tenant / org default** only for users who never chose for themselves, without ever overriding a real choice:
+
+```ts title="middleware.ts"
+export default createBetterI18nMiddleware({
+  projectId: "acme/dashboard",
+  defaultLocale: "en",
+  localePrefix: "always",
+}, async (request, { locale, isExplicit, response }) => {
+  const tenant = readTenantFromCookie(request); // your own cookie/session
+
+  // 1. Hard lock (e.g. "English only") — overrides everything.
+  if (tenant?.forceLocale && locale !== tenant.forceLocale) {
+    return NextResponse.redirect(rewriteLocale(request, tenant.forceLocale));
+  }
+
+  // 2. Tenant default — ONLY when the user has not explicitly chosen.
+  if (!isExplicit && tenant?.defaultLocale && locale !== tenant.defaultLocale) {
+    return NextResponse.redirect(rewriteLocale(request, tenant.defaultLocale));
+  }
+
+  // Otherwise keep the detected locale (including the user's own choice).
+});
+```
+
+<Callout type="info">
+  Set the same name on both sides: `detection.explicitCookieName` (middleware) and `explicitCookieName` (provider / `useSetLocale` config). Both default to `` `${cookieName}_explicit` ``.
+</Callout>
 
 ## Advanced: NextAuth.js Integration
 

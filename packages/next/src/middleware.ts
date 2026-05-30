@@ -13,6 +13,24 @@ import type { I18nConfig } from "./types.js";
 export interface MiddlewareContext {
   /** Detected locale from the request */
   locale: string;
+  /**
+   * Where the locale was resolved from, in priority order:
+   * path > cookie > geo > header > default.
+   */
+  detectedFrom: "path" | "cookie" | "geo" | "header" | "default";
+  /**
+   * Whether the active locale is an *explicit* user choice — i.e. the
+   * explicit-marker cookie (written only by `useSetLocale()`, never by this
+   * middleware) is present. Use this to apply a tenant/org default ONLY when
+   * the user has not deliberately picked a language:
+   *
+   * ```ts
+   * if (!isExplicit && org.defaultLocale && locale !== org.defaultLocale) {
+   *   return NextResponse.redirect(new URL(`/${org.defaultLocale}${rest}`, request.url));
+   * }
+   * ```
+   */
+  isExplicit: boolean;
   /** The i18n response with headers already set - can be modified */
   response: NextResponse;
 }
@@ -94,6 +112,7 @@ export function createBetterI18nMiddleware(
     browserLanguage = true,
     cookieName = "locale",
     cookieMaxAge = 31536000,
+    explicitCookieName = `${cookieName}_explicit`,
   } = detection;
 
   // Create i18n core instance for CDN operations
@@ -114,6 +133,11 @@ export function createBetterI18nMiddleware(
         ? null
         : request.nextUrl.pathname.split("/")[1];
     const cookieLocale = cookie ? request.cookies.get(cookieName)?.value : null;
+    // Explicit marker: written only by useSetLocale() on the client, never by
+    // this middleware. Presence => the user deliberately picked the locale.
+    const isExplicit = cookie
+      ? !!request.cookies.get(explicitCookieName)?.value
+      : false;
     const headerLocale = browserLanguage
       ? request.headers.get("accept-language")?.split(",")[0]?.split("-")[0]
       : null;
@@ -207,6 +231,8 @@ export function createBetterI18nMiddleware(
     if (callback) {
       const callbackResult = await callback(request, {
         locale: detectedLocale,
+        detectedFrom: result.detectedFrom,
+        isExplicit,
         response,
       });
 

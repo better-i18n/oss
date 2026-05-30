@@ -57,12 +57,15 @@ export default createBetterI18nMiddleware({
 | `detection.browserLanguage` | `boolean` | `true` | Enable Accept-Language header detection |
 | `detection.cookieName` | `string` | `"locale"` | Cookie name for storing preference |
 | `detection.cookieMaxAge` | `number` | `31536000` | Cookie max age in seconds |
+| `detection.explicitCookieName` | `string` | `"locale_explicit"` | Cookie marking a deliberate user choice (read-only in middleware) |
 
 **Callback Context:**
 
 | Property | Type | Description |
 | --- | --- | --- |
 | `locale` | `string` | Detected locale (e.g., `"en"`, `"tr"`) |
+| `detectedFrom` | `"path" \| "cookie" \| "geo" \| "header" \| "default"` | Where the locale was resolved from |
+| `isExplicit` | `boolean` | `true` when the explicit-marker cookie is present (deliberate user choice) |
 | `response` | `NextResponse` | i18n response with headers already set |
 
 **Return Values:**
@@ -446,6 +449,7 @@ interface I18nConfig {
 
   // Optional - Locale persistence
   cookieName?: string; // Default: "locale"
+  explicitCookieName?: string; // Default: `${cookieName}_explicit` — marks a deliberate user choice
 
   // Optional - Timezone
   timeZone?: string; // IANA timezone (set explicitly to avoid ENVIRONMENT_FALLBACK warnings)
@@ -479,6 +483,7 @@ interface I18nMiddlewareConfig {
     browserLanguage?: boolean; // Default: true
     cookieName?: string;     // Default: "locale"
     cookieMaxAge?: number;   // Default: 31536000 (1 year)
+    explicitCookieName?: string; // Default: `${cookieName}_explicit`
   };
 }
 ```
@@ -528,6 +533,10 @@ Context passed to the middleware callback.
 interface MiddlewareContext {
   /** Detected locale from the request */
   locale: string;
+  /** Where the locale was resolved from: path > cookie > geo > header > default */
+  detectedFrom: "path" | "cookie" | "geo" | "header" | "default";
+  /** true when the explicit-marker cookie is present (deliberate user choice) */
+  isExplicit: boolean;
   /** The i18n response with headers already set - can be modified */
   response: NextResponse;
 }

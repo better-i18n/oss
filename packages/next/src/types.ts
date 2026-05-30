@@ -34,6 +34,17 @@ export interface I18nConfig extends I18nCoreConfig {
   cookieName?: string;
 
   /**
+   * Cookie name written by `useSetLocale()` to mark the locale as an *explicit*
+   * user choice. The middleware reads this (but never writes it) so a callback
+   * can tell a deliberate pick apart from an auto-detected one — e.g. to apply
+   * a tenant/org default only for users who never chose themselves.
+   *
+   * Must match `detection.explicitCookieName` in your middleware config.
+   * @default `${cookieName}_explicit`
+   */
+  explicitCookieName?: string;
+
+  /**
    * Next.js ISR revalidation time for manifest (seconds)
    * @default 3600
    */
@@ -65,6 +76,7 @@ export interface I18nConfig extends I18nCoreConfig {
 export interface NormalizedConfig extends CoreNormalizedConfig, Omit<I18nConfig, keyof I18nCoreConfig> {
   localePrefix: LocalePrefix;
   cookieName: string;
+  explicitCookieName: string;
   manifestRevalidateSeconds: number;
   messagesRevalidateSeconds: number;
 }

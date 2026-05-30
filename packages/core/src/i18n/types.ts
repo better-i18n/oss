@@ -13,6 +13,16 @@ export interface I18nMiddlewareConfig {
     browserLanguage?: boolean; // default: true
     cookieName?: string; // default: 'locale'
     cookieMaxAge?: number; // default: 31536000 (1 year)
+    /**
+     * Name of the cookie that marks a locale as an *explicit* user choice
+     * (set only by `useSetLocale()` on the client — never auto-written by the
+     * middleware). Lets a callback distinguish "the user deliberately picked
+     * this language" from "we auto-detected/persisted it", which is what you
+     * need to apply a tenant/org default without overriding a real choice.
+     *
+     * @default `${cookieName}_explicit` (e.g. "locale_explicit")
+     */
+    explicitCookieName?: string;
   };
 }
 

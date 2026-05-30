@@ -32,6 +32,7 @@ export const normalizeConfig = (config: I18nConfig): NormalizedConfig => {
   const {
     localePrefix,
     cookieName,
+    explicitCookieName,
     manifestRevalidateSeconds,
     messagesRevalidateSeconds,
     timeZone,
@@ -40,10 +41,13 @@ export const normalizeConfig = (config: I18nConfig): NormalizedConfig => {
 
   const coreConfig = coreNormalizeConfig(coreFields);
 
+  const resolvedCookieName = cookieName ?? "locale";
+
   return {
     ...coreConfig,
     localePrefix: localePrefix ?? "as-needed",
-    cookieName: cookieName ?? "locale",
+    cookieName: resolvedCookieName,
+    explicitCookieName: explicitCookieName ?? `${resolvedCookieName}_explicit`,
     manifestRevalidateSeconds: manifestRevalidateSeconds ?? (isDevMode() ? 0 : 3600),
     messagesRevalidateSeconds: messagesRevalidateSeconds ?? (isDevMode() ? 0 : 5),
     timeZone,
