@@ -1,5 +1,12 @@
 # docs
 
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies [937b122]
+  - @better-i18n/core@0.13.0
+
 ## 0.0.10
 
 ### Patch Changes
