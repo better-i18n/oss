@@ -90,10 +90,10 @@
     }
   },
   "devDependencies": {
-    "@types/react": "^19.1.12",
+    "@types/react": "^19.2.17",
     "jsdom": "^26.1.0",
     "typescript": "~5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.6"
   },
   "publishConfig": {
     "access": "public"
