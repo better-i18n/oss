@@ -45,13 +45,24 @@ const LazyHelpwayWidget = lazy(() =>
  */
 function HelpwayWidgetMount({ locale }: { locale: string }) {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const [deepLink, setDeepLink] = useState<{ convId?: string; token?: string }>({});
+  useEffect(() => {
+    const convId = new URLSearchParams(window.location.search).get("hw_conv") ?? undefined;
+    const token = new URLSearchParams(window.location.hash.slice(1)).get("hw_token") ?? undefined;
+    if (token) {
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+    setDeepLink({ convId, token });
+    setMounted(true);
+  }, []);
   if (!mounted) return null;
   return (
     <Suspense fallback={null}>
       <LazyHelpwayWidget
         apiKey="pk_live_Nir-sHLl1_qc9S9EuV9RdNN5"
         locale={locale}
+        initialConversationId={deepLink.convId}
+        deepLinkToken={deepLink.token}
       />
     </Suspense>
   );

@@ -21,7 +21,7 @@
     "@better-i18n/use-intl": "workspace:*",
     "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.90",
     "@getbrevo/brevo": "^5.0.4",
-    "@helpway/react": "0.12.1",
+    "@helpway/react": "0.13.1",
     "@radix-ui/react-hover-card": "^1.1.15",
     "@remotion/player": "^4.0.450",
     "@tailwindcss/vite": "^4.1.18",
