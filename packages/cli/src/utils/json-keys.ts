@@ -143,4 +143,6 @@ export function countMissingKeysFromEntries(
 export interface MissingKeyEntry {
   key: string;
   value: string;
+  /** Namespace resolved from the code binding (e.g. useTranslation("common")), when known */
+  namespace?: string;
 }

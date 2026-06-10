@@ -353,7 +353,7 @@ function groupIssuesAsMissing(allIssues: Issue[]): Record<string, MissingKeyEntr
     seen.add(issue.key);
     const ns = issue.key.split(".")[0] || "default";
     if (!grouped[ns]) grouped[ns] = [];
-    grouped[ns].push({ key: issue.key, value: issue.text || "" });
+    grouped[ns].push({ key: issue.key, value: issue.text || "", namespace: issue.namespace });
   }
   return grouped;
 }
@@ -432,10 +432,26 @@ async function pushMissingKeys(
   const keys = Object.values(missing)
     .flat()
     .map((entry) => {
+      // Natural-language keys (lingui style: t`Cancel order`) ARE the source text
+      if (entry.key.includes(" ")) {
+        return { n: entry.key, ns: entry.namespace ?? "default", v: entry.key };
+      }
+      // Namespace from the code binding (useTranslation("common")) wins —
+      // it's a fact, not a guess. The analyzer prefixes the key with it.
+      if (entry.namespace) {
+        const n = entry.key.startsWith(`${entry.namespace}.`)
+          ? entry.key.slice(entry.namespace.length + 1)
+          : entry.key;
+        return { n, ns: entry.namespace, v: undefined };
+      }
+      // Unbound keys: apply the platform convention (first segment = namespace).
       const parts = entry.key.split(".");
       const ns = parts.length > 1 ? parts[0] : "default";
       const n = parts.length > 1 ? parts.slice(1).join(".") : entry.key;
-      return { n, ns, v: entry.value || undefined };
+      // entry.value is the raw t() argument (the key itself), never real
+      // source text — the CLI has no default-value extraction, so omit v
+      // and let the dashboard / Better AI / MCP fill the source text in.
+      return { n, ns, v: undefined };
     });
 
   if (!isJson && !options.yes) {

@@ -291,6 +291,7 @@ export function getSummary(
         missing[ns].push({
           key: issue.key,
           value: issue.text || "",
+          namespace: issue.namespace,
         });
       }
     }
