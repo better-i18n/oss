@@ -434,7 +434,11 @@ async function pushMissingKeys(
     .map((entry) => {
       // Natural-language keys (lingui style: t`Cancel order`) ARE the source text
       if (entry.key.includes(" ")) {
-        return { n: entry.key, ns: entry.namespace ?? "default", v: entry.key };
+        const n =
+          entry.namespace && entry.key.startsWith(`${entry.namespace}.`)
+            ? entry.key.slice(entry.namespace.length + 1)
+            : entry.key;
+        return { n, ns: entry.namespace ?? "default", v: n };
       }
       // Namespace from the code binding (useTranslation("common")) wins —
       // it's a fact, not a guess. The analyzer prefixes the key with it.
@@ -481,9 +485,15 @@ async function pushMissingKeys(
     : ora(`Creating ${keys.length} key${keys.length !== 1 ? "s" : ""}...`).start();
 
   const result = await trpc.mutate<{
-    created: number;
-    dup: string[];
-    warn: string[];
+    ok: boolean;
+    cnt: number;
+    new: number;
+    ren: number;
+    dup: number;
+    k: Array<{ k: string; id: string; tr: number }>;
+    skip?: Array<{ k: string; reason: string }>;
+    warn?: Array<{ k: string; ns: string; other: string[] }>;
+    blocked?: Array<{ k: string; ns: string; src: string }>;
   }>("mcp.createKeys", {
     orgSlug: project.org,
     projectSlug: project.slug,
@@ -502,16 +512,18 @@ async function pushMissingKeys(
     return;
   }
 
-  spinner?.succeed(`${d.created} key${d.created !== 1 ? "s" : ""} created`);
-  if (d.dup.length > 0) {
-    console.log(
-      yellow(
-        `  ${d.dup.length} duplicate${d.dup.length !== 1 ? "s" : ""} skipped: ${d.dup.slice(0, 5).join(", ")}${d.dup.length > 5 ? "…" : ""}`,
-      ),
-    );
+  spinner?.succeed(`${d.cnt} key${d.cnt !== 1 ? "s" : ""} created`);
+  if (d.dup > 0) {
+    console.log(yellow(`  ${d.dup} duplicate${d.dup !== 1 ? "s" : ""} skipped (already exist)`));
   }
-  if (d.warn.length > 0) {
-    console.log(yellow(`  Warnings: ${d.warn.join(", ")}`));
+  for (const s of d.skip ?? []) {
+    console.log(yellow(`  Skipped ${s.k}: ${s.reason}`));
+  }
+  for (const w of d.warn ?? []) {
+    console.log(yellow(`  "${w.k}" created in [${w.ns}] but also exists in: ${w.other.join(", ")}`));
+  }
+  for (const b of d.blocked ?? []) {
+    console.log(yellow(`  Blocked ${b.k} [${b.ns}]: same source text already exists (use --force via keys create)`));
   }
   console.log(dim("  Keys are now in the dashboard. Translate them there, with Better AI, or via MCP, then publish."));
   console.log();

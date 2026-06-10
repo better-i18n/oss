@@ -13,6 +13,13 @@ import type { Issue, RuleContext } from "../types.js";
 const TRANSLATION_FUNCTIONS = new Set(["t", "useTranslation", "useTranslations", "useT", "useScopedT"]);
 
 /**
+ * Hook calls whose first argument is a NAMESPACE, not a translation key.
+ * They create bindings (handled by the namespace pre-scan) — extracting a
+ * key from the hook call itself produces phantom keys like "common".
+ */
+const NAMESPACE_HOOKS = new Set(["useTranslation", "useTranslations", "useT", "useScopedT"]);
+
+/**
  * Check if identifier looks like a translator variable
  * Common patterns: t, tUser, tAuth, tCommon, etc.
  */
@@ -30,6 +37,9 @@ export function checkTranslationFunction(
 ): Issue | null {
   const bindingId = getBindingIdentifier(node);
   if (!bindingId) return null;
+
+  // Namespace hooks bind a namespace — their argument is never a key
+  if (NAMESPACE_HOOKS.has(bindingId)) return null;
 
   // Check if this identifier is bound to a translation namespace
   let binding = ctx.namespaceMap?.[bindingId];
