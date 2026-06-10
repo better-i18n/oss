@@ -46,6 +46,11 @@ export interface SyncOptions extends ScanOptions {
   format: "eslint" | "json";
   summary?: boolean;
   checkType?: "missing" | "unused" | "both"; // Which checks to run
+  push?: boolean; // Create missing keys in Better i18n after comparison
+  yes?: boolean; // Skip the confirmation prompt for --push
+  project?: string; // org/slug override for --push
+  apiKey?: string;
+  apiUrl?: string;
 }
 
 export async function syncCommand(options: SyncOptions) {
@@ -103,6 +108,8 @@ export async function syncCommand(options: SyncOptions) {
         `Manifest loaded (source: ${bold(sourceLocale)}, ${manifest.languages.length} languages)`,
       );
     } catch (error) {
+      // Reset so a half-assigned manifest can't leak into the comparison step
+      manifest = null;
       spinner.warn(
         `Could not fetch manifest: ${error instanceof Error ? error.message : String(error)}`,
       );
@@ -288,6 +295,17 @@ export async function syncCommand(options: SyncOptions) {
           options.checkType // Pass checkType to filter report
         );
       }
+
+      // Step 7: Push missing keys (opt-in) or point at the next step
+      const includesMissing = (options.checkType ?? "both") !== "unused";
+      const totalMissing = countMissingKeysFromEntries(metrics.missing);
+      if (includesMissing && totalMissing > 0) {
+        if (options.push) {
+          await pushMissingKeys(metrics.missing, options, isJson);
+        } else if (!isJson && !options.summary) {
+          printPushHint();
+        }
+      }
     } catch (error) {
       spinner.fail(
         `Failed to fetch remote keys: ${error instanceof Error ? error.message : String(error)}`,
@@ -351,6 +369,108 @@ function reportLocalKeys(
 /**
  * Report comparison (human-readable)
  */
+/**
+ * Print the next-step hint after a comparison that found missing keys.
+ * Keeps users from dead-ending on "sync found them, now what?".
+ */
+function printPushHint() {
+  console.log(dim("  To create the missing keys in Better i18n:"));
+  console.log(`    ${cyan("better-i18n sync --push")}`);
+  console.log(dim("  Or hand it to your AI agent (better-i18n MCP) for context-aware source text:"));
+  console.log(dim(`    "run better-i18n sync --format json and create the missing keys"`));
+  console.log();
+}
+
+/**
+ * Create the missing keys in Better i18n via mcp.createKeys.
+ *
+ * Namespace rule matches the platform convention: the first dot segment
+ * becomes the namespace, the rest is the key. Single-segment keys go to
+ * "default". Always confirm before writing unless --yes (or JSON mode).
+ */
+async function pushMissingKeys(
+  missing: Record<string, MissingKeyEntry[]>,
+  options: SyncOptions,
+  isJson: boolean,
+) {
+  const { requireAuth, handleError } = await import("../utils/require-auth.js");
+  const { resolveProject } = await import("./projects.js");
+
+  const { trpc } = requireAuth({ ...options, json: isJson });
+  const project = await resolveProject(options);
+
+  const keys = Object.values(missing)
+    .flat()
+    .map((entry) => {
+      const parts = entry.key.split(".");
+      const ns = parts.length > 1 ? parts[0] : "default";
+      const n = parts.length > 1 ? parts.slice(1).join(".") : entry.key;
+      return { n, ns, v: entry.value || undefined };
+    });
+
+  if (!isJson && !options.yes) {
+    console.log(
+      bold(
+        `  Creating ${keys.length} key${keys.length !== 1 ? "s" : ""} in ${green(project.org + "/" + project.slug)}`,
+      ),
+    );
+    console.log();
+    for (const k of keys.slice(0, 10)) {
+      const nsLabel = k.ns !== "default" ? dim(`[${k.ns}] `) : "";
+      console.log(`  ${nsLabel}${cyan(k.n)}${k.v ? dim(` → "${k.v}"`) : ""}`);
+    }
+    if (keys.length > 10) console.log(dim(`  ... and ${keys.length - 10} more`));
+    console.log();
+
+    const { confirm } = await import("@inquirer/prompts");
+    const proceed = await confirm({ message: "Create these keys?", default: true });
+    if (!proceed) {
+      console.log(dim("  Cancelled."));
+      return;
+    }
+  }
+
+  const spinner = isJson
+    ? null
+    : ora(`Creating ${keys.length} key${keys.length !== 1 ? "s" : ""}...`).start();
+
+  const result = await trpc.mutate<{
+    created: number;
+    dup: string[];
+    warn: string[];
+  }>("mcp.createKeys", {
+    orgSlug: project.org,
+    projectSlug: project.slug,
+    k: keys,
+  });
+
+  if (!result.ok || !result.data) {
+    spinner?.fail("Failed to create keys");
+    handleError(result, isJson);
+    return;
+  }
+
+  const d = result.data;
+  if (isJson) {
+    console.log(JSON.stringify({ ok: true, push: d }));
+    return;
+  }
+
+  spinner?.succeed(`${d.created} key${d.created !== 1 ? "s" : ""} created`);
+  if (d.dup.length > 0) {
+    console.log(
+      yellow(
+        `  ${d.dup.length} duplicate${d.dup.length !== 1 ? "s" : ""} skipped: ${d.dup.slice(0, 5).join(", ")}${d.dup.length > 5 ? "…" : ""}`,
+      ),
+    );
+  }
+  if (d.warn.length > 0) {
+    console.log(yellow(`  Warnings: ${d.warn.join(", ")}`));
+  }
+  console.log(dim("  Keys are now in the dashboard. Translate them there, with Better AI, or via MCP, then publish."));
+  console.log();
+}
+
 function reportComparisonReport(
   localKeys: LocalKeysData,
   metrics: SyncMetrics,

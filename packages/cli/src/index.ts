@@ -204,6 +204,9 @@ program
   .option("-f, --format <type>", "Output format: eslint, json", "eslint")
   .option("--summary", "Show only the high-level metrics summary")
   .option("--verbose", "Show detailed output")
+  .option("--push", "Create the missing keys in Better i18n after comparison")
+  .option("-y, --yes", "Skip the confirmation prompt (for --push)")
+  .option("-p, --project <org/project>", "Project override for --push (e.g. acme/dashboard)")
   .action(syncCommand);
 
 program

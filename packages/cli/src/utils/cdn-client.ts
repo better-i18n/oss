@@ -26,7 +26,16 @@ export async function fetchManifest(
     throw new Error(`Manifest fetch failed (${response.status})`);
   }
 
-  return response.json() as Promise<CdnManifest>;
+  // CDN returns 200 with an empty body for projects that were never published.
+  // Validate the shape so callers get a clear error instead of a TypeError.
+  const data = (await response.json()) as CdnManifest;
+  if (!data || !Array.isArray(data.languages)) {
+    throw new Error(
+      "Project has no published translations yet. Publish once from the dashboard (or `better-i18n publish`) and retry.",
+    );
+  }
+
+  return data;
 }
 
 /**
@@ -43,7 +52,7 @@ export async function fetchRemoteKeys(
   manifest: CdnManifest | null,
 ): Promise<RemoteTranslations> {
   let url: string;
-  if (manifest?.files[locale]?.url) {
+  if (manifest?.files?.[locale]?.url) {
     url = manifest.files[locale].url;
   } else {
     url = `${cdnBaseUrl}/${workspaceId}/${projectSlug}/translations/${locale}.json`;
@@ -73,7 +82,7 @@ export async function fetchLocaleFile(
   try {
     const manifest = await fetchManifest(cdnBaseUrl, workspaceId, projectSlug);
 
-    if (!manifest.files[locale]) {
+    if (!manifest.files?.[locale]) {
       return null;
     }
 
