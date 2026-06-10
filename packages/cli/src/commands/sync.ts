@@ -325,7 +325,37 @@ export async function syncCommand(options: SyncOptions) {
     } else {
       reportLocalKeys(localKeys, allIssues.length, duration);
     }
+
+    // No manifest (never published / GitHub-only project): with --push we
+    // can't diff against the CDN, so push everything we found locally.
+    // The server skips keys that already exist (reported as duplicates).
+    if (options.push && allIssues.length > 0) {
+      if (!isJson) {
+        console.log(
+          dim("  No published manifest to compare against — pushing all local keys (existing keys are skipped server-side)."),
+        );
+        console.log();
+      }
+      await pushMissingKeys(groupIssuesAsMissing(allIssues), options, isJson);
+    }
   }
+}
+
+/**
+ * Group extracted issues into the missing-keys shape used by pushMissingKeys.
+ * Mirrors the namespace grouping in key-comparison: first dot segment.
+ */
+function groupIssuesAsMissing(allIssues: Issue[]): Record<string, MissingKeyEntry[]> {
+  const grouped: Record<string, MissingKeyEntry[]> = {};
+  const seen = new Set<string>();
+  for (const issue of allIssues) {
+    if (!issue.key || issue.isDynamic || seen.has(issue.key)) continue;
+    seen.add(issue.key);
+    const ns = issue.key.split(".")[0] || "default";
+    if (!grouped[ns]) grouped[ns] = [];
+    grouped[ns].push({ key: issue.key, value: issue.text || "" });
+  }
+  return grouped;
 }
 
 // fetchManifest, groupKeysByNamespace, fetchRemoteKeys → imported from utils/
