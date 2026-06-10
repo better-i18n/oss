@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1
+
+### Patch Changes
+
+- e132f48: `--version` now reports the real package version (was hardcoded to 0.4.0).
+
 ## 0.6.0
 
 ### Minor Changes
