@@ -7,6 +7,7 @@
  */
 
 import { program } from "commander";
+import pkg from "../package.json" with { type: "json" };
 import { loadEnvFiles } from "./utils/load-env.js";
 import { scanCommand } from "./commands/scan.js";
 
@@ -42,7 +43,7 @@ const PROJECT_OPTIONS = (cmd: ReturnType<typeof program.command>) =>
 program
   .name("better-i18n")
   .description("Localization infrastructure for modern apps — scan, sync, and manage translation keys")
-  .version("0.4.0");
+  .version(pkg.version);
 
 // ── Auth ──────────────────────────────────────────────────────────────
 
