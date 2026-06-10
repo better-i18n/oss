@@ -73,9 +73,18 @@ export interface CacheMeta {
  */
 export interface BetterI18nBackendOptions {
   /**
-   * Project identifier in "org/project" format (e.g., "acme/dashboard")
+   * Project identifier in "org/project" format (e.g., "acme/dashboard").
+   *
+   * Canonical field — matches the "Project ID" shown in the dashboard.
+   * Either `projectId` or `project` (legacy alias) must be set.
    */
-  project: string;
+  projectId?: string;
+
+  /**
+   * Legacy alias for `projectId`. Kept for backward compatibility.
+   * @deprecated Use `projectId` instead.
+   */
+  project?: string;
 
   /**
    * Default/fallback locale

@@ -32,8 +32,19 @@ export function getLanguagesSnapshot(): LanguageOption[] {
 }
 
 export interface InitBetterI18nOptions {
-  /** Project identifier in "org/project" format */
-  project: string;
+  /**
+   * Project identifier in "org/project" format.
+   *
+   * Canonical field — matches the "Project ID" shown in the dashboard.
+   * Either `projectId` or `project` (legacy alias) must be set.
+   */
+  projectId?: string;
+
+  /**
+   * Legacy alias for `projectId`. Kept for backward compatibility.
+   * @deprecated Use `projectId` instead.
+   */
+  project?: string;
 
   /**
    * i18next instance to configure.
@@ -126,7 +137,7 @@ async function resolveInitialLocale(
  * i18n.use(initReactI18next);
  *
  * const { languages } = await initBetterI18n({
- *   project: 'acme/my-app',
+ *   projectId: 'acme/my-app',
  *   i18n,
  *   useDeviceLocale: true,
  * });
@@ -136,7 +147,6 @@ export async function initBetterI18n(
   options: InitBetterI18nOptions
 ): Promise<BetterI18nResult> {
   const {
-    project,
     i18n: i18nOpt,
     defaultLocale = "en",
     storage: userStorage,
@@ -147,6 +157,14 @@ export async function initBetterI18n(
     debug = false,
     i18nextOptions = {},
   } = options;
+
+  const resolvedProject = options.projectId ?? options.project;
+  if (!resolvedProject) {
+    throw new Error(
+      `${LOG_PREFIX} \`projectId\` is required (e.g. projectId: "acme/my-app")`
+    );
+  }
+  const project: string = resolvedProject;
 
   // Fall back to the global i18next singleton when no instance provided.
   // In React Native, this is always the same module instance — safe to use.

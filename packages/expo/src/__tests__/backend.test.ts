@@ -137,7 +137,7 @@ describe("BetterI18nBackend", () => {
         { project: "" },
         {}
       )
-    ).toThrow("`project` is required");
+    ).toThrow("`projectId` is required");
   });
 
   it("should fetch translations from CDN on first read", async () => {

@@ -88,13 +88,14 @@ export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions
     _i18nextOptions: InitOptions
   ): void {
     this.services = services;
-    if (!backendOptions.project) {
+    const project = backendOptions.projectId ?? backendOptions.project;
+    if (!project) {
       throw new Error(
-        "[better-i18n/expo] `project` is required in backend options"
+        "[better-i18n/expo] `projectId` is required in backend options"
       );
     }
 
-    this.project = backendOptions.project;
+    this.project = project;
     this.debug = backendOptions.debug ?? false;
     this.cacheExpiration =
       backendOptions.cacheExpiration ?? DEFAULT_CACHE_EXPIRATION_MS;
@@ -102,7 +103,7 @@ export class BetterI18nBackend implements BackendModule<BetterI18nBackendOptions
     this.storagePromise = resolveStorage(backendOptions.storage);
 
     this.core = createI18nCore({
-      project: backendOptions.project,
+      project,
       defaultLocale: backendOptions.defaultLocale ?? "en",
       cdnBaseUrl: backendOptions.cdnBaseUrl,
       debug: this.debug,
