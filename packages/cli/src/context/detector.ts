@@ -172,8 +172,10 @@ function parseI18nConfig(filePath: string): ProjectContext | null {
   const content = readFileSync(filePath, "utf-8");
 
   // Try project = "org/slug" format (exported const)
+  // projectId is accepted as an alias — SDK setups use projectId, and the
+  // dashboard shows both ("Pass this value as the projectId ... or project")
   const projectConstMatch = content.match(
-    /(?:export\s+)?const\s+project\s*=\s*['"]([^'"]+\/[^'"]+)['"]/,
+    /(?:export\s+)?const\s+project(?:Id)?\s*=\s*['"]([^'"]+\/[^'"]+)['"]/,
   );
   if (projectConstMatch) {
     const [workspaceId, projectSlug] = projectConstMatch[1].split("/");
@@ -193,9 +195,9 @@ function parseI18nConfig(filePath: string): ProjectContext | null {
   }
 
   // Try project: "org/slug" format (object property)
-  // Also handles: project: process.env.X || "org/slug"
+  // Also handles: project: process.env.X || "org/slug" and the projectId alias
   const projectMatch = content.match(
-    /project:\s*(?:[^'"]*\|\|\s*)?['"]([^'"]+\/[^'"]+)['"]/,
+    /project(?:Id)?:\s*(?:[^'"]*\|\|\s*)?['"]([^'"]+\/[^'"]+)['"]/,
   );
   if (projectMatch) {
     const [workspaceId, projectSlug] = projectMatch[1].split("/");
