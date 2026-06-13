@@ -68,8 +68,14 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     if (!post) {
       throw notFound();
     }
-    const { filterMessages } = await import("@/lib/page-namespaces");
-    const messages = filterMessages(allMessages, ["breadcrumbs"]);
+    const { filterMessagesByPath } = await import("@/lib/page-namespaces");
+    // Delegate to the single source of truth for blog namespaces
+    // (blog + relatedPages + shared + page meta) instead of a hand-rolled
+    // list — otherwise RelatedPages falls back to humanized key names.
+    const messages = filterMessagesByPath(
+      allMessages,
+      `/${params.locale}/blog/${params.slug}/`,
+    );
     const relatedPosts = await loadRelatedPosts({
       data: {
         slug: params.slug,

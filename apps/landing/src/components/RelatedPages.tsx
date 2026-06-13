@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
 import { SpriteIcon } from "@/components/SpriteIcon";
 
 type PageLink = {
@@ -84,7 +84,11 @@ const PAGE_POOL: Record<string, PageLink[]> = {
 };
 
 export function RelatedPages({ currentPage, locale, variant = "mixed" }: RelatedPagesProps) {
-  const t = useTranslations("relatedPages");
+  // useT (not raw useTranslations) so the `defaultValue` fallbacks below
+  // actually render when the `relatedPages` namespace is missing from a
+  // page's SSR messages — raw use-intl ignores the options object and would
+  // fall through to humanized key names ("For Developers Desc", "Title").
+  const t = useT("relatedPages");
 
   const pool = variant === "mixed"
     ? [...forPages, ...resourcePages, ...contentPages]
