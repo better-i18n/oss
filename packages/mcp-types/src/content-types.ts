@@ -16,6 +16,8 @@
 export interface ContentModelFieldConfig {
   /** Target content model slug for relation fields */
   targetModel?: string;
+  /** If true, the relation holds an ordered array of target entries instead of one */
+  multiple?: boolean;
 }
 
 /** Single enum option */
