@@ -238,7 +238,44 @@ async function handleApiRoute(
     return handlePostComment(request, env);
   }
 
+  // GET /api/status — aggregate uptime state from BetterStack.
+  // Must live here: the worker short-circuits ALL /api/* above SSR (step 4a),
+  // so the TanStack server route at src/routes/api/status.ts never runs in
+  // production. Without this branch /api/status 404s and the nav status pill
+  // reads the 404 JSON as "not operational" → false red dot.
+  if (path === "/api/status" && request.method === "GET") {
+    return handleStatus();
+  }
+
   return jsonResponse({ error: "Not found" }, 404);
+}
+
+const BETTERSTACK_STATUS_URL =
+  "https://better-i18n.betteruptime.com/index.json";
+
+async function handleStatus(): Promise<Response> {
+  let status = "operational";
+  try {
+    const res = await fetch(BETTERSTACK_STATUS_URL);
+    if (res.ok) {
+      const json = (await res.json()) as {
+        data?: { attributes?: { aggregate_state?: string } };
+      };
+      status = json?.data?.attributes?.aggregate_state ?? "operational";
+    }
+  } catch {
+    // Network/parse failure — fail safe to operational so a transient
+    // BetterStack hiccup never paints a false outage on the marketing nav.
+    status = "operational";
+  }
+  return new Response(JSON.stringify({ status }), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, max-age=60",
+      ...API_CORS_HEADERS,
+    },
+  });
 }
 
 async function handleApplication(

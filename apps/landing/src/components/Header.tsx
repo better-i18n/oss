@@ -123,12 +123,24 @@ export default function Header({ className }: { className?: string }) {
 
   const { data: statusData } = useQuery<{ status: string }>({
     queryKey: ["site-status"],
-    queryFn: () => fetch("/api/status").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/status");
+      // A non-2xx (e.g. 404 from an unrouted /api/status) still returns valid
+      // JSON like {"error":"Not found"} — parsing it would leave status
+      // undefined and paint a false red dot. Throw so the query stays in its
+      // (undefined) loading state, which renders as operational.
+      if (!r.ok) throw new Error(`status ${r.status}`);
+      return r.json();
+    },
     staleTime: 60_000,
     refetchOnWindowFocus: false,
+    retry: false,
     enabled: statusQueryEnabled,
   });
-  const isStatusOk = !statusData || statusData.status === "operational";
+  // Default to OK: only flip to the red/"Status" state when the endpoint
+  // explicitly reports a non-operational aggregate_state. Missing data or a
+  // malformed payload must never read as an outage.
+  const isStatusOk = !statusData?.status || statusData.status === "operational";
 
   return (
     <header className={cn("sticky top-0 z-40 bg-mist-100", className)}>
