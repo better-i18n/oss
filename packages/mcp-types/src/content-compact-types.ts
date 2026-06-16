@@ -50,8 +50,8 @@ export interface CompactContentModelField {
   pos: number;
   /** Field options (e.g., { ev: [{ l: "Published", v: "published" }] } for enum values, sit = showInTable) */
   opts?: { ev?: Array<{ l: string; v: string }>; sit?: boolean } | null;
-  /** Type-specific config (e.g., { tm: "categories" } for relation → targetModel) */
-  fc?: { tm?: string } | null;
+  /** Type-specific config (e.g., { tm: "categories" } for relation → targetModel; mp = multiple) */
+  fc?: { tm?: string; mp?: boolean } | null;
 }
 
 /**

@@ -404,6 +404,7 @@ const mcpFieldOptionsSchema = z.object({
 /** Type-specific field configuration (e.g., targetModel for relation fields) */
 const mcpFieldConfigSchema = z.object({
   targetModel: z.string().optional().describe("Target content model slug for relation fields"),
+  multiple: z.boolean().optional().describe("If true, the relation holds an ordered array of target entries instead of one"),
 }).optional();
 
 /** Field definition for creating content models */

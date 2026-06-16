@@ -41,6 +41,7 @@ const fieldDefinition = z.object({
   options: fieldOptionsSchema,
   fieldConfig: z.object({
     targetModel: z.string().optional(),
+    multiple: z.boolean().optional().describe("If true, the relation holds an ordered array of target entries instead of one"),
   }).optional(),
 });
 
@@ -161,6 +162,7 @@ EXAMPLES:
                 description: "Type-specific configuration (e.g., targetModel for relation fields)",
                 properties: {
                   targetModel: { type: "string", description: "Target model slug for relation fields" },
+                  multiple: { type: "boolean", description: "If true, the relation holds an ordered array of target entries instead of one" },
                 },
               },
             },
