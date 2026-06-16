@@ -21,13 +21,25 @@ Better i18n's headless CMS organizes content into **models** and **entries**. Mo
 | Type | Use for | Localized? |
 |---|---|---|
 | `text` | Short strings — titles, names | Yes |
+| `textarea` | Multi-line plain text | Yes |
 | `richtext` | Long-form content with formatting | Yes |
 | `number` | Counts, prices, ratings | No (usually) |
 | `boolean` | Toggle flags — featured, archived | No |
-| `date` | Publish date, event start | No |
-| `image` | Media reference | No |
-| `reference` | Link to another entry | No |
-| `json` | Free-form structured data | Optional |
+| `date` | Date only — publish date, event start | No |
+| `datetime` | Date + time | No |
+| `enum` | A fixed set of options | No |
+| `media` | Image / file reference | No |
+| `relation` | Link to another entry (see [Relations](#relations)) | No |
+
+There is **no array or group field type**, and `relation` points to a single entry. To model "more than one of something", see below — do not reach for numbered fields.
+
+## Modeling repeating content
+
+When you need more than one of something, pick the right home for it instead of inventing extra fields:
+
+1. **Page-composition / repeating structured content → body blocks.** Hero sections, feature grids, FAQ lists, CTAs, and any repeating section belong in the entry **body**, not as sidebar fields. Blocks are code-first: you register them per project with a `defineBlock()`-style declaration backed by a JSON Schema — which **does** support arrays and nested objects — and editors insert them via the `/` slash picker.
+2. **References to other entries → a `relation` field.** A post pointing to its category, author, or tags is a relation; resolve it with `.expand()` (see [Relations](#relations)).
+3. **Never model repetition as numbered sidebar fields.** `Feature 1`, `Feature 2`, `Tag 1 Slug`… is an anti-pattern — it produces an unusable wall of fields and cannot scale. Use a body block (case 1) or a relation (case 2).
 
 ## Localized vs. universal fields
 
