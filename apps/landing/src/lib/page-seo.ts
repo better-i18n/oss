@@ -9,7 +9,7 @@ import {
 import { getLocaleTier } from "@/seo/locale-tiers";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
-import { filterMessages } from "./page-namespaces";
+import { filterMessages, filterMessagesByPath } from "./page-namespaces";
 import {
   getDefaultStructuredData,
   getHomePageStructuredData,
@@ -291,12 +291,30 @@ export function createPageLoader(extraNamespaces?: readonly string[]) {
     ? [...HEAD_NAMESPACES, ...extraNamespaces]
     : [...HEAD_NAMESPACES];
 
-  return async ({ context }: { context: { locale: string; locales: string[] } }) => {
+  return async ({
+    context,
+    location,
+  }: {
+    context: { locale: string; locales: string[] };
+    location: { pathname: string };
+  }) => {
     const allMessages = await getMessages({
       project: i18nConfig.project,
       locale: context.locale,
     });
-    const messages = filterMessages(allMessages, namespaces);
+    // SSR: head() only needs meta + breadcrumbs (+ extras). Keep this minimal so
+    // we don't dehydrate the full page dict into the SSR HTML (CWV — BETTER-263);
+    // the full set is embedded once by __root's <script id="__i18n_messages__">.
+    //
+    // Client navigation: return the FULL message set the provider needs for this
+    // page. A page loader BLOCKS navigation until it resolves, so the new
+    // component and its messages commit atomically. The root provider merges
+    // this in — closing the race where it briefly fell back to the PREVIOUS
+    // page's namespaces and rendered humanized key placeholders ("Title", …).
+    const isClient = typeof document !== "undefined";
+    const messages = isClient
+      ? filterMessagesByPath(allMessages, location.pathname)
+      : filterMessages(allMessages, namespaces);
     return { messages, locale: context.locale };
   };
 }

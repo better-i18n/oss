@@ -6,6 +6,7 @@ import {
   Link,
   redirect,
   useRouter,
+  useMatches,
 } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -345,6 +346,7 @@ function NotFoundPage() {
 function RootComponent() {
   const { locale, locales, requestId } = Route.useRouteContext();
   const router = useRouter();
+  const matches = useMatches();
   // Per-mount QueryClient — prevents cross-request cache leak on CF Workers
   const [queryClient] = useState(createQueryClient);
 
@@ -377,7 +379,19 @@ function RootComponent() {
       if (msgs) ssrMessagesByRequest.delete(requestId);
       return msgs;
     }
-    return loaderData.messages ?? getClientMessages();
+    // Base: first-hydration <script id="__i18n_messages__"> tag (full set) or
+    // the root loader's client-nav messages.
+    const base = loaderData?.messages ?? getClientMessages();
+    // The active page loader returns the FULL message set for its page on client
+    // navigation. A page loader blocks navigation until resolved, so its data is
+    // always fresh and committed in-sync with the rendered component. Merge it
+    // over `base` so the new page's namespaces overwrite any stale ones left from
+    // the previous navigation — this closes the placeholder race.
+    const childMessages = matches
+      .map((m) => (m.loaderData as { messages?: Messages } | undefined)?.messages)
+      .filter((m): m is Messages => Boolean(m));
+    if (childMessages.length === 0) return base;
+    return Object.assign({}, base ?? {}, ...childMessages);
   })();
 
   useEffect(() => {
