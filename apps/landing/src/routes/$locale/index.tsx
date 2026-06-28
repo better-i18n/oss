@@ -47,8 +47,6 @@ import { getChangelogsMeta } from "@/lib/changelog";
 import { withTimeout } from "@/lib/fetch-utils";
 import { readMessages } from "@/lib/ssr-messages";
 import { getMessages } from "@better-i18n/use-intl/server";
-import type { Messages } from "@better-i18n/use-intl";
-import { filterMessagesByPath } from "@/lib/page-namespaces";
 import { i18nConfig } from "@/i18n.config";
 import { getPricingPlans, type PricingPlan } from "@/lib/content";
 
@@ -67,9 +65,6 @@ type HomeLoaderData = {
   recentChangelogs: ReturnType<typeof Array.prototype.slice>;
   plans: PricingPlan[];
   headData: HeadData;
-  // Client navigation only — full home message set for the provider (race fix).
-  // undefined on SSR so it's never dehydrated (messages ship via __root script).
-  messages?: Messages;
 };
 
 export const Route = createFileRoute("/$locale/")({
@@ -135,23 +130,11 @@ export const Route = createFileRoute("/$locale/")({
       ],
     };
 
-    // Client navigation: provide the full home message set so the root provider
-    // commits the correct namespaces atomically with this component (race fix).
-    // SSR: undefined — keeps the dict out of dehydration (CWV).
-    const isClient = typeof document !== "undefined";
-    const messages = isClient
-      ? filterMessagesByPath(
-          (allMessages ?? {}) as Record<string, Record<string, unknown>>,
-          `/${locale}/`,
-        )
-      : undefined;
-
     return {
       locale: context.locale,
       recentChangelogs: releases.slice(0, 4),
       plans,
       headData,
-      messages,
     };
   },
   head: ({ loaderData }) =>
