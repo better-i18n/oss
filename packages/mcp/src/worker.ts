@@ -132,12 +132,30 @@ async function handleMcpRequest(
 ): Promise<Response> {
   const apiUrl = env.BETTER_I18N_API_URL || "https://dash.better-i18n.com";
 
+  // BOTH auth paths must reach the API via the AUTH_API Service Binding when
+  // it is bound. mcp.better-i18n.com and dash.better-i18n.com live in the same
+  // CF zone, so a plain fetch() from this worker to the API host is re-routed
+  // to the dashboard SPA and returns "<!doctype html>" instead of JSON
+  // (CF same-zone subrequest limitation). The Service Binding performs a direct
+  // Worker-to-Worker dispatch that bypasses zone routing. The apiKey path used
+  // to skip the binding and fetch the host directly — that is why tools/call
+  // failed with `Unexpected token '<'` even for invalid keys (the request never
+  // reached API auth). See worker.test.ts for the regression guard.
+  const serviceFetch = env.AUTH_API
+    ? (input: Request | string | URL, init?: RequestInit) =>
+        env.AUTH_API!.fetch(new Request(input as string | URL, init))
+    : undefined;
+
   const apiClient =
     auth.type === "apiKey"
       ? createBetterI18nClient({
-          apiUrl,
+          // With the Service Binding the host is irrelevant (direct dispatch);
+          // only the /api/trpc path matters. Fall back to the public URL when
+          // no binding is configured (e.g. local `wrangler dev`).
+          apiUrl: serviceFetch ? "https://internal" : apiUrl,
           apiKey: auth.apiKey,
           debug: false,
+          customFetch: serviceFetch,
         })
       : createBetterI18nClient({
           apiUrl: "https://internal", // domain doesn't matter for Service Binding
@@ -147,10 +165,7 @@ async function handleMcpRequest(
             serviceKey: env.MCP_SERVICE_SECRET || "",
             userId: auth.userId,
           },
-          customFetch: (input, init) =>
-            env.AUTH_API!.fetch(
-              new Request(input as string | URL, init),
-            ),
+          customFetch: serviceFetch,
         });
 
   const server = createConfiguredServer(apiClient);

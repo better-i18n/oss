@@ -41,6 +41,8 @@ export interface CdnInfo {
  * Project info from listProjects endpoint.
  */
 export interface ProjectInfo {
+  /** Project UUID (canonical identifier for API calls) */
+  id: string;
   /** Project identifier in 'org/project' format */
   slug: string;
   /** Project display name */

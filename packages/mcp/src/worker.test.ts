@@ -233,6 +233,56 @@ describe("Worker — /mcp API key auth (bi- prefix)", () => {
     const res = await worker.fetch(req, emptyEnv);
     expect(res.status).not.toBe(401);
   });
+
+  it("tools/call routes downstream through AUTH_API Service Binding, not a same-zone host fetch", async () => {
+    // Regression guard for the same-zone subrequest bug: mcp.better-i18n.com and
+    // dash.better-i18n.com share a CF zone, so a plain fetch() from the worker to
+    // the API host is re-routed to the dashboard SPA and returns "<!doctype html>"
+    // instead of JSON — which surfaced as `Unexpected token '<'` on every
+    // tools/call. When AUTH_API is bound, the apiKey path MUST dispatch the
+    // downstream tRPC call through the Service Binding, carrying the user's key.
+    const seen: { url: string; apiKey: string | null }[] = [];
+    const env: Env = {
+      AUTH_API: {
+        fetch: async (input: Request | string) => {
+          const downstream = new Request(input as Request | string);
+          seen.push({
+            url: downstream.url,
+            apiKey: downstream.headers.get("x-api-key"),
+          });
+          // Minimal JSON response so the tRPC client does not hard-crash.
+          return new Response(JSON.stringify([{ result: { data: [] } }]), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          });
+        },
+      },
+      MCP_SERVICE_SECRET: "test-secret",
+    };
+
+    const req = makeRequest(
+      "/mcp",
+      "POST",
+      {
+        Authorization: "Bearer bi-test-api-key",
+        "Content-Type": "application/json",
+        Accept: "application/json, text/event-stream",
+      },
+      JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "tools/call",
+        params: { name: "listProjects", arguments: {} },
+      }),
+    );
+
+    const res = await worker.fetch(req, env);
+
+    expect(res.status).not.toBe(401);
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen[0]?.url).toContain("/api/trpc");
+    expect(seen[0]?.apiKey).toBe("bi-test-api-key");
+  });
 });
 
 // ---------------------------------------------------------------------------
