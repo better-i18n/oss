@@ -1,75 +1,21 @@
 {
   "version": 3,
-  "summary": "Better i18n is AI-native localization infrastructure: a translation-management REST API (TMS), a headless content API (CMS), a public translation CDN, two MCP servers, and a CLI that scans your codebase for hardcoded strings and syncs translations. Agents can list keys, propose and publish translations, and manage localized content without leaving the conversation.",
+  "summary": "Better i18n is AI-native localization infrastructure. Agents integrate through two MCP servers — translation management (TMS) and headless CMS content — a CLI that scans source code for hardcoded strings and syncs translations, and a public translation CDN that serves per-locale JSON. Keys, translations, and localized content are managed programmatically without leaving the conversation.",
   "credentials": {
     "better_i18n_api_key": {
       "type": "api_key",
       "label": "Better i18n API key",
       "generateUrl": "https://dash.better-i18n.com/settings/api-keys",
-      "setup": "Create an API key in the dashboard under Settings → API Keys. Use a secret key (sk_...) for write access. Send it as the X-API-Key header on REST calls, or expose it as the BETTER_I18N_API_KEY environment variable for the MCP server and CLI."
+      "setup": "Create an API key in the dashboard under Settings → API Keys. Use a secret key (sk_...) for write access. Expose it as the BETTER_I18N_API_KEY environment variable for the translation MCP server and the CLI."
     },
     "better_i18n_content_api_key": {
       "type": "api_key",
       "label": "Better i18n Content API key",
       "generateUrl": "https://dash.better-i18n.com/settings/api-keys",
-      "setup": "Create an API key in the dashboard under Settings → API Keys. Send it as the X-API-Key header to the Content API, or expose it as the BETTER_I18N_CONTENT_API_KEY environment variable for the content MCP server."
+      "setup": "Create an API key in the dashboard under Settings → API Keys. Expose it as the BETTER_I18N_CONTENT_API_KEY environment variable for the content MCP server."
     }
   },
   "surfaces": [
-    {
-      "slug": "better-i18n-api",
-      "name": "Better i18n Platform API",
-      "type": "http",
-      "docs": "https://docs.better-i18n.com/api",
-      "url": "https://api.better-i18n.com/v1",
-      "basis": { "via": "declared", "source": "https://better-i18n.com/.well-known/integrations.json" },
-      "auth": {
-        "status": "required",
-        "entries": [
-          {
-            "use": [
-              {
-                "id": "better_i18n_api_key",
-                "mechanics": { "source": "http", "in": "header", "headerName": "X-API-Key" }
-              }
-            ],
-            "basis": { "via": "declared", "source": "https://better-i18n.com/.well-known/integrations.json" }
-          }
-        ]
-      }
-    },
-    {
-      "slug": "better-i18n-content-api",
-      "name": "Better i18n Content API",
-      "type": "http",
-      "url": "https://api.better-i18n.com/content/v1",
-      "basis": { "via": "declared", "source": "https://better-i18n.com/.well-known/integrations.json" },
-      "auth": {
-        "status": "required",
-        "entries": [
-          {
-            "use": [
-              {
-                "id": "better_i18n_content_api_key",
-                "mechanics": { "source": "http", "in": "header", "headerName": "X-API-Key" }
-              }
-            ],
-            "basis": { "via": "declared", "source": "https://better-i18n.com/.well-known/integrations.json" }
-          }
-        ]
-      }
-    },
-    {
-      "slug": "better-i18n-cdn",
-      "name": "Better i18n Translation CDN",
-      "type": "http",
-      "url": "https://cdn.better-i18n.com",
-      "basis": { "via": "declared", "source": "https://better-i18n.com/.well-known/integrations.json" },
-      "auth": {
-        "status": "none",
-        "basis": { "via": "declared", "source": "https://better-i18n.com/.well-known/integrations.json" }
-      }
-    },
     {
       "slug": "better-i18n-mcp",
       "name": "Better i18n MCP (translations)",
@@ -135,6 +81,17 @@
             "basis": { "via": "declared", "source": "https://better-i18n.com/.well-known/integrations.json" }
           }
         ]
+      }
+    },
+    {
+      "slug": "better-i18n-cdn",
+      "name": "Better i18n Translation CDN",
+      "type": "http",
+      "url": "https://cdn.better-i18n.com",
+      "basis": { "via": "declared", "source": "https://better-i18n.com/.well-known/integrations.json" },
+      "auth": {
+        "status": "none",
+        "basis": { "via": "declared", "source": "https://better-i18n.com/.well-known/integrations.json" }
       }
     }
   ]
