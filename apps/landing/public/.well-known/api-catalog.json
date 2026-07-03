@@ -1,12 +1,12 @@
 {
   "linkset": [
     {
-      "anchor": "https://api.better-i18n.com/v1",
+      "anchor": "https://api.better-i18n.com",
       "service-doc": [
         {
           "href": "https://docs.better-i18n.com/api",
           "type": "text/html",
-          "title": "Platform REST API — translations, projects, keys, languages, sync"
+          "title": "Platform API — translations, projects, keys, languages, sync"
         }
       ],
       "service-meta": [
@@ -28,15 +28,6 @@
       "terms-of-service": [
         {
           "href": "https://better-i18n.com/terms",
-          "type": "text/html"
-        }
-      ]
-    },
-    {
-      "anchor": "https://api.better-i18n.com/content/v1",
-      "status": [
-        {
-          "href": "https://status.better-i18n.com",
           "type": "text/html"
         }
       ]
