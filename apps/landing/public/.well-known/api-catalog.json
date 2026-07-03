@@ -2,12 +2,6 @@
   "linkset": [
     {
       "anchor": "https://api.better-i18n.com/v1",
-      "service-desc": [
-        {
-          "href": "https://docs.better-i18n.com/api/openapi.json",
-          "type": "application/vnd.oai.openapi+json"
-        }
-      ],
       "service-doc": [
         {
           "href": "https://docs.better-i18n.com/api",
@@ -40,19 +34,6 @@
     },
     {
       "anchor": "https://api.better-i18n.com/content/v1",
-      "service-desc": [
-        {
-          "href": "https://docs.better-i18n.com/content-api/openapi.json",
-          "type": "application/vnd.oai.openapi+json"
-        }
-      ],
-      "service-doc": [
-        {
-          "href": "https://docs.better-i18n.com/content-api",
-          "type": "text/html",
-          "title": "Content API — headless CMS entries + models"
-        }
-      ],
       "status": [
         {
           "href": "https://status.better-i18n.com",
@@ -62,13 +43,6 @@
     },
     {
       "anchor": "https://cdn.better-i18n.com",
-      "service-doc": [
-        {
-          "href": "https://docs.better-i18n.com/cdn",
-          "type": "text/html",
-          "title": "Translation CDN — public JSON delivery for manifests + per-locale messages"
-        }
-      ],
       "status": [
         {
           "href": "https://status.better-i18n.com",
