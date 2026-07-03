@@ -13,6 +13,12 @@
       "label": "Better i18n Content API key",
       "generateUrl": "https://dash.better-i18n.com/settings/api-keys",
       "setup": "Create an API key in the dashboard under Settings → API Keys. Expose it as the BETTER_I18N_CONTENT_API_KEY environment variable for the content MCP server."
+    },
+    "better_i18n_oauth": {
+      "type": "oauth2",
+      "label": "Better i18n OAuth",
+      "generateUrl": "https://dash.better-i18n.com/settings/api-keys",
+      "setup": "The hosted MCP server at https://mcp.better-i18n.com/mcp is protected by OAuth 2.1. The protected-resource metadata and authorization server are advertised at https://mcp.better-i18n.com/.well-known/oauth-protected-resource, so MCP clients resolve and complete the flow automatically (scopes: openid, profile, email, offline_access). No manual token needed for interactive clients."
     }
   },
   "surfaces": [
@@ -20,11 +26,22 @@
       "slug": "better-i18n-mcp",
       "name": "Better i18n MCP (translations)",
       "type": "mcp",
+      "url": "https://mcp.better-i18n.com/mcp",
+      "transports": ["streamable-http"],
       "docs": "https://docs.better-i18n.com/mcp",
       "basis": { "via": "declared", "source": "https://better-i18n.com/.well-known/integrations.json" },
       "auth": {
         "status": "required",
         "entries": [
+          {
+            "use": [
+              {
+                "id": "better_i18n_oauth",
+                "mechanics": { "source": "well-known" }
+              }
+            ],
+            "basis": { "via": "declared", "source": "https://better-i18n.com/.well-known/integrations.json" }
+          },
           {
             "use": [
               {
