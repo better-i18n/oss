@@ -13,8 +13,6 @@ import {
 } from "@/components/ComparisonTable";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import { UserComplaints } from "@/components/UserComplaints";
-import { WhySwitchSection } from "@/components/WhySwitchSection";
 
 export const Route = createFileRoute("/$locale/compare/lokalise")({
   loader: createPageLoader(),
@@ -38,12 +36,12 @@ function LokaliseComparisonPage() {
   const features: ComparisonFeature[] = [
     { name: t("compare.lokalise.features.gitIntegration"), betterI18n: true, competitor: true },
     { name: t("compare.lokalise.features.aiTranslation"), betterI18n: true, competitor: true },
-    { name: t("compare.lokalise.features.mcpSupport"), betterI18n: true, competitor: false, highlight: true },
+    { name: t("compare.lokalise.features.mcpSupport"), betterI18n: true, competitor: true },
     { name: t("compare.lokalise.features.cdnDelivery"), betterI18n: true, competitor: true },
     { name: t("compare.lokalise.features.figmaPlugin"), betterI18n: false, competitor: true },
     { name: t("compare.lokalise.features.astKeyDiscovery"), betterI18n: true, competitor: false, highlight: true },
     { name: t("compare.lokalise.features.pricing"), betterI18n: t("compare.lokalise.features.pricingBetter"), competitor: t("compare.lokalise.features.pricingLokalise") },
-    { name: t("compare.lokalise.features.freeForOpenSource"), betterI18n: true, competitor: false, highlight: true },
+    { name: t("compare.lokalise.features.freeForOpenSource"), betterI18n: true, competitor: true },
     { name: t("compare.lokalise.features.developerFirst"), betterI18n: true, competitor: false, highlight: true },
   ];
 
@@ -62,15 +60,6 @@ function LokaliseComparisonPage() {
           <ComparisonTable competitorName="Lokalise" features={features} featureLabel={t("compare.featureLabel")} />
         </div>
       </section>
-
-      <UserComplaints
-        competitor="Lokalise"
-        complaints={[
-          { source: "G2", quote: t("compare.lokalise.userComplaints.1.quote"), category: t("compare.lokalise.userComplaints.1.category") },
-          { source: "Capterra", quote: t("compare.lokalise.userComplaints.2.quote"), category: t("compare.lokalise.userComplaints.2.category") },
-          { source: "G2", quote: t("compare.lokalise.userComplaints.3.quote"), category: t("compare.lokalise.userComplaints.3.category") },
-        ]}
-      />
 
       {/* Why Better I18N */}
       <section className="py-16 bg-mist-50">
@@ -102,15 +91,6 @@ function LokaliseComparisonPage() {
           </div>
         </div>
       </section>
-
-      <WhySwitchSection
-        competitor="Lokalise"
-        reasons={[
-          { painPoint: t("compare.lokalise.switchReasons.1.pain"), solution: t("compare.lokalise.switchReasons.1.solution") },
-          { painPoint: t("compare.lokalise.switchReasons.2.pain"), solution: t("compare.lokalise.switchReasons.2.solution") },
-          { painPoint: t("compare.lokalise.switchReasons.3.pain"), solution: t("compare.lokalise.switchReasons.3.solution") },
-        ]}
-      />
 
       <ComparisonRelatedTopics
         heading={t("compare.lokalise.relatedTopics", { defaultValue: "Explore Further" })}
