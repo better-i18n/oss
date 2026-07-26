@@ -58,6 +58,9 @@ function LokaliseComparisonPage() {
       <section className="pb-16">
         <div className="mx-auto max-w-4xl px-6 lg:px-10">
           <ComparisonTable competitorName="Lokalise" features={features} featureLabel={t("compare.featureLabel")} />
+          <p className="mt-4 text-sm text-mist-500">
+            {t("compare.lokalise.updatedNote", { defaultValue: "Updated 26 July 2026." })}
+          </p>
         </div>
       </section>
 
