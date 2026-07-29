@@ -415,19 +415,31 @@ const fetchBatchNamespaces = async (
 
     const data = (await response.json()) as Messages;
 
-    // Validate: batch response must contain at least one requested namespace.
-    // CDN returns {} for unknown paths — distinguish from "all namespaces empty".
-    const returnedKeys = Object.keys(data);
-    const hasRequestedKeys = returnedKeys.some((k) => sorted.includes(k));
-    if (returnedKeys.length === 0 || !hasRequestedKeys) {
-      logger.debug("batch response empty or invalid, falling back to individual fetches");
+    // Validate: batch response must contain EVERY requested namespace.
+    // The batch endpoint can return a *partial* set — e.g. when the combined
+    // payload is large it may be truncated, dropping the alphabetically-later
+    // namespaces (`sorted` is sorted, so a big namespace like "marketing" is
+    // exactly what falls off the end). Accepting a partial set silently ships
+    // pages missing whole namespaces (rendered as fallback text like "Title").
+    // On any shortfall, return null so the caller falls back to individual
+    // per-namespace fetches — one request each, with no aggregate size cap.
+    // `sorted` only contains namespaces the manifest declares available, so a
+    // missing key is a genuine shortfall, never a non-existent namespace.
+    const returnedKeys = new Set(Object.keys(data));
+    const missing = sorted.filter((ns) => !returnedKeys.has(ns));
+    if (returnedKeys.size === 0 || missing.length > 0) {
+      logger.debug("batch response incomplete, falling back to individual fetches", {
+        requested: sorted.length,
+        returned: returnedKeys.size,
+        missing,
+      });
       return null;
     }
 
     logger.debug("batch fetched", {
       locale,
       requested: sorted.length,
-      returned: returnedKeys.length,
+      returned: returnedKeys.size,
     });
 
     return data;

@@ -811,6 +811,34 @@ describe("cdn fallback", () => {
       expect(messages).toEqual({ common: NS_COMMON_EN, auth: NS_AUTH_EN });
     });
 
+    it("falls back to individual fetches when batch response is INCOMPLETE (partial)", async () => {
+      // Regression: the batch endpoint can return a partial set (e.g. truncated
+      // when the combined payload is large, dropping alphabetically-later
+      // namespaces). Accepting it silently ships pages missing whole namespaces.
+      // A partial batch must be rejected and every namespace re-fetched directly.
+      const MANIFEST_BATCH: ManifestResponse = {
+        ...MANIFEST_V2,
+        batch: true,
+      };
+
+      const mockFetch = createMockFetch({
+        "manifest.json": { ok: true, data: MANIFEST_BATCH },
+        // batch returns ONLY common — "auth" was dropped (truncated response)
+        "batch.json": { ok: true, data: { common: NS_COMMON_EN } },
+        "en/common.json": { ok: true, data: NS_COMMON_EN },
+        "en/auth.json": { ok: true, data: NS_AUTH_EN },
+      });
+
+      const i18n = createI18nCore({ ...BASE_CONFIG, fetch: mockFetch });
+      const messages = await i18n.getMessages("en", { namespaces: ["common", "auth"] });
+
+      // Must return the COMPLETE set, not the partial batch payload.
+      expect(messages).toEqual({ common: NS_COMMON_EN, auth: NS_AUTH_EN });
+      // Individual namespace files were fetched after the partial batch was rejected.
+      const calls = (mockFetch as ReturnType<typeof vi.fn>).mock.calls as string[][];
+      expect(calls.some((a) => String(a[0]).includes("en/auth.json"))).toBe(true);
+    });
+
     it("skips batch for single uncached namespace (direct fetch more efficient)", async () => {
       const MANIFEST_BATCH: ManifestResponse = {
         ...MANIFEST_V2,
