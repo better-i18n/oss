@@ -42,20 +42,10 @@ import {
  * without the `i18n.multilingualSeo.` prefix, so the page rendered its own
  * hardcoded defaults instead of published copy.
  *
- * SECTION_EYEBROWS holds the only user-facing strings not read from a key — the
- * interim state documented in DESIGN-DECISIONS.md (Coverage gaps), same as
- * `i18n/nextjs.tsx`. No defaultValue anywhere.
+ * The seven section eyebrows the new shape needs are keys too
+ * (`i18n.multilingualSeo.sections.*.eyebrow`), so there is no hardcoded
+ * user-facing string and no fallback path anywhere on this page.
  */
-
-const SECTION_EYEBROWS = {
-  definition: "Overview",
-  challenges: "Challenges",
-  urls: "Architecture",
-  hreflang: "Hreflang",
-  localization: "Localization",
-  process: "Rollout",
-  faq: "FAQ",
-} as const;
 
 export const Route = createFileRoute("/$locale/i18n/multilingual-seo")({
   loader: createPageLoader(),
@@ -177,7 +167,7 @@ function MultilingualSeoPage() {
       <Section labelledBy="multilingual-seo-definition">
         <SectionHeader
           id="multilingual-seo-definition"
-          eyebrow={SECTION_EYEBROWS.definition}
+          eyebrow={t(k("sections.definition.eyebrow"))}
           title={t(k("definition.title"))}
         />
         <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
@@ -207,7 +197,7 @@ function MultilingualSeoPage() {
       <Section labelledBy="multilingual-seo-challenges">
         <SectionHeader
           id="multilingual-seo-challenges"
-          eyebrow={SECTION_EYEBROWS.challenges}
+          eyebrow={t(k("sections.challenges.eyebrow"))}
           title={t(k("challenges.title"))}
           subtitle={t(k("challenges.subtitle"))}
         />
@@ -247,7 +237,7 @@ function MultilingualSeoPage() {
       <Section labelledBy="multilingual-seo-urls">
         <SectionHeader
           id="multilingual-seo-urls"
-          eyebrow={SECTION_EYEBROWS.urls}
+          eyebrow={t(k("sections.urls.eyebrow"))}
           title={t(k("urlStructures.title"))}
           subtitle={t(k("urlStructures.subtitle"))}
         />
@@ -270,7 +260,7 @@ function MultilingualSeoPage() {
       <Section labelledBy="multilingual-seo-hreflang">
         <SectionHeader
           id="multilingual-seo-hreflang"
-          eyebrow={SECTION_EYEBROWS.hreflang}
+          eyebrow={t(k("sections.hreflang.eyebrow"))}
           title={t(k("hreflang.checklist.title"))}
           subtitle={t(k("hreflang.checklist.subtitle"))}
         />
@@ -298,7 +288,7 @@ function MultilingualSeoPage() {
       <Section labelledBy="multilingual-seo-localization">
         <SectionHeader
           id="multilingual-seo-localization"
-          eyebrow={SECTION_EYEBROWS.localization}
+          eyebrow={t(k("sections.localization.eyebrow"))}
           title={t(k("localizationVsTranslation.title"))}
           subtitle={t(k("localizationVsTranslation.subtitle"))}
         />
@@ -360,7 +350,7 @@ function MultilingualSeoPage() {
       <Section labelledBy="multilingual-seo-process">
         <SectionHeader
           id="multilingual-seo-process"
-          eyebrow={SECTION_EYEBROWS.process}
+          eyebrow={t(k("sections.process.eyebrow"))}
           title={t(k("process.title"))}
           subtitle={t(k("process.subtitle"))}
         />
@@ -415,7 +405,7 @@ function MultilingualSeoPage() {
       <Divider />
 
       <FaqSection
-        eyebrow={SECTION_EYEBROWS.faq}
+        eyebrow={t(k("sections.faq.eyebrow"))}
         title={t(k("faq.title"))}
         items={faqIds.map((id) => ({
           id,

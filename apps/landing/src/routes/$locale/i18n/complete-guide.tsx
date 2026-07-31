@@ -43,17 +43,10 @@ import {
  * `marketing.i18n.completeGuide.concepts.locale.title`, so the page had been
  * rendering its own hardcoded defaults rather than published copy.
  *
- * The three SECTION_EYEBROWS below are the only user-facing strings not read
- * from a key. They follow the interim state documented in DESIGN-DECISIONS.md
- * (Coverage gaps) and in `i18n/nextjs.tsx`: no defaultValue anywhere, and one
- * object to edit once the keys are published.
+ * The three section eyebrows the new shape needs are keys too
+ * (`i18n.completeGuide.sections.*.eyebrow`), so there is no hardcoded
+ * user-facing string and no fallback path anywhere on this page.
  */
-
-const SECTION_EYEBROWS = {
-  foundations: "Foundations",
-  quality: "Quality",
-  frameworks: "By framework",
-} as const;
 
 export const Route = createFileRoute("/$locale/i18n/complete-guide")({
   loader: createPageLoader(),
@@ -223,7 +216,7 @@ function CompleteGuideI18nPage() {
       <Section labelledBy="complete-guide-foundations">
         <SectionHeader
           id="complete-guide-foundations"
-          eyebrow={SECTION_EYEBROWS.foundations}
+          eyebrow={t(k("sections.foundations.eyebrow"))}
           title={t(k("concepts.title"))}
           subtitle={t(k("concepts.subtitle"))}
         />
@@ -396,7 +389,7 @@ function CompleteGuideI18nPage() {
       <Section labelledBy="complete-guide-quality">
         <SectionHeader
           id="complete-guide-quality"
-          eyebrow={SECTION_EYEBROWS.quality}
+          eyebrow={t(k("sections.quality.eyebrow"))}
           title={t(k("mistakes.title"))}
           subtitle={t(k("mistakes.subtitle"))}
         />
@@ -462,7 +455,7 @@ function CompleteGuideI18nPage() {
       <Section labelledBy="complete-guide-frameworks">
         <SectionHeader
           id="complete-guide-frameworks"
-          eyebrow={SECTION_EYEBROWS.frameworks}
+          eyebrow={t(k("sections.frameworks.eyebrow"))}
           title={t(k("frameworks.title"))}
           subtitle={t(k("frameworks.subtitle"))}
         />

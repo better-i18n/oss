@@ -21,13 +21,12 @@ import { Divider, PageHero, Section, SectionHeader } from "@/components/ui/page"
  *   - Every grid is now one hairline table of rows (rule/interior-hairlines-only:
  *     interior rules, -1px shift, bare clip box), so 41 links read as one index.
  *
- * i18n: the four section titles and the hero come from existing
- * `marketing.i18n.index.*` keys. The per-item names and descriptions have NO
- * keys yet — they were previously rendered through `defaultValue`, which is
- * forbidden in this project. They now live in the HUB_COPY constants below,
- * exactly as `i18n/nextjs.tsx` does, so there is no fallback path in `t()` and
- * moving them to `i18n.index.*` keys is a single-object edit once those keys are
- * published. See DESIGN-DECISIONS.md → Coverage gaps.
+ * i18n: everything user-facing on this page is a key under
+ * `marketing.i18n.index.*` — hero, the four section titles and eyebrows, and the
+ * name + description of all 41 links. The 82 item keys were created for this
+ * page; before that the labels only rendered through `defaultValue`, which is
+ * forbidden here (the CDN source_text is the only source of truth). The arrays
+ * below therefore carry a slug and a key stem, never a string.
  */
 
 export const Route = createFileRoute("/$locale/i18n/")({
@@ -64,67 +63,65 @@ export const Route = createFileRoute("/$locale/i18n/")({
   component: I18nIndexPage,
 });
 
-/** Section eyebrows — awaiting `i18n.index.*.eyebrow` keys (see file header). */
-const SECTION_EYEBROWS = {
-  frameworks: "Frameworks",
-  topics: "Resources",
-  localization: "Localization",
-  seo: "Search",
-} as const;
-
-type HubLink = { slug: string; name: string; description: string };
+/**
+ * A hub link: `slug` is the route segment, `key` is the stem under
+ * `i18n.index.<group>.<key>` that holds `.name` and `.description`. The two
+ * differ where the slug is long (`localization-vs-internationalization` →
+ * `l10nVsI18n`), so they cannot be derived from each other.
+ */
+type HubLink = { slug: string; key: string };
 
 const frameworks: HubLink[] = [
-  { slug: "react", name: "React i18n", description: "Type-safe React internationalization with hooks and context" },
-  { slug: "nextjs", name: "Next.js i18n", description: "Server-side i18n for Next.js apps with App Router support" },
-  { slug: "tanstack-start", name: "TanStack Start i18n", description: "Full-stack i18n for TanStack Start with SSR and route-aware localization" },
-  { slug: "vite", name: "Vite i18n", description: "Fast frontend i18n for Vite projects with typed translation workflows" },
-  { slug: "remix-hydrogen", name: "Remix & Hydrogen i18n", description: "Localized route-driven apps and storefront experiences" },
-  { slug: "vue", name: "Vue i18n", description: "Vue.js internationalization with Composition API integration" },
-  { slug: "nuxt", name: "Nuxt i18n", description: "Nuxt.js localization module with automatic routing" },
-  { slug: "angular", name: "Angular i18n", description: "Angular internationalization with built-in i18n support" },
-  { slug: "svelte", name: "Svelte i18n", description: "Lightweight Svelte internationalization integration" },
-  { slug: "expo", name: "Expo i18n", description: "Offline-ready localization for Expo and React Native apps" },
-  { slug: "ios", name: "iOS i18n", description: "String Catalog and SwiftUI localization for native iOS apps" },
-  { slug: "flutter", name: "Flutter i18n", description: "ARB-based localization for Flutter mobile and web apps" },
-  { slug: "server", name: "Server i18n", description: "Middleware-based internationalization for APIs and edge runtimes" },
+  { slug: "react", key: "react" },
+  { slug: "nextjs", key: "nextjs" },
+  { slug: "tanstack-start", key: "tanstackStart" },
+  { slug: "vite", key: "vite" },
+  { slug: "remix-hydrogen", key: "remixHydrogen" },
+  { slug: "vue", key: "vue" },
+  { slug: "nuxt", key: "nuxt" },
+  { slug: "angular", key: "angular" },
+  { slug: "svelte", key: "svelte" },
+  { slug: "expo", key: "expo" },
+  { slug: "ios", key: "ios" },
+  { slug: "flutter", key: "flutter" },
+  { slug: "server", key: "server" },
 ];
 
 const topics: HubLink[] = [
-  { slug: "best-tms", name: "Best TMS", description: "Compare top translation management systems" },
-  { slug: "best-library", name: "Best Library", description: "Find the best i18n library for your framework" },
-  { slug: "for-developers", name: "For Developers", description: "Developer-focused internationalization guide" },
-  { slug: "translation-management-system", name: "Translation Management", description: "Centralize your translation workflow with a TMS" },
-  { slug: "software-localization", name: "Software Localization", description: "Adapt your software for global markets" },
-  { slug: "website-localization", name: "Website Localization", description: "Localize your website for international users" },
-  { slug: "software-localization-services", name: "Software Localization Services", description: "Compare platform and agency localization approaches" },
-  { slug: "localization-management", name: "Localization Management", description: "Manage localization workflows at scale" },
-  { slug: "localization-vs-internationalization", name: "Localization vs Internationalization", description: "Understand the difference between l10n and i18n" },
-  { slug: "react-intl", name: "React Intl", description: "Internationalization with the react-intl library" },
+  { slug: "best-tms", key: "bestTms" },
+  { slug: "best-library", key: "bestLibrary" },
+  { slug: "for-developers", key: "forDevelopers" },
+  { slug: "translation-management-system", key: "translationManagement" },
+  { slug: "software-localization", key: "softwareLocalization" },
+  { slug: "website-localization", key: "websiteLocalization" },
+  { slug: "software-localization-services", key: "softwareLocalizationServices" },
+  { slug: "localization-management", key: "localizationManagement" },
+  { slug: "localization-vs-internationalization", key: "l10nVsI18n" },
+  { slug: "react-intl", key: "reactIntl" },
 ];
 
 const localizationGuides: HubLink[] = [
-  { slug: "content-localization", name: "Content Localization", description: "Adapt your content for different cultures and markets" },
-  { slug: "content-localization-services", name: "Content Localization Services", description: "Professional services for content localization at scale" },
-  { slug: "cultural-adaptation", name: "Cultural Adaptation", description: "Go beyond translation with culturally aware content" },
-  { slug: "website-translation", name: "Website Translation", description: "Translate your website content for global audiences" },
-  { slug: "translation-solutions", name: "Translation Solutions", description: "Explore tools and services for translation workflows" },
-  { slug: "localization-software", name: "Localization Software", description: "Platforms and tools that power multilingual products" },
-  { slug: "localization-platforms", name: "Localization Platforms", description: "Compare cloud-based localization management platforms" },
-  { slug: "localization-tools", name: "Localization Tools", description: "Developer-facing tools for managing translations" },
+  { slug: "content-localization", key: "contentLocalization" },
+  { slug: "content-localization-services", key: "contentLocalizationServices" },
+  { slug: "cultural-adaptation", key: "culturalAdaptation" },
+  { slug: "website-translation", key: "websiteTranslation" },
+  { slug: "translation-solutions", key: "translationSolutions" },
+  { slug: "localization-software", key: "localizationSoftware" },
+  { slug: "localization-platforms", key: "localizationPlatforms" },
+  { slug: "localization-tools", key: "localizationTools" },
 ];
 
 const seoGuides: HubLink[] = [
-  { slug: "multilingual-seo", name: "Multilingual SEO", description: "Optimize your site to rank in every language" },
-  { slug: "international-seo", name: "International SEO", description: "Strategy guide for ranking globally across markets" },
-  { slug: "international-seo-consulting", name: "International SEO Consulting", description: "Expert guidance for global search strategies" },
-  { slug: "technical-multilingual-seo", name: "Technical Multilingual SEO", description: "Hreflang, canonicals, and technical implementation" },
-  { slug: "technical-international-seo", name: "Technical International SEO", description: "Deep-dive into international SEO infrastructure" },
-  { slug: "multilingual-website-seo", name: "Multilingual Website SEO", description: "Practical guide to multilingual website optimization" },
-  { slug: "global-market-seo", name: "Global Market SEO", description: "SEO strategies for entering global markets" },
-  { slug: "seo-international-audiences", name: "SEO for International Audiences", description: "Target international audiences effectively" },
-  { slug: "local-seo-international", name: "Local SEO International", description: "Local SEO strategies across multiple countries" },
-  { slug: "ecommerce-global-seo", name: "E-commerce Global SEO", description: "SEO for international online stores" },
+  { slug: "multilingual-seo", key: "multilingualSeo" },
+  { slug: "international-seo", key: "internationalSeo" },
+  { slug: "international-seo-consulting", key: "internationalSeoConsulting" },
+  { slug: "technical-multilingual-seo", key: "technicalMultilingualSeo" },
+  { slug: "technical-international-seo", key: "technicalInternationalSeo" },
+  { slug: "multilingual-website-seo", key: "multilingualWebsiteSeo" },
+  { slug: "global-market-seo", key: "globalMarketSeo" },
+  { slug: "seo-international-audiences", key: "seoInternationalAudiences" },
+  { slug: "local-seo-international", key: "localSeoInternational" },
+  { slug: "ecommerce-global-seo", key: "ecommerceGlobalSeo" },
 ];
 
 function I18nIndexPage() {
@@ -144,10 +141,10 @@ function I18nIndexPage() {
       <Section labelledBy="i18n-hub-frameworks">
         <SectionHeader
           id="i18n-hub-frameworks"
-          eyebrow={SECTION_EYEBROWS.frameworks}
+          eyebrow={t("i18n.index.frameworks.eyebrow")}
           title={t("i18n.index.frameworks.title")}
         />
-        <HubGrid items={frameworks} locale={locale} columns={3} />
+        <HubGrid items={frameworks} group="frameworks" locale={locale} columns={3} />
       </Section>
 
       <Divider />
@@ -155,10 +152,10 @@ function I18nIndexPage() {
       <Section labelledBy="i18n-hub-topics">
         <SectionHeader
           id="i18n-hub-topics"
-          eyebrow={SECTION_EYEBROWS.topics}
+          eyebrow={t("i18n.index.topics.eyebrow")}
           title={t("i18n.index.topics.title")}
         />
-        <HubGrid items={topics} locale={locale} columns={3} />
+        <HubGrid items={topics} group="topics" locale={locale} columns={3} />
       </Section>
 
       <Divider />
@@ -166,10 +163,10 @@ function I18nIndexPage() {
       <Section labelledBy="i18n-hub-localization">
         <SectionHeader
           id="i18n-hub-localization"
-          eyebrow={SECTION_EYEBROWS.localization}
+          eyebrow={t("i18n.index.localizationGuides.eyebrow")}
           title={t("i18n.index.localizationGuides.title")}
         />
-        <HubGrid items={localizationGuides} locale={locale} columns={4} />
+        <HubGrid items={localizationGuides} group="localizationGuides" locale={locale} columns={4} />
       </Section>
 
       <Divider />
@@ -177,10 +174,10 @@ function I18nIndexPage() {
       <Section labelledBy="i18n-hub-seo">
         <SectionHeader
           id="i18n-hub-seo"
-          eyebrow={SECTION_EYEBROWS.seo}
+          eyebrow={t("i18n.index.seoGuides.eyebrow")}
           title={t("i18n.index.seoGuides.title")}
         />
-        <HubGrid items={seoGuides} locale={locale} columns={4} />
+        <HubGrid items={seoGuides} group="seoGuides" locale={locale} columns={4} />
       </Section>
     </MarketingLayout>
   );
@@ -193,13 +190,17 @@ function I18nIndexPage() {
  */
 function HubGrid({
   items,
+  group,
   locale,
   columns,
 }: {
   items: HubLink[];
+  /** Key group under `i18n.index.*` that holds this set of link labels. */
+  group: "frameworks" | "topics" | "localizationGuides" | "seoGuides";
   locale: string;
   columns: 3 | 4;
 }) {
+  const t = useT("marketing");
   const gridCols =
     columns === 3
       ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
@@ -221,10 +222,10 @@ function HubGrid({
           >
             <span className="min-w-0">
               <span className="block text-[13px] font-medium text-mist-900">
-                {item.name}
+                {t(`i18n.index.${group}.${item.key}.name`)}
               </span>
               <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
-                {item.description}
+                {t(`i18n.index.${group}.${item.key}.description`)}
               </span>
             </span>
             <SpriteIcon
