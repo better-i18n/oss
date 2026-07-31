@@ -5,6 +5,30 @@ import { getPageHead, formatStructuredData, createPageLoader } from "@/lib/page-
 import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
 import { SITE_URL } from "@/lib/meta";
 import { useT } from "@/lib/i18n";
+import { Divider, PageHero, Section, SectionHeader } from "@/components/ui/page";
+
+/**
+ * i18n hub — the index for 40+ framework and topic guides. It is a hub, not a
+ * pillar page, so it gets the page grammar (PageHero → Divider → Sections that
+ * open with a SectionHeader) but no bespoke visuals: the content IS the link
+ * set, and a diagram on top of it would compete with it.
+ *
+ * What changed and why:
+ *   - It was five bare <section> blocks alternating white / bg-mist-50, each
+ *     holding a grid of rounded-xl bordered cards with hover:shadow. Four
+ *     stacked card grids read as four unrelated pages; with 41 cards the borders
+ *     alone were the loudest thing on the screen.
+ *   - Every grid is now one hairline table of rows (rule/interior-hairlines-only:
+ *     interior rules, -1px shift, bare clip box), so 41 links read as one index.
+ *
+ * i18n: the four section titles and the hero come from existing
+ * `marketing.i18n.index.*` keys. The per-item names and descriptions have NO
+ * keys yet — they were previously rendered through `defaultValue`, which is
+ * forbidden in this project. They now live in the HUB_COPY constants below,
+ * exactly as `i18n/nextjs.tsx` does, so there is no fallback path in `t()` and
+ * moving them to `i18n.index.*` keys is a single-object edit once those keys are
+ * published. See DESIGN-DECISIONS.md → Coverage gaps.
+ */
 
 export const Route = createFileRoute("/$locale/i18n/")({
   loader: createPageLoader(),
@@ -40,57 +64,67 @@ export const Route = createFileRoute("/$locale/i18n/")({
   component: I18nIndexPage,
 });
 
-const frameworks = [
-  { key: "react", name: "React", slug: "react", defaultDesc: "Type-safe React internationalization with hooks and context" },
-  { key: "nextjs", name: "Next.js", slug: "nextjs", defaultDesc: "Server-side i18n for Next.js apps with App Router support" },
-  { key: "tanstackStart", name: "TanStack Start", slug: "tanstack-start", defaultDesc: "Full-stack i18n for TanStack Start with SSR and route-aware localization" },
-  { key: "vite", name: "Vite", slug: "vite", defaultDesc: "Fast frontend i18n for Vite projects with typed translation workflows" },
-  { key: "remixHydrogen", name: "Remix & Hydrogen", slug: "remix-hydrogen", defaultDesc: "Localized route-driven apps and storefront experiences" },
-  { key: "vue", name: "Vue", slug: "vue", defaultDesc: "Vue.js internationalization with Composition API integration" },
-  { key: "nuxt", name: "Nuxt", slug: "nuxt", defaultDesc: "Nuxt.js localization module with automatic routing" },
-  { key: "angular", name: "Angular", slug: "angular", defaultDesc: "Angular internationalization with built-in i18n support" },
-  { key: "svelte", name: "Svelte", slug: "svelte", defaultDesc: "Lightweight Svelte internationalization integration" },
-  { key: "expo", name: "Expo", slug: "expo", defaultDesc: "Offline-ready localization for Expo and React Native apps" },
-  { key: "ios", name: "iOS", slug: "ios", defaultDesc: "String Catalog and SwiftUI localization for native iOS apps" },
-  { key: "flutter", name: "Flutter", slug: "flutter", defaultDesc: "ARB-based localization for Flutter mobile and web apps" },
-  { key: "server", name: "Server", slug: "server", defaultDesc: "Middleware-based internationalization for APIs and edge runtimes" },
+/** Section eyebrows — awaiting `i18n.index.*.eyebrow` keys (see file header). */
+const SECTION_EYEBROWS = {
+  frameworks: "Frameworks",
+  topics: "Resources",
+  localization: "Localization",
+  seo: "Search",
+} as const;
+
+type HubLink = { slug: string; name: string; description: string };
+
+const frameworks: HubLink[] = [
+  { slug: "react", name: "React i18n", description: "Type-safe React internationalization with hooks and context" },
+  { slug: "nextjs", name: "Next.js i18n", description: "Server-side i18n for Next.js apps with App Router support" },
+  { slug: "tanstack-start", name: "TanStack Start i18n", description: "Full-stack i18n for TanStack Start with SSR and route-aware localization" },
+  { slug: "vite", name: "Vite i18n", description: "Fast frontend i18n for Vite projects with typed translation workflows" },
+  { slug: "remix-hydrogen", name: "Remix & Hydrogen i18n", description: "Localized route-driven apps and storefront experiences" },
+  { slug: "vue", name: "Vue i18n", description: "Vue.js internationalization with Composition API integration" },
+  { slug: "nuxt", name: "Nuxt i18n", description: "Nuxt.js localization module with automatic routing" },
+  { slug: "angular", name: "Angular i18n", description: "Angular internationalization with built-in i18n support" },
+  { slug: "svelte", name: "Svelte i18n", description: "Lightweight Svelte internationalization integration" },
+  { slug: "expo", name: "Expo i18n", description: "Offline-ready localization for Expo and React Native apps" },
+  { slug: "ios", name: "iOS i18n", description: "String Catalog and SwiftUI localization for native iOS apps" },
+  { slug: "flutter", name: "Flutter i18n", description: "ARB-based localization for Flutter mobile and web apps" },
+  { slug: "server", name: "Server i18n", description: "Middleware-based internationalization for APIs and edge runtimes" },
 ];
 
-const topics = [
-  { key: "bestTms", slug: "best-tms", defaultName: "Best TMS", defaultDesc: "Compare top translation management systems" },
-  { key: "bestLibrary", slug: "best-library", defaultName: "Best Library", defaultDesc: "Find the best i18n library for your framework" },
-  { key: "forDevelopers", slug: "for-developers", defaultName: "For Developers", defaultDesc: "Developer-focused internationalization guide" },
-  { key: "translationManagement", slug: "translation-management-system", defaultName: "Translation Management", defaultDesc: "Centralize your translation workflow with a TMS" },
-  { key: "softwareLocalization", slug: "software-localization", defaultName: "Software Localization", defaultDesc: "Adapt your software for global markets" },
-  { key: "websiteLocalization", slug: "website-localization", defaultName: "Website Localization", defaultDesc: "Localize your website for international users" },
-  { key: "softwareLocalizationServices", slug: "software-localization-services", defaultName: "Software Localization Services", defaultDesc: "Compare platform and agency localization approaches" },
-  { key: "localizationManagement", slug: "localization-management", defaultName: "Localization Management", defaultDesc: "Manage localization workflows at scale" },
-  { key: "l10nVsI18n", slug: "localization-vs-internationalization", defaultName: "Localization vs Internationalization", defaultDesc: "Understand the difference between l10n and i18n" },
-  { key: "reactIntl", slug: "react-intl", defaultName: "React Intl", defaultDesc: "Internationalization with the react-intl library" },
+const topics: HubLink[] = [
+  { slug: "best-tms", name: "Best TMS", description: "Compare top translation management systems" },
+  { slug: "best-library", name: "Best Library", description: "Find the best i18n library for your framework" },
+  { slug: "for-developers", name: "For Developers", description: "Developer-focused internationalization guide" },
+  { slug: "translation-management-system", name: "Translation Management", description: "Centralize your translation workflow with a TMS" },
+  { slug: "software-localization", name: "Software Localization", description: "Adapt your software for global markets" },
+  { slug: "website-localization", name: "Website Localization", description: "Localize your website for international users" },
+  { slug: "software-localization-services", name: "Software Localization Services", description: "Compare platform and agency localization approaches" },
+  { slug: "localization-management", name: "Localization Management", description: "Manage localization workflows at scale" },
+  { slug: "localization-vs-internationalization", name: "Localization vs Internationalization", description: "Understand the difference between l10n and i18n" },
+  { slug: "react-intl", name: "React Intl", description: "Internationalization with the react-intl library" },
 ];
 
-const localizationGuides = [
-  { key: "contentLocalization", slug: "content-localization", defaultName: "Content Localization", defaultDesc: "Adapt your content for different cultures and markets" },
-  { key: "contentLocalizationServices", slug: "content-localization-services", defaultName: "Content Localization Services", defaultDesc: "Professional services for content localization at scale" },
-  { key: "culturalAdaptation", slug: "cultural-adaptation", defaultName: "Cultural Adaptation", defaultDesc: "Go beyond translation with culturally aware content" },
-  { key: "websiteTranslation", slug: "website-translation", defaultName: "Website Translation", defaultDesc: "Translate your website content for global audiences" },
-  { key: "translationSolutions", slug: "translation-solutions", defaultName: "Translation Solutions", defaultDesc: "Explore tools and services for translation workflows" },
-  { key: "localizationSoftware", slug: "localization-software", defaultName: "Localization Software", defaultDesc: "Platforms and tools that power multilingual products" },
-  { key: "localizationPlatforms", slug: "localization-platforms", defaultName: "Localization Platforms", defaultDesc: "Compare cloud-based localization management platforms" },
-  { key: "localizationTools", slug: "localization-tools", defaultName: "Localization Tools", defaultDesc: "Developer-facing tools for managing translations" },
+const localizationGuides: HubLink[] = [
+  { slug: "content-localization", name: "Content Localization", description: "Adapt your content for different cultures and markets" },
+  { slug: "content-localization-services", name: "Content Localization Services", description: "Professional services for content localization at scale" },
+  { slug: "cultural-adaptation", name: "Cultural Adaptation", description: "Go beyond translation with culturally aware content" },
+  { slug: "website-translation", name: "Website Translation", description: "Translate your website content for global audiences" },
+  { slug: "translation-solutions", name: "Translation Solutions", description: "Explore tools and services for translation workflows" },
+  { slug: "localization-software", name: "Localization Software", description: "Platforms and tools that power multilingual products" },
+  { slug: "localization-platforms", name: "Localization Platforms", description: "Compare cloud-based localization management platforms" },
+  { slug: "localization-tools", name: "Localization Tools", description: "Developer-facing tools for managing translations" },
 ];
 
-const seoGuides = [
-  { key: "multilingualSeo", slug: "multilingual-seo", defaultName: "Multilingual SEO", defaultDesc: "Optimize your site to rank in every language" },
-  { key: "internationalSeo", slug: "international-seo", defaultName: "International SEO", defaultDesc: "Strategy guide for ranking globally across markets" },
-  { key: "internationalSeoConsulting", slug: "international-seo-consulting", defaultName: "International SEO Consulting", defaultDesc: "Expert guidance for global search strategies" },
-  { key: "technicalMultilingualSeo", slug: "technical-multilingual-seo", defaultName: "Technical Multilingual SEO", defaultDesc: "Hreflang, canonicals, and technical implementation" },
-  { key: "technicalInternationalSeo", slug: "technical-international-seo", defaultName: "Technical International SEO", defaultDesc: "Deep-dive into international SEO infrastructure" },
-  { key: "multilingualWebsiteSeo", slug: "multilingual-website-seo", defaultName: "Multilingual Website SEO", defaultDesc: "Practical guide to multilingual website optimization" },
-  { key: "globalMarketSeo", slug: "global-market-seo", defaultName: "Global Market SEO", defaultDesc: "SEO strategies for entering global markets" },
-  { key: "seoInternationalAudiences", slug: "seo-international-audiences", defaultName: "SEO for International Audiences", defaultDesc: "Target international audiences effectively" },
-  { key: "localSeoInternational", slug: "local-seo-international", defaultName: "Local SEO International", defaultDesc: "Local SEO strategies across multiple countries" },
-  { key: "ecommerceGlobalSeo", slug: "ecommerce-global-seo", defaultName: "E-commerce Global SEO", defaultDesc: "SEO for international online stores" },
+const seoGuides: HubLink[] = [
+  { slug: "multilingual-seo", name: "Multilingual SEO", description: "Optimize your site to rank in every language" },
+  { slug: "international-seo", name: "International SEO", description: "Strategy guide for ranking globally across markets" },
+  { slug: "international-seo-consulting", name: "International SEO Consulting", description: "Expert guidance for global search strategies" },
+  { slug: "technical-multilingual-seo", name: "Technical Multilingual SEO", description: "Hreflang, canonicals, and technical implementation" },
+  { slug: "technical-international-seo", name: "Technical International SEO", description: "Deep-dive into international SEO infrastructure" },
+  { slug: "multilingual-website-seo", name: "Multilingual Website SEO", description: "Practical guide to multilingual website optimization" },
+  { slug: "global-market-seo", name: "Global Market SEO", description: "SEO strategies for entering global markets" },
+  { slug: "seo-international-audiences", name: "SEO for International Audiences", description: "Target international audiences effectively" },
+  { slug: "local-seo-international", name: "Local SEO International", description: "Local SEO strategies across multiple countries" },
+  { slug: "ecommerce-global-seo", name: "E-commerce Global SEO", description: "SEO for international online stores" },
 ];
 
 function I18nIndexPage() {
@@ -99,143 +133,107 @@ function I18nIndexPage() {
 
   return (
     <MarketingLayout showCTA={true}>
-      {/* Hero */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-3xl">
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("i18n.index.hero.title", { defaultValue: "Internationalization & Localization Hub" })}
-            </h1>
-            <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("i18n.index.hero.subtitle", { defaultValue: "Comprehensive guides for internationalization, localization, and multilingual SEO. From framework-specific i18n setup to global SEO strategy." })}
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        titleId="i18n-hub-hero-title"
+        title={t("i18n.index.hero.title")}
+        subtitle={t("i18n.index.hero.subtitle")}
+      />
 
-      {/* Frameworks Grid */}
-      <section className="pb-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
-            {t("i18n.index.frameworks.title", { defaultValue: "Framework Guides" })}
-          </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {frameworks.map((framework) => (
-              <Link
-                key={framework.slug}
-                to={`/$locale/i18n/${framework.slug}`}
-                params={{ locale }}
-                className="group relative flex flex-col rounded-2xl border border-mist-200 bg-white p-6 hover:border-mist-300 hover:shadow-lg transition-all"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-medium text-mist-950">
-                      {framework.name} i18n
-                    </h3>
-                    <p className="mt-1 text-sm text-mist-600">
-                      {t(`i18n.index.frameworks.${framework.key}.description`, { defaultValue: framework.defaultDesc })}
-                    </p>
-                  </div>
-                  <SpriteIcon name="arrow-right" className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Divider />
 
-      {/* Topics Grid */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
-            {t("i18n.index.topics.title", { defaultValue: "Popular Topics" })}
-          </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {topics.map((topic) => (
-              <Link
-                key={topic.slug}
-                to={`/$locale/i18n/${topic.slug}`}
-                params={{ locale }}
-                className="group relative flex flex-col rounded-2xl border border-mist-200 bg-white p-6 hover:border-mist-300 hover:shadow-lg transition-all"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-mist-950">
-                      {t(`i18n.index.topics.${topic.key}.name`, { defaultValue: topic.defaultName })}
-                    </h3>
-                    <p className="mt-1 text-sm text-mist-600">
-                      {t(`i18n.index.topics.${topic.key}.description`, { defaultValue: topic.defaultDesc })}
-                    </p>
-                  </div>
-                  <SpriteIcon name="arrow-right" className="w-5 h-5 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Section labelledBy="i18n-hub-frameworks">
+        <SectionHeader
+          id="i18n-hub-frameworks"
+          eyebrow={SECTION_EYEBROWS.frameworks}
+          title={t("i18n.index.frameworks.title")}
+        />
+        <HubGrid items={frameworks} locale={locale} columns={3} />
+      </Section>
 
-      {/* Localization Guides */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
-            {t("i18n.index.localizationGuides.title", { defaultValue: "Localization Guides" })}
-          </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {localizationGuides.map((guide) => (
-              <Link
-                key={guide.slug}
-                to={`/$locale/i18n/${guide.slug}`}
-                params={{ locale }}
-                className="group relative flex flex-col rounded-2xl border border-mist-200 bg-white p-6 hover:border-mist-300 hover:shadow-lg transition-all"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-mist-950">
-                      {t(`i18n.index.localizationGuides.${guide.key}.name`, { defaultValue: guide.defaultName })}
-                    </h3>
-                    <p className="mt-1 text-sm text-mist-600">
-                      {t(`i18n.index.localizationGuides.${guide.key}.description`, { defaultValue: guide.defaultDesc })}
-                    </p>
-                  </div>
-                  <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Divider />
 
-      {/* Multilingual SEO Guides */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
-            {t("i18n.index.seoGuides.title", { defaultValue: "Multilingual SEO Guides" })}
-          </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {seoGuides.map((guide) => (
-              <Link
-                key={guide.slug}
-                to={`/$locale/i18n/${guide.slug}`}
-                params={{ locale }}
-                className="group relative flex flex-col rounded-2xl border border-mist-200 bg-white p-6 hover:border-mist-300 hover:shadow-lg transition-all"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-mist-950">
-                      {t(`i18n.index.seoGuides.${guide.key}.name`, { defaultValue: guide.defaultName })}
-                    </h3>
-                    <p className="mt-1 text-sm text-mist-600">
-                      {t(`i18n.index.seoGuides.${guide.key}.description`, { defaultValue: guide.defaultDesc })}
-                    </p>
-                  </div>
-                  <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Section labelledBy="i18n-hub-topics">
+        <SectionHeader
+          id="i18n-hub-topics"
+          eyebrow={SECTION_EYEBROWS.topics}
+          title={t("i18n.index.topics.title")}
+        />
+        <HubGrid items={topics} locale={locale} columns={3} />
+      </Section>
+
+      <Divider />
+
+      <Section labelledBy="i18n-hub-localization">
+        <SectionHeader
+          id="i18n-hub-localization"
+          eyebrow={SECTION_EYEBROWS.localization}
+          title={t("i18n.index.localizationGuides.title")}
+        />
+        <HubGrid items={localizationGuides} locale={locale} columns={4} />
+      </Section>
+
+      <Divider />
+
+      <Section labelledBy="i18n-hub-seo">
+        <SectionHeader
+          id="i18n-hub-seo"
+          eyebrow={SECTION_EYEBROWS.seo}
+          title={t("i18n.index.seoGuides.title")}
+        />
+        <HubGrid items={seoGuides} locale={locale} columns={4} />
+      </Section>
     </MarketingLayout>
+  );
+}
+
+/**
+ * One hairline index of links. Cells draw their own top + left rule and the grid
+ * is shifted -1px, so the first row and column lose theirs at every breakpoint
+ * without any nth-child arithmetic (rule/interior-hairlines-only).
+ */
+function HubGrid({
+  items,
+  locale,
+  columns,
+}: {
+  items: HubLink[];
+  locale: string;
+  columns: 3 | 4;
+}) {
+  const gridCols =
+    columns === 3
+      ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+
+  return (
+    <div className="mt-8 overflow-hidden">
+      <div className={`-mt-px -ml-px grid ${gridCols}`}>
+        {items.map((item) => (
+          <Link
+            key={item.slug}
+            // Every guide is its own file route, so the target cannot be
+            // expressed as one literal. Cast to a sibling route id (same
+            // `$locale` param shape) the way `RelatedPages` does, rather than
+            // leaving a template literal that the router's link types reject.
+            to={`/$locale/i18n/${item.slug}/` as "/$locale/i18n/"}
+            params={{ locale }}
+            className="group flex items-start justify-between gap-3 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
+          >
+            <span className="min-w-0">
+              <span className="block text-[13px] font-medium text-mist-900">
+                {item.name}
+              </span>
+              <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
+                {item.description}
+              </span>
+            </span>
+            <SpriteIcon
+              name="arrow-right"
+              className="mt-0.5 size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
+            />
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }

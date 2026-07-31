@@ -4,11 +4,56 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import {
-  IconFileText,
-  IconCircleQuestionmark,
-  IconClipboard,
-  IconLightBulb,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
+  ClosingCta,
+  Divider,
+  FaqSection,
+  PageHero,
+  Section,
+  SectionHeader,
+} from "@/components/ui/page";
+
+/**
+ * Complete guide to i18n / L10n — the site's longest educational page, rebuilt
+ * on the pillar page shape (rule/pillar-page-shape): PageHero + bespoke visual
+ * → Divider → six Sections that each open with a SectionHeader → FaqSection →
+ * ClosingCta.
+ *
+ * What changed and why:
+ *   - It was 13 ad-hoc <section> blocks alternating bg-white / bg-mist-50 /
+ *     bg-mist-100, every heading centered, every group of items a grid of
+ *     rounded-xl bordered cards. Thirteen separations, no hierarchy: the reader
+ *     could not tell "key concepts" (foundational) from "common mistakes"
+ *     (advisory) because both looked like six floating cards.
+ *   - Those 13 blocks are consolidated into SIX Sections by topic:
+ *     vocabulary (i18n vs L10n + key concepts), file formats, implementation
+ *     (process + production checklist), choosing a TMS, quality (mistakes +
+ *     testing), framework guides. Not one paragraph, heading or translation key
+ *     was dropped — rule/seo-content-is-load-bearing: merging sections is a
+ *     container change, never a content cut.
+ *   - Three bespoke visuals carry the parts that prose explains badly: the
+ *     i18n/L10n split (hero), the file-format comparison (a hairline table
+ *     instead of six cards), and the implementation flow (numbered hairline
+ *     rows, no filled circles).
+ *
+ * i18n: every t() call below reads a key that already exists in the `marketing`
+ * namespace under `i18n.completeGuide.*`. All `defaultValue` fallbacks were
+ * REMOVED (they are forbidden in this project — the CDN source_text is the only
+ * source of truth) and, in the same pass, the item-level keys were re-prefixed:
+ * they were being read as `marketing.concepts.locale.title` instead of
+ * `marketing.i18n.completeGuide.concepts.locale.title`, so the page had been
+ * rendering its own hardcoded defaults rather than published copy.
+ *
+ * The three SECTION_EYEBROWS below are the only user-facing strings not read
+ * from a key. They follow the interim state documented in DESIGN-DECISIONS.md
+ * (Coverage gaps) and in `i18n/nextjs.tsx`: no defaultValue anywhere, and one
+ * object to edit once the keys are published.
+ */
+
+const SECTION_EYEBROWS = {
+  foundations: "Foundations",
+  quality: "Quality",
+  frameworks: "By framework",
+} as const;
 
 export const Route = createFileRoute("/$locale/i18n/complete-guide")({
   loader: createPageLoader(),
@@ -29,475 +74,621 @@ export const Route = createFileRoute("/$locale/i18n/complete-guide")({
   component: CompleteGuideI18nPage,
 });
 
+const KEY_PREFIX = "i18n.completeGuide";
+
+/** Every key on this page lives under one prefix; `k` is the only place it appears. */
+const k = (suffix: string) => `${KEY_PREFIX}.${suffix}`;
+
 const keyConcepts = [
-  { icon: "globe", titleKey: "concepts.locale.title", descKey: "concepts.locale.description", defaultTitle: "Locale Identifiers (BCP 47)", defaultDesc: "BCP 47 tags like en-US or zh-Hans-CN encode language, script, and region. They are the foundation of every i18n system and determine which translations, formats, and rules apply." },
-  { icon: "code-brackets", titleKey: "concepts.unicode.title", descKey: "concepts.unicode.description", defaultTitle: "Unicode & UTF-8", defaultDesc: "Unicode assigns a unique code point to every character in every script. UTF-8 is the dominant encoding on the web and ensures text renders correctly regardless of language." },
-  { icon: "settings-gear", titleKey: "concepts.keys.title", descKey: "concepts.keys.description", defaultTitle: "Translation Keys", defaultDesc: "Translation keys are stable identifiers that map to locale-specific strings. They decouple your source code from translatable content, enabling parallel development and translation." },
-  { icon: "group", titleKey: "concepts.plurals.title", descKey: "concepts.plurals.description", defaultTitle: "Pluralization (ICU)", defaultDesc: "Languages have different plural rules — English has two forms, Arabic has six. ICU MessageFormat handles plurals, gender, and select expressions in a single syntax." },
-  { icon: "arrow-right", titleKey: "concepts.rtl.title", descKey: "concepts.rtl.description", defaultTitle: "RTL Support", defaultDesc: "Arabic, Hebrew, and other scripts read right-to-left. RTL support requires mirroring layouts, flipping icons, and using CSS logical properties instead of left/right." },
-  { icon: "magnifying-glass", titleKey: "concepts.formatting.title", descKey: "concepts.formatting.description", defaultTitle: "Date / Number / Currency", defaultDesc: "Dates, numbers, and currencies vary by locale. The Intl API and libraries like date-fns provide locale-aware formatting so 1,000.50 renders as 1.000,50 in German." },
-];
+  { icon: "globe", key: "concepts.locale" },
+  { icon: "code-brackets", key: "concepts.unicode" },
+  { icon: "settings-gear", key: "concepts.keys" },
+  { icon: "group", key: "concepts.plurals" },
+  { icon: "arrow-right", key: "concepts.rtl" },
+  { icon: "magnifying-glass", key: "concepts.formatting" },
+] as const;
 
 const processSteps = [
-  { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Audit Your Codebase", defaultDesc: "Identify every hardcoded string, date format, and locale-dependent pattern. Map which components and pages contain user-facing text that needs extraction." },
-  { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Externalize Strings", defaultDesc: "Move all user-facing text into structured resource files (JSON, XLIFF, or PO). Replace inline strings with translation function calls that reference keys." },
-  { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Choose Your Tools", defaultDesc: "Select an i18n library for your framework, a translation management system (TMS) for collaboration, and decide between human, AI, or hybrid translation workflows." },
-  { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Integrate & Ship", defaultDesc: "Wire your i18n library into routing and rendering, connect your TMS to CI/CD for automatic syncing, and deploy locale bundles via CDN for fast delivery." },
-];
-
-const commonMistakes = [
-  { icon: "code-brackets", titleKey: "mistakes.concatenation.title", descKey: "mistakes.concatenation.description", defaultTitle: "String Concatenation", defaultDesc: "Building sentences by concatenating fragments breaks in languages with different word order. Use ICU MessageFormat with placeholders instead." },
-  { icon: "settings-gear", titleKey: "mistakes.hardcoded.title", descKey: "mistakes.hardcoded.description", defaultTitle: "Hardcoded Strings", defaultDesc: "Embedding user-facing text directly in source code makes translation impossible without code changes. Externalize every string from day one." },
-  { icon: "group", titleKey: "mistakes.plurals.title", descKey: "mistakes.plurals.description", defaultTitle: "Ignoring Plurals", defaultDesc: "Simple if/else for singular/plural only works in English. Many languages have multiple plural forms that require proper ICU plural rules." },
-  { icon: "rocket", titleKey: "mistakes.afterthought.title", descKey: "mistakes.afterthought.description", defaultTitle: "Translation as Afterthought", defaultDesc: "Bolting on i18n after launch means expensive refactoring. Designing for internationalization from the start saves time and prevents architectural debt." },
-];
-
-const frameworkGuides = [
-  { name: "React", href: "/$locale/i18n/react", descKey: "frameworks.react", defaultDesc: "react-intl, react-i18next, and FormatJS patterns" },
-  { name: "Next.js", href: "/$locale/i18n/nextjs", descKey: "frameworks.nextjs", defaultDesc: "App Router, middleware, and server component i18n" },
-  { name: "Vue", href: "/$locale/i18n/vue", descKey: "frameworks.vue", defaultDesc: "vue-i18n composition API and SFC integration" },
-  { name: "Angular", href: "/$locale/i18n/angular", descKey: "frameworks.angular", defaultDesc: "Built-in i18n, ngx-translate, and Transloco" },
-  { name: "Svelte", href: "/$locale/i18n/svelte", descKey: "frameworks.svelte", defaultDesc: "svelte-i18n, SvelteKit routing, and stores" },
-  { name: "Flutter", href: "/$locale/i18n/flutter", descKey: "frameworks.flutter", defaultDesc: "intl package, ARB files, and gen-l10n tooling" },
-  { name: "React Native", href: "/$locale/i18n/react-native-localization", descKey: "frameworks.reactNative", defaultDesc: "i18next, Expo localization, and native modules" },
-  { name: "Nuxt", href: "/$locale/i18n/nuxt", descKey: "frameworks.nuxt", defaultDesc: "@nuxtjs/i18n module with auto-routing" },
-];
-
-const fileFormats = [
-  { titleKey: "formats.json.title", descKey: "formats.json.description", defaultTitle: "JSON", defaultDesc: "Most popular for web apps (React, Vue, Angular). Human-readable, supports nesting for organized key structures. No built-in pluralization standard, so libraries like ICU MessageFormat fill the gap." },
-  { titleKey: "formats.xliff.title", descKey: "formats.xliff.description", defaultTitle: "XLIFF", defaultDesc: "XML-based industry standard for translation exchange between tools. Supported by all professional TMS platforms. Verbose but feature-rich, with built-in support for notes, state tracking, and metadata." },
-  { titleKey: "formats.po.title", descKey: "formats.po.description", defaultTitle: "PO/POT (Gettext)", defaultDesc: "Classic open-source format used in Python, PHP, and Ruby ecosystems. Built-in plural support with dedicated plural forms syntax. Widely supported by translators and translation tools." },
-  { titleKey: "formats.arb.title", descKey: "formats.arb.description", defaultTitle: "ARB", defaultDesc: "Application Resource Bundle is the Flutter and Dart standard format. JSON-based with ICU message syntax support, enabling plurals and selects natively. Used by Flutter's gen-l10n tooling." },
-  { titleKey: "formats.strings.title", descKey: "formats.strings.description", defaultTitle: ".strings / .stringsdict", defaultDesc: "Apple platform native formats for iOS and macOS development. .strings handles simple key-value pairs while .stringsdict uses XML plist structure for pluralization rules." },
-  { titleKey: "formats.resx.title", descKey: "formats.resx.description", defaultTitle: ".resx", defaultDesc: ".NET resource file format used for C# and VB.NET applications. XML-based with strong Visual Studio tooling integration. Supports typed resources for strings, images, and other assets." },
-];
+  { number: "01", key: "process.step1" },
+  { number: "02", key: "process.step2" },
+  { number: "03", key: "process.step3" },
+  { number: "04", key: "process.step4" },
+] as const;
 
 const tmsCriteria = [
-  { icon: "code-brackets", titleKey: "tms.integration.title", descKey: "tms.integration.description", defaultTitle: "Developer Integration", defaultDesc: "Evaluate CLI tools, SDK support, Git-based workflows, and CI/CD hooks. The best TMS platforms integrate directly into your development pipeline so translations stay in sync with code changes automatically." },
-  { icon: "magnifying-glass", titleKey: "tms.memory.title", descKey: "tms.memory.description", defaultTitle: "Translation Memory", defaultDesc: "Translation memory stores previously approved translations and suggests them for similar or identical strings. This reduces translation cost, speeds up turnaround, and maintains consistency across your product." },
-  { icon: "group", titleKey: "tms.collaboration.title", descKey: "tms.collaboration.description", defaultTitle: "Collaboration Features", defaultDesc: "Look for reviewer workflows, inline comments, shared glossaries, and approval chains. These features enable translators, reviewers, and developers to work together without bottlenecks or miscommunication." },
-  { icon: "rocket", titleKey: "tms.automation.title", descKey: "tms.automation.description", defaultTitle: "AI and Automation", defaultDesc: "Modern TMS platforms offer machine translation suggestions, automated quality checks, batch operations, and smart routing. AI-assisted workflows reduce manual effort while maintaining translation quality." },
+  { icon: "code-brackets", key: "tms.integration" },
+  { icon: "magnifying-glass", key: "tms.memory" },
+  { icon: "group", key: "tms.collaboration" },
+  { icon: "rocket", key: "tms.automation" },
+] as const;
+
+const commonMistakes = [
+  { icon: "code-brackets", key: "mistakes.concatenation" },
+  { icon: "settings-gear", key: "mistakes.hardcoded" },
+  { icon: "group", key: "mistakes.plurals" },
+  { icon: "rocket", key: "mistakes.afterthought" },
+] as const;
+
+const frameworkGuides: Array<{ name: string; href: string; descKey: string }> = [
+  { name: "React", href: "/$locale/i18n/react", descKey: "frameworks.react" },
+  { name: "Next.js", href: "/$locale/i18n/nextjs", descKey: "frameworks.nextjs" },
+  { name: "Vue", href: "/$locale/i18n/vue", descKey: "frameworks.vue" },
+  { name: "Angular", href: "/$locale/i18n/angular", descKey: "frameworks.angular" },
+  { name: "Svelte", href: "/$locale/i18n/svelte", descKey: "frameworks.svelte" },
+  { name: "Flutter", href: "/$locale/i18n/flutter", descKey: "frameworks.flutter" },
+  {
+    name: "React Native",
+    href: "/$locale/i18n/react-native-localization",
+    descKey: "frameworks.reactNative",
+  },
+  { name: "Nuxt", href: "/$locale/i18n/nuxt", descKey: "frameworks.nuxt" },
 ];
+
+/**
+ * File formats as a hairline comparison table rather than six cards: the reader
+ * is choosing BETWEEN them, and a comparison needs a shared row rhythm. The
+ * `ecosystem` column is figure data (framework names, file extensions), not
+ * translatable prose.
+ */
+const fileFormats = [
+  { key: "formats.json", ecosystem: "React · Vue · Angular", ext: ".json" },
+  { key: "formats.xliff", ecosystem: "TMS interchange", ext: ".xlf" },
+  { key: "formats.po", ecosystem: "Python · PHP · Ruby", ext: ".po / .pot" },
+  { key: "formats.arb", ecosystem: "Flutter · Dart", ext: ".arb" },
+  { key: "formats.strings", ecosystem: "iOS · macOS", ext: ".strings" },
+  { key: "formats.resx", ecosystem: ".NET · C#", ext: ".resx" },
+] as const;
 
 const productionChecklist = [
-  { key: "checklist.externalized", defaultValue: "All user-facing strings externalized to resource files" },
-  { key: "checklist.detection", defaultValue: "Locale detection implemented (browser, URL, user preference)" },
-  { key: "checklist.plurals", defaultValue: "Pluralization handled with ICU MessageFormat for all target languages" },
-  { key: "checklist.formatting", defaultValue: "Date, time, number, and currency formatting uses Intl API or equivalent" },
-  { key: "checklist.rtl", defaultValue: "RTL layout support tested with CSS logical properties" },
-  { key: "checklist.fallback", defaultValue: "Fallback locale configured for missing translations" },
-  { key: "checklist.naming", defaultValue: "Translation keys follow a consistent naming convention" },
-  { key: "checklist.ci", defaultValue: "CI pipeline validates no missing or unused translation keys" },
-];
+  "checklist.externalized",
+  "checklist.detection",
+  "checklist.plurals",
+  "checklist.formatting",
+  "checklist.rtl",
+  "checklist.fallback",
+  "checklist.naming",
+  "checklist.ci",
+] as const;
 
-const faqItems = [
-  { questionKey: "faq.q1.question", answerKey: "faq.q1.answer", defaultQuestion: "What is the difference between i18n and L10n?", defaultAnswer: "Internationalization (i18n) is the engineering process of designing software so it can support multiple languages and regions. Localization (L10n) is the content process of adapting that software for a specific locale, including translating text, adjusting formats, and ensuring cultural appropriateness. i18n happens once in your codebase; L10n happens for every locale you support." },
-  { questionKey: "faq.q2.question", answerKey: "faq.q2.answer", defaultQuestion: "Which i18n library should I use?", defaultAnswer: "The best library depends on your framework. For React, react-intl (FormatJS) and react-i18next are the most widely adopted. Vue developers typically use vue-i18n. Angular has built-in i18n support alongside community options like Transloco. Svelte projects use svelte-i18n. Evaluate each option based on bundle size, ICU support, and how well it integrates with your rendering model." },
-  { questionKey: "faq.q3.question", answerKey: "faq.q3.answer", defaultQuestion: "How many languages should I launch with?", defaultAnswer: "Start with two to three high-impact languages based on your existing user data or target market research. This lets you validate your i18n architecture, translation workflow, and QA process at a manageable scale. Expand to additional languages once you have a reliable pipeline in place, using analytics to prioritize which locales to add next." },
-  { questionKey: "faq.q4.question", answerKey: "faq.q4.answer", defaultQuestion: "Can I use machine translation for my app?", defaultAnswer: "A hybrid approach works well: use machine translation for initial drafts and high-volume, low-criticality content, then have human reviewers refine quality-critical strings like marketing copy, error messages, and legal text. Modern neural machine translation has improved significantly, but human review remains essential for nuance, brand voice, and cultural accuracy." },
-  { questionKey: "faq.q5.question", answerKey: "faq.q5.answer", defaultQuestion: "What is pseudo-localization?", defaultAnswer: "Pseudo-localization is a testing technique that replaces text with accented or extended characters (e.g., turning 'Hello' into '[~Hellllo~]') without changing meaning. It helps developers spot hardcoded strings, text truncation, and layout issues before real translations are available. Most i18n libraries and TMS tools support generating pseudo-localized output automatically." },
-  { questionKey: "faq.q6.question", answerKey: "faq.q6.answer", defaultQuestion: "How do I handle dynamic content localization?", defaultAnswer: "Use ICU MessageFormat placeholders for interpolation (e.g., 'Hello, {name}') instead of concatenating strings. For plurals, use ICU plural syntax that adapts to each language's rules. Avoid building sentences from fragments, since word order varies across languages. For rich text, use tagged placeholders that let translators reorder HTML elements without breaking markup." },
-];
+const testingPractices = [
+  "testing.pseudo",
+  "testing.visual",
+  "testing.automated",
+  "testing.linguistic",
+  "testing.expansion",
+] as const;
+
+const faqIds = ["q1", "q2", "q3", "q4", "q5", "q6"] as const;
 
 function CompleteGuideI18nPage() {
-  const t = useT("marketing.i18n.completeGuide");
-  const tCommon = useT("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const relatedPages = [
-    { name: "What is Internationalization?", href: "/$locale/what-is-internationalization", description: t("related.whatIsI18n", { defaultValue: "Core concepts behind i18n" }) },
-    { name: "What is Localization?", href: "/$locale/what-is-localization", description: t("related.whatIsL10n", { defaultValue: "Fundamentals of L10n" }) },
-    { name: "Localization vs Internationalization", href: "/$locale/i18n/localization-vs-internationalization", description: t("related.l10nVsI18n", { defaultValue: "Key differences explained" }) },
-    { name: "Software Localization", href: "/$locale/i18n/software-localization", description: t("related.softwareL10n", { defaultValue: "Adapt your app for global markets" }) },
-    { name: "Best i18n Library", href: "/$locale/i18n/best-library", description: t("related.bestLibrary", { defaultValue: "Compare top i18n libraries" }) },
+    {
+      name: "What is Internationalization?",
+      href: "/$locale/what-is-internationalization",
+      description: t(k("related.whatIsI18n")),
+    },
+    {
+      name: "What is Localization?",
+      href: "/$locale/what-is-localization",
+      description: t(k("related.whatIsL10n")),
+    },
+    {
+      name: "Localization vs Internationalization",
+      href: "/$locale/i18n/localization-vs-internationalization",
+      description: t(k("related.l10nVsI18n")),
+    },
+    {
+      name: "Software Localization",
+      href: "/$locale/i18n/software-localization",
+      description: t(k("related.softwareL10n")),
+    },
+    {
+      name: "Best i18n Library",
+      href: "/$locale/i18n/best-library",
+      description: t(k("related.bestLibrary")),
+    },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
-      {/* Hero */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <SpriteIcon name="globe" className="size-4" />
-              <span>{t("badge", { defaultValue: "i18n & L10n Guide" })}</span>
-            </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("hero.title", { defaultValue: "The Complete Guide to Internationalization and Localization" })}
-            </h1>
-            <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "Everything you need to take your software global — from core i18n concepts and framework integrations to localization workflows, testing strategies, and common pitfalls to avoid." })}
-            </p>
+      <PageHero
+        pillar="ai"
+        pillarLabel={t(k("badge"))}
+        titleId="complete-guide-hero-title"
+        title={t(k("hero.title"))}
+        subtitle={t(k("hero.subtitle"))}
+        primary={{ label: t(k("cta.primary")), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t(k("cta.secondary")), href: "https://docs.better-i18n.com" }}
+        visual={
+          <SplitVisual
+            i18nTitle={t(k("i18nVsL10n.i18n.title"))}
+            l10nTitle={t(k("i18nVsL10n.l10n.title"))}
+            i18nItems={[
+              t(k("concepts.locale.title")),
+              t(k("concepts.unicode.title")),
+              t(k("concepts.keys.title")),
+              t(k("concepts.plurals.title")),
+            ]}
+          />
+        }
+      />
+
+      <Divider />
+
+      {/* 1 — Vocabulary: the i18n/L10n split, then the six concepts every
+          implementation rests on. Was two sections (i18nVsL10n + concepts). */}
+      <Section labelledBy="complete-guide-foundations">
+        <SectionHeader
+          id="complete-guide-foundations"
+          eyebrow={SECTION_EYEBROWS.foundations}
+          title={t(k("concepts.title"))}
+          subtitle={t(k("concepts.subtitle"))}
+        />
+
+        <div className="mt-8 overflow-hidden">
+          <div className="-mt-px -ml-px grid grid-cols-1 lg:grid-cols-2">
+            <article className="border-t border-l border-black/[0.05] px-5 py-5 lg:pl-0">
+              <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                {t(k("i18nVsL10n.i18n.title"))}
+              </h3>
+              <div className="mt-3 flex flex-col gap-3 text-[13px] leading-relaxed text-mist-600">
+                <p>{t(k("i18nVsL10n.i18n.paragraph1"))}</p>
+                <p>{t(k("i18nVsL10n.i18n.paragraph2"))}</p>
+                <p>{t(k("i18nVsL10n.i18n.paragraph3"))}</p>
+              </div>
+            </article>
+            <article className="border-t border-l border-black/[0.05] px-5 py-5">
+              <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                {t(k("i18nVsL10n.l10n.title"))}
+              </h3>
+              <div className="mt-3 flex flex-col gap-3 text-[13px] leading-relaxed text-mist-600">
+                <p>{t(k("i18nVsL10n.l10n.paragraph1"))}</p>
+                <p>{t(k("i18nVsL10n.l10n.paragraph2"))}</p>
+                <p>{t(k("i18nVsL10n.l10n.paragraph3"))}</p>
+              </div>
+            </article>
           </div>
         </div>
-      </section>
 
-      {/* What Is i18n vs L10n */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
-            <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("i18nVsL10n.i18n.title", { defaultValue: "Internationalization (i18n)" })}
-              </h2>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("i18nVsL10n.i18n.paragraph1", { defaultValue: "Internationalization is the process of designing and engineering your software so it can be adapted to different languages and regions without requiring code changes. The abbreviation i18n comes from the 18 letters between the 'i' and the 'n' in internationalization." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("i18nVsL10n.i18n.paragraph2", { defaultValue: "i18n covers externalizing strings, supporting Unicode, abstracting date and number formats, building locale-aware routing, and structuring your codebase so that adding a new language is a configuration step — not a development project." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed">
-                {t("i18nVsL10n.i18n.paragraph3", { defaultValue: "Internationalization is a one-time engineering investment that pays dividends over the lifetime of your product. Once your codebase is properly internationalized, adding a new language becomes primarily a content task — not an engineering task. Teams that internationalize early spend significantly less time and budget on each subsequent locale compared to those who retrofit i18n into an existing codebase." })}
-              </p>
-            </div>
-            <div className="mt-10 lg:mt-0">
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("i18nVsL10n.l10n.title", { defaultValue: "Localization (L10n)" })}
-              </h2>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("i18nVsL10n.l10n.paragraph1", { defaultValue: "Localization is the process of adapting your internationalized product for a specific locale. This includes translating text, adjusting layouts for RTL scripts, localizing images and media, and ensuring content is culturally appropriate for the target audience." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("i18nVsL10n.l10n.paragraph2", { defaultValue: "L10n is an ongoing effort. As your product evolves, new strings need translation, new markets require cultural adaptation, and formatting rules must stay current. Automation through a translation management system keeps this sustainable." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed">
-                {t("i18nVsL10n.l10n.paragraph3", { defaultValue: "Localization quality directly impacts user trust and business outcomes. Users are more likely to engage with and purchase products presented in their native language, and poor translations can actively damage brand perception. Investing in professional localization — whether through human translators, carefully reviewed machine translation, or a hybrid approach — is essential for any product targeting international markets." })}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Key Concepts */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("concepts.title", { defaultValue: "Key i18n Concepts You Need to Know" })}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("concepts.subtitle", { defaultValue: "Master these foundational concepts before implementing internationalization in any framework." })}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 overflow-hidden">
+          <ul
+            role="list"
+            className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+          >
             {keyConcepts.map((concept) => (
-              <div key={concept.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
-                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <SpriteIcon name={concept.icon as SpriteIconName} className="size-5" />
-                </div>
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(concept.titleKey, { defaultValue: concept.defaultTitle })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(concept.descKey, { defaultValue: concept.defaultDesc })}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* i18n File Format Comparison */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-4">
-              <IconFileText className="size-4" />
-              <span>{t("formats.badge", { defaultValue: "Format Reference" })}</span>
-            </div>
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("formats.title", { defaultValue: "i18n File Format Comparison" })}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("formats.subtitle", { defaultValue: "Choosing the right file format for your translation resources depends on your framework, toolchain, and team workflow. Here are the most widely used formats." })}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {fileFormats.map((format) => (
-              <div key={format.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(format.titleKey, { defaultValue: format.defaultTitle })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(format.descKey, { defaultValue: format.defaultDesc })}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* The i18n Process */}
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("process.title", { defaultValue: "The i18n Implementation Process" })}
-            </h2>
-            <p className="mt-3 text-mist-700">
-              {t("process.subtitle", { defaultValue: "A step-by-step approach to internationalizing your application from scratch." })}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {processSteps.map((step) => (
-              <div key={step.number} className="text-center p-6">
-                <div className="size-10 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium mx-auto mb-4">
-                  {step.number}
-                </div>
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
-                </h3>
-                <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: step.defaultDesc })}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Choosing a TMS */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-4">
-              <IconLightBulb className="size-4" />
-              <span>{t("tms.badge", { defaultValue: "TMS Guide" })}</span>
-            </div>
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("tms.title", { defaultValue: "Choosing a Translation Management System" })}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("tms.subtitle", { defaultValue: "A translation management system (TMS) is the central hub where developers, translators, and reviewers collaborate on localized content. It stores your translation keys, manages workflows, and connects to your codebase. When evaluating a TMS, prioritize these four criteria." })}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {tmsCriteria.map((criterion) => (
-              <div key={criterion.titleKey} className="p-6 rounded-xl bg-mist-50 border border-mist-200">
-                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <SpriteIcon name={criterion.icon as SpriteIconName} className="size-5" />
-                </div>
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(criterion.titleKey, { defaultValue: criterion.defaultTitle })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(criterion.descKey, { defaultValue: criterion.defaultDesc })}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Framework Overview */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("frameworks.title", { defaultValue: "Framework-Specific i18n Guides" })}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("frameworks.subtitle", { defaultValue: "Every framework has its own i18n ecosystem. Dive into the guide for your stack." })}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {frameworkGuides.map((guide) => (
-              <Link
-                key={guide.href}
-                to={guide.href}
-                params={{ locale }}
-                className="group flex items-center justify-between p-5 rounded-xl border border-mist-200 bg-mist-50 hover:border-mist-300 hover:shadow-md transition-all"
+              <li
+                key={concept.key}
+                className="border-t border-l border-black/[0.05] px-5 py-4"
               >
-                <div>
-                  <h3 className="text-sm font-medium text-mist-950">{guide.name}</h3>
-                  <p className="text-xs text-mist-500 mt-1">
-                    {t(guide.descKey, { defaultValue: guide.defaultDesc })}
-                  </p>
+                <div className="flex items-center gap-2">
+                  <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-500">
+                    <SpriteIcon
+                      name={concept.icon as SpriteIconName}
+                      className="size-3"
+                    />
+                  </span>
+                  <h3 className="text-[13px] font-medium text-mist-900">
+                    {t(k(`${concept.key}.title`))}
+                  </h3>
                 </div>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Common Mistakes */}
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("mistakes.title", { defaultValue: "Common i18n Mistakes to Avoid" })}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("mistakes.subtitle", { defaultValue: "These pitfalls are easy to fall into and expensive to fix later. Avoid them from the start." })}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {commonMistakes.map((mistake) => (
-              <div key={mistake.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
-                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <SpriteIcon name={mistake.icon as SpriteIconName} className="size-5" />
-                </div>
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(mistake.titleKey, { defaultValue: mistake.defaultTitle })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(mistake.descKey, { defaultValue: mistake.defaultDesc })}
+                <p className="mt-2 text-[13px] leading-relaxed text-mist-600">
+                  {t(k(`${concept.key}.description`))}
                 </p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
-      </section>
+      </Section>
 
-      {/* i18n Checklist for Production Readiness */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-4">
-              <IconClipboard className="size-4" />
-              <span>{t("checklist.badge", { defaultValue: "Production Checklist" })}</span>
-            </div>
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("checklist.title", { defaultValue: "i18n Checklist for Production Readiness" })}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("checklist.subtitle", { defaultValue: "Verify these eight items before shipping your internationalized application to production. Each one addresses a common gap that causes issues in real-world deployments." })}
+      <Divider />
+
+      {/* 2 — File formats, as a comparison table. */}
+      <Section labelledBy="complete-guide-formats">
+        <SectionHeader
+          id="complete-guide-formats"
+          eyebrow={t(k("formats.badge"))}
+          title={t(k("formats.title"))}
+          subtitle={t(k("formats.subtitle"))}
+        />
+        <div className="mt-8">
+          <FormatTable
+            rows={fileFormats.map((format) => ({
+              id: format.key,
+              name: t(k(`${format.key}.title`)),
+              description: t(k(`${format.key}.description`)),
+              ecosystem: format.ecosystem,
+              ext: format.ext,
+            }))}
+          />
+        </div>
+      </Section>
+
+      <Divider />
+
+      {/* 3 — Implementation: the four-step flow, then the production checklist
+          that says when the work is actually done. Was two sections. */}
+      <Section labelledBy="complete-guide-process">
+        <SectionHeader
+          id="complete-guide-process"
+          eyebrow={t(k("checklist.badge"))}
+          title={t(k("process.title"))}
+          subtitle={t(k("process.subtitle"))}
+        />
+
+        <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+          <ProcessVisual
+            steps={processSteps.map((step) => ({
+              number: step.number,
+              title: t(k(`${step.key}.title`)),
+              description: t(k(`${step.key}.description`)),
+            }))}
+          />
+
+          <div>
+            <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+              {t(k("checklist.title"))}
+            </h3>
+            <p className="mt-2 text-[13px] leading-relaxed text-mist-600">
+              {t(k("checklist.subtitle"))}
             </p>
-          </div>
-          <div className="max-w-2xl mx-auto">
-            <ul className="space-y-4">
+            <ul role="list" className="mt-4 flex flex-col">
               {productionChecklist.map((item) => (
-                <li key={item.key} className="flex items-start gap-3">
-                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                  <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
+                <li
+                  key={item}
+                  className="flex items-start gap-2.5 border-t border-black/[0.05] py-2.5 text-[13px] leading-relaxed text-mist-700 first:border-t-0 first:pt-0"
+                >
+                  <SpriteIcon
+                    name="checkmark"
+                    className="mt-0.5 size-3.5 shrink-0 text-mist-400"
+                  />
+                  <span>{t(k(item))}</span>
                 </li>
               ))}
             </ul>
           </div>
         </div>
-      </section>
+      </Section>
 
-      {/* Testing */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
-            <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("testing.title", { defaultValue: "Localization Testing Strategies" })}
-              </h2>
-              <p className="text-mist-700 leading-relaxed">
-                {t("testing.subtitle", { defaultValue: "Shipping untested translations leads to truncated text, broken layouts, and embarrassing cultural missteps. Build testing into your workflow from the beginning." })}
-              </p>
-            </div>
-            <div className="mt-8 lg:mt-0">
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                  <span className="text-mist-700">{t("testing.pseudo", { defaultValue: "Use pseudo-localization to catch hardcoded strings and layout issues before real translations arrive" })}</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                  <span className="text-mist-700">{t("testing.visual", { defaultValue: "Run visual regression tests across locales to detect text overflow, truncation, and RTL mirroring bugs" })}</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                  <span className="text-mist-700">{t("testing.automated", { defaultValue: "Automate missing-key detection in CI so untranslated strings never reach production" })}</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                  <span className="text-mist-700">{t("testing.linguistic", { defaultValue: "Conduct linguistic QA with native speakers to verify tone, context, and cultural accuracy" })}</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                  <span className="text-mist-700">{t("testing.expansion", { defaultValue: "Test with text expansion (German, Finnish) and contraction (Chinese, Japanese) to ensure UI flexibility" })}</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+      <Divider />
+
+      {/* 4 — Choosing a TMS. */}
+      <Section labelledBy="complete-guide-tms">
+        <SectionHeader
+          id="complete-guide-tms"
+          eyebrow={t(k("tms.badge"))}
+          title={t(k("tms.title"))}
+          subtitle={t(k("tms.subtitle"))}
+        />
+        <div className="mt-8 overflow-hidden">
+          <ul role="list" className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2">
+            {tmsCriteria.map((criterion) => (
+              <li
+                key={criterion.key}
+                className="border-t border-l border-black/[0.05] px-5 py-4"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-500">
+                    <SpriteIcon
+                      name={criterion.icon as SpriteIconName}
+                      className="size-3"
+                    />
+                  </span>
+                  <h3 className="text-[13px] font-medium text-mist-900">
+                    {t(k(`${criterion.key}.title`))}
+                  </h3>
+                </div>
+                <p className="mt-2 text-[13px] leading-relaxed text-mist-600">
+                  {t(k(`${criterion.key}.description`))}
+                </p>
+              </li>
+            ))}
+          </ul>
         </div>
-      </section>
+      </Section>
 
-      {/* FAQ */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-4">
-              <IconCircleQuestionmark className="size-4" />
-              <span>{t("faq.badge", { defaultValue: "FAQ" })}</span>
-            </div>
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("faq.title", { defaultValue: "Frequently Asked Questions About i18n" })}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("faq.subtitle", { defaultValue: "Answers to the most common questions teams ask when planning and implementing internationalization." })}
+      <Divider />
+
+      {/* 5 — Quality: the four mistakes that cost the most, then how to test so
+          they surface before release. Was two sections. */}
+      <Section labelledBy="complete-guide-quality">
+        <SectionHeader
+          id="complete-guide-quality"
+          eyebrow={SECTION_EYEBROWS.quality}
+          title={t(k("mistakes.title"))}
+          subtitle={t(k("mistakes.subtitle"))}
+        />
+
+        <div className="mt-8 overflow-hidden">
+          <ul
+            role="list"
+            className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {commonMistakes.map((mistake) => (
+              <li
+                key={mistake.key}
+                className="border-t border-l border-black/[0.05] px-5 py-4"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-500">
+                    <SpriteIcon
+                      name={mistake.icon as SpriteIconName}
+                      className="size-3"
+                    />
+                  </span>
+                  <h3 className="text-[13px] font-medium text-mist-900">
+                    {t(k(`${mistake.key}.title`))}
+                  </h3>
+                </div>
+                <p className="mt-2 text-[13px] leading-relaxed text-mist-600">
+                  {t(k(`${mistake.key}.description`))}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+          <div>
+            <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+              {t(k("testing.title"))}
+            </h3>
+            <p className="mt-2 text-[13px] leading-relaxed text-mist-600">
+              {t(k("testing.subtitle"))}
             </p>
           </div>
-          <div className="max-w-3xl mx-auto space-y-8">
-            {faqItems.map((item) => (
-              <div key={item.questionKey} className="border-b border-mist-200 pb-8 last:border-b-0">
-                <h3 className="text-base font-medium text-mist-950 mb-3">
-                  {t(item.questionKey, { defaultValue: item.defaultQuestion })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(item.answerKey, { defaultValue: item.defaultAnswer })}
-                </p>
-              </div>
+          <ul role="list" className="flex flex-col">
+            {testingPractices.map((practice) => (
+              <li
+                key={practice}
+                className="flex items-start gap-2.5 border-t border-black/[0.05] py-2.5 text-[13px] leading-relaxed text-mist-700 first:border-t-0 first:pt-0"
+              >
+                <SpriteIcon
+                  name="checkmark"
+                  className="mt-0.5 size-3.5 shrink-0 text-mist-400"
+                />
+                <span>{t(k(practice))}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Section>
+
+      <Divider />
+
+      {/* 6 — Framework guides. */}
+      <Section labelledBy="complete-guide-frameworks">
+        <SectionHeader
+          id="complete-guide-frameworks"
+          eyebrow={SECTION_EYEBROWS.frameworks}
+          title={t(k("frameworks.title"))}
+          subtitle={t(k("frameworks.subtitle"))}
+        />
+        <div className="mt-8 overflow-hidden">
+          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            {frameworkGuides.map((guide) => (
+              <Link
+                key={guide.href}
+                to={guide.href}
+                params={{ locale }}
+                className="group flex items-start justify-between gap-3 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
+              >
+                <span className="min-w-0">
+                  <span className="block text-[13px] font-medium text-mist-900">
+                    {guide.name}
+                  </span>
+                  <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
+                    {t(k(guide.descKey))}
+                  </span>
+                </span>
+                <SpriteIcon
+                  name="arrow-right"
+                  className="mt-0.5 size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
+                />
+              </Link>
             ))}
           </div>
         </div>
-      </section>
+      </Section>
 
-      {/* Related Topics */}
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">
-            {tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}
-          </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <Divider />
+
+      <FaqSection
+        eyebrow={t(k("faq.badge"))}
+        title={t(k("faq.title"))}
+        subtitle={t(k("faq.subtitle"))}
+        items={faqIds.map((id) => ({
+          id,
+          question: t(k(`faq.${id}.question`)),
+          answer: t(k(`faq.${id}.answer`)),
+        }))}
+      />
+
+      <Divider />
+
+      {/* Related topics — the same hairline grid as every other link set. */}
+      <Section labelledBy="complete-guide-related">
+        <h2 id="complete-guide-related" className="section-h2">
+          {t("whatIs.relatedTopics")}
+        </h2>
+        <div className="mt-6 overflow-hidden">
+          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
             {relatedPages.map((page) => (
               <Link
                 key={page.href}
                 to={page.href}
                 params={{ locale }}
-                className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+                className="group flex items-start justify-between gap-3 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
               >
-                <div>
-                  <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
-                  <p className="text-xs text-mist-500 mt-1">{page.description}</p>
-                </div>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all shrink-0" />
+                <span className="min-w-0">
+                  <span className="block text-[13px] font-medium text-mist-900">
+                    {page.name}
+                  </span>
+                  <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
+                    {page.description}
+                  </span>
+                </span>
+                <SpriteIcon
+                  name="arrow-right"
+                  className="mt-0.5 size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
+                />
               </Link>
             ))}
           </div>
         </div>
-      </section>
+      </Section>
 
-      {/* CTA */}
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
-        <div className="mx-auto max-w-2xl text-center px-6">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("cta.title", { defaultValue: "Start Localizing Your App Today" })}
-          </h2>
-          <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "AI-powered translations, developer-friendly SDKs, and automated workflows. Go global in minutes, not months." })}
-          </p>
-          <div className="mt-8 flex justify-center gap-4 flex-wrap">
-            <a
-              href="https://dash.better-i18n.com"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
-            >
-              {t("cta.primary", { defaultValue: "Get Started Free" })}
-            </a>
-            <a
-              href="https://docs.better-i18n.com"
-              className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-            >
-              {t("cta.secondary", { defaultValue: "Read the Docs" })}
-            </a>
+      <Divider />
+
+      <ClosingCta
+        title={t(k("cta.title"))}
+        subtitle={t(k("cta.subtitle"))}
+        primary={{ label: t(k("cta.primary")), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t(k("cta.secondary")), href: "https://docs.better-i18n.com" }}
+      />
+    </MarketingLayout>
+  );
+}
+
+/* ─── Bespoke visuals ──────────────────────────────────────────────
+   DOM + SVG, drawn for this page: they localise through the same t() calls as
+   the prose, stay crisp at any DPR, and cost a few KB instead of a 2x asset. */
+
+/**
+ * Hero — the one distinction the whole guide hangs on: i18n is work you do once
+ * in the codebase, L10n is work you repeat per locale. Two columns split by a
+ * single hairline, so the split IS the diagram.
+ */
+const SPLIT_VISUAL_LOCALES = [
+  { code: "tr-TR", state: "reviewed" },
+  { code: "de-DE", state: "reviewed" },
+  { code: "ja-JP", state: "in review" },
+  { code: "ar-EG", state: "rtl · queued" },
+] as const;
+
+function SplitVisual({
+  i18nTitle,
+  l10nTitle,
+  i18nItems,
+}: {
+  i18nTitle: string;
+  l10nTitle: string;
+  i18nItems: readonly string[];
+}) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
+      <div className="grid lg:grid-cols-2">
+        <div className="border-black/[0.05] p-5 max-lg:border-b lg:border-r">
+          <p className="text-[11px] font-medium text-mist-400">i18n · once</p>
+          <p className="mt-2 text-[13px] text-mist-900">{i18nTitle}</p>
+          <ul role="list" className="mt-3 flex flex-wrap gap-1.5">
+            {i18nItems.map((item) => (
+              <li
+                key={item}
+                className="rounded-sm border border-black/[0.06] bg-mist-50 px-2 py-0.5 text-[11px] text-mist-500"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4 rounded-lg border border-black/[0.06] bg-mist-50 p-3 font-mono text-[12px] leading-relaxed">
+            <span className="text-mist-400">t(</span>
+            <span className="text-mist-700">&quot;cart.items&quot;</span>
+            <span className="text-mist-300">, </span>
+            <span className="text-mist-700">{"{ count }"}</span>
+            <span className="text-mist-400">)</span>
           </div>
         </div>
-      </section>
-    </MarketingLayout>
+
+        <div className="p-5">
+          <p className="text-[11px] font-medium text-mist-400">L10n · per locale</p>
+          <p className="mt-2 text-[13px] text-mist-900">{l10nTitle}</p>
+          <ul role="list" className="mt-3 divide-y divide-black/[0.05]">
+            {SPLIT_VISUAL_LOCALES.map((l) => (
+              <li key={l.code} className="flex items-center gap-3 py-2">
+                <span className="w-16 shrink-0 font-mono text-[11px] text-mist-500">
+                  {l.code}
+                </span>
+                <span className="h-px flex-1 bg-black/[0.06]" />
+                <span className="shrink-0 text-[11px] text-mist-400">{l.state}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Formats — a comparison, so it gets one shared row rhythm instead of six
+ * cards. It is a single figure, so it keeps its own shell
+ * (rule/interior-hairlines-only, figure exception).
+ */
+function FormatTable({
+  rows,
+}: {
+  rows: Array<{
+    id: string;
+    name: string;
+    description: string;
+    ecosystem: string;
+    ext: string;
+  }>;
+}) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
+      <div className="divide-y divide-black/[0.05]">
+        {rows.map((row) => (
+          <div
+            key={row.id}
+            className="grid items-start gap-x-6 gap-y-2 px-5 py-4 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)]"
+          >
+            <div>
+              <h3 className="text-[13px] font-medium text-mist-900">{row.name}</h3>
+              <p className="mt-1 font-mono text-[11px] text-mist-400">{row.ext}</p>
+              <p className="mt-1 text-[11px] text-mist-400">{row.ecosystem}</p>
+            </div>
+            <p className="text-[13px] leading-relaxed text-mist-600">
+              {row.description}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Process — numbered hairline rows. Deliberately no filled step circles: the
+ * number is the marker, the rule is the connection.
+ */
+function ProcessVisual({
+  steps,
+}: {
+  steps: Array<{ number: string; title: string; description: string }>;
+}) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
+      <ol className="divide-y divide-black/[0.05]">
+        {steps.map((step) => (
+          <li key={step.number} className="flex items-start gap-4 px-5 py-4">
+            <span className="w-6 shrink-0 pt-0.5 font-mono text-[11px] tabular-nums text-mist-400">
+              {step.number}
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[13px] font-medium text-mist-900">
+                {step.title}
+              </span>
+              <span className="mt-1 block text-[13px] leading-relaxed text-mist-600">
+                {step.description}
+              </span>
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }

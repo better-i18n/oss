@@ -5,6 +5,57 @@ import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import {
+  ClosingCta,
+  Divider,
+  FaqSection,
+  PageHero,
+  Section,
+  SectionHeader,
+} from "@/components/ui/page";
+
+/**
+ * Multilingual SEO — rebuilt on the pillar page shape
+ * (rule/pillar-page-shape): PageHero + bespoke visual → Divider → six Sections
+ * that each open with a SectionHeader → FaqSection → ClosingCta.
+ *
+ * What changed and why:
+ *   - It was 11 alternating-background blocks, the FAQ hand-rolled as seven
+ *     bordered cards with its own type scale, and the CTA a dark rounded panel
+ *     with side margins that broke the frame rules.
+ *   - The 11 blocks are consolidated into SIX Sections: what it is, the four
+ *     challenges, URL structure, the hreflang checklist, localization vs
+ *     translation (+ the benefits it buys), the rollout process (+ how this
+ *     platform covers it). No paragraph, list item, code example or key was
+ *     dropped — rule/seo-content-is-load-bearing.
+ *   - Two bespoke visuals replace the two places where the old page described a
+ *     technical artifact in prose: the hreflang tag block (real
+ *     <link rel="alternate"> lines for three locales plus x-default) and the URL
+ *     structure comparison (subfolder / subdomain / ccTLD in one hairline table
+ *     with the tradeoff spelled out per row).
+ *
+ * i18n: every t() call reads an existing `marketing.i18n.multilingualSeo.*`
+ * key and all `defaultValue` fallbacks were removed (forbidden in this project —
+ * the CDN source_text is the only source of truth). In the same pass the
+ * item-level keys were re-prefixed: `challenges.*`, `urlStructures.*`,
+ * `hreflang.checklist.*`, `benefits.list.*` and `process.step*` were being read
+ * without the `i18n.multilingualSeo.` prefix, so the page rendered its own
+ * hardcoded defaults instead of published copy.
+ *
+ * SECTION_EYEBROWS holds the only user-facing strings not read from a key — the
+ * interim state documented in DESIGN-DECISIONS.md (Coverage gaps), same as
+ * `i18n/nextjs.tsx`. No defaultValue anywhere.
+ */
+
+const SECTION_EYEBROWS = {
+  definition: "Overview",
+  challenges: "Challenges",
+  urls: "Architecture",
+  hreflang: "Hreflang",
+  localization: "Localization",
+  process: "Rollout",
+  faq: "FAQ",
+} as const;
 
 export const Route = createFileRoute("/$locale/i18n/multilingual-seo")({
   loader: createPageLoader(),
@@ -25,447 +76,506 @@ export const Route = createFileRoute("/$locale/i18n/multilingual-seo")({
   component: MultilingualSeoPage,
 });
 
+const KEY_PREFIX = "i18n.multilingualSeo";
+
+/** Every key on this page lives under one prefix; `k` is the only place it appears. */
+const k = (suffix: string) => `${KEY_PREFIX}.${suffix}`;
+
 const challenges = [
-  { icon: "api-connection", titleKey: "challenges.hreflang.title", descKey: "challenges.hreflang.description", defaultTitle: "Hreflang Implementation", defaultDesc: "Correctly implementing hreflang tags to tell search engines which language version to show each user." },
-  { icon: "globe", titleKey: "challenges.urlStructure.title", descKey: "challenges.urlStructure.description", defaultTitle: "URL Structure Decisions", defaultDesc: "Choosing between subdirectories, subdomains, and ccTLDs for your multilingual site architecture." },
-  { icon: "magnifying-glass", titleKey: "challenges.keywordResearch.title", descKey: "challenges.keywordResearch.description", defaultTitle: "Multilingual Keyword Research", defaultDesc: "Conducting keyword research in each language rather than translating English keywords directly." },
-  { icon: "rocket", titleKey: "challenges.contentDuplication.title", descKey: "challenges.contentDuplication.description", defaultTitle: "Content Duplication Risks", defaultDesc: "Avoiding duplicate content penalties when similar pages exist across multiple language versions." },
-];
+  { icon: "api-connection", key: "challenges.hreflang" },
+  { icon: "globe", key: "challenges.urlStructure" },
+  { icon: "magnifying-glass", key: "challenges.keywordResearch" },
+  { icon: "rocket", key: "challenges.contentDuplication" },
+] as const;
+
+/** `best` is figure data: the one-line verdict the table exists to deliver. */
+const urlStructures = [
+  { key: "urlStructures.subdirectory", best: "Default choice · one domain to rank" },
+  { key: "urlStructures.subdomain", best: "Separate infra or CMS per language" },
+  { key: "urlStructures.cctld", best: "Legal or logistics per country" },
+] as const;
+
+const hreflangChecklist = [
+  "hreflang.checklist.selfRef",
+  "hreflang.checklist.bidirectional",
+  "hreflang.checklist.xDefault",
+  "hreflang.checklist.validCodes",
+  "hreflang.checklist.canonical",
+  "hreflang.checklist.sitemap",
+  "hreflang.checklist.consistent",
+] as const;
+
+const benefits = [
+  "benefits.list.organicReach",
+  "benefits.list.localSearchVisibility",
+  "benefits.list.reducedBounceRate",
+  "benefits.list.higherConversions",
+  "benefits.list.competitiveEdge",
+  "benefits.list.brandAuthority",
+] as const;
+
+const processSteps = [
+  { number: "01", key: "process.step1" },
+  { number: "02", key: "process.step2" },
+  { number: "03", key: "process.step3" },
+  { number: "04", key: "process.step4" },
+] as const;
+
+const solutionFeatures = [
+  "solution.feature1",
+  "solution.feature2",
+  "solution.feature3",
+] as const;
+
+const faqIds = ["q1", "q2", "q3", "q4", "q5", "q6", "q7"] as const;
 
 function MultilingualSeoPage() {
-  const t = useT("marketing.i18n.multilingualSeo");
-  const tCommon = useT("marketing");
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
-  const benefits = [
-    { key: "benefits.list.organicReach", defaultValue: "Expand organic reach to non-English speaking markets worldwide" },
-    { key: "benefits.list.localSearchVisibility", defaultValue: "Improve visibility in local search results for each target market" },
-    { key: "benefits.list.reducedBounceRate", defaultValue: "Reduce bounce rates by serving content in the user's preferred language" },
-    { key: "benefits.list.higherConversions", defaultValue: "Increase conversion rates with culturally relevant localized content" },
-    { key: "benefits.list.competitiveEdge", defaultValue: "Gain competitive advantage in markets with less SEO competition" },
-    { key: "benefits.list.brandAuthority", defaultValue: "Build brand authority and trust with native-language content" },
-  ];
-
-  const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Audit & Plan", defaultDesc: "Assess your current site structure, identify target markets, and plan your multilingual URL architecture." },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Technical Setup", defaultDesc: "Implement hreflang tags, configure URL structure, and set up international sitemaps for each language." },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Content Localization", defaultDesc: "Translate and localize content with SEO-optimized keywords for each target language and region." },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Monitor & Scale", defaultDesc: "Track rankings and organic traffic per locale, then expand to additional markets based on performance data." },
-  ];
-
-  const urlStructures = [
-    { titleKey: "urlStructures.subdirectory.title", descKey: "urlStructures.subdirectory.description", exampleKey: "urlStructures.subdirectory.example", defaultTitle: "Subdirectory", defaultDesc: "Language versions live under path segments on the same domain. Consolidates domain authority and is easiest to maintain.", defaultExample: "example.com/en/, example.com/fr/" },
-    { titleKey: "urlStructures.subdomain.title", descKey: "urlStructures.subdomain.description", exampleKey: "urlStructures.subdomain.example", defaultTitle: "Subdomain", defaultDesc: "Each language gets its own subdomain. Allows separate server configurations but splits domain authority.", defaultExample: "en.example.com, fr.example.com" },
-    { titleKey: "urlStructures.cctld.title", descKey: "urlStructures.cctld.description", exampleKey: "urlStructures.cctld.example", defaultTitle: "Country-Code TLD", defaultDesc: "Each country gets its own top-level domain. Strongest geotargeting signal but highest cost and complexity.", defaultExample: "example.com, example.fr, example.de" },
-  ];
-
-  const hreflangChecklist = [
-    { key: "hreflang.checklist.selfRef", defaultValue: "Every page includes a self-referencing hreflang tag pointing to itself" },
-    { key: "hreflang.checklist.bidirectional", defaultValue: "All hreflang references are bidirectional — page A points to page B and page B points back to page A" },
-    { key: "hreflang.checklist.xDefault", defaultValue: "An x-default hreflang tag is set to indicate the fallback page for unmatched locales" },
-    { key: "hreflang.checklist.validCodes", defaultValue: "Language and region codes follow ISO 639-1 and ISO 3166-1 Alpha-2 standards" },
-    { key: "hreflang.checklist.canonical", defaultValue: "Canonical tags do not conflict with hreflang tags — each localized page canonicalizes to itself" },
-    { key: "hreflang.checklist.sitemap", defaultValue: "International sitemaps include hreflang annotations as an alternative to HTML link elements" },
-    { key: "hreflang.checklist.consistent", defaultValue: "Hreflang tags are consistent across all pages — no orphan references or missing reciprocal links" },
-  ];
-
   const relatedPages = [
-    { name: "International SEO Strategy", href: "/$locale/i18n/international-seo", description: t("related.internationalSeo", { defaultValue: "Build a comprehensive international SEO strategy" }) },
-    { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("related.websiteLocalization", { defaultValue: "Adapt your website for global audiences" }) },
-    { name: "Website Translation", href: "/$locale/i18n/website-translation", description: t("related.websiteTranslation", { defaultValue: "Translate your website for international users" }) },
-    { name: "Translation Management System", href: "/$locale/i18n/translation-management-system", description: t("related.tms", { defaultValue: "Centralize your localization workflow with a TMS" }) },
+    {
+      name: "International SEO Strategy",
+      href: "/$locale/i18n/international-seo",
+      description: t(k("related.internationalSeo")),
+    },
+    {
+      name: "Website Localization",
+      href: "/$locale/i18n/website-localization",
+      description: t(k("related.websiteLocalization")),
+    },
+    {
+      name: "Website Translation",
+      href: "/$locale/i18n/website-translation",
+      description: t(k("related.websiteTranslation")),
+    },
+    {
+      name: "Translation Management System",
+      href: "/$locale/i18n/translation-management-system",
+      description: t(k("related.tms")),
+    },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <SpriteIcon name="globe" className="size-4" />
-              <span>{t("badge", { defaultValue: "Multilingual SEO" })}</span>
-            </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("hero.title", { defaultValue: "Multilingual SEO: Rank in Every Language and Market You Serve" })}
-            </h1>
-            <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "Multilingual SEO is the practice of optimizing your website to rank in search engines across multiple languages and regions. Learn hreflang tags, URL structures, localization SEO strategies, and how multilingual SEO services can help you capture global organic traffic." })}
-            </p>
-          </div>
-        </div>
-      </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
-            <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("definition.title", { defaultValue: "What Is Multilingual SEO?" })}
-              </h2>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph1", { defaultValue: "Multilingual SEO is the process of optimizing website content in multiple languages so that search engines can correctly index and rank each language version for users in the appropriate locale. It combines technical SEO with content localization to ensure that a Spanish-speaking user in Madrid sees Spanish content and a French speaker in Paris sees French content." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph2", { defaultValue: "A multilingual SEO company or multilingual SEO agency will typically address hreflang tag implementation, localized keyword research, URL architecture decisions, and canonical tag management — all of which signal to Google which version of a page to serve to which audience." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph3", { defaultValue: "Localization SEO goes further than translation. It accounts for regional search behavior, local slang, and cultural nuances that affect how people search. This is why multilingual SEO services must combine technical precision with deep linguistic expertise." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed">
-                {t("definition.paragraph4", { defaultValue: "Multilingual SEO also intersects with the rise of AI-powered search. Google AI Overviews, Perplexity, and other AI answer engines rely on structured language signals — including hreflang tags — to determine which language version of content to cite in generated responses. When hreflang implementation is correct, AI systems can confidently attribute and surface the right locale-specific content. This means proper multilingual SEO is no longer just about traditional search rankings — it directly affects whether your content appears in AI-generated answers for users searching in different languages." })}
-              </p>
-            </div>
-            <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
-              <h3 className="text-lg font-medium text-mist-950 mb-4">
-                {t("keyStats.title", { defaultValue: "Why Multilingual SEO Matters" })}
-              </h3>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("keyStats.content", { defaultValue: "Over 75% of internet users search in languages other than English. Only 25% of web content is in English, yet businesses that optimize for local languages capture 70% more qualified traffic from those markets. A multilingual SEO strategy is the most cost-effective path to international growth." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed">
-                {t("keyStats.content2", { defaultValue: "Google processes billions of searches daily in over 150 languages. Without proper hreflang implementation and localized content, your international pages compete against each other — causing keyword cannibalization and ranking losses." })}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        pillar="mcp"
+        pillarLabel={t(k("badge"))}
+        titleId="multilingual-seo-hero-title"
+        title={t(k("hero.title"))}
+        subtitle={t(k("hero.subtitle"))}
+        primary={{ label: t(k("cta.primary")), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t(k("cta.secondary")), href: "https://docs.better-i18n.com" }}
+        visual={<HreflangVisual />}
+      />
 
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("challenges.title", { defaultValue: "Common Multilingual SEO Challenges" })}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("challenges.subtitle", { defaultValue: "These are the technical and strategic obstacles most businesses face when scaling multilingual SEO." })}
-            </p>
+      <Divider />
+
+      {/* 1 — What multilingual SEO is, with the market numbers alongside. */}
+      <Section labelledBy="multilingual-seo-definition">
+        <SectionHeader
+          id="multilingual-seo-definition"
+          eyebrow={SECTION_EYEBROWS.definition}
+          title={t(k("definition.title"))}
+        />
+        <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+          <div className="flex flex-col gap-3 text-[13px] leading-relaxed text-mist-600">
+            <p>{t(k("definition.paragraph1"))}</p>
+            <p>{t(k("definition.paragraph2"))}</p>
+            <p>{t(k("definition.paragraph3"))}</p>
+            <p>{t(k("definition.paragraph4"))}</p>
           </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <aside className="rounded-xl border border-black/[0.07] bg-mist-50 p-5">
+            <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+              {t(k("keyStats.title"))}
+            </h3>
+            <p className="mt-3 text-[13px] leading-relaxed text-mist-600">
+              {t(k("keyStats.content"))}
+            </p>
+            <p className="mt-3 text-[13px] leading-relaxed text-mist-600">
+              {t(k("keyStats.content2"))}
+            </p>
+          </aside>
+        </div>
+      </Section>
+
+      <Divider />
+
+      {/* 2 — The four things that actually break. */}
+      <Section labelledBy="multilingual-seo-challenges">
+        <SectionHeader
+          id="multilingual-seo-challenges"
+          eyebrow={SECTION_EYEBROWS.challenges}
+          title={t(k("challenges.title"))}
+          subtitle={t(k("challenges.subtitle"))}
+        />
+        <div className="mt-8 overflow-hidden">
+          <ul
+            role="list"
+            className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          >
             {challenges.map((challenge) => (
-              <div key={challenge.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
-                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <SpriteIcon name={challenge.icon as SpriteIconName} className="size-5" />
-                </div>
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(challenge.descKey, { defaultValue: challenge.defaultDesc })}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("urlStructures.title", { defaultValue: "URL Structure Options for Multilingual Websites" })}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("urlStructures.subtitle", { defaultValue: "Choosing the right URL architecture is one of the most important multilingual SEO decisions you will make. Each approach has distinct tradeoffs for authority, maintenance, and geotargeting." })}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-            {urlStructures.map((structure) => (
-              <div key={structure.titleKey} className="p-6 rounded-xl border border-mist-200 bg-mist-50">
-                <div className="flex items-center gap-3 mb-3">
-                  <SpriteIcon name="group" className="size-5 text-mist-700" />
-                  <h3 className="text-base font-medium text-mist-950">
-                    {t(structure.titleKey, { defaultValue: structure.defaultTitle })}
+              <li
+                key={challenge.key}
+                className="border-t border-l border-black/[0.05] px-5 py-4"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-500">
+                    <SpriteIcon
+                      name={challenge.icon as SpriteIconName}
+                      className="size-3"
+                    />
+                  </span>
+                  <h3 className="text-[13px] font-medium text-mist-900">
+                    {t(k(`${challenge.key}.title`))}
                   </h3>
                 </div>
-                <p className="text-sm text-mist-700 leading-relaxed mb-3">
-                  {t(structure.descKey, { defaultValue: structure.defaultDesc })}
+                <p className="mt-2 text-[13px] leading-relaxed text-mist-600">
+                  {t(k(`${challenge.key}.description`))}
                 </p>
-                <code className="text-xs bg-mist-200 text-mist-800 rounded px-2 py-1">
-                  {t(structure.exampleKey, { defaultValue: structure.defaultExample })}
-                </code>
-              </div>
+              </li>
             ))}
+          </ul>
+        </div>
+      </Section>
+
+      <Divider />
+
+      {/* 3 — URL structure, as a table: this is a decision with three options. */}
+      <Section labelledBy="multilingual-seo-urls">
+        <SectionHeader
+          id="multilingual-seo-urls"
+          eyebrow={SECTION_EYEBROWS.urls}
+          title={t(k("urlStructures.title"))}
+          subtitle={t(k("urlStructures.subtitle"))}
+        />
+        <div className="mt-8">
+          <UrlStructureTable
+            rows={urlStructures.map((structure) => ({
+              id: structure.key,
+              name: t(k(`${structure.key}.title`)),
+              description: t(k(`${structure.key}.description`)),
+              example: t(k(`${structure.key}.example`)),
+              best: structure.best,
+            }))}
+          />
+        </div>
+      </Section>
+
+      <Divider />
+
+      {/* 4 — The hreflang checklist. */}
+      <Section labelledBy="multilingual-seo-hreflang">
+        <SectionHeader
+          id="multilingual-seo-hreflang"
+          eyebrow={SECTION_EYEBROWS.hreflang}
+          title={t(k("hreflang.checklist.title"))}
+          subtitle={t(k("hreflang.checklist.subtitle"))}
+        />
+        <div className="mt-8 overflow-hidden">
+          <ul role="list" className="-mt-px -ml-px grid grid-cols-1 lg:grid-cols-2">
+            {hreflangChecklist.map((item) => (
+              <li
+                key={item}
+                className="flex items-start gap-2.5 border-t border-l border-black/[0.05] px-5 py-3.5 text-[13px] leading-relaxed text-mist-700"
+              >
+                <SpriteIcon
+                  name="checkmark"
+                  className="mt-0.5 size-3.5 shrink-0 text-mist-400"
+                />
+                <span>{t(k(item))}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Section>
+
+      <Divider />
+
+      {/* 5 — Why translation alone does not rank, and what localization buys. */}
+      <Section labelledBy="multilingual-seo-localization">
+        <SectionHeader
+          id="multilingual-seo-localization"
+          eyebrow={SECTION_EYEBROWS.localization}
+          title={t(k("localizationVsTranslation.title"))}
+          subtitle={t(k("localizationVsTranslation.subtitle"))}
+        />
+
+        <div className="mt-8 overflow-hidden">
+          <div className="-mt-px -ml-px grid grid-cols-1 lg:grid-cols-2">
+            <article className="border-t border-l border-black/[0.05] px-5 py-5 lg:pl-0">
+              <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                {t(k("localizationVsTranslation.translationFails.title"))}
+              </h3>
+              <div className="mt-3 flex flex-col gap-3 text-[13px] leading-relaxed text-mist-600">
+                <p>{t(k("localizationVsTranslation.translationFails.paragraph1"))}</p>
+                <p>{t(k("localizationVsTranslation.translationFails.paragraph2"))}</p>
+                <p>{t(k("localizationVsTranslation.translationFails.paragraph3"))}</p>
+              </div>
+            </article>
+            <article className="border-t border-l border-black/[0.05] px-5 py-5">
+              <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                {t(k("localizationVsTranslation.localizationAdds.title"))}
+              </h3>
+              <div className="mt-3 flex flex-col gap-3 text-[13px] leading-relaxed text-mist-600">
+                <p>{t(k("localizationVsTranslation.localizationAdds.paragraph1"))}</p>
+                <p>{t(k("localizationVsTranslation.localizationAdds.paragraph2"))}</p>
+                <p>{t(k("localizationVsTranslation.localizationAdds.paragraph3"))}</p>
+              </div>
+            </article>
           </div>
         </div>
-      </section>
 
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-10">
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-                {t("hreflang.checklist.title", { defaultValue: "Hreflang Tag Implementation Checklist" })}
-              </h2>
-              <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-                {t("hreflang.checklist.subtitle", { defaultValue: "Use this checklist to verify your hreflang tags are correctly implemented. Missing or misconfigured hreflang annotations are among the most common multilingual SEO errors, and search engines will ignore invalid hreflang directives entirely." })}
-              </p>
-            </div>
-            <ul className="space-y-4">
-              {hreflangChecklist.map((item) => (
-                <li key={item.key} className="flex items-start gap-3 p-4 rounded-xl border border-mist-200 bg-white">
-                  <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                  <span className="text-mist-700 leading-relaxed">{t(item.key, { defaultValue: item.defaultValue })}</span>
+        <div className="mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+          <div>
+            <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+              {t(k("benefits.title"))}
+            </h3>
+            <p className="mt-2 text-[13px] leading-relaxed text-mist-600">
+              {t(k("benefits.subtitle"))}
+            </p>
+          </div>
+          <ul role="list" className="flex flex-col">
+            {benefits.map((benefit) => (
+              <li
+                key={benefit}
+                className="flex items-start gap-2.5 border-t border-black/[0.05] py-2.5 text-[13px] leading-relaxed text-mist-700 first:border-t-0 first:pt-0"
+              >
+                <SpriteIcon
+                  name="checkmark"
+                  className="mt-0.5 size-3.5 shrink-0 text-mist-400"
+                />
+                <span>{t(k(benefit))}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Section>
+
+      <Divider />
+
+      {/* 6 — How the rollout runs, and where this platform sits in it. */}
+      <Section labelledBy="multilingual-seo-process">
+        <SectionHeader
+          id="multilingual-seo-process"
+          eyebrow={SECTION_EYEBROWS.process}
+          title={t(k("process.title"))}
+          subtitle={t(k("process.subtitle"))}
+        />
+
+        <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+          <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
+            <ol className="divide-y divide-black/[0.05]">
+              {processSteps.map((step) => (
+                <li key={step.number} className="flex items-start gap-4 px-5 py-4">
+                  <span className="w-6 shrink-0 pt-0.5 font-mono text-[11px] tabular-nums text-mist-400">
+                    {step.number}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[13px] font-medium text-mist-900">
+                      {t(k(`${step.key}.title`))}
+                    </span>
+                    <span className="mt-1 block text-[13px] leading-relaxed text-mist-600">
+                      {t(k(`${step.key}.description`))}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div>
+            <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+              {t(k("solution.title"))}
+            </h3>
+            <p className="mt-2 text-[13px] leading-relaxed text-mist-600">
+              {t(k("solution.content"))}
+            </p>
+            <ul role="list" className="mt-4 flex flex-col">
+              {solutionFeatures.map((feature) => (
+                <li
+                  key={feature}
+                  className="border-t border-black/[0.05] py-3 first:border-t-0 first:pt-0"
+                >
+                  <h4 className="text-[13px] font-medium text-mist-900">
+                    {t(k(`${feature}.title`))}
+                  </h4>
+                  <p className="mt-1 text-[13px] leading-relaxed text-mist-600">
+                    {t(k(`${feature}.description`))}
+                  </p>
                 </li>
               ))}
             </ul>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
-            <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("benefits.title", { defaultValue: "Benefits of a Strong Multilingual SEO Strategy" })}
-              </h2>
-              <p className="text-mist-700 leading-relaxed">
-                {t("benefits.subtitle", { defaultValue: "Proper multilingual SEO and localization SEO investment compounds over time, giving you sustainable organic growth across every market you enter." })}
-              </p>
-            </div>
-            <div className="mt-8 lg:mt-0">
-              <ul className="space-y-4">
-                {benefits.map((benefit) => (
-                  <li key={benefit.key} className="flex items-start gap-3">
-                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Divider />
 
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("localizationVsTranslation.title", { defaultValue: "Content Localization vs Translation for SEO" })}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("localizationVsTranslation.subtitle", { defaultValue: "Direct translation and true content localization produce fundamentally different SEO outcomes. Understanding the distinction is essential for any multilingual SEO strategy." })}
-            </p>
-          </div>
-          <div className="lg:grid lg:grid-cols-2 lg:gap-16">
-            <div className="p-8 rounded-2xl bg-mist-50 border border-mist-100">
-              <h3 className="text-lg font-medium text-mist-950 mb-4">
-                {t("localizationVsTranslation.translationFails.title", { defaultValue: "Why Translation Alone Fails" })}
-              </h3>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("localizationVsTranslation.translationFails.paragraph1", { defaultValue: "Keyword mismatch is the primary reason direct translation underperforms. A high-volume English keyword, when translated word-for-word into German or Japanese, often maps to a phrase that native speakers rarely type into a search engine. Search engines rank pages that match actual query patterns — not pages that contain grammatically correct but rarely searched phrases." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("localizationVsTranslation.translationFails.paragraph2", { defaultValue: "Cultural context also shifts the meaning and relevance of content. Metaphors, idioms, and references that resonate with an American audience may confuse or alienate readers in South Korea or Brazil. When users bounce from content that feels unnatural, search engines interpret that engagement signal as a ranking demotion indicator." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed">
-                {t("localizationVsTranslation.translationFails.paragraph3", { defaultValue: "Search intent itself varies between languages and regions. The same topic may have informational intent in one market and transactional intent in another. A translated page that ignores these intent differences will rank poorly because it fails to satisfy what users in that locale are actually looking for." })}
-              </p>
-            </div>
-            <div className="mt-8 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
-              <h3 className="text-lg font-medium text-mist-950 mb-4">
-                {t("localizationVsTranslation.localizationAdds.title", { defaultValue: "What Content Localization Adds" })}
-              </h3>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("localizationVsTranslation.localizationAdds.paragraph1", { defaultValue: "Native keyword research is the foundation of content localization. Instead of translating English keywords, localization teams research what terms people in each market actually search. This often reveals entirely different keyword clusters that a translation-only approach would miss completely." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("localizationVsTranslation.localizationAdds.paragraph2", { defaultValue: "Cultural adaptation ensures that examples, case studies, and references align with the target audience's experience. A localized page for the French market might reference GDPR compliance scenarios, while the same page for Japan might emphasize data residency regulations — even though the core topic remains the same." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed">
-                {t("localizationVsTranslation.localizationAdds.paragraph3", { defaultValue: "Local link building relevance improves when content is genuinely localized. Regional publishers, bloggers, and industry sites are far more likely to link to content that speaks to their audience's specific concerns. These local backlinks send strong geographic relevance signals to search engines, reinforcing your rankings in that specific market." })}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <FaqSection
+        eyebrow={SECTION_EYEBROWS.faq}
+        title={t(k("faq.title"))}
+        items={faqIds.map((id) => ({
+          id,
+          question: t(k(`faq.${id}.question`)),
+          answer: t(k(`faq.${id}.answer`)),
+        }))}
+      />
 
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("process.title", { defaultValue: "Multilingual SEO Implementation Process" })}
-            </h2>
-            <p className="mt-3 text-mist-700">
-              {t("process.subtitle", { defaultValue: "A structured approach to launching and scaling multilingual SEO for your website." })}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {processSteps.map((step) => (
-              <div key={step.number} className="text-center p-6">
-                <div className="size-10 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium mx-auto mb-4">
-                  {step.number}
-                </div>
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
-                </h3>
-                <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: step.defaultDesc })}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "How Better I18N Powers Your Multilingual SEO" })}
-            </h2>
-            <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better I18N automates the translation pipeline that underpins multilingual SEO success. From AI-powered localization that preserves keyword intent to automatic hreflang injection and CDN-delivered locale bundles, Better I18N removes the technical friction of multilingual SEO implementation." })}
-            </p>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature1.title", { defaultValue: "SEO-Aware Translations" })}
-                </h3>
-                <p className="text-sm text-mist-700">
-                  {t("solution.feature1.description", { defaultValue: "AI translations that preserve target keywords, meta tag structure, and semantic intent for each locale." })}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature2.title", { defaultValue: "Hreflang Management" })}
-                </h3>
-                <p className="text-sm text-mist-700">
-                  {t("solution.feature2.description", { defaultValue: "Automatically generate and maintain hreflang tags across all language variants without manual configuration." })}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature3.title", { defaultValue: "Global CDN Delivery" })}
-                </h3>
-                <p className="text-sm text-mist-700">
-                  {t("solution.feature3.description", { defaultValue: "Serve locale content from edge locations worldwide to improve Core Web Vitals scores and international rankings." })}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-8 text-center">
-              {t("faq.title", { defaultValue: "Frequently Asked Questions About Multilingual SEO" })}
-            </h2>
-            <div className="space-y-6">
-              <div className="p-6 rounded-xl bg-white border border-mist-200">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("faq.q1.question", { defaultValue: "What is the difference between multilingual SEO and international SEO?" })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t("faq.q1.answer", { defaultValue: "Multilingual SEO focuses on optimizing content across different languages — ensuring each language version ranks for relevant queries in that language. International SEO is a broader concept that also includes geographic targeting, currency, and market-specific strategies. Multilingual SEO is a key component of any international SEO strategy." })}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl bg-white border border-mist-200">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("faq.q2.question", { defaultValue: "Do I need separate domains for each language?" })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t("faq.q2.answer", { defaultValue: "No. Most multilingual websites use subdirectories (example.com/fr/) or subdomains (fr.example.com) rather than separate country-code TLDs. Subdirectories consolidate domain authority and are the most common choice. Separate domains (example.fr) provide the strongest geotargeting signal but split authority and increase maintenance cost." })}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl bg-white border border-mist-200">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("faq.q3.question", { defaultValue: "How do hreflang tags work?" })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t("faq.q3.answer", { defaultValue: "Hreflang tags are HTML link elements placed in the <head> of each page that tell search engines which language and regional version of a page to serve to users. Each page lists all its language variants, including itself. The x-default value indicates the fallback page for users whose language is not specifically targeted. Correct implementation prevents duplicate content issues across language versions." })}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl bg-white border border-mist-200">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("faq.q4.question", { defaultValue: "Should I translate my keywords or research new ones per language?" })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t("faq.q4.answer", { defaultValue: "Always research keywords natively in each target language rather than directly translating English keywords. Search behavior differs across languages and cultures — a direct translation may not match how people actually search. Use local keyword research tools and native speakers to identify high-value terms in each market." })}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl bg-white border border-mist-200">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("faq.q5.question", { defaultValue: "How long does it take to see results from multilingual SEO?" })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t("faq.q5.answer", { defaultValue: "Multilingual SEO typically takes 3-6 months to show meaningful ranking improvements in new language markets, similar to standard SEO timelines. Factors that affect speed include domain authority, content quality, competition level in the target market, and technical implementation correctness. Markets with less SEO competition may show results faster." })}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl bg-white border border-mist-200">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("faq.q6.question", { defaultValue: "What are the most common hreflang mistakes?" })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t("faq.q6.answer", { defaultValue: "The most frequent hreflang mistakes are missing reciprocal tags, incorrect language or region codes, and conflicts between canonical and hreflang tags. Reciprocal tags mean that if page A declares page B as its French version, page B must also declare page A as its English version — otherwise search engines may ignore both annotations. Using wrong codes, such as 'uk' instead of the correct ISO 639-1 code 'en-GB' for British English, causes search engines to discard the tag entirely. Canonical tag conflicts occur when a localized page points its canonical tag to a different language version instead of itself, which contradicts the hreflang declaration and confuses crawlers." })}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl bg-white border border-mist-200">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("faq.q7.question", { defaultValue: "How do I measure multilingual SEO success?" })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t("faq.q7.answer", { defaultValue: "Measure multilingual SEO success by tracking per-locale organic traffic, keyword rankings segmented by language and country, and conversion rates for each market. Google Search Console's international targeting report and the performance report filtered by country provide direct visibility into how each locale performs. Use hreflang validation tools to regularly audit your implementation for errors such as orphan tags or missing return links. Monitor indexation status per language version to ensure search engines are crawling and indexing all locale variants. Comparing organic growth rates across locales helps identify which markets are responding to your multilingual SEO efforts and which need further optimization." })}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
+      <Divider />
 
       <SeeAlso currentSlug="multilingual-seo" locale={locale} />
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+      <Divider />
+
+      <Section labelledBy="multilingual-seo-related">
+        <h2 id="multilingual-seo-related" className="section-h2">
+          {t("whatIs.relatedTopics")}
+        </h2>
+        <div className="mt-6 overflow-hidden">
+          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {relatedPages.map((page) => (
               <Link
                 key={page.href}
                 to={page.href}
                 params={{ locale }}
-                className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+                className="group flex items-start justify-between gap-3 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
               >
-                <div>
-                  <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
-                  <p className="text-xs text-mist-500 mt-1">{page.description}</p>
-                </div>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <span className="min-w-0">
+                  <span className="block text-[13px] font-medium text-mist-900">
+                    {page.name}
+                  </span>
+                  <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
+                    {page.description}
+                  </span>
+                </span>
+                <SpriteIcon
+                  name="arrow-right"
+                  className="mt-0.5 size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
+                />
               </Link>
             ))}
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
-        <div className="mx-auto max-w-2xl text-center px-6">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("cta.title", { defaultValue: "Launch Your Multilingual SEO Strategy Today" })}
-          </h2>
-          <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Automate translation, hreflang management, and locale delivery so your teams can focus on content strategy — not infrastructure." })}
-          </p>
-          <div className="mt-8 flex justify-center gap-4 flex-wrap">
-            <a
-              href="https://dash.better-i18n.com"
-              aria-label="Get started with Better I18N for multilingual SEO"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
-            >
-              {t("cta.primary", { defaultValue: "Get Started Free" })}
-            </a>
-            <a
-              href="https://docs.better-i18n.com"
-              className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-            >
-              {t("cta.secondary", { defaultValue: "Read the Docs" })}
-            </a>
-          </div>
-        </div>
-      </section>
+      <Divider />
+
+      <ClosingCta
+        title={t(k("cta.title"))}
+        subtitle={t(k("cta.subtitle"))}
+        primary={{ label: t(k("cta.primary")), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t(k("cta.secondary")), href: "https://docs.better-i18n.com" }}
+      />
     </MarketingLayout>
+  );
+}
+
+/* ─── Bespoke visuals ───────────────────────────────────────────── */
+
+/**
+ * Hero — the artifact the whole page is about: the actual hreflang block a
+ * three-locale site ships, including the self-reference and x-default that the
+ * checklist below insists on. Code, not prose, because this is what a developer
+ * pastes into <head>.
+ */
+const HREFLANG_TAGS = [
+  { hreflang: "en", href: "https://example.com/pricing" },
+  { hreflang: "de", href: "https://example.com/de/pricing" },
+  { hreflang: "tr", href: "https://example.com/tr/fiyatlandirma" },
+  { hreflang: "x-default", href: "https://example.com/pricing" },
+] as const;
+
+const HREFLANG_RULES = [
+  "self-referencing",
+  "bidirectional",
+  "ISO 639-1 + 3166-1",
+  "canonical: self",
+] as const;
+
+function HreflangVisual() {
+  return (
+    <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
+      <div className="flex items-center gap-2 border-b border-black/[0.05] px-4 py-2.5">
+        <span className="font-mono text-[11px] text-mist-500">
+          &lt;head&gt; · /de/pricing
+        </span>
+        <span className="ml-auto text-[11px] text-mist-400">
+          3 locales · 1 x-default
+        </span>
+      </div>
+
+      <div className="overflow-x-auto p-4">
+        <pre className="font-mono text-[12px] leading-[1.9] text-mist-700">
+          {HREFLANG_TAGS.map((tag) => (
+            <div key={tag.hreflang} className="whitespace-pre">
+              <span className="text-mist-400">&lt;link </span>
+              <span className="text-mist-500">rel=</span>
+              <span className="text-mist-700">&quot;alternate&quot;</span>
+              <span className="text-mist-500"> hreflang=</span>
+              <span className="text-mist-900">&quot;{tag.hreflang}&quot;</span>
+              <span className="text-mist-500"> href=</span>
+              <span className="text-mist-700">&quot;{tag.href}&quot;</span>
+              <span className="text-mist-400"> /&gt;</span>
+            </div>
+          ))}
+        </pre>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-black/[0.05] px-4 py-3">
+        {HREFLANG_RULES.map((rule) => (
+          <span
+            key={rule}
+            className="flex items-center gap-1.5 text-[11px] text-mist-400"
+          >
+            <span aria-hidden="true" className="size-1 rounded-full bg-mist-300" />
+            {rule}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * URL structure — three options, one decision. A table so the verdict column
+ * ("when is this the right answer") lines up and can be compared at a glance;
+ * three cards could not do that.
+ */
+function UrlStructureTable({
+  rows,
+}: {
+  rows: Array<{
+    id: string;
+    name: string;
+    description: string;
+    example: string;
+    best: string;
+  }>;
+}) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
+      <div className="divide-y divide-black/[0.05]">
+        {rows.map((row) => (
+          <div
+            key={row.id}
+            className="grid items-start gap-x-6 gap-y-2 px-5 py-4 lg:grid-cols-[minmax(0,220px)_minmax(0,1fr)_minmax(0,200px)]"
+          >
+            <div>
+              <h3 className="text-[13px] font-medium text-mist-900">{row.name}</h3>
+              <p className="mt-1.5 font-mono text-[11px] break-all text-mist-400">
+                {row.example}
+              </p>
+            </div>
+            <p className="text-[13px] leading-relaxed text-mist-600">
+              {row.description}
+            </p>
+            <p className="text-[11px] leading-relaxed text-mist-400">{row.best}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
