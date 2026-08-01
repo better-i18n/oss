@@ -1,6 +1,7 @@
 import { useDeferredValue, useState } from "react";
 import { Link, Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { CodeBlock } from "@/components/CodeBlock";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
@@ -67,26 +68,26 @@ function IntegrationsIndex({ locale }: { locale: string }) {
   const integrations: IntegrationItem[] = cmsIntegrations.map(toIntegrationItem);
 
   const categories: Array<{ id: "all" | IntegrationCategory; label: string }> = [
-    { id: "all", label: t("filters.categories.all", { defaultValue: "All" }) },
+    { id: "all", label: t("filters.categories.all") },
     {
       id: "featured",
-      label: t("filters.categories.featured", { defaultValue: "Featured" }),
+      label: t("filters.categories.featured"),
     },
     {
       id: "frameworks",
-      label: t("filters.categories.frameworks", { defaultValue: "Frameworks" }),
+      label: t("filters.categories.frameworks"),
     },
     {
       id: "developerTools",
-      label: t("filters.categories.developerTools", { defaultValue: "Developer Tools" }),
+      label: t("filters.categories.developerTools"),
     },
     {
       id: "delivery",
-      label: t("filters.categories.delivery", { defaultValue: "Delivery" }),
+      label: t("filters.categories.delivery"),
     },
     {
       id: "aiAutomation",
-      label: t("filters.categories.aiAutomation", { defaultValue: "AI & Automation" }),
+      label: t("filters.categories.aiAutomation"),
     },
   ];
 
@@ -132,44 +133,31 @@ function IntegrationsIndex({ locale }: { locale: string }) {
 
   return (
     <MarketingLayout showCTA={true}>
-      <section className="py-10 lg:py-14">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center rounded-full bg-mist-100 px-3 py-1.5 text-sm text-mist-700">
-              {t("hero.eyebrow", { defaultValue: "Integration directory" })}
-            </div>
-            <h1 className="mt-6 max-w-2xl font-display text-2xl/[1.08] font-medium tracking-[-0.03em] text-mist-950 sm:text-3xl/[1.06] lg:text-[2.9rem]/[1.02]">
-              {t("hero.title", {
-                defaultValue: "Integrations that fit how modern product teams ship.",
-              })}
+            <div className="eyebrow">{t("hero.eyebrow")}</div>
+            <h1 className="section-h2 mt-6 max-w-2xl lg:text-[2.9rem]/[1.02]">
+              {t("hero.title")}
             </h1>
-            <p className="mt-4 max-w-2xl text-lg/8 text-mist-600">
-              {t("hero.titleHighlight", {
-                defaultValue:
-                  "Browse frameworks, developer tools, AI workflows, and delivery surfaces.",
-              })}
+            <p className="section-p mt-3 max-w-2xl">
+              {t("hero.titleHighlight")}
             </p>
             <p className="mt-5 max-w-xl text-sm/7 text-mist-700">
-              {t("hero.subtitle", {
-                defaultValue:
-                  "Better I18N is not a giant marketplace. It is a focused integration surface for teams that want AI-native localization, Git-native review, and CDN-first delivery without heavy TMS overhead.",
-              })}
+              {t("hero.subtitle")}
             </p>
           </div>
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
-            <h2 className="font-display text-3xl/[1.08] font-medium tracking-[-0.03em] text-mist-950 sm:text-4xl/[1.04]">
-              {t("directory.title", { defaultValue: "Explore integrations" })}
+            <h2 className="section-h2">
+              {t("directory.title")}
             </h2>
             <p className="mt-3 text-sm/7 text-mist-700">
-              {t("directory.subtitle", {
-                defaultValue:
-                  "Browse Better's current integration surface across frameworks, developer tooling, delivery, and AI workflows.",
-              })}
+              {t("directory.subtitle")}
             </p>
           </div>
 
@@ -181,10 +169,8 @@ function IntegrationsIndex({ locale }: { locale: string }) {
                   type="search"
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder={t("filters.searchPlaceholder", {
-                    defaultValue: "Search GitHub, Next.js, CDN, AI, CLI...",
-                  })}
-                  className="w-full rounded-full border border-mist-200 bg-mist-100 py-3 pl-11 pr-4 text-sm text-mist-950 outline-none transition-colors placeholder:text-mist-400 focus:border-mist-400 focus:bg-white"
+                  placeholder={t("filters.searchPlaceholder")}
+                  className="w-full rounded-full border border-black/[0.07] bg-white py-3 pl-11 pr-4 text-sm text-mist-950 outline-none transition-colors placeholder:text-mist-400 focus:border-mist-400"
                 />
               </div>
               <div className="flex flex-wrap gap-2">
@@ -195,11 +181,7 @@ function IntegrationsIndex({ locale }: { locale: string }) {
                       key={category.id}
                       type="button"
                       onClick={() => setActiveCategory(category.id)}
-                      className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
-                        active
-                          ? "bg-mist-950 text-white"
-                          : "bg-mist-100 text-mist-700 hover:bg-mist-200 hover:text-mist-950"
-                      }`}
+                      className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${ active ? "border-mist-950 bg-mist-950 text-white" : "border-black/[0.07] text-mist-600 hover:text-mist-950" }`}
                     >
                       {category.label}
                       <span className={`ml-1 ${active ? "text-white/70" : "text-mist-400"}`}>
@@ -222,7 +204,7 @@ function IntegrationsIndex({ locale }: { locale: string }) {
                 return (
                   <section key={group.id}>
                     <div className="mb-4 flex items-center justify-between gap-4">
-                      <h3 className="font-display text-2xl/[1.08] font-medium tracking-[-0.02em] text-mist-950">
+                      <h3 className="section-h2">
                         {t(`categories.${group.id}`)}
                       </h3>
                       <span className="text-sm text-mist-500">{items.length}</span>
@@ -236,15 +218,14 @@ function IntegrationsIndex({ locale }: { locale: string }) {
                 );
               })}
 
+            {/* No dashed box: an empty state is a sentence, not a card. */}
             {filteredIntegrations.length === 0 && (
-              <div className="rounded-lg border border-dashed border-mist-300 px-6 py-12 text-center">
-                <p className="text-lg font-medium text-mist-950">
-                  {t("empty.title", { defaultValue: "No integrations matched that search." })}
+              <div className="py-2">
+                <p className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                  {t("empty.title")}
                 </p>
-                <p className="mt-2 text-sm text-mist-600">
-                  {t("empty.subtitle", {
-                    defaultValue: "Try searching for GitHub, Next.js, CLI, MCP, or CDN.",
-                  })}
+                <p className="mt-1.5 max-w-[46ch] text-[13px] leading-relaxed text-mist-600">
+                  {t("empty.subtitle")}
                 </p>
               </div>
             )}
@@ -252,86 +233,69 @@ function IntegrationsIndex({ locale }: { locale: string }) {
         </div>
       </section>
 
-      <section className="bg-mist-100 py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="mb-10 max-w-3xl">
-            <h2 className="font-display text-3xl/[1.08] font-medium tracking-[-0.03em] text-mist-950 sm:text-4xl/[1.04]">
-              {t("workflows.title", { defaultValue: "Popular workflow combinations" })}
+            <h2 className="section-h2">
+              {t("workflows.title")}
             </h2>
             <p className="mt-3 text-sm/7 text-mist-700">
-              {t("workflows.subtitle", {
-                defaultValue:
-                  "Buyers rarely search for a single integration in isolation. They search for working stacks. These combinations help Better win discovery traffic and conversion-heavy intent together.",
-              })}
+              {t("workflows.subtitle")}
             </p>
           </div>
           <div className="grid gap-5 lg:grid-cols-3">
+            {/* Bare columns: three repeated items in a .map() do not each get a
+                box. The gap separates them; the section already frames them. */}
             {workflowCards.map((workflow) => (
-              <a
-                key={workflow.key}
-                href={workflow.href}
-                className="group rounded-lg border border-mist-200 bg-white p-6 transition-colors hover:border-mist-300"
-              >
-                <h3 className="text-lg font-medium text-mist-950">
+              <a key={workflow.key} href={workflow.href} className="group flex flex-col">
+                <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                   {t(`workflows.items.${workflow.key}.title`)}
                 </h3>
-                <p className="mt-3 text-sm/6 text-mist-600">
+                <p className="mt-2 text-[13px] leading-relaxed text-mist-600">
                   {t(`workflows.items.${workflow.key}.body`)}
                 </p>
-                <div className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-mist-900">
+                <span className="learn-more mt-4 w-fit">
                   {t(`workflows.items.${workflow.key}.cta`)}
-                  <IconArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                </div>
+                  <IconArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                </span>
               </a>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-            <div className="rounded-lg bg-white p-8">
-              <div className="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-mist-600">
-                {t("seo.eyebrow", { defaultValue: "SEO angle" })}
-              </div>
-              <h2 className="mt-5 font-display text-2xl/[1.08] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.04]">
-                {t("seo.title", {
-                  defaultValue: "Why this page matters beyond product marketing",
-                })}
+            <div className="flex flex-col">
+              <div className="eyebrow">{t("seo.eyebrow")}</div>
+              <h2 className="section-h2 mt-5">
+                {t("seo.title")}
               </h2>
               <p className="mt-4 text-sm/7 text-mist-700">
-                {t("seo.body1", {
-                  defaultValue:
-                    "Integration directories do two jobs at once. They help buyers understand product fit, and they create a strong surface for search terms like GitHub localization, Next.js localization integration, translation CDN, MCP localization, and Expo OTA translations.",
-                })}
+                {t("seo.body1")}
               </p>
               <p className="mt-4 text-sm/7 text-mist-700">
-                {t("seo.body2", {
-                  defaultValue:
-                    "Crowdin and Lokalise use integrations as both discovery surfaces and trust signals. Better should do the same, but with a narrower and more honest product story: fewer integrations, tighter workflow fit, and better alignment with modern engineering teams.",
-                })}
+                {t("seo.body2")}
               </p>
             </div>
 
-            <div className="wallpaper overflow-x-auto rounded-lg p-6 code-block">
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-mist-400">
-                    {t("quickStart.eyebrow", { defaultValue: "Quick start" })}
-                  </p>
-                  <h3 className="mt-1 text-lg font-medium text-white">
-                    {t("quickStart.title", {
-                      defaultValue: "Ship through code, not spreadsheets",
-                    })}
-                  </h3>
-                </div>
-                <div className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-mist-300">
-                  Next.js
-                </div>
+            <div className="flex flex-col">
+              {/* Was a `bg-mist-950` slab with white-on-dark text: the only dark
+                  surface on a white page, and unreadable next to the prose it
+                  explains. `CodeBlock` tokenises at build time
+                  (rule/code-blocks-are-tokenised-at-build). */}
+              <div className="mb-4">
+                <div className="eyebrow">{t("quickStart.eyebrow")}</div>
+                <h3 className="mt-1 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                  {t("quickStart.title")}
+                </h3>
               </div>
-              <pre className="text-sm text-mist-100 font-mono">
-                <code>{`# Install the SDK
+              <CodeBlock
+                lang="bash"
+                filename="quick-start"
+                meta="Next.js"
+                code={`# Install the SDK
 npm install @better-i18n/next
 
 # Add Better to your app
@@ -344,8 +308,8 @@ export default withBetterI18n({
 })
 
 # Publish translations through the CDN
-# Add GitHub review flows only when your team needs them`}</code>
-              </pre>
+# Add GitHub review flows only when your team needs them`}
+              />
             </div>
           </div>
         </div>
@@ -366,12 +330,12 @@ function IntegrationBrandMark({ item }: { item: IntegrationItem }) {
       <img
         src={brandUrl}
         alt={`${item.name} logo`}
-        className="size-6 rounded-sm object-contain"
+        className="size-3.5 rounded-[3px] object-contain"
         loading="lazy"
         decoding="async"
         referrerPolicy="strict-origin-when-cross-origin"
-        width={24}
-        height={24}
+        width={16}
+        height={16}
         onError={() => setImageFailed(true)}
       />
     );
@@ -379,17 +343,17 @@ function IntegrationBrandMark({ item }: { item: IntegrationItem }) {
 
   // 2. Sprite or component icon
   if (item.icon.type === "sprite" && item.icon.name) {
-    return <SpriteIcon name={item.icon.name} className="size-5" />;
+    return <SpriteIcon name={item.icon.name} className="size-3.5" />;
   }
   if (item.icon.type === "component") {
     const Component = item.icon.component;
-    return <Component className="size-5" />;
+    return <Component className="size-3.5" />;
   }
 
   // 3. Text label — last resort
   if (item.markLabel) {
     return (
-      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mist-950">
+      <span className="text-[9px] font-medium uppercase tracking-[0.08em] text-mist-700">
         {item.markLabel}
       </span>
     );
@@ -411,18 +375,14 @@ function IntegrationCard({
   const content = (
     <>
       <div className="flex items-start justify-between gap-4">
-        <div className={`${compact ? "size-10" : "size-11"} flex shrink-0 items-center justify-center rounded-lg border border-mist-200 bg-white text-mist-950`}>
+        <div className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.06] bg-white text-mist-950">
           <IntegrationBrandMark item={item} />
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           {item.badgeLabel && (
-            <span className="rounded-full bg-mist-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500">
-              {item.badgeLabel}
-            </span>
+            <span className="text-[10px] text-mist-400">{item.badgeLabel}</span>
           )}
-          <span className="rounded-full bg-mist-950 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
-            {t(`status.${item.status}`)}
-          </span>
+          <span className="text-[10px] font-medium text-mist-900">{t(`status.${item.status}`)}</span>
         </div>
       </div>
 
@@ -436,7 +396,7 @@ function IntegrationCard({
       </div>
 
       <div className={`${compact ? "mt-5" : "mt-6"} inline-flex items-center gap-2 text-sm font-medium text-mist-900`}>
-        {t("directory.cardCta.openGuide", { defaultValue: "Open guide" })}
+        {t("directory.cardCta.openGuide")}
         <IconArrowRight className="size-4" />
       </div>
     </>
@@ -446,7 +406,7 @@ function IntegrationCard({
     <Link
       to="/$locale/integrations/$slug/"
       params={{ locale, slug: item.slug }}
-      className={`group flex h-full flex-col rounded-lg border border-mist-200 bg-white ${compact ? "p-5" : "p-6"} transition-colors hover:border-mist-300`}
+      className="group flex h-full flex-col"
     >
       {content}
     </Link>

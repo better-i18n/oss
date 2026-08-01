@@ -35,7 +35,7 @@ export default function DeveloperQuotes() {
             >
               {/* Quote */}
               <div className="mb-6">
-                <IconOpenQuote1 className="size-8 text-mist-300 mb-3" />
+                <IconOpenQuote1 className="size-4 text-mist-300 mb-3" />
                 <p className="text-[15px] leading-relaxed text-mist-900">
                   "{t(`quotes.items.${key}.quote`)}"
                 </p>
@@ -47,7 +47,7 @@ export default function DeveloperQuotes() {
               {/* Solution */}
               <div className="flex gap-3 border-t border-black/[0.05] pt-4">
                 <div className="flex-shrink-0 mt-0.5">
-                  <IconCheckCircle2 className="size-5 text-emerald-500" />
+                  <IconCheckCircle2 className="size-3.5 text-mist-600" />
                 </div>
                 <div>
                   <span className="text-[11px] font-medium text-mist-400">

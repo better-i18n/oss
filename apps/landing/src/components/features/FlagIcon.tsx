@@ -1,7 +1,6 @@
 /**
  * FlagIcon — small inline country flag image used inside the feature
- * cards. Same pattern that the AI drawer demo (`DemoAIDrawerStandalone`)
- * uses, sourced from flagcdn.com.
+ * cards, sourced from flagcdn.com.
  *
  * `countryCode` should be the ISO 3166-1 alpha-2 country code, NOT the
  * BCP-47 language code. For locales whose language tag differs from the

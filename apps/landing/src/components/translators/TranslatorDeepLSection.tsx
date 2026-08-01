@@ -5,9 +5,9 @@ import {
 import { SpriteIcon } from "@/components/SpriteIcon";
 
 const benefits = [
-  { key: "consistent", icon: <SpriteIcon name="checkmark" className="size-5" /> },
-  { key: "autoSync", icon: <IconArrowsRepeat className="size-5" /> },
-  { key: "allPairs", icon: <SpriteIcon name="globe" className="size-5" /> },
+  { key: "consistent", icon: <SpriteIcon name="checkmark" className="size-3.5" /> },
+  { key: "autoSync", icon: <IconArrowsRepeat className="size-3.5" /> },
+  { key: "allPairs", icon: <SpriteIcon name="globe" className="size-3.5" /> },
 ];
 
 export default function TranslatorDeepLSection() {
@@ -17,15 +17,12 @@ export default function TranslatorDeepLSection() {
     <section>
       <div className="section">
         {/* Header */}
-        <div className="mb-12 lg:mb-16 text-center">
-          <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-md border border-black/[0.07] bg-white px-2.5 py-1 text-[11px] font-medium text-mist-600">
-            <SpriteIcon name="globe" className="size-4" />
-            {t("deepl.badge")}
-          </div>
+        <div className="mb-12 lg:mb-16">
+          <div className="eyebrow">{t("deepl.badge")}</div>
           <h2 className="section-h2">
             {t("deepl.title")}
           </h2>
-          <p className="section-p mt-3 max-w-2xl mx-auto">
+          <p className="section-p mt-3">
             {t("deepl.subtitle")}
           </p>
         </div>
@@ -37,13 +34,13 @@ export default function TranslatorDeepLSection() {
               key={benefit.key}
               className="flex flex-col"
             >
-              <div className="flex size-[22px] shrink-0 items-center justify-center rounded-md border border-black/[0.04] bg-black/[0.03] text-mist-600 mb-4">
+              <div className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600 mb-4">
                 {benefit.icon}
               </div>
-              <h3 className="text-lg font-medium text-mist-950 mb-2">
+              <h3 className="mb-2 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                 {t(`deepl.benefits.${benefit.key}.title`)}
               </h3>
-              <p className="text-mist-600 leading-relaxed">
+              <p className="text-[13px] leading-relaxed text-mist-600">
                 {t(`deepl.benefits.${benefit.key}.description`)}
               </p>
             </div>

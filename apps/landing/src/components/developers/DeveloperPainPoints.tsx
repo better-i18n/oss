@@ -8,15 +8,15 @@ import {
 const painPointKeys = [
   {
     key: "contextSwitching",
-    icon: <IconArrowLeftRight className="size-6" />,
+    icon: <IconArrowLeftRight className="size-3.5" />,
   },
   {
     key: "manualSyncing",
-    icon: <IconArrowsRepeat className="size-6" />,
+    icon: <IconArrowsRepeat className="size-3.5" />,
   },
   {
     key: "backlogDebt",
-    icon: <IconClipboard2 className="size-6" />,
+    icon: <IconClipboard2 className="size-3.5" />,
   },
 ];
 
@@ -42,7 +42,7 @@ export default function DeveloperPainPoints() {
               className="flex flex-col"
             >
               <div>
-                <div className="flex size-[22px] shrink-0 items-center justify-center rounded-md border border-black/[0.04] bg-black/[0.03] text-mist-600 mb-4">
+                <div className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600 mb-4">
                   {point.icon}
                 </div>
                 <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900 mb-2">

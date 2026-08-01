@@ -1,120 +1,91 @@
 import { useTranslations } from "@better-i18n/use-intl";
-import {
-  IconLightBulb,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { SpriteIcon } from "@/components/SpriteIcon";
+import { Section, SectionHeader } from "@/components/ui/page";
+import { FlowHero, FlowCard, FlowMono, FlowText } from "@/components/visuals/FlowHero";
+import { LocaleFlag } from "@/components/ui/locale-flag";
 
-const stepKeys = [
-  {
-    key: "connect",
-    icon: <SpriteIcon name="github" className="size-5" />,
-  },
-  {
-    key: "discover",
-    icon: <SpriteIcon name="magnifying-glass" className="size-5" />,
-  },
-  {
-    key: "translate",
-    icon: <IconLightBulb className="size-5" />,
-  },
-  {
-    key: "publish",
-    icon: <SpriteIcon name="checkmark" className="size-5" />,
-  },
-];
-
+/**
+ * "How it works" for /for-developers/, as the converging flow diagram.
+ *
+ * It used to be two hand-maintained timelines — a four-column horizontal one for
+ * desktop and a vertical one for mobile — each drawing its own rail, its own
+ * numbered node and its own chevrons. Two layouts, one meaning, and neither of
+ * them said what the product does.
+ *
+ * `FlowHero` is now the standard answer to "how does this work"
+ * (rule/how-it-works-is-a-converging-flow): the inputs sit around the edge, the
+ * platform sits in the middle, one accent pulse runs edge to centre. Nothing was
+ * invented here — every card is a published `developers.workflow.steps.*` key,
+ * the same copy the timeline carried, and the three locale cards mirror what
+ * `publish` actually produces.
+ */
 export default function DeveloperWorkflow() {
   const t = useTranslations("developers");
 
   return (
-    <section>
-      <div className="section">
-        <div className="mb-12 lg:mb-16">
-          <h2 className="section-h2">
-            {t("workflow.title")}
-          </h2>
-          <p className="section-p mt-3">
-            {t("workflow.subtitle")}
-          </p>
-        </div>
+    <section id="workflow">
+      <Section>
+        <SectionHeader
+          eyebrow={t("workflow.eyebrow")}
+          title={t("workflow.title")}
+          subtitle={t("workflow.subtitle")}
+        />
 
-        {/* Desktop: Horizontal Timeline */}
-        <div className="hidden lg:block">
-          <div className="relative">
-            {/* Connection Line */}
-            {/* A hairline, not a gradient: the rail is structure, and a fading
-                gradient is decoration pretending to be one. */}
-            <div className="absolute top-[11px] left-0 right-0 h-px bg-black/[0.07]" />
-
-            <div className="grid grid-cols-4 gap-6">
-              {stepKeys.map((step, index) => (
-                <div key={step.key} className="relative flex flex-col">
-                  {/* Step Circle */}
-                  {/* One 22px neutral tile, not a 96px bordered plate: the
-                      number carries the sequence and the tile only carries the
-                      mark (rule/listed-items-are-not-cards). */}
-                  <div className="relative z-10 mb-5 flex items-center gap-2 bg-white pr-2">
-                    <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
-                      {step.icon}
-                    </span>
-                    <span className="text-[11px] font-medium tabular-nums text-mist-400">
-                      {t(`workflow.steps.${step.key}.number`)}
-                    </span>
-                  </div>
-
-                  {/* Arrow (between steps) */}
-                  {index < stepKeys.length - 1 && (
-                    <div className="absolute top-[3px] right-3 flex items-center">
-                      <SpriteIcon name="chevron-right" className="size-3.5 text-mist-300" />
-                    </div>
-                  )}
-
-                  {/* Left-aligned, like every other step list on the site —
-                      centred text in a four-column row had nothing to align to. */}
-                  <h3 className="mb-1.5 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
-                    {t(`workflow.steps.${step.key}.title`)}
-                  </h3>
-                  <p className="text-[13px] leading-relaxed text-mist-600">
-                    {t(`workflow.steps.${step.key}.description`)}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile: Vertical Timeline */}
-        <div className="lg:hidden">
-          <div className="relative">
-            {/* Vertical Line */}
-            <div className="absolute top-0 bottom-0 left-[11px] w-px bg-black/[0.07]" />
-
-            <div className="space-y-8">
-              {stepKeys.map((step) => (
-                <div key={step.key} className="relative flex gap-4">
-                  {/* Step Circle */}
-                  <div className="relative z-10 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
-                    {step.icon}
-                  </div>
-
-                  {/* Text */}
-                  <div className="flex-1">
-                    <span className="mb-1 block text-[11px] font-medium tabular-nums text-mist-400">
-                      {t(`workflow.steps.${step.key}.number`)}
-                    </span>
-                    <h3 className="mb-1 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
-                      {t(`workflow.steps.${step.key}.title`)}
-                    </h3>
-                    <p className="text-[13px] leading-relaxed text-mist-600">
-                      {t(`workflow.steps.${step.key}.description`)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+        <FlowHero
+          pillar="ai"
+          title={t("workflow.title")}
+          center={{
+            mark: (
+              <img
+                src="/brand/logo.svg"
+                alt=""
+                width={26}
+                height={26}
+                style={{ width: 26, height: 26 }}
+              />
+            ),
+            label: "Better I18N",
+            sublabel: t("workflow.legend.automated"),
+          }}
+          cards={[
+            <FlowCard key="connect" eyebrow={t("workflow.steps.connect.title")}>
+              <FlowMono>github.com/your-org</FlowMono>
+              <div style={{ marginTop: 4 }}>
+                <FlowText muted>{t("workflow.steps.connect.description")}</FlowText>
+              </div>
+            </FlowCard>,
+            <FlowCard key="discover" eyebrow={t("workflow.steps.discover.title")}>
+              <FlowText>{t("workflow.steps.discover.description")}</FlowText>
+            </FlowCard>,
+            <FlowCard key="translate" eyebrow={t("workflow.steps.translate.title")}>
+              <FlowText>{t("workflow.steps.translate.description")}</FlowText>
+            </FlowCard>,
+            <FlowCard key="publish" eyebrow={t("workflow.steps.publish.title")}>
+              <FlowText>{t("workflow.steps.publish.description")}</FlowText>
+            </FlowCard>,
+            <FlowCard
+              key="tr"
+              eyebrow={t("workflow.steps.publish.title")}
+              corner={<LocaleFlag locale="tr" size={14} />}
+            >
+              <FlowMono>tr · published</FlowMono>
+            </FlowCard>,
+            <FlowCard
+              key="de"
+              eyebrow={t("workflow.steps.publish.title")}
+              corner={<LocaleFlag locale="de" size={14} />}
+            >
+              <FlowMono>de · published</FlowMono>
+            </FlowCard>,
+            <FlowCard
+              key="ja"
+              eyebrow={t("workflow.steps.publish.title")}
+              corner={<LocaleFlag locale="ja" size={14} />}
+            >
+              <FlowMono>ja · published</FlowMono>
+            </FlowCard>,
+          ]}
+        />
+      </Section>
     </section>
   );
 }

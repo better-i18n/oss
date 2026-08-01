@@ -1,54 +1,85 @@
 import { useTranslations } from "@better-i18n/use-intl";
-import {
-  IconAt,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import { SpriteIcon } from "@/components/SpriteIcon";
+import { Section, SectionHeader } from "@/components/ui/page";
+import { FlowHero, FlowCard, FlowMono, FlowText } from "@/components/visuals/FlowHero";
+import { LocaleFlag } from "@/components/ui/locale-flag";
 
-const features = [
-  { key: "multiModel", icon: <SpriteIcon name="sparkles-soft" className="size-5" /> },
-  { key: "humanControl", icon: <SpriteIcon name="checkmark" className="size-5" /> },
-  { key: "glossary", icon: <SpriteIcon name="book" className="size-5" /> },
-  { key: "mentions", icon: <IconAt className="size-5" /> },
-];
-
+/**
+ * What a translator actually works with, as the converging flow diagram.
+ *
+ * This section answers "how does translating here work", so it takes the
+ * standard shape (rule/how-it-works-is-a-converging-flow) rather than a
+ * centred two-column grid of icon tiles. Each input the translator relies on —
+ * the model they pick, the glossary that constrains it, the mentions that
+ * address a language or a namespace, and their own approval — sits on the edge
+ * and converges on the editor.
+ *
+ * Copy is unchanged: every card is a published `translators.features.items.*`
+ * key, the same title and description the grid rendered.
+ */
 export default function TranslatorFeatures() {
   const t = useTranslations("translators");
 
   return (
     <section id="features">
-      <div className="section">
-        <div className="mb-12 lg:mb-16 text-center">
-          <h2 className="section-h2">
-            {t("features.title")}
-          </h2>
-          <p className="section-p mt-3 max-w-2xl mx-auto">
-            {t("features.subtitle")}
-          </p>
-        </div>
+      <Section>
+        <SectionHeader
+          eyebrow={t("features.eyebrow")}
+          title={t("features.title")}
+          subtitle={t("features.subtitle")}
+        />
 
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-          {features.map((feature) => (
-            <div
-              key={feature.key}
-              className="flex flex-col"
-            >
-              <div className="flex items-start gap-4">
-                <div className="flex size-[22px] shrink-0 items-center justify-center rounded-md border border-black/[0.04] bg-black/[0.03] text-mist-600">
-                  {feature.icon}
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-mist-950 mb-2">
-                    {t(`features.items.${feature.key}.title`)}
-                  </h3>
-                  <p className="text-mist-600 leading-relaxed">
-                    {t(`features.items.${feature.key}.description`)}
-                  </p>
-                </div>
+        <FlowHero
+          pillar="ai"
+          title={t("features.title")}
+          center={{
+            mark: (
+              <img
+                src="/brand/logo.svg"
+                alt=""
+                width={26}
+                height={26}
+                style={{ width: 26, height: 26 }}
+              />
+            ),
+            label: "Better I18N",
+            sublabel: t("features.legend.assisted"),
+          }}
+          cards={[
+            <FlowCard key="multiModel" eyebrow={t("features.items.multiModel.title")}>
+              <FlowMono>gpt · claude · gemini · deepl</FlowMono>
+              <div style={{ marginTop: 4 }}>
+                <FlowText muted>{t("features.items.multiModel.description")}</FlowText>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            </FlowCard>,
+            <FlowCard key="glossary" eyebrow={t("features.items.glossary.title")}>
+              <FlowText>{t("features.items.glossary.description")}</FlowText>
+            </FlowCard>,
+            <FlowCard key="humanControl" eyebrow={t("features.items.humanControl.title")}>
+              <FlowText>{t("features.items.humanControl.description")}</FlowText>
+            </FlowCard>,
+            <FlowCard key="mentions" eyebrow={t("features.items.mentions.title")}>
+              <FlowMono>@Turkish · @auth</FlowMono>
+              <div style={{ marginTop: 4 }}>
+                <FlowText muted>{t("features.items.mentions.description")}</FlowText>
+              </div>
+            </FlowCard>,
+            <FlowCard
+              key="tr"
+              eyebrow={t("workflow.steps.published.status")}
+              corner={<LocaleFlag locale="tr" size={14} />}
+            >
+              <FlowMono>tr · published</FlowMono>
+            </FlowCard>,
+            <FlowCard
+              key="de"
+              eyebrow={t("workflow.steps.published.status")}
+              corner={<LocaleFlag locale="de" size={14} />}
+            >
+              <FlowMono>de · published</FlowMono>
+            </FlowCard>,
+          ]}
+        />
+      </Section>
     </section>
   );
 }

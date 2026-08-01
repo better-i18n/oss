@@ -7,6 +7,7 @@ import {
   IconAntigravity,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { HighlightedCode, type CodeLang } from "@/components/CodeBlock";
 import { ZedIcon } from "@/components/ZedIcon";
 
 const ideConfigs = [
@@ -14,7 +15,7 @@ const ideConfigs = [
     key: "cursor",
     name: "Cursor",
     icon: IconCursor,
-    language: "json",
+    lang: "json" as CodeLang,
     code: `{
   "mcpServers": {
     "better-i18n": {
@@ -31,7 +32,7 @@ const ideConfigs = [
     key: "claude",
     name: "Claude",
     icon: IconClaudeai,
-    language: "bash",
+    lang: "bash" as CodeLang,
     code: `# Claude Code (terminal)
 claude mcp add better-i18n -s user \\
   -e BETTER_I18N_API_KEY=your-api-key \\
@@ -46,7 +47,7 @@ claude mcp add better-i18n -s user \\
     key: "windsurf",
     name: "Windsurf",
     icon: IconWindsurf,
-    language: "json",
+    lang: "json" as CodeLang,
     code: `{
   "mcpServers": {
     "better-i18n": {
@@ -63,7 +64,7 @@ claude mcp add better-i18n -s user \\
     key: "zed",
     name: "Zed",
     icon: ZedIcon,
-    language: "json",
+    lang: "json" as CodeLang,
     code: `{
   "context_servers": {
     "better-i18n": {
@@ -82,7 +83,7 @@ claude mcp add better-i18n -s user \\
     key: "antigravity",
     name: "Antigravity",
     icon: IconAntigravity,
-    language: "markdown",
+    lang: "text" as CodeLang,
     code: `# Antigravity MCP Configuration
 # Add to your GEMINI.md or .rules:
 
@@ -173,13 +174,8 @@ export default function DeveloperIDESupport() {
                 shadow was the last piece of elevation on this page. */}
             <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
               {/* Window header with dots */}
-              <div className="flex items-center gap-2 px-4 py-3 bg-mist-50 border-b border-mist-200">
-                <div className="flex gap-1.5">
-                  <div className="size-3 rounded-full bg-red-400/80" />
-                  <div className="size-3 rounded-full bg-yellow-400/80" />
-                  <div className="size-3 rounded-full bg-green-400/80" />
-                </div>
-                <span className="ml-3 text-xs text-mist-400 font-mono">
+              <div className="flex items-center gap-2 border-b border-black/[0.06] px-4 py-3">
+                <span className="text-xs text-mist-400 font-mono">
                   {activeIDE === "claude"
                     ? "terminal"
                     : activeIDE === "antigravity"
@@ -189,7 +185,7 @@ export default function DeveloperIDESupport() {
               </div>
 
               {/* IDE Tabs */}
-              <div className="flex border-b border-mist-200 bg-mist-50/50">
+              <div className="flex border-b border-black/[0.06]">
                 {ideConfigs.map((ide) => {
                   const Icon = ide.icon;
                   const isActive = activeIDE === ide.key;
@@ -198,7 +194,7 @@ export default function DeveloperIDESupport() {
                       key={ide.key}
                       type="button"
                       onClick={() => setActiveIDE(ide.key)}
-                      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap ${ isActive ? "bg-white text-mist-950 border-b-2 border-mist-950 -mb-px" : "text-mist-500 hover:text-mist-700 hover:bg-mist-100/50" }`}
+                      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap ${ isActive ? "border-b-2 border-mist-950 text-mist-950 -mb-px" : "text-mist-500 hover:text-mist-900" }`}
                     >
                       <Icon className="size-4" />
                       {ide.name}
@@ -207,32 +203,18 @@ export default function DeveloperIDESupport() {
                 })}
               </div>
 
-              {/* Code Content - Fixed height, no scroll */}
-              <div className="relative">
-                <pre className="p-5 text-[13px] leading-[1.7]">
-                  <code className="text-mist-700 font-mono block">
-                    {codeLines.map((line, i) => (
-                      <div key={i} className="flex h-[22px]">
-                        <span className="select-none text-mist-400 w-6 text-right mr-4 shrink-0">
-                          {i + 1}
-                        </span>
-                        <span
-                          className={
-                            line.trim().startsWith("#") ||
-                            line.trim().startsWith("//")
-                              ? "text-mist-400 italic"
-                              : line.includes('"')
-                                ? "text-mist-800"
-                                : "text-mist-600"
-                          }
-                        >
-                          {line || " "}
-                        </span>
-                      </div>
-                    ))}
-                  </code>
-                </pre>
-              </div>
+              {/* This panel had its own two-hue highlighter: a line was italic
+                  grey if it started with `#`, darker if it contained a quote.
+                  That guessed at syntax it could not see. The shared tokeniser
+                  reads the language properly and gives the same three hues as
+                  every other code block on the site
+                  (rule/code-blocks-carry-three-hues); the fixed line count is
+                  kept so switching IDE does not resize the panel. */}
+              <HighlightedCode
+                lang={activeConfig.lang}
+                code={codeLines.join("\n")}
+                className="overflow-x-auto p-5 font-mono text-[13px] leading-[1.7] text-mist-700"
+              />
             </div>
 
             {/* Decorative gradient blur behind */}

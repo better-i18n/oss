@@ -1,7 +1,4 @@
 import { useTranslations } from "@better-i18n/use-intl";
-import {
-  IconFilterTimeline
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { CodeBlock } from "@/components/CodeBlock";
 
 export default function DeveloperCLIDemo() {
@@ -13,10 +10,9 @@ export default function DeveloperCLIDemo() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Text */}
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-mist-200 px-3 py-1.5 text-sm text-mist-700 w-fit mb-6">
-              <IconFilterTimeline className="size-4" />
-              {t("cliDemo.badge")}
-            </span>
+            {/* The site's label style, not a tinted pill: the same words in
+                the same place, without a second surface behind them. */}
+            <div className="eyebrow mb-4">{t("cliDemo.badge")}</div>
             <h2 className="section-h2">
               {t("cliDemo.title")}
             </h2>
