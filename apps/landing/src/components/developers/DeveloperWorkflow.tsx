@@ -42,31 +42,39 @@ export default function DeveloperWorkflow() {
         <div className="hidden lg:block">
           <div className="relative">
             {/* Connection Line */}
-            <div className="absolute top-12 left-0 right-0 h-px bg-gradient-to-r from-mist-200 via-mist-300 to-mist-200" />
+            {/* A hairline, not a gradient: the rail is structure, and a fading
+                gradient is decoration pretending to be one. */}
+            <div className="absolute top-[11px] left-0 right-0 h-px bg-black/[0.07]" />
 
             <div className="grid grid-cols-4 gap-6">
               {stepKeys.map((step, index) => (
-                <div key={step.key} className="relative flex flex-col items-center">
+                <div key={step.key} className="relative flex flex-col">
                   {/* Step Circle */}
-                  <div className="relative z-10 mb-6 flex size-24 flex-col items-center justify-center rounded-xl border border-black/[0.07] bg-white">
-                    <span className="text-xs font-medium text-mist-400 mb-1">
+                  {/* One 22px neutral tile, not a 96px bordered plate: the
+                      number carries the sequence and the tile only carries the
+                      mark (rule/listed-items-are-not-cards). */}
+                  <div className="relative z-10 mb-5 flex items-center gap-2 bg-white pr-2">
+                    <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
+                      {step.icon}
+                    </span>
+                    <span className="text-[11px] font-medium tabular-nums text-mist-400">
                       {t(`workflow.steps.${step.key}.number`)}
                     </span>
-                    <div className="text-mist-700">{step.icon}</div>
                   </div>
 
                   {/* Arrow (between steps) */}
                   {index < stepKeys.length - 1 && (
-                    <div className="absolute top-12 left-[calc(50%+48px)] w-[calc(100%-96px)] flex items-center justify-center">
-                      <SpriteIcon name="chevron-right" className="size-4 text-mist-400" />
+                    <div className="absolute top-[3px] right-3 flex items-center">
+                      <SpriteIcon name="chevron-right" className="size-3.5 text-mist-300" />
                     </div>
                   )}
 
-                  {/* Text */}
-                  <h3 className="text-base font-medium text-mist-950 text-center mb-2">
+                  {/* Left-aligned, like every other step list on the site —
+                      centred text in a four-column row had nothing to align to. */}
+                  <h3 className="mb-1.5 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                     {t(`workflow.steps.${step.key}.title`)}
                   </h3>
-                  <p className="text-sm text-mist-600 text-center max-w-[200px]">
+                  <p className="text-[13px] leading-relaxed text-mist-600">
                     {t(`workflow.steps.${step.key}.description`)}
                   </p>
                 </div>
@@ -79,25 +87,25 @@ export default function DeveloperWorkflow() {
         <div className="lg:hidden">
           <div className="relative">
             {/* Vertical Line */}
-            <div className="absolute top-0 bottom-0 left-6 w-px bg-black/[0.07]" />
+            <div className="absolute top-0 bottom-0 left-[11px] w-px bg-black/[0.07]" />
 
             <div className="space-y-8">
               {stepKeys.map((step) => (
-                <div key={step.key} className="relative flex gap-6">
+                <div key={step.key} className="relative flex gap-4">
                   {/* Step Circle */}
-                  <div className="relative z-10 flex size-12 shrink-0 items-center justify-center rounded-xl border border-black/[0.07] bg-white">
-                    <div className="text-mist-700">{step.icon}</div>
+                  <div className="relative z-10 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
+                    {step.icon}
                   </div>
 
                   {/* Text */}
-                  <div className="flex-1 pt-1">
-                    <span className="text-xs font-medium text-mist-400 block mb-1">
+                  <div className="flex-1">
+                    <span className="mb-1 block text-[11px] font-medium tabular-nums text-mist-400">
                       {t(`workflow.steps.${step.key}.number`)}
                     </span>
-                    <h3 className="text-base font-medium text-mist-950 mb-1">
+                    <h3 className="mb-1 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                       {t(`workflow.steps.${step.key}.title`)}
                     </h3>
-                    <p className="text-sm text-mist-600">
+                    <p className="text-[13px] leading-relaxed text-mist-600">
                       {t(`workflow.steps.${step.key}.description`)}
                     </p>
                   </div>

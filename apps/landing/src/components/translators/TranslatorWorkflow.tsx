@@ -1,48 +1,37 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import { SpriteIcon } from "@/components/SpriteIcon";
 
+/**
+ * The four translation statuses, told by ink weight instead of hue.
+ *
+ * Each step used to carry a colour on four surfaces at once — plate background,
+ * plate border, a filled dot and the status text — red → amber → orange → green.
+ * Four decorative hues in one row (rule/neutral-ink-accent-is-identity-only), and
+ * they were not carrying the meaning: the published status LABEL does that. The
+ * progression now reads as ink getting heavier as a string gets closer to live,
+ * which is the same device the rest of the site uses for "more done".
+ *
+ * If we ever decide status hue is information (the way code tokens are), that is
+ * a rule to ratify in DESIGN-DECISIONS.md first, not a per-component choice.
+ */
 const workflowSteps = [
-  {
-    key: "missing",
-    dotColor: "bg-red-400",
-    bgColor: "bg-red-50",
-    borderColor: "border-red-200",
-    textColor: "text-red-600",
-  },
-  {
-    key: "draft",
-    dotColor: "bg-amber-400",
-    bgColor: "bg-amber-50",
-    borderColor: "border-amber-200",
-    textColor: "text-amber-600",
-  },
-  {
-    key: "approved",
-    dotColor: "bg-orange-400",
-    bgColor: "bg-orange-50",
-    borderColor: "border-orange-200",
-    textColor: "text-orange-600",
-  },
-  {
-    key: "published",
-    dotColor: "bg-green-400",
-    bgColor: "bg-green-50",
-    borderColor: "border-green-200",
-    textColor: "text-green-600",
-  },
+  { key: "missing", dot: "bg-mist-200", ink: "text-mist-400" },
+  { key: "draft", dot: "bg-mist-300", ink: "text-mist-500" },
+  { key: "approved", dot: "bg-mist-500", ink: "text-mist-600" },
+  { key: "published", dot: "bg-mist-900", ink: "text-mist-900" },
 ];
 
 export default function TranslatorWorkflow() {
   const t = useTranslations("translators");
 
   return (
-    <section className="py-16 lg:py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section>
+      <div className="section">
         <div className="mb-12 lg:mb-16 text-center">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
+          <h2 className="section-h2">
             {t("workflow.title")}
           </h2>
-          <p className="mt-4 text-lg text-mist-600 max-w-2xl mx-auto">
+          <p className="section-p mt-3 max-w-2xl mx-auto">
             {t("workflow.subtitle")}
           </p>
         </div>
@@ -59,14 +48,10 @@ export default function TranslatorWorkflow() {
                   key={step.key}
                   className="relative flex flex-col items-center"
                 >
-                  {/* Status Circle */}
-                  <div
-                    className={`size-28 rounded-2xl ${step.bgColor} border ${step.borderColor} flex flex-col items-center justify-center mb-6 relative z-10`}
-                  >
-                    <div
-                      className={`size-5 rounded-full ${step.dotColor} mb-2`}
-                    />
-                    <span className={`text-xs font-semibold ${step.textColor}`}>
+                  {/* Status: a 6px dot and the label, no 112px plate. */}
+                  <div className="relative z-10 mb-5 flex items-center gap-2 bg-white pr-2">
+                    <span className={`size-1.5 shrink-0 rounded-full ${step.dot}`} />
+                    <span className={`text-[11px] font-medium ${step.ink}`}>
                       {t(`workflow.steps.${step.key}.status`)}
                     </span>
                   </div>
@@ -79,7 +64,7 @@ export default function TranslatorWorkflow() {
                   )}
 
                   {/* Text */}
-                  <h3 className="text-base font-semibold text-mist-950 text-center mb-2">
+                  <h3 className="text-base font-medium text-mist-950 text-center mb-2">
                     {t(`workflow.steps.${step.key}.title`)}
                   </h3>
                   <p className="text-sm text-mist-600 text-center max-w-[200px]">
@@ -100,24 +85,19 @@ export default function TranslatorWorkflow() {
             <div className="space-y-8">
               {workflowSteps.map((step) => (
                 <div key={step.key} className="relative flex gap-6">
-                  {/* Status Circle */}
-                  <div
-                    className={`size-12 rounded-xl ${step.bgColor} border ${step.borderColor} flex items-center justify-center shrink-0 relative z-10`}
-                  >
-                    <div className={`size-3 rounded-full ${step.dotColor}`} />
+                  <div className="relative z-10 mt-1.5 flex size-[22px] shrink-0 items-center justify-center bg-white">
+                    <span className={`size-1.5 rounded-full ${step.dot}`} />
                   </div>
 
                   {/* Text */}
-                  <div className="flex-1 pt-1">
-                    <span
-                      className={`text-xs font-semibold ${step.textColor} block mb-1`}
-                    >
+                  <div className="flex-1">
+                    <span className={`mb-1 block text-[11px] font-medium ${step.ink}`}>
                       {t(`workflow.steps.${step.key}.status`)}
                     </span>
-                    <h3 className="text-base font-semibold text-mist-950 mb-1">
+                    <h3 className="mb-1 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                       {t(`workflow.steps.${step.key}.title`)}
                     </h3>
-                    <p className="text-sm text-mist-600">
+                    <p className="text-[13px] leading-relaxed text-mist-600">
                       {t(`workflow.steps.${step.key}.description`)}
                     </p>
                   </div>
@@ -127,12 +107,10 @@ export default function TranslatorWorkflow() {
           </div>
         </div>
 
-        {/* Summary */}
-        <div className="mt-12 text-center">
-          <p className="text-sm text-mist-500 bg-mist-50 border border-mist-200 inline-block px-4 py-2 rounded-full">
-            {t("workflow.summary")}
-          </p>
-        </div>
+        {/* Summary — a sentence, not a pill on a tinted chip. */}
+        <p className="mt-10 text-[13px] leading-relaxed text-mist-600">
+          {t("workflow.summary")}
+        </p>
       </div>
     </section>
   );

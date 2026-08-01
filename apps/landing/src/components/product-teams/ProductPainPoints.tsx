@@ -1,26 +1,12 @@
 "use client";
 
 import { useTranslations } from "@better-i18n/use-intl";
-import { motion } from "framer-motion";
+import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import {
   IconExclamationCircle,
   IconCheckCircle2,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
 
 export default function ProductPainPoints() {
   const t = useTranslations("product-teams");
@@ -49,35 +35,24 @@ export default function ProductPainPoints() {
   ];
 
   return (
-    <section className="px-2 py-16 lg:py-24">
-      <div className="w-full mx-auto max-w-[1400px]">
-        <div className="px-6 lg:px-10">
+    <section>
+      <div className="section">
           {/* Section Header */}
           <div className="max-w-2xl mb-12">
-            <h2 className="text-2xl/[1.2] font-semibold tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.2]">
+            <h2 className="text-2xl/[1.2] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.2]">
               {t("painPoints.title")}
             </h2>
-            <p className="mt-4 text-base text-mist-600">
+            <p className="section-p mt-3">
               {t("painPoints.description")}
             </p>
           </div>
 
           {/* Pain Points Grid */}
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-          >
-            {painPoints.map((item, idx) => (
-              <motion.div
-                key={idx}
-                variants={cardVariants}
-                className="group bg-white rounded-2xl p-6 lg:p-8 border border-mist-200 hover:border-mist-300 transition-colors"
-              >
+          <Stagger className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2">
+            {painPoints.map((item) => (
+              <StaggerItem key={item.pain} className="flex flex-col">
                 {/* Pain Title */}
-                <h3 className="text-lg font-medium text-mist-950 mb-6">
+                <h3 className="mb-5 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                   "{item.pain}"
                 </h3>
 
@@ -86,13 +61,13 @@ export default function ProductPainPoints() {
                   {/* Before */}
                   <div className="flex gap-3">
                     <div className="flex-shrink-0 mt-0.5">
-                      <IconExclamationCircle className="size-5 text-red-400" />
+                      <IconExclamationCircle className="size-3.5 text-mist-400" />
                     </div>
                     <div>
-                      <span className="text-xs font-medium uppercase tracking-wider text-mist-400">
+                      <span className="text-[11px] font-medium text-mist-400">
                         {t("painPoints.before")}
                       </span>
-                      <p className="text-sm text-mist-600 mt-1">
+                      <p className="mt-1 text-[13px] leading-relaxed text-mist-600">
                         {item.before}
                       </p>
                     </div>
@@ -101,22 +76,22 @@ export default function ProductPainPoints() {
                   {/* After */}
                   <div className="flex gap-3">
                     <div className="flex-shrink-0 mt-0.5">
-                      <IconCheckCircle2 className="size-5 text-emerald-500" />
+                      <IconCheckCircle2 className="size-3.5 text-mist-600" />
                     </div>
                     <div>
-                      <span className="text-xs font-medium uppercase tracking-wider text-mist-400">
+                      <span className="text-[11px] font-medium text-mist-400">
                         {t("painPoints.after")}
                       </span>
-                      <p className="text-sm text-mist-950 mt-1 font-medium">
+                      <p className="mt-1 text-[13px] font-medium leading-relaxed text-mist-900">
                         {item.after}
                       </p>
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </StaggerItem>
             ))}
-          </motion.div>
-        </div>
+          </Stagger>
+        
       </div>
     </section>
   );

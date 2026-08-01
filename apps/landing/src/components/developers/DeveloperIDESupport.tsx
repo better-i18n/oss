@@ -132,12 +132,12 @@ export default function DeveloperIDESupport() {
   const codeLines = normalizeCode(activeConfig.code);
 
   return (
-    <section className="py-20 lg:py-28">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section>
+      <div className="section">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           {/* Left side - Content */}
           <div className="lg:sticky lg:top-24">
-            <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1] lg:text-[2.75rem]/[1.1]">
+            <h2 className="section-h2 lg:text-[2.75rem]/[1.1]">
               {t("ideSupport.title")}
             </h2>
             <p className="mt-5 text-lg text-mist-600 leading-relaxed max-w-lg">
@@ -146,11 +146,11 @@ export default function DeveloperIDESupport() {
 
             {/* Features list */}
             <div className="mt-10 space-y-6">
-              {features.map((feature, idx) => {
+              {features.map((feature) => {
                 return (
-                  <div key={idx} className="flex gap-4">
-                    <div className="flex-shrink-0 size-12 rounded-xl bg-mist-100 flex items-center justify-center text-mist-600">
-                      <SpriteIcon name={feature.spriteName} className="size-6" />
+                  <div key={feature.spriteName} className="flex gap-4">
+                    <div className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
+                      <SpriteIcon name={feature.spriteName} className="size-3.5" />
                     </div>
                     <div>
                       <h3 className="font-medium text-mist-950 text-base">
@@ -169,7 +169,9 @@ export default function DeveloperIDESupport() {
           {/* Right side - Code Block with Tabs */}
           <div className="relative">
             {/* Browser-like window frame */}
-            <div className="bg-white rounded-2xl border border-mist-200 shadow-xl overflow-hidden">
+            {/* A figure keeps its own shell, but a hairline one — the card
+                shadow was the last piece of elevation on this page. */}
+            <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
               {/* Window header with dots */}
               <div className="flex items-center gap-2 px-4 py-3 bg-mist-50 border-b border-mist-200">
                 <div className="flex gap-1.5">
@@ -194,12 +196,9 @@ export default function DeveloperIDESupport() {
                   return (
                     <button
                       key={ide.key}
+                      type="button"
                       onClick={() => setActiveIDE(ide.key)}
-                      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap ${
-                        isActive
-                          ? "bg-white text-mist-950 border-b-2 border-mist-950 -mb-px"
-                          : "text-mist-500 hover:text-mist-700 hover:bg-mist-100/50"
-                      }`}
+                      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap ${ isActive ? "bg-white text-mist-950 border-b-2 border-mist-950 -mb-px" : "text-mist-500 hover:text-mist-700 hover:bg-mist-100/50" }`}
                     >
                       <Icon className="size-4" />
                       {ide.name}
@@ -237,7 +236,8 @@ export default function DeveloperIDESupport() {
             </div>
 
             {/* Decorative gradient blur behind */}
-            <div className="absolute -inset-4 -z-10 bg-gradient-to-br from-mist-200/40 via-transparent to-mist-100/40 rounded-3xl blur-2xl" />
+            {/* (Removed: a blurred gradient glow behind the panel. Decoration
+                with no information, and the only gradient left on the page.) */}
           </div>
         </div>
       </div>

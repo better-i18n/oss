@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "@better-i18n/use-intl";
-import { motion, AnimatePresence } from "framer-motion";
+import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import {
   IconPeople,
   IconSpeaker,
@@ -34,15 +34,14 @@ export default function ProductCollaboration() {
   ];
 
   return (
-    <section className="px-2 py-16 lg:py-24">
-      <div className="w-full mx-auto max-w-[1400px]">
-        <div className="px-6 lg:px-10">
+    <section>
+      <div className="section">
           {/* Section Header */}
           <div className="max-w-2xl mb-12">
-            <h2 className="text-2xl/[1.2] font-semibold tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.2]">
+            <h2 className="text-2xl/[1.2] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.2]">
               {t("collaboration.title")}
             </h2>
-            <p className="mt-4 text-base text-mist-600">
+            <p className="section-p mt-3">
               {t("collaboration.description")}
             </p>
           </div>
@@ -57,32 +56,23 @@ export default function ProductCollaboration() {
                 return (
                   <button
                     key={roleKey}
+                    type="button"
                     onClick={() => setActiveRole(roleKey)}
-                    className={`w-full text-left p-4 rounded-xl border transition-all ${
-                      isActive
-                        ? "bg-white border-mist-300 shadow-sm"
-                        : "bg-transparent border-transparent hover:bg-white/50"
-                    }`}
+                    className={`w-full border-l py-2 pl-4 text-left transition-colors ${ isActive ? "border-l-mist-900 text-mist-900" : "border-l-black/[0.07] text-mist-500 hover:text-mist-900" }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
-                          isActive
-                            ? "bg-mist-950 text-white"
-                            : "bg-mist-200 text-mist-600"
-                        }`}
+                        className={`flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] transition-colors ${ isActive ? "text-mist-900" : "text-mist-500" }`}
                       >
                         {spriteName ? (
-                          <SpriteIcon name={spriteName} className="size-5" />
+                          <SpriteIcon name={spriteName} className="size-3.5" />
                         ) : Icon ? (
-                          <Icon className="size-5" />
+                          <Icon className="size-3.5" />
                         ) : null}
                       </div>
                       <div>
                         <span
-                          className={`block text-sm font-medium ${
-                            isActive ? "text-mist-950" : "text-mist-700"
-                          }`}
+                          className={`block text-sm font-medium ${ isActive ? "text-mist-950" : "text-mist-700" }`}
                         >
                           {t(`collaboration.roles.${roleKey}.title`)}
                         </span>
@@ -98,31 +88,24 @@ export default function ProductCollaboration() {
 
             {/* Content Panel */}
             <div className="lg:col-span-2">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeRole}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="bg-white rounded-2xl border border-mist-200 p-6 lg:p-8"
-                >
-                  <h3 className="text-lg font-medium text-mist-950 mb-6">
+              {/* Re-keyed on the active role so switching tabs replays the
+                  house fade-up. AnimatePresence plus a hand-rolled x-slide was
+                  the only bespoke motion left on this page; Stagger is the
+                  same grammar every other section already uses. */}
+              <Stagger key={activeRole} className="min-w-0">
+                <StaggerItem>
+                  <h3 className="mb-6 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                     {t(`collaboration.roles.${activeRole}.title`)}
                   </h3>
+                </StaggerItem>
 
+                <StaggerItem>
                   <ul className="space-y-4">
-                    {points.map((point, idx) => (
-                      <motion.li
-                        key={idx}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.1 }}
-                        className="flex items-start gap-3"
-                      >
-                        <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    {points.map((point) => (
+                      <li key={point} className="flex items-start gap-3">
+                        <div className="mt-0.5 flex size-[18px] shrink-0 items-center justify-center rounded-[5px] border border-black/[0.06] bg-white">
                           <svg
-                            className="w-3 h-3 text-emerald-600"
+                            className="size-2.5 text-mist-700"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -136,12 +119,12 @@ export default function ProductCollaboration() {
                           </svg>
                         </div>
                         <span className="text-sm text-mist-700">{point}</span>
-                      </motion.li>
+                      </li>
                     ))}
                   </ul>
-                </motion.div>
-              </AnimatePresence>
-            </div>
+                </StaggerItem>
+              </Stagger>
+
           </div>
         </div>
       </div>

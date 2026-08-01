@@ -5,22 +5,22 @@ import {
 import { SpriteIcon } from "@/components/SpriteIcon";
 
 const painPoints = [
-  { key: "noContext", icon: <SpriteIcon name="magnifying-glass" className="size-6" /> },
-  { key: "inconsistentTerms", icon: <SpriteIcon name="book" className="size-6" /> },
-  { key: "blindQuality", icon: <IconCircleInfo className="size-6" /> },
+  { key: "noContext", icon: <SpriteIcon name="magnifying-glass" className="size-3.5" /> },
+  { key: "inconsistentTerms", icon: <SpriteIcon name="book" className="size-3.5" /> },
+  { key: "blindQuality", icon: <IconCircleInfo className="size-3.5" /> },
 ];
 
 export default function TranslatorPainPoints() {
   const t = useTranslations("translators");
 
   return (
-    <section className="py-16 lg:py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section>
+      <div className="section">
         <div className="mb-12 lg:mb-16">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
+          <h2 className="section-h2">
             {t("painPoints.title")}
           </h2>
-          <p className="mt-4 text-lg text-mist-600">
+          <p className="section-p mt-3">
             {t("painPoints.subtitle")}
           </p>
         </div>
@@ -29,16 +29,16 @@ export default function TranslatorPainPoints() {
           {painPoints.map((point) => (
             <div
               key={point.key}
-              className="group relative border border-mist-200 rounded-2xl p-6 lg:p-8 hover:border-mist-300 transition-colors"
+              className="flex flex-col"
             >
               <div>
-                <div className="size-12 rounded-xl bg-mist-100 flex items-center justify-center text-mist-600 mb-5">
+                <div className="mb-5 flex size-[22px] items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   {point.icon}
                 </div>
-                <h3 className="text-lg font-semibold text-mist-950 mb-2">
+                <h3 className="mb-2 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                   {t(`painPoints.items.${point.key}.title`)}
                 </h3>
-                <p className="text-mist-600 leading-relaxed">
+                <p className="text-[13px] leading-relaxed text-mist-600">
                   {t(`painPoints.items.${point.key}.description`)}
                 </p>
               </div>
