@@ -264,22 +264,24 @@ function MultilingualSeoPage() {
           title={t(k("hreflang.checklist.title"))}
           subtitle={t(k("hreflang.checklist.subtitle"))}
         />
-        <div className="mt-8 overflow-hidden">
-          <ul role="list" className="-mt-px -ml-px grid grid-cols-1 lg:grid-cols-2">
-            {hreflangChecklist.map((item) => (
-              <li
-                key={item}
-                className="flex items-start gap-2.5 border-t border-l border-black/[0.05] px-5 py-3.5 text-[13px] leading-relaxed text-mist-700"
-              >
-                <SpriteIcon
-                  name="checkmark"
-                  className="mt-0.5 size-3.5 shrink-0 text-mist-400"
-                />
-                <span>{t(k(item))}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* A checklist is a list, not a matrix, so the items get no cell of
+            their own — bare rows split by gap (rule/listed-items-are-not-cards).
+            The check mark's tile is the only box left, and it is the same tile
+            the comparison tables use. */}
+        <ul role="list" className="mt-8 grid grid-cols-1 gap-x-10 gap-y-3.5 lg:grid-cols-2">
+          {hreflangChecklist.map((item) => (
+            <li
+              key={item}
+              className="flex items-start gap-2.5 text-[13px] leading-relaxed text-mist-700"
+            >
+              <SpriteIcon
+                name="checkmark"
+                className="mt-0.5 size-3.5 shrink-0 text-mist-400"
+              />
+              <span>{t(k(item))}</span>
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Divider />
@@ -424,30 +426,29 @@ function MultilingualSeoPage() {
         <h2 id="multilingual-seo-related" className="section-h2">
           {t("whatIs.relatedTopics")}
         </h2>
-        <div className="mt-6 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            {relatedPages.map((page) => (
-              <Link
-                key={page.href}
-                to={page.href}
-                params={{ locale }}
-                className="group flex items-start justify-between gap-3 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
-              >
-                <span className="min-w-0">
-                  <span className="block text-[13px] font-medium text-mist-900">
-                    {page.name}
-                  </span>
-                  <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
-                    {page.description}
-                  </span>
+        {/* Link list → bare columns (rule/listed-items-are-not-cards). */}
+        <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+          {relatedPages.map((page) => (
+            <Link
+              key={page.href}
+              to={page.href}
+              params={{ locale }}
+              className="group flex items-start justify-between gap-3"
+            >
+              <span className="min-w-0">
+                <span className="block text-[13px] font-medium text-mist-900 transition-colors group-hover:text-mist-600">
+                  {page.name}
                 </span>
-                <SpriteIcon
-                  name="arrow-right"
-                  className="mt-0.5 size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
-                />
-              </Link>
-            ))}
-          </div>
+                <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
+                  {page.description}
+                </span>
+              </span>
+              <SpriteIcon
+                name="arrow-right"
+                className="mt-0.5 size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
+              />
+            </Link>
+          ))}
         </div>
       </Section>
 

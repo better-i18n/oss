@@ -557,14 +557,13 @@ export function ComparisonRelatedTopics({
       <div className="section">
         <h2 className="text-[11px] font-medium text-mist-400">{heading}</h2>
 
-        <div className="mt-4 overflow-hidden rounded-xl border border-black/[0.07] bg-white">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-x-10 gap-y-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {links.map((link) => (
               <Link
                 key={link.to}
                 to={link.to as never}
                 params={{ locale } as never}
-                className="group flex items-start justify-between gap-3 border-t border-l border-black/[0.05] px-4 py-4 transition-colors hover:bg-black/[0.02]"
+                className="group flex items-start justify-between gap-3 px-4 py-4"
               >
                 <span className="min-w-0">
                   <span className="block text-[13px] font-medium text-mist-900">{link.title}</span>
@@ -580,7 +579,6 @@ export function ComparisonRelatedTopics({
               </Link>
             ))}
           </div>
-        </div>
       </div>
     </section>
   );
@@ -610,8 +608,7 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
       <div className="section">
         <h2 className="text-[11px] font-medium text-mist-400">{title}</h2>
 
-        <div className="mt-4 overflow-hidden rounded-xl border border-black/[0.07] bg-white">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-3">
+        <div className="mt-8 grid gap-x-10 gap-y-6 grid-cols-1 sm:grid-cols-3">
             {others.map((competitor) => (
               <Link
                 key={competitor.slug}
@@ -632,7 +629,7 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
                    noise. The full sentence stays as the accessible name so the
                    link still says where it goes out of context. */
                 aria-label={t("vsLabel", { name: competitor.name })}
-                className="group flex items-center gap-2.5 border-t border-l border-black/[0.05] px-4 py-3 transition-colors hover:bg-black/[0.02]"
+                className="group flex items-center gap-2.5"
               >
                 <CompetitorMark competitor={competitor.slug} size={20} />
                 <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-mist-700 transition-colors group-hover:text-mist-950">
@@ -646,7 +643,6 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
               </Link>
             ))}
           </div>
-        </div>
       </div>
     </section>
   );

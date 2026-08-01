@@ -459,14 +459,13 @@ function CompleteGuideI18nPage() {
           title={t(k("frameworks.title"))}
           subtitle={t(k("frameworks.subtitle"))}
         />
-        <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-x-10 gap-y-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {frameworkGuides.map((guide) => (
               <Link
                 key={guide.href}
                 to={guide.href}
                 params={{ locale }}
-                className="group flex items-start justify-between gap-3 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
+                className="group flex items-start justify-between gap-3"
               >
                 <span className="min-w-0">
                   <span className="block text-[13px] font-medium text-mist-900">
@@ -483,7 +482,6 @@ function CompleteGuideI18nPage() {
               </Link>
             ))}
           </div>
-        </div>
       </Section>
 
       <Divider />
@@ -506,14 +504,13 @@ function CompleteGuideI18nPage() {
         <h2 id="complete-guide-related" className="section-h2">
           {t("whatIs.relatedTopics")}
         </h2>
-        <div className="mt-6 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-8 grid gap-x-10 gap-y-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
             {relatedPages.map((page) => (
               <Link
                 key={page.href}
                 to={page.href}
                 params={{ locale }}
-                className="group flex items-start justify-between gap-3 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
+                className="group flex items-start justify-between gap-3"
               >
                 <span className="min-w-0">
                   <span className="block text-[13px] font-medium text-mist-900">
@@ -530,7 +527,6 @@ function CompleteGuideI18nPage() {
               </Link>
             ))}
           </div>
-        </div>
       </Section>
 
       <Divider />

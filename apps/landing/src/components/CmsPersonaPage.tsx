@@ -88,14 +88,13 @@ export function CmsPersonaPage({
               title={t("builtForEveryTeam")}
               subtitle={t("builtForEveryTeamDesc")}
             />
-            <div className="mt-8 overflow-hidden">
-              <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-8 grid gap-x-10 gap-y-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {linkable.map((persona) => (
                   <Link
                     key={persona.slug}
                     to={personaRoute(persona.slug)!}
                     params={{ locale }}
-                    className="group flex items-start justify-between gap-3 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
+                    className="group flex items-start justify-between gap-3"
                   >
                     <span className="min-w-0">
                       <span className="block text-[13px] font-medium text-mist-900">
@@ -115,7 +114,6 @@ export function CmsPersonaPage({
                   </Link>
                 ))}
               </div>
-            </div>
           </Section>
         </>
       )}

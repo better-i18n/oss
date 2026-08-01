@@ -4,6 +4,10 @@ import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import { HighlightedCode } from "@/components/CodeBlock";
+import { FlowHero, FlowCard, FlowMono, FlowText } from "@/components/visuals/FlowHero";
+import { LocaleFlag } from "@/components/ui/locale-flag";
+import { PageTestimonial } from "@/components/ui/page";
+import { useTranslations } from "@better-i18n/use-intl";
 import {
   ClosingCta,
   Divider,
@@ -92,6 +96,17 @@ function ContentPage() {
         }}
         visual={<ModelVisual t={t} />}
       />
+
+      <Divider />
+
+      {/* The product's own flow, the same shape the framework pages use: every
+          source of content converges on one platform and leaves through one
+          edge. Added on request ("ürünü anlattığımız bloklar bu sayfalara da
+          gelsin"); the existing ModelVisual and QueryVisual are untouched below.
+          Every label is an existing contentPage key — no new copy. */}
+      <Section>
+        <ContentFlow t={t} />
+      </Section>
 
       <Divider />
 
@@ -205,6 +220,10 @@ function ContentPage() {
 
       <Divider />
 
+      <ContentTestimonial />
+
+      <Divider />
+
       <RelatedPages currentPage="features" locale={locale} variant="content" />
 
       <Divider />
@@ -223,6 +242,74 @@ function ContentPage() {
         }}
       />
     </MarketingLayout>
+  );
+}
+
+/* ─── Product flow ───────────────────────────────────────────────── */
+
+/**
+ * Better Content, as a flow: a model and its localized fields on one side, the
+ * chainable read and the edge cache on the other, all converging on the product
+ * tile. Geometry, motion and reduced-motion handling belong to <FlowHero />.
+ */
+function ContentFlow({ t }: { t: (key: string) => string }) {
+  const entryCard = (locale: string) => (
+    <FlowCard eyebrow={t("capabilities.localized.title")} corner={<LocaleFlag locale={locale} size={14} />}>
+      <FlowMono>{`blog-posts · ${locale}`}</FlowMono>
+      <div style={{ marginTop: 4 }}>
+        <FlowText muted>{t("visual.localized")}</FlowText>
+      </div>
+    </FlowCard>
+  );
+
+  return (
+    <FlowHero
+      pillar="sync"
+      title={t("capabilities.title")}
+      center={{
+        mark: (
+          <img src="/brand/logo.svg" alt="" width={26} height={26} style={{ width: 26, height: 26 }} />
+        ),
+        label: "Better Content",
+        sublabel: t("capabilities.edge.title"),
+      }}
+      cards={[
+        <FlowCard key="model" eyebrow={t("capabilities.models.title")}>
+          <FlowMono>{t("visual.model")}</FlowMono>
+        </FlowCard>,
+        <FlowCard key="query" eyebrow={t("query.title")}>
+          <FlowMono>.from(&quot;blog-posts&quot;).language(&quot;tr&quot;)</FlowMono>
+          <div style={{ marginTop: 4 }}>
+            <FlowText muted>{t("query.point.two")}</FlowText>
+          </div>
+        </FlowCard>,
+        <FlowCard key="relations" eyebrow={t("capabilities.relations.title")}>
+          <FlowMono>.expand([&quot;author&quot;, &quot;category&quot;])</FlowMono>
+        </FlowCard>,
+        <FlowCard key="publish" eyebrow={t("capabilities.publish.title")}>
+          <FlowText>{t("visual.entry")}</FlowText>
+        </FlowCard>,
+        <div key="tr">{entryCard("tr")}</div>,
+        <div key="de">{entryCard("de")}</div>,
+        <div key="ja">{entryCard("ja")}</div>,
+        <FlowCard key="mcp" eyebrow={t("capabilities.mcp.title")}>
+          <FlowMono>createContentEntry()</FlowMono>
+        </FlowCard>,
+      ]}
+    />
+  );
+}
+
+/** One real quote — the CDN-publish one, because that is this page's promise. */
+function ContentTestimonial() {
+  const tq = useTranslations("testimonials");
+  return (
+    <PageTestimonial
+      quote={tq("2.quote")}
+      name={tq("2.name")}
+      role={tq("2.title")}
+      patternId="dots-content"
+    />
   );
 }
 

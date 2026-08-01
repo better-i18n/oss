@@ -24,31 +24,31 @@ export default function DeveloperPainPoints() {
   const t = useTranslations("developers");
 
   return (
-    <section className="py-16 lg:py-24 bg">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section className="bg">
+      <div className="section">
         <div className="mb-12 lg:mb-16">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
+          <h2 className="section-h2">
             {t("painPoints.title")}
           </h2>
-          <p className="mt-4 text-lg text-mist-600">
+          <p className="section-p mt-3">
             {t("painPoints.subtitle")}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-          {painPointKeys.map((point, index) => (
+        <div className="grid grid-cols-1 gap-x-10 gap-y-9 md:grid-cols-3">
+          {painPointKeys.map((point) => (
             <div
-              key={index}
-              className="group relative bg-white border border-mist-200 rounded-2xl p-6 lg:p-8 hover:border-mist-300 transition-colors"
+              key={point.key}
+              className="flex flex-col"
             >
               <div>
-                <div className="size-12 rounded-xl bg-mist-100 flex items-center justify-center text-mist-600 mb-5">
+                <div className="flex size-[22px] shrink-0 items-center justify-center rounded-md border border-black/[0.04] bg-black/[0.03] text-mist-600 mb-4">
                   {point.icon}
                 </div>
-                <h3 className="text-lg font-semibold text-mist-950 mb-2">
+                <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900 mb-2">
                   {t(`painPoints.items.${point.key}.title`)}
                 </h3>
-                <p className="text-mist-600 leading-relaxed">
+                <p className="text-[13px] leading-relaxed text-mist-600">
                   {t(`painPoints.items.${point.key}.description`)}
                 </p>
               </div>

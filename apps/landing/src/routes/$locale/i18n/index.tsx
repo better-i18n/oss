@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { GuideMark, type GuideGroup } from "@/lib/i18n-guide-icons";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, formatStructuredData, createPageLoader } from "@/lib/page-seo";
 import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
@@ -184,9 +185,17 @@ function I18nIndexPage() {
 }
 
 /**
- * One hairline index of links. Cells draw their own top + left rule and the grid
- * is shifted -1px, so the first row and column lose theirs at every breakpoint
- * without any nth-child arithmetic (rule/interior-hairlines-only).
+ * One index of links — bare columns split by gap, no cell borders.
+ *
+ * rule/listed-items-are-not-cards: this is a link list, not a matrix of equal
+ * units, so the items get no box of their own. The page already draws a frame
+ * (FrameLines + the `.section` rules) and `<Section>` already supplies the
+ * padding; a border per link put a third box inside the second one and left the
+ * eye reading rules instead of names — with 41 links the borders were the loudest
+ * thing on the page.
+ *
+ * rule/name-a-thing-with-its-mark: the frameworks group carries each framework's
+ * own logo, on the same 18px neutral tile the vendor marks use.
  */
 function HubGrid({
   items,
@@ -196,7 +205,7 @@ function HubGrid({
 }: {
   items: HubLink[];
   /** Key group under `i18n.index.*` that holds this set of link labels. */
-  group: "frameworks" | "topics" | "localizationGuides" | "seoGuides";
+  group: GuideGroup;
   locale: string;
   columns: 3 | 4;
 }) {
@@ -207,34 +216,40 @@ function HubGrid({
       : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 
   return (
-    <div className="mt-8 overflow-hidden">
-      <div className={`-mt-px -ml-px grid ${gridCols}`}>
-        {items.map((item) => (
-          <Link
-            key={item.slug}
-            // Every guide is its own file route, so the target cannot be
-            // expressed as one literal. Cast to a sibling route id (same
-            // `$locale` param shape) the way `RelatedPages` does, rather than
-            // leaving a template literal that the router's link types reject.
-            to={`/$locale/i18n/${item.slug}/` as "/$locale/i18n/"}
-            params={{ locale }}
-            className="group flex items-start justify-between gap-3 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
-          >
-            <span className="min-w-0">
-              <span className="block text-[13px] font-medium text-mist-900">
-                {t(`i18n.index.${group}.${item.key}.name`)}
+    <div className={`mt-8 grid gap-x-10 gap-y-7 ${gridCols}`}>
+      {items.map((item) => (
+        <Link
+          key={item.slug}
+          // Every guide is its own file route, so the target cannot be
+          // expressed as one literal. Cast to a sibling route id (same
+          // `$locale` param shape) the way `RelatedPages` does, rather than
+          // leaving a template literal that the router's link types reject.
+          to={`/$locale/i18n/${item.slug}/` as "/$locale/i18n/"}
+          params={{ locale }}
+          className="group flex items-start justify-between gap-3"
+        >
+            <span className="flex min-w-0 items-start gap-3">
+              {/* <GuideMark /> rather than a local tile: rule/name-a-thing-with-
+                  its-mark wants ONE tile at one size everywhere a framework is
+                  named, and this grid inventing its own was how that drifts. */}
+              <span className="mt-0.5">
+                <GuideMark slug={item.slug} group={group} />
               </span>
-              <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
-                {t(`i18n.index.${group}.${item.key}.description`)}
+              <span className="min-w-0">
+                <span className="block text-[13px] font-medium text-mist-900">
+                  {t(`i18n.index.${group}.${item.key}.name`)}
+                </span>
+                <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
+                  {t(`i18n.index.${group}.${item.key}.description`)}
+                </span>
               </span>
             </span>
             <SpriteIcon
               name="arrow-right"
               className="mt-0.5 size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
             />
-          </Link>
-        ))}
-      </div>
+        </Link>
+      ))}
     </div>
   );
 }

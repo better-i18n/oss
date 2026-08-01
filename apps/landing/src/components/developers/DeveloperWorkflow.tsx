@@ -27,13 +27,13 @@ export default function DeveloperWorkflow() {
   const t = useTranslations("developers");
 
   return (
-    <section className="py-16 lg:py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section>
+      <div className="section">
         <div className="mb-12 lg:mb-16">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
+          <h2 className="section-h2">
             {t("workflow.title")}
           </h2>
-          <p className="mt-4 text-lg text-mist-600">
+          <p className="section-p mt-3">
             {t("workflow.subtitle")}
           </p>
         </div>
@@ -46,10 +46,10 @@ export default function DeveloperWorkflow() {
 
             <div className="grid grid-cols-4 gap-6">
               {stepKeys.map((step, index) => (
-                <div key={index} className="relative flex flex-col items-center">
+                <div key={step.key} className="relative flex flex-col items-center">
                   {/* Step Circle */}
-                  <div className="size-24 rounded-2xl bg-white border border-mist-200 shadow-sm flex flex-col items-center justify-center mb-6 relative z-10">
-                    <span className="text-xs font-bold text-mist-400 mb-1">
+                  <div className="relative z-10 mb-6 flex size-24 flex-col items-center justify-center rounded-xl border border-black/[0.07] bg-white">
+                    <span className="text-xs font-medium text-mist-400 mb-1">
                       {t(`workflow.steps.${step.key}.number`)}
                     </span>
                     <div className="text-mist-700">{step.icon}</div>
@@ -63,7 +63,7 @@ export default function DeveloperWorkflow() {
                   )}
 
                   {/* Text */}
-                  <h3 className="text-base font-semibold text-mist-950 text-center mb-2">
+                  <h3 className="text-base font-medium text-mist-950 text-center mb-2">
                     {t(`workflow.steps.${step.key}.title`)}
                   </h3>
                   <p className="text-sm text-mist-600 text-center max-w-[200px]">
@@ -79,22 +79,22 @@ export default function DeveloperWorkflow() {
         <div className="lg:hidden">
           <div className="relative">
             {/* Vertical Line */}
-            <div className="absolute top-0 bottom-0 left-6 w-px bg-mist-200" />
+            <div className="absolute top-0 bottom-0 left-6 w-px bg-black/[0.07]" />
 
             <div className="space-y-8">
-              {stepKeys.map((step, index) => (
-                <div key={index} className="relative flex gap-6">
+              {stepKeys.map((step) => (
+                <div key={step.key} className="relative flex gap-6">
                   {/* Step Circle */}
-                  <div className="size-12 rounded-xl bg-white border border-mist-200 shadow-sm flex items-center justify-center shrink-0 relative z-10">
+                  <div className="relative z-10 flex size-12 shrink-0 items-center justify-center rounded-xl border border-black/[0.07] bg-white">
                     <div className="text-mist-700">{step.icon}</div>
                   </div>
 
                   {/* Text */}
                   <div className="flex-1 pt-1">
-                    <span className="text-xs font-bold text-mist-400 block mb-1">
+                    <span className="text-xs font-medium text-mist-400 block mb-1">
                       {t(`workflow.steps.${step.key}.number`)}
                     </span>
-                    <h3 className="text-base font-semibold text-mist-950 mb-1">
+                    <h3 className="text-base font-medium text-mist-950 mb-1">
                       {t(`workflow.steps.${step.key}.title`)}
                     </h3>
                     <p className="text-sm text-mist-600">

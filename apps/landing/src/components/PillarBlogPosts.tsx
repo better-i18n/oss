@@ -13,18 +13,18 @@ export function PillarBlogPosts({ posts, locale }: PillarBlogPostsProps) {
   if (posts.length === 0) return null;
 
   return (
-    <section className="py-14">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <h2 className="font-display text-2xl/[1.08] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.04] mb-8">
-          {t("relatedArticles", "Related Articles")}
+    <section>
+      <div className="section">
+        <h2 className="section-h2 mb-8">
+          {t("relatedArticles")}
         </h2>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
             <Link
               key={post.slug}
-              to="/$locale/blog/$slug"
+              to="/$locale/blog/$slug/"
               params={{ locale, slug: post.slug }}
-              className="group flex flex-col rounded-2xl border border-mist-200 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-mist-300 hover:shadow-md"
+              className="group flex flex-col"
             >
               <h3 className="font-display text-[15px]/[1.4] font-medium text-mist-950 group-hover:text-mist-700 transition-colors line-clamp-2">
                 {post.title}
@@ -35,7 +35,7 @@ export function PillarBlogPosts({ posts, locale }: PillarBlogPostsProps) {
                 </p>
               )}
               <span className="mt-4 text-sm font-medium text-mist-700">
-                {t("readMore", "Read more")} &rarr;
+                {t("readMore")} &rarr;
               </span>
             </Link>
           ))}

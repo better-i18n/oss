@@ -4,6 +4,10 @@ import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import { HighlightedCode } from "@/components/CodeBlock";
+import { FlowHero, FlowCard, FlowMono, FlowText } from "@/components/visuals/FlowHero";
+import { LocaleFlag } from "@/components/ui/locale-flag";
+import { PageTestimonial } from "@/components/ui/page";
+import { useTranslations } from "@better-i18n/use-intl";
 import {
   ClosingCta,
   Divider,
@@ -93,6 +97,17 @@ function AnalyticsPage() {
         }}
         visual={<ViewsVisual t={t} />}
       />
+
+      <Divider />
+
+      {/* Better Analytics as a flow: a view somewhere in the app becomes one
+          cookie-free signal, and the breakdowns leave the platform on the other
+          side. Requested alongside the Content one; ViewsVisual, InstallVisual
+          and TransportVisual below are unchanged. Labels are existing
+          analyticsPage keys. */}
+      <Section>
+        <AnalyticsFlow t={t} />
+      </Section>
 
       <Divider />
 
@@ -219,6 +234,10 @@ function AnalyticsPage() {
 
       <Divider />
 
+      <AnalyticsTestimonial />
+
+      <Divider />
+
       <RelatedPages currentPage="features" locale={locale} variant="content" />
 
       <Divider />
@@ -237,6 +256,72 @@ function AnalyticsPage() {
         }}
       />
     </MarketingLayout>
+  );
+}
+
+/* ─── Product flow ───────────────────────────────────────────────── */
+
+/**
+ * Every tracked view arrives the same way — one explicit call, one beacon, no
+ * cookie — and leaves as a breakdown by language, country and entry.
+ */
+function AnalyticsFlow({ t }: { t: (key: string) => string }) {
+  const localeCard = (locale: string) => (
+    <FlowCard eyebrow={t("visual.byLanguage")} corner={<LocaleFlag locale={locale} size={14} />}>
+      <FlowMono>{`${locale} · content.view`}</FlowMono>
+    </FlowCard>
+  );
+
+  return (
+    <FlowHero
+      pillar="mcp"
+      title={t("tracked.title")}
+      center={{
+        mark: (
+          <img src="/brand/logo.svg" alt="" width={26} height={26} style={{ width: 26, height: 26 }} />
+        ),
+        label: "Better Analytics",
+        sublabel: t("visual.live"),
+      }}
+      cards={[
+        <FlowCard key="hook" eyebrow={t("install.title")}>
+          <FlowMono>useTrackView(&quot;content.view&quot;)</FlowMono>
+        </FlowCard>,
+        <FlowCard key="explicit" eyebrow={t("tracked.explicit.title")}>
+          <FlowText>{t("install.point.one")}</FlowText>
+        </FlowCard>,
+        <FlowCard key="beacon" eyebrow={t("transport.eyebrow")}>
+          <FlowMono>sendBeacon</FlowMono>
+          <div style={{ marginTop: 4 }}>
+            <FlowText muted>{t("transport.beacon")}</FlowText>
+          </div>
+        </FlowCard>,
+        <FlowCard key="key" eyebrow={t("safety.writeOnly.title")}>
+          <FlowMono>bi_pub_…</FlowMono>
+        </FlowCard>,
+        <div key="tr">{localeCard("tr")}</div>,
+        <div key="de">{localeCard("de")}</div>,
+        <FlowCard key="country" eyebrow={t("tracked.country.title")}>
+          <FlowMono>DE · TR · JP</FlowMono>
+        </FlowCard>,
+        <FlowCard key="entries" eyebrow={t("visual.topEntries")}>
+          <FlowMono>entryId · contentModel</FlowMono>
+        </FlowCard>,
+      ]}
+    />
+  );
+}
+
+/** One real quote — the platform-breadth one, since this is a second product. */
+function AnalyticsTestimonial() {
+  const tq = useTranslations("testimonials");
+  return (
+    <PageTestimonial
+      quote={tq("1.quote")}
+      name={tq("1.name")}
+      role={tq("1.title")}
+      patternId="dots-analytics"
+    />
   );
 }
 

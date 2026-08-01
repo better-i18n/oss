@@ -14,18 +14,18 @@ export default function TranslatorDeepLSection() {
   const t = useTranslations("translators");
 
   return (
-    <section className="py-16 lg:py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section>
+      <div className="section">
         {/* Header */}
         <div className="mb-12 lg:mb-16 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1.5 text-sm text-blue-700 mb-6">
+          <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-md border border-black/[0.07] bg-white px-2.5 py-1 text-[11px] font-medium text-mist-600">
             <SpriteIcon name="globe" className="size-4" />
             {t("deepl.badge")}
           </div>
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
+          <h2 className="section-h2">
             {t("deepl.title")}
           </h2>
-          <p className="mt-4 text-lg text-mist-600 max-w-2xl mx-auto">
+          <p className="section-p mt-3 max-w-2xl mx-auto">
             {t("deepl.subtitle")}
           </p>
         </div>
@@ -35,12 +35,12 @@ export default function TranslatorDeepLSection() {
           {benefits.map((benefit) => (
             <div
               key={benefit.key}
-              className="relative border border-mist-200 rounded-2xl p-6 lg:p-8 hover:border-mist-300 transition-colors"
+              className="flex flex-col"
             >
-              <div className="size-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 mb-5">
+              <div className="flex size-[22px] shrink-0 items-center justify-center rounded-md border border-black/[0.04] bg-black/[0.03] text-mist-600 mb-4">
                 {benefit.icon}
               </div>
-              <h3 className="text-lg font-semibold text-mist-950 mb-2">
+              <h3 className="text-lg font-medium text-mist-950 mb-2">
                 {t(`deepl.benefits.${benefit.key}.title`)}
               </h3>
               <p className="text-mist-600 leading-relaxed">

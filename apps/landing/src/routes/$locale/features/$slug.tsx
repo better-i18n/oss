@@ -163,14 +163,13 @@ function FeaturePageComponent() {
             {/* Hairline index, not a card grid: each cell draws its own top +
                 left rule, the grid is shifted -1px, and the wrapper is a bare
                 clip box (rule/interior-hairlines-only). */}
-            <div className="mt-8 overflow-hidden">
-              <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-8 grid gap-x-10 gap-y-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {relatedFeatures.map((feature: MarketingPageListItem) => (
                   <Link
                     key={feature.slug}
                     to="/$locale/features/$slug/"
                     params={{ locale, slug: feature.slug }}
-                    className="group flex flex-col gap-2 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
+                    className="group flex flex-col gap-2"
                   >
                     <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
                       {feature.title}
@@ -183,7 +182,6 @@ function FeaturePageComponent() {
                   </Link>
                 ))}
               </div>
-            </div>
           </Section>
         </>
       )}
