@@ -4,6 +4,7 @@ import { RelatedPages } from "@/components/RelatedPages";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { CodeBlock } from "@/components/CodeBlock";
+import { McpClientSetup } from "@/components/visuals/McpClientSetup";
 import {
   ClosingCta,
   Divider,
@@ -22,7 +23,7 @@ import {
   toIntegrationItem,
   type IntegrationItem,
 } from "@/lib/integrations-catalog";
-import { getIntegrationFacts, type IntegrationFacts } from "@/lib/integration-facts";
+import { getIntegrationFacts } from "@/lib/integration-facts";
 import { useT } from "@/lib/i18n";
 
 const BRANDFETCH_CLIENT_ID = import.meta.env.VITE_BRANDFETCH_CLIENT_ID;
@@ -122,6 +123,7 @@ function IntegrationDetailPage() {
   const pillar = CATEGORY_PILLAR[integration.category] ?? "sync";
   const fitPoints = getFitPoints(integration.slug, t);
   const installHref = getDashboardInstallHref({ locale, slug: integration.slug });
+  const hasSetupBlock = Boolean(facts?.clientSetup || facts?.usage);
 
   return (
     <MarketingLayout
@@ -146,31 +148,28 @@ function IntegrationDetailPage() {
         titleId="integration-hero-title"
         title={integration.name}
         subtitle={integration.summary}
-        primary={{ label: t("detail.nextStep.install"), href: installHref }}
+        /* Anchor when this integration has a setup block to scroll to,
+           dashboard when it does not: linking to an anchor that is not on the
+           page is worse than the old behaviour. */
+        primary={{ label: t("detail.nextStep.install"), href: hasSetupBlock ? "#setup" : installHref }}
         secondary={
           integration.guideHref
             ? { label: t("detail.nextStep.readGuide"), href: integration.guideHref }
             : undefined
         }
-        visual={<HeroVisual integration={integration} facts={facts} t={t} />}
+        /* The flow diagram is the hero visual, the way /content/ and
+           /analytics/ do it. The install snippet used to sit here and it was
+           the wrong altitude for a hero: it answers "how do I wire this up",
+           which is a question you ask after you have decided. */
+        visual={<IntegrationFlow integration={integration} pillar={pillar} t={t} />}
       />
 
       <Divider />
 
-      {/* "How does this work" is the converging diagram everywhere on the site
-          (rule/how-it-works-is-a-converging-flow) — the integration is one card
-          in it, not a diagram of its own. */}
-      <Section>
-        <SectionHeader
-          eyebrow={t("detail.flow.eyebrow")}
-          title={t("detail.workflowFit.title", { name: integration.name })}
-        />
-        <IntegrationFlow integration={integration} pillar={pillar} t={t} />
-      </Section>
-
-      <Divider />
-
-      <Section>
+      {/* The flow moved up into the hero, so this band is the setup itself
+          rather than an empty header. `id` + scroll-margin so the hero CTA can
+          land here without the sticky header eating the heading. */}
+      <Section id="setup" className="scroll-mt-24">
         <SectionHeader
           eyebrow={t("detail.setup.eyebrow")}
           title={t("detail.setup.title", { name: integration.name })}
@@ -197,7 +196,11 @@ function IntegrationDetailPage() {
               </li>
             ))}
           </ol>
-          {facts?.usage ? (
+          {facts?.clientSetup ? (
+            /* The MCP page shows the editor tabs from /for-developers/ — the
+               same five configs, one component, no second copy. */
+            <McpClientSetup />
+          ) : facts?.usage ? (
             <div>
               <p className="mb-3 text-[11px] font-medium text-mist-400">
                 {t("detail.setup.usageLabel")}
@@ -210,6 +213,14 @@ function IntegrationDetailPage() {
             </div>
           ) : null}
         </div>
+
+        {/* The hero button now scrolls here, so the dashboard link lives at the
+            end of the step it belongs to. Removing it would leave the page
+            without a way to convert. */}
+        <a href={installHref} className="btn btn-dark btn-lg mt-10">
+          {t("detail.nextStep.install")}
+          <SpriteIcon name="arrow-right" className="size-4" />
+        </a>
       </Section>
 
       {facts?.capabilities ? (
@@ -317,56 +328,6 @@ function IntegrationDetailPage() {
 }
 
 /**
- * The hero's right-hand column.
- *
- * A frame belongs to a single object with one job, and there are two candidates
- * here: the snippet you paste, or — when we have no verified snippet for this
- * integration — the summary panel with its mark and labels. Never both, and
- * never an empty band: the previous hero left a 128px gap under the copy
- * because nothing filled the second column.
- */
-function HeroVisual({
-  integration,
-  facts,
-  t,
-}: {
-  integration: IntegrationItem;
-  facts: IntegrationFacts | null;
-  t: (key: string, opts?: Record<string, unknown>) => string;
-}) {
-  if (facts?.install) {
-    return (
-      <CodeBlock
-        lang={facts.install.lang}
-        filename={facts.install.filename}
-        meta={integration.name}
-        code={facts.install.code}
-      />
-    );
-  }
-
-  return (
-    <div className="rounded-xl border border-black/[0.07] bg-white p-6">
-      {/* Mark and name only. Category, badge and status all live in the pillar
-          badge above the h1 now — printing the status here as well is how
-          "Built-in" ended up on the page twice. */}
-      <div className="flex items-center gap-3">
-        <div className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.06] bg-white">
-          <IntegrationBrandMark item={integration} />
-        </div>
-        <span className="text-[11px] font-medium text-mist-900">{integration.name}</span>
-      </div>
-      {integration.detail ? (
-        <p className="mt-4 text-[13px] leading-relaxed text-mist-600">{integration.detail}</p>
-      ) : null}
-      <p className="mt-4 border-t border-black/[0.05] pt-4 text-[13px] leading-relaxed text-mist-600">
-        {t("detail.nextStep.body")}
-      </p>
-    </div>
-  );
-}
-
-/**
  * The same converging diagram the rest of the site uses, with this integration
  * named in one of the cards. Slot geometry belongs to FlowHero — the cards are
  * the only thing that varies per page.
@@ -403,7 +364,11 @@ function IntegrationFlow({
         </FlowCard>,
         // The integration itself, named: one card in the flow, not a diagram
         // of its own.
-        <FlowCard key="integration" eyebrow={integration.name}>
+        <FlowCard
+          key="integration"
+          eyebrow={integration.name}
+          corner={<IntegrationBrandMark item={integration} />}
+        >
           <FlowMono>{integration.slug}</FlowMono>
         </FlowCard>,
         <FlowCard key="glossary" eyebrow={t("detail.flow.cards.glossary")}>

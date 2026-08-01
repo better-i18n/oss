@@ -1,100 +1,6 @@
 import { useTranslations } from "@better-i18n/use-intl";
-import { useState } from "react";
-import {
-  IconCursor,
-  IconWindsurf,
-  IconClaudeai,
-  IconAntigravity,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { SpriteIcon } from "@/components/SpriteIcon";
-import { HighlightedCode, type CodeLang } from "@/components/CodeBlock";
-import { ZedIcon } from "@/components/ZedIcon";
-
-const ideConfigs = [
-  {
-    key: "cursor",
-    name: "Cursor",
-    icon: IconCursor,
-    lang: "json" as CodeLang,
-    code: `{
-  "mcpServers": {
-    "better-i18n": {
-      "command": "npx",
-      "args": ["@better-i18n/mcp"],
-      "env": {
-        "BETTER_I18N_API_KEY": "your-api-key"
-      }
-    }
-  }
-}`,
-  },
-  {
-    key: "claude",
-    name: "Claude",
-    icon: IconClaudeai,
-    lang: "bash" as CodeLang,
-    code: `# Claude Code (terminal)
-claude mcp add better-i18n -s user \\
-  -e BETTER_I18N_API_KEY=your-api-key \\
-  -- npx -y @better-i18n/mcp
-
-# Claude Desktop: add to config
-# { "mcpServers": { "better-i18n":
-#   { "command": "npx",
-#     "args": ["@better-i18n/mcp"] }}}`,
-  },
-  {
-    key: "windsurf",
-    name: "Windsurf",
-    icon: IconWindsurf,
-    lang: "json" as CodeLang,
-    code: `{
-  "mcpServers": {
-    "better-i18n": {
-      "command": "npx",
-      "args": ["@better-i18n/mcp"],
-      "env": {
-        "BETTER_I18N_API_KEY": "your-api-key"
-      }
-    }
-  }
-}`,
-  },
-  {
-    key: "zed",
-    name: "Zed",
-    icon: ZedIcon,
-    lang: "json" as CodeLang,
-    code: `{
-  "context_servers": {
-    "better-i18n": {
-      "command": {
-        "path": "npx",
-        "args": ["@better-i18n/mcp"],
-        "env": {
-          "BETTER_I18N_API_KEY": "key"
-        }
-      }
-    }
-  }
-}`,
-  },
-  {
-    key: "antigravity",
-    name: "Antigravity",
-    icon: IconAntigravity,
-    lang: "text" as CodeLang,
-    code: `# Antigravity MCP Configuration
-# Add to your GEMINI.md or .rules:
-
-MCP Servers:
-- better-i18n: @better-i18n/mcp
-
-Environment Variables:
-BETTER_I18N_API_KEY: your-api-key
-BETTER_I18N_DEBUG: false`,
-  },
-];
+import { McpClientSetup } from "@/components/visuals/McpClientSetup";
 
 const features = [
   {
@@ -114,23 +20,8 @@ const features = [
   },
 ];
 
-const CODE_LINES = 11;
-
-// Normalize code to fixed line count for consistent height
-function normalizeCode(code: string): string[] {
-  const lines = code.split("\n");
-  while (lines.length < CODE_LINES) {
-    lines.push("");
-  }
-  return lines.slice(0, CODE_LINES);
-}
-
 export default function DeveloperIDESupport() {
   const t = useTranslations("developers");
-  const [activeIDE, setActiveIDE] = useState("cursor");
-
-  const activeConfig = ideConfigs.find((ide) => ide.key === activeIDE)!;
-  const codeLines = normalizeCode(activeConfig.code);
 
   return (
     <section>
@@ -167,60 +58,10 @@ export default function DeveloperIDESupport() {
             </div>
           </div>
 
-          {/* Right side - Code Block with Tabs */}
-          <div className="relative">
-            {/* Browser-like window frame */}
-            {/* A figure keeps its own shell, but a hairline one — the card
-                shadow was the last piece of elevation on this page. */}
-            <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
-              {/* Window header with dots */}
-              <div className="flex items-center gap-2 border-b border-black/[0.06] px-4 py-3">
-                <span className="text-xs text-mist-400 font-mono">
-                  {activeIDE === "claude"
-                    ? "terminal"
-                    : activeIDE === "antigravity"
-                      ? "GEMINI.md"
-                      : "mcp-config.json"}
-                </span>
-              </div>
-
-              {/* IDE Tabs */}
-              <div className="flex border-b border-black/[0.06]">
-                {ideConfigs.map((ide) => {
-                  const Icon = ide.icon;
-                  const isActive = activeIDE === ide.key;
-                  return (
-                    <button
-                      key={ide.key}
-                      type="button"
-                      onClick={() => setActiveIDE(ide.key)}
-                      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap ${ isActive ? "border-b-2 border-mist-950 text-mist-950 -mb-px" : "text-mist-500 hover:text-mist-900" }`}
-                    >
-                      <Icon className="size-4" />
-                      {ide.name}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* This panel had its own two-hue highlighter: a line was italic
-                  grey if it started with `#`, darker if it contained a quote.
-                  That guessed at syntax it could not see. The shared tokeniser
-                  reads the language properly and gives the same three hues as
-                  every other code block on the site
-                  (rule/code-blocks-carry-three-hues); the fixed line count is
-                  kept so switching IDE does not resize the panel. */}
-              <HighlightedCode
-                lang={activeConfig.lang}
-                code={codeLines.join("\n")}
-                className="overflow-x-auto p-5 font-mono text-[13px] leading-[1.7] text-mist-700"
-              />
-            </div>
-
-            {/* Decorative gradient blur behind */}
-            {/* (Removed: a blurred gradient glow behind the panel. Decoration
-                with no information, and the only gradient left on the page.) */}
-          </div>
+          {/* Right side — the shared MCP client panel. Same object, same five
+              editors; /integrations/mcp-server/ renders it too instead of
+              carrying a second copy of the configs that would drift. */}
+          <McpClientSetup />
         </div>
       </div>
     </section>

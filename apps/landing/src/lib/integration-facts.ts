@@ -39,6 +39,12 @@ export interface IntegrationFacts {
   readonly usage?: IntegrationSnippet;
   /** Capability table rows. */
   readonly capabilities?: readonly CapabilityRow[];
+  /**
+   * Render the shared MCP client panel (the editor tabs from /for-developers/)
+   * instead of a single snippet. Only true where those configs are the actual
+   * setup: an unrelated integration must not show editor tabs.
+   */
+  readonly clientSetup?: boolean;
   /** Key under `integrationsPage.detail.capabilities.<key>.title` for the table heading. */
   readonly capabilitiesKey?: string;
   /** Where these facts came from. Not rendered — this is the audit trail. */
@@ -185,6 +191,7 @@ npx -y @better-i18n/mcp@latest`,
     },
     capabilities: MCP_CAPABILITIES,
     capabilitiesKey: "mcp",
+    clientSetup: true,
     source: "packages/mcp/src/index.ts, packages/mcp/src/tools/*",
   },
 
