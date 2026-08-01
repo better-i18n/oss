@@ -88,3 +88,33 @@ export function resolveIcon(
 export function toIntegrationItem(cms: IntegrationCmsItem): IntegrationItem {
   return { ...cms, icon: resolveIcon(cms.iconType, cms.iconName) };
 }
+
+/* ── Meta labels ─────────────────────────────────────────────────────
+   Two CMS fields land in the same line: `status` (rendered through
+   `status.<value>`) and `badge_label` (free text). On four entries —
+   mcp-server, github, cli, ai-translation — both resolve to "Built-in", so the
+   page printed the same word twice ("Featured Built-in Built-in").
+
+   Clearing those four in the CMS would fix today and not tomorrow: the next
+   built-in integration fills the same field again and the duplicate comes back
+   silently. So the rule lives in code, in one function, used by both the
+   directory and the detail page — the two places that render this pair. */
+
+/**
+ * The labels for an integration's meta line, with the badge dropped when it
+ * says the same thing as the status. Comparison is case- and space-insensitive
+ * because the CMS value is hand-typed.
+ */
+export function integrationMetaLabels(
+  item: Pick<IntegrationCmsItem, "category" | "status" | "badgeLabel">,
+  t: (key: string) => string,
+): { category: string; badge: string | null; status: string } {
+  const status = t(`status.${item.status}`);
+  const normalise = (value: string) => value.trim().toLowerCase().replace(/[\s-]+/g, "");
+  const badge =
+    item.badgeLabel && normalise(item.badgeLabel) !== normalise(status)
+      ? item.badgeLabel
+      : null;
+
+  return { category: t(`categories.${item.category}`), badge, status };
+}

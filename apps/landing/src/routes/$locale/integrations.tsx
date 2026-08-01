@@ -7,6 +7,7 @@ import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { getIntegrations } from "@/lib/content";
 import {
+  integrationMetaLabels,
   type IntegrationCategory,
   type IntegrationItem,
   toIntegrationItem,
@@ -372,24 +373,26 @@ function IntegrationCard({
   compact?: boolean;
 }) {
   const t = useTranslations("integrationsPage");
+  const meta = integrationMetaLabels(item, t);
   const content = (
     <>
       <div className="flex items-start justify-between gap-4">
         <div className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.06] bg-white text-mist-950">
           <IntegrationBrandMark item={item} />
         </div>
+        {/* `badge_label` and `status` resolve to the same word on the built-in
+            integrations, so the card printed "Built-in Built-in". The rule lives
+            in `integrationMetaLabels` and both routes read it from there. */}
         <div className="flex flex-wrap items-center justify-end gap-2">
-          {item.badgeLabel && (
-            <span className="text-[10px] text-mist-400">{item.badgeLabel}</span>
-          )}
-          <span className="text-[10px] font-medium text-mist-900">{t(`status.${item.status}`)}</span>
+          {meta.badge && <span className="text-[10px] text-mist-400">{meta.badge}</span>}
+          <span className="text-[10px] font-medium text-mist-900">{meta.status}</span>
         </div>
       </div>
 
       <div className={compact ? "mt-4" : "mt-5"}>
         <div className="flex items-center gap-2">
           <h3 className={`${compact ? "text-base" : "text-lg"} font-medium text-mist-950`}>{item.name}</h3>
-          <span className="text-xs text-mist-400">/ {t(`categories.${item.category}`)}</span>
+          <span className="text-xs text-mist-400">/ {meta.category}</span>
         </div>
         <p className="mt-2 text-sm/6 text-mist-700">{item.summary}</p>
         {!compact && item.detail && <p className="mt-4 text-sm/6 text-mist-500">{item.detail}</p>}
