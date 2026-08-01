@@ -83,6 +83,9 @@ a glance, the same job Helpway's inbox/outreach/helpcenter colors do.
 Evidence: `src/components/ui/page.tsx PILLAR_META`
 Bad: `border-blue-600 text-blue-600` on a generic feature card
 Good: `<PillarBadge pillar="sync" label={t("pillar.sync")} />`
+Exceptions: code-block tokens, where hue carries the information rather than
+decorating it — three pillar hues only, see `rule/code-blocks-carry-three-hues`.
+Do not "restore neutrality" there; grey tokens measured as unhighlighted.
 
 ## rule/token-names-are-stable
 Scope: `src/styles.css` `@theme`
@@ -318,10 +321,9 @@ Scope: every code sample on the marketing site
 Rule: code is highlighted by `src/components/CodeBlock.tsx` — a synchronous,
 dependency-free tokenizer (`HighlightedCode` for a bare block, `CodeBlock` for
 the framed figure). No Shiki, Prism, highlight.js or any runtime highlighter, and
-no new dependency for this job. Tokens are coloured from the `mist` scale only
-(keyword mist-950, plain mist-700, string/number mist-600, comment mist-400,
-punctuation mist-300); an unknown language renders as escaped plaintext rather
-than being guessed at.
+no new dependency for this job. An unknown language renders as escaped plaintext
+rather than being guessed at. Token *colour* is a separate decision — see
+`rule/code-blocks-carry-three-hues`.
 Why: these pages are SSG with a CWV budget. TanStack, on the same stack, measured
 a docs page transferring ~1.1 MiB of script with "roughly 358 KiB tied to syntax
 highlighting alone" (Shiki + WASM + themes + grammars) and answered it by
@@ -338,6 +340,77 @@ Exceptions: the dark-ground snippets on `i18n/for-developers.tsx`,
 `integrations.tsx` and `developers/DeveloperIDESupport.tsx` are still unhighlighted
 — they need a dark token map, listed under Coverage gaps.
 Decision: user, 2026-08-01 ("runtime'da ağır bir highlighter YÜKLEMEYECEKSİN").
+
+## rule/code-blocks-carry-three-hues
+Scope: token colour inside a code block (`TOKEN_INK` in `src/components/CodeBlock.tsx`)
+Rule: exactly three hues, all already in the design system, at the 700 step —
+keyword `violet-700` (the `ai` pillar hue), string `green-700` (`sync`), number
+`orange-700` (`content`). Everything else stays grey: comment `mist-400`,
+punctuation `mist-300`, plain `mist-700`. No fourth hue, no new token, no
+background tint per token, no theme switch.
+Why: this is a deliberate exception to
+`rule/neutral-ink-accent-is-identity-only`, and it follows that rule's own
+reasoning rather than breaking it. Colour is banned elsewhere because it was
+decoration "carrying no information". In a code block the opposite holds: hue IS
+the information — it is what separates a string from an identifier at a glance.
+The all-grey version was not restrained, it was unhighlighted: measured on
+`/en/i18n/nextjs/`, **56 of 72 tokens in one block resolved to `mist-300`**, which
+reads as plain text with noise, and the reported bug was literally "kod
+bloklarında renklendirme yok" on a page where highlighting was already running.
+What keeps it from becoming a rainbow theme: three hues only, all reused from
+`PILLAR_META`, the 700 step so 12px mono stays AA on white, and
+comment/punctuation/plain left grey so hue marks *meaning* instead of every second
+character.
+Evidence: `src/components/CodeBlock.tsx` (`TOKEN_INK` + the COLOUR block above it);
+verified rendered — 1606 token spans across the site's blocks resolve to
+violet/green/orange/grey, with `import`/`from`/`export`/`const`/`await` violet,
+string literals green, comments grey.
+Bad: `TOKEN_INK.keyword = "text-mist-950"` (grey-on-grey, i.e. unhighlighted);
+adding a fourth hue for operators or types
+Good: the three-hue map above, with everything structural left grey
+Decision: user, 2026-08-01 (changed `TOKEN_INK` directly after measuring the
+all-grey result).
+
+## rule/tools-grammar-stops-at-the-tool
+Scope: `src/routes/$locale/tools/*` (8 routes, they bypass `MarketingLayout`)
+Rule: the page grammar governs the **shell**; the tool's own working surface is
+exempt. Concretely —
+
+*Shell (grammar applies, no exceptions):* hero, section openings, the transitions
+between sections, prose around the tool, related links, the closing CTA. White
+ground, hairline separation (`border-black/[0.07]`), weight-500 headings,
+`<Divider />` as the only transition, `.btn` for buttons, no `max-w-* px-* py-*`
+triples.
+
+*Instrument (grammar yields):* the input/output panels, result tables, code
+output, segmented controls, file drop zones. These may keep denser padding, their
+own internal rules, and monospace surfaces, because a reference table that obeys
+marketing rhythm becomes unreadable.
+
+Two things bind even inside the instrument:
+1. **Inline code chips follow the prose scale** — `bg-mist-50` + `border
+   border-black/[0.07]` + `rounded-md px-1.5 py-0.5`, the same treatment
+   `ProseBody` gives `prose-code`. Not `bg-mist-100` / `bg-mist-200`.
+2. **Hue is reserved for tool STATE, never for decoration.** A validation warning
+   or an error may be amber/red, because the hue is the message. A "Save up to
+   40%" badge, an RTL/LTR label, or a "Recommended" chip may not, because the
+   text already carries the meaning and the colour is ornament.
+
+Why: tools are interactive apps, not documents — forcing `<Section>` rhythm into a
+locale reference table or an ICU playground trades legibility for consistency
+nobody asked for. But the page *around* the tool is a marketing page, and it was
+drifting: tinted `bg-mist-100` canvases, hand-rolled buttons and off-scale code
+chips made `/tools/*` read as a different product.
+Evidence: 21 tinted surfaces across 6 tool files (2026-08-01 sweep);
+`hreflang-generator.tsx:282` (`border-mist-200 bg-mist-100` panel),
+`icu-playground.tsx` (4 off-scale code chips), `cost-calculator.tsx:275`
+(`h-px bg-mist-200` rule).
+Bad: `<code className="rounded bg-mist-200 px-1">`, `bg-green-100` savings badge
+Good: `<code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5">`,
+amber kept on `hreflang-generator` validation warnings
+Exceptions: the instrument surfaces listed above.
+Decision: user delegated 2026-08-01 ("grammar'ı SAYFA KABUĞUNA uygula … aracın
+kendi UI'ında okunabilirliği bozacak şekilde zorlamayı deneme").
 
 ## Coverage gaps (no decision yet — do not invent one)
 
@@ -389,6 +462,24 @@ Decision: user, 2026-08-01 ("runtime'da ağır bir highlighter YÜKLEMEYECEKSİN
   every code section. `FrameworkComparison` already accepts per-section
   `eyebrow`/`icon`, so this is key creation + prop passing, not a component change.
 
+- **Still open — the two buyer's-guide pages hold their body copy as literals.**
+  `i18n/best-library.tsx` and `i18n/best-tms.tsx` were brought onto the grammar
+  (2026-08-01: hero chip, ink-weight "recommended" marker instead of emerald, the
+  four shadowed related-topic cards replaced by one hairline container, `.section`
+  instead of `mx-auto max-w-3xl`, `.btn btn-dark btn-lg` closing CTA), and
+  `best-tms` gained the `i18n.bestTms.platforms.*` header that closed its
+  `heading jump` — the vendor list used to start at `h3` directly under the `h1`.
+  What did **not** change: the section titles, the six "what to look for" cards
+  and the six FAQ pairs on each page are still English literals in the route
+  file, and both files call `useTranslations("marketing")` directly rather than
+  `useT`. That is ~40 strings per page, i.e. the same job the six framework pages
+  went through, and it is key creation — not a design decision.
+
+  Their FAQ lists are also still hand-rolled (`border-b border-mist-100` +
+  `text-base` h3) instead of `FaqList` / `FaqSection`. Worth unifying, but the
+  FAQ JSON-LD is generated from the same literals, so the copy move and the
+  component move should happen in one change, not two.
+
 - **Data-quality bug found while creating keys**: a key literally named
   `marketing.Expo i18n` exists (the key *name* is the English text). `createKeys`
   surfaced it as a duplicate-source-text warning. It should be renamed or deleted;
@@ -403,16 +494,20 @@ Decision: user, 2026-08-01 ("runtime'da ağır bir highlighter YÜKLEMEYECEKSİN
   file is flat; not yet ratified.
 - **Motion**: `framer-motion` is used in 12 files (`Stagger`, demo loops). No rule
   yet for how much motion the Helpway register tolerates.
-- **Tools pages** (`tools/*`, 8 routes, bypass `MarketingLayout`): interactive
-  apps, not documents. No decision on whether the page grammar applies to them.
+- ~~**Tools pages** (`tools/*`, 8 routes, bypass `MarketingLayout`): interactive
+  apps, not documents. No decision on whether the page grammar applies to them.~~
+  **Closed** (2026-08-01) — see `rule/tools-grammar-stops-at-the-tool`: grammar
+  binds the shell, yields inside the instrument, with inline code chips and the
+  hue-is-state-not-decoration limit binding everywhere.
 - **Dark mode**: deliberately disabled (`@custom-variant dark (&:where(.force-dark))`).
   No plan to re-enable; if that changes, every hairline value needs a dark pair.
 - **Dark-ground code samples**: `i18n/for-developers.tsx`, `integrations.tsx` and
   `developers/DeveloperIDESupport.tsx` print snippets as `text-mist-100` on a dark
   panel. They are the only code blocks the tokenizer does not cover, because the
-  `mist` token ink in `rule/code-blocks-are-tokenised-at-build` is calibrated for
-  a white ground. Either give `CodeBlock` a dark token map or move those three
-  panels onto the light figure — no decision yet.
+  three hues in `rule/code-blocks-carry-three-hues` are the 700 steps, picked for
+  AA on white — violet/green/orange-700 on a near-black panel is the inverse
+  problem. Either give `CodeBlock` a dark token map (the 300/400 steps of the same
+  three hues) or move those three panels onto the light figure — no decision yet.
 - **`changelog/$slug` + `careers/$slug` + `integrations/$slug` bodies**: these CMS
   templates render their content without `prose`/`BlogContent` at all, so
   `rule/one-prose-scale` does not reach them yet. Whether they should adopt it
