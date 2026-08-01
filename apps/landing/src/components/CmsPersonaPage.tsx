@@ -1,13 +1,40 @@
 import { Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import BlogContent from "@/components/blog/BlogContent";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import type { MarketingPage, MarketingPageListItem } from "@/lib/content";
 import { getPersonaLabel } from "@/lib/cms-persona-helpers";
+import { personaRoute } from "@/lib/persona-routes";
+import { PROSE_CLASS } from "@/components/ProseBody";
+import { Divider, PageHero, Section, SectionHeader } from "@/components/ui/page";
 import { useT } from "@/lib/i18n";
+
+/**
+ * The template behind every CMS persona page (`/for-saas`, `/for-agencies`, …).
+ *
+ * What changed and why:
+ *   - The hero was a hand-rolled `<section><div className="section"><div
+ *     className="max-w-3xl">` with a `rounded-full` badge and pill buttons; it is
+ *     now `<PageHero>`, so the persona pages open exactly like the pillar pages
+ *     (rule/one-container, rule/pillar-page-shape).
+ *   - The related-personas band sat on `bg-mist-50` with `rounded-xl border
+ *     border-mist-200 hover:shadow-md` cards and a 16px gap. Tinted band and card
+ *     shadows both go (rule/white-page-hairline-separation); the cards become one
+ *     hairline index (rule/interior-hairlines-only) and the band is introduced by
+ *     `<SectionHeader>` after a `<Divider />` instead of by a colour change.
+ *   - The body prose chain is the shared one (rule/one-prose-scale) instead of a
+ *     fourth local copy.
+ *   - Sibling links went through `to={`/$locale/${slug}`}` — an untypeable
+ *     template literal that also shipped 404s for the seven personas whose routes
+ *     are archived. They now resolve through `personaRoute()`, and a persona with
+ *     no page is skipped instead of linked.
+ *   - All six `defaultValue` fallbacks are gone; every key exists in the
+ *     `persona` namespace on the CDN.
+ *
+ * Content, headings, structured data and URLs are untouched
+ * (rule/seo-content-is-load-bearing) — this is a shell and typography change.
+ */
 
 interface CmsPersonaPageProps {
   page: MarketingPage;
@@ -21,109 +48,76 @@ export function CmsPersonaPage({
   relatedPersonas,
 }: CmsPersonaPageProps) {
   const t = useT("persona");
+  /* Only personas that still have a route can be linked. */
+  const linkable = relatedPersonas.filter((p) => personaRoute(p.slug));
 
   return (
-    <MarketingLayout bgClassName="bg-white" showCTA={true}>
-      {/* Hero Section */}
-      <section>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 sm:py-24">
-          <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-mist-200 bg-white px-3 py-1.5 text-sm font-medium text-mist-700 mb-6">
-              {getPersonaLabel(page.slug)}
-            </span>
-            <h1
-              className="font-display text-3xl/[1.1] font-semibold tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1] lg:text-5xl/[1.1]"
-              style={{ textWrap: "balance" }}
-            >
-              {page.title}
-            </h1>
-            {page.heroSubtitle && (
-              <p
-                className="mt-6 text-lg/8 text-mist-600 max-w-2xl"
-                style={{ textWrap: "pretty" }}
-              >
-                {page.heroSubtitle}
-              </p>
-            )}
-            <div className="flex flex-wrap items-center gap-4 mt-8">
-              <a
-                href="https://dash.better-i18n.com"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-mist-950 px-6 py-3 text-sm font-medium text-white hover:bg-mist-900 transition-colors"
-              >
-                {t("hero.cta", "Get Started")}
-                <SpriteIcon name="arrow-right" className="size-4" />
-              </a>
-              <a
-                href="https://cal.com/better-i18n/30min?overlayCalendar=true"
-                className="inline-flex items-center gap-2 text-sm font-medium text-mist-600 hover:text-mist-950 transition-colors"
-              >
-                {t("hero.bookDemo", "Book a demo")}
-                <SpriteIcon name="chevron-right" className="size-4" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+    <MarketingLayout showCTA={true}>
+      <PageHero
+        pillar="ai"
+        pillarLabel={getPersonaLabel(page.slug)}
+        titleId="persona-hero-title"
+        title={page.title}
+        subtitle={page.heroSubtitle ?? ""}
+        primary={{ label: t("hero.cta"), href: "https://dash.better-i18n.com" }}
+        secondary={{
+          label: t("hero.bookDemo"),
+          href: "https://cal.com/better-i18n/30min?overlayCalendar=true",
+        }}
+      />
 
-      {/* Content — left-aligned to match hero container, narrower body
-          for readability (max ~70ch line length). */}
       {page.bodyHtml && (
-        <section className="py-16">
-          <div className="mx-auto max-w-7xl px-6 lg:px-10">
-            <article className="max-w-3xl min-w-0">
-              <BlogContent
-                html={page.bodyHtml}
-                locale={locale}
-                className="prose prose-lg max-w-none
-                  prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
-                  prose-p:text-mist-700 prose-p:leading-relaxed
-                  prose-a:text-mist-950 prose-a:underline-offset-4 prose-a:decoration-mist-300 hover:prose-a:decoration-mist-500
-                  prose-strong:text-mist-900 prose-strong:font-semibold
-                  prose-code:text-mist-900 prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
-                  prose-blockquote:border-l-mist-300 prose-blockquote:text-mist-600 prose-blockquote:not-italic
-                  prose-img:rounded-xl
-                  prose-li:text-mist-700
-                  prose-hr:border-mist-100"
-              />
+        <>
+          <Divider />
+          <Section>
+            {/* Markdown is one flow, so it gets one Section; the h2 rhythm inside
+                comes from the shared prose scale. */}
+            <article className="min-w-0">
+              <BlogContent html={page.bodyHtml} locale={locale} className={PROSE_CLASS} />
             </article>
-          </div>
-        </section>
+          </Section>
+        </>
       )}
 
-      {/* Related Personas */}
-      {relatedPersonas.length > 0 && (
-        <section className="py-16 bg-mist-50">
-          <div className="mx-auto max-w-7xl px-6 lg:px-10">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-3">
-              {t("builtForEveryTeam", "Built for every team")}
-            </h2>
-            <p className="text-base text-mist-600 mb-8 max-w-2xl">
-              {t("builtForEveryTeamDesc", "See how Better I18N adapts to different roles and industries.")}
-            </p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {relatedPersonas.map((persona) => (
-                <Link
-                  key={persona.slug}
-                  to={`/$locale/${persona.slug}` as string}
-                  params={{ locale }}
-                  className="group flex items-center justify-between p-5 rounded-xl bg-white border border-mist-200 hover:border-mist-300 hover:shadow-md transition-all"
-                >
-                  <div className="min-w-0">
-                    <h3 className="text-sm font-medium text-mist-950 group-hover:text-mist-700 transition-colors">
-                      {persona.title}
-                    </h3>
-                    {persona.heroSubtitle && (
-                      <p className="mt-1 text-xs text-mist-500 leading-relaxed line-clamp-2">
-                        {persona.heroSubtitle}
-                      </p>
-                    )}
-                  </div>
-                  <SpriteIcon name="arrow-right" className="w-4 h-4 flex-shrink-0 ml-3 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
-                </Link>
-              ))}
+      {linkable.length > 0 && (
+        <>
+          <Divider />
+          <Section>
+            <SectionHeader
+              eyebrow={getPersonaLabel(page.slug)}
+              title={t("builtForEveryTeam")}
+              subtitle={t("builtForEveryTeamDesc")}
+            />
+            <div className="mt-8 overflow-hidden">
+              <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {linkable.map((persona) => (
+                  <Link
+                    key={persona.slug}
+                    to={personaRoute(persona.slug)!}
+                    params={{ locale }}
+                    className="group flex items-start justify-between gap-3 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-[13px] font-medium text-mist-900">
+                        {persona.title}
+                      </span>
+                      {persona.heroSubtitle && (
+                        <span className="mt-1 block line-clamp-2 text-[12px] leading-relaxed text-mist-500">
+                          {persona.heroSubtitle}
+                        </span>
+                      )}
+                    </span>
+                    <SpriteIcon
+                      name="arrow-right"
+                      className="mt-0.5 size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </Section>
+        </>
       )}
     </MarketingLayout>
   );
@@ -138,27 +132,19 @@ export function CmsPersonaNotFound({
   const t = useT("persona");
 
   return (
-    <div className="bg-white">
-      <Header className="bg-white" />
-      <main className="py-24 sm:py-32">
-        <div className="mx-auto max-w-2xl px-6 text-center">
-          <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            {t("notFound.title", "Page not found")}
-          </h1>
-          <p className="mt-4 text-lg text-mist-600">
-            {t("notFound.description", "The page you're looking for doesn't exist.")}
-          </p>
-          <Link
-            to="/$locale"
-            params={{ locale }}
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-          >
-            <IconArrowLeft className="w-4 h-4" />
-            {t("notFound.goHome", "Go Home")}
-          </Link>
-        </div>
-      </main>
-      <Footer />
-    </div>
+    <MarketingLayout showCTA={false}>
+      <Section>
+        <h1 className="section-h2">{t("notFound.title")}</h1>
+        <p className="section-p mt-3">{t("notFound.description")}</p>
+        <Link
+          to="/$locale/"
+          params={{ locale }}
+          className="btn btn-dark btn-lg mt-8 w-fit"
+        >
+          <IconArrowLeft className="size-4" />
+          {t("notFound.goHome")}
+        </Link>
+      </Section>
+    </MarketingLayout>
   );
 }
