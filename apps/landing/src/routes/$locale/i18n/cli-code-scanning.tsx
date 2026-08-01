@@ -33,7 +33,7 @@ const coreFeatures = [
 ];
 
 function CliCodeScanningPage() {
-  const t = useT("marketing.i18n.cliCodeScanning");
+  const t = useT("marketing");
   const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
@@ -60,40 +60,40 @@ function CliCodeScanningPage() {
   ];
 
   const relatedPages = [
-    { name: "For Developers", href: "/$locale/i18n/for-developers", description: t("related.forDevelopers", { defaultValue: "Developer-focused i18n tools with type-safe SDKs and Git-first workflows" }) },
-    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("related.localizationSoftware", { defaultValue: "TMS and CAT tools for managing translations at scale" }) },
-    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("related.localizationSoftware", { defaultValue: "TMS and CAT tools for managing translations at scale" }) },
-    { name: "Translation Management System", href: "/$locale/i18n/translation-management-system", description: t("related.tms", { defaultValue: "Centralize your localization workflow with a TMS" }) },
+    { name: "For Developers", href: "/$locale/i18n/for-developers", description: t("i18n.cliCodeScanning.related.forDevelopers") },
+    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("i18n.cliCodeScanning.related.localizationSoftware") },
+    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("i18n.cliCodeScanning.related.localizationSoftware") },
+    { name: "Translation Management System", href: "/$locale/i18n/translation-management-system", description: t("i18n.cliCodeScanning.related.tms") },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
-      <section id="hero" className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section id="hero">
+        <div className="section">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
               <SpriteIcon name="script" className="size-4" />
-              <span>{t("badge", { defaultValue: "CLI & Code Scanning" })}</span>
+              <span>{t("i18n.cliCodeScanning.badge")}</span>
             </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("hero.title", { defaultValue: "CLI & Code Scanning: Find Every Untranslated String Automatically" })}
+            <h1 className="section-h2">
+              {t("i18n.cliCodeScanning.hero.title")}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "Stop hunting through source files for hardcoded strings. Better I18N's CLI uses AST-based parsing to scan your entire codebase, detect untranslated text in JSX components and attributes, report missing and unused keys, and integrate seamlessly into your CI pipeline." })}
+              {t("i18n.cliCodeScanning.hero.subtitle")}
             </p>
           </div>
         </div>
       </section>
 
-      <section id="core-features" className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section id="core-features" className="bg-mist-50">
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("features.title", { defaultValue: "AST-Powered Code Scanning" })}
+            <h2 className="section-h2">
+              {t("i18n.cliCodeScanning.features.title")}
             </h2>
             <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("features.subtitle", { defaultValue: "Unlike regex-based scanners that produce false positives, Better I18N parses your code into an Abstract Syntax Tree for precise, context-aware string detection." })}
+              {t("i18n.cliCodeScanning.features.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -114,18 +114,18 @@ function CliCodeScanningPage() {
         </div>
       </section>
 
-      <section id="cli-commands" className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section id="cli-commands" className="bg-white">
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("cliCommands.title", { defaultValue: "CLI Commands for Translation Auditing" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.cliCodeScanning.cliCommands.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("cliCommands.paragraph1", { defaultValue: "The check command provides an interactive, developer-friendly auditing experience. It compares the translation keys used in your source code against the keys stored in Better I18N's remote, surfacing both missing keys that need translation and unused keys that can be cleaned up." })}
+                {t("i18n.cliCodeScanning.cliCommands.paragraph1")}
               </p>
               <p className="text-mist-700 leading-relaxed">
-                {t("cliCommands.paragraph2", { defaultValue: "Dynamic key patterns like template literals are detected automatically. When your code uses t(`key.${variable}`), the CLI recognizes the dynamic segment and includes it in pattern-matched reports, so nothing slips through the cracks." })}
+                {t("i18n.cliCodeScanning.cliCommands.paragraph2")}
               </p>
             </div>
             <div className="mt-10 lg:mt-0">
@@ -142,18 +142,18 @@ function CliCodeScanningPage() {
         </div>
       </section>
 
-      <section id="output-formats" className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section id="output-formats" className="bg-white">
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("outputs.title", { defaultValue: "Flexible Output Formats" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.cliCodeScanning.outputs.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("outputs.paragraph1", { defaultValue: "Scan results are available in multiple formats to fit your workflow. ESLint-style output gives human-readable reports with file, line, and column references. JSON output provides machine-readable data for CI/CD automation and custom tooling." })}
+                {t("i18n.cliCodeScanning.outputs.paragraph1")}
               </p>
               <p className="text-mist-700 leading-relaxed">
-                {t("outputs.paragraph2", { defaultValue: "Verbose mode delivers deep transparency with detailed audit logs, scoping summaries, and timing information. Scan statistics show file counts, discovery metrics, and performance data so you always know the health of your translation coverage." })}
+                {t("i18n.cliCodeScanning.outputs.paragraph2")}
               </p>
             </div>
             <div className="mt-10 lg:mt-0 space-y-4">
@@ -161,7 +161,7 @@ function CliCodeScanningPage() {
                 <div key={format.titleKey} className="flex items-start gap-3">
                   <SpriteIcon name="code-brackets" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
-                    <h4 className="text-sm font-medium text-mist-950 mb-1">{t(format.titleKey, { defaultValue: format.defaultTitle })}</h4>
+                    <h3 className="text-sm font-medium text-mist-950 mb-1">{t(format.titleKey, { defaultValue: format.defaultTitle })}</h3>
                     <p className="text-sm text-mist-600">{t(format.descKey, { defaultValue: format.defaultDesc })}</p>
                   </div>
                 </div>
@@ -171,14 +171,14 @@ function CliCodeScanningPage() {
         </div>
       </section>
 
-      <section id="devops-integration" className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section id="devops-integration" className="bg-mist-100">
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("devops.title", { defaultValue: "DevOps & CI/CD Integration" })}
+            <h2 className="section-h2">
+              {t("i18n.cliCodeScanning.devops.title")}
             </h2>
             <p className="mt-3 text-mist-700">
-              {t("devops.subtitle", { defaultValue: "Embed translation checks into your existing development pipeline to catch missing strings before they reach production." })}
+              {t("i18n.cliCodeScanning.devops.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -199,38 +199,38 @@ function CliCodeScanningPage() {
         </div>
       </section>
 
-      <section id="better-i18n-solution" className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section id="better-i18n-solution" className="bg-white">
+        <div className="section">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Better I18N CLI: Code Scanning Built for Localization" })}
+            <h2 className="section-h2 mb-6">
+              {t("i18n.cliCodeScanning.solution.title")}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better I18N's CLI combines AST-based code scanning with remote key management in a single tool. Scan your codebase for hardcoded strings, compare local usage against your remote translation store, detect unused keys that inflate bundle size, and generate reports for your CI pipeline — all without leaving your terminal." })}
+              {t("i18n.cliCodeScanning.solution.content")}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature1.title", { defaultValue: "Scope-Aware Scanning" })}
+                  {t("i18n.cliCodeScanning.solution.feature1.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature1.description", { defaultValue: "Tracks useTranslations and getTranslations calls through lexical scopes, binding each t() call to its correct namespace automatically." })}
+                  {t("i18n.cliCodeScanning.solution.feature1.description")}
                 </p>
               </div>
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature2.title", { defaultValue: "Server Component Support" })}
+                  {t("i18n.cliCodeScanning.solution.feature2.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature2.description", { defaultValue: "Full support for Next.js App Router async server components, so getTranslations calls in server code are detected and audited alongside client-side usage." })}
+                  {t("i18n.cliCodeScanning.solution.feature2.description")}
                 </p>
               </div>
               <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature3.title", { defaultValue: "Pre-Commit Hooks" })}
+                  {t("i18n.cliCodeScanning.solution.feature3.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature3.description", { defaultValue: "Run scans on staged files only with the --staged flag, catching untranslated strings before they are committed without slowing down your workflow." })}
+                  {t("i18n.cliCodeScanning.solution.feature3.description")}
                 </p>
               </div>
             </div>
@@ -238,8 +238,8 @@ function CliCodeScanningPage() {
         </div>
       </section>
 
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section className="border-t border-mist-200">
+        <div className="section">
           <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {relatedPages.map((page) => (
@@ -260,13 +260,13 @@ function CliCodeScanningPage() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
+      <section className="bg-mist-950 rounded-xl mx-6 lg:mx-10 mb-16">
         <div className="mx-auto max-w-2xl text-center px-6">
           <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("cta.title", { defaultValue: "Ship Translations Without Missing a String" })}
+            {t("i18n.cliCodeScanning.cta.title")}
           </h2>
           <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Better I18N's CLI scans your code, detects every untranslated string, and fits into your CI pipeline so nothing reaches production without a translation." })}
+            {t("i18n.cliCodeScanning.cta.subtitle")}
           </p>
           <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <a
@@ -274,14 +274,14 @@ function CliCodeScanningPage() {
               aria-label="Start using Better I18N CLI and code scanning tools for free"
               className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
             >
-              {t("cta.primary", { defaultValue: "Get Started Free" })}
+              {t("i18n.cliCodeScanning.cta.primary")}
             </a>
             <a
               href="https://docs.better-i18n.com"
               aria-label="Read the Better I18N CLI documentation"
               className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
             >
-              {t("cta.secondary", { defaultValue: "Read the Docs" })}
+              {t("i18n.cliCodeScanning.cta.secondary")}
             </a>
           </div>
         </div>

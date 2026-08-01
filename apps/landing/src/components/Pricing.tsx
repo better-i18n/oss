@@ -60,6 +60,11 @@ export default function Pricing({
   const t = useT("pricing");
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
   const Heading = headingLevel;
+  /* Plan names sit one level under the section heading, whatever that is. On
+     /pricing the section IS the page h1, so the cards must be h2 — hardcoding
+     h3 there skipped a level (h1 → h3), which is what the audit flagged. On the
+     home page the section is an h2 and the cards stay h3. */
+  const CardHeading = headingLevel === "h1" ? "h2" : "h3";
 
   // If no CMS plans provided, render nothing (data should come from loader)
   if (!plans || plans.length === 0) return null;
@@ -80,18 +85,18 @@ export default function Pricing({
   });
 
   return (
-    <section id="pricing" className="py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section id="pricing">
+      <div className="section">
         <div className="flex flex-col gap-8">
           {/* Heading + billing toggle */}
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <Heading className="font-display text-3xl/[1.08] font-medium tracking-[-0.03em] text-mist-950 sm:text-4xl/[1.04] text-balance">
+              <Heading className="section-h2 text-balance">
                 {t("title", {
                   defaultValue: "Pricing to fit your business needs.",
                 })}
               </Heading>
-              <p className="mt-4 text-lg text-mist-600 text-pretty">
+              <p className="section-p mt-3">
                 {t("subtitle", {
                   defaultValue:
                     "Start free, scale when you ship. No per-seat fees, no enterprise contracts — just transparent pricing built for teams shipping globally.",
@@ -99,16 +104,16 @@ export default function Pricing({
               </p>
             </div>
 
-            <div className="inline-flex w-fit items-center gap-1 rounded-full border border-mist-200 bg-white p-1">
+            <div className="inline-flex w-fit items-center rounded-[10px] bg-[#f1f1f0] p-1">
               <button
                 type="button"
                 aria-pressed={billingPeriod === "monthly"}
                 onClick={() => setBillingPeriod("monthly")}
                 className={cn(
-                  "cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors duration-200",
+                  "h-8 cursor-pointer rounded-md px-4 text-[13px] font-medium transition-all duration-150",
                   billingPeriod === "monthly"
-                    ? "bg-mist-950 text-white"
-                    : "text-mist-600 hover:text-mist-950"
+                    ? "bg-white text-mist-900 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
+                    : "text-mist-400 hover:text-mist-700"
                 )}
               >
                 {t("monthly", { defaultValue: "Monthly" })}
@@ -118,19 +123,17 @@ export default function Pricing({
                 aria-pressed={billingPeriod === "yearly"}
                 onClick={() => setBillingPeriod("yearly")}
                 className={cn(
-                  "cursor-pointer flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors duration-200",
+                  "flex h-8 cursor-pointer items-center gap-1.5 rounded-md px-4 text-[13px] font-medium transition-all duration-150",
                   billingPeriod === "yearly"
-                    ? "bg-mist-950 text-white"
-                    : "text-mist-600 hover:text-mist-950"
+                    ? "bg-white text-mist-900 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
+                    : "text-mist-400 hover:text-mist-700"
                 )}
               >
                 {t("yearly", { defaultValue: "Yearly" })}
                 <span
                   className={cn(
-                    "rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums",
-                    billingPeriod === "yearly"
-                      ? "bg-white/15 text-white"
-                      : "bg-mist-100 text-mist-700"
+                    "rounded-[3px] px-1.5 py-0.5 text-[10px] font-medium tabular-nums",
+                    "bg-emerald-50 text-emerald-700"
                   )}
                 >
                   −20%
@@ -140,7 +143,9 @@ export default function Pricing({
           </div>
 
           {/* Plans — framed grid block, title + toggle stay outside */}
-          <div className="grid grid-cols-1 gap-y-12 lg:grid-cols-3 lg:gap-y-0 lg:divide-x lg:divide-mist-200/70 rounded-3xl border border-mist-200/70 bg-white p-5 sm:p-6 lg:p-8 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          {/* Columns split by hairlines — no card, no shadow. The frame already
+              contains the block, so a second border would be a nested box. */}
+          <div className="feat-row">
             {plans.map((plan, planIdx) => {
               const isPopular = plan.popular;
               const isEnterprise = plan.planId === "enterprise";
@@ -170,11 +175,11 @@ export default function Pricing({
               return (
                 <div
                   key={plan.planId}
-                  className="flex flex-col px-0 pb-0 lg:px-8 lg:first:pl-0 lg:last:pr-0"
+                  className="feat-item !gap-0"
                 >
                   {/* Most-popular eyebrow — subtle, no pill */}
                   {isPopular ? (
-                    <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-mist-950 mb-2">
+                    <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-mist-600">
                       <span aria-hidden>★</span>
                       {t("mostPopular", { defaultValue: "Most popular" })}
                     </p>
@@ -184,10 +189,10 @@ export default function Pricing({
                     </p>
                   )}
 
-                  {/* Plan name */}
-                  <h3 className="text-xl font-semibold tracking-[-0.01em] text-mist-950">
+                  {/* Plan name — one level under the section heading */}
+                  <CardHeading className="text-[18px] font-medium tracking-[-0.02em] text-mist-900">
                     {plan.name}
-                  </h3>
+                  </CardHeading>
 
                   {/* Description */}
                   <p className="mt-1.5 text-sm leading-relaxed text-mist-600 text-pretty">
@@ -197,7 +202,7 @@ export default function Pricing({
                   {/* Price */}
                   <div className="mt-6">
                     <div className="flex items-baseline gap-1.5">
-                      <span className="text-3xl font-semibold tracking-[-0.03em] text-mist-950 tabular-nums">
+                      <span className="text-[40px] font-medium leading-none tracking-[-0.03em] text-mist-900 tabular-nums">
                         {displayPrice}
                       </span>
                       {!isEnterprise ? (
@@ -218,10 +223,8 @@ export default function Pricing({
                     rel="noopener noreferrer"
                     aria-label={`${plan.ctaLabel} — Better I18N ${plan.name}`}
                     className={cn(
-                      "mt-5 inline-flex w-full items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200",
-                      isPopular
-                        ? "bg-mist-950 text-white hover:bg-mist-800"
-                        : "border border-mist-200 bg-white text-mist-950 hover:bg-mist-50"
+                      "btn btn-lg mt-5 w-fit",
+                      isPopular ? "btn-dark" : "btn-outline"
                     )}
                   >
                     {plan.ctaLabel}

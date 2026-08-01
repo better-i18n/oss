@@ -4,6 +4,7 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
+import { i18nGuideRoute } from "@/lib/i18n-guide-routes";
 
 export const Route = createFileRoute("/$locale/i18n/best-library")({
   loader: createPageLoader(),
@@ -66,13 +67,13 @@ function BestLibraryPage() {
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
       {/* Hero */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
               <span>{t("i18n.bestLibrary.badge")}</span>
             </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
+            <h1 className="section-h2">
               {t("i18n.bestLibrary.hero.title")}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
@@ -83,17 +84,13 @@ function BestLibraryPage() {
       </section>
 
       {/* Libraries Grid */}
-      <section className="pb-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {libraries.map((library) => (
               <div
                 key={library.name}
-                className={`rounded-2xl border p-6 ${
-                  library.highlight
-                    ? "border-emerald-200 bg-emerald-50/50"
-                    : "border-mist-200 bg-white"
-                }`}
+                className={`rounded-xl border p-6 ${ library.highlight ? "border-emerald-200 bg-emerald-50/50" : "border-mist-200 bg-white" }`}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-xs font-medium text-mist-500 bg-mist-100 px-2 py-0.5 rounded">
@@ -105,9 +102,14 @@ function BestLibraryPage() {
                     </span>
                   )}
                 </div>
-                <h3 className="text-base font-medium text-mist-950 font-mono">
+                {/* h2, not h3: this grid is the page's first content block and
+                    the section above it has no heading of its own, so an h3 here
+                    skipped a level straight after the h1. Each library is a
+                    top-level item on a "best library" page, so h2 is also the
+                    honest level for it. */}
+                <h2 className="text-base font-medium text-mist-950 font-mono">
                   {library.name}
-                </h3>
+                </h2>
                 <p className="mt-2 text-sm text-mist-600">{library.description}</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {library.features.map((feature) => (
@@ -127,16 +129,16 @@ function BestLibraryPage() {
       </section>
 
       {/* Framework Links */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
+      <section className="bg-mist-50">
+        <div className="section">
+          <h2 className="section-h2 mb-8">
             {t("i18n.bestLibrary.frameworks.title")}
           </h2>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {["react", "nextjs", "vue", "nuxt", "angular", "svelte"].map((fw) => (
               <Link
                 key={fw}
-                to={`/$locale/i18n/${fw}`}
+                to={i18nGuideRoute(fw)}
                 params={{ locale }}
                 className="flex items-center justify-center gap-2 p-4 bg-white rounded-xl border border-mist-100 hover:border-mist-300 hover:shadow transition-all"
               >
@@ -149,12 +151,12 @@ function BestLibraryPage() {
       </section>
 
       {/* Related Topics */}
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section className="border-t border-mist-200">
+        <div className="section">
           <h2 className="text-lg font-medium text-mist-950 mb-6">{t("whatIs.relatedTopics")}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Link
-              to="/$locale/i18n/best-tms"
+              to="/$locale/i18n/best-tms/"
               params={{ locale }}
               className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
             >
@@ -165,7 +167,7 @@ function BestLibraryPage() {
               <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
-              to="/$locale/what-is-internationalization"
+              to="/$locale/what-is-internationalization/"
               params={{ locale }}
               className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
             >
@@ -176,7 +178,7 @@ function BestLibraryPage() {
               <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
-              to="/$locale/for-developers"
+              to="/$locale/for-developers/"
               params={{ locale }}
               className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
             >
@@ -187,7 +189,7 @@ function BestLibraryPage() {
               <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
             </Link>
             <Link
-              to="/$locale/compare"
+              to="/$locale/compare/"
               params={{ locale }}
               className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
             >
@@ -202,9 +204,9 @@ function BestLibraryPage() {
       </section>
 
       {/* How to Choose */}
-      <section className="py-16 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
+      <section className="border-t border-mist-200">
+        <div className="section">
+          <h2 className="section-h2 mb-8">
             How to choose the right i18n library
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -234,8 +236,8 @@ function BestLibraryPage() {
                 description: "If you need to push translation corrections without a new deployment, choose a library with runtime loading support. Better I18N delivers translations via CDN with 60-second cache max-age, enabling near-instant updates for web and mobile apps.",
               },
             ].map((item) => (
-              <div key={item.criterion} className="p-6 rounded-2xl border border-mist-100 bg-white">
-                <h3 className="text-sm font-semibold text-mist-950 mb-2">{item.criterion}</h3>
+              <div key={item.criterion} className="p-6 rounded-xl border border-mist-100 bg-white">
+                <h3 className="text-sm font-medium text-mist-950 mb-2">{item.criterion}</h3>
                 <p className="text-sm/6 text-mist-600">{item.description}</p>
               </div>
             ))}
@@ -244,9 +246,9 @@ function BestLibraryPage() {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 border-t border-mist-200">
+      <section className="border-t border-mist-200">
         <div className="mx-auto max-w-3xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-10">
+          <h2 className="section-h2 mb-10">
             Frequently Asked Questions
           </h2>
           <div className="space-y-8">
@@ -282,7 +284,7 @@ function BestLibraryPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
+      <section className="bg-mist-950 rounded-xl mx-6 lg:mx-10 mb-16">
         <div className="mx-auto max-w-2xl text-center px-6">
           <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
             {t("i18n.bestLibrary.cta.title")}

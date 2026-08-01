@@ -44,9 +44,9 @@ function TermsPage() {
       >
         {/* Table of Contents */}
         <div className="not-prose mb-10 rounded-xl border border-black/[0.07] bg-mist-50 p-5 text-sm">
-          <h3 className="mt-0 mb-3 text-[13px] font-medium text-mist-900">
+          <h2 className="mt-0 mb-3 text-[13px] font-medium text-mist-900">
             {t("toc.title", { defaultValue: "Table of Contents" })}
-          </h3>
+          </h2>
           <ul className="space-y-2 list-none pl-0 m-0">
             {[
               { id: "introduction", label: "Introduction" },
