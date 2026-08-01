@@ -12,28 +12,21 @@ interface PainPromiseProofProps {
   readonly proof: { readonly label: string; readonly text: string };
 }
 
+/**
+ * Pain → Promise → Proof, told by order and heading rather than by colour.
+ *
+ * Each card used to carry its own hue: red for the pain, emerald for the
+ * promise, blue for the proof, on the card border AND a 48px filled icon plate.
+ * Three decorative colours in one row, on a page whose rule reserves colour for
+ * pillar identity, links and code tokens
+ * (rule/neutral-ink-accent-is-identity-only) — and the hues were not even
+ * carrying the distinction, the labels were. Now the labels do it alone: one
+ * ink, one 22px neutral tile, no card.
+ */
 const SECTION_CONFIG = [
-  {
-    key: "pain",
-    icon: <IconExclamationCircle className="size-6" />,
-    iconBg: "bg-red-50",
-    iconColor: "text-red-500",
-    borderColor: "border-red-100",
-  },
-  {
-    key: "promise",
-    icon: <IconTarget className="size-6" />,
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-500",
-    borderColor: "border-emerald-100",
-  },
-  {
-    key: "proof",
-    icon: <IconShield className="size-6" />,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-500",
-    borderColor: "border-blue-100",
-  },
+  { key: "pain", icon: <IconExclamationCircle className="size-3.5" /> },
+  { key: "promise", icon: <IconTarget className="size-3.5" /> },
+  { key: "proof", icon: <IconShield className="size-3.5" /> },
 ] as const;
 
 export default function PainPromiseProof({
@@ -46,34 +39,25 @@ export default function PainPromiseProof({
   const sections = { pain, promise, proof };
 
   return (
-    <section className="py-16 lg:py-24 bg-white">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="mb-12 lg:mb-16 text-center">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            {title}
-          </h2>
-          <p className="mt-4 text-lg text-mist-600 max-w-2xl mx-auto">
-            {subtitle}
-          </p>
+    <section className="bg-white">
+      <div className="section">
+        <div className="mb-10">
+          <h2 className="section-h2">{title}</h2>
+          <p className="section-p mt-3">{subtitle}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 gap-x-10 gap-y-9 md:grid-cols-3">
           {SECTION_CONFIG.map((config) => {
             const section = sections[config.key];
             return (
-              <div
-                key={config.key}
-                className={`relative rounded-2xl border ${config.borderColor} p-6 lg:p-8`}
-              >
-                <div
-                  className={`size-12 rounded-xl ${config.iconBg} flex items-center justify-center ${config.iconColor} mb-5`}
-                >
+              <div key={config.key} className="flex flex-col">
+                <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   {config.icon}
-                </div>
-                <span className="text-xs font-medium uppercase tracking-wider text-mist-400">
+                </span>
+                <span className="mt-4 text-[11px] font-medium text-mist-400">
                   {section.label}
                 </span>
-                <p className="mt-2 text-lg font-medium text-mist-950 leading-relaxed">
+                <p className="mt-1.5 text-[15px] leading-relaxed text-mist-900">
                   {section.text}
                 </p>
               </div>

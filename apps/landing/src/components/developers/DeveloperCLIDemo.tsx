@@ -2,13 +2,14 @@ import { useTranslations } from "@better-i18n/use-intl";
 import {
   IconFilterTimeline
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { CodeBlock } from "@/components/CodeBlock";
 
 export default function DeveloperCLIDemo() {
   const t = useTranslations("developers");
 
   return (
-    <section className="py-16 lg:py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section>
+      <div className="section">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Text */}
           <div>
@@ -16,10 +17,10 @@ export default function DeveloperCLIDemo() {
               <IconFilterTimeline className="size-4" />
               {t("cliDemo.badge")}
             </span>
-            <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
+            <h2 className="section-h2">
               {t("cliDemo.title")}
             </h2>
-            <p className="mt-4 text-lg text-mist-600">
+            <p className="section-p mt-3">
               {t("cliDemo.description")}
             </p>
             <ul className="mt-6 space-y-3">
@@ -34,34 +35,28 @@ export default function DeveloperCLIDemo() {
             </ul>
           </div>
 
-          {/* Terminal */}
-          <div className="bg-mist-950 rounded-2xl overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-mist-800">
-              <div className="size-3 rounded-full bg-red-400" />
-              <div className="size-3 rounded-full bg-yellow-400" />
-              <div className="size-3 rounded-full bg-green-400" />
-              <span className="ml-2 text-xs text-mist-400">terminal</span>
-            </div>
-            <div className="p-6 font-mono text-sm leading-relaxed">
-              <p className="text-mist-400"># {t("cliDemo.terminal.comment")}</p>
-              <p className="mt-2">
-                <span className="text-emerald-400">$</span>{" "}
-                <span className="text-white">bunx better-i18n init</span>
-              </p>
-              <p className="mt-3 text-mist-400">
-                {t("cliDemo.terminal.output1")}
-              </p>
-              <p className="text-mist-400">
-                {t("cliDemo.terminal.output2")}
-              </p>
-              <p className="text-mist-400">
-                {t("cliDemo.terminal.output3")}
-              </p>
-              <p className="mt-3 text-emerald-400">
-                {t("cliDemo.terminal.success")}
-              </p>
-            </div>
-          </div>
+          {/* Terminal — light, like every other code block on the site.
+              It was `bg-mist-950` with three macOS traffic-light dots and
+              emerald/white ink: a second theme living on a white page, and the
+              one place a reader had to re-learn what a code block looks like.
+              The shared highlighter renders the same session on the standard
+              hairline figure, with the three-hue token palette
+              (rule/code-blocks-carry-three-hues) doing the work the dark
+              background used to pretend to do. */}
+          <CodeBlock
+            lang="bash"
+            filename="terminal"
+            code={[
+              `# ${t("cliDemo.terminal.comment")}`,
+              "$ bunx better-i18n init",
+              "",
+              t("cliDemo.terminal.output1"),
+              t("cliDemo.terminal.output2"),
+              t("cliDemo.terminal.output3"),
+              "",
+              t("cliDemo.terminal.success"),
+            ].join("\n")}
+          />
         </div>
       </div>
     </section>

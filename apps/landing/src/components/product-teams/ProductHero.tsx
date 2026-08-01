@@ -6,6 +6,7 @@ import {
   IconEarth,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { ProcessCompare } from "@/components/visuals/ProcessCompare";
 
 export default function ProductHero() {
   const t = useTranslations("product-teams");
@@ -30,10 +31,9 @@ export default function ProductHero() {
   ];
 
   return (
-    <section className="px-2 pt-8 pb-16 lg:pb-24">
-      <div className="w-full mx-auto max-w-[1400px]">
-        <div className="px-6 lg:px-10 py-12 lg:py-16">
-          <div className="flex flex-col gap-12 lg:gap-16">
+    <section>
+      <div className="section">
+          <div className="flex flex-col gap-10 lg:gap-12">
             {/* Text Content */}
             <motion.div
               className="flex flex-col gap-6 max-w-3xl"
@@ -42,13 +42,13 @@ export default function ProductHero() {
               transition={{ duration: 0.5 }}
             >
               {/* Badge */}
-              <span className="inline-flex items-center gap-2 rounded-full bg-mist-200 px-3 py-1.5 text-sm text-mist-700 w-fit">
+              <span className="inline-flex w-fit items-center gap-2 rounded-sm border border-black/[0.06] bg-mist-50 px-2.5 py-1 text-xs text-mist-600">
                 <IconEarth className="size-4" />
                 {t("hero.badge")}
               </span>
 
               <h1
-                className="text-3xl/[1.1] font-semibold tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1] lg:text-5xl/[1.1]"
+                className="text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1] lg:text-5xl/[1.1]"
                 style={{ textWrap: "balance" }}
               >
                 {t("hero.title")}
@@ -65,14 +65,14 @@ export default function ProductHero() {
               <div className="flex flex-wrap items-center gap-4 mt-2">
                 <a
                   href="https://dash.better-i18n.com"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-mist-950 px-6 py-3 text-sm font-medium text-white hover:bg-mist-900 transition-colors"
+                  className="btn btn-dark btn-lg"
                 >
                   {t("hero.cta.primary")}
                   <SpriteIcon name="arrow-right" className="size-4" />
                 </a>
                 <a
                   href="#workflow"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-mist-600 hover:text-mist-950 transition-colors"
+                  className="learn-more"
                 >
                   {t("hero.cta.secondary")}
                   <SpriteIcon name="chevron-right" className="size-4" />
@@ -87,18 +87,58 @@ export default function ProductHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              {stats.map((stat, idx) => (
-                <div key={idx} className="flex flex-col gap-1">
-                  <span className="text-2xl lg:text-3xl font-semibold text-mist-950">
+              {stats.map((stat) => (
+                <div key={stat.label} className="flex flex-col gap-1">
+                  <span className="text-2xl lg:text-3xl font-medium text-mist-950">
                     {stat.value}
                   </span>
-                  <span className="text-sm text-mist-500">{stat.label}</span>
+                  <span className="text-[13px] leading-snug text-mist-500 text-pretty">{stat.label}</span>
                 </div>
               ))}
             </motion.div>
+
+            {/* The process, not a dashboard picture: the four published
+                `painPoints.items.*.before` lines are already the manual lane and
+                the `.after` lines are already ours, so the figure is the page's
+                own copy laid on one x-scale. (`ProductDashboardPreview` is no
+                longer rendered anywhere — it is dead code, not a regression.) */}
+            <ProductProcess />
           </div>
-        </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Manual lane = the four `product-teams.painPoints.items.*.before` lines, Better
+ * lane = the matching `.after` lines. Both were already published and already
+ * paired as before/after prose on this page, so nothing here is a new claim; the
+ * figure only puts the pair on one scale. The lane labels come from
+ * `painPoints.before` / `painPoints.after`, which exist for exactly this contrast.
+ */
+function ProductProcess() {
+  const t = useTranslations("product-teams");
+  const tc = useTranslations("common");
+  const ITEMS = ["blocked", "scattered", "markets", "voice"] as const;
+
+  return (
+    <ProcessCompare
+      pillar="content"
+      title={t("workflow.title")}
+      handledLabel={tc("processCompare.handled")}
+      /* No `dropped` here, unlike the developer and translator lanes: this
+         page's before/after are 1:1 pairs — each manual habit is REPLACED by a
+         better one, not eliminated — so striking three of them through claimed a
+         shortening that does not happen, and the caption read "4 steps become 4".
+         With nothing dropped the caption correctly disappears. */
+      manual={{
+        label: t("painPoints.before"),
+        steps: ITEMS.map((key) => ({ label: t(`painPoints.items.${key}.before`) })),
+      }}
+      better={{
+        label: t("painPoints.after"),
+        steps: ITEMS.map((key) => ({ label: t(`painPoints.items.${key}.after`) })),
+      }}
+    />
   );
 }

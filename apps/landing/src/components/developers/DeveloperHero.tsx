@@ -1,5 +1,6 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { ProcessCompare } from "@/components/visuals/ProcessCompare";
 export default function DeveloperHero() {
   const t = useTranslations("developers");
 
@@ -18,7 +19,7 @@ export default function DeveloperHero() {
               </span>
 
               <h1
-                className="text-3xl/[1.1] font-semibold tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1] lg:text-5xl/[1.1]"
+                className="text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1] lg:text-5xl/[1.1]"
                 style={{ textWrap: "balance" }}
               >
                 {t("hero.title")}
@@ -50,26 +51,68 @@ export default function DeveloperHero() {
               </div>
             </div>
 
-            {/* Screenshot - Wrapped in wallpaper */}
-            <div className="w-full wallpaper rounded-lg overflow-hidden p-4 lg:p-6">
-              <div
-                className="bg-white rounded-xl overflow-hidden relative"
-                style={{
-                  boxShadow:
-                    "0 28px 70px rgba(0, 0, 0, 0.25), 0 14px 32px rgba(0, 0, 0, 0.15)",
-                  aspectRatio: "16 / 8.40",
-                }}
-              >
-                <img
-                  src="/docs.webp"
-                  alt="Better I18N Documentation"
-                  className="w-full h-full object-cover object-top"
-                />
-              </div>
-            </div>
+            {/* The hero used to be a screenshot of our own docs on a matted
+                canvas — a picture of a website, telling a developer nothing
+                about their week. It is now the process itself: the manual lane
+                with the steps that disappear struck through, and the same job
+                below in four. Every label is a published key, and both lanes are
+                copy we already shipped (`integration.steps.*` is literally the
+                manual checklist this page was written against). */}
+            <DeveloperProcess />
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * The manual lane is `developers.integration.steps.*` — the eight-step checklist
+ * that section already lists — and the Better lane is the four
+ * `developers.workflow.steps.*` titles. Nothing new was written for this figure;
+ * the two lists were already on the page in prose form, so putting them side by
+ * side is a presentation change, not a new claim.
+ */
+function DeveloperProcess() {
+  const t = useTranslations("developers");
+  const tc = useTranslations("common");
+
+  return (
+    <ProcessCompare
+      pillar="ai"
+      title={t("integration.tagline")}
+      handledLabel={t("integration.stepsHandled")}
+      manual={{
+        label: tc("processCompare.manual"),
+        steps: [
+          { label: t("integration.steps.addKey"), meta: tc("processCompare.meta.byHand") },
+          { label: t("integration.steps.createJson"), dropped: true },
+          { label: t("integration.steps.copyKey"), dropped: true },
+          {
+            label: t("integration.steps.emailTranslator"),
+            meta: tc("processCompare.meta.waiting"),
+            dropped: true,
+          },
+          { label: t("integration.steps.waitTranslations"), dropped: true },
+          { label: t("integration.steps.importFiles"), dropped: true },
+          { label: t("integration.steps.pushGithub") },
+        ],
+      }}
+      better={{
+        label: tc("processCompare.better"),
+        steps: [
+          {
+            label: t("workflow.steps.connect.title"),
+            meta: tc("processCompare.meta.oneCommand"),
+          },
+          { label: t("workflow.steps.discover.title") },
+          { label: t("workflow.steps.translate.title") },
+          {
+            label: t("workflow.steps.publish.title"),
+            meta: tc("processCompare.meta.noDeploy"),
+          },
+        ],
+      }}
+    />
   );
 }

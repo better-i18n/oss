@@ -10,7 +10,7 @@ const resourceKeys = [
     key: "nextjs",
     href: "https://docs.better-i18n.com/frameworks/nextjs",
     icon: (
-      <svg className="size-6" viewBox="0 0 24 24" fill="currentColor">
+      <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor">
         <path d="M11.572 0c-.176 0-.31.001-.358.007a19.76 19.76 0 0 1-.364.033C7.443.346 4.25 2.185 2.228 5.012a11.875 11.875 0 0 0-2.119 5.243c-.096.659-.108.854-.108 1.747s.012 1.089.108 1.748c.652 4.506 3.86 8.292 8.209 9.695.779.251 1.6.422 2.534.525.363.04 1.935.04 2.299 0 1.611-.178 2.977-.577 4.323-1.264.207-.106.247-.134.219-.158-.02-.013-.9-1.193-1.955-2.62l-1.919-2.592-2.404-3.558a338.739 338.739 0 0 0-2.422-3.556c-.009-.002-.018 1.579-.023 3.51-.007 3.38-.01 3.515-.052 3.595a.426.426 0 0 1-.206.214c-.075.037-.14.044-.495.044H7.81l-.108-.068a.438.438 0 0 1-.157-.171l-.05-.106.006-4.703.007-4.705.072-.092a.645.645 0 0 1 .174-.143c.096-.047.134-.051.54-.051.478 0 .558.018.682.154.035.038 1.337 1.999 2.895 4.361a10760.433 10760.433 0 0 0 4.735 7.17l1.9 2.879.096-.063a12.317 12.317 0 0 0 2.466-2.163 11.944 11.944 0 0 0 2.824-6.134c.096-.66.108-.854.108-1.748 0-.893-.012-1.088-.108-1.747-.652-4.506-3.859-8.292-8.208-9.695a12.597 12.597 0 0 0-2.499-.523A33.119 33.119 0 0 0 11.572 0zm4.069 7.217c.347 0 .408.005.486.047a.473.473 0 0 1 .237.277c.018.06.023 1.365.018 4.304l-.006 4.218-.744-1.14-.746-1.14v-3.066c0-1.982.01-3.097.023-3.15a.478.478 0 0 1 .233-.296c.096-.05.13-.054.5-.054z" />
       </svg>
     ),
@@ -20,7 +20,7 @@ const resourceKeys = [
     href: "https://docs.better-i18n.com/frameworks/tanstack-start",
     icon: (
       <svg
-        className="size-6"
+        className="size-3.5"
         viewBox="-11.5 -10.232 23 20.463"
         fill="currentColor"
       >
@@ -37,7 +37,7 @@ const resourceKeys = [
     key: "expo",
     href: "https://docs.better-i18n.com/frameworks/expo",
     icon: (
-      <svg className="size-6" viewBox="0 0 24 24" fill="currentColor">
+      <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor">
         <path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z" />
       </svg>
     ),
@@ -46,7 +46,7 @@ const resourceKeys = [
     key: "server",
     href: "https://docs.better-i18n.com/frameworks/server",
     icon: (
-      <svg className="size-6" viewBox="0 0 24 24" fill="currentColor">
+      <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor">
         <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" />
       </svg>
     ),
@@ -54,17 +54,17 @@ const resourceKeys = [
   {
     key: "sdk",
     href: "https://docs.better-i18n.com/sdk",
-    icon: <SpriteIcon name="code-brackets" className="size-6" />,
+    icon: <SpriteIcon name="code-brackets" className="size-3.5" />,
   },
   {
     key: "cli",
     href: "https://docs.better-i18n.com/cli",
-    icon: <IconConsole className="size-6" />,
+    icon: <IconConsole className="size-3.5" />,
   },
   {
     key: "mcp",
     href: "https://docs.better-i18n.com/mcp",
-    icon: <IconServer1 className="size-6" />,
+    icon: <IconServer1 className="size-3.5" />,
   },
 ];
 
@@ -72,37 +72,46 @@ export default function DeveloperResources() {
   const t = useTranslations("developers");
 
   return (
-    <section className="py-16 lg:py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section>
+      <div className="section">
         <div className="mb-12 lg:mb-16">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
+          <h2 className="section-h2">
             {t("resources.title")}
           </h2>
-          <p className="mt-4 text-lg text-mist-600">
+          <p className="section-p mt-3">
             {t("resources.subtitle")}
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {/* Compact link list, the same rhythm as the compare hub and
+            Alternatives: 22px mark, 15px title, 13px description, no card. It
+            was four `p-6 rounded-xl border` cards with a 48px icon plate and a
+            repeated "view docs" row per card — roughly twice the height for the
+            same four links, and the repeated CTA said nothing the link did not
+            (rule/listed-items-are-not-cards). */}
+        <div className="grid grid-cols-1 gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
           {resourceKeys.map((resource) => (
             <a
               key={resource.key}
               href={resource.href}
-              className="group relative flex flex-col p-6 rounded-xl bg-white border border-mist-200 hover:border-mist-300 hover:shadow-md transition-all"
+              className="group flex items-start gap-3"
             >
-              <div className="flex items-center justify-center size-12 rounded-lg bg-mist-100 text-mist-700 group-hover:bg-mist-200 group-hover:text-mist-900 transition-colors mb-4">
+              <span className="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                 {resource.icon}
-              </div>
-              <h3 className="font-semibold text-mist-950 mb-2">
-                {t(`resources.items.${resource.key}.title`)}
-              </h3>
-              <p className="text-sm text-mist-600 flex-1">
-                {t(`resources.items.${resource.key}.description`)}
-              </p>
-              <div className="mt-4 flex items-center gap-1.5 text-sm font-medium text-mist-700 group-hover:text-mist-900 transition-colors">
-                {t("resources.viewDocs")}
-                <SpriteIcon name="chevron-right" className="size-4 transition-transform group-hover:translate-x-0.5" />
-              </div>
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[15px] font-medium tracking-[-0.015em] text-mist-900 transition-colors group-hover:text-mist-600">
+                  {t(`resources.items.${resource.key}.title`)}
+                </span>
+                <span className="mt-1 block text-[13px] leading-relaxed text-mist-600">
+                  {t(`resources.items.${resource.key}.description`)}
+                </span>
+              </span>
+              <SpriteIcon
+                name="chevron-right"
+                className="mt-1 size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
+                aria-hidden="true"
+              />
             </a>
           ))}
         </div>

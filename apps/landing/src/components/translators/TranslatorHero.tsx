@@ -1,5 +1,6 @@
 import { useTranslations } from "@better-i18n/use-intl";
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { ProcessCompare } from "@/components/visuals/ProcessCompare";
 
 export default function TranslatorHero() {
   const t = useTranslations("translators");
@@ -19,7 +20,7 @@ export default function TranslatorHero() {
               </span>
 
               <h1
-                className="text-3xl/[1.1] font-semibold tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1] lg:text-5xl/[1.1]"
+                className="text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1] lg:text-5xl/[1.1]"
                 style={{ textWrap: "balance" }}
               >
                 {t("hero.title")}
@@ -51,26 +52,59 @@ export default function TranslatorHero() {
               </div>
             </div>
 
-            {/* Screenshot - Wrapped in wallpaper */}
-            <div className="w-full wallpaper rounded-lg overflow-hidden p-4 lg:p-6">
-              <div
-                className="bg-white rounded-xl overflow-hidden relative"
-                style={{
-                  boxShadow:
-                    "0 28px 70px rgba(0, 0, 0, 0.25), 0 14px 32px rgba(0, 0, 0, 0.15)",
-                  aspectRatio: "16 / 8.40",
-                }}
-              >
-                <img
-                  src="/translators.webp"
-                  alt="Better I18N Translation Editor"
-                  className="w-full h-full object-cover object-top"
-                />
-              </div>
-            </div>
+            {/* Was a screenshot of the editor; now the translator's own process,
+                before and after. */}
+            <TranslatorProcess />
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * The Better lane is the four published `translators.workflow.steps.*` titles —
+ * the same statuses the page explains below. The manual lane needed copy that did
+ * not exist yet, so five keys were added under
+ * `translators.processCompare.translators.*`; they describe the spreadsheet round
+ * trip the page's own pain points already name (no context, inconsistent terms,
+ * blind quality) rather than inventing a new grievance.
+ */
+function TranslatorProcess() {
+  const t = useTranslations("translators");
+  const tc = useTranslations("common");
+
+  return (
+    <ProcessCompare
+      pillar="sync"
+      title={t("workflow.title")}
+      handledLabel={tc("processCompare.handled")}
+      manual={{
+        label: tc("processCompare.manual"),
+        steps: [
+          { label: t("processCompare.translators.brief") },
+          { label: t("processCompare.translators.guess"), dropped: true },
+          { label: t("processCompare.translators.terms"), dropped: true },
+          {
+            label: t("processCompare.translators.send"),
+            meta: tc("processCompare.meta.waiting"),
+            dropped: true,
+          },
+          { label: t("processCompare.translators.rebuild"), dropped: true },
+        ],
+      }}
+      better={{
+        label: tc("processCompare.better"),
+        steps: [
+          { label: t("workflow.steps.missing.title") },
+          { label: t("workflow.steps.draft.title") },
+          { label: t("workflow.steps.approved.title") },
+          {
+            label: t("workflow.steps.published.title"),
+            meta: tc("processCompare.meta.noDeploy"),
+          },
+        ],
+      }}
+    />
   );
 }
