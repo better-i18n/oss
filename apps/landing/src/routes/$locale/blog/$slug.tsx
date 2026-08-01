@@ -11,6 +11,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { RelatedPages } from "@/components/RelatedPages";
 import { useT } from "@/lib/i18n";
+import { PROSE_CLASS } from "@/components/ProseBody";
 import BlogContent from "@/components/blog/BlogContent";
 import RelatedPosts from "@/components/blog/RelatedPosts";
 import TableOfContents from "@/components/blog/TableOfContents";
@@ -25,7 +26,9 @@ import { useTrackView } from "@better-i18n/content/adapters/react";
 import { getRelatedPages } from "@/seo/internal-links";
 // Breadcrumb removed from UI but kept for SEO structured data
 import ShareButtons from "@/components/blog/ShareButtons";
-import { IconArrowLeft, IconCircleInfo } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { Frame, Section, Divider } from "@/components/ui/page";
+import { BlogEmptyState } from "@/components/blog/BlogGrid";
+import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import {
   SITE_URL,
   getAlternateLinks,
@@ -216,7 +219,10 @@ function BlogPostPage() {
 
   const canonicalUrl = `${SITE_URL}/${locale}/blog/${post.slug}`;
 
-  // Analytics: blog view + engaged time
+  // Analytics: blog view + engaged time.
+  // Every value the effect reads is listed. The dependency list is not a
+  // throttle — the route remounts per post, so this still fires once per view,
+  // and an honest list means a late-arriving field can't be silently dropped.
   useEffect(() => {
     trackBlogView({
       slug: post.slug,
@@ -225,7 +231,7 @@ function BlogPostPage() {
       author: post.authorName ?? undefined,
       locale,
     });
-  }, [post.slug]);
+  }, [post.slug, post.title, post.category, post.authorName, locale]);
   useEngagedTime("blog", post.slug);
 
   // Better i18n Content Analytics — tracks per-entry views by locale
@@ -242,91 +248,111 @@ function BlogPostPage() {
       <ReadingProgress slug={post.slug} />
       <Header className="bg-white" />
       <main>
-        {/* Article header */}
-        <div className="mx-auto max-w-4xl px-6 lg:px-10 pt-10 pb-8">
-          {/* Meta row: category + date + read time */}
-          <div className="flex items-center gap-3 text-[13px] text-mist-400 mb-4">
-            {post.category && (
-              <span className="text-mist-500">{post.category}</span>
-            )}
-            {post.publishedAt && (
-              <>
-                <span className="text-mist-300">/</span>
-                <time dateTime={post.publishedAt}>
-                  {formatPostDate(post.publishedAt, locale)}
-                </time>
-              </>
-            )}
-            {post.readTime && (
-              <>
-                <span className="text-mist-300">/</span>
-                <span>{t("minRead", { defaultValue: "{count} min read", count: post.readTime })}</span>
-              </>
-            )}
-          </div>
+        {/* Reading column + rail. 720px is the measure the body type was tuned
+            for; the 240px rail carries navigation and attribution so neither
+            competes with the prose. Both live inside the one <Frame>, so the
+            page's vertical hairlines still run behind the article. */}
+        <Frame style={{ paddingTop: 44, paddingBottom: 56 }}>
+          {/* justify-START, not center. Centering the 720+64+240=1024px pair
+              inside the 1160px frame pushed the reading column ~68px right,
+              while the Related Posts <Section> below started at the frame's
+              left edge — so the article, its CTA and its comments all read as
+              indented against the section that follows them. The frame's left
+              edge is the page's one vertical alignment line; leftover space
+              belongs on the right, behind the rail. */}
+          <div className="grid justify-start gap-16 lg:grid-cols-[minmax(0,720px)_240px]">
+            <article className="min-w-0">
+              <Link
+                to="/$locale/blog/"
+                params={{ locale }}
+                className="inline-flex items-center gap-1.5 text-[13px] text-mist-500 transition-colors hover:text-mist-900"
+              >
+                <IconArrowLeft className="size-3.5" />
+                {t("backToBlog")}
+              </Link>
 
-          <h1 className="text-[28px]/[1.2] font-semibold tracking-[-0.03em] text-mist-950 sm:text-[40px]/[1.12] text-balance">
-            {post.title}
-          </h1>
-
-          {/* Author + share */}
-          <div className="mt-6 flex items-center justify-between border-b border-mist-200/50 pb-6">
-            <div className="flex items-center gap-2.5">
-              {post.authorAvatar ? (
-                <img
-                  src={post.authorAvatar}
-                  alt=""
-                  width={28}
-                  height={28}
-                  className="size-7 rounded-full object-cover [image-orientation:from-image]"
-                />
-              ) : post.authorName ? (
-                <div className="size-7 rounded-full bg-mist-200 flex items-center justify-center text-[10px] font-semibold text-mist-600">
-                  {post.authorName.charAt(0).toUpperCase()}
+              {post.category && (
+                <div className="mt-5">
+                  <span className="inline-flex items-center rounded-md border border-black/[0.07] px-2.5 py-1 text-[11px] font-medium text-mist-600">
+                    {post.category}
+                  </span>
                 </div>
-              ) : null}
-              {post.authorName && (
-                <span className="text-[14px] text-mist-600">{post.authorName}</span>
               )}
-            </div>
-            <ShareButtons url={canonicalUrl} title={post.title} slug={post.slug} />
-          </div>
-        </div>
 
-        {/* Content area with TOC on the right */}
-        {post.bodyHtml && (
-          <div className="mx-auto max-w-6xl px-6 lg:px-10 pt-10 pb-16">
-            <div className="lg:flex lg:gap-16">
-              {/* Main content - left side */}
-              <article className="min-w-0 flex-1 max-w-3xl">
-                {/* Mobile TOC */}
-                <div className="lg:hidden mb-10 rounded-xl bg-mist-50/60 border border-mist-100 overflow-hidden">
+              <h1
+                className="mt-3.5 font-medium leading-[1.12] tracking-[-0.03em] text-mist-950"
+                style={{ fontSize: "clamp(28px, 4vw, 38px)", textWrap: "balance" }}
+              >
+                {post.title}
+              </h1>
+
+              {post.excerpt && (
+                <p className="mt-3.5 max-w-[60ch] text-[16px] leading-relaxed text-mist-600">
+                  {post.excerpt}
+                </p>
+              )}
+
+              <div className="mt-4 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                {post.authorAvatar ? (
+                  <img
+                    src={post.authorAvatar}
+                    alt=""
+                    width={28}
+                    height={28}
+                    className="size-7 shrink-0 rounded-full border border-black/[0.06] object-cover [image-orientation:from-image]"
+                  />
+                ) : null}
+                {post.authorName && (
+                  <span className="text-[13px] font-medium text-mist-900">{post.authorName}</span>
+                )}
+                {post.publishedAt && (
+                  <time className="text-[13px] text-mist-400" dateTime={post.publishedAt}>
+                    {formatPostDate(post.publishedAt, locale)}
+                  </time>
+                )}
+                {post.readTime && (
+                  <span className="text-[13px] text-mist-400">
+                    {t("minRead", { count: post.readTime })}
+                  </span>
+                )}
+                {/* Share lives in the rail on desktop; below lg the rail is gone,
+                    so it rides along the byline instead of disappearing. */}
+                <div className="ml-auto lg:hidden">
+                  <ShareButtons url={canonicalUrl} title={post.title} slug={post.slug} />
+                </div>
+              </div>
+
+              {/* Hero image only when the CMS actually has one — a placeholder
+                  panel here would read as a failed image load. */}
+              {post.bannerImage && (
+                <img
+                  src={post.bannerImage}
+                  alt=""
+                  className="mt-6 aspect-[16/8] w-full rounded-xl border border-black/[0.07] object-cover"
+                />
+              )}
+
+              <div className="my-7 h-px bg-black/[0.06]" aria-hidden="true" />
+
+              {post.bodyHtml && (
+                <>
+                {/* Mobile TOC — the rail is hidden below lg, so the same nav
+                    collapses into a disclosure at the top of the article. */}
+                <div className="mb-8 overflow-hidden rounded-xl border border-black/[0.07] bg-white lg:hidden">
                   <details className="group">
-                    <summary className="flex items-center justify-between px-5 py-3.5 text-sm font-medium text-mist-700 cursor-pointer select-none">
-                      {t("tableOfContents", { defaultValue: "Table of Contents" })}
-                      <SpriteIcon name="chevron-bottom" className="w-4 h-4 text-mist-400 transition-transform group-open:rotate-180" />
+                    <summary className="flex cursor-pointer items-center justify-between px-5 py-3.5 text-[13px] font-medium text-mist-700 select-none">
+                      {t("tableOfContents")}
+                      <SpriteIcon name="chevron-bottom" className="size-4 text-mist-400 transition-transform group-open:rotate-180" />
                     </summary>
-                    <div className="px-5 pb-4 border-t border-mist-100 pt-3">
+                    <div className="border-t border-black/[0.05] px-5 pt-3 pb-4">
                       <TableOfContents html={post.bodyHtml} />
                     </div>
                   </details>
                 </div>
 
-                <BlogContent
-                  html={post.bodyHtml}
-                  className="prose prose-lg max-w-none
-                    prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
-                    prose-headings:scroll-mt-24
-                    prose-p:text-mist-700 prose-p:leading-[1.8]
-                    prose-a:text-mist-950 prose-a:underline-offset-4 prose-a:decoration-mist-300 hover:prose-a:decoration-mist-500
-                    prose-strong:text-mist-900 prose-strong:font-semibold
-                    prose-pre:p-0 prose-pre:bg-transparent prose-pre:rounded-none prose-pre:my-0 prose-pre:border-0 prose-pre:shadow-none
-                    prose-code:text-mist-900 prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
-                    prose-blockquote:border-l-2 prose-blockquote:border-mist-200 prose-blockquote:pl-6 prose-blockquote:text-mist-600 prose-blockquote:not-italic prose-blockquote:font-normal
-                    prose-img:rounded-xl prose-img:shadow-sm
-                    prose-li:text-mist-700 prose-li:leading-[1.8]
-                    prose-hr:border-mist-100"
-                />
+                {/* One shared prose scale (components/ProseBody.tsx) — the blog
+                    chain this page used to inline IS that standard now. */}
+                <BlogContent html={post.bodyHtml} className={PROSE_CLASS} />
 
                 {/* Contextual CTA — matches blog post topic */}
                 <InlineCTA
@@ -336,46 +362,75 @@ function BlogPostPage() {
                   ctaUrl={cta.ctaUrl.startsWith("http") ? cta.ctaUrl : `/${locale}${cta.ctaUrl}/`}
                   slug={post.slug}
                 />
+                </>
+              )}
 
-                {/* Internal links — topical cluster connections */}
-                {internalLinks.length > 0 && (
-                  <nav className="mt-10 not-prose border-t border-mist-100 pt-8" aria-label="Related guides">
-                    <p className="text-sm font-medium text-mist-500 uppercase tracking-wider mb-3">
-                      {t("continueReading", { defaultValue: "Continue reading" })}
-                    </p>
-                    <ul className="flex flex-wrap gap-2">
-                      {internalLinks.map((link) => (
-                        <li key={link.path}>
-                          <a
-                            href={`/${locale}/${link.path}/`}
-                            className="inline-flex items-center gap-1 rounded-lg border border-mist-200 bg-mist-50/50 px-3 py-1.5 text-sm text-mist-700 hover:bg-mist-100 hover:text-mist-900 transition-colors"
-                          >
-                            {link.anchor}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </nav>
-                )}
-                {/* Comments */}
-                <CommentSection slug={post.slug} />
-              </article>
+              {/* Internal links — topical cluster connections */}
+              {internalLinks.length > 0 && (
+                <nav className="not-prose mt-10 border-t border-black/[0.06] pt-8" aria-label="Related guides">
+                  <p className="eyebrow">{t("continueReading")}</p>
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {internalLinks.map((link) => (
+                      <li key={link.path}>
+                        <a
+                          href={`/${locale}/${link.path}/`}
+                          className="inline-flex items-center rounded-md border border-black/[0.07] px-3 py-1.5 text-[13px] text-mist-700 transition-colors hover:bg-black/[0.02] hover:text-mist-900"
+                        >
+                          {link.anchor}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              )}
 
-              {/* TOC sidebar - desktop only, right side */}
-              <aside className="hidden lg:block lg:w-56 lg:flex-shrink-0">
-                <div className="sticky top-24">
-                  <TableOfContents html={post.bodyHtml} />
+              {/* Comments */}
+              <CommentSection slug={post.slug} />
+            </article>
+
+            {/* Rail: contents → attribution → share. Desktop only; every item
+                here has a mobile counterpart inside the article column. */}
+            <aside className="hidden lg:block">
+              <div className="sticky top-24 flex flex-col gap-6">
+                {post.bodyHtml && <TableOfContents html={post.bodyHtml} />}
+
+                <div>
+                  <p className="eyebrow">{t("writtenBy")}</p>
+                  <div className="mt-3 flex items-center gap-2.5">
+                    {post.authorAvatar ? (
+                      <img
+                        src={post.authorAvatar}
+                        alt=""
+                        width={32}
+                        height={32}
+                        className="size-8 shrink-0 rounded-full border border-black/[0.06] object-cover [image-orientation:from-image]"
+                      />
+                    ) : null}
+                    {post.authorName && (
+                      <p className="text-[13px] font-medium text-mist-900">{post.authorName}</p>
+                    )}
+                  </div>
                 </div>
-              </aside>
-            </div>
+
+                <div>
+                  <p className="eyebrow">{t("share")}</p>
+                  <div className="mt-3">
+                    <ShareButtons url={canonicalUrl} title={post.title} slug={post.slug} />
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
-        )}
+        </Frame>
 
         {/* Related posts */}
         {relatedPosts.length > 0 && (
-          <div className="mx-auto max-w-7xl px-6 lg:px-10 pb-16">
-            <RelatedPosts posts={relatedPosts} locale={locale} />
-          </div>
+          <>
+            <Divider />
+            <Section>
+              <RelatedPosts posts={relatedPosts} locale={locale} />
+            </Section>
+          </>
         )}
       </main>
       <RelatedPages currentPage="blog" locale={locale} variant="mixed" />
@@ -398,31 +453,18 @@ function BlogPostNotFound() {
   return (
     <div className="bg-white">
       <Header className="bg-white" />
-      <main className="py-24 sm:py-32">
-        <div className="mx-auto max-w-2xl px-6 text-center">
-          {/* Icon */}
-          <div className="mx-auto mb-6 h-16 w-16 rounded-full bg-mist-100 flex items-center justify-center">
-            <IconCircleInfo className="h-8 w-8 text-mist-400" />
-          </div>
-
-          <p className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            {t("notFound.title", { defaultValue: "Post not found" })}
-          </p>
-          <p className="mt-4 text-lg text-mist-600">
-            {t("notFound.description", {
-              defaultValue:
-                "The post you're looking for doesn't exist or has been removed.",
-            })}
-          </p>
-          <Link
-            to="/$locale/blog/"
-            params={{ locale }}
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
+      <main>
+        <Section>
+          <BlogEmptyState
+            title={t("notFound.title")}
+            description={t("notFound.description")}
           >
-            <IconArrowLeft className="w-4 h-4" />
-            {t("backToBlog", { defaultValue: "Back to Blog" })}
-          </Link>
-        </div>
+            <Link to="/$locale/blog/" params={{ locale }} className="btn btn-dark btn-sm">
+              <IconArrowLeft className="size-4" />
+              {t("backToBlog")}
+            </Link>
+          </BlogEmptyState>
+        </Section>
       </main>
       <Footer />
     </div>

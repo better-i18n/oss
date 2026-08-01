@@ -1,20 +1,50 @@
+import type { ReactNode } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
-import {
-  FrameworkHero,
-  FeatureList,
-  CodeExample,
-  SetupGuide,
-  FrameworkCTA,
-  LibraryIntegration,
-  OtherFrameworks,
-} from "@/components/FrameworkComparison";
+import { LibraryIntegration, OtherFrameworks } from "@/components/FrameworkComparison";
 import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
 import { PillarBlogPosts } from "@/components/PillarBlogPosts";
+import {
+  ClosingCta,
+  Divider,
+  PageHero,
+  Section,
+  SectionHeader,
+} from "@/components/ui/page";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { loadPillarBlogPosts } from "@/lib/pillar-blog-loader";
 import { useT } from "@/lib/i18n";
+import { HighlightedCode } from "@/components/CodeBlock";
+
+/**
+ * Next.js i18n — the site's highest-traffic SEO page, rebuilt on the pillar page
+ * shape (rule/pillar-page-shape): PageHero + bespoke visual → Divider → six
+ * Sections that each open with a SectionHeader → ClosingCta.
+ *
+ * What changed and why:
+ *   - It was 15 consecutive <CodeExample> sections, every one of them opening
+ *     with the eyebrow "Example". A reader scrolling had no way to tell the
+ *     middleware block from the server-action block, and the page read as a
+ *     dumped snippet archive rather than a guide.
+ *   - The 18 code blocks are now GROUPED into five topics (setup, routing/edge,
+ *     rendering/ISR, advanced + troubleshooting, capabilities). Not one code
+ *     block, title, description or translation key was dropped —
+ *     rule/seo-content-is-load-bearing: merging sections is a container change,
+ *     never a content cut.
+ *   - Two bespoke DOM+SVG visuals replace the wall of text at the two points
+ *     where the mental model matters: how a request flows through middleware →
+ *     Server Component → Client Component, and how a published string reaches an
+ *     ISR-cached page.
+ *
+ * i18n: no `defaultValue` anywhere — the CDN source_text is the only source of
+ * truth. The section eyebrows and the publish-timeline labels used to live in
+ * local `SECTION_EYEBROWS` / `PUBLISH_TIMELINE` constants, which meant they
+ * rendered in English in all 22 locales; they are now `i18n.nextjs.eyebrow.*`
+ * and `i18n.nextjs.visual.timeline.*`. `PUBLISH_TIMELINE` still exists, but it
+ * holds key SUFFIXES rather than copy.
+ */
 
 const PILLAR_KEYWORDS = ["next.js", "nextjs", "i18n"] as const;
 
@@ -48,48 +78,252 @@ export const Route = createFileRoute("/$locale/i18n/nextjs")({
   component: NextjsI18nPage,
 });
 
-function NextjsI18nPage() {
+/* ═══ Bespoke visual 1 — the request path ══════════════════════════════════
+   Answers "which file runs when", with the real file names, because that is the
+   single thing a developer evaluating a Next.js i18n setup needs to hold in their
+   head. DOM cells for the text (selectable, fixed size) + one SVG layer for the
+   CDN feed line. `vector-effect="non-scaling-stroke"` keeps the hairline exactly
+   1px while `preserveAspectRatio="none"` lets the curve span any width. */
+
+const REQUEST_STAGES: {
+  file: string;
+  label: string;
+  icon: Parameters<typeof SpriteIcon>[0]["name"];
+}[] = [
+  { file: "middleware.ts", label: "middleware", icon: "globe" },
+  { file: "i18n/request.ts", label: "getRequestConfig", icon: "settings-gear" },
+  { file: "app/[locale]/page.tsx", label: "getMessages()", icon: "script" },
+  { file: "components/Hero.tsx", label: "useTranslations()", icon: "code-brackets" },
+];
+
+function RequestFlowVisual() {
+  return (
+    <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
+      {/* Stages */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        {REQUEST_STAGES.map((stage, index) => (
+          <div
+            key={stage.file}
+            className="flex flex-col gap-2 border-black/[0.05] p-4 max-lg:border-b lg:border-r lg:last:border-r-0"
+          >
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] tabular-nums text-mist-400">
+                {index + 1}
+              </span>
+              <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
+                <SpriteIcon name={stage.icon} className="size-3.5" aria-hidden="true" />
+              </span>
+              <code className="min-w-0 truncate font-mono text-[12px] font-medium text-mist-900">
+                {stage.label}
+              </code>
+            </div>
+            <code className="truncate rounded-sm bg-black/[0.03] px-1.5 py-0.5 font-mono text-[11px] text-mist-600">
+              {stage.file}
+            </code>
+          </div>
+        ))}
+      </div>
+
+      {/* CDN feed — the curve lands under the Server Component column */}
+      <div className="border-t border-black/[0.05] bg-mist-50 px-4 py-3">
+        <svg
+          viewBox="0 0 1000 40"
+          preserveAspectRatio="none"
+          className="h-8 w-full text-black/15"
+          aria-hidden="true"
+        >
+          <path
+            d="M20 34 H520 C560 34 560 8 600 8 H980"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1"
+            strokeDasharray="3 3"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+        <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
+          <span className="font-mono text-[11px] text-mist-500">
+            cdn.better-i18n.com/your-org/your-project/&#123;locale&#125;/translations.json
+          </span>
+          <span className="ml-auto font-mono text-[10px] text-mist-400">max-age=60</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══ Bespoke visual 2 — publish to an ISR-cached page ══════════════════════
+   The question this answers: "if my page is statically generated, when does a
+   published string actually appear?" Three revalidation strategies, on one
+   timeline, with the real numbers from the code samples below. */
+
+const REVALIDATION_MODES = [
+  { mode: "revalidate = 3600", file: "app/[locale]/layout.tsx", worst: "~60 min" },
+  { mode: "revalidate = 1800", file: "app/[locale]/[slug]/page.tsx", worst: "~30 min" },
+  { mode: "revalidatePath()", file: "app/api/revalidate/route.ts", worst: "< 1 min" },
+];
+
+/* Key suffixes, not copy: the labels are resolved inside the component with
+   t() so the timeline translates with the rest of the page. */
+const PUBLISH_TIMELINE = ["publish", "r2Write", "cdnPurge", "revalidate", "served"];
+
+function IsrFlowVisual() {
   const t = useT("marketing");
-  const { locale } = Route.useParams();
-  const { pillarPosts } = Route.useLoaderData();
 
-  const features = [
-    t("i18n.nextjs.features.appRouter"),
-    t("i18n.nextjs.features.middleware"),
-    t("i18n.nextjs.features.serverComponents"),
-    t("i18n.nextjs.features.staticGeneration"),
-    t("i18n.nextjs.features.isr"),
-    t("i18n.nextjs.features.typesafe"),
-    t("i18n.nextjs.features.cdn"),
-    t("i18n.nextjs.features.seo"),
-    t("i18n.nextjs.features.routing"),
-  ];
+  return (
+    <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
+      {/* Timeline */}
+      <div className="px-4 pt-4">
+        <svg
+          viewBox="0 0 1000 24"
+          preserveAspectRatio="none"
+          className="h-6 w-full text-black/15"
+          aria-hidden="true"
+        >
+          <path
+            d="M8 12 H992"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
+          />
+          {[8, 254, 500, 746, 992].map((x) => (
+            <circle key={x} cx={x} cy="12" r="3" fill="#fff" stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          ))}
+        </svg>
+        <div className="mb-4 grid grid-cols-5">
+          {PUBLISH_TIMELINE.map((step, index) => (
+            <span
+              key={step}
+              className={`text-[10px] font-medium text-mist-500 ${ index === 0 ? "text-left" : index === PUBLISH_TIMELINE.length - 1 ? "text-right" : "text-center" }`}
+            >
+              {t(`i18n.nextjs.visual.timeline.${step}`)}
+            </span>
+          ))}
+        </div>
+      </div>
 
-  const nextjsSetupSteps = [
-    {
-      step: 1,
-      title: "Install",
-      description:
-        "Add @better-i18n/use-intl, use-intl, and the Next.js adapter to your project.",
-      code: "npm install @better-i18n/use-intl use-intl",
-      fileName: "terminal",
-    },
-    {
-      step: 2,
-      title: "Add middleware for locale detection",
-      description:
-        "The middleware reads the Accept-Language header and URL prefix to detect the user's locale and redirect accordingly.",
-      code: `import { betterI18nMiddleware } from '@better-i18n/next';
+      {/* Strategies */}
+      <div className="overflow-hidden border-t border-black/[0.05]">
+        <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-3">
+          {REVALIDATION_MODES.map((row) => (
+            <div
+              key={row.mode}
+              className="flex flex-col gap-1.5 border-t border-l border-black/[0.05] px-4 py-3"
+            >
+              <code className="w-fit rounded-sm bg-black/[0.03] px-1.5 py-0.5 font-mono text-[11px] text-mist-700">
+                {row.mode}
+              </code>
+              <code className="truncate font-mono text-[11px] text-mist-600">{row.file}</code>
+              <span className="mt-auto font-mono text-[10px] text-mist-400">{row.worst}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══ Shared pieces ════════════════════════════════════════════════════════ */
+
+/**
+ * A code block inside a section: hairline shell, file name bar, light body.
+ * One treatment for all 18 blocks on this page.
+ */
+function CodeCard({
+  label,
+  description,
+  code,
+  fileName,
+}: {
+  /** Omitted when the section header already names this block. */
+  label?: string;
+  description?: string;
+  code: string;
+  fileName?: string;
+}) {
+  return (
+    <div>
+      {label && (
+        <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">{label}</h3>
+      )}
+      {description && (
+        <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">{description}</p>
+      )}
+      <div className={`overflow-hidden rounded-xl border border-black/[0.07] ${label || description ? "mt-3" : ""}`}>
+        {fileName && (
+          <div className="border-b border-black/[0.05] bg-white px-4 py-2 font-mono text-[11px] text-mist-500">
+            {fileName}
+          </div>
+        )}
+        <div className="overflow-x-auto bg-mist-50 p-4">
+          <HighlightedCode
+            code={code}
+            lang="tsx"
+            className="font-mono text-[12px] leading-[1.7] whitespace-pre text-mist-800"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Numbered step: mono index, hairline separated. Used by the setup section. */
+function Step({
+  index,
+  title,
+  description,
+  children,
+}: {
+  index: number;
+  title: string;
+  description: string;
+  children?: ReactNode;
+}) {
+  return (
+    <div
+      className={`flex gap-4 py-6 ${index === 1 ? "pt-0" : "border-t border-black/[0.05]"}`}
+    >
+      <span className="mt-0.5 w-4 shrink-0 font-mono text-[11px] tabular-nums text-mist-400">
+        {index}
+      </span>
+      <div className="min-w-0 flex-1">
+        <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">{title}</h3>
+        <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">{description}</p>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/** Bare code body, for use inside a <Step>. */
+function StepCode({ code, fileName }: { code: string; fileName: string }) {
+  return (
+    <div className="mt-3 overflow-hidden rounded-xl border border-black/[0.07]">
+      <div className="border-b border-black/[0.05] bg-white px-4 py-2 font-mono text-[11px] text-mist-500">
+        {fileName}
+      </div>
+      <div className="overflow-x-auto bg-mist-50 p-4">
+        <HighlightedCode
+            code={code}
+            lang="tsx"
+            className="font-mono text-[12px] leading-[1.7] whitespace-pre text-mist-800"
+          />
+      </div>
+    </div>
+  );
+}
+
+/* ═══ Code samples — unchanged from the previous revision ═══════════════════
+   Every string below is existing indexed page content. Kept verbatim. */
+
+const INSTALL_CODE = "npm install @better-i18n/use-intl use-intl";
+
+const MIDDLEWARE_STEP_CODE = `import { betterI18nMiddleware } from '@better-i18n/next';
 export const middleware = betterI18nMiddleware;
-export const config = { matcher: ['/((?!api|_next).*)'] };`,
-      fileName: "middleware.ts",
-    },
-    {
-      step: 3,
-      title: "Load messages in a Server Component",
-      description:
-        "Use getMessages() in your root layout to fetch translations server-side and pass them to BetterI18nProvider.",
-      code: `// app/[locale]/layout.tsx
+export const config = { matcher: ['/((?!api|_next).*)'] };`;
+
+const LAYOUT_STEP_CODE = `// app/[locale]/layout.tsx
 import { BetterI18nProvider } from '@better-i18n/use-intl';
 import { getMessages } from '@better-i18n/use-intl/server';
 
@@ -107,31 +341,22 @@ export default async function RootLayout({ children, params }) {
       </body>
     </html>
   );
-}`,
-      fileName: "app/[locale]/layout.tsx",
-    },
-    {
-      step: 4,
-      title: "Use translations in Client Components",
-      description:
-        "Call useTranslations() in any Client Component. Messages are already hydrated from the server — no extra fetch.",
-      code: `'use client';
+}`;
+
+const CLIENT_STEP_CODE = `'use client';
 import { useTranslations } from '@better-i18n/use-intl';
 
 export function HeroSection() {
   const t = useTranslations('home');
   return <h1>{t('title')}</h1>;
-}`,
-      fileName: "components/HeroSection.tsx",
-    },
-  ];
+}`;
 
-  const middlewareCode = `// middleware.ts — locale detection
+const MIDDLEWARE_CODE = `// middleware.ts — locale detection
 import { betterI18nMiddleware } from '@better-i18n/next'
 export const middleware = betterI18nMiddleware
 export const config = { matcher: ['/((?!api|_next).*)'] }`;
 
-  const codeExample = `// app/[locale]/page.tsx
+const PAGE_CODE = `// app/[locale]/page.tsx
 import { getTranslations } from '@better-i18n/next';
 
 export default async function Page({ params }: { params: { locale: string } }) {
@@ -145,7 +370,7 @@ export default async function Page({ params }: { params: { locale: string } }) {
   );
 }`;
 
-  const isrLayoutCode = `// app/[locale]/layout.tsx — ISR with i18n
+const ISR_LAYOUT_CODE = `// app/[locale]/layout.tsx — ISR with i18n
 import { getMessages } from '@better-i18n/use-intl/server';
 import { BetterI18nProvider } from '@better-i18n/use-intl';
 
@@ -170,7 +395,7 @@ export default async function LocaleLayout({
   );
 }`;
 
-  const isrStaticParamsCode = `// app/[locale]/[slug]/page.tsx — Generate static pages per locale
+const ISR_STATIC_PARAMS_CODE = `// app/[locale]/[slug]/page.tsx — Generate static pages per locale
 import { getMessages } from '@better-i18n/use-intl/server';
 
 export async function generateStaticParams() {
@@ -196,7 +421,7 @@ export default async function Page({
   return <article><h1>{t[params.slug + '.title']}</h1></article>;
 }`;
 
-  const isrOnDemandCode = `// app/api/revalidate/route.ts — On-demand ISR for translation updates
+const ISR_ON_DEMAND_CODE = `// app/api/revalidate/route.ts — On-demand ISR for translation updates
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -212,7 +437,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ revalidated: true, locale, path });
 }`;
 
-  const edgeMiddlewareCode = `// middleware.ts — Edge-based locale detection
+const EDGE_MIDDLEWARE_CODE = `// middleware.ts — Edge-based locale detection
 import { NextRequest, NextResponse } from 'next/server';
 
 const SUPPORTED_LOCALES = ['en', 'de', 'fr', 'ja', 'es'] as const;
@@ -263,7 +488,7 @@ export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };`;
 
-  const edgeMessageLoadingCode = `// lib/edge-messages.ts — Edge-compatible message loading
+const EDGE_MESSAGE_LOADING_CODE = `// lib/edge-messages.ts — Edge-compatible message loading
 const messageCache = new Map<string, { data: Record<string, string>; ts: number }>();
 const TTL = 60_000; // 1 minute cache at edge
 
@@ -288,7 +513,7 @@ export async function getEdgeMessages(
   return data;
 }`;
 
-  const edgeRouteHandlerCode = `// app/api/translate/route.ts — Edge API route with i18n
+const EDGE_ROUTE_HANDLER_CODE = `// app/api/translate/route.ts — Edge API route with i18n
 import { getEdgeMessages } from '@/lib/edge-messages';
 
 export const runtime = 'edge';
@@ -304,7 +529,7 @@ export async function GET(request: Request) {
   return Response.json({ text: translated, locale });
 }`;
 
-  const hydrationFixCode = `// Fix: Hydration mismatch with date/number formatting
+const HYDRATION_FIX_CODE = `// Fix: Hydration mismatch with date/number formatting
 // Problem: Server renders "1,000" but client renders "1.000"
 // Solution: Ensure the same locale is used on both server and client
 
@@ -336,7 +561,7 @@ export function Price({ amount }: { amount: number }) {
   return <span>{format.number(amount, { style: 'currency', currency: 'USD' })}</span>;
 }`;
 
-  const fallbackCode = `// lib/i18n-config.ts — Locale fallback chain
+const FALLBACK_CODE = `// lib/i18n-config.ts — Locale fallback chain
 const FALLBACK_CHAIN: Record<string, string[]> = {
   'pt-BR': ['pt', 'en'],
   'zh-TW': ['zh-CN', 'en'],
@@ -361,7 +586,7 @@ export function resolveMessages(
   );
 }`;
 
-  const dateFormatCode = `// components/LocalizedDate.tsx — Consistent date formatting
+const DATE_FORMAT_CODE = `// components/LocalizedDate.tsx — Consistent date formatting
 'use client';
 import { useFormatter, useLocale } from '@better-i18n/use-intl';
 
@@ -383,7 +608,7 @@ export function LocalizedDate({ date }: { date: Date | string }) {
   );
 }`;
 
-  const nestedLayoutCode = `// app/[locale]/dashboard/layout.tsx — Nested layout with namespace
+const NESTED_LAYOUT_CODE = `// app/[locale]/dashboard/layout.tsx — Nested layout with namespace
 import { getMessages } from '@better-i18n/use-intl/server';
 import { BetterI18nProvider } from '@better-i18n/use-intl';
 import { DashboardNav } from '@/components/DashboardNav';
@@ -411,7 +636,7 @@ export default async function DashboardLayout({
   );
 }`;
 
-  const parallelRoutesCode = `// app/[locale]/@analytics/page.tsx — Parallel route with i18n
+const PARALLEL_ROUTES_CODE = `// app/[locale]/@analytics/page.tsx — Parallel route with i18n
 import { getTranslations } from '@better-i18n/next';
 
 export default async function AnalyticsSlot({
@@ -448,7 +673,7 @@ export default function Layout({
   );
 }`;
 
-  const serverActionsCode = `// app/[locale]/contact/actions.ts — Server action with i18n
+const SERVER_ACTIONS_CODE = `// app/[locale]/contact/actions.ts — Server action with i18n
 'use server';
 import { getTranslations } from '@better-i18n/next';
 import { headers } from 'next/headers';
@@ -492,6 +717,23 @@ export default function ContactPage() {
   );
 }`;
 
+function NextjsI18nPage() {
+  const t = useT("marketing");
+  const { locale } = Route.useParams();
+  const { pillarPosts } = Route.useLoaderData();
+
+  const features = [
+    t("i18n.nextjs.features.appRouter"),
+    t("i18n.nextjs.features.middleware"),
+    t("i18n.nextjs.features.serverComponents"),
+    t("i18n.nextjs.features.staticGeneration"),
+    t("i18n.nextjs.features.isr"),
+    t("i18n.nextjs.features.typesafe"),
+    t("i18n.nextjs.features.cdn"),
+    t("i18n.nextjs.features.seo"),
+    t("i18n.nextjs.features.routing"),
+  ];
+
   const libraries = [
     {
       name: "next-intl",
@@ -520,109 +762,232 @@ export default function ContactPage() {
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
-      <FrameworkHero
+
+      <PageHero
+        pillar="mcp"
+        pillarLabel="Next.js i18n"
         title={t("i18n.nextjs.hero.title")}
         subtitle={t("i18n.nextjs.hero.subtitle")}
-        badgeText="Next.js i18n"
+        primary={{
+          label: t("i18n.nextjs.cta.primary"),
+          href: "https://dash.better-i18n.com",
+        }}
+        secondary={{
+          label: t("i18n.nextjs.cta.secondary"),
+          href: "https://docs.better-i18n.com/frameworks/nextjs",
+        }}
+        visual={<RequestFlowVisual />}
       />
 
-      <SetupGuide title="Set up in 4 steps" steps={nextjsSetupSteps} />
+      {/* ── 1. Setup ─────────────────────────────────────────────────── */}
+      <Divider />
+      <Section>
+        <SectionHeader
+          eyebrow={t("i18n.nextjs.eyebrow.setup")}
+          title="Set up in 4 steps"
+        />
+        <div className="mt-8">
+          <Step
+            index={1}
+            title="Install"
+            description="Add @better-i18n/use-intl, use-intl, and the Next.js adapter to your project."
+          >
+            <StepCode code={INSTALL_CODE} fileName="terminal" />
+          </Step>
+          <Step
+            index={2}
+            title="Add middleware for locale detection"
+            description="The middleware reads the Accept-Language header and URL prefix to detect the user's locale and redirect accordingly."
+          >
+            <StepCode code={MIDDLEWARE_STEP_CODE} fileName="middleware.ts" />
+          </Step>
+          <Step
+            index={3}
+            title="Load messages in a Server Component"
+            description="Use getMessages() in your root layout to fetch translations server-side and pass them to BetterI18nProvider."
+          >
+            <StepCode code={LAYOUT_STEP_CODE} fileName="app/[locale]/layout.tsx" />
+          </Step>
+          <Step
+            index={4}
+            title="Use translations in Client Components"
+            description="Call useTranslations() in any Client Component. Messages are already hydrated from the server — no extra fetch."
+          >
+            <StepCode code={CLIENT_STEP_CODE} fileName="components/HeroSection.tsx" />
+          </Step>
+        </div>
+      </Section>
 
-      <FeatureList title={t("i18n.nextjs.featuresTitle")} features={features} />
+      {/* ── 2. Routing and the edge ───────────────────────────────────── */}
+      <Divider />
+      <Section>
+        <SectionHeader
+          eyebrow={t("i18n.nextjs.eyebrow.routing")}
+          title={t("i18n.nextjs.edge.title")}
+          subtitle={t("i18n.nextjs.edge.description")}
+        />
+        <div className="mt-8 flex flex-col gap-10">
+          <CodeCard
+            label="Middleware Setup"
+            description="Add locale detection and routing to your Next.js app with a single middleware file."
+            code={MIDDLEWARE_CODE}
+            fileName="middleware.ts"
+          />
+          {/* Titled by this section's header (i18n.nextjs.edge.*) — a second
+              heading here would just repeat it. */}
+          <CodeCard
+            code={EDGE_MIDDLEWARE_CODE}
+            fileName="middleware.ts"
+          />
+          <CodeCard
+            label="Edge-Compatible Message Loading"
+            description="Cache translations at the edge with a lightweight in-memory TTL cache for instant responses."
+            code={EDGE_MESSAGE_LOADING_CODE}
+            fileName="lib/edge-messages.ts"
+          />
+          <CodeCard
+            label="Edge API Route with i18n"
+            description="Return translated API responses from edge functions with minimal cold start."
+            code={EDGE_ROUTE_HANDLER_CODE}
+            fileName="app/api/translate/route.ts"
+          />
+        </div>
+      </Section>
 
-      <CodeExample
-        title="Middleware Setup"
-        description="Add locale detection and routing to your Next.js app with a single middleware file."
-        code={middlewareCode}
-      />
+      {/* ── 3. Rendering: Server Components and ISR ───────────────────── */}
+      <Divider />
+      <Section>
+        <SectionHeader
+          eyebrow={t("i18n.nextjs.eyebrow.rendering")}
+          title={t("i18n.nextjs.isr.title")}
+          subtitle={t("i18n.nextjs.isr.description")}
+        />
+        <div className="mt-8">
+          <IsrFlowVisual />
+        </div>
+        <div className="mt-10 flex flex-col gap-10">
+          <CodeCard
+            label={t("i18n.nextjs.codeExample.title")}
+            description={t("i18n.nextjs.codeExample.description")}
+            code={PAGE_CODE}
+            fileName="app/[locale]/page.tsx"
+          />
+          {/* Titled by this section's header (i18n.nextjs.isr.*). */}
+          <CodeCard
+            code={ISR_LAYOUT_CODE}
+            fileName="app/[locale]/layout.tsx"
+          />
+          <CodeCard
+            label="ISR with generateStaticParams"
+            description="Pre-render pages for every locale at build time, then refresh with ISR on a schedule."
+            code={ISR_STATIC_PARAMS_CODE}
+            fileName="app/[locale]/[slug]/page.tsx"
+          />
+          <CodeCard
+            label="On-Demand Revalidation"
+            description="Trigger ISR revalidation when translations are updated — hook into the Better I18N publish webhook."
+            code={ISR_ON_DEMAND_CODE}
+            fileName="app/api/revalidate/route.ts"
+          />
+        </div>
+      </Section>
 
-      <CodeExample
-        title={t("i18n.nextjs.codeExample.title")}
-        description={t("i18n.nextjs.codeExample.description")}
-        code={codeExample}
-      />
+      {/* ── 4. Advanced patterns and troubleshooting ──────────────────── */}
+      <Divider />
+      <Section>
+        <SectionHeader
+          eyebrow={t("i18n.nextjs.eyebrow.advanced")}
+          title={t("i18n.nextjs.advanced.title")}
+          subtitle={t("i18n.nextjs.advanced.description")}
+        />
+        <div className="mt-8 flex flex-col gap-10">
+          {/* Titled by this section's header (i18n.nextjs.advanced.*). */}
+          <CodeCard
+            code={NESTED_LAYOUT_CODE}
+            fileName="app/[locale]/dashboard/layout.tsx"
+          />
+          <CodeCard
+            label="Parallel Routes with i18n"
+            description="Load translations independently in parallel route slots for modular, locale-aware layouts."
+            code={PARALLEL_ROUTES_CODE}
+            fileName="app/[locale]/@analytics/page.tsx"
+          />
+          <CodeCard
+            label="Server Actions with Translation"
+            description="Return translated validation errors and success messages from server actions."
+            code={SERVER_ACTIONS_CODE}
+            fileName="app/[locale]/contact/actions.ts"
+          />
+        </div>
 
-      <CodeExample
-        title={t("i18n.nextjs.isr.title")}
-        description={t("i18n.nextjs.isr.description")}
-        code={isrLayoutCode}
-      />
+        {/* Troubleshooting keeps its own opening inside this section: it is the
+            same topic (getting rendering right) seen from the failure side. */}
+        <div className="mt-14 border-t border-black/[0.05] pt-10">
+          <h3 className="text-[19px] font-medium tracking-[-0.02em] text-mist-900">
+            {t("i18n.nextjs.troubleshooting.title")}
+          </h3>
+          <p className="section-p mt-2">{t("i18n.nextjs.troubleshooting.description")}</p>
+          <div className="mt-8 flex flex-col gap-10">
+            {/* Titled by the troubleshooting heading above (i18n.nextjs.troubleshooting.*). */}
+            <CodeCard code={HYDRATION_FIX_CODE} />
+            <CodeCard
+              label="Locale Fallback Chain"
+              description="Define fallback chains so regional variants like pt-BR fall back to pt, then en."
+              code={FALLBACK_CODE}
+              fileName="lib/i18n-config.ts"
+            />
+            <CodeCard
+              label="Consistent Date Formatting"
+              description="Avoid server/client date mismatches by explicitly setting timeZone to UTC."
+              code={DATE_FORMAT_CODE}
+              fileName="components/LocalizedDate.tsx"
+            />
+          </div>
+        </div>
+      </Section>
 
-      <CodeExample
-        title="ISR with generateStaticParams"
-        description="Pre-render pages for every locale at build time, then refresh with ISR on a schedule."
-        code={isrStaticParamsCode}
-      />
+      {/* ── 5. Capabilities ──────────────────────────────────────────── */}
+      <Divider />
+      <Section>
+        <SectionHeader
+          eyebrow={t("i18n.nextjs.eyebrow.capabilities")}
+          title={t("i18n.nextjs.featuresTitle")}
+        />
+        <div className="mt-8 overflow-hidden">
+          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {features.map((feature) => (
+              <div
+                key={feature}
+                className="flex items-start gap-2.5 border-t border-l border-black/[0.05] px-4 py-3"
+              >
+                <SpriteIcon
+                  name="checkmark"
+                  className="mt-0.5 size-3.5 shrink-0 text-mist-900"
+                  aria-hidden="true"
+                />
+                <span className="text-[13px] leading-relaxed text-mist-700">{feature}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
 
-      <CodeExample
-        title="On-Demand Revalidation"
-        description="Trigger ISR revalidation when translations are updated — hook into the Better I18N publish webhook."
-        code={isrOnDemandCode}
-      />
-
-      <CodeExample
-        title={t("i18n.nextjs.edge.title")}
-        description={t("i18n.nextjs.edge.description")}
-        code={edgeMiddlewareCode}
-      />
-
-      <CodeExample
-        title="Edge-Compatible Message Loading"
-        description="Cache translations at the edge with a lightweight in-memory TTL cache for instant responses."
-        code={edgeMessageLoadingCode}
-      />
-
-      <CodeExample
-        title="Edge API Route with i18n"
-        description="Return translated API responses from edge functions with minimal cold start."
-        code={edgeRouteHandlerCode}
-      />
-
-      <CodeExample
-        title={t("i18n.nextjs.troubleshooting.title")}
-        description={t("i18n.nextjs.troubleshooting.description")}
-        code={hydrationFixCode}
-      />
-
-      <CodeExample
-        title="Locale Fallback Chain"
-        description="Define fallback chains so regional variants like pt-BR fall back to pt, then en."
-        code={fallbackCode}
-      />
-
-      <CodeExample
-        title="Consistent Date Formatting"
-        description="Avoid server/client date mismatches by explicitly setting timeZone to UTC."
-        code={dateFormatCode}
-      />
-
-      <CodeExample
-        title={t("i18n.nextjs.advanced.title")}
-        description={t("i18n.nextjs.advanced.description")}
-        code={nestedLayoutCode}
-      />
-
-      <CodeExample
-        title="Parallel Routes with i18n"
-        description="Load translations independently in parallel route slots for modular, locale-aware layouts."
-        code={parallelRoutesCode}
-      />
-
-      <CodeExample
-        title="Server Actions with Translation"
-        description="Return translated validation errors and success messages from server actions."
-        code={serverActionsCode}
-      />
-
+      {/* ── 6. Library integrations (own section + divider) ───────────── */}
       <LibraryIntegration
         title={t("i18n.nextjs.librariesTitle")}
         subtitle={t("i18n.nextjs.librariesSubtitle")}
         libraries={libraries}
       />
 
+      <Divider />
       <PillarBlogPosts posts={pillarPosts} locale={locale} />
 
-      <ComparisonRelatedTopics heading={t("i18n.nextjs.relatedTitle")} links={relatedLinks} locale={locale} />
+      <Divider />
+      <ComparisonRelatedTopics
+        heading={t("i18n.nextjs.relatedTitle")}
+        links={relatedLinks}
+        locale={locale}
+      />
 
       <OtherFrameworks
         title={t("i18n.nextjs.otherFrameworks")}
@@ -630,13 +995,18 @@ export default function ContactPage() {
         locale={locale}
       />
 
-      <FrameworkCTA
+      <Divider />
+      <ClosingCta
         title={t("i18n.nextjs.cta.title")}
         subtitle={t("i18n.nextjs.cta.subtitle")}
-        primaryCTA={t("i18n.nextjs.cta.primary")}
-        primaryHref="https://dash.better-i18n.com"
-        secondaryCTA={t("i18n.nextjs.cta.secondary")}
-        secondaryHref="https://docs.better-i18n.com/frameworks/nextjs"
+        primary={{
+          label: t("i18n.nextjs.cta.primary"),
+          href: "https://dash.better-i18n.com",
+        }}
+        secondary={{
+          label: t("i18n.nextjs.cta.secondary"),
+          href: "https://docs.better-i18n.com/frameworks/nextjs",
+        }}
       />
     </MarketingLayout>
   );

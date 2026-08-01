@@ -1,0 +1,427 @@
+# Better i18n Landing — Design Decisions
+
+Accepted product/design decisions for `oss/apps/landing`, written as code so any
+agent (Claude, Composer, grok) can load the *why* and not just copy the style.
+
+**Load this file before**: a new page, a redesign, a section audit, or any
+"make it look better" task. Style questions are answered here first, taste second.
+
+Origin: 2026-07-31 — the landing adopts the Helpway marketing design language
+(`helpway/apps/marketing`) wholesale, in both style *and* page structure.
+Reason: better-i18n's 57 SEO detail pages had no shared section grammar (7–13
+ad-hoc `<section>` blocks per page, container/typography re-invented per file),
+while Helpway's 8 pages share a 176-line contract (`ui/product-page.tsx`) and read
+as one product. We adopt the contract, not just the colors.
+
+---
+
+## rule/one-container
+Scope: every marketing page and section
+Rule: horizontal containment comes from `.frame` (no vertical rhythm) or
+`<Section>` / `.section` (frame + rhythm) — both 1160px with vertical hairlines.
+A page may not write `max-w-7xl px-6 py-20` (or any `max-w-*` + `px-*` + `py-*`
+container trio) by hand.
+Why: 96 route files each re-declared their own container, so no two sections
+lined up and the frame rules broke across pages. One container = one column.
+Evidence: `src/styles.css` (PAGE GRAMMAR block), `src/components/ui/page.tsx`
+Bad: `<section className="py-20"><div className="mx-auto max-w-7xl px-6">`
+Good: `<Section>` from `@/components/ui/page`
+Exceptions: full-bleed bands (logo marquee, quote ground) use `<Section className="!p-0">`.
+
+## rule/section-opens-with-header
+Scope: every section on every page
+Rule: a section's first children are `eyebrow` → `section-h2` → `section-p`,
+via `<SectionHeader>`. Never start a section with a card grid, a table, or an h3.
+Why: a 12-section SEO page stays readable only if every section starts with the
+same sentence shape. This is what makes a long page feel deliberate rather than
+accumulated.
+Evidence: `helpway/apps/marketing/src/components/ui/product-page.tsx:SectionHeader`,
+used identically by Inbox/HelpCenter/SupportTeams/Agencies pages.
+Bad: `<Section><div className="grid grid-cols-3">…`
+Good: `<Section><SectionHeader eyebrow={…} title={…} subtitle={…} /> …visual…`
+
+## rule/divider-is-the-only-transition
+Scope: between two sections
+Rule: sections are separated by `<Divider />` — a full-bleed hairline whose 13px
+corner ticks sit on the frame edges. No alternating background colors, no
+gradient wipes, no extra margin as a separator.
+Why: the tick marks are the signature that ties unrelated sections to the same
+frame. Background alternation was how the old design faked separation, and it is
+what made the page read as stacked cards.
+Evidence: `src/styles.css` `.divider/.divider-inner`, `helpway .../page-router.tsx`
+Exceptions: none.
+
+## rule/weight-500-headings
+Scope: all headings h1–h3
+Rule: `font-weight: 500`. Hierarchy comes from size (`--text-hero`, `--text-h2`,
+`--text-lead`) and ink weight (`mist-950` → `mist-600`), never from bold.
+Why: at 14px base with `-0.025em` tracking, semibold/bold headings read as shouting
+and break the quiet register the rest of the page relies on.
+Bad: `text-4xl font-semibold` / `font-bold`
+Good: `className="section-h2"` or `font-medium` + `--text-*`
+
+## rule/white-page-hairline-separation
+Scope: page background and surfaces
+Rule: the page is white. Separation is done with hairlines
+(`rgba(0,0,0,0.07)`), not with a tinted canvas and floating cards. Elevation is
+near-invisible: `--shadow-xs` / `--shadow-card` only.
+Why: the previous design put every page on `bg-mist-100` (#eef0f1) with white
+`rounded-2xl` cards + `shadow-lg`; that reads as a dashboard, not a document, and
+it fights the frame rules.
+Evidence: `src/styles.css` `@layer base body`, `MarketingLayout.tsx` default
+`bgClassName="bg-white"`, `FrameLines`
+Exceptions: `bg-mist-50` (#fafaf9) as a *subtle* surface inside a section is fine.
+
+## rule/neutral-ink-accent-is-identity-only
+Scope: color usage
+Rule: the palette is neutral greys. Accent color appears only in
+`<PillarBadge>` (ai / sync / mcp / content) plus link and focus states. No
+`blue-500/600/700` on borders, headings, icons or fills.
+Why: color was carrying no information — it was decoration on 31 sites. Reserving
+it for pillar identity makes "which product surface am I reading about" legible at
+a glance, the same job Helpway's inbox/outreach/helpcenter colors do.
+Evidence: `src/components/ui/page.tsx PILLAR_META`
+Bad: `border-blue-600 text-blue-600` on a generic feature card
+Good: `<PillarBadge pillar="sync" label={t("pillar.sync")} />`
+
+## rule/token-names-are-stable
+Scope: `src/styles.css` `@theme`
+Rule: the `mist-*` scale keeps its names; only its *values* are rebound. New code
+prefers the semantic aliases (`--color-ink`, `--color-muted-ink`, `--color-hairline`).
+Why: `mist-*` utilities occur 2689× across 132 files. Renaming would have meant a
+mechanical edit of every file with no visual gain; rebinding moved the whole site
+in one commit. Steps were mapped from measured usage (950 = body text + dark
+buttons, 700 = paragraphs, 200 = the default border, 50 = card surface), so
+contrast survives: `mist-500` = #787878 (4.6:1 AA), `mist-400` = #929292 is
+**11–12px meta only**.
+Evidence: `src/styles.css` `@theme` comment block
+
+## rule/seo-content-is-load-bearing
+Scope: any restructure of a detail page
+Rule: restyling may change containers, order, and section *count* (target 4–6),
+but must not delete indexed copy, headings that carry keywords, structured data,
+`seo/pages.ts` entries, `llms-txt.ts` sections, or route URLs.
+Why: this app is an SEO + AI-visibility engine, not only a brochure; a section
+merge is a container change, not a content cut.
+Evidence: `CLAUDE.md` (Purpose), `src/seo/pages.ts`, `src/seo/llms-txt.ts`
+Bad: dropping three thin sections to hit the 4–6 target
+Good: merging three thin sections into one `<Section>` keeping all prose
+
+## rule/pillar-pages-get-bespoke-visuals
+Scope: detail pages
+Rule: ~8–10 pillar pages (nextjs, react, complete-guide, multilingual-seo,
+features, pricing, compare/index, for-developers) get a purpose-built visual per
+section — a diagram built from DOM + SVG, like Helpway's connector/flow visuals.
+Every other page composes the four repeatable archetypes: `FeatureRow` +
+`FeatureColumn`, `BentoList` + `BentoRow`, comparison table, code block.
+Why: Helpway's per-page quality comes from bespoke visuals, and 57 bespoke pages
+is ~7× the effort that produced Helpway's entire landing. A tiered budget is the
+only version of this that both ships and stays consistent.
+Evidence: measured — `AgenciesPage.tsx` 711L / `InboxPage.tsx` 774L are mostly
+per-page diagram code (`BranchConnector`, `DrillConnector`, `MiniChannel`).
+Decision: user, 2026-07-31.
+
+## rule/verify-rendered-not-source
+Scope: any claim that a restyle "looks right"
+Rule: do not call a visual change verified from source. Render it (dev server +
+screenshot, or `npx impeccable detect`) or hand it to the user for a look.
+Why: token rebinding touches 132 files at once; source review cannot see the result.
+
+---
+
+## rule/menu-leads-with-products
+Scope: header Product mega menu
+Rule: the first section lists **products** (Better I18N, Better Content) with a
+`<ProductTile>` identity mark; personas ("Who it's for") come second, industries
+third. Product tiles are the one place a saturated colour is allowed in chrome.
+Why: the menu previously opened with four persona cards, so a first-time visitor
+had to infer what is actually sold. Products first answers "what is this?" before
+"is it for me?" — the reference implementation does the same with its three
+product folders.
+Evidence: `src/components/Header.tsx` (Product menu), `src/components/ui/product-tile.tsx`
+Decision: user, 2026-07-31.
+
+## rule/menu-one-secondary-density
+Scope: every header mega-menu panel
+Rule: a panel has exactly two densities — a primary left column (product/lead
+cards: 40px mark, 14px title, 13px description) and a tinted right rail
+(`<MegaMenuRail>`) where every secondary link is the same 13px row with a 16px
+bare glyph. Never stack a card section on top of a pill section in the same
+panel, and never give a secondary link a description.
+Why: the Product panel previously ran Products (cards) → Who it's for (cards
+with two-line descriptions) → By industry (bare rows). Three stacked densities
+read as "one big area and one small one" — the hierarchy was carried by item
+size instead of by layout, so nothing looked deliberate. Splitting it makes
+position carry the hierarchy and lets all secondary links share one scale.
+Evidence: `src/components/header/mega-menu.tsx` (`MegaMenuSplit`, `MegaMenuRail`,
+`MegaMenuRailLink`), applied to all three panels in `src/components/Header.tsx`
+Bad: `<MegaMenuSection label="By industry">` under a card section
+Good: `<MegaMenuSplit><MegaMenuSection …/><MegaMenuRail>…</MegaMenuRail></MegaMenuSplit>`
+Exceptions: the panel footer bar (`MegaMenuFooter`) spans full width below the split.
+
+## rule/pillar-page-shape
+Scope: pillar detail pages (`features`, `i18n/nextjs`, `i18n/react`,
+`i18n/complete-guide`, `i18n/multilingual-seo`, `pricing`, `compare/`, `for-developers`)
+Rule: the page is `PageHero` (pillar badge → hero headline → lede → 2 CTAs →
+one bespoke hero visual) → `Divider` → 4–6 `Section`s that each open with
+`SectionHeader` and carry one purpose-built visual → `ClosingCta`. Set
+`MarketingLayout showCTA={false}` so the page owns its closing ask.
+Why: this is the reference implementation's product-page shape, and it is what
+makes a long page read as authored rather than accumulated. The first
+implementation is `routes/$locale/features/index.tsx` — copy that shape.
+Evidence: `helpway/apps/marketing/src/pages/InboxPage.tsx`,
+`routes/$locale/features/index.tsx` (PipelineVisual, GlossaryVisual,
+GitFlowVisual, ScanVisual)
+
+## rule/interior-hairlines-only
+Scope: every grid, list or table of cells inside a `Section`
+Rule: cells are separated by INTERIOR hairlines only. Each cell carries
+`border-t border-l border-black/[0.05]`, the grid is shifted `-mt-px -ml-px`, and
+the wrapper is a bare `overflow-hidden` — no border, no radius — which clips the
+first row's and first column's rules. Never add an outer
+`rounded-xl border border-black/[0.07]` around such a grid: `.section` already
+contains it, so the border reads as a box inside a box on top of the interior
+rules. Never use nth-child arithmetic (`:first-child`, `divide-x`) to place the
+rules in a responsive grid — the count changes per breakpoint and a rule then
+doubles or disappears.
+Why: the previous design separated everything with cards; the sweep replaced the
+cards with a bordered container, which was still one box too many. Twice the ink
+the split needs. The `-1px` shift + bare clip box is the only version that is
+correct at 1, 2, 3 and 4 columns without per-breakpoint rules.
+Evidence: `FrameworkSupport.tsx:178-190` (original), `UseCases.tsx`,
+`Testimonials.tsx`, `MetricsBadges.tsx` (`StatColumns`), `FrameworkComparison.tsx`
+(`HAIRLINE_GRID`), `framework/SdkFlow.tsx`
+Bad: `<div className="overflow-hidden rounded-xl border border-black/[0.07]"><div className="-mt-px -ml-px grid …">`
+Good: `<div className="overflow-hidden"><div className="-mt-px -ml-px grid …">`
+Exceptions: a *figure* — a bespoke visual, a code block, a product mockup — is a
+single object rather than a set of cells, so it keeps its own
+`rounded-xl border border-black/[0.07]` shell. See `PipelineVisual`,
+`RequestFlowVisual`, `CodeBlock`.
+Decision: user, 2026-07-31 ("buralarda çok border olmasına gerek yok içeride").
+
+## rule/no-package-we-do-not-ship
+Scope: every page, code sample, FAQ answer and `structuredDataOptions.dependencies`
+Rule: a code sample may only `import` from, and `dependencies` may only list,
+packages that exist in `oss/packages/`. Before writing an install line or an
+import for a framework page, check that directory. If there is no SDK for that
+framework, document the real path — `@better-i18n/core` (zero dependencies, no
+framework import on the main path) feeding that ecosystem's own i18n runtime —
+and say plainly that no wrapper is needed and why.
+Why: five pages documented packages that do not exist —
+`@better-i18n/vue`, `@better-i18n/nuxt`, `@better-i18n/svelte`,
+`@better-i18n/angular`, `@better-i18n/js`. The audience for those pages is
+developers, and the first thing they do is run the install line, which 404s. That
+costs more credibility than having no page for the framework at all. Stating a
+limitation (the CLI scanner's default extensions are `.tsx/.jsx/.ts/.js`, so it
+does not read `.vue` SFCs) reads as competence; a fabricated import reads as a lie.
+Evidence: `oss/packages/` listing, `packages/core/package.json` (`dependencies: {}`),
+`packages/cli/src/analyzer/file-collector.ts:29`, `packages/core/src/cdn.ts:796-799`;
+fixed in `i18n/{vue,nuxt,svelte,angular,javascript}.tsx`
+Bad: `import { useI18n } from '@better-i18n/vue'`
+Good: `import { createI18nCore } from '@better-i18n/core'` + `import { useI18n } from 'vue-i18n'`
+Decision: user, 2026-07-31 (chose "Dürüst konumlandırma: core + framework'ün kendi i18n'i").
+
+## rule/one-architecture-story
+Scope: any explanation of how the SDK behaves at runtime
+Rule: the read path, the fallback chain, the publish path and the platform
+numbers live in ONE component (`framework/SdkFlow.tsx` → `<CoreSdkFlow>`). A page
+passes only what is page-specific: the first hop's name, what the framework layer
+does with the messages, and where it calls the client from. Pages do not restate
+the architecture inline.
+Why: the same four hops and the same five fallback layers apply to all 17
+framework pages. Inlined per page, they drift — and a drifted architecture
+diagram is worse than none, because it is quoted as documentation. The numbers
+(60s client TTL, `max-age=60`, HTTP 200 always, 0 dependencies, 5 fallback
+layers) are platform behaviour, so a platform change must be one edit.
+Evidence: `framework/SdkFlow.tsx` (`CoreSdkFlow`), used by
+`i18n/{vue,nuxt,svelte,angular,javascript}.tsx`
+Decision: user, 2026-07-31 ("sdklarin calisma mantigini flowlarla anlatabiliriz").
+
+## rule/no-inline-i18n-fallback
+Scope: every `t()` call in this app
+Rule: call `t("key")` and nothing else. Never pass `defaultValue`. If a string is
+missing, create the key on the CDN (`createKeys` + `publishTranslations`).
+Why: not a style preference — `useT` **humanizes an unresolved key and never
+reads `defaultValue`**. So `t("vsLabel", { defaultValue: "Better I18N vs {name}" })`
+renders the literal text "Vs Label" on screen. The fallback is dead code that also
+hides the missing key from anyone reading the source, which is how "Title",
+"Description", "Vs Label" and "Disclaimer" shipped to production on the comparison
+pages. A key that exists is visible in `listKeys`, gets translated into all 22
+languages, and cannot silently degrade.
+Evidence: `ComparisonTable.tsx:554` (`vsLabel` + defaultValue) rendering "Vs Label"
+in the browser while SSR was correct; user report 2026-08-01 ("bunlar neden eski
+lan description falan diyor").
+Bad: `t("heading", { defaultValue: "Related Guides" })`
+Good: `t("heading")` — plus the key created in the `seeAlso` namespace.
+Exceptions: none.
+
+## rule/client-messages-must-cover-every-key-the-page-renders
+Scope: `src/lib/page-namespaces.ts` (`PAGE_NAMESPACE_MAP`, `resolveDynamicConfig`)
+Rule: when a page renders a key, that key's namespace/subtree must be in the
+page's config. Adding a cross-page section (sibling links, a shared disclaimer)
+means adding its subtree too — and verifying in the BROWSER, not in the SSR HTML.
+Why: the same filter runs on the server and in the embedded
+`<script id="__i18n_messages__">`, but a page can render correctly server-side and
+degrade after hydration when a subtree was dropped. On `/compare/{competitor}` the
+config carried only that competitor's subtree, so the five sibling `vsLabel`s in
+`<OtherComparisons>` humanized to "Vs Label" the moment React took over.
+Evidence: aside DOM count 7 placeholders vs 2 in SSR HTML on
+`/en/compare/crowdin/`, 2026-08-01.
+Exceptions: none — a smaller payload is not worth a wrong page.
+
+## rule/competitor-marks-are-real-logos
+Scope: any surface that names a competitor (comparison pages, hub matrix,
+Alternatives, OtherComparisons)
+Rule: show the vendor's own mark from `public/logos/` via `<CompetitorMark>`. Do
+not recolour, crop, or restyle it; the constant is the tile (same size, same
+hairline, white ground), never the logo. Every comparison surface carries
+`compare.disclaimer`. Removing a file from `public/logos/` degrades that vendor to
+a monogram automatically.
+Why: on a page whose whole job is comparison, a letter tile reads as being coy
+about who we mean. The real mark is more honest, faster to scan, and markets them
+well — the posture the whole comparison set is written in.
+Evidence: `src/components/icons/CompetitorMarks.tsx`; assets sourced from each
+vendor's own site favicon / brand asset; user decision 2026-08-01 ("urunelrin
+gercek logolari yok ... saygi duyalim").
+Exceptions: a vendor asking us to stop — delete the asset, monogram takes over.
+
+## rule/one-prose-scale
+Scope: every surface that renders body content authored elsewhere — blog posts
+(`blog/$slug`), CMS feature pages (`features/$slug`), the legal documents
+(`LegalLayout` → terms / privacy / cookies)
+Rule: the `prose-*` chain lives in ONE place, `src/components/ProseBody.tsx`
+(`PROSE_CLASS` for HTML-string surfaces, `<ProseBody>` for JSX ones). A page may
+not write its own chain. The standard is:
+`prose max-w-none` + `prose-headings:font-display prose-headings:font-medium`
+(weight 500, never Typography's bold) + `prose-h2:[font-size:var(--text-h2)]
+prose-h2:pt-10 prose-h2:border-t prose-h2:border-black/[0.05]` (a markdown h2 is
+a section opening, so the hairline does the job `<Divider />` does on an authored
+page) + `prose-a:text-mist-950 prose-a:underline-offset-4
+prose-a:decoration-mist-300` (ink, never a hue) + `prose-code:bg-mist-50
+prose-code:border prose-code:border-black/[0.07]` (matches the code figure) +
+`prose-pre:*` reset to nothing (the code block owns its frame) +
+`prose-ul:marker:text-mist-300 prose-ol:marker:text-mist-400`.
+BANNED: `prose-slate`, `prose-lg`, `prose-invert`, any `prose-a:text-blue-*`.
+`prose-slate`/`prose-lg` re-import Typography's own size and weight scale, which
+is what made legal h2s bold and oversized next to 500-weight headings.
+Why: the same paragraph rendered at three different weights on three surfaces,
+and links were blue in the legal documents and ink everywhere else. Width and
+vertical rhythm are deliberately NOT in the chain — they belong to
+`<Section>`/`<Frame>`, so the string drops into any layout.
+Evidence: `src/components/ProseBody.tsx`; was inlined at `blog/$slug.tsx:354`,
+`features/$slug.tsx` and `LegalLayout.tsx:62` (`prose-slate prose-lg
+prose-a:text-blue-600`)
+Decision: user, 2026-08-01 (legal headings "çok bold", links "MAVİ").
+
+## rule/code-blocks-are-tokenised-at-build
+Scope: every code sample on the marketing site
+Rule: code is highlighted by `src/components/CodeBlock.tsx` — a synchronous,
+dependency-free tokenizer (`HighlightedCode` for a bare block, `CodeBlock` for
+the framed figure). No Shiki, Prism, highlight.js or any runtime highlighter, and
+no new dependency for this job. Tokens are coloured from the `mist` scale only
+(keyword mist-950, plain mist-700, string/number mist-600, comment mist-400,
+punctuation mist-300); an unknown language renders as escaped plaintext rather
+than being guessed at.
+Why: these pages are SSG with a CWV budget. TanStack, on the same stack, measured
+a docs page transferring ~1.1 MiB of script with "roughly 358 KiB tied to syntax
+highlighting alone" (Shiki + WASM + themes + grammars) and answered it by
+building a narrow highlighter: `@tanstack/highlight` is 1.7 KB gzipped empty,
+3.9 KB with TSX, ~8 KB with all 25 languages, synchronous, "tokens carry stable
+semantic classes instead of theme colors". Our snippet set is a few dozen
+hand-authored samples in four languages, so a ~90-line tokenizer covers it and
+ships nothing to the browser at all.
+Evidence: TanStack/tanstack.com — `src/blog/introducing-tanstack-markdown-and-highlight.md`,
+`src/components/landing/HighlightLanding.tsx:28,101,157`, `package.json`
+(`"@tanstack/highlight": "^0.0.9"`); ours: `src/components/CodeBlock.tsx`, used by
+`blog/BlogContent.tsx`, `analytics.tsx`, `content.tsx`, `i18n/nextjs.tsx`
+Exceptions: the dark-ground snippets on `i18n/for-developers.tsx`,
+`integrations.tsx` and `developers/DeveloperIDESupport.tsx` are still unhighlighted
+— they need a dark token map, listed under Coverage gaps.
+Decision: user, 2026-08-01 ("runtime'da ağır bir highlighter YÜKLEMEYECEKSİN").
+
+## Coverage gaps (no decision yet — do not invent one)
+
+- ~~**~150 strings hardcoded in page files, awaiting keys.**~~ **Closed for
+  `i18n/{nextjs,nuxt,svelte,angular,javascript}.tsx`** (2026-08-01): 64 keys
+  created under `marketing` → `i18n.{nextjs,nuxt,svelte,angular,javascript}.*`
+  and published (source language only). The local `COPY` / `SECTION_EYEBROWS`
+  constants are gone; `PUBLISH_TIMELINE` on the Next.js page survives but now
+  holds key *suffixes*, not copy. No `defaultValue` was introduced — fallbacks
+  stay forbidden, the CDN `source_text` is the only source of truth.
+  Key path scheme, for the next page: `page-namespaces.ts` resolves
+  `/i18n/{slug}` to `marketing.i18n.{camelSlug}`, so a new key must live under
+  that subtree or the namespace filter will drop it before the page sees it
+  (`tanstack-start` → `i18n.tanstackStart`, and note the authored-name exception
+  for `localization-vs-internationalization` → `i18n.l10nVsI18n`).
+
+- ~~**`i18n/vue.tsx` holds ~40 strings inline.**~~ **Closed** (2026-08-01): 54
+  keys under `i18n.vue.*`, published. `FEATURES` / `SETUP_STEPS` / `LIBRARIES`
+  still exist as module constants but now carry key *ids* and code samples only —
+  the prose is resolved with `t()` in the component. Eight FAQ pairs moved to
+  `i18n.vue.faq.items.<id>.{question,answer}`.
+
+- ~~**`i18n.expo` does not exist.**~~ **Closed** (2026-08-01): 37 keys under
+  `i18n.expo.*`, published; the page went from 0 `t()` calls to 21.
+
+- ~~**Four pages render entirely from literals.**~~ **Closed** (2026-08-01):
+  98 keys created and published — `i18n.vite` (25), `i18n.tanstackStart` (24),
+  `i18n.remixHydrogen` (25), `i18n.server` (24). With `i18n.expo` (37) and
+  `i18n.vue` (54) that is **six** framework pages moved off literals in one pass.
+  All six follow the same shape: code samples and `fileName` stay in the route
+  file (code is not copy), each setup step / FAQ item carries a stable `id`, and
+  a module-scope `FEATURE_KEYS` list is mapped through `t()` inside the component.
+
+  Two traps worth remembering, both cost a debug cycle here:
+  (1) inserting an import "after the last `import` line" is wrong in these files —
+  the code samples contain `import …` at column 0 inside template literals, so the
+  anchor must be the last import *before* `export const Route`;
+  (2) `getSync` timed out on two of the four publishes while the job itself
+  succeeded — verify a publish by reading
+  `cdn.better-i18n.com/better-i18n/landing/en/marketing.json` and counting the
+  subtree, not by trusting the sync call to return.
+
+- **Still open — inline section eyebrows.** `eyebrow="Setup"`, `"Capabilities"`,
+  `"In a component"`, `"Works with"`, `"Two ways"`, `"Formatting"`,
+  `"Switching locale"`, `"In a template"` are still literals in
+  `i18n/{nuxt,svelte,angular,javascript}.tsx`, and `react`, `flutter`, `ios`,
+  `vite`, `tanstack-start`, `remix-hydrogen`, `server`, `django`, `ruby`,
+  `android` still fall back to `FrameworkComparison`'s default `"Example"` on
+  every code section. `FrameworkComparison` already accepts per-section
+  `eyebrow`/`icon`, so this is key creation + prop passing, not a component change.
+
+- **Data-quality bug found while creating keys**: a key literally named
+  `marketing.Expo i18n` exists (the key *name* is the English text). `createKeys`
+  surfaced it as a duplicate-source-text warning. It should be renamed or deleted;
+  nothing reads it by that path.
+
+- **Better Content has no landing page.** The menu entry points at
+  `docs.better-i18n.com/content` as a stopgap. If Content is a product in the
+  nav, it needs a page (`/$locale/content/`) with the pillar-page treatment.
+
+- **Hero for the home page**: whether the `.wallpaper` gradient hero survives in
+  any form, or is replaced by the flat left-aligned `PageHero`. Recommendation on
+  file is flat; not yet ratified.
+- **Motion**: `framer-motion` is used in 12 files (`Stagger`, demo loops). No rule
+  yet for how much motion the Helpway register tolerates.
+- **Tools pages** (`tools/*`, 8 routes, bypass `MarketingLayout`): interactive
+  apps, not documents. No decision on whether the page grammar applies to them.
+- **Dark mode**: deliberately disabled (`@custom-variant dark (&:where(.force-dark))`).
+  No plan to re-enable; if that changes, every hairline value needs a dark pair.
+- **Dark-ground code samples**: `i18n/for-developers.tsx`, `integrations.tsx` and
+  `developers/DeveloperIDESupport.tsx` print snippets as `text-mist-100` on a dark
+  panel. They are the only code blocks the tokenizer does not cover, because the
+  `mist` token ink in `rule/code-blocks-are-tokenised-at-build` is calibrated for
+  a white ground. Either give `CodeBlock` a dark token map or move those three
+  panels onto the light figure — no decision yet.
+- **`changelog/$slug` + `careers/$slug` + `integrations/$slug` bodies**: these CMS
+  templates render their content without `prose`/`BlogContent` at all, so
+  `rule/one-prose-scale` does not reach them yet. Whether they should adopt it
+  depends on whether their content is long-form (changelog entries) or structured
+  data (job posts, integration cards) — unaudited.
+
+CLOSED 2026-08-01: *Blog / changelog templates: prose scale* → `rule/one-prose-scale`.
+*Legal pages: no section grammar* → the three documents now render through
+`LegalLayout` on `MarketingLayout` (white ground, `<Section>` container, hairline
+nav rail) plus `rule/one-prose-scale`. The **content** of the legal pages is still
+`t(key, { defaultValue })` on ~200 strings — that is an i18n gap, not a design one,
+and it is tracked as such (the fallbacks are load-bearing until those keys exist).
