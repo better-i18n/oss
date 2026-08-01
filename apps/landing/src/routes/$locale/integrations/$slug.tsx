@@ -59,17 +59,19 @@ export const Route = createFileRoute("/$locale/integrations/$slug")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: params?.locale || "en",
-      /* Not "integrations": that key holds the directory's own meta, and every
-         one of the twenty detail pages was inheriting it, so the whole set
-         shipped with one identical <title>. `integrationDetail` has no meta
-         entry, which makes getPageHead fall through to `metaFallback` — built
-         below from the CMS fields, which are per-integration AND localized. */
-      /* …unless the CMS has no copy for this locale at all: /de/ has no German
-         entry for most integrations, and an empty description is worse than the
-         directory's, which IS translated. Measured: /de/integrations/nextjs/
-         shipped description length 0 before this fallback. */
-      pageKey: cmsItem?.summary ? "integrationDetail" : "integrations",
-      metaFallback: buildDetailMeta(cmsItem),
+      /* Not "integrations": that key holds the directory's own meta, and all
+         twenty detail pages inherited it, so the whole set shipped with one
+         identical <title>. */
+      pageKey: "integrationDetail",
+      /* The title is `meta.integrationDetail.title` — "{name} integration" in
+         English, "{name} entegrasyonu" in Turkish, "{name}-Integration" in
+         German — so the sentence is translated and only the product name is
+         substituted here. The description still comes from the CMS, which is
+         per-integration; when a locale has no CMS entry (most of /de/) it falls
+         back to the directory's translated description rather than shipping an
+         empty one. */
+      metaParams: { name: cmsItem?.name ?? "Integration" },
+      metaFallback: buildDetailMeta(cmsItem, loaderData?.messages),
       pathname: `/integrations/${cmsItem?.slug || ""}`,
       pageType: "educational",
       structuredDataOptions: {
@@ -85,26 +87,31 @@ export const Route = createFileRoute("/$locale/integrations/$slug")({
 });
 
 /**
- * Per-page title and description, built from the CMS fields.
+ * The fallback meta, used when the CDN has nothing for this page.
  *
- * Not from new i18n keys on purpose: `name`, `summary` and `detail` are already
- * per-integration AND per-locale in the CMS, so this stays correct on /tr/ and
- * /de/ without twenty more key pairs to translate. The description is whatever
- * the CMS says, clamped at a word boundary — padding it to hit a character
- * target would mean writing English into a Turkish page.
+ * The title now lives in `meta.integrationDetail.title` and is translated, so
+ * this only has to hold the line if that key is ever missing. The description
+ * comes from the CMS (`summary` + `detail`, both per-locale), clamped at a word
+ * boundary: padding it to hit a character target would mean writing English
+ * into a Turkish page. When the CMS has no entry for the locale, the directory's
+ * own translated description is used instead of an empty string.
  */
 function buildDetailMeta(
   cmsItem: { name: string; summary: string; detail: string | null } | null | undefined,
+  messages?: Record<string, unknown>,
 ) {
   const name = cmsItem?.name ?? "Integration";
   const summary = cmsItem?.summary ?? "";
   const detail = cmsItem?.detail ?? "";
   const full = [summary, detail].filter(Boolean).join(" ");
-  const description = full.length > 160 ? `${full.slice(0, 157).replace(/\s+\S*$/, "")}…` : full;
+  const clamped = full.length > 160 ? `${full.slice(0, 157).replace(/\s+\S*$/, "")}…` : full;
+  const directoryDescription =
+    (messages as { meta?: { integrations?: { description?: string } } } | undefined)?.meta
+      ?.integrations?.description ?? "";
 
   return {
     title: `${name} integration — Better I18N`,
-    description,
+    description: clamped || directoryDescription,
   };
 }
 
