@@ -1,8 +1,7 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getMarketingPage, getMarketingPages, type MarketingPageListItem } from "@/lib/content";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
 import BlogContent from "@/components/blog/BlogContent";
 import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
@@ -22,6 +21,8 @@ import {
   formatStructuredData,
 } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import { PROSE_CLASS } from "@/components/ProseBody";
+import { Divider, PageHero, Section } from "@/components/ui/page";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 
@@ -120,77 +121,77 @@ function FeaturePageComponent() {
   const t = useT("featuresPage");
 
   return (
-    <div className="bg-white">
-      <Header className="bg-white" />
+    /* The CMS feature pages now use the same page grammar as the authored ones
+       (rule/pillar-page-shape, rule/one-container): MarketingLayout for the
+       white ground + frame rules, PageHero for the opening, then the markdown
+       body as ONE Section. Before this they were a bare
+       `<div><Header/><main className="py-16"><article className="mx-auto max-w-4xl">`
+       with a plain prose dump inside, which is why the page had no borders and
+       no section rhythm while every neighbouring page did.
+       Not one word of CMS copy is touched — the shell and the typography are
+       (rule/seo-content-is-load-bearing); head()/loader/structured data are
+       untouched above. */
+    <MarketingLayout showCTA={false}>
       <BackToHub hub="features" locale={locale} />
-      <main className="py-16">
-        <article className="mx-auto max-w-4xl px-6 lg:px-10">
-          {/* Hero */}
-          <header className="mb-12">
-            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-mist-500 mb-4">
-              {t("featureBadge", "Feature")}
-            </span>
-            <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1] lg:text-5xl/[1.1]">
-              {page.title}
-            </h1>
-            {page.heroSubtitle && (
-              <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-                {page.heroSubtitle}
-              </p>
-            )}
-          </header>
 
-          {/* Content */}
-          {page.bodyHtml && (
-            <div className="min-w-0">
-              <BlogContent
-                html={page.bodyHtml}
-                className="prose prose-lg max-w-none
-                  prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-mist-950
-                  prose-p:text-mist-700 prose-p:leading-relaxed
-                  prose-a:text-mist-950 prose-a:underline-offset-4 prose-a:decoration-mist-300 hover:prose-a:decoration-mist-500
-                  prose-strong:text-mist-900 prose-strong:font-semibold
-                  prose-code:text-mist-900 prose-code:bg-mist-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
-                  prose-blockquote:border-l-mist-300 prose-blockquote:text-mist-600 prose-blockquote:not-italic
-                  prose-img:rounded-xl
-                  prose-li:text-mist-700
-                  prose-hr:border-mist-100"
-              />
-            </div>
-          )}
-        </article>
+      <PageHero
+        pillar="ai"
+        pillarLabel={t("featureBadge")}
+        titleId="feature-hero-title"
+        title={page.title}
+        subtitle={page.heroSubtitle ?? ""}
+      />
 
-        {/* Related Features */}
-        {relatedFeatures.length > 0 && (
-          <div className="mx-auto max-w-7xl px-6 lg:px-10 mt-16">
-            <h2 className="font-display text-2xl font-medium text-mist-950 mb-8">
-              {t("exploreMore", "Explore more features")}
-            </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {relatedFeatures.map((feature: MarketingPageListItem) => (
-                <Link
-                  key={feature.slug}
-                  to="/$locale/features/$slug"
-                  params={{ locale, slug: feature.slug }}
-                  className="group p-6 rounded-xl bg-mist-50 border border-mist-100 hover:border-mist-200 transition-colors"
-                >
-                  <h3 className="text-base font-medium text-mist-950 group-hover:text-mist-700 transition-colors">
-                    {feature.title}
-                  </h3>
-                  {feature.heroSubtitle && (
-                    <p className="mt-2 text-sm text-mist-600 leading-relaxed line-clamp-2">
-                      {feature.heroSubtitle}
-                    </p>
-                  )}
-                </Link>
-              ))}
+      <Divider />
+
+      {/* Markdown is a single flow, so it gets a single Section. The h2 rhythm
+          inside it comes from the shared prose scale (hairline rule + --text-h2
+          above each h2) rather than from one Section per heading. */}
+      {page.bodyHtml && (
+        <Section>
+          <article className="min-w-0">
+            <BlogContent html={page.bodyHtml} className={PROSE_CLASS} />
+          </article>
+        </Section>
+      )}
+
+      {relatedFeatures.length > 0 && (
+        <>
+          <Divider />
+          <Section>
+            <h2 className="section-h2">{t("exploreMore")}</h2>
+            {/* Hairline index, not a card grid: each cell draws its own top +
+                left rule, the grid is shifted -1px, and the wrapper is a bare
+                clip box (rule/interior-hairlines-only). */}
+            <div className="mt-8 overflow-hidden">
+              <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {relatedFeatures.map((feature: MarketingPageListItem) => (
+                  <Link
+                    key={feature.slug}
+                    to="/$locale/features/$slug/"
+                    params={{ locale, slug: feature.slug }}
+                    className="group flex flex-col gap-2 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
+                  >
+                    <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
+                      {feature.title}
+                    </h3>
+                    {feature.heroSubtitle && (
+                      <p className="line-clamp-2 text-[13px] leading-relaxed text-mist-600">
+                        {feature.heroSubtitle}
+                      </p>
+                    )}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </main>
+          </Section>
+        </>
+      )}
+
+      <Divider />
+
       <RelatedPages currentPage="features" locale={locale} variant="for" />
-      <Footer />
-    </div>
+    </MarketingLayout>
   );
 }
 
@@ -199,27 +200,19 @@ function FeatureNotFound() {
   const t = useT("featuresPage");
 
   return (
-    <div className="bg-white">
-      <Header className="bg-white" />
-      <main className="py-24 sm:py-32">
-        <div className="mx-auto max-w-2xl px-6 text-center">
-          <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            {t("notFound.title", "Feature not found")}
-          </h1>
-          <p className="mt-4 text-lg text-mist-600">
-            {t("notFound.description", "The feature page you're looking for doesn't exist.")}
-          </p>
-          <Link
-            to="/$locale/features"
-            params={{ locale }}
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-          >
-            <IconArrowLeft className="w-4 h-4" />
-            {t("allFeatures", "All Features")}
-          </Link>
-        </div>
-      </main>
-      <Footer />
-    </div>
+    <MarketingLayout showCTA={false}>
+      <Section>
+        <h1 className="section-h2">{t("notFound.title")}</h1>
+        <p className="section-p mt-3">{t("notFound.description")}</p>
+        <Link
+          to="/$locale/features/"
+          params={{ locale }}
+          className="btn btn-dark btn-lg mt-8 w-fit"
+        >
+          <IconArrowLeft className="size-4" />
+          {t("allFeatures")}
+        </Link>
+      </Section>
+    </MarketingLayout>
   );
 }

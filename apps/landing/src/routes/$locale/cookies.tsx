@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import { MarketingLayout } from "@/components/MarketingLayout";
 import { LegalLayout } from "../../components/LegalLayout";
 import { useT } from "@/lib/i18n";
 import {
@@ -37,8 +36,7 @@ function CookiePolicyPage() {
   const t = useT("cookies");
 
   return (
-    <>
-      <Header className="bg-[#f9f9f9]" />
+    <MarketingLayout showCTA={false}>
       <LegalLayout
         active="cookies"
         title={t("title", { defaultValue: "Cookie Policy" })}
@@ -91,14 +89,14 @@ function CookiePolicyPage() {
                 <tr>
                   <td><code>bi18n_cookie_consent</code></td>
                   <td>Better I18N</td>
-                  <td>{t("cookies.consent.purpose", { defaultValue: "Stores your cookie consent preferences" })}</td>
-                  <td>{t("cookies.consent.duration", { defaultValue: "Persistent" })}</td>
+                  <td>{t("consent.purpose")}</td>
+                  <td>{t("consent.duration")}</td>
                 </tr>
                 <tr>
                   <td><code>bi18n_locale</code></td>
                   <td>Better I18N</td>
-                  <td>{t("cookies.locale.purpose", { defaultValue: "Remembers your language preference" })}</td>
-                  <td>{t("cookies.locale.duration", { defaultValue: "Persistent" })}</td>
+                  <td>{t("locale.purpose")}</td>
+                  <td>{t("locale.duration")}</td>
                 </tr>
               </tbody>
             </table>
@@ -126,14 +124,14 @@ function CookiePolicyPage() {
                 <tr>
                   <td><code>_ga</code></td>
                   <td>Google Analytics</td>
-                  <td>{t("cookies.ga.purpose", { defaultValue: "Distinguishes unique visitors" })}</td>
-                  <td>{t("cookies.ga.duration", { defaultValue: "2 years" })}</td>
+                  <td>{t("ga.purpose")}</td>
+                  <td>{t("ga.duration")}</td>
                 </tr>
                 <tr>
                   <td><code>_ga_*</code></td>
                   <td>Google Analytics</td>
-                  <td>{t("cookies.gaSession.purpose", { defaultValue: "Maintains session state" })}</td>
-                  <td>{t("cookies.gaSession.duration", { defaultValue: "2 years" })}</td>
+                  <td>{t("gaSession.purpose")}</td>
+                  <td>{t("gaSession.duration")}</td>
                 </tr>
               </tbody>
             </table>
@@ -161,8 +159,8 @@ function CookiePolicyPage() {
                 <tr>
                   <td><code>_gcl_au</code></td>
                   <td>Google Ads</td>
-                  <td>{t("cookies.gclau.purpose", { defaultValue: "Stores conversion data for ad clicks" })}</td>
-                  <td>{t("cookies.gclau.duration", { defaultValue: "90 days" })}</td>
+                  <td>{t("gclau.purpose")}</td>
+                  <td>{t("gclau.duration")}</td>
                 </tr>
               </tbody>
             </table>
@@ -249,7 +247,6 @@ function CookiePolicyPage() {
           </p>
         </section>
       </LegalLayout>
-      <Footer />
-    </>
+    </MarketingLayout>
   );
 }

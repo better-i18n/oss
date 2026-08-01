@@ -9,6 +9,7 @@ import * as React from "react";
 // SSR (real ESM via noExternal) and client (CJS namespace).
 import * as htmlReactParser from "html-react-parser";
 import type { DOMNode, HTMLReactParserOptions } from "html-react-parser";
+import { HighlightedCode, type CodeLang } from "@/components/CodeBlock";
 type HRPElement = import("html-react-parser").Element;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -94,6 +95,7 @@ function CopyButton({ code }: { code: string }) {
 
   return (
     <button
+      type="button"
       onClick={handleCopy}
       className="p-1.5 rounded-md text-mist-400 hover:text-mist-600 dark:hover:text-mist-200 hover:bg-mist-200 dark:hover:bg-mist-800 transition-colors"
       title="Copy code"
@@ -112,16 +114,52 @@ function CopyButton({ code }: { code: string }) {
   );
 }
 
-function BlogCodeBlock({ code }: { code: string }) {
+/**
+ * Maps a `language-xxx` class from the CMS to one of the four grammars the
+ * highlighter knows. Anything else renders as escaped plaintext rather than
+ * being guessed at — a mis-highlighted snippet is worse than a plain one.
+ */
+function toCodeLang(className: string | undefined): CodeLang {
+  const raw = /language-([\w+-]+)/.exec(className ?? "")?.[1]?.toLowerCase();
+  switch (raw) {
+    case "tsx":
+    case "jsx":
+      return "tsx";
+    case "ts":
+    case "typescript":
+      return "ts";
+    case "js":
+    case "javascript":
+    case "mjs":
+      return "js";
+    case "json":
+    case "jsonc":
+      return "json";
+    case "bash":
+    case "sh":
+    case "shell":
+    case "zsh":
+      return "bash";
+    default:
+      return "text";
+  }
+}
+
+function BlogCodeBlock({ code, lang }: { code: string; lang: CodeLang }) {
   return (
-    <div className="not-prose my-6 rounded-xl overflow-hidden border border-mist-200 dark:border-mist-800 shadow-sm bg-mist-50 dark:bg-mist-950 relative group">
+    <div className="not-prose group relative my-6 overflow-hidden rounded-xl border border-black/[0.07] bg-mist-50 dark:border-mist-800 dark:bg-mist-950">
       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
         <CopyButton code={code} />
       </div>
-      <div className="p-5 overflow-x-auto">
-        <pre className="text-[13px] leading-relaxed text-mist-800 dark:text-mist-200 font-mono whitespace-pre">
-          {code}
-        </pre>
+      <div className="overflow-x-auto">
+        {/* Highlighting is synchronous and dependency-free (see CodeBlock.tsx):
+            these pages are SSG, so the tokens are computed at build time and the
+            browser downloads no highlighter at all. */}
+        <HighlightedCode
+          code={code}
+          lang={lang}
+          className="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed whitespace-pre text-mist-800"
+        />
       </div>
     </div>
   );
@@ -217,8 +255,11 @@ export default function BlogContent({ html, className, locale }: BlogContentProp
 
         if (codeNode) {
           const codeContent = getTextContent(codeNode as DOMNode);
+          const lang = toCodeLang(
+            codeNode.attribs?.class ?? domNode.attribs?.class,
+          );
 
-          return <BlogCodeBlock code={codeContent} />;
+          return <BlogCodeBlock code={codeContent} lang={lang} />;
         }
       }
 

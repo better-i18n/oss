@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import { MarketingLayout } from "@/components/MarketingLayout";
 import { LegalLayout } from "../../components/LegalLayout";
 import { useT } from "@/lib/i18n";
 import {
@@ -37,16 +36,15 @@ function TermsPage() {
   const t = useT("terms");
 
   return (
-    <>
-      <Header className="bg-[#f9f9f9]" />
+    <MarketingLayout showCTA={false}>
       <LegalLayout
         active="terms"
         title={t("title", { defaultValue: "Terms of Service" })}
         lastUpdated={t("lastUpdatedDate", { defaultValue: "March 25, 2026" })}
       >
         {/* Table of Contents */}
-        <div className="bg-gray-50 rounded-xl p-6 mb-10 border border-gray-100 text-sm">
-          <h3 className="font-semibold text-gray-900 mb-3 mt-0 text-base">
+        <div className="not-prose mb-10 rounded-xl border border-black/[0.07] bg-mist-50 p-5 text-sm">
+          <h3 className="mt-0 mb-3 text-[13px] font-medium text-mist-900">
             {t("toc.title", { defaultValue: "Table of Contents" })}
           </h3>
           <ul className="space-y-2 list-none pl-0 m-0">
@@ -71,7 +69,7 @@ function TermsPage() {
               <li key={item.id}>
                 <a
                   href={`#${item.id}`}
-                  className="no-underline text-gray-600 hover:text-gray-900"
+                  className="text-[13px] text-mist-600 no-underline hover:text-mist-900"
                 >
                   {t(`toc.${item.id}`, { defaultValue: item.label })}
                 </a>
@@ -454,7 +452,6 @@ function TermsPage() {
           <dd>{t("sections.definitions.application.definition", { defaultValue: "The web application at better-i18n.com and any associated client applications." })}</dd>
         </dl>
       </LegalLayout>
-      <Footer />
-    </>
+    </MarketingLayout>
   );
 }

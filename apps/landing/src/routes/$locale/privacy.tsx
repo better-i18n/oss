@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import { MarketingLayout } from "@/components/MarketingLayout";
 import { LegalLayout } from "../../components/LegalLayout";
 import { useT } from "@/lib/i18n";
 import {
@@ -37,16 +36,15 @@ function PrivacyPage() {
   const t = useT("privacy");
 
   return (
-    <>
-      <Header className="bg-[#f9f9f9]" />
+    <MarketingLayout showCTA={false}>
       <LegalLayout
         active="privacy"
         title={t("title", { defaultValue: "Privacy Policy" })}
         lastUpdated={t("lastUpdatedDate", { defaultValue: "March 25, 2026" })}
       >
         {/* Table of Contents */}
-        <div className="bg-gray-50 rounded-xl p-6 mb-10 border border-gray-100 text-sm">
-          <h3 className="font-semibold text-gray-900 mb-3 mt-0 text-base">
+        <div className="not-prose mb-10 rounded-xl border border-black/[0.07] bg-mist-50 p-5 text-sm">
+          <h3 className="mt-0 mb-3 text-[13px] font-medium text-mist-900">
             {t("toc.title", { defaultValue: "Table of Contents" })}
           </h3>
           <ul className="space-y-2 list-none pl-0 m-0">
@@ -71,7 +69,7 @@ function PrivacyPage() {
               <li key={item.id}>
                 <a
                   href={`#${item.id}`}
-                  className="no-underline text-gray-600 hover:text-gray-900"
+                  className="text-[13px] text-mist-600 no-underline hover:text-mist-900"
                 >
                   {t(`toc.${item.id}`, { defaultValue: item.label })}
                 </a>
@@ -80,7 +78,7 @@ function PrivacyPage() {
           </ul>
         </div>
 
-        <p className="text-gray-600 text-lg mb-8">
+        <p className="mb-8 text-mist-600">
           {t("note", {
             defaultValue:
               "This privacy policy describes how Better i18n, Inc. collects, uses, and protects your personal data when you use our website and services.",
@@ -611,7 +609,6 @@ function PrivacyPage() {
           <dd>{t("sections.definitions.eu.definition", { defaultValue: "All references made within this document to the European Union include all current member states to the European Union and the European Economic Area." })}</dd>
         </dl>
       </LegalLayout>
-      <Footer />
-    </>
+    </MarketingLayout>
   );
 }

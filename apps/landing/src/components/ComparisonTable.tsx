@@ -77,11 +77,11 @@ function FeatureValue({
 
 /** The three mark labels, read once per table (screen readers only). */
 function useMarkLabels(): Record<MarkState, string> {
-  const t = useT("marketing");
+  const t = useT("compare");
   return {
-    yes: t("compare.marks.yes"),
-    no: t("compare.marks.no"),
-    partial: t("compare.marks.partial"),
+    yes: t("marks.yes"),
+    no: t("marks.no"),
+    partial: t("marks.partial"),
   };
 }
 
@@ -112,7 +112,7 @@ interface ComparisonTableProps {
 }
 
 export function ComparisonTable({ competitorName, features, featureLabel }: ComparisonTableProps) {
-  const t = useT("marketing");
+  const t = useT("compare");
   const labels = useMarkLabels();
 
   return (
@@ -123,7 +123,7 @@ export function ComparisonTable({ competitorName, features, featureLabel }: Comp
     >
       <div role="row" className="grid grid-cols-3">
         <div role="columnheader" className={HEAD_CELL}>
-          {featureLabel ?? t("compare.featureLabel")}
+          {featureLabel ?? t("featureColumn")}
         </div>
         <div
           role="columnheader"
@@ -187,7 +187,7 @@ export function MultiComparisonTable({
   features,
   featureLabel,
 }: MultiComparisonTableProps) {
-  const t = useT("marketing");
+  const t = useT("compare");
   const labels = useMarkLabels();
   const columns = `minmax(180px, 2fr) repeat(${competitors.length}, minmax(100px, 1fr))`;
 
@@ -200,7 +200,7 @@ export function MultiComparisonTable({
       >
         <div role="row" className="grid" style={{ gridTemplateColumns: columns }}>
           <div role="columnheader" className={HEAD_CELL}>
-            {featureLabel ?? t("compare.featureLabel")}
+            {featureLabel ?? t("featureColumn")}
           </div>
           {competitors.map((name, i) => (
             <div
@@ -602,7 +602,7 @@ interface OtherComparisonsProps {
 }
 
 export function OtherComparisons({ currentSlug, locale, title }: OtherComparisonsProps) {
-  const t = useT("marketing");
+  const t = useT("compare");
   const others = allComparisons.filter((c) => c.slug !== currentSlug);
 
   return (
@@ -631,7 +631,7 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
                    the logo present, repeating "Better I18N vs …" in 13px is
                    noise. The full sentence stays as the accessible name so the
                    link still says where it goes out of context. */
-                aria-label={t("compare.vsLabel", { name: competitor.name })}
+                aria-label={t("vsLabel", { name: competitor.name })}
                 className="group flex items-center gap-2.5 border-t border-l border-black/[0.05] px-4 py-3 transition-colors hover:bg-black/[0.02]"
               >
                 <CompetitorMark competitor={competitor.slug} size={20} />
