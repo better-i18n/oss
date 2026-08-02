@@ -15,6 +15,21 @@
 /** CDN message format: top-level keys are namespaces, values are nested key-value maps. */
 type Messages = Record<string, Record<string, unknown>>;
 
+/**
+ * The same messages, described so TanStack Router accepts them as loader data.
+ *
+ * Router validates loader return values against a structural serializable
+ * constraint whose leaves are `{}` — and `unknown` is NOT assignable to `{}`, so
+ * every route whose loader returned `Messages` reported TS2322 on its `loader`
+ * property (93 occurrences before this was named, `__root.tsx` included).
+ *
+ * `NonNullable<unknown>` (i.e. `{}`) is both accurate and sufficient: these
+ * values come from `JSON.parse` of the CDN payload, so a leaf is a string, a
+ * number, a boolean, an array or a nested object — never null or undefined.
+ * Narrowing to `string` would have been a lie for grouped/nested keys.
+ */
+export type SerializableMessages = Record<string, Record<string, NonNullable<unknown>>>;
+
 // ─── Shared namespaces (included on every page) ─────────────────────
 
 const SHARED_NAMESPACES = [
@@ -25,6 +40,10 @@ const SHARED_NAMESPACES = [
   "cookieBanner",
   "cta",
   "meta",
+  // Back-to-hub breadcrumb labels (<BackToHub />) appear on every framework and
+  // comparison page. Without it here the component resolves to empty strings —
+  // which is exactly what happened once its inline fallbacks were removed.
+  "navigation",
 ] as const;
 
 // ─── Types ──────────────────────────────────────────────────────────
@@ -88,12 +107,19 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   ["about", { namespaces: ["aboutPage", "relatedPages"] }],
   ["careers", { namespaces: ["careersPage", "relatedPages"] }],
   ["status", { namespaces: ["statusPage"] }],
-  ["changelog", { namespaces: ["changelogPage", "changelog"] }],
+  // <RelatedPages /> renders in MarketingLayout on the changelog index, so the
+  // `relatedPages` namespace has to travel with it — without it the section
+  // heading resolved to nothing.
+  ["changelog", { namespaces: ["changelogPage", "changelog", "relatedPages"] }],
 
   // ─── Legal ──────────────────────────────────────────────────
-  ["privacy", { namespaces: ["legal", "privacy"] }],
-  ["terms", { namespaces: ["legal", "terms"] }],
-  ["cookies", { namespaces: ["legal", "cookies"] }],
+  /* The three legal documents now read everything from `legal`
+     (`legal.privacy.*`, `legal.terms.*`, `legal.cookies.*`) — their 313 strings
+     used to live in the page files as `defaultValue`, so the per-page namespaces
+     held only a handful of keys and are no longer read at all. */
+  ["privacy", { namespaces: ["legal"] }],
+  ["terms", { namespaces: ["legal"] }],
+  ["cookies", { namespaces: ["legal"] }],
 
   // ─── Persona pages (hardcoded routes) ─────────────────────────
   ["for-developers", { namespaces: ["developers", "relatedPages", "cta"] }],
@@ -104,23 +130,80 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   ],
 
   // ─── Educational pages ──────────────────────────────────────
-  ["what-is", { namespaces: ["marketing.whatIsPage", "relatedPages"] }],
+  // `testimonials` — the page closes with <PageTestimonial />.
+  [
+    "what-is",
+    {
+      namespaces: [
+        "marketing.whatIsPage",
+        // Sibling subtree — the <FlowHero /> card copy. Named explicitly or the
+        // whatIsPage filter drops it.
+        "marketing.flowHero",
+        // The page closes with <PageTestimonial />.
+        "testimonials",
+        "relatedPages",
+      ],
+    },
+  ],
+  // Both /what-is-* pages close with the shared "Related topics" link set, which
+  // reads marketing.whatIs.links.* plus the scalar marketing.whatIs.relatedTopics.
+  // That subtree is a SIBLING of whatIsInternationalization / whatIsLocalization,
+  // so it is not pulled in by the page's own spec — it needs its own entry, the
+  // same way resolveDynamicConfig already adds it for every /i18n/* page.
   [
     "what-is-internationalization",
-    { namespaces: ["marketing.whatIsInternationalization", "relatedPages"] },
+    {
+      namespaces: [
+        "marketing.whatIsInternationalization",
+        "marketing.whatIs.links",
+        "relatedPages",
+      ],
+    },
   ],
   [
     "what-is-localization",
-    { namespaces: ["marketing.whatIsLocalization", "relatedPages"] },
+    {
+      namespaces: [
+        "marketing.whatIsLocalization",
+        "marketing.whatIs.links",
+        "relatedPages",
+      ],
+    },
   ],
 
   // ─── i18n hub (only index-level keys, NOT all sub-page content) ──
   ["i18n", { namespaces: ["marketing.i18n.index", "relatedPages"] }],
 
+  // Slug↔key exception: resolveDynamicConfig would derive
+  // "marketing.i18n.localizationVsInternationalization" from the URL, but the
+  // keys were authored under the shorter `l10nVsI18n` and are already translated
+  // into every locale. An exact-match entry wins over the dynamic resolver, so
+  // the page reads the real subtree instead of an empty one.
+  [
+    "i18n/localization-vs-internationalization",
+    {
+      namespaces: [
+        "marketing.i18n.l10nVsI18n",
+        "marketing.i18n.relatedLinks",
+        "marketing.whatIs.links",
+        "relatedPages",
+      ],
+    },
+  ],
+
   // ─── Compare hub (only index-level keys) ────────────────────────
+  // `compare` (featureColumn, vsLabel) is the <ComparisonTable /> chrome — it is
+  // a top-level CDN namespace, distinct from the marketing.compare.* page copy.
   [
     "compare",
-    { namespaces: ["marketing.compare.index", "alternatives", "relatedPages"] },
+    {
+      namespaces: [
+        "marketing.compare.index",
+        "compare",
+        "alternatives",
+        "relatedPages",
+      ],
+    },
   ],
 
   // ─── Tools hub (no custom namespaces — UI is hardcoded English) ──
@@ -145,6 +228,18 @@ function resolveDynamicConfig(pagePath: string): PageConfig | null {
         `marketing.i18n.${camelSubpage}`,
         "marketing.i18n.relatedLinks",
         "marketing.whatIs.links",
+        // Pillar pages mount <FlowHero /> and <PageTestimonial />; both read
+        // subtrees that sit OUTSIDE marketing.i18n.*, so the filter drops them
+        // unless they are named here.
+        "marketing.flowHero",
+        "testimonials",
+        // <SeeAlso /> closes several guide pages and reads its own top-level
+        // namespace — without this it rendered "Eyebrow" / "Heading".
+        "seeAlso",
+        // Framework guides embed <ComparisonTable />, whose column chrome
+        // (featureColumn, vsLabel) lives in the top-level `compare` namespace —
+        // not under marketing.compare.*.
+        "compare",
         "relatedPages",
       ],
     };
@@ -162,6 +257,8 @@ function resolveDynamicConfig(pagePath: string): PageConfig | null {
         `marketing.compare.${camelCompetitor}`,
         "marketing.compare.complaints",
         "marketing.compare.whySwitch",
+        // <ComparisonTable /> chrome lives in its own top-level namespace.
+        "compare",
         "alternatives",
         "relatedPages",
       ],
@@ -347,13 +444,13 @@ export function getCdnNamespacesForPage(
 export function filterMessages(
   messages: Messages,
   namespaces: readonly string[],
-): Messages {
+): SerializableMessages {
   const namespaceSet = new Set(namespaces);
-  const filtered: Record<string, Record<string, unknown>> = {};
+  const filtered: SerializableMessages = {};
 
   for (const key of Object.keys(messages)) {
     if (namespaceSet.has(key)) {
-      filtered[key] = messages[key];
+      filtered[key] = messages[key] as SerializableMessages[string];
     }
   }
 
@@ -450,14 +547,15 @@ function resolvePageKey(pagePath: string): string | null {
 export function filterMessagesByPath(
   messages: Messages,
   pathname: string,
-): Messages {
+): SerializableMessages {
   const pagePath = extractPagePath(pathname);
   const config = getPageConfig(pagePath);
 
-  if (!config) return messages;
+  // No page config: everything passes through untouched.
+  if (!config) return messages as SerializableMessages;
 
   const allSpecs = [...SHARED_NAMESPACES, ...config.namespaces];
-  const filtered: Record<string, Record<string, unknown>> = {};
+  const filtered: SerializableMessages = {};
 
   // Group specs: top-level vs dot-path
   const topLevel: string[] = [];
@@ -475,7 +573,7 @@ export function filterMessagesByPath(
   const topLevelSet = new Set(topLevel);
   for (const key of Object.keys(messages)) {
     if (topLevelSet.has(key)) {
-      filtered[key] = messages[key];
+      filtered[key] = messages[key] as SerializableMessages[string];
     }
   }
 
@@ -524,7 +622,7 @@ export function filterMessagesByPath(
       filtered["meta"] = { [pageKey]: metaNs[pageKey] };
     } else {
       // Unknown page — include full meta as fallback
-      filtered["meta"] = metaNs;
+      filtered["meta"] = metaNs as SerializableMessages[string];
     }
   }
 

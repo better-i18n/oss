@@ -25,6 +25,25 @@ const EMPTY_INDEX: BlogIndex = {
 };
 
 export async function loadBlogIndex(locale: string): Promise<BlogIndex> {
+  // Browser first. TanStack re-runs this loader on the client, and every branch
+  // below is server-only: `node:fs` cannot resolve, there is no `__cf_assets`,
+  // and SITE_URL is the PRODUCTION origin — so in dev the browser made a
+  // cross-origin request to better-i18n.com, failed, and returned EMPTY_INDEX.
+  // The page then replaced 24 server-rendered posts with the "no posts yet"
+  // empty state. A relative URL is same-origin in both dev and production.
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch(`/blog-index-${locale}.json`);
+      if (res.ok) return (await res.json()) as BlogIndex;
+      console.warn(`[blog-index] client ${locale} → ${res.status}`);
+    } catch (error) {
+      console.warn(`[blog-index] client ${locale} fetch failed:`, error);
+    }
+    // Never hand an empty index to a page that already rendered posts —
+    // throwing keeps whatever the server sent on screen.
+    throw new Error(`blog index unavailable for ${locale}`);
+  }
+
   // Dev: read local file directly (production JSON lacks latest fields)
   if (import.meta.env.DEV) {
     try {

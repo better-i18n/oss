@@ -152,6 +152,7 @@ const ENGLISH_PAGE_TITLES: Readonly<Record<string, string>> = {
   "compare/transifex": "Better I18N vs Transifex", "compare/smartling": "Better I18N vs Smartling",
   "compare/xtm": "Better I18N vs XTM",
   "compare/crowdin-vs-lokalise": "Crowdin vs Lokalise vs Better I18N",
+  "compare/locize": "Better I18N vs Locize",
   "i18n/complete-guide": "Complete Guide to i18n & Localization",
   "what-is": "What is i18n? Internationalization & Localization Guide",
   "what-is-internationalization": "What is Internationalization?",
@@ -209,7 +210,7 @@ const ENGLISH_PAGE_DESCRIPTIONS: Readonly<Record<string, string>> = {
   "for-product-teams": "Localization management dashboard with progress tracking, review workflows, and analytics.",
   "i18n/complete-guide": "Comprehensive guide covering i18n fundamentals, implementation patterns, and best practices.",
   "what-is": "Learn the difference between internationalization (i18n) and localization (l10n) with comparison table.",
-  compare: "Side-by-side comparisons of Better I18N vs Crowdin, Lokalise, Phrase, Transifex, Smartling, and XTM.",
+  compare: "Side-by-side comparisons of Better I18N vs Crowdin, Lokalise, Phrase, Transifex, Smartling, XTM, and Locize.",
   "compare/crowdin": "Feature, pricing, and developer experience comparison between Better I18N and Crowdin.",
   "compare/lokalise": "Feature, pricing, and developer experience comparison between Better I18N and Lokalise.",
   "compare/phrase": "Feature, pricing, and developer experience comparison between Better I18N and Phrase.",
@@ -217,6 +218,7 @@ const ENGLISH_PAGE_DESCRIPTIONS: Readonly<Record<string, string>> = {
   "compare/smartling": "Feature, pricing, and developer experience comparison between Better I18N and Smartling. Covers AI translation, workflow automation, and enterprise capabilities.",
   "compare/xtm": "Feature, pricing, and developer experience comparison between Better I18N and XTM. Covers translation memory, connector ecosystem, and localization workflows.",
   "compare/crowdin-vs-lokalise": "Three-way comparison of Crowdin vs Lokalise vs Better I18N. Pricing for 10-person teams, feature matrix, CLI/API/SDK coverage, and migration guide.",
+  "compare/locize": "Better I18N vs Locize, the managed translation backend built by the i18next team. Covers MCP tooling on both sides, per-project vs account-wide pricing, JSON-only vs multi-format platforms, and the cases where Locize is the better choice.",
   blog: "Latest articles on internationalization, localization, multilingual SEO, and translation management.",
   about: "Company story, mission, and team behind Better I18N.",
   "i18n/react": "Step-by-step React i18n setup with @better-i18n/use-intl, hooks, and context API.",
@@ -272,7 +274,7 @@ const STATIC_SECTIONS: readonly LlmsTxtSectionDef[] = [
   {
     headingKey: "keyPages",
     paths: [
-      "", "features", "pricing", "integrations",
+      "", "features", "content", "analytics", "pricing", "integrations",
       "for-developers", "for-product-teams", "for-translators",
       "about", "blog", "changelog", "careers",
     ],
@@ -305,7 +307,7 @@ const STATIC_SECTIONS: readonly LlmsTxtSectionDef[] = [
     paths: [
       "compare", "compare/crowdin", "compare/lokalise", "compare/phrase",
       "compare/transifex", "compare/smartling", "compare/xtm",
-      "compare/crowdin-vs-lokalise",
+      "compare/crowdin-vs-lokalise", "compare/locize",
     ],
   },
   {

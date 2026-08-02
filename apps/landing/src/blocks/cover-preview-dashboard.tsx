@@ -29,7 +29,7 @@ export const coverPreviewDashboardBlock = defineBlock({
         <div key={l.code} className="flex items-center gap-2 px-1">
           <span className="w-[18px] shrink-0 font-mono text-[8px] uppercase text-gray-400">{l.code}</span>
           <span className="w-[44px] shrink-0 truncate text-[8px] text-gray-500">{l.name}</span>
-          <div className="h-[4px] flex-1 rounded-full bg-gray-100 overflow-hidden">
+          <div className="h-[4px] flex-1 rounded-full bg-black/[0.06] overflow-hidden">
             <div
               className="h-full rounded-full"
               style={{

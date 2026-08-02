@@ -4,8 +4,10 @@
  * `CmsPersonaPage` links to sibling personas using a slug that comes from the
  * CMS: `to={`/$locale/${persona.slug}`}`. That never type-checks (TanStack types
  * `to` as a union of real routes) and, worse, the CMS still returns personas
- * whose route was archived — `for-marketers`, `for-designers`, `for-gaming` and
- * friends live in `src/_archived-routes/`, so those links shipped as 404s.
+ * whose page was retired in the 2026-03 SEO pruning — `for-marketers`,
+ * `for-designers`, `for-gaming` and friends. Their route files are gone; the
+ * URLs live on only as 301s in `src/seo/redirects.ts`. Linking to them directly
+ * would ship an internal link that redirects, so this map skips them.
  *
  * This map is the single place a persona slug becomes a route. A slug with no
  * entry has no page, so the caller skips the card rather than rendering a dead

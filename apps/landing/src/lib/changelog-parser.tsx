@@ -34,12 +34,40 @@ export const statusDefaults: Record<StatusTone, string> = {
   security: "SECURITY",
 };
 
+/**
+ * One badge treatment for every tone.
+ *
+ * This was a five-hue palette (emerald / sky / blue / amber / rose). Two reasons
+ * it is now neutral:
+ *
+ * 1. The distinction the colour drew is already carried by the badge's own WORD
+ *    — NEW / FIXED / SECURITY. Hue repeated that information on a weaker
+ *    channel, which is exactly what `rule/neutral-ink-accent-is-identity-only`
+ *    reserves colour against: it is spent on pillar identity, link/focus and
+ *    code tokens, because in those three places hue is the ONLY channel.
+ * 2. Consistency was the real break. `Changelog.tsx` (the home-page band) already
+ *    renders a neutral hairline chip for the same data, so one release looked
+ *    like two different products depending on which surface you were on. The
+ *    colour values below are copied from that chip verbatim rather than
+ *    re-invented, so the two surfaces cannot drift again.
+ *
+ * `security` is the one tone that gets emphasis — but in INK, not hue: a darker
+ * rule and darker text, still inside the neutral scale. It earns that because it
+ * is the only tone a reader SCANS a long list for, rather than reads in order.
+ *
+ * The map stays keyed by tone (and `StatusTone` / `statusDefaults` stay) because
+ * the type still drives labels and is wanted for filtering later — only the
+ * colour mapping collapsed.
+ */
+const BADGE_NEUTRAL = "border-black/[0.07] bg-mist-50 text-mist-600";
+const BADGE_SECURITY = "border-black/[0.14] bg-mist-50 text-mist-900";
+
 export const statusClasses: Record<StatusTone, string> = {
-  new: "border-emerald-300/50 bg-emerald-50 text-emerald-700",
-  updated: "border-sky-300/50 bg-sky-50 text-sky-700",
-  improved: "border-blue-300/50 bg-blue-50 text-blue-700",
-  fixed: "border-amber-300/50 bg-amber-50 text-amber-700",
-  security: "border-rose-300/50 bg-rose-50 text-rose-700",
+  new: BADGE_NEUTRAL,
+  updated: BADGE_NEUTRAL,
+  improved: BADGE_NEUTRAL,
+  fixed: BADGE_NEUTRAL,
+  security: BADGE_SECURITY,
 };
 
 const statusAliases: Record<string, StatusTone> = {
@@ -127,15 +155,19 @@ export function renderInline(text: string) {
   return text
     .split(/(\*\*.+?\*\*)/g)
     .filter(Boolean)
-    .map((segment, index) => {
+    // Key by content + running offset: the array is derived from one string and
+    // never reordered, so a positional key is stable, but react-doctor is right
+    // that a bare index says nothing about identity.
+    .map((segment, index, all) => {
+      const key = `${all.slice(0, index).join("").length}-${segment}`;
       if (segment.startsWith("**") && segment.endsWith("**")) {
         return (
-          <strong key={`${segment}-${index}`} className="font-medium text-mist-950">
+          <strong key={key} className="font-medium text-mist-950">
             {segment.slice(2, -2)}
           </strong>
         );
       }
-      return <span key={`${segment}-${index}`}>{segment}</span>;
+      return <span key={key}>{segment}</span>;
     });
 }
 
@@ -301,7 +333,7 @@ export function StatusBadge({
     <span
       className={`mr-1.5 mb-[3px] inline-flex h-4 items-center rounded border px-1 align-middle font-mono text-[9px] font-medium uppercase ${statusClasses[tone]}`}
     >
-      {t(`badge.${tone}`, { defaultValue: statusDefaults[tone] })}
+      {t(`badge.${tone}`)}
     </span>
   );
 }

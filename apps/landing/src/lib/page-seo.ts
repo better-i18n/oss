@@ -77,6 +77,16 @@ interface PageSEOOptions {
   faqItems?: Array<{ question: string; answer: string }>;
   /** Mark page as noindex (e.g., thin content with low translation coverage) */
   noindex?: boolean;
+  /**
+   * Values for `{placeholders}` inside the page's meta strings.
+   *
+   * A meta key can be shared by many pages when the only difference is a name:
+   * `meta.integrationDetail.title` is "{name} integration — Better I18N" in
+   * English and "{name} entegrasyonu — Better I18N" in Turkish. Without this the
+   * route had to build the sentence in code, which meant the English glue words
+   * shipped on every locale.
+   */
+  metaParams?: Readonly<Record<string, string>>;
   /** Fallback meta when CDN-provided meta keys do not exist yet */
   metaFallback?: {
     title: string;
@@ -183,19 +193,26 @@ export function getPageHead(options: PageSEOOptions) {
   const fallbackTitle = options.metaFallback?.title ?? `${autoTitle} — ${SITE_NAME}`;
   const fallbackDesc = options.metaFallback?.description ?? "";
 
+  /** Replace `{name}`-style placeholders; leaves the string alone when unused. */
+  const fill = (value: string) =>
+    options.metaParams
+      ? value.replace(/\{(\w+)\}/g, (match, key: string) => options.metaParams?.[key] ?? match)
+      : value;
+
   const resolvedMeta = {
     ...meta,
-    title: meta.title === SITE_NAME ? fallbackTitle : meta.title,
-    description: meta.description || fallbackDesc,
+    title: meta.title === SITE_NAME ? fallbackTitle : fill(meta.title),
+    description: fill(meta.description || fallbackDesc),
     ogTitle:
       meta.ogTitle === SITE_NAME
         ? options.metaFallback?.ogTitle || fallbackTitle
-        : meta.ogTitle,
-    ogDescription:
+        : fill(meta.ogTitle),
+    ogDescription: fill(
       meta.ogDescription ||
-      options.metaFallback?.ogDescription ||
-      fallbackDesc ||
-      "",
+        options.metaFallback?.ogDescription ||
+        fallbackDesc ||
+        "",
+    ),
   };
 
   // Auto-populate URL in structured data options from canonical URL
@@ -223,7 +240,7 @@ export function getPageHead(options: PageSEOOptions) {
   const cleanPath = pathname.replace(/^\/+/, "");
   if (cleanPath) {
     const segments = cleanPath.split("/").filter(Boolean);
-    const homeLabel = messages["breadcrumbs.home"] ?? "Home";
+    const homeLabel = readBreadcrumbLabel(messages, "breadcrumbs.home") ?? "Home";
     const breadcrumbItems = [
       { name: homeLabel, url: `${SITE_URL}/${locale}/` },
     ];
@@ -231,7 +248,7 @@ export function getPageHead(options: PageSEOOptions) {
     let currentPath = "";
     for (const segment of segments) {
       currentPath += `/${segment}`;
-      const label = messages[`breadcrumbs.${segment}`]
+      const label = readBreadcrumbLabel(messages, `breadcrumbs.${segment}`)
         ?? segment.charAt(0).toUpperCase() + segment.slice(1);
       breadcrumbItems.push({
         name: label,
@@ -286,11 +303,16 @@ const HEAD_NAMESPACES = ["meta", "breadcrumbs"] as const;
  * @param extraNamespaces - Additional namespaces the head() function needs
  *   beyond meta + breadcrumbs (e.g., ["pricingPage"] for FAQ schema extraction).
  */
+
 export function createPageLoader(extraNamespaces?: readonly string[]) {
   const namespaces = extraNamespaces
     ? [...HEAD_NAMESPACES, ...extraNamespaces]
     : [...HEAD_NAMESPACES];
 
+  /* Return type comes from filterMessages (SerializableMessages, declared in
+     page-namespaces.ts): the router's loader-data constraint has `{}` leaves and
+     `unknown` is not assignable to it. Naming it at the source fixes every route
+     at once instead of 93 routes casting their own loader. */
   return async ({ context }: { context: { locale: string; locales: string[] } }) => {
     const allMessages = await getMessages({
       project: i18nConfig.project,
@@ -326,11 +348,36 @@ const CATEGORY_LABELS: Readonly<Record<string, { readonly label: string; readonl
  * @param messages - i18n messages for translating breadcrumb labels (breadcrumbs namespace)
  * @returns Breadcrumb items array where the last item has no href (current page)
  */
+/**
+ * Breadcrumb labels live in the `breadcrumbs` namespace, and messages arrive from
+ * the CDN namespaced + nested (`{ breadcrumbs: { home: "…" } }`). This function was
+ * written against FLAT dotted keys, so every lookup missed and every label silently
+ * fell back to the humanized URL segment. Resolve both shapes so translated labels
+ * actually reach the page, and take `unknown` values because a namespace node is an
+ * object, not a string.
+ */
+type BreadcrumbMessages = Readonly<Record<string, unknown>>;
+
+function readBreadcrumbLabel(
+  messages: BreadcrumbMessages,
+  dottedKey: string,
+): string | undefined {
+  const flat = messages[dottedKey];
+  if (typeof flat === "string") return flat;
+  const [namespace, ...rest] = dottedKey.split(".");
+  let node: unknown = messages[namespace];
+  for (const part of rest) {
+    if (typeof node !== "object" || node === null) return undefined;
+    node = (node as Record<string, unknown>)[part];
+  }
+  return typeof node === "string" ? node : undefined;
+}
+
 export function getBreadcrumbItems(
   pathname: string,
-  messages: Readonly<Record<string, string>> = {},
+  messages: BreadcrumbMessages = {},
 ): ReadonlyArray<{ readonly label: string; readonly href?: string }> {
-  const homeLabel = messages["breadcrumbs.home"] ?? "Home";
+  const homeLabel = readBreadcrumbLabel(messages, "breadcrumbs.home") ?? "Home";
   const cleanPath = pathname.replace(/^\/+/, "").replace(/\/+$/, "");
 
   if (!cleanPath) return [];
@@ -342,35 +389,35 @@ export function getBreadcrumbItems(
 
   if (segments.length === 1) {
     // Single segment: Home > Page (e.g., /for-developers, /pricing)
-    const segmentLabel = messages[`breadcrumbs.${segments[0]}`]
+    const segmentLabel = readBreadcrumbLabel(messages, `breadcrumbs.${segments[0]}`)
       ?? segments[0].replace(/^for-/, "For ").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     items.push({ label: segmentLabel });
   } else if (segments.length === 2) {
     const category = CATEGORY_LABELS[segments[0]];
-    const categoryLabel = messages[`breadcrumbs.${segments[0]}`] ?? category?.label
+    const categoryLabel = readBreadcrumbLabel(messages, `breadcrumbs.${segments[0]}`) ?? category?.label
       ?? segments[0].charAt(0).toUpperCase() + segments[0].slice(1);
     items.push({ label: categoryLabel, href: category?.href ?? `/${segments[0]}` });
 
     const pageSegment = segments[segments.length - 1];
-    const pageLabel = messages[`breadcrumbs.${pageSegment}`]
+    const pageLabel = readBreadcrumbLabel(messages, `breadcrumbs.${pageSegment}`)
       ?? pageSegment.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     items.push({ label: pageLabel });
   } else {
     // 3+ segments: Home > Category > Subcategory > ... > Page
     const category = CATEGORY_LABELS[segments[0]];
-    const categoryLabel = messages[`breadcrumbs.${segments[0]}`] ?? category?.label
+    const categoryLabel = readBreadcrumbLabel(messages, `breadcrumbs.${segments[0]}`) ?? category?.label
       ?? segments[0].charAt(0).toUpperCase() + segments[0].slice(1);
     items.push({ label: categoryLabel, href: category?.href ?? `/${segments[0]}` });
 
     for (let i = 1; i < segments.length - 1; i++) {
       const subPath = segments.slice(0, i + 1).join("/");
-      const subLabel = messages[`breadcrumbs.${segments[i]}`]
+      const subLabel = readBreadcrumbLabel(messages, `breadcrumbs.${segments[i]}`)
         ?? segments[i].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
       items.push({ label: subLabel, href: `/${subPath}` });
     }
 
     const pageSegment = segments[segments.length - 1];
-    const pageLabel = messages[`breadcrumbs.${pageSegment}`]
+    const pageLabel = readBreadcrumbLabel(messages, `breadcrumbs.${pageSegment}`)
       ?? pageSegment.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     items.push({ label: pageLabel });
   }

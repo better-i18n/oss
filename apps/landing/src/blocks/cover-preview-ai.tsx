@@ -21,10 +21,10 @@ export const coverPreviewAiBlock = defineBlock({
       <div className="flex items-center gap-1.5">
         <span className="rounded bg-violet-50 px-1.5 py-0.5 font-mono text-[8px] text-violet-600">✦ {model}</span>
         {context.map((c) => (
-          <span key={c} className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[7px] text-gray-500">{c}</span>
+          <span key={c} className="rounded bg-mist-50 px-1.5 py-0.5 font-mono text-[7px] text-gray-500">{c}</span>
         ))}
       </div>
-      <div className="rounded-md bg-gray-50 px-2 py-1.5">
+      <div className="rounded-md bg-mist-50 px-2 py-1.5">
         <div className="flex items-center gap-1 mb-0.5">
           <span className="font-mono text-[8px] font-medium text-gray-500">{sourceLang}</span>
           <span className="text-[7px] text-gray-300">source</span>
@@ -32,9 +32,9 @@ export const coverPreviewAiBlock = defineBlock({
         <div className="text-[9px] text-gray-700">{sourceText}</div>
       </div>
       <div className="flex items-center gap-1 px-1">
-        <div className="h-[1px] flex-1 bg-gray-200" />
+        <div className="h-[1px] flex-1 bg-black/[0.07]" />
         <span className="text-[8px] text-gray-400">→</span>
-        <div className="h-[1px] flex-1 bg-gray-200" />
+        <div className="h-[1px] flex-1 bg-black/[0.07]" />
       </div>
       <div className="rounded-md border border-emerald-200 bg-emerald-50/50 px-2 py-1.5">
         <div className="flex items-center gap-1 mb-0.5">

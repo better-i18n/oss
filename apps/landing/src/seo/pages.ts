@@ -29,6 +29,10 @@ export const MARKETING_PAGES = [
   { path: "pricing", priority: 0.9, changefreq: "weekly", prerender: true },
   { path: "integrations", priority: 0.9, changefreq: "weekly", prerender: true },
 
+  // Product pages (one per surface sold in the nav)
+  { path: "content", priority: 0.9, changefreq: "weekly", prerender: true },
+  { path: "analytics", priority: 0.9, changefreq: "weekly", prerender: true },
+
   // Audience pages (8 high-value personas)
   { path: "for-developers", priority: 0.9, changefreq: "weekly", prerender: true },
   { path: "for-translators", priority: 0.9, changefreq: "weekly", prerender: true },
@@ -87,6 +91,10 @@ export const MARKETING_PAGES = [
   { path: "compare/smartling", priority: 0.85, changefreq: "weekly", prerender: true },
   { path: "compare/xtm", priority: 0.85, changefreq: "weekly", prerender: true },
   { path: "compare/crowdin-vs-lokalise", priority: 0.85, changefreq: "weekly", prerender: true },
+  /* 0.9 rather than the 0.85 the rest of the set carries: Locize published a
+     comparison against us first, so this is the one compare page that is
+     defending a live query instead of opening a new one. */
+  { path: "compare/locize", priority: 0.9, changefreq: "weekly", prerender: true },
 
   // Educational pages
   { path: "what-is", priority: 0.85, changefreq: "monthly", prerender: true },

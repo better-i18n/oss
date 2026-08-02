@@ -55,7 +55,7 @@ export const coverBlogBlock = defineBlock({
 
         {/* Center: title */}
         <h3
-          className="relative z-10 max-w-[90%] text-[13px] font-semibold leading-[1.35] tracking-[-0.2px]"
+          className="relative z-10 max-w-[90%] text-[13px] font-medium leading-[1.35] tracking-[-0.2px]"
           style={{ color: "#1a1a1a" }}
         >
           {title}

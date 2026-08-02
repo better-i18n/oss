@@ -23,13 +23,13 @@ export const coverPreviewCdnBlock = defineBlock({
   render: ({ locales, p50, cacheHit }) => (
     <PreviewShell title="better-i18n.com / cdn">
       <div className="grid grid-cols-2 gap-1.5">
-        <div className="rounded-md bg-gray-50 px-2 py-1">
+        <div className="rounded-md bg-mist-50 px-2 py-1">
           <div className="text-[7px] uppercase tracking-wide text-gray-400">P50 latency</div>
-          <div className="mt-0.5 font-mono text-[10px] font-semibold text-emerald-600">{p50}</div>
+          <div className="mt-0.5 font-mono text-[10px] font-medium text-emerald-600">{p50}</div>
         </div>
-        <div className="rounded-md bg-gray-50 px-2 py-1">
+        <div className="rounded-md bg-mist-50 px-2 py-1">
           <div className="text-[7px] uppercase tracking-wide text-gray-400">Cache hit</div>
-          <div className="mt-0.5 font-mono text-[10px] font-semibold text-blue-600">{cacheHit}</div>
+          <div className="mt-0.5 font-mono text-[10px] font-medium text-mist-900">{cacheHit}</div>
         </div>
       </div>
       {locales.map((l) => (
