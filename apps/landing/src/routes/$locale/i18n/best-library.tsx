@@ -5,6 +5,12 @@ import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useTranslations } from "@better-i18n/use-intl";
 import { i18nGuideRoute } from "@/lib/i18n-guide-routes";
+import {
+  ClosingCta,
+  Divider,
+  SectionHeader,
+} from "@/components/ui/page";
+import { GuideMark } from "@/lib/i18n-guide-icons";
 
 export const Route = createFileRoute("/$locale/i18n/best-library")({
   loader: createPageLoader(),
@@ -18,6 +24,18 @@ export const Route = createFileRoute("/$locale/i18n/best-library")({
   },
   component: BestLibraryPage,
 });
+
+/** Framework label → `/i18n/{slug}`, so `GuideMark` resolves the real brand
+    mark (rule/name-a-thing-with-its-mark). Explicit rather than lowercasing the
+    label: "Next.js" lowercases to "next.js", which matches no slug. */
+const FRAMEWORK_SLUG: Record<string, string> = {
+  React: "react",
+  "Next.js": "nextjs",
+  Vue: "vue",
+  Svelte: "svelte",
+  Angular: "angular",
+  Nuxt: "nuxt",
+};
 
 const libraries = [
   {
@@ -70,13 +88,13 @@ function BestLibraryPage() {
       <section>
         <div className="section">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
+            <div className="mb-6 inline-flex w-fit items-center rounded-md border border-black/[0.07] bg-white px-2.5 py-1 text-[11px] font-medium text-mist-600">
               <span>{t("i18n.bestLibrary.badge")}</span>
             </div>
             <h1 className="section-h2">
               {t("i18n.bestLibrary.hero.title")}
             </h1>
-            <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
+            <p className="section-p mt-5">
               {t("i18n.bestLibrary.hero.subtitle")}
             </p>
           </div>
@@ -88,16 +106,17 @@ function BestLibraryPage() {
         <div className="section">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {libraries.map((library) => (
-              <div
-                key={library.name}
-                className={`rounded-xl border p-6 ${ library.highlight ? "border-emerald-200 bg-emerald-50/50" : "border-mist-200 bg-white" }`}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-medium text-mist-500 bg-mist-100 px-2 py-0.5 rounded">
+              /* No per-item border or padding (rule/listed-items-are-not-cards).
+                 The recommended library is marked by ink weight on its name, not
+                 by a tinted box — the box was the third one on the page. */
+              <div key={library.name}>
+                <div className="mb-2 flex items-center gap-2">
+                  <GuideMark slug={FRAMEWORK_SLUG[library.framework] ?? ""} />
+                  <span className="text-[11px] font-medium text-mist-500">
                     {library.framework}
                   </span>
                   {library.highlight && (
-                    <span className="text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
+                    <span className="rounded-sm bg-mist-900 px-1.5 py-0.5 text-[11px] font-medium text-white">
                       {t("i18n.bestLibrary.recommended")}
                     </span>
                   )}
@@ -117,7 +136,7 @@ function BestLibraryPage() {
                       key={feature}
                       className="inline-flex items-center gap-1 text-xs text-mist-500"
                     >
-                      <SpriteIcon name="checkmark" className="w-3 h-3 text-emerald-600" />
+                      <SpriteIcon name="checkmark" className="size-3 shrink-0 text-mist-900" aria-hidden="true" />
                       {feature}
                     </span>
                   ))}
@@ -129,82 +148,115 @@ function BestLibraryPage() {
       </section>
 
       {/* Framework Links */}
-      <section className="bg-mist-50">
+      <Divider />
+      <section>
         <div className="section">
-          <h2 className="section-h2 mb-8">
+          <h2 className="section-h2">
             {t("i18n.bestLibrary.frameworks.title")}
           </h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          {/* Equal-unit framework grid — the rule's stated exception, so the
+              hairline cells stay. They had `gap-4` as well, which floated every
+              rule instead of letting neighbours share one; the -1px shift plus a
+              clip box is what makes a matrix out of them. */}
+          <div className="mt-8 overflow-hidden">
+          <div className="-mt-px -ml-px grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
             {["react", "nextjs", "vue", "nuxt", "angular", "svelte"].map((fw) => (
               <Link
                 key={fw}
                 to={i18nGuideRoute(fw)}
                 params={{ locale }}
-                className="flex items-center justify-center gap-2 p-4 bg-white rounded-xl border border-mist-100 hover:border-mist-300 hover:shadow transition-all"
+                className="group flex items-center justify-center gap-2 border-t border-l border-black/[0.05] p-4 transition-colors hover:bg-black/[0.02]"
               >
-                <span className="text-sm font-medium text-mist-950 capitalize">{fw}</span>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400" />
+                <GuideMark slug={fw} />
+                <span className="text-[13px] font-medium capitalize text-mist-900">{fw}</span>
               </Link>
             ))}
+          </div>
           </div>
         </div>
       </section>
 
       {/* Related Topics */}
-      <section className="border-t border-mist-200">
+      <Divider />
+      <section>
         <div className="section">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">{t("whatIs.relatedTopics")}</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <SectionHeader
+            eyebrow={t("i18n.relatedLinks.eyebrow")}
+            title={t("whatIs.relatedTopics")}
+            subtitle={t("i18n.relatedLinks.subtitle")}
+          />
+          {/* Four bare columns (rule/listed-items-are-not-cards). These were
+              hairline cells in a rounded container one revision ago; a list of
+              four links is text, and the frame plus .section padding already
+              separate it from everything else. */}
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-x-10 lg:grid-cols-4">
             <Link
               to="/$locale/i18n/best-tms/"
               params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+              className="group flex items-start justify-between gap-3"
             >
               <div>
-                <h3 className="text-sm font-medium text-mist-950">{t("whatIs.links.bestTms")}</h3>
-                <p className="text-xs text-mist-500 mt-1">{t("whatIs.links.bestTmsDesc")}</p>
+                <h3 className="text-[13px] font-medium text-mist-700 transition-colors group-hover:text-mist-950">{t("whatIs.links.bestTms")}</h3>
+                <p className="mt-1 text-[12px] leading-[1.45] text-mist-500">{t("whatIs.links.bestTmsDesc")}</p>
               </div>
-              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon
+                name="chevron-right"
+                className="size-3.5 shrink-0 text-mist-300 transition-transform duration-150 group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
             </Link>
             <Link
               to="/$locale/what-is-internationalization/"
               params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+              className="group flex items-start justify-between gap-3"
             >
               <div>
-                <h3 className="text-sm font-medium text-mist-950">{t("whatIs.links.i18n")}</h3>
-                <p className="text-xs text-mist-500 mt-1">{t("whatIs.links.i18nDesc")}</p>
+                <h3 className="text-[13px] font-medium text-mist-700 transition-colors group-hover:text-mist-950">{t("whatIs.links.i18n")}</h3>
+                <p className="mt-1 text-[12px] leading-[1.45] text-mist-500">{t("whatIs.links.i18nDesc")}</p>
               </div>
-              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon
+                name="chevron-right"
+                className="size-3.5 shrink-0 text-mist-300 transition-transform duration-150 group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
             </Link>
             <Link
               to="/$locale/for-developers/"
               params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+              className="group flex items-start justify-between gap-3"
             >
               <div>
-                <h3 className="text-sm font-medium text-mist-950">{t("i18n.relatedLinks.forDevelopers")}</h3>
-                <p className="text-xs text-mist-500 mt-1">{t("i18n.relatedLinks.forDevelopersDesc")}</p>
+                <h3 className="text-[13px] font-medium text-mist-700 transition-colors group-hover:text-mist-950">{t("i18n.relatedLinks.forDevelopers")}</h3>
+                <p className="mt-1 text-[12px] leading-[1.45] text-mist-500">{t("i18n.relatedLinks.forDevelopersDesc")}</p>
               </div>
-              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon
+                name="chevron-right"
+                className="size-3.5 shrink-0 text-mist-300 transition-transform duration-150 group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
             </Link>
             <Link
               to="/$locale/compare/"
               params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+              className="group flex items-start justify-between gap-3"
             >
               <div>
-                <h3 className="text-sm font-medium text-mist-950">{t("whatIs.links.compare")}</h3>
-                <p className="text-xs text-mist-500 mt-1">{t("whatIs.links.compareDesc")}</p>
+                <h3 className="text-[13px] font-medium text-mist-700 transition-colors group-hover:text-mist-950">{t("whatIs.links.compare")}</h3>
+                <p className="mt-1 text-[12px] leading-[1.45] text-mist-500">{t("whatIs.links.compareDesc")}</p>
               </div>
-              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon
+                name="chevron-right"
+                className="size-3.5 shrink-0 text-mist-300 transition-transform duration-150 group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
             </Link>
           </div>
         </div>
       </section>
 
       {/* How to Choose */}
-      <section className="border-t border-mist-200">
+      <Divider />
+      <section>
         <div className="section">
           <h2 className="section-h2 mb-8">
             How to choose the right i18n library
@@ -236,7 +288,7 @@ function BestLibraryPage() {
                 description: "If you need to push translation corrections without a new deployment, choose a library with runtime loading support. Better I18N delivers translations via CDN with 60-second cache max-age, enabling near-instant updates for web and mobile apps.",
               },
             ].map((item) => (
-              <div key={item.criterion} className="p-6 rounded-xl border border-mist-100 bg-white">
+              <div key={item.criterion}>
                 <h3 className="text-sm font-medium text-mist-950 mb-2">{item.criterion}</h3>
                 <p className="text-sm/6 text-mist-600">{item.description}</p>
               </div>
@@ -246,8 +298,9 @@ function BestLibraryPage() {
       </section>
 
       {/* FAQ */}
-      <section className="border-t border-mist-200">
-        <div className="mx-auto max-w-3xl px-6 lg:px-10">
+      <Divider />
+      <section>
+        <div className="section">
           <h2 className="section-h2 mb-10">
             Frequently Asked Questions
           </h2>
@@ -273,8 +326,13 @@ function BestLibraryPage() {
                 question: "How do i18n libraries handle missing translations?",
                 answer: "Most libraries fall back to a specified fallback locale (usually the source language) when a translation is missing. react-i18next and i18next log missing keys in development mode. next-intl throws errors for missing keys in development and silently falls back in production. Better I18N's dashboard shows translation coverage per language, so you can ensure 100% coverage before deploying.",
               },
-            ].map((item, i) => (
-              <div key={i} className="border-b border-mist-100 pb-8 last:border-0 last:pb-0">
+            ].map((item) => (
+              /* The question text is the stable identity here; the array index
+                 is not (react-doctor: no-array-index-as-key). */
+              <div
+                key={item.question}
+                className="border-b border-mist-100 pb-8 last:border-0 last:pb-0"
+              >
                 <h3 className="text-base font-medium text-mist-950 mb-3">{item.question}</h3>
                 <p className="text-sm/6 text-mist-600">{item.answer}</p>
               </div>
@@ -284,22 +342,16 @@ function BestLibraryPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-mist-950 rounded-xl mx-6 lg:mx-10 mb-16">
-        <div className="mx-auto max-w-2xl text-center px-6">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("i18n.bestLibrary.cta.title")}
-          </h2>
-          <p className="mt-4 text-lg text-mist-300">{t("i18n.bestLibrary.cta.subtitle")}</p>
-          <div className="mt-8">
-            <a
-              href="https://dash.better-i18n.com"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
-            >
-              {t("i18n.bestLibrary.cta.button")}
-            </a>
-          </div>
-        </div>
-      </section>
+      <Divider />
+
+      {/* The ask closes the page. Was a floating dark band with its own
+          container; <ClosingCta /> is the grammar's one closing shape. This
+          page offers a single action, so no secondary. */}
+      <ClosingCta
+        title={t("i18n.bestLibrary.cta.title")}
+        subtitle={t("i18n.bestLibrary.cta.subtitle")}
+        primary={{ label: t("i18n.bestLibrary.cta.button"), href: "https://dash.better-i18n.com" }}
+      />
     </MarketingLayout>
   );
 }

@@ -5,6 +5,7 @@ import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import { ClosingCta, Divider } from "@/components/ui/page";
 import { IconAiTranslate } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/website-translation")({
@@ -27,133 +28,133 @@ export const Route = createFileRoute("/$locale/i18n/website-translation")({
 });
 
 const approaches = [
-  { icon: IconAiTranslate, titleKey: "approaches.manual.title", descKey: "approaches.manual.description", defaultTitle: "Manual Translation", defaultDesc: "Professional human translators handle every string. Highest quality for marketing copy and legal content, but slower turnaround and higher per-word cost." },
-  { icon: "zap", titleKey: "approaches.machine.title", descKey: "approaches.machine.description", defaultTitle: "Machine Translation", defaultDesc: "Automated engines like Google Translate or DeepL process content instantly. Fast and cheap, but often produces awkward phrasing that needs human review." },
-  { icon: "shield-check", titleKey: "approaches.hybrid.title", descKey: "approaches.hybrid.description", defaultTitle: "Hybrid Translation", defaultDesc: "Machine translation generates a first draft, then professional translators review and polish the output. Balances speed with quality for most content types." },
-  { icon: "rocket", titleKey: "approaches.aiNative.title", descKey: "approaches.aiNative.description", defaultTitle: "AI-Native Translation", defaultDesc: "Modern AI models trained on your glossary and brand voice produce context-aware translations that require minimal post-editing. The fastest path to high-quality multilingual content." },
+  { icon: IconAiTranslate, titleKey: "i18n.websiteTranslation.approaches.manual.title", descKey: "i18n.websiteTranslation.approaches.manual.description" },
+  { icon: "zap", titleKey: "i18n.websiteTranslation.approaches.machine.title", descKey: "i18n.websiteTranslation.approaches.machine.description" },
+  { icon: "shield-check", titleKey: "i18n.websiteTranslation.approaches.hybrid.title", descKey: "i18n.websiteTranslation.approaches.hybrid.description" },
+  { icon: "rocket", titleKey: "i18n.websiteTranslation.approaches.aiNative.title", descKey: "i18n.websiteTranslation.approaches.aiNative.description" },
 ];
 
 function WebsiteTranslationPage() {
-  const t = useT("marketing.i18n.websiteTranslation");
+  const t = useT("marketing");
   const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    { key: "benefits.list.reachSpanishSpeakers", defaultValue: "Reach 500M+ Spanish speakers with professionally translated content" },
-    { key: "benefits.list.frenchMarkets", defaultValue: "Expand into French-speaking markets across Europe, Canada, and Africa" },
-    { key: "benefits.list.germanAudiences", defaultValue: "Engage German audiences who strongly prefer browsing in their native language" },
-    { key: "benefits.list.arabicExpansion", defaultValue: "Unlock Arabic-speaking markets with RTL-ready translated pages" },
-    { key: "benefits.list.chineseGrowth", defaultValue: "Tap into Chinese-language growth with culturally adapted translations" },
-    { key: "benefits.list.seoRankings", defaultValue: "Improve organic search rankings in every target language and locale" },
+    { key: "i18n.websiteTranslation.benefits.list.reachSpanishSpeakers" },
+    { key: "i18n.websiteTranslation.benefits.list.frenchMarkets" },
+    { key: "i18n.websiteTranslation.benefits.list.germanAudiences" },
+    { key: "i18n.websiteTranslation.benefits.list.arabicExpansion" },
+    { key: "i18n.websiteTranslation.benefits.list.chineseGrowth" },
+    { key: "i18n.websiteTranslation.benefits.list.seoRankings" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Content Audit", defaultDesc: "Inventory all translatable strings, pages, and metadata to define your translation scope." },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "String Extraction", defaultDesc: "Extract all text into structured translation files using your i18n framework." },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Translation", defaultDesc: "Translate content using AI, human translators, or a hybrid of both approaches." },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Quality Review", defaultDesc: "Review translations for accuracy, consistency, and cultural appropriateness." },
-    { number: "5", titleKey: "process.step5.title", descKey: "process.step5.description", defaultTitle: "Publish & Monitor", defaultDesc: "Deploy translated content to production and monitor performance across locales." },
+    { number: "1", titleKey: "i18n.websiteTranslation.process.step1.title", descKey: "i18n.websiteTranslation.process.step1.description" },
+    { number: "2", titleKey: "i18n.websiteTranslation.process.step2.title", descKey: "i18n.websiteTranslation.process.step2.description" },
+    { number: "3", titleKey: "i18n.websiteTranslation.process.step3.title", descKey: "i18n.websiteTranslation.process.step3.description" },
+    { number: "4", titleKey: "i18n.websiteTranslation.process.step4.title", descKey: "i18n.websiteTranslation.process.step4.description" },
+    { number: "5", titleKey: "i18n.websiteTranslation.process.step5.title", descKey: "i18n.websiteTranslation.process.step5.description" },
   ];
 
   const relatedPages = [
-    { name: "Translation Solutions", href: "/$locale/i18n/translation-solutions", description: t("related.translationSolutions", { defaultValue: "Compare platforms and tools for website translation" }) },
-    { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("related.websiteLocalization", { defaultValue: "Beyond translation — full cultural adaptation for global markets" }) },
-    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("related.localizationSoftware", { defaultValue: "Platforms and software for managing localization at scale" }) },
-    { name: "Content Localization", href: "/$locale/i18n/content-localization", description: t("related.contentLocalization", { defaultValue: "Adapt every piece of content for every market" }) },
+    { name: "Translation Solutions", href: "/$locale/i18n/translation-solutions", description: t("i18n.websiteTranslation.related.translationSolutions") },
+    { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("i18n.websiteTranslation.related.websiteLocalization") },
+    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("i18n.websiteTranslation.related.localizationSoftware") },
+    { name: "Content Localization", href: "/$locale/i18n/content-localization", description: t("i18n.websiteTranslation.related.contentLocalization") },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
+            <div className="eyebrow mb-5 flex items-center gap-2">
               <SpriteIcon name="globe" className="size-4" />
-              <span>{t("badge", { defaultValue: "Website Translation" })}</span>
+              <span>{t("i18n.websiteTranslation.badge")}</span>
             </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("hero.title", { defaultValue: "Website Translation: Translate Your Site into Any Language" })}
+            <h1 className="section-h2">
+              {t("i18n.websiteTranslation.hero.title")}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "Whether you need to translate English to Spanish, French to English, or Chinese to English, a professional website translation strategy reaches billions of new users. Discover every approach — from manual to AI-native — and learn how to choose the right solution for your scale." })}
+              {t("i18n.websiteTranslation.hero.subtitle")}
             </p>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("definition.title", { defaultValue: "What Is Website Translation?" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.websiteTranslation.definition.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph1", { defaultValue: "Website translation is the process of converting your site's text, metadata, and UI strings from a source language into one or more target languages. The most common pairs include Spanish to English, English to Spanish, French to English, and English to German — collectively reaching over two billion native speakers worldwide." })}
+                {t("i18n.websiteTranslation.definition.paragraph1")}
               </p>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph2", { defaultValue: "High-quality website translation goes beyond word-for-word conversion. A skilled Spanish translator or Portuguese to English specialist understands regional dialects: Mexican Spanish differs from Castilian Spanish, and Brazilian Portuguese differs from European Portuguese. Getting these nuances right determines whether your site resonates or alienates." })}
+                {t("i18n.websiteTranslation.definition.paragraph2")}
               </p>
               <p className="text-mist-700 leading-relaxed">
-                {t("definition.paragraph3", { defaultValue: "Modern AI-powered translation tools have dramatically reduced the cost and time required. What once took weeks of work from a professional translator can now happen in hours, with human review ensuring accuracy for business-critical copy." })}
+                {t("i18n.websiteTranslation.definition.paragraph3")}
               </p>
             </div>
-            <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
+            <div className="mt-10 lg:mt-0">
               <h3 className="text-lg font-medium text-mist-950 mb-4">
-                {t("languageStats.title", { defaultValue: "Top Languages by Search Volume" })}
+                {t("i18n.websiteTranslation.languageStats.title")}
               </h3>
               <ul className="space-y-3">
                 <li className="flex items-center justify-between text-sm">
-                  <span className="text-mist-700">{t("languageStats.spanish", { defaultValue: "Spanish to English / English to Spanish" })}</span>
+                  <span className="text-mist-700">{t("i18n.websiteTranslation.languageStats.spanish")}</span>
                   <span className="font-medium text-mist-950">16M+ searches/mo</span>
                 </li>
                 <li className="flex items-center justify-between text-sm">
-                  <span className="text-mist-700">{t("languageStats.french", { defaultValue: "French to English" })}</span>
+                  <span className="text-mist-700">{t("i18n.websiteTranslation.languageStats.french")}</span>
                   <span className="font-medium text-mist-950">1M+ searches/mo</span>
                 </li>
                 <li className="flex items-center justify-between text-sm">
-                  <span className="text-mist-700">{t("languageStats.german", { defaultValue: "English to German" })}</span>
+                  <span className="text-mist-700">{t("i18n.websiteTranslation.languageStats.german")}</span>
                   <span className="font-medium text-mist-950">450K searches/mo</span>
                 </li>
                 <li className="flex items-center justify-between text-sm">
-                  <span className="text-mist-700">{t("languageStats.chinese", { defaultValue: "Chinese to English" })}</span>
+                  <span className="text-mist-700">{t("i18n.websiteTranslation.languageStats.chinese")}</span>
                   <span className="font-medium text-mist-950">368K searches/mo</span>
                 </li>
                 <li className="flex items-center justify-between text-sm">
-                  <span className="text-mist-700">{t("languageStats.arabic", { defaultValue: "English to Arabic" })}</span>
+                  <span className="text-mist-700">{t("i18n.websiteTranslation.languageStats.arabic")}</span>
                   <span className="font-medium text-mist-950">246K searches/mo</span>
                 </li>
               </ul>
               <p className="mt-4 text-xs text-mist-500">
-                {t("languageStats.note", { defaultValue: "Each language pair represents a distinct market opportunity for your website." })}
+                {t("i18n.websiteTranslation.languageStats.note")}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("approaches.title", { defaultValue: "Website Translation Approaches" })}
+            <h2 className="section-h2">
+              {t("i18n.websiteTranslation.approaches.title")}
             </h2>
             <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("approaches.subtitle", { defaultValue: "Choose the right translation method based on your content volume, quality requirements, and available budget." })}
+              {t("i18n.websiteTranslation.approaches.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {approaches.map((approach) => (
-              <div key={approach.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
-                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
+              <div key={approach.titleKey}>
+                <div className="mb-3 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   {typeof approach.icon === "string" ? <SpriteIcon name={approach.icon as SpriteIconName} className="size-5" /> : <approach.icon className="size-5" />}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(approach.titleKey, { defaultValue: approach.defaultTitle })}
+                  {t(approach.titleKey)}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(approach.descKey, { defaultValue: approach.defaultDesc })}
+                  {t(approach.descKey)}
                 </p>
               </div>
             ))}
@@ -161,43 +162,43 @@ function WebsiteTranslationPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("seo.title", { defaultValue: "SEO Considerations for Translated Websites" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.websiteTranslation.seo.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("seo.paragraph1", { defaultValue: "Translating your website unlocks organic search traffic in entirely new markets. A Spanish translator working on your site creates pages that rank for Spanish-language queries — searches like 'spanish translator' alone receive 368,000 monthly searches. Proper implementation of hreflang tags tells search engines which version of your page to serve in each locale." })}
+                {t("i18n.websiteTranslation.seo.paragraph1")}
               </p>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("seo.paragraph2", { defaultValue: "Each translated URL should live on a dedicated path or subdomain (e.g., /es/, /fr/, /de/) so search engines can index them independently. Avoid translating content directly into query parameters — it prevents Google from crawling and indexing your multilingual pages." })}
+                {t("i18n.websiteTranslation.seo.paragraph2")}
               </p>
               <p className="text-mist-700 leading-relaxed">
-                {t("seo.paragraph3", { defaultValue: "Metadata — including page titles, meta descriptions, and Open Graph tags — must also be translated. Leaving English metadata on Portuguese to English translated pages signals mixed signals to search engines and reduces click-through rates from non-English results pages." })}
+                {t("i18n.websiteTranslation.seo.paragraph3")}
               </p>
             </div>
             <div className="mt-10 lg:mt-0">
               <div className="flex items-start gap-3 mb-4">
                 <SpriteIcon name="magnifying-glass" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                 <div>
-                  <h3 className="text-sm font-medium text-mist-950 mb-1">{t("seo.hreflang.title", { defaultValue: "Implement hreflang Tags" })}</h3>
-                  <p className="text-sm text-mist-600">{t("seo.hreflang.description", { defaultValue: "Signal to Google which language version to serve to each user for correct international targeting." })}</p>
+                  <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.websiteTranslation.seo.hreflang.title")}</h3>
+                  <p className="text-sm text-mist-600">{t("i18n.websiteTranslation.seo.hreflang.description")}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3 mb-4">
                 <SpriteIcon name="magnifying-glass" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                 <div>
-                  <h3 className="text-sm font-medium text-mist-950 mb-1">{t("seo.urls.title", { defaultValue: "Use Locale-Specific URLs" })}</h3>
-                  <p className="text-sm text-mist-600">{t("seo.urls.description", { defaultValue: "Dedicated /es/, /fr/, /de/ paths allow independent indexing and ranking for each translated language." })}</p>
+                  <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.websiteTranslation.seo.urls.title")}</h3>
+                  <p className="text-sm text-mist-600">{t("i18n.websiteTranslation.seo.urls.description")}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <SpriteIcon name="magnifying-glass" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                 <div>
-                  <h3 className="text-sm font-medium text-mist-950 mb-1">{t("seo.metadata.title", { defaultValue: "Translate All Metadata" })}</h3>
-                  <p className="text-sm text-mist-600">{t("seo.metadata.description", { defaultValue: "Titles, descriptions, alt text, and structured data must all be translated to maximize search visibility." })}</p>
+                  <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.websiteTranslation.seo.metadata.title")}</h3>
+                  <p className="text-sm text-mist-600">{t("i18n.websiteTranslation.seo.metadata.description")}</p>
                 </div>
               </div>
             </div>
@@ -205,23 +206,23 @@ function WebsiteTranslationPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("benefits.title", { defaultValue: "Benefits of Professional Website Translation" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.websiteTranslation.benefits.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed">
-                {t("benefits.subtitle", { defaultValue: "Translating your site into Spanish, French, German, Arabic, or Chinese unlocks markets with hundreds of millions of potential customers who prefer browsing and buying in their native language." })}
+                {t("i18n.websiteTranslation.benefits.subtitle")}
               </p>
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
+                    <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
+                    <span className="text-mist-700">{t(benefit.key)}</span>
                   </li>
                 ))}
               </ul>
@@ -230,27 +231,27 @@ function WebsiteTranslationPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("process.title", { defaultValue: "The Website Translation Workflow" })}
+            <h2 className="section-h2">
+              {t("i18n.websiteTranslation.process.title")}
             </h2>
             <p className="mt-3 text-mist-700">
-              {t("process.subtitle", { defaultValue: "A repeatable five-step process for translating your website accurately and efficiently at scale." })}
+              {t("i18n.websiteTranslation.process.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 lg:grid-cols-5">
             {processSteps.map((step) => (
               <div key={step.number} className="text-center p-6">
-                <div className="size-10 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium mx-auto mb-4">
+                <div className="mb-3 block text-[11px] font-medium tabular-nums text-mist-400">
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
+                  {t(step.titleKey)}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: step.defaultDesc })}
+                  {t(step.descKey)}
                 </p>
               </div>
             ))}
@@ -258,38 +259,38 @@ function WebsiteTranslationPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Translate Your Website Faster with Better I18N" })}
+            <h2 className="section-h2 mb-6">
+              {t("i18n.websiteTranslation.solution.title")}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better I18N connects your codebase directly to an AI translation engine trained on your glossary and brand voice. Automatically extract every string — from English to Spanish, English to German, English to Arabic, and beyond — then publish translations to a global CDN without touching your deployment pipeline." })}
+              {t("i18n.websiteTranslation.solution.content")}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature1.title", { defaultValue: "Any Language Pair" })}
+                  {t("i18n.websiteTranslation.solution.feature1.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature1.description", { defaultValue: "Translate to Spanish, French, German, Chinese, Arabic, Portuguese, and 100+ other languages from a single dashboard." })}
+                  {t("i18n.websiteTranslation.solution.feature1.description")}
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature2.title", { defaultValue: "Quality Assurance Built In" })}
+                  {t("i18n.websiteTranslation.solution.feature2.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature2.description", { defaultValue: "Glossary enforcement, consistency checks, and human review workflows ensure translation quality across every locale." })}
+                  {t("i18n.websiteTranslation.solution.feature2.description")}
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature3.title", { defaultValue: "SEO-Ready Output" })}
+                  {t("i18n.websiteTranslation.solution.feature3.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature3.description", { defaultValue: "Automatically generates translated metadata, hreflang attributes, and locale-specific sitemaps for maximum search visibility." })}
+                  {t("i18n.websiteTranslation.solution.feature3.description")}
                 </p>
               </div>
             </div>
@@ -299,54 +300,40 @@ function WebsiteTranslationPage() {
 
 
       <SeeAlso currentSlug="website-translation" locale={locale} />
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}</h2>
+      <section className="border-t border-mist-200">
+        <div className="section">
+          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics")}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {relatedPages.map((page) => (
               <Link
                 key={page.href}
                 to={page.href}
                 params={{ locale }}
-                className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+                className="group flex items-start justify-between gap-3"
               >
                 <div>
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600" />
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
-        <div className="mx-auto max-w-2xl text-center px-6">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("cta.title", { defaultValue: "Start Translating Your Website Today" })}
-          </h2>
-          <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Reach Spanish, French, German, Arabic, and Chinese speakers with AI-powered translations that sound natural and convert." })}
-          </p>
-          <div className="mt-8 flex justify-center gap-4 flex-wrap">
-            <a
-              href="https://dash.better-i18n.com"
-              aria-label="Start translating your website for free with Better I18N"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
-            >
-              {t("cta.primary", { defaultValue: "Get Started Free" })}
-            </a>
-            <a
-              href="https://docs.better-i18n.com"
-              aria-label="Read the Better I18N documentation for website translation"
-              className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-            >
-              {t("cta.secondary", { defaultValue: "Read the Docs" })}
-            </a>
-          </div>
-        </div>
-      </section>
+      <Divider />
+
+      {/* The ask closes the page. Was a `bg-mist-950` band with `rounded-xl
+          mx-6` — a floating dark card on a white document, carrying its own
+          container and its own button scale. <ClosingCta /> is the one closing
+          shape in the grammar. */}
+      <ClosingCta
+        title={t("i18n.websiteTranslation.cta.title")}
+        subtitle={t("i18n.websiteTranslation.cta.subtitle")}
+        primary={{ label: t("i18n.websiteTranslation.cta.primary"), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t("i18n.websiteTranslation.cta.secondary"), href: "https://docs.better-i18n.com" }}
+      />
     </MarketingLayout>
   );
 }

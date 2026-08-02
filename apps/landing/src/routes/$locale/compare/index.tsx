@@ -20,6 +20,7 @@ const COMPARE_ROUTES = {
   transifex: "/$locale/compare/transifex/",
   smartling: "/$locale/compare/smartling/",
   xtm: "/$locale/compare/xtm/",
+  locize: "/$locale/compare/locize/",
 } as const;
 
 
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/$locale/compare/")({
         { name: "Lokalise", description: "Translation and localization platform", url: `${SITE_URL}/en/compare/lokalise` },
         { name: "Phrase", description: "Enterprise localization platform", url: `${SITE_URL}/en/compare/phrase` },
         { name: "Transifex", description: "Localization platform for digital content", url: `${SITE_URL}/en/compare/transifex` },
+        { name: "Locize", description: "Managed translation backend from the i18next team", url: `${SITE_URL}/en/compare/locize` },
       ],
     });
 
@@ -53,25 +55,34 @@ const competitors = [
   { key: "lokalise", name: "Lokalise", slug: "lokalise", defaultDesc: "Compare Better I18N with Lokalise for modern app localization and deployment.", defaultHighlight: "Built-in CDN delivery" },
   { key: "phrase", name: "Phrase", slug: "phrase", defaultDesc: "See how Better I18N compares to Phrase for enterprise translation management.", defaultHighlight: "Developer-first platform" },
   { key: "transifex", name: "Transifex", slug: "transifex", defaultDesc: "Compare Better I18N with Transifex for open-source and SaaS localization.", defaultHighlight: "Free tier available" },
+  { key: "locize", name: "Locize", slug: "locize", defaultDesc: "Compare Better I18N with Locize, the managed backend built by the i18next team.", defaultHighlight: "Agent-native vs translator-native" },
 ];
 
-const COMPETITOR_COLUMNS = ["Crowdin", "Lokalise", "Phrase", "Transifex"] as const;
+const COMPETITOR_COLUMNS = ["Crowdin", "Lokalise", "Phrase", "Transifex", "Locize"] as const;
 
 /** Column order of every `MATRIX_ROWS.values` array, used as the cell key. */
 const MATRIX_COLUMNS = ["Better I18N", ...COMPETITOR_COLUMNS] as const;
 
-/** values[0] is Better I18N; the rest follow COMPETITOR_COLUMNS order. */
+/** values[0] is Better I18N; the rest follow COMPETITOR_COLUMNS order.
+    The Locize column (last) is sourced from locize.com/pricing and their own
+    published comparison, read 2026-08-01. It is the one competitor here with a
+    real MCP server \u2014 26 tools in the official registry \u2014 so that row says \u2713 for
+    them. A matrix that only we win is a matrix nobody believes. */
 const MATRIX_ROWS = [
-  { key: "freeTier", values: ["\u2713", "\u2713", "\u2717", "\u2717", "\u2717"] },
-  { key: "cdn", values: ["\u2713", "\u2717", "\u2717", "\u2717", "\u2717"] },
-  { key: "mcp", values: ["\u2713", "\u2717", "\u2717", "\u2717", "\u2717"] },
-  { key: "ai", values: ["\u2713", "\u2713", "\u2713", "\u2713", "\u2713"] },
-  { key: "git", values: ["\u2713", "\u2713", "\u2713", "\u2713", "~"] },
-  { key: "cli", values: ["\u2713", "\u2713", "\u2713", "\u2713", "~"] },
-  { key: "ota", values: ["\u2713", "\u2717", "\u2717", "\u2717", "\u2717"] },
-  { key: "typesafe", values: ["\u2713", "\u2717", "\u2717", "\u2717", "\u2717"] },
-  { key: "mobile", values: ["\u2713", "\u2713", "\u2713", "\u2713", "~"] },
-  { key: "price", values: ["$0/mo", "$40/mo", "$140/mo", "$1,245/mo", "$150/mo"] },
+  { key: "freeTier", values: ["\u2713", "\u2713", "\u2717", "\u2717", "\u2717", "\u2713"] },
+  { key: "cdn", values: ["\u2713", "\u2717", "\u2717", "\u2717", "\u2717", "\u2713"] },
+  { key: "mcp", values: ["\u2713", "\u2717", "\u2717", "\u2717", "\u2717", "\u2713"] },
+  { key: "ai", values: ["\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713"] },
+  /* ~ for Locize: git-style branches inside the platform, but their own
+     comparison marks "GitHub App with automated PRs" as not available. */
+  { key: "git", values: ["\u2713", "\u2713", "\u2713", "\u2713", "~", "~"] },
+  { key: "cli", values: ["\u2713", "\u2713", "\u2713", "\u2713", "~", "\u2713"] },
+  /* ~ for Locize: the CDN serves runtime updates without a rebuild, but there
+     is no separately marketed mobile OTA product to point at. */
+  { key: "ota", values: ["\u2713", "\u2717", "\u2717", "\u2717", "\u2717", "~"] },
+  { key: "typesafe", values: ["\u2713", "\u2717", "\u2717", "\u2717", "\u2717", "\u2717"] },
+  { key: "mobile", values: ["\u2713", "\u2713", "\u2713", "\u2713", "~", "\u2713"] },
+  { key: "price", values: ["$0/mo", "$40/mo", "$140/mo", "$1,245/mo", "$150/mo", "$7/mo"] },
 ] as const;
 
 function ComparePage() {
@@ -210,14 +221,18 @@ function ComparePage() {
           title={t("compare.index.competitors.title")}
           subtitle={t("compare.index.competitors.subtitle")}
         />
-        <div className="mt-8 overflow-hidden rounded-xl border border-black/[0.07]">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2">
+        {/* Bare columns, gap only. A listed item is not a card: the page is
+            already a bordered frame, and giving each row its own border stacks a
+            third box inside it (rule/listed-items-are-not-cards). The matrix
+            above keeps its border because a table's rules ARE its structure. */}
+        <div className="mt-8">
+          <div className="grid grid-cols-1 gap-x-12 gap-y-8 sm:grid-cols-2">
             {competitors.map((competitor) => (
               <Link
                 key={competitor.slug}
                 to={COMPARE_ROUTES[competitor.slug as keyof typeof COMPARE_ROUTES]}
                 params={{ locale }}
-                className="group flex flex-col gap-3 border-t border-l border-black/[0.05] px-5 py-4 transition-colors hover:bg-black/[0.02]"
+                className="group flex flex-col gap-2.5"
               >
                 <div className="flex items-start justify-between gap-4">
                   <h3 className="flex items-center gap-2.5 text-[15px] font-medium tracking-[-0.015em] text-mist-900">

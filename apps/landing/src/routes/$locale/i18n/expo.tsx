@@ -10,6 +10,7 @@ import {
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/$locale/i18n/expo")({
   loader: createPageLoader(),
@@ -31,23 +32,32 @@ export const Route = createFileRoute("/$locale/i18n/expo")({
   component: ExpoI18nPage,
 });
 
+/* Key suffixes, not copy — resolved with t() inside the component. Same shape
+   as the other framework pages, and it keeps the array out of react-doctor's
+   prefer-module-scope-static-value. */
+const FEATURE_KEYS = [
+  "noNativeModules",
+  "offlineFirst",
+  "deviceLocale",
+  "instantSwitching",
+  "otaUpdates",
+  "reactI18next",
+];
+
 function ExpoI18nPage() {
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const setupSteps = [
     {
       step: 1,
-      title: "Install packages",
-      description:
-        "Add the Better I18N Expo adapter along with expo-localization and react-i18next.",
+      id: "step1",
       code: "npm install @better-i18n/expo expo-localization react-i18next i18next",
       fileName: "terminal",
     },
     {
       step: 2,
-      title: "Initialize in i18n.ts",
-      description:
-        "Call initBetterI18n() at module scope. It registers the CDN loader and configures i18next with your project's languages.",
+      id: "step2",
       code: `import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { initBetterI18n } from '@better-i18n/expo';
@@ -64,9 +74,7 @@ export const { languages } = await initBetterI18n({
     },
     {
       step: 3,
-      title: "Import in App Entry",
-      description:
-        "Import i18n.ts at the top of your app entry point so it initializes before any screens render. No provider wrapper needed.",
+      id: "step3",
       code: `// App.tsx or _layout.tsx (Expo Router)
 import './i18n';
 
@@ -77,9 +85,7 @@ export default function App() {
     },
     {
       step: 4,
-      title: "Translate in Components",
-      description:
-        "Use the standard react-i18next useTranslation hook in any screen or component.",
+      id: "step4",
       code: `import { useTranslation } from 'react-i18next';
 import { Text } from 'react-native';
 
@@ -91,70 +97,58 @@ function HomeScreen() {
     },
   ];
 
-  const features = [
-    "Zero native modules — works in Expo Go without ejecting",
-    "Offline-first — MMKV or AsyncStorage persistent cache",
-    "Device locale — auto-detects language via expo-localization",
-    "Instant switching — locale changes without UI flash",
-    "OTA updates — push translation changes without an app store release",
-    "react-i18next compatible — works with existing i18next setups",
-  ];
+  /* Copy from the CDN, code samples from the file above (code is code, not
+     copy). `id` is the key path segment, so a step's prose lives in
+     i18n.expo.setup.<id>.*. */
+  const steps = setupSteps.map((step) => ({
+    ...step,
+    title: t(`i18n.expo.setup.${step.id}.title`),
+    description: t(`i18n.expo.setup.${step.id}.description`),
+  }));
+
+  const features = FEATURE_KEYS.map((k) => t(`i18n.expo.features.${k}`));
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
-        title="Expo i18n — Localize your React Native app"
-        subtitle="Add internationalization to your Expo app with offline support, automatic device locale detection, and OTA translation updates."
-        badgeText="Expo i18n"
+        title={t("i18n.expo.hero.title")}
+        subtitle={t("i18n.expo.hero.subtitle")}
+        badgeText={t("i18n.expo.hero.badge")}
       />
 
-      <SetupGuide title="Get started in 4 steps" steps={setupSteps} />
+      <SetupGuide title={t("i18n.expo.setup.title")} steps={steps} />
 
-      <FeatureList title="Why use Better I18N with Expo?" features={features} />
+      <FeatureList title={t("i18n.expo.featuresTitle")} features={features} />
 
       <FrameworkFAQ
-        title="Expo i18n — Frequently Asked Questions"
+        title={t("i18n.expo.faq.title")}
         items={[
-          {
-            question: "What is the recommended i18n approach for Expo apps?",
-            answer: "The recommended stack is react-i18next + expo-localization + @better-i18n/expo. expo-localization reads the device's language setting, react-i18next provides the t() hook and pluralization engine, and @better-i18n/expo fetches translations from the CDN with offline caching. This combination works in Expo Go without ejecting, supports over-the-air translation updates, and is compatible with both Expo Router and bare React Native projects.",
-          },
-          {
-            question: "How does Better I18N work with Expo Router?",
-            answer: "With Expo Router, you wrap your root _layout.tsx with the i18n initialization. Import your i18n.ts file at the top of the root layout — this ensures translations are loaded before any screen renders. Expo Router's file-based routing doesn't require URL-based locale prefixes; locale state is managed globally via i18next and the device locale from expo-localization. The Better I18N CDN delivers translations per locale on demand.",
-          },
-          {
-            question: "Can I push translation updates without an app store release?",
-            answer: "Yes. Better I18N's Expo adapter fetches translations from the CDN at runtime. When you publish new or corrected translations in the Better I18N dashboard, the next app launch downloads the updated strings — no new app build required. Translations are cached in AsyncStorage or MMKV so users see the last known translations even when offline. This makes translation hotfixes fast without waiting for App Store or Google Play review.",
-          },
-          {
-            question: "How do I detect and use the device language in Expo?",
-            answer: "expo-localization's getLocales() returns an array of the user's preferred locales in priority order. @better-i18n/expo reads this automatically via the useDeviceLocale option in initBetterI18n(). If the top locale is supported by your project, it's used; otherwise it falls back to your defaultLocale. The override chain is: user's explicit language selection → device language → default locale.",
-          },
-          {
-            question: "Does @better-i18n/expo work with MMKV for storage?",
-            answer: "Yes. @better-i18n/expo uses a duck-typed storage adapter — you pass any storage object that implements getItem, setItem, and removeItem. For MMKV, use the storageAdapter() helper from @better-i18n/expo and pass your MMKV instance. MMKV is significantly faster than AsyncStorage for large translation files, reducing cold-start time for apps with many languages.",
-          },
-          {
-            question: "How do I handle locale switching without a reload in Expo?",
-            answer: "@better-i18n/expo overrides i18next's changeLanguage() method to pre-load the target locale's translations before switching. This prevents the English flash that happens when i18next switches locale before the new translations are ready. The result is a smooth transition — users see the fully translated UI immediately, not a flash of the source language.",
-          },
-        ]}
+          "approach",
+          "expoRouter",
+          "otaUpdates",
+          "deviceLanguage",
+          "mmkv",
+          "localeSwitching",
+        ].map((id) => ({
+          id,
+          question: t(`i18n.expo.faq.items.${id}.question`),
+          answer: t(`i18n.expo.faq.items.${id}.answer`),
+        }))}
       />
 
       <OtherFrameworks
-        title="Other frameworks"
+        title={t("i18n.expo.otherFrameworks")}
         currentFramework="expo"
         locale={locale}
       />
 
       <FrameworkCTA
-        title="Ship your multilingual Expo app today"
-        subtitle="Manage translations in the dashboard, push updates over-the-air, and keep your app fully localized."
-        primaryCTA="Get started free"
+        title={t("i18n.expo.cta.title")}
+        subtitle={t("i18n.expo.cta.subtitle")}
+        primaryCTA={t("i18n.expo.cta.primary")}
         primaryHref="https://dash.better-i18n.com"
-        secondaryCTA="Read the docs"
+        secondaryCTA={t("i18n.expo.cta.secondary")}
         secondaryHref="https://docs.better-i18n.com/frameworks/expo"
       />
     </MarketingLayout>

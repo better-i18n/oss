@@ -39,10 +39,10 @@ function AboutPage() {
   return (
     <MarketingLayout showCTA={true}>
       {/* Hero Section */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1] lg:text-6xl/[1.1]">
+            <h1 className="section-h2">
               {t("hero.title")}
               <span className="block text-mist-600">{t("hero.titleHighlight")}</span>
             </h1>
@@ -57,9 +57,9 @@ function AboutPage() {
       <PlatformMetrics />
 
       {/* Story Section */}
-      <section className="py-16 bg-white">
+      <section className="bg-white">
         <div className="mx-auto max-w-3xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl font-medium text-mist-950 mb-8">
+          <h2 className="section-h2 mb-8">
             {t("story.title")}
           </h2>
           <div className="prose prose-mist max-w-none text-mist-700">
@@ -71,9 +71,9 @@ function AboutPage() {
       </section>
 
       {/* Values Section */}
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl font-medium text-mist-950 mb-12 text-center">
+      <section>
+        <div className="section">
+          <h2 className="section-h2 mb-12 text-center">
             {t("values.title")}
           </h2>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">

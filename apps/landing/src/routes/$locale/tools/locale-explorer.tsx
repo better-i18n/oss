@@ -86,7 +86,7 @@ function LocaleRow({
 
   return (
     <Link
-      to="/$locale/tools/locale-explorer/$localeCode"
+      to="/$locale/tools/locale-explorer/$localeCode/"
       params={{ locale, localeCode: localeData.code }}
       className="group grid grid-cols-[minmax(80px,1fr)_minmax(140px,2fr)_minmax(100px,1fr)_80px_60px_minmax(100px,1fr)] items-center gap-4 border-b border-mist-100 px-4 py-3 text-sm transition-colors hover:bg-mist-50 last:border-b-0"
     >
@@ -97,11 +97,7 @@ function LocaleRow({
       <span className="text-mist-600">{localeData.region ?? "—"}</span>
       <span className="text-mist-600">{localeData.script ?? "—"}</span>
       <span
-        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-          localeData.direction === "rtl"
-            ? "bg-amber-50 text-amber-700"
-            : "bg-mist-100 text-mist-600"
-        }`}
+        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ localeData.direction === "rtl" ? "bg-amber-50 text-amber-700" : "bg-mist-100 text-mist-600" }`}
       >
         {localeData.direction.toUpperCase()}
       </span>
@@ -191,11 +187,7 @@ function LocaleExplorerPage() {
           <button
             type="button"
             onClick={() => setRtlOnly((prev) => !prev)}
-            className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
-              rtlOnly
-                ? "border-amber-300 bg-amber-50 text-amber-700"
-                : "border-mist-200 bg-white text-mist-700 hover:bg-mist-50"
-            }`}
+            className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${ rtlOnly ? "border-amber-300 bg-amber-50 text-amber-700" : "border-mist-200 bg-white text-mist-700 hover:bg-mist-50" }`}
           >
             RTL Only
           </button>
@@ -244,7 +236,7 @@ function LocaleExplorerPage() {
         </p>
         <a
           href="https://dash.better-i18n.com"
-          className="mt-5 inline-flex items-center justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-medium text-mist-950 transition-colors hover:bg-mist-100"
+          className="mt-5 inline-flex items-center justify-center rounded-xl border border-black/[0.07] bg-white px-5 py-2.5 text-sm font-medium text-mist-950 transition-colors hover:bg-black/[0.03]"
         >
           Try Better I18N free
         </a>

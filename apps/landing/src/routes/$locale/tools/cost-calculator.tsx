@@ -153,18 +153,20 @@ function CostCard({
         "relative flex flex-col gap-4 rounded-xl p-6",
         isHighlighted
           ? "border-2 border-mist-950 bg-mist-50"
-          : "border border-mist-200 bg-white",
+          : "border border-black/[0.07] bg-white",
       ].join(" ")}
     >
+      {/* Neutral, not green: the saving is decoration on a number this card
+          already prints, so it is not tool STATE and does not earn a hue. */}
       {savingsPercent !== undefined && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap bg-green-100 text-green-800 rounded-full px-3 py-1 text-xs font-semibold">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-black/[0.07] bg-white px-3 py-1 text-xs font-medium text-mist-700">
           Save up to {savingsPercent}% vs human
         </span>
       )}
 
       <div>
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-base font-semibold text-mist-950">{tierName}</h3>
+          <h3 className="text-base font-medium text-mist-950">{tierName}</h3>
           {tierIndex === 2 && (
             <span className="rounded-full bg-mist-950 px-2.5 py-0.5 text-xs font-medium text-white">
               Recommended
@@ -178,7 +180,7 @@ function CostCard({
         <p className="text-xs font-medium uppercase tracking-wider text-mist-500">
           One-time (initial)
         </p>
-        <p className="mt-1 text-2xl font-bold text-mist-950">
+        <p className="mt-1 text-2xl font-medium text-mist-950">
           {formatCurrency(min)}
           <span className="text-base font-normal text-mist-500">
             {" "}– {formatCurrency(max)}
@@ -190,7 +192,7 @@ function CostCard({
         <p className="text-xs font-medium uppercase tracking-wider text-mist-500">
           Monthly maintenance
         </p>
-        <p className="mt-1 text-lg font-semibold text-mist-700">
+        <p className="mt-1 text-lg font-medium text-mist-700">
           {formatCurrency(monthlyMin)}
           <span className="text-sm font-normal text-mist-500">
             {" "}– {formatCurrency(monthlyMax)}
@@ -272,16 +274,16 @@ function CostCalculatorPage() {
       {/* Step indicator */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
         <StepIndicator step={1} currentStep={currentStep} label="Project Info" />
-        <div className="hidden h-px flex-1 bg-mist-200 sm:block" aria-hidden="true" />
+        <div className="hidden h-px flex-1 bg-black/[0.07] sm:block" aria-hidden="true" />
         <StepIndicator step={2} currentStep={currentStep} label="Target Languages" />
-        <div className="hidden h-px flex-1 bg-mist-200 sm:block" aria-hidden="true" />
+        <div className="hidden h-px flex-1 bg-black/[0.07] sm:block" aria-hidden="true" />
         <StepIndicator step={3} currentStep={currentStep} label="Cost Breakdown" />
       </div>
 
       {/* Step 1: Project Info */}
       {currentStep === 1 && (
         <div className="rounded-xl border border-mist-200 bg-white p-6">
-          <h2 className="mb-1 text-lg font-semibold text-mist-950">
+          <h2 className="mb-1 text-lg font-medium text-mist-950">
             Step 1: Project Info
           </h2>
           <p className="mb-6 text-sm text-mist-600">
@@ -345,7 +347,7 @@ function CostCalculatorPage() {
       {/* Step 2: Target Languages */}
       {currentStep === 2 && (
         <div className="rounded-xl border border-mist-200 bg-white p-6">
-          <h2 className="mb-1 text-lg font-semibold text-mist-950">
+          <h2 className="mb-1 text-lg font-medium text-mist-950">
             Step 2: Target Languages
           </h2>
           <p className="mb-4 text-sm text-mist-600">
@@ -416,13 +418,13 @@ function CostCalculatorPage() {
           <div className="rounded-xl border border-mist-200 bg-white px-6 py-4">
             <div className="flex flex-wrap items-center gap-x-8 gap-y-2 text-sm text-mist-700">
               <span>
-                <span className="font-semibold text-mist-950">
+                <span className="font-medium text-mist-950">
                   {wordCountState.count.toLocaleString()}
                 </span>{" "}
                 words
               </span>
               <span>
-                <span className="font-semibold text-mist-950">
+                <span className="font-medium text-mist-950">
                   {selectedLanguages.length}
                 </span>{" "}
                 languages
@@ -439,7 +441,7 @@ function CostCalculatorPage() {
 
           {/* Cost cards */}
           <div>
-            <h2 className="mb-4 text-lg font-semibold text-mist-950">
+            <h2 className="mb-4 text-lg font-medium text-mist-950">
               Cost Comparison
             </h2>
             <div className="grid gap-4 sm:grid-cols-3">
@@ -483,7 +485,7 @@ function CostCalculatorPage() {
               />
             </svg>
             <div>
-              <p className="text-sm font-semibold text-green-900">
+              <p className="text-sm font-medium text-green-900">
                 Save up to {savingsPercent}% with Better I18N
               </p>
               <p className="text-xs text-green-700">
@@ -494,7 +496,7 @@ function CostCalculatorPage() {
 
           {/* Per-language breakdown table */}
           <div>
-            <h2 className="mb-4 text-lg font-semibold text-mist-950">
+            <h2 className="mb-4 text-lg font-medium text-mist-950">
               Per-Language Cost Breakdown
             </h2>
             <div className="overflow-hidden rounded-xl border border-mist-200 bg-white">
@@ -555,7 +557,7 @@ function CostCalculatorPage() {
 
           {/* Monthly maintenance estimate */}
           <div>
-            <h2 className="mb-4 text-lg font-semibold text-mist-950">
+            <h2 className="mb-4 text-lg font-medium text-mist-950">
               Monthly Maintenance Estimate
             </h2>
             <p className="mb-4 text-sm text-mist-600">
@@ -628,7 +630,7 @@ function CostCalculatorPage() {
             </p>
             <a
               href="https://dash.better-i18n.com"
-              className="mt-5 inline-flex items-center justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-medium text-mist-950 transition-colors hover:bg-mist-100"
+              className="mt-5 inline-flex items-center justify-center rounded-xl border border-black/[0.07] bg-white px-5 py-2.5 text-sm font-medium text-mist-950 transition-colors hover:bg-black/[0.03]"
             >
               Get started free
             </a>

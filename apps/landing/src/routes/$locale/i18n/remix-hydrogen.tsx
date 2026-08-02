@@ -11,6 +11,7 @@ import {
 } from "@/components/FrameworkComparison";
 import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
 import { createPageLoader, getPageHead } from "@/lib/page-seo";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/$locale/i18n/remix-hydrogen")({
   loader: createPageLoader(),
@@ -36,23 +37,30 @@ export const Route = createFileRoute("/$locale/i18n/remix-hydrogen")({
   component: RemixHydrogenI18nPage,
 });
 
+/* Key suffixes, not copy — resolved with t() in the component. */
+const FEATURE_KEYS = [
+  "loaders",
+  "seoPages",
+  "oneWorkflow",
+  "routeStrategies",
+  "noRedeploy",
+  "buyerIntent",
+];
+
 function RemixHydrogenI18nPage() {
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const setupSteps = [
     {
       step: 1,
-      title: "Install the app-side SDK",
-      description:
-        "Use the provider-based SDK in your Remix or Hydrogen app so translated content can be shared across route modules.",
+      id: "step1",
       code: "npm install @better-i18n/use-intl use-intl",
       fileName: "terminal",
     },
     {
       step: 2,
-      title: "Resolve locale on the server",
-      description:
-        "Read locale from request, route params, or storefront context and pass it into your app root.",
+      id: "step2",
       code: `export async function loader({ request }: LoaderFunctionArgs) {
   const locale = resolveLocaleFromRequest(request);
 
@@ -62,9 +70,7 @@ function RemixHydrogenI18nPage() {
     },
     {
       step: 3,
-      title: "Hydrate the provider in the root route",
-      description:
-        "Provide the locale once so nested routes, product pages, and cart UI all share the same translation source.",
+      id: "step3",
       code: `export default function App() {
   const { locale } = useLoaderData<typeof loader>();
 
@@ -78,14 +84,15 @@ function RemixHydrogenI18nPage() {
     },
   ];
 
-  const features = [
-    "Server-loaded locale handling that fits Remix loaders and Hydrogen storefront flows",
-    "Good fit for SEO-sensitive category, product, and content pages",
-    "One translation workflow for storefront UI, account pages, and marketing routes",
-    "Supports route-based locale strategies without fragile file duplication",
-    "Lets developers ship localized storefront updates without blocking on redeploys",
-    "Keeps comparison and buyer-intent content aligned with product localization pages",
-  ];
+  /* Copy from the CDN; the code samples and file names stay in the file
+     because they are code, not copy. `id` is the key path segment. */
+  const steps = setupSteps.map((step) => ({
+    ...step,
+    title: t(`i18n.remixHydrogen.setup.${step.id}.title`),
+    description: t(`i18n.remixHydrogen.setup.${step.id}.description`),
+  }));
+
+  const features = FEATURE_KEYS.map((k) => t(`i18n.remixHydrogen.features.${k}`));
 
   const codeExample = `import { BetterI18nProvider, useTranslations } from '@better-i18n/use-intl';
 
@@ -133,42 +140,42 @@ export default function App() {
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
-        title="Remix & Hydrogen i18n for storefront and route-driven apps"
-        subtitle="Use Better I18N to keep server-rendered locale state, localized storefront content, and search-facing routes aligned in one workflow."
-        badgeText="Remix & Hydrogen i18n"
+        title={t("i18n.remixHydrogen.hero.title")}
+        subtitle={t("i18n.remixHydrogen.hero.subtitle")}
+        badgeText={t("i18n.remixHydrogen.hero.badge")}
       />
 
-      <SetupGuide title="Get started in 3 steps" steps={setupSteps} />
+      <SetupGuide title={t("i18n.remixHydrogen.setup.title")} steps={steps} />
 
       <FeatureList
-        title="Why use Better I18N with Remix and Hydrogen?"
+        title={t("i18n.remixHydrogen.featuresTitle")}
         features={features}
       />
 
       <CodeExample
-        title="Route-level locale wiring"
-        description="A provider-based setup that fits loader-driven frameworks and storefront route trees."
+        title={t("i18n.remixHydrogen.codeExample.title")}
+        description={t("i18n.remixHydrogen.codeExample.description")}
         code={codeExample}
       />
 
       <ComparisonRelatedTopics
-        heading="Related guides"
+        heading={t("i18n.remixHydrogen.relatedTitle")}
         links={relatedLinks}
         locale={locale}
       />
 
       <OtherFrameworks
-        title="Other frameworks"
+        title={t("i18n.remixHydrogen.otherFrameworks")}
         currentFramework="remix-hydrogen"
         locale={locale}
       />
 
       <FrameworkCTA
-        title="Ship localized storefronts without fragmented workflows"
-        subtitle="Keep server locale handling, product content, and buyer-intent pages in one localization system."
-        primaryCTA="Get started free"
+        title={t("i18n.remixHydrogen.cta.title")}
+        subtitle={t("i18n.remixHydrogen.cta.subtitle")}
+        primaryCTA={t("i18n.remixHydrogen.cta.primary")}
         primaryHref="https://dash.better-i18n.com"
-        secondaryCTA="Read the docs"
+        secondaryCTA={t("i18n.remixHydrogen.cta.secondary")}
         secondaryHref="https://docs.better-i18n.com/"
       />
     </MarketingLayout>

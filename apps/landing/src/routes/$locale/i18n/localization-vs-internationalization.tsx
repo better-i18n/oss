@@ -4,6 +4,7 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import { ClosingCta, Divider } from "@/components/ui/page";
 
 export const Route = createFileRoute(
   "/$locale/i18n/localization-vs-internationalization",
@@ -27,92 +28,92 @@ export const Route = createFileRoute(
 });
 
 function L10nVsI18nPage() {
-  const t = useT("marketing.i18n.l10nVsI18n");
+  const t = useT("marketing");
   const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const i18nActivities = [
-    { key: "comparison.i18n.activities.externalizeStrings", defaultValue: "Externalize all user-facing strings into resource files" },
-    { key: "comparison.i18n.activities.unicodeSupport", defaultValue: "Enable full Unicode support throughout the codebase" },
-    { key: "comparison.i18n.activities.dateTimeFormatting", defaultValue: "Use locale-aware date, time, and number formatting APIs" },
-    { key: "comparison.i18n.activities.layoutFlexibility", defaultValue: "Build flexible layouts that accommodate text expansion and RTL scripts" },
-    { key: "comparison.i18n.activities.pluralizationRules", defaultValue: "Implement pluralization rules that support all CLDR plural categories" },
+    { key: "i18n.l10nVsI18n.comparison.i18n.activities.externalizeStrings" },
+    { key: "i18n.l10nVsI18n.comparison.i18n.activities.unicodeSupport" },
+    { key: "i18n.l10nVsI18n.comparison.i18n.activities.dateTimeFormatting" },
+    { key: "i18n.l10nVsI18n.comparison.i18n.activities.layoutFlexibility" },
+    { key: "i18n.l10nVsI18n.comparison.i18n.activities.pluralizationRules" },
   ];
 
   const l10nActivities = [
-    { key: "comparison.l10n.activities.translatingContent", defaultValue: "Translating UI strings, documentation, and marketing content" },
-    { key: "comparison.l10n.activities.culturalAdaptation", defaultValue: "Adapting imagery, colors, and symbols for cultural appropriateness" },
-    { key: "comparison.l10n.activities.localFormats", defaultValue: "Applying local formats for currency, addresses, and phone numbers" },
-    { key: "comparison.l10n.activities.legalCompliance", defaultValue: "Ensuring legal and regulatory compliance for each target market" },
-    { key: "comparison.l10n.activities.marketingAdaptation", defaultValue: "Adapting marketing messaging and tone for regional audiences" },
+    { key: "i18n.l10nVsI18n.comparison.l10n.activities.translatingContent" },
+    { key: "i18n.l10nVsI18n.comparison.l10n.activities.culturalAdaptation" },
+    { key: "i18n.l10nVsI18n.comparison.l10n.activities.localFormats" },
+    { key: "i18n.l10nVsI18n.comparison.l10n.activities.legalCompliance" },
+    { key: "i18n.l10nVsI18n.comparison.l10n.activities.marketingAdaptation" },
   ];
 
   const keyDifferences = [
-    { titleKey: "differences.timing.title", descKey: "differences.timing.description", defaultTitle: "Timing", defaultDesc: "Internationalization happens during architecture and development. Localization happens after — or alongside — feature completion, for each target locale." },
-    { titleKey: "differences.scope.title", descKey: "differences.scope.description", defaultTitle: "Scope", defaultDesc: "Internationalization is a one-time engineering effort that affects the entire codebase. Localization is an ongoing, per-locale process that scales with your market reach." },
-    { titleKey: "differences.team.title", descKey: "differences.team.description", defaultTitle: "Team", defaultDesc: "Internationalization is owned by developers and architects. Localization involves translators, linguists, and market specialists working alongside the engineering team." },
-    { titleKey: "differences.frequency.title", descKey: "differences.frequency.description", defaultTitle: "Frequency", defaultDesc: "Internationalization is done once and maintained. Localization is repeated every time you add a new language, market, or significant content update." },
+    { titleKey: "i18n.l10nVsI18n.differences.timing.title", descKey: "i18n.l10nVsI18n.differences.timing.description" },
+    { titleKey: "i18n.l10nVsI18n.differences.scope.title", descKey: "i18n.l10nVsI18n.differences.scope.description" },
+    { titleKey: "i18n.l10nVsI18n.differences.team.title", descKey: "i18n.l10nVsI18n.differences.team.description" },
+    { titleKey: "i18n.l10nVsI18n.differences.frequency.title", descKey: "i18n.l10nVsI18n.differences.frequency.description" },
   ];
 
   const relatedPages = [
-    { name: "What is Internationalization?", href: "/$locale/what-is-internationalization", description: t("related.whatIsI18n", { defaultValue: "Deep dive into i18n concepts" }) },
-    { name: "What is Localization?", href: "/$locale/what-is-localization", description: t("related.whatIsL10n", { defaultValue: "Deep dive into l10n concepts" }) },
-    { name: "Software Localization", href: "/$locale/i18n/software-localization", description: t("related.softwareLocalization", { defaultValue: "The complete localization process" }) },
-    { name: "React i18n Guide", href: "/$locale/i18n/react", description: t("related.react", { defaultValue: "Implementing i18n in React apps" }) },
+    { name: "What is Internationalization?", href: "/$locale/what-is-internationalization", description: t("i18n.l10nVsI18n.related.whatIsI18n") },
+    { name: "What is Localization?", href: "/$locale/what-is-localization", description: t("i18n.l10nVsI18n.related.whatIsL10n") },
+    { name: "Software Localization", href: "/$locale/i18n/software-localization", description: t("i18n.l10nVsI18n.related.softwareLocalization") },
+    { name: "React i18n Guide", href: "/$locale/i18n/react", description: t("i18n.l10nVsI18n.related.react") },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
       {/* Hero */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <span>{t("badge", { defaultValue: "i18n vs l10n" })}</span>
+            <div className="eyebrow mb-5 flex items-center gap-2">
+              <span>{t("i18n.l10nVsI18n.badge")}</span>
             </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("hero.title", { defaultValue: "Localization vs Internationalization: Understanding the Difference" })}
+            <h1 className="section-h2">
+              {t("i18n.l10nVsI18n.hero.title")}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "Localization vs internationalization (also known as i18n vs l10n) are two complementary but distinct processes. Understanding the difference between localization and internationalization is essential for building software that works globally." })}
+              {t("i18n.l10nVsI18n.hero.subtitle")}
             </p>
           </div>
         </div>
       </section>
 
       {/* Quick Definitions */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-8 text-center">
-            {t("quickDefs.title", { defaultValue: "Quick Definitions" })}
+      <section>
+        <div className="section">
+          <h2 className="section-h2 mb-8 text-center">
+            {t("i18n.l10nVsI18n.quickDefs.title")}
           </h2>
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            <div className="p-8 rounded-2xl bg-violet-50 border border-violet-100">
+            <div className="p-8 rounded-xl bg-violet-50 border border-violet-100">
               <div className="flex items-center gap-3 mb-4">
                 <SpriteIcon name="code-brackets" className="size-6 text-violet-600" />
                 <h3 className="text-xl font-medium text-mist-950">
-                  {t("quickDefs.i18n.title", { defaultValue: "Internationalization (i18n)" })}
+                  {t("i18n.l10nVsI18n.quickDefs.i18n.title")}
                 </h3>
               </div>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("quickDefs.i18n.definition", { defaultValue: "Software internationalization is the process of designing and building your application so it can be adapted for different languages and regions without engineering changes. It's the foundation that makes localization possible." })}
+                {t("i18n.l10nVsI18n.quickDefs.i18n.definition")}
               </p>
               <div className="p-4 rounded-xl bg-white border border-violet-100">
                 <code className="text-sm text-mist-900 font-mono">i18n = i + (18 letters) + n</code>
               </div>
             </div>
-            <div className="p-8 rounded-2xl bg-blue-50 border border-blue-100">
+            <div className="mt-10 lg:mt-0">
               <div className="flex items-center gap-3 mb-4">
-                <SpriteIcon name="globe" className="size-6 text-blue-600" />
+                <SpriteIcon name="globe" className="size-6 text-mist-600" />
                 <h3 className="text-xl font-medium text-mist-950">
-                  {t("quickDefs.l10n.title", { defaultValue: "Localization (l10n)" })}
+                  {t("i18n.l10nVsI18n.quickDefs.l10n.title")}
                 </h3>
               </div>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("quickDefs.l10n.definition", { defaultValue: "Localization and internationalization work together, but localization is the actual adaptation of content for a specific locale - translating text, formatting numbers and dates, and adjusting cultural elements for each target market." })}
+                {t("i18n.l10nVsI18n.quickDefs.l10n.definition")}
               </p>
-              <div className="p-4 rounded-xl bg-white border border-blue-100">
+              <div className="mt-4 rounded-md border border-black/[0.07] bg-mist-50 p-4">
                 <code className="text-sm text-mist-900 font-mono">l10n = l + (10 letters) + n</code>
               </div>
             </div>
@@ -121,36 +122,36 @@ function L10nVsI18nPage() {
       </section>
 
       {/* Side-by-Side Comparison */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-8 text-center">
-            {t("comparison.title", { defaultValue: "Localisation vs Internationalisation: What Each Involves" })}
+      <section>
+        <div className="section">
+          <h2 className="section-h2 mb-8 text-center">
+            {t("i18n.l10nVsI18n.comparison.title")}
           </h2>
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            <div className="p-6 rounded-xl bg-white border border-mist-200">
+            <div>
               <h3 className="text-lg font-medium text-mist-950 mb-4 flex items-center gap-2">
                 <SpriteIcon name="code-brackets" className="size-5 text-violet-600" />
-                {t("comparison.i18n.title", { defaultValue: "Internationalization Activities" })}
+                {t("i18n.l10nVsI18n.comparison.i18n.title")}
               </h3>
               <ul className="space-y-3">
                 {i18nActivities.map((activity) => (
                   <li key={activity.key} className="flex items-start gap-2">
                     <SpriteIcon name="checkmark" className="size-4 text-violet-500 mt-0.5 shrink-0" />
-                    <span className="text-sm text-mist-700">{t(activity.key, { defaultValue: activity.defaultValue })}</span>
+                    <span className="text-sm text-mist-700">{t(activity.key)}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="p-6 rounded-xl bg-white border border-mist-200">
+            <div>
               <h3 className="text-lg font-medium text-mist-950 mb-4 flex items-center gap-2">
-                <SpriteIcon name="globe" className="size-5 text-blue-600" />
-                {t("comparison.l10n.title", { defaultValue: "Localization Activities" })}
+                <SpriteIcon name="globe" className="size-5 text-mist-600" />
+                {t("i18n.l10nVsI18n.comparison.l10n.title")}
               </h3>
               <ul className="space-y-3">
                 {l10nActivities.map((activity) => (
                   <li key={activity.key} className="flex items-start gap-2">
-                    <SpriteIcon name="checkmark" className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                    <span className="text-sm text-mist-700">{t(activity.key, { defaultValue: activity.defaultValue })}</span>
+                    <SpriteIcon name="checkmark" className="size-4 text-mist-400 mt-0.5 shrink-0" />
+                    <span className="text-sm text-mist-700">{t(activity.key)}</span>
                   </li>
                 ))}
               </ul>
@@ -160,21 +161,21 @@ function L10nVsI18nPage() {
       </section>
 
       {/* Key Differences */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("differences.title", { defaultValue: "Key Differences Between i18n and l10n" })}
+            <h2 className="section-h2">
+              {t("i18n.l10nVsI18n.differences.title")}
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {keyDifferences.map((diff) => (
-              <div key={diff.titleKey} className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div key={diff.titleKey}>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(diff.titleKey, { defaultValue: diff.defaultTitle })}
+                  {t(diff.titleKey)}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(diff.descKey, { defaultValue: diff.defaultDesc })}
+                  {t(diff.descKey)}
                 </p>
               </div>
             ))}
@@ -183,27 +184,27 @@ function L10nVsI18nPage() {
       </section>
 
       {/* How They Work Together */}
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("together.title", { defaultValue: "How Internationalization and Localization Work Together" })}
+            <h2 className="section-h2 mb-6">
+              {t("i18n.l10nVsI18n.together.title")}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-4">
-              {t("together.paragraph1", { defaultValue: "Software internationalization and localization are two sides of the same coin. Internationalization prepares your codebase to support multiple locales, while localization fills in the locale-specific content. You internationalize once, then localize for each market." })}
+              {t("i18n.l10nVsI18n.together.paragraph1")}
             </p>
             <p className="text-mist-700 leading-relaxed">
-              {t("together.paragraph2", { defaultValue: "Better I18N bridges both processes: it handles internationalization through type-safe SDKs and automatic key discovery, and streamlines localization with AI-powered translations, glossary management, and instant CDN deployment." })}
+              {t("i18n.l10nVsI18n.together.paragraph2")}
             </p>
           </div>
         </div>
       </section>
 
       {/* Related Pages */}
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section className="border-t border-mist-200">
+        <div className="section">
           <h2 className="text-lg font-medium text-mist-950 mb-6">
-            {tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}
+            {tCommon("whatIs.relatedTopics")}
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {relatedPages.map((page) => (
@@ -211,44 +212,30 @@ function L10nVsI18nPage() {
                 key={page.href}
                 to={page.href}
                 params={{ locale }}
-                className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+                className="group flex items-start justify-between gap-3"
               >
                 <div>
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600" />
               </Link>
             ))}
           </div>
         </div>
       </section>
+      <Divider />
 
-      {/* CTA */}
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
-        <div className="mx-auto max-w-2xl text-center px-6">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("cta.title", { defaultValue: "Handle Both i18n and l10n in One Platform" })}
-          </h2>
-          <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Better I18N covers the full internationalization and localization pipeline. From code to translation to deployment." })}
-          </p>
-          <div className="mt-8 flex justify-center gap-4 flex-wrap">
-            <a
-              href="https://dash.better-i18n.com"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
-            >
-              {t("cta.primary", { defaultValue: "Start Free" })}
-            </a>
-            <a
-              href="https://docs.better-i18n.com"
-              className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-            >
-              {t("cta.secondary", { defaultValue: "Read the Docs" })}
-            </a>
-          </div>
-        </div>
-      </section>
+      {/* The ask closes the page. Was a `bg-mist-950` band with `rounded-xl
+          mx-6` — a floating dark card on a white document, with its own
+          container and its own button scale. <ClosingCta /> is the one closing
+          shape in the grammar. */}
+      <ClosingCta
+        title={t("i18n.l10nVsI18n.cta.title")}
+        subtitle={t("i18n.l10nVsI18n.cta.subtitle")}
+        primary={{ label: t("i18n.l10nVsI18n.cta.primary"), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t("i18n.l10nVsI18n.cta.secondary"), href: "https://docs.better-i18n.com" }}
+      />
     </MarketingLayout>
   );
 }

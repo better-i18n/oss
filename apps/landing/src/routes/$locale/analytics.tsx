@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { testimonialAvatar } from "@/lib/testimonials";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
@@ -238,10 +239,6 @@ function AnalyticsPage() {
 
       <Divider />
 
-      <RelatedPages currentPage="features" locale={locale} variant="content" />
-
-      <Divider />
-
       <ClosingCta
         eyebrow={t("closing.eyebrow")}
         title={t("closing.title")}
@@ -255,6 +252,10 @@ function AnalyticsPage() {
           href: "https://docs.better-i18n.com/content/analytics",
         }}
       />
+
+      <Divider />
+
+      <RelatedPages currentPage="features" locale={locale} variant="content" />
     </MarketingLayout>
   );
 }
@@ -320,6 +321,7 @@ function AnalyticsTestimonial() {
       quote={tq("1.quote")}
       name={tq("1.name")}
       role={tq("1.title")}
+      avatar={testimonialAvatar(1)}
       patternId="dots-analytics"
     />
   );

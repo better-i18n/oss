@@ -260,7 +260,7 @@ interface FormatInfoCardProps {
 function FormatInfoCard({ label, name, extension, description }: FormatInfoCardProps) {
   return (
     <div className="rounded-xl border border-mist-200 bg-white p-5">
-      <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-mist-500 mb-2">
+      <div className="text-[11px] font-medium text-mist-500 mb-2">
         {label}
       </div>
       <div className="flex items-center gap-2 mb-2">
@@ -277,7 +277,7 @@ function FormatInfoCard({ label, name, extension, description }: FormatInfoCardP
 function PairNotFound() {
   return (
     <div className="flex min-h-[400px] flex-col items-center justify-center px-6 text-center">
-      <h1 className="font-display text-2xl font-medium text-mist-950">
+      <h1 className="section-h2">
         Format pair not found
       </h1>
       <p className="mt-3 text-mist-600">

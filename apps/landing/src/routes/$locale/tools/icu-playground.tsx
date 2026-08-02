@@ -198,7 +198,7 @@ function VariableControl({
     return (
       <div className="flex flex-col gap-1">
         <label className="text-xs font-medium text-mist-600">
-          <code className="rounded bg-mist-100 px-1 py-0.5 text-xs text-mist-800">
+          <code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 text-xs text-mist-800">
             {variable.name}
           </code>{" "}
           <span className="text-mist-400">(select)</span>
@@ -225,7 +225,7 @@ function VariableControl({
       <div className="flex flex-col gap-1">
         <label className="flex items-center justify-between text-xs font-medium text-mist-600">
           <span>
-            <code className="rounded bg-mist-100 px-1 py-0.5 text-xs text-mist-800">
+            <code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 text-xs text-mist-800">
               {variable.name}
             </code>{" "}
             <span className="text-mist-400">({variable.type})</span>
@@ -249,7 +249,7 @@ function VariableControl({
     return (
       <div className="flex flex-col gap-1">
         <label className="text-xs font-medium text-mist-600">
-          <code className="rounded bg-mist-100 px-1 py-0.5 text-xs text-mist-800">
+          <code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 text-xs text-mist-800">
             {variable.name}
           </code>{" "}
           <span className="text-mist-400">(date)</span>
@@ -268,7 +268,7 @@ function VariableControl({
   return (
     <div className="flex flex-col gap-1">
       <label className="text-xs font-medium text-mist-600">
-        <code className="rounded bg-mist-100 px-1 py-0.5 text-xs text-mist-800">
+        <code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 text-xs text-mist-800">
           {variable.name}
         </code>{" "}
         <span className="text-mist-400">(string)</span>
@@ -468,9 +468,9 @@ function ICUPlaygroundPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Left panel — input */}
         <div className="flex flex-col gap-4">
-          <div className="overflow-hidden rounded-2xl border border-mist-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-mist-200 bg-white shadow-sm">
             <div className="border-b border-mist-100 px-5 py-3">
-              <h2 className="text-sm font-semibold text-mist-900">ICU Message</h2>
+              <h2 className="text-sm font-medium text-mist-900">ICU Message</h2>
               <p className="mt-0.5 text-xs text-mist-500">
                 Edit your message using ICU syntax below
               </p>
@@ -495,7 +495,7 @@ function ICUPlaygroundPage() {
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
                   </svg>
                   <div>
-                    <p className="text-xs font-semibold text-red-700">Parse error</p>
+                    <p className="text-xs font-medium text-red-700">Parse error</p>
                     <p className="mt-0.5 text-xs text-red-600">{parseResult.error}</p>
                   </div>
                 </div>
@@ -516,9 +516,9 @@ function ICUPlaygroundPage() {
 
           {/* Variable controls */}
           {parseResult.variables.length > 0 && (
-            <div className="overflow-hidden rounded-2xl border border-mist-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-mist-200 bg-white shadow-sm">
               <div className="border-b border-mist-100 px-5 py-3">
-                <h2 className="text-sm font-semibold text-mist-900">Variables</h2>
+                <h2 className="text-sm font-medium text-mist-900">Variables</h2>
                 <p className="mt-0.5 text-xs text-mist-500">
                   Adjust values to see live output changes
                 </p>
@@ -540,9 +540,9 @@ function ICUPlaygroundPage() {
         {/* Right panel — preview */}
         <div className="flex flex-col gap-4">
           {/* Multi-locale preview */}
-          <div className="overflow-hidden rounded-2xl border border-mist-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-mist-200 bg-white shadow-sm">
             <div className="border-b border-mist-100 px-5 py-3">
-              <h2 className="text-sm font-semibold text-mist-900">Multi-locale Preview</h2>
+              <h2 className="text-sm font-medium text-mist-900">Multi-locale Preview</h2>
               <p className="mt-0.5 text-xs text-mist-500">
                 Live output across 4 locales using Intl.PluralRules
               </p>
@@ -561,9 +561,9 @@ function ICUPlaygroundPage() {
           </div>
 
           {/* Code snippet */}
-          <div className="overflow-hidden rounded-2xl border border-mist-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-mist-200 bg-white shadow-sm">
             <div className="flex items-center justify-between border-b border-mist-100 px-5 py-3">
-              <h2 className="text-sm font-semibold text-mist-900">Code Snippet</h2>
+              <h2 className="text-sm font-medium text-mist-900">Code Snippet</h2>
               <button
                 type="button"
                 onClick={handleCopySnippet}
@@ -580,11 +580,7 @@ function ICUPlaygroundPage() {
                   key={tab}
                   type="button"
                   onClick={() => setActiveCodeTab(tab)}
-                  className={`px-4 py-2 text-xs font-medium transition-colors ${
-                    activeCodeTab === tab
-                      ? "border-b-2 border-mist-900 text-mist-900"
-                      : "text-mist-500 hover:text-mist-700"
-                  }`}
+                  className={`px-4 py-2 text-xs font-medium transition-colors ${ activeCodeTab === tab ? "border-b-2 border-mist-900 text-mist-900" : "text-mist-500 hover:text-mist-700" }`}
                 >
                   {tab}
                 </button>
@@ -597,8 +593,8 @@ function ICUPlaygroundPage() {
           </div>
 
           {/* CTA */}
-          <div className="rounded-2xl border border-mist-200 bg-gradient-to-br from-mist-50 to-white p-5">
-            <p className="text-sm font-semibold text-mist-900">
+          <div className="rounded-xl border border-mist-200 bg-gradient-to-br from-mist-50 to-white p-5">
+            <p className="text-sm font-medium text-mist-900">
               Managing hundreds of ICU messages?
             </p>
             <p className="mt-1 text-sm text-mist-600">

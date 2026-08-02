@@ -25,46 +25,59 @@ import { loadPillarBlogPosts } from "@/lib/pillar-blog-loader";
 import { useT } from "@/lib/i18n";
 
 /**
- * Better I18N vs Crowdin — the reference implementation for the compare/* pages.
+ * Better I18N vs Locize — same skeleton as compare/crowdin.tsx (the reference
+ * implementation): PageHero → Divider → Sections that each open with a
+ * SectionHeader → FaqSection → ClosingCta → legal disclaimer.
  *
- * Shape follows rule/pillar-page-shape: PageHero → Divider → Sections that each
- * open with a SectionHeader → FaqSection → ClosingCta → legal disclaimer.
+ * WHY THIS PAGE EXISTS: Locize published their own "Locize vs. Better i18n"
+ * comparison and we had no Locize page at all, so that query was theirs alone.
  *
- * TWO THINGS WERE REMOVED ON PURPOSE, both about data honesty:
+ * WHY IT CONCEDES SO MUCH: their page is unusually fair — it opens with what we
+ * do well and cites our own docs for the gaps. The only credible reply to a fair
+ * page is a fair page. Every gap they name that we could confirm is confirmed
+ * here (translator tooling, translation memory, non-JSON formats in the platform,
+ * EU residency, versioned releases), and `compare.locize.fits.*` is a whole
+ * section telling the reader to choose Locize when those things matter. Claiming
+ * a translation memory we do not have would be caught by any evaluator in ten
+ * minutes and would cost more than the row is worth.
  *
- *  1. The `<UserComplaints>` block attributed quotes to "G2" and "Capterra"
- *     ("Migration between versions is painful", …). We have no sourced quotes:
- *     nobody collected them, and the strings were authored in-house. Presenting
- *     invented text as a named review site's verdict on a named competitor is
- *     both a data-integrity problem and a legal one. The keys still exist in the
- *     CDN — nothing was deleted — but this page no longer attributes them.
- *  2. The `defaultValue` fallbacks on the related-topics links. Fallbacks are
- *     forbidden in this project: the CDN source_text is the only source of truth.
+ * SOURCES FOR EVERY LOCIZE VALUE, all read 2026-08-01:
+ *  - locize.com/pricing — Free $0, Starter $7, Starter-Plus $19, Growth $49,
+ *    Professional $99, Professional-Plus $149, Enterprise $199, all /mo billed
+ *    monthly and priced PER PROJECT; usage-based plan with a $5/mo base fee and
+ *    no language/user/namespace limits; the "15,000 words ≈ 3,000 source words ×
+ *    5 languages" worked example on the Starter plan is theirs verbatim; CDN
+ *    downloads included on every plan, split standard / pro.
+ *  - locize.com/compare/locize-vs-better-i18n — their MCP server has 26 tools
+ *    with OAuth 2.0 read/write/manage/admin scopes and is in the official MCP
+ *    registry; format list (XLIFF, PO, Android XML, iOS .strings, resx, YAML,
+ *    CSV, XLSX); translation memory + glossary + styleguide; in-context editor,
+ *    screenshot context, review workflow, per-user permissions; versioned
+ *    publishing, git-style branches, per-tenant overrides; EU infrastructure on
+ *    AWS Ireland; BYOK AI (OpenAI, Gemini, Mistral) with quality estimation.
+ *    Their own matrix marks "GitHub App with automated PRs" as not available on
+ *    their side — that is why `gitWorkflow.theirs` is an em dash rather than a
+ *    claim of ours.
  *
- * WHAT THE COMPETITOR CLAIMS BELOW ARE BASED ON (all from Crowdin's own public
- * pricing page, fetched 2026-07-31):
- *  - "Hosted words are the number of words that should be translated multiplied
- *     by the number of the project's target languages" — their FAQ, verbatim.
- *     500 words × 10 languages = 5,000 hosted words. That multiplication is the
- *     single most important thing a buyer needs to understand, so it leads the
- *     pricing section instead of a headline monthly figure.
- *  - "CDN for Translations" is a paid ADD-ON priced per 1M requests and per 10GB
- *     of transfer, free below those thresholds.
- *  - The open-source plan is granted on request ("Request Open Source License"),
- *     not self-serve.
- *  - Enterprise is annual billing only; listed prices exclude VAT/GST.
+ * SOURCES FOR OUR OWN VALUES (we hold ourselves to the same rule):
+ *  - Flat $20/mo Pro and the free tier: our own /pricing page.
+ *  - 17 translation tools + 11 content tools: docs.better-i18n.com/mcp.
+ *  - TypeScript type generation: docs.better-i18n.com/cli.
+ *  - Nine-format converter: /tools/translation-file-converter on this site.
+ *  - CDN always answers 200 with a stale fallback, ~60s propagation: the CDN
+ *    architecture in oss/CLAUDE.md, which the worker implements.
+ *  - Expo SDK built on i18next: packages/expo depends on i18next.
  *
- * Their per-plan monthly figures are rendered client-side and could not be read,
- * so no new price number is asserted here. The one that appears comes from the
- * already-published `features.pricingCrowdin` key. Every cell we could not verify
- * is an em dash, per the instruction to leave a gap rather than guess.
+ * `dataResidency.ours` is an em dash on purpose. We do not publish a region
+ * commitment, and inventing one on a comparison page is exactly the failure this
+ * page set exists to avoid.
  */
 
-const PILLAR_KEYWORDS = ["crowdin", "comparison", "alternative"] as const;
+const PILLAR_KEYWORDS = ["locize", "i18next", "comparison"] as const;
 
 const baseLoader = createPageLoader();
 
-export const Route = createFileRoute("/$locale/compare/crowdin")({
+export const Route = createFileRoute("/$locale/compare/locize")({
   loader: async (args: Parameters<typeof baseLoader>[0]) => {
     const [base, pillarPosts] = await Promise.all([
       baseLoader(args),
@@ -78,42 +91,43 @@ export const Route = createFileRoute("/$locale/compare/crowdin")({
     return getPageHead({
       messages: loaderData?.messages || {},
       locale: loaderData?.locale || "en",
-      pageKey: "compareCrowdin",
-      pathname: "/compare/crowdin",
+      pageKey: "compareLocize",
+      pathname: "/compare/locize",
       pageType: "comparison",
-      structuredDataOptions: { competitorName: "Crowdin" },
+      structuredDataOptions: { competitorName: "Locize" },
     });
   },
-  component: CrowdinComparisonPage,
+  component: LocizeComparisonPage,
 });
 
 /* ─── Comparison matrix ───────────────────────────────────────────────────
-   Rows carry nuance, not ticks: a cell says what the behaviour IS. Where a
-   competitor value could not be verified from a public source it renders an em
-   dash — an empty cell is a finding, a guessed cell is a liability.
+   Rows carry nuance, not ticks. Four rows resolve to an em dash on OUR side —
+   translator tooling, translation memory, data residency, and formats inside
+   the platform — and that is the point: this is the one competitor whose own
+   comparison of us is accurate, so a matrix that scored 14–0 for us would read
+   as a lie next to their page.
 
-   `ours` / `theirs` are translation-key suffixes under compare.crowdin.matrix.
-   `emphasis` marks the rows where the difference is structural rather than a
-   feature checkbox. */
+   Row keys double as translation-key suffixes under compare.locize.matrix.rows.
+   `emphasis` marks the rows where the difference is structural. */
 const MATRIX_ROWS: { key: string; emphasis?: boolean }[] = [
   { key: "pricingModel", emphasis: true },
-  { key: "hostedWords", emphasis: true },
-  { key: "cdnDelivery", emphasis: true },
-  { key: "otaUpdates" },
+  { key: "i18next", emphasis: true },
+  { key: "mcp", emphasis: true },
   { key: "aiApproach" },
+  { key: "fileFormats", emphasis: true },
   { key: "gitWorkflow" },
   { key: "cliSdk" },
-  { key: "mcp", emphasis: true },
   { key: "typeSafety" },
-  { key: "setup" },
-  { key: "openSource" },
-  { key: "docs" },
-  { key: "security" },
-] as const;
+  { key: "translatorTooling" },
+  { key: "translationMemory" },
+  { key: "releaseControl" },
+  { key: "cdnDelivery" },
+  { key: "dataResidency" },
+  { key: "seats" },
+];
 
-/* Hero mark pair: our product tile against the competitor's monogram. PageHero's
-   `pillarLabel` is a plain string, so the marks ride in `visual` rather than
-   being spliced into a translated headline — no string surgery per locale. */
+/* Hero mark pair, identical to the other compare pages: our tile against their
+   own mark, so the page names who it is talking about instead of being coy. */
 function VersusMarks() {
   return (
     <div className="flex w-fit items-center gap-3 rounded-xl border border-black/[0.07] bg-white px-4 py-3">
@@ -123,25 +137,20 @@ function VersusMarks() {
       </span>
       <span className="text-[12px] text-mist-400">vs</span>
       <span className="flex items-center gap-2">
-        <CompetitorMark competitor="crowdin" size={28} />
-        <span className="text-[13px] text-mist-600">Crowdin</span>
+        <CompetitorMark competitor="locize" size={28} />
+        <span className="text-[13px] text-mist-600">Locize</span>
       </span>
     </div>
   );
 }
 
-/* The same 18px hairline tile BentoRow uses in ui/page.tsx, so a yes/no in the
-   matrix reads like every other "included" marker on the site instead of a bare
-   glyph. A capability the other product does not have gets an em-dash bar, not a
-   red cross: the claim is "not available", not "bad product" — and on a page
-   whose whole credibility rests on being fair about a competitor, that
-   distinction is the point. Prose cells keep plain text; only discrete
-   yes/no values get a tile. */
 /** A cell whose published value is just an em dash means "not available". */
 function isEmDash(value: ReactNode): boolean {
-  return typeof value === "string" && value.trim() === "\u2014";
+  return typeof value === "string" && value.trim() === "—";
 }
 
+/* The em-dash bar rather than a red cross: the claim is "not available", not
+   "bad product" — and on this page half the bars are on our own side. */
 function FeatureTile({ state }: { state: "yes" | "no" }) {
   return (
     <span className="flex size-[18px] shrink-0 items-center justify-center rounded-[5px] border border-black/[0.06] bg-white">
@@ -181,11 +190,7 @@ function MatrixCell({
   );
 }
 
-/* ─── Legal ───────────────────────────────────────────────────────────────
-   Required on every compare page. Structure mirrors what mature comparison
-   pages carry — trademark ownership, informational purpose, source and date of
-   the data, and a route to corrections — but the wording is ours. */
-function CrowdinComparisonPage() {
+function LocizeComparisonPage() {
   const t = useT("marketing");
   const { locale } = Route.useParams();
   const { pillarPosts } = Route.useLoaderData();
@@ -196,35 +201,35 @@ function CrowdinComparisonPage() {
 
       <PageHero
         pillar="mcp"
-        pillarLabel={t("compare.crowdin.hero.badge")}
-        titleId="compare-crowdin-title"
-        title={t("compare.crowdin.hero.title")}
-        subtitle={t("compare.crowdin.hero.subtitle")}
+        pillarLabel={t("compare.locize.hero.badge")}
+        titleId="compare-locize-title"
+        title={t("compare.locize.hero.title")}
+        subtitle={t("compare.locize.hero.subtitle")}
         primary={{
-          label: t("compare.crowdin.cta.button"),
+          label: t("compare.locize.cta.button"),
           href: "https://dash.better-i18n.com",
         }}
         secondary={{
-          label: t("compare.crowdin.hero.ctaSecondary"),
+          label: t("compare.locize.hero.ctaSecondary"),
           href: `/${locale}/pricing/`,
         }}
         visual={<VersusMarks />}
       />
 
-      {/* ── Why teams switch ─────────────────────────────────────────── */}
+      {/* ── What we optimise for ─────────────────────────────────────── */}
       <Divider />
       <Section>
         <SectionHeader
-          eyebrow={t("compare.crowdin.whySwitch.eyebrow")}
-          title={t("compare.crowdin.whyBetter.title")}
-          subtitle={t("compare.crowdin.whySwitch.subtitle")}
+          eyebrow={t("compare.locize.whySwitch.eyebrow")}
+          title={t("compare.locize.whyBetter.title")}
+          subtitle={t("compare.locize.whySwitch.subtitle")}
         />
         <div className="mt-8 overflow-hidden">
           <div className="-mt-px -ml-px grid grid-cols-1 lg:grid-cols-3">
             {[
-              { icon: "code", key: "developerFirst" },
-              { icon: "robot", key: "mcpNative" },
-              { icon: "github", key: "gitFirst" },
+              { icon: "code", key: "codeNative" },
+              { icon: "robot", key: "agentNative" },
+              { icon: "sparkles-soft", key: "flatPrice" },
             ].map((item) => (
               <div
                 key={item.key}
@@ -232,17 +237,17 @@ function CrowdinComparisonPage() {
               >
                 <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   <SpriteIcon
-                    name={item.icon as "code" | "robot" | "github"}
+                    name={item.icon as "code" | "robot" | "sparkles-soft"}
                     className="size-3.5"
                     aria-hidden="true"
                   />
                 </span>
                 <div>
                   <h3 className="text-[15px] font-medium tracking-[-0.02em] text-mist-900">
-                    {t(`compare.crowdin.whyBetter.${item.key}.title`)}
+                    {t(`compare.locize.whyBetter.${item.key}.title`)}
                   </h3>
                   <p className="mt-1.5 text-[13px] leading-[1.55] text-mist-600">
-                    {t(`compare.crowdin.whyBetter.${item.key}.description`)}
+                    {t(`compare.locize.whyBetter.${item.key}.description`)}
                   </p>
                 </div>
               </div>
@@ -255,15 +260,14 @@ function CrowdinComparisonPage() {
       <Divider />
       <Section>
         <SectionHeader
-          eyebrow={t("compare.crowdin.matrix.eyebrow")}
-          title={t("compare.crowdin.matrix.title")}
-          subtitle={t("compare.crowdin.matrix.subtitle")}
+          eyebrow={t("compare.locize.matrix.eyebrow")}
+          title={t("compare.locize.matrix.title")}
+          subtitle={t("compare.locize.matrix.subtitle")}
         />
 
         {/* Hairline matrix: cells draw their own top + left rule, the table is
-            shifted -1px, and the container clips the overhang — so no
-            nth-child arithmetic decides where a rule goes. Scroll is contained
-            inside the container, never on the page. */}
+            shifted -1px, and the container clips the overhang. Scroll is
+            contained inside the container, never on the page. */}
         <div className="mt-8 overflow-hidden rounded-xl border border-black/[0.07]">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] -mt-px -ml-px border-collapse">
@@ -279,11 +283,9 @@ function CrowdinComparisonPage() {
                     </span>
                   </th>
                   <th className="w-[37%] border-t border-l border-black/[0.05] bg-mist-50 px-4 py-3 text-left text-[11px] font-medium text-mist-500">
-                    {/* The mark makes the column identifiable at a glance in a
-                        15-row matrix, and treats the competitor as a peer. */}
                     <span className="flex items-center gap-1.5">
-                      <CompetitorMark competitor="crowdin" size={20} />
-                      Crowdin
+                      <CompetitorMark competitor="locize" size={20} />
+                      Locize
                     </span>
                   </th>
                 </tr>
@@ -305,14 +307,14 @@ function CrowdinComparisonPage() {
                             aria-hidden="true"
                           />
                         ) : null}
-                        <span>{t(`compare.crowdin.matrix.rows.${row.key}.label`)}</span>
+                        <span>{t(`compare.locize.matrix.rows.${row.key}.label`)}</span>
                       </span>
                     </th>
                     <MatrixCell tone="ours">
-                      {t(`compare.crowdin.matrix.rows.${row.key}.ours`)}
+                      {t(`compare.locize.matrix.rows.${row.key}.ours`)}
                     </MatrixCell>
                     <MatrixCell tone="theirs">
-                      {t(`compare.crowdin.matrix.rows.${row.key}.theirs`)}
+                      {t(`compare.locize.matrix.rows.${row.key}.theirs`)}
                     </MatrixCell>
                   </tr>
                 ))}
@@ -321,7 +323,7 @@ function CrowdinComparisonPage() {
           </div>
         </div>
         <p className="mt-3 text-[12px] leading-[1.6] text-mist-400">
-          {t("compare.crowdin.matrix.note")}
+          {t("compare.locize.matrix.note")}
         </p>
       </Section>
 
@@ -329,47 +331,47 @@ function CrowdinComparisonPage() {
       <Divider />
       <Section>
         <SectionHeader
-          eyebrow={t("compare.crowdin.pricing.eyebrow")}
-          title={t("compare.crowdin.pricing.title")}
-          subtitle={t("compare.crowdin.pricing.subtitle")}
+          eyebrow={t("compare.locize.pricing.eyebrow")}
+          title={t("compare.locize.pricing.title")}
+          subtitle={t("compare.locize.pricing.subtitle")}
         />
 
         <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
           {/* How their model scales */}
           <div>
             <p className="text-[11px] font-medium text-mist-400">
-              {t("compare.crowdin.pricing.modelLabel")}
+              {t("compare.locize.pricing.modelLabel")}
             </p>
             <p className="mt-3 text-[13px] leading-[1.65] text-mist-600">
-              {t("compare.crowdin.pricing.modelBody")}
+              {t("compare.locize.pricing.modelBody")}
             </p>
 
-            {/* The multiplication, shown rather than described. Numbers are
-                Crowdin's own worked example from their pricing FAQ. */}
+            {/* The multiplication, shown rather than described. These three
+                numbers are Locize's own worked example for the Starter plan. */}
             <div className="mt-4 overflow-hidden rounded-xl border border-black/[0.07] bg-mist-50 px-4 py-3">
               <p className="font-mono text-[12px] leading-[1.7] text-mist-700">
-                500 {t("compare.crowdin.pricing.wordsUnit")}
+                3,000 {t("compare.locize.pricing.wordsUnit")}
                 <span className="text-mist-400"> × </span>
-                10 {t("compare.crowdin.pricing.localesUnit")}
+                5 {t("compare.locize.pricing.localesUnit")}
                 <span className="text-mist-400"> = </span>
                 <span className="text-mist-900">
-                  5,000 {t("compare.crowdin.pricing.hostedWordsUnit")}
+                  15,000 {t("compare.locize.pricing.hostedWordsUnit")}
                 </span>
               </p>
               <p className="mt-1.5 text-[11px] text-mist-400">
-                {t("compare.crowdin.pricing.exampleNote")}
+                {t("compare.locize.pricing.exampleNote")}
               </p>
             </div>
           </div>
 
-          {/* What we include that has to be added there */}
+          {/* What the flat plan covers */}
           <div>
             <p className="text-[11px] font-medium text-mist-400">
-              {t("compare.crowdin.pricing.includedLabel")}
+              {t("compare.locize.pricing.includedLabel")}
             </p>
             <div className="mt-3 overflow-hidden">
               <div className="-mt-px">
-                {["cdn", "ota", "mcp", "freeTier"].map((item) => (
+                {["flatPrice", "cdn", "mcp", "freeTier"].map((item) => (
                   <div
                     key={item}
                     className="flex items-start gap-2.5 border-t border-black/[0.05] py-3"
@@ -379,10 +381,10 @@ function CrowdinComparisonPage() {
                     </span>
                     <div className="min-w-0">
                       <p className="text-[13px] font-medium text-mist-900">
-                        {t(`compare.crowdin.pricing.included.${item}.title`)}
+                        {t(`compare.locize.pricing.included.${item}.title`)}
                       </p>
                       <p className="mt-1 text-[13px] leading-[1.55] text-mist-600">
-                        {t(`compare.crowdin.pricing.included.${item}.body`)}
+                        {t(`compare.locize.pricing.included.${item}.body`)}
                       </p>
                     </div>
                   </div>
@@ -393,13 +395,48 @@ function CrowdinComparisonPage() {
         </div>
       </Section>
 
+      {/* ── Where Locize wins ────────────────────────────────────────────
+          The section that makes the rest of the page believable. Four cases
+          where we tell the reader to buy the other product, each one a gap
+          Locize named in their own comparison and we confirmed. */}
+      <Divider />
+      <Section>
+        <SectionHeader
+          eyebrow={t("compare.locize.fits.eyebrow")}
+          title={t("compare.locize.fits.title")}
+          subtitle={t("compare.locize.fits.subtitle")}
+        />
+        <div className="mt-8 overflow-hidden">
+          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2">
+            {["i18next", "formats", "translators", "compliance"].map((item) => (
+              <div
+                key={item}
+                className="flex gap-3 border-t border-l border-black/[0.05] px-5 py-6"
+              >
+                <span className="mt-0.5">
+                  <CompetitorMark competitor="locize" size={22} />
+                </span>
+                <div className="min-w-0">
+                  <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                    {t(`compare.locize.fits.items.${item}.title`)}
+                  </h3>
+                  <p className="mt-1.5 text-[13px] leading-[1.55] text-mist-600">
+                    {t(`compare.locize.fits.items.${item}.body`)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
       {/* ── Migration ────────────────────────────────────────────────── */}
       <Divider />
       <Section>
         <SectionHeader
-          eyebrow={t("compare.crowdin.migration.eyebrow")}
-          title={t("compare.crowdin.migration.title")}
-          subtitle={t("compare.crowdin.migration.subtitle")}
+          eyebrow={t("compare.locize.migration.eyebrow")}
+          title={t("compare.locize.migration.title")}
+          subtitle={t("compare.locize.migration.subtitle")}
         />
         <div className="mt-8">
           {["export", "import", "connect", "verify"].map((step, index) => (
@@ -414,17 +451,17 @@ function CrowdinComparisonPage() {
               </span>
               <div className="min-w-0 flex-1">
                 <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
-                  {t(`compare.crowdin.migration.steps.${step}.title`)}
+                  {t(`compare.locize.migration.steps.${step}.title`)}
                 </h3>
                 <p className="mt-1.5 text-[13px] leading-[1.55] text-mist-600">
-                  {t(`compare.crowdin.migration.steps.${step}.body`)}
+                  {t(`compare.locize.migration.steps.${step}.body`)}
                 </p>
               </div>
             </div>
           ))}
         </div>
         <p className="mt-2 text-[12px] leading-[1.6] text-mist-400">
-          {t("compare.crowdin.migration.note")}
+          {t("compare.locize.migration.note")}
         </p>
       </Section>
 
@@ -434,58 +471,58 @@ function CrowdinComparisonPage() {
       {/* ── FAQ ──────────────────────────────────────────────────────── */}
       <Divider />
       <FaqSection
-        eyebrow={t("compare.crowdin.faq.eyebrow")}
-        title={t("compare.crowdin.faq.title")}
-        subtitle={t("compare.crowdin.faq.subtitle")}
-        items={["cheaper", "whySwitch", "migrate", "security", "which", "openSource"].map(
+        eyebrow={t("compare.locize.faq.eyebrow")}
+        title={t("compare.locize.faq.title")}
+        subtitle={t("compare.locize.faq.subtitle")}
+        items={["whichOne", "i18nextUsers", "formats", "pricing", "agents", "migrate"].map(
           (id) => ({
             id,
-            question: t(`compare.crowdin.faq.items.${id}.question`),
-            answer: t(`compare.crowdin.faq.items.${id}.answer`),
+            question: t(`compare.locize.faq.items.${id}.question`),
+            answer: t(`compare.locize.faq.items.${id}.answer`),
           }),
         )}
       />
 
       <Divider />
       <ComparisonRelatedTopics
-        heading={t("compare.crowdin.relatedTopics")}
+        heading={t("compare.locize.relatedTopics")}
         locale={locale}
         links={[
           {
             to: "/$locale/what-is",
-            title: t("compare.crowdin.related.whatIsI18n"),
-            description: t("compare.crowdin.related.whatIsI18nDesc"),
+            title: t("compare.locize.related.whatIsI18n"),
+            description: t("compare.locize.related.whatIsI18nDesc"),
           },
           {
             to: "/$locale/i18n/react",
-            title: t("compare.crowdin.related.react"),
-            description: t("compare.crowdin.related.reactDesc"),
+            title: t("compare.locize.related.react"),
+            description: t("compare.locize.related.reactDesc"),
           },
           {
             to: "/$locale/features",
-            title: t("compare.crowdin.related.features"),
-            description: t("compare.crowdin.related.featuresDesc"),
+            title: t("compare.locize.related.features"),
+            description: t("compare.locize.related.featuresDesc"),
           },
         ]}
       />
 
       <OtherComparisons
-        currentSlug="crowdin"
+        currentSlug="locize"
         locale={locale}
         title={t("compare.otherComparisons")}
       />
 
       <Divider />
       <ClosingCta
-        eyebrow={t("compare.crowdin.closing.eyebrow")}
-        title={t("compare.crowdin.cta.title")}
-        subtitle={t("compare.crowdin.cta.subtitle")}
+        eyebrow={t("compare.locize.closing.eyebrow")}
+        title={t("compare.locize.cta.title")}
+        subtitle={t("compare.locize.cta.subtitle")}
         primary={{
-          label: t("compare.crowdin.cta.button"),
+          label: t("compare.locize.cta.button"),
           href: "https://dash.better-i18n.com",
         }}
         secondary={{
-          label: t("compare.crowdin.closing.ctaSecondary"),
+          label: t("compare.locize.closing.ctaSecondary"),
           href: "https://cal.com/better-i18n/30min?overlayCalendar=true",
         }}
       />

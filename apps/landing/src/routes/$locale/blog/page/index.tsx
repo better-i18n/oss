@@ -8,7 +8,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 export const Route = createFileRoute("/$locale/blog/page/")({
   loader: ({ params }) => {
     throw redirect({
-      to: "/$locale/blog",
+      to: "/$locale/blog/",
       params: { locale: params.locale },
       statusCode: 301,
     });

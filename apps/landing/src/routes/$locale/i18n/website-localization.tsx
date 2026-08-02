@@ -5,6 +5,7 @@ import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import { ClosingCta, Divider } from "@/components/ui/page";
 
 export const Route = createFileRoute("/$locale/i18n/website-localization")({
   loader: createPageLoader(),
@@ -26,85 +27,85 @@ export const Route = createFileRoute("/$locale/i18n/website-localization")({
 });
 
 const challenges = [
-  { icon: "code-brackets", titleKey: "challenges.contentManagement.title", descKey: "challenges.contentManagement.description", defaultTitle: "Content Management", defaultDesc: "Managing translations across hundreds of pages, components, and dynamic content while keeping everything in sync with source updates." },
-  { icon: "globe", titleKey: "challenges.culturalAdaptation.title", descKey: "challenges.culturalAdaptation.description", defaultTitle: "Cultural Adaptation", defaultDesc: "Adapting imagery, colors, layouts, and messaging to resonate with local audiences beyond simple text translation." },
-  { icon: "group", titleKey: "challenges.teamCoordination.title", descKey: "challenges.teamCoordination.description", defaultTitle: "Team Coordination", defaultDesc: "Coordinating developers, translators, and reviewers across time zones without bottlenecks or miscommunication." },
-  { icon: "zap", titleKey: "challenges.performance.title", descKey: "challenges.performance.description", defaultTitle: "Performance Optimization", defaultDesc: "Loading translations efficiently without impacting page speed, bundle size, or time to first meaningful paint." },
+  { icon: "code-brackets", titleKey: "i18n.websiteLocalization.challenges.contentManagement.title", descKey: "i18n.websiteLocalization.challenges.contentManagement.description" },
+  { icon: "globe", titleKey: "i18n.websiteLocalization.challenges.culturalAdaptation.title", descKey: "i18n.websiteLocalization.challenges.culturalAdaptation.description" },
+  { icon: "group", titleKey: "i18n.websiteLocalization.challenges.teamCoordination.title", descKey: "i18n.websiteLocalization.challenges.teamCoordination.description" },
+  { icon: "zap", titleKey: "i18n.websiteLocalization.challenges.performance.title", descKey: "i18n.websiteLocalization.challenges.performance.description" },
 ];
 
 function WebsiteLocalizationPage() {
-  const t = useT("marketing.i18n.websiteLocalization");
+  const t = useT("marketing");
   const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const benefits = [
-    { key: "benefits.list.globalReach", defaultValue: "Expand your reach to users in new markets and languages" },
-    { key: "benefits.list.userExperience", defaultValue: "Deliver a native-quality experience that builds user trust" },
-    { key: "benefits.list.seo", defaultValue: "Improve search rankings with locale-specific content and metadata" },
-    { key: "benefits.list.revenue", defaultValue: "Increase conversion rates and revenue in international markets" },
-    { key: "benefits.list.brandTrust", defaultValue: "Build brand credibility by speaking your customers' language" },
-    { key: "benefits.list.compliance", defaultValue: "Meet regional regulatory requirements for content and data privacy" },
+    { key: "i18n.websiteLocalization.benefits.list.globalReach" },
+    { key: "i18n.websiteLocalization.benefits.list.userExperience" },
+    { key: "i18n.websiteLocalization.benefits.list.seo" },
+    { key: "i18n.websiteLocalization.benefits.list.revenue" },
+    { key: "i18n.websiteLocalization.benefits.list.brandTrust" },
+    { key: "i18n.websiteLocalization.benefits.list.compliance" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Audit & Plan", defaultDesc: "Analyze your website structure, identify translatable content, and define target locales and priorities." },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Internationalize", defaultDesc: "Prepare your codebase with i18n frameworks, extract strings, and set up locale routing." },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Translate & Adapt", defaultDesc: "Translate content with AI and human reviewers, adapting layouts and media for each locale." },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Test & Launch", defaultDesc: "QA translations in context, verify locale-specific formatting, and deploy to production." },
+    { number: "1", titleKey: "i18n.websiteLocalization.process.step1.title", descKey: "i18n.websiteLocalization.process.step1.description" },
+    { number: "2", titleKey: "i18n.websiteLocalization.process.step2.title", descKey: "i18n.websiteLocalization.process.step2.description" },
+    { number: "3", titleKey: "i18n.websiteLocalization.process.step3.title", descKey: "i18n.websiteLocalization.process.step3.description" },
+    { number: "4", titleKey: "i18n.websiteLocalization.process.step4.title", descKey: "i18n.websiteLocalization.process.step4.description" },
   ];
 
   const relatedPages = [
-    { name: "Software Localization", href: "/$locale/i18n/software-localization", description: t("related.softwareLocalization", { defaultValue: "Complete guide to software localization" }) },
-    { name: "Translation Management System", href: "/$locale/i18n/translation-management-system", description: t("related.tms", { defaultValue: "How TMS platforms streamline localization" }) },
-    { name: "Localization vs Internationalization", href: "/$locale/i18n/localization-vs-internationalization", description: t("related.l10nVsI18n", { defaultValue: "Understanding the key differences" }) },
-    { name: "What is Localization?", href: "/$locale/what-is-localization", description: t("related.whatIsL10n", { defaultValue: "Definition and fundamentals of l10n" }) },
+    { name: "Software Localization", href: "/$locale/i18n/software-localization", description: t("i18n.websiteLocalization.related.softwareLocalization") },
+    { name: "Translation Management System", href: "/$locale/i18n/translation-management-system", description: t("i18n.websiteLocalization.related.tms") },
+    { name: "Localization vs Internationalization", href: "/$locale/i18n/localization-vs-internationalization", description: t("i18n.websiteLocalization.related.l10nVsI18n") },
+    { name: "What is Localization?", href: "/$locale/what-is-localization", description: t("i18n.websiteLocalization.related.whatIsL10n") },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
       {/* Hero */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
+            <div className="eyebrow mb-5 flex items-center gap-2">
               <SpriteIcon name="globe" className="size-4" />
-              <span>{t("badge", { defaultValue: "Website Localization" })}</span>
+              <span>{t("i18n.websiteLocalization.badge")}</span>
             </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("hero.title", { defaultValue: "Website Localization: Adapt Your Web Application for Global Audiences" })}
+            <h1 className="section-h2">
+              {t("i18n.websiteLocalization.hero.title")}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "Website localization goes beyond translation. Learn how to adapt your web application's content, design, and functionality for users worldwide with web localization services powered by AI." })}
+              {t("i18n.websiteLocalization.hero.subtitle")}
             </p>
           </div>
         </div>
       </section>
 
       {/* Definition */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("definition.title", { defaultValue: "What Is Website Localization?" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.websiteLocalization.definition.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph1", { defaultValue: "Website localization is the process of adapting a web application or website for a specific locale or market. It encompasses translating text, adjusting layouts for right-to-left languages, formatting dates and currencies, and adapting images and colors to match cultural expectations." })}
+                {t("i18n.websiteLocalization.definition.paragraph1")}
               </p>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph2", { defaultValue: "Unlike simple translation, website localisation services consider the full user experience. This includes SEO optimization for local search engines, adapting payment methods, and ensuring compliance with regional regulations like GDPR or CCPA." })}
+                {t("i18n.websiteLocalization.definition.paragraph2")}
               </p>
               <p className="text-mist-700 leading-relaxed">
-                {t("definition.paragraph3", { defaultValue: "Modern web localization leverages translation management systems and AI-powered tools to streamline the process, reducing time-to-market for multilingual websites from months to days." })}
+                {t("i18n.websiteLocalization.definition.paragraph3")}
               </p>
             </div>
-            <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
+            <div className="mt-10 lg:mt-0">
               <h3 className="text-lg font-medium text-mist-950 mb-4">
-                {t("whyItMatters.title", { defaultValue: "Why Website Localization Matters" })}
+                {t("i18n.websiteLocalization.whyItMatters.title")}
               </h3>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("whyItMatters.content", { defaultValue: "75% of consumers prefer to buy products in their native language. Companies that localize their websites see up to 70% higher conversion rates in target markets. Web localization is not optional for global businesses - it's a competitive necessity." })}
+                {t("i18n.websiteLocalization.whyItMatters.content")}
               </p>
             </div>
           </div>
@@ -112,27 +113,27 @@ function WebsiteLocalizationPage() {
       </section>
 
       {/* Challenges */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("challenges.title", { defaultValue: "Common Website Localization Challenges" })}
+            <h2 className="section-h2">
+              {t("i18n.websiteLocalization.challenges.title")}
             </h2>
             <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("challenges.subtitle", { defaultValue: "Understanding these challenges helps you choose the right web localization services and tools for your project." })}
+              {t("i18n.websiteLocalization.challenges.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {challenges.map((challenge) => (
-              <div key={challenge.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
-                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
+              <div key={challenge.titleKey}>
+                <div className="mb-3 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   <SpriteIcon name={challenge.icon as SpriteIconName} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(challenge.titleKey, { defaultValue: challenge.defaultTitle })}
+                  {t(challenge.titleKey)}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(challenge.descKey, { defaultValue: challenge.defaultDesc })}
+                  {t(challenge.descKey)}
                 </p>
               </div>
             ))}
@@ -141,23 +142,23 @@ function WebsiteLocalizationPage() {
       </section>
 
       {/* Benefits */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("benefits.title", { defaultValue: "Benefits of Website Localization" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.websiteLocalization.benefits.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed">
-                {t("benefits.subtitle", { defaultValue: "Investing in website translation localization delivers measurable returns across user engagement, search visibility, and revenue." })}
+                {t("i18n.websiteLocalization.benefits.subtitle")}
               </p>
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
+                    <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
+                    <span className="text-mist-700">{t(benefit.key)}</span>
                   </li>
                 ))}
               </ul>
@@ -167,27 +168,27 @@ function WebsiteLocalizationPage() {
       </section>
 
       {/* Process */}
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("process.title", { defaultValue: "The Website Localization Process" })}
+            <h2 className="section-h2">
+              {t("i18n.websiteLocalization.process.title")}
             </h2>
             <p className="mt-3 text-mist-700">
-              {t("process.subtitle", { defaultValue: "A proven workflow for localizing your web application efficiently." })}
+              {t("i18n.websiteLocalization.process.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {processSteps.map((step) => (
               <div key={step.number} className="text-center p-6">
-                <div className="size-10 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium mx-auto mb-4">
+                <div className="mb-3 block text-[11px] font-medium tabular-nums text-mist-400">
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
+                  {t(step.titleKey)}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: step.defaultDesc })}
+                  {t(step.descKey)}
                 </p>
               </div>
             ))}
@@ -196,38 +197,38 @@ function WebsiteLocalizationPage() {
       </section>
 
       {/* How Better I18N Helps */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Streamline Website Localization with Better I18N" })}
+            <h2 className="section-h2 mb-6">
+              {t("i18n.websiteLocalization.solution.title")}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better I18N combines AI-powered translation with developer-friendly tools to make website localization seamless. Auto-discover translation keys from your codebase, translate with context-aware AI, and deploy to global CDN instantly." })}
+              {t("i18n.websiteLocalization.solution.content")}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature1.title", { defaultValue: "AI Translation" })}
+                  {t("i18n.websiteLocalization.solution.feature1.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature1.description", { defaultValue: "Context-aware translations that respect your brand glossary and terminology." })}
+                  {t("i18n.websiteLocalization.solution.feature1.description")}
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature2.title", { defaultValue: "Developer SDK" })}
+                  {t("i18n.websiteLocalization.solution.feature2.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature2.description", { defaultValue: "Type-safe SDKs for React, Next.js, Vue, and more with automatic key discovery." })}
+                  {t("i18n.websiteLocalization.solution.feature2.description")}
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature3.title", { defaultValue: "Instant Deploy" })}
+                  {t("i18n.websiteLocalization.solution.feature3.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature3.description", { defaultValue: "Push translations to global CDN or sync via GitHub - no redeploy needed." })}
+                  {t("i18n.websiteLocalization.solution.feature3.description")}
                 </p>
               </div>
             </div>
@@ -238,53 +239,39 @@ function WebsiteLocalizationPage() {
       {/* Related Pages */}
 
       <SeeAlso currentSlug="website-localization" locale={locale} />
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}</h2>
+      <section className="border-t border-mist-200">
+        <div className="section">
+          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics")}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {relatedPages.map((page) => (
               <Link
                 key={page.href}
                 to={page.href}
                 params={{ locale }}
-                className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+                className="group flex items-start justify-between gap-3"
               >
                 <div>
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600" />
               </Link>
             ))}
           </div>
         </div>
       </section>
+      <Divider />
 
-      {/* CTA */}
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
-        <div className="mx-auto max-w-2xl text-center px-6">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("cta.title", { defaultValue: "Start Localizing Your Website Today" })}
-          </h2>
-          <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Set up website localization in minutes with AI-powered translations and developer-friendly tools." })}
-          </p>
-          <div className="mt-8 flex justify-center gap-4 flex-wrap">
-            <a
-              href="https://dash.better-i18n.com"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
-            >
-              {t("cta.primary", { defaultValue: "Get Started Free" })}
-            </a>
-            <a
-              href="https://docs.better-i18n.com"
-              className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-            >
-              {t("cta.secondary", { defaultValue: "Read the Docs" })}
-            </a>
-          </div>
-        </div>
-      </section>
+      {/* The ask closes the page. Was a `bg-mist-950` band with `rounded-xl
+          mx-6` — a floating dark card on a white document, with its own
+          container and its own button scale. <ClosingCta /> is the one closing
+          shape in the grammar. */}
+      <ClosingCta
+        title={t("i18n.websiteLocalization.cta.title")}
+        subtitle={t("i18n.websiteLocalization.cta.subtitle")}
+        primary={{ label: t("i18n.websiteLocalization.cta.primary"), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t("i18n.websiteLocalization.cta.secondary"), href: "https://docs.better-i18n.com" }}
+      />
     </MarketingLayout>
   );
 }

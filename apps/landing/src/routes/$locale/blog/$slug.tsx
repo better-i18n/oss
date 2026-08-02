@@ -24,7 +24,8 @@ import { trackBlogView } from "@/lib/analytics-events";
 import { useEngagedTime } from "@/hooks/use-engaged-time";
 import { useTrackView } from "@better-i18n/content/adapters/react";
 import { getRelatedPages } from "@/seo/internal-links";
-// Breadcrumb removed from UI but kept for SEO structured data
+// The visual breadcrumb is intentionally absent from this page; the crawlable
+// one is the BreadcrumbList JSON-LD built in `head` below.
 import ShareButtons from "@/components/blog/ShareButtons";
 import { Frame, Section, Divider } from "@/components/ui/page";
 import { BlogEmptyState } from "@/components/blog/BlogGrid";
@@ -64,21 +65,18 @@ const loadRelatedPosts = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/$locale/blog/$slug")({
   loader: async ({ params, context }) => {
-    const [post, allMessages] = await Promise.all([
+    // Three independent fetches — the namespace helper import used to sit on its
+    // own serial `await` behind this batch for no reason.
+    const [post, allMessages, { filterMessagesByPath }] = await Promise.all([
       loadBlogPost({ data: { slug: params.slug, locale: params.locale } }),
       getMessages({ project: i18nConfig.project, locale: context.locale }),
+      import("@/lib/page-namespaces"),
     ]);
     if (!post) {
       throw notFound();
     }
-    const { filterMessagesByPath } = await import("@/lib/page-namespaces");
-    // Delegate to the single source of truth for blog namespaces
-    // (blog + relatedPages + shared + page meta) instead of a hand-rolled
-    // list — otherwise RelatedPages falls back to humanized key names.
-    const messages = filterMessagesByPath(
-      allMessages,
-      `/${params.locale}/blog/${params.slug}/`,
-    );
+    // Stays serial on purpose: related posts are selected BY the current post's
+    // category, so this genuinely cannot start until `post` resolves.
     const relatedPosts = await loadRelatedPosts({
       data: {
         slug: params.slug,
@@ -86,6 +84,13 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
         locale: params.locale,
       },
     });
+    // Delegate to the single source of truth for blog namespaces
+    // (blog + relatedPages + shared + page meta) instead of a hand-rolled
+    // list — otherwise RelatedPages falls back to humanized key names.
+    const messages = filterMessagesByPath(
+      allMessages,
+      `/${params.locale}/blog/${params.slug}/`,
+    );
     return { post, locale: params.locale, relatedPosts, messages };
   },
   head: ({ loaderData }) => {

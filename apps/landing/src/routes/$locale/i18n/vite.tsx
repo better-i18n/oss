@@ -11,6 +11,7 @@ import {
 } from "@/components/FrameworkComparison";
 import { ComparisonRelatedTopics } from "@/components/ComparisonTable";
 import { createPageLoader, getPageHead } from "@/lib/page-seo";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/$locale/i18n/vite")({
   loader: createPageLoader(),
@@ -36,23 +37,30 @@ export const Route = createFileRoute("/$locale/i18n/vite")({
   component: ViteI18nPage,
 });
 
+/* Key suffixes, not copy — resolved with t() in the component. */
+const FEATURE_KEYS = [
+  "hmr",
+  "frameworks",
+  "cdn",
+  "useCases",
+  "onboarding",
+  "simplicity",
+];
+
 function ViteI18nPage() {
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const setupSteps = [
     {
       step: 1,
-      title: "Install the React-friendly SDK",
-      description:
-        "For most Vite projects, start with @better-i18n/use-intl and use-intl so translations work in standard component trees.",
+      id: "step1",
       code: "npm install @better-i18n/use-intl use-intl",
       fileName: "terminal",
     },
     {
       step: 2,
-      title: "Wrap your app once",
-      description:
-        "Mount BetterI18nProvider in your Vite entry file so locale data is available before the first render.",
+      id: "step2",
       code: `import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BetterI18nProvider } from '@better-i18n/use-intl';
@@ -67,9 +75,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     },
     {
       step: 3,
-      title: "Translate inside components",
-      description:
-        "Use typed hooks for keys and interpolation while keeping Vite hot reload fast during content iteration.",
+      id: "step3",
       code: `import { useTranslations } from '@better-i18n/use-intl';
 
 export function Hero() {
@@ -81,14 +87,15 @@ export function Hero() {
     },
   ];
 
-  const features = [
-    "Fast local iteration with Vite HMR while translation keys stay typed",
-    "Works well for React, Vue, and other Vite-powered frontends",
-    "CDN-delivered messages keep builds lighter and updates faster",
-    "Good fit for marketing sites, dashboards, and hybrid app shells",
-    "Easy onboarding for teams moving from hand-rolled JSON files",
-    "Keeps framework-specific complexity out of your translation workflow",
-  ];
+  /* Copy from the CDN; the code samples and file names stay in the file
+     because they are code, not copy. `id` is the key path segment. */
+  const steps = setupSteps.map((step) => ({
+    ...step,
+    title: t(`i18n.vite.setup.${step.id}.title`),
+    description: t(`i18n.vite.setup.${step.id}.description`),
+  }));
+
+  const features = FEATURE_KEYS.map((k) => t(`i18n.vite.features.${k}`));
 
   const codeExample = `import { BetterI18nProvider, useTranslations } from '@better-i18n/use-intl';
 
@@ -133,39 +140,39 @@ export default function App() {
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
-        title="Vite i18n without slowing down development"
-        subtitle="Use Better I18N with Vite projects to keep hot reload fast, translation keys typed, and locale content easy to ship across app and marketing surfaces."
-        badgeText="Vite i18n"
+        title={t("i18n.vite.hero.title")}
+        subtitle={t("i18n.vite.hero.subtitle")}
+        badgeText={t("i18n.vite.hero.badge")}
       />
 
-      <SetupGuide title="Get started in 3 steps" steps={setupSteps} />
+      <SetupGuide title={t("i18n.vite.setup.title")} steps={steps} />
 
-      <FeatureList title="Why use Better I18N with Vite?" features={features} />
+      <FeatureList title={t("i18n.vite.featuresTitle")} features={features} />
 
       <CodeExample
-        title="Typical Vite setup"
-        description="A minimal provider-based setup for Vite apps that need typed translations and fast iteration."
+        title={t("i18n.vite.codeExample.title")}
+        description={t("i18n.vite.codeExample.description")}
         code={codeExample}
       />
 
       <ComparisonRelatedTopics
-        heading="Related guides"
+        heading={t("i18n.vite.relatedTitle")}
         links={relatedLinks}
         locale={locale}
       />
 
       <OtherFrameworks
-        title="Other frameworks"
+        title={t("i18n.vite.otherFrameworks")}
         currentFramework="vite"
         locale={locale}
       />
 
       <FrameworkCTA
-        title="Ship localized Vite apps faster"
-        subtitle="Keep your development speed, move translations to a real workflow, and publish updates without hand-editing locale files."
-        primaryCTA="Get started free"
+        title={t("i18n.vite.cta.title")}
+        subtitle={t("i18n.vite.cta.subtitle")}
+        primaryCTA={t("i18n.vite.cta.primary")}
         primaryHref="https://dash.better-i18n.com"
-        secondaryCTA="Read the docs"
+        secondaryCTA={t("i18n.vite.cta.secondary")}
         secondaryHref="https://docs.better-i18n.com/"
       />
     </MarketingLayout>

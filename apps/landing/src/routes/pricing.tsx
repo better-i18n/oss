@@ -4,7 +4,7 @@ import { i18nConfig } from "../i18n.config";
 export const Route = createFileRoute("/pricing")({
   beforeLoad: ({ context }) => {
     throw redirect({
-      to: "/$locale/pricing",
+      to: "/$locale/pricing/",
       params: {
         locale: context.locale || i18nConfig.defaultLocale,
       },

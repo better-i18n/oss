@@ -11,10 +11,12 @@ import {
   ComparisonRelatedTopics,
   type ComparisonFeature,
 } from "@/components/ComparisonTable";
+import { ComparisonDisclaimer } from "@/components/ComparisonDisclaimer";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import { UserComplaints } from "@/components/UserComplaints";
 import { WhySwitchSection } from "@/components/WhySwitchSection";
+import { Divider, SectionHeader } from "@/components/ui/page";
 
 export const Route = createFileRoute("/$locale/compare/xtm")({
   loader: createPageLoader(),
@@ -101,8 +103,8 @@ function XTMComparisonPage() {
         subtitle={t("compare.xtm.hero.subtitle")}
       />
 
-      <section className="pb-16">
-        <div className="mx-auto max-w-4xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <ComparisonTable
             competitorName="XTM"
             features={features}
@@ -114,18 +116,21 @@ function XTMComparisonPage() {
       <UserComplaints
         competitor="XTM"
         complaints={[
-          { source: "G2", quote: t("compare.xtm.userComplaints.1.quote"), category: t("compare.xtm.userComplaints.1.category") },
-          { source: "Capterra", quote: t("compare.xtm.userComplaints.2.quote"), category: t("compare.xtm.userComplaints.2.category") },
-          { source: "G2", quote: t("compare.xtm.userComplaints.3.quote"), category: t("compare.xtm.userComplaints.3.category") },
+          { quote: t("compare.xtm.userComplaints.1.quote"), category: t("compare.xtm.userComplaints.1.category") },
+          { quote: t("compare.xtm.userComplaints.2.quote"), category: t("compare.xtm.userComplaints.2.category") },
+          { quote: t("compare.xtm.userComplaints.3.quote"), category: t("compare.xtm.userComplaints.3.category") },
         ]}
       />
 
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-12">
-            {t("compare.xtm.whyBetter.title")}
-          </h2>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+      <Divider />
+      <section>
+        <div className="section">
+          <SectionHeader
+            eyebrow={t("compare.xtm.whyBetter.eyebrow")}
+            title={t("compare.xtm.whyBetter.title")}
+            subtitle={t("compare.xtm.whyBetter.subtitle")}
+          />
+          <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
             <Differentiator
               icon={<SpriteIcon name="code" className="w-5 h-5" />}
               title={t("compare.xtm.whyBetter.developerFirst.title")}
@@ -163,37 +168,23 @@ function XTMComparisonPage() {
       />
 
       <ComparisonRelatedTopics
-        heading={t("compare.xtm.relatedTopics", {
-          defaultValue: "Learn More",
-        })}
+        heading={t("compare.xtm.relatedTopics")}
         locale={locale}
         links={[
           {
             to: "/$locale/what-is",
-            title: t("compare.xtm.related.whatIsI18n", {
-              defaultValue: "What is i18n?",
-            }),
-            description: t("compare.xtm.related.whatIsI18nDesc", {
-              defaultValue: "Understanding internationalization fundamentals",
-            }),
+            title: t("compare.xtm.related.whatIsI18n"),
+            description: t("compare.xtm.related.whatIsI18nDesc"),
           },
           {
             to: "/$locale/i18n/react",
-            title: t("compare.xtm.related.react", {
-              defaultValue: "React i18n",
-            }),
-            description: t("compare.xtm.related.reactDesc", {
-              defaultValue: "Integrate translations into your React app",
-            }),
+            title: t("compare.xtm.related.react"),
+            description: t("compare.xtm.related.reactDesc"),
           },
           {
             to: "/$locale/features",
-            title: t("compare.xtm.related.features", {
-              defaultValue: "All Features",
-            }),
-            description: t("compare.xtm.related.featuresDesc", {
-              defaultValue: "Explore the full Better I18N platform",
-            }),
+            title: t("compare.xtm.related.features"),
+            description: t("compare.xtm.related.featuresDesc"),
           },
         ]}
       />
@@ -210,6 +201,8 @@ function XTMComparisonPage() {
         primaryCTA={t("compare.xtm.cta.button")}
         primaryHref="https://dash.better-i18n.com"
       />
+
+      <ComparisonDisclaimer />
     </MarketingLayout>
   );
 }

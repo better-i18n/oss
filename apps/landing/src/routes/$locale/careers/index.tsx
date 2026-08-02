@@ -57,10 +57,10 @@ function CareersPage() {
   return (
     <MarketingLayout showCTA={false}>
       {/* Hero */}
-      <section className="pt-16 pb-10 sm:pt-20 sm:pb-12">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-2xl">
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
+            <h1 className="section-h2">
               {t("hero.title", "Work on infrastructure that ships language to every user.")}
             </h1>
             <p className="mt-5 text-base/7 text-mist-600">
@@ -80,9 +80,9 @@ function CareersPage() {
       </section>
 
       {/* Open Positions */}
-      <section className="py-12" id="positions">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl font-medium text-mist-950 mb-2">
+      <section id="positions">
+        <div className="section">
+          <h2 className="section-h2 mb-2">
             {t("openPositions.title", "Open positions")}
           </h2>
           <p className="text-sm text-mist-500 mb-8">

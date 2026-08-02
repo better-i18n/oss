@@ -191,10 +191,10 @@ function LocaleDetailPage() {
       >
         <div className="rounded-xl border border-mist-200 bg-white p-8 text-center">
           <p className="text-mist-600 mb-4">
-            The locale <code className="rounded bg-mist-100 px-1.5 py-0.5 text-sm">{localeCode}</code> is not in our database.
+            The locale <code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 text-sm">{localeCode}</code> is not in our database.
           </p>
           <Link
-            to="/$locale/tools/locale-explorer"
+            to="/$locale/tools/locale-explorer/"
             params={{ locale }}
             className="inline-flex items-center justify-center rounded-xl border border-mist-200 px-4 py-2 text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors"
           >
@@ -367,7 +367,7 @@ function LocaleDetailPage() {
                     className="flex items-center justify-between px-4 py-3"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="inline-flex items-center justify-center rounded-lg bg-mist-100 px-2.5 py-1 text-xs font-medium text-mist-700">
+                      <span className="inline-flex items-center justify-center rounded-md border border-black/[0.07] bg-mist-50 px-2.5 py-1 text-xs font-medium text-mist-700">
                         {category}
                       </span>
                       <span className="text-sm text-mist-500">
@@ -420,7 +420,7 @@ function LocaleDetailPage() {
               {relatedLocales.map((rel) => (
                 <Link
                   key={rel.code}
-                  to="/$locale/tools/locale-explorer/$localeCode"
+                  to="/$locale/tools/locale-explorer/$localeCode/"
                   params={{ locale, localeCode: rel.code }}
                   className="grid grid-cols-[minmax(80px,1fr)_minmax(140px,2fr)_80px_60px] items-center gap-4 border-b border-mist-100 px-4 py-3 text-sm transition-colors hover:bg-mist-50 last:border-b-0"
                 >
@@ -430,11 +430,7 @@ function LocaleDetailPage() {
                   <span className="text-mist-800">{rel.englishName}</span>
                   <span className="text-mist-600">{rel.script ?? "—"}</span>
                   <span
-                    className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                      rel.direction === "rtl"
-                        ? "bg-amber-50 text-amber-700"
-                        : "bg-mist-100 text-mist-600"
-                    }`}
+                    className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-xs font-medium ${ rel.direction === "rtl" ? "bg-amber-50 text-amber-700" : "bg-mist-100 text-mist-600" }`}
                   >
                     {rel.direction.toUpperCase()}
                   </span>
@@ -454,7 +450,7 @@ function LocaleDetailPage() {
           </p>
           <a
             href="https://dash.better-i18n.com"
-            className="mt-5 inline-flex items-center justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-medium text-mist-950 transition-colors hover:bg-mist-100"
+            className="mt-5 inline-flex items-center justify-center rounded-xl border border-black/[0.07] bg-white px-5 py-2.5 text-sm font-medium text-mist-950 transition-colors hover:bg-black/[0.03]"
           >
             Start free trial
           </a>

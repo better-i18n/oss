@@ -10,6 +10,7 @@ import {
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/$locale/i18n/server")({
   loader: createPageLoader(),
@@ -31,15 +32,24 @@ export const Route = createFileRoute("/$locale/i18n/server")({
   component: ServerI18nPage,
 });
 
+/* Key suffixes, not copy — resolved with t() in the component. */
+const FEATURE_KEYS = [
+  "webStandards",
+  "nodeAdaptor",
+  "acceptLanguage",
+  "singletonCache",
+  "typeSafe",
+  "edgeReady",
+];
+
 function ServerI18nPage() {
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const setupSteps = [
     {
       step: 1,
-      title: "Install the package",
-      description:
-        "Install @better-i18n/server. Optionally install Hono or Express depending on your framework.",
+      id: "step1",
       code: `npm install @better-i18n/server
 # Hono: npm install hono
 # Express: npm install express`,
@@ -47,9 +57,7 @@ function ServerI18nPage() {
     },
     {
       step: 2,
-      title: "Create a singleton",
-      description:
-        "Instantiate createServerI18n() once at module scope. The TtlCache is shared across all requests — no CDN fetch per request.",
+      id: "step2",
       code: `import { createServerI18n } from '@better-i18n/server';
 
 export const i18n = createServerI18n({
@@ -60,11 +68,17 @@ export const i18n = createServerI18n({
     },
     {
       step: 3,
-      title: "Register middleware",
-      description:
-        "Wire up the middleware for your framework. The middleware reads Accept-Language, resolves the locale, and injects t() into the request context.",
+      id: "step3",
     },
   ];
+
+  /* Copy from the CDN; the code samples and file names stay in the file
+     because they are code, not copy. `id` is the key path segment. */
+  const steps = setupSteps.map((step) => ({
+    ...step,
+    title: t(`i18n.server.setup.${step.id}.title`),
+    description: t(`i18n.server.setup.${step.id}.description`),
+  }));
 
   const middlewareTabs = [
     {
@@ -100,49 +114,42 @@ app.get('/api/users/:id', (req, res) => {
     },
   ];
 
-  const features = [
-    "Web Standards middleware — Hono, Cloudflare Workers, Deno Deploy",
-    "Node.js adaptor — Express, Fastify, Koa via fromNodeHeaders()",
-    "Auto Accept-Language — RFC 5646 compliant locale detection",
-    "Singleton TtlCache — zero CDN fetches per request after warm-up",
-    "Type-safe t() — full TypeScript inference for translation keys",
-    "Edge-ready — native Cloudflare Workers support",
-  ];
+  const features = FEATURE_KEYS.map((k) => t(`i18n.server.features.${k}`));
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
-        title="Server-Side i18n for Hono, Express & Edge"
-        subtitle="Internationalize your API and server-rendered apps. Better I18N provides middleware for Hono, Express, Fastify, and edge runtimes with automatic locale detection."
-        badgeText="Server-Side i18n"
+        title={t("i18n.server.hero.title")}
+        subtitle={t("i18n.server.hero.subtitle")}
+        badgeText={t("i18n.server.hero.badge")}
       />
 
-      <SetupGuide title="Set up in 3 steps" steps={setupSteps} />
+      <SetupGuide title={t("i18n.server.setup.title")} steps={steps} />
 
       <TabbedCode
-        title="Framework middleware"
-        description="Choose your server framework — the middleware API is consistent across Hono and Node.js adapters."
+        title={t("i18n.server.tabbed.title")}
+        description={t("i18n.server.tabbed.description")}
         tabs={middlewareTabs}
       />
 
       <FeatureList
-        title="Why use Better I18N on the server?"
+        title={t("i18n.server.featuresTitle")}
         features={features}
       />
 
       <OtherFrameworks
-        title="Other frameworks"
+        title={t("i18n.server.otherFrameworks")}
         currentFramework="server"
         locale={locale}
       />
 
       <FrameworkCTA
-        title="Localize your API responses today"
-        subtitle="Serve translated error messages, notifications, and content from your backend with zero overhead."
-        primaryCTA="Get started free"
+        title={t("i18n.server.cta.title")}
+        subtitle={t("i18n.server.cta.subtitle")}
+        primaryCTA={t("i18n.server.cta.primary")}
         primaryHref="https://dash.better-i18n.com"
-        secondaryCTA="Read the docs"
+        secondaryCTA={t("i18n.server.cta.secondary")}
         secondaryHref="https://docs.better-i18n.com/frameworks/server"
       />
     </MarketingLayout>

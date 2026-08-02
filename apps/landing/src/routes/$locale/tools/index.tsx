@@ -62,16 +62,16 @@ function ToolsHubPage() {
   return (
     <MarketingLayout bgClassName="bg-mist-50" showCTA={false} breadcrumbs={breadcrumbs}>
       {/* Hero */}
-      <section className="border-b border-mist-200 bg-white py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section className="border-b border-mist-200 bg-white">
+        <div className="section">
           <div className="max-w-3xl">
-            <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.18em] text-mist-500">
+            <p className="mb-4 text-[11px] font-medium text-mist-500">
               Free Developer Tools
             </p>
-            <h1 className="font-display text-4xl/[1.06] font-medium tracking-[-0.03em] text-mist-950 sm:text-5xl/[1.04]">
+            <h1 className="section-h2">
               Free i18n &amp; Localization Tools
             </h1>
-            <p className="mt-4 text-lg/7 text-mist-700">
+            <p className="section-p mt-3">
               Browser-based tools for developers working with
               internationalization. No signup required — everything runs in your
               browser.
@@ -81,7 +81,7 @@ function ToolsHubPage() {
       </section>
 
       {/* Tool Grid */}
-      <section className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
+      <section className="section">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {TOOL_REGISTRY.map((tool) => (
             <ToolCard key={tool.slug} tool={tool} locale={locale} />
@@ -93,10 +93,10 @@ function ToolsHubPage() {
       <ToolFAQ items={faqItems} title="Questions about the free tools" />
 
       {/* CTA */}
-      <section className="border-t border-mist-200 bg-white py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section className="border-t border-mist-200 bg-white">
+        <div className="section">
           <div className="flex flex-col gap-4">
-            <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1]">
+            <h2 className="section-h2">
               Ready to scale your i18n?
             </h2>
             <p className="max-w-2xl text-base/7 text-mist-700">

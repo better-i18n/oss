@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n";
 import Header from "../../components/Header";
 import Hero from "../../components/Hero";
 import Footer from "../../components/Footer";
+import { Divider, FrameLines } from "@/components/ui/page";
 // Below-the-fold (code-split): each section ships as its own chunk so the
 // initial JS bundle stays small and the browser can fetch + parse them in
 // parallel with the main bundle. SSG still resolves these Suspense
@@ -156,10 +157,18 @@ function LandingPage() {
     queryKey: ["changelogs-home", locale],
     queryFn: async () => {
       const response = await fetch(`/api/changelog?locale=${locale}`);
-      if (!response.ok) return [];
+      // THROW, don't return []. Returning an empty array makes react-query treat
+      // it as a successful result and it replaces whatever SSR rendered — so a
+      // 404 on this endpoint (which is the case in dev, where /api/changelog
+      // isn't routed) silently blanked a section that had server data. Throwing
+      // keeps the SSR/initial data on screen.
+      if (!response.ok) throw new Error(`changelog ${response.status}`);
       const json = (await response.json()) as { releases: typeof initialChangelogs };
-      return (json.releases ?? []).slice(0, 4);
+      const releases = (json.releases ?? []).slice(0, 4);
+      if (releases.length === 0) throw new Error("changelog empty");
+      return releases;
     },
+    retry: false,
     // Only pass initialData when SSR loaded changelogs — if empty, let react-query fetch.
     initialData: initialChangelogs.length > 0 ? initialChangelogs : undefined,
     staleTime: 5 * 60 * 1000,
@@ -169,46 +178,62 @@ function LandingPage() {
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-mist-950 focus:text-sm focus:font-medium"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-[var(--shadow-card)] focus:text-mist-950 focus:text-sm focus:font-medium"
       >
         {t("skipToContent", { defaultValue: "Skip to content" })}
       </a>
+      <FrameLines />
       <Header />
-      <main id="main-content">
+      {/* Sections are separated ONLY by <Divider /> — the tick-marked hairline
+          that ties every band to the same 1160px frame. No alternating
+          backgrounds (rule/divider-is-the-only-transition). */}
+      <main id="main-content" className="relative z-[1]">
         <Hero />
+        <Divider />
         <Suspense fallback={<SectionFallback minHeight={800} />}>
           <Features />
         </Suspense>
+        <Divider />
         <Suspense fallback={<SectionFallback />}>
           <FrameworkSupport />
         </Suspense>
+        <Divider />
         <Suspense fallback={<SectionFallback />}>
           <UseCases />
         </Suspense>
+        <Divider />
         <Suspense fallback={<SectionFallback />}>
           <UserSegments />
         </Suspense>
+        <Divider />
         <Suspense fallback={<SectionFallback />}>
           <Alternatives />
         </Suspense>
+        <Divider />
         <Suspense fallback={<SectionFallback />}>
           <Testimonials />
         </Suspense>
+        <Divider />
         <Suspense fallback={<SectionFallback minHeight={400} />}>
           <IndustryStats />
         </Suspense>
+        <Divider />
         <Suspense fallback={<SectionFallback />}>
           <Changelog releases={recentChangelogs} />
         </Suspense>
+        <Divider />
         <Suspense fallback={<SectionFallback minHeight={800} />}>
           <Pricing plans={plans} />
         </Suspense>
+        <Divider />
         <Suspense fallback={<SectionFallback />}>
           <ComparisonFAQ />
         </Suspense>
+        <Divider />
         <Suspense fallback={<SectionFallback minHeight={300} />}>
           <MetricsBadges />
         </Suspense>
+        <Divider />
         <Suspense fallback={<SectionFallback minHeight={400} />}>
           <RelatedPages currentPage="home" locale={locale} variant="content" />
         </Suspense>

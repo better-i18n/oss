@@ -1,14 +1,14 @@
 import { createFileRoute, redirect, notFound, Link } from "@tanstack/react-router";
-import { SpriteIcon } from "@/components/SpriteIcon";
 import { POSTS_PER_PAGE, type BlogPostListItem } from "@/lib/content";
 import { loadBlogIndex } from "@/lib/blog-index";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/blog/BlogCard";
+import { BlogGrid, BlogEmptyState } from "@/components/blog/BlogGrid";
 import Pagination from "@/components/blog/Pagination";
 import { RelatedPages } from "@/components/RelatedPages";
 import { useT } from "@/lib/i18n";
-import { IconPageText } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import { PageHero, Section, Divider } from "@/components/ui/page";
 import {
   getLocalizedMeta,
   formatMetaTags,
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
     // /blog/page/1/ → 301 redirect to /blog/
     if (pageNum === 1) {
       throw redirect({
-        to: "/$locale/blog",
+        to: "/$locale/blog/",
         params: { locale: params.locale },
         statusCode: 301,
       });
@@ -45,7 +45,16 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
       throw notFound();
     }
 
-    const index = await loadBlogIndex(params.locale);
+    // All three are independent of one another. The out-of-range 404 below needs
+    // `index`, but messages don't need `index` — so they are fetched together
+    // rather than queued behind it. The only cost is fetching messages for a
+    // page number that turns out to be out of range, which is a 404 path.
+    const [index, { filterMessages }, allMessages] = await Promise.all([
+      loadBlogIndex(params.locale),
+      import("@/lib/page-namespaces"),
+      getMessages({ project: i18nConfig.project, locale: context.locale }),
+    ]);
+
     const totalPages = Math.max(
       1,
       Math.ceil(index.allPosts.length / POSTS_PER_PAGE),
@@ -59,8 +68,6 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
     const start = (pageNum - 1) * POSTS_PER_PAGE;
     const posts = index.allPosts.slice(start, start + POSTS_PER_PAGE);
 
-    const { filterMessages } = await import("@/lib/page-namespaces");
-    const allMessages = await getMessages({ project: i18nConfig.project, locale: context.locale });
     const messages = filterMessages(allMessages, ["meta", "breadcrumbs"]);
     return {
       posts,
@@ -140,57 +147,31 @@ function PaginatedBlogPage() {
   return (
     <div className="bg-white">
       <Header className="bg-white" />
-      <main className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-16">
-            <div className="max-w-2xl">
-              <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-                {t("title", { defaultValue: "Blog" })}
-              </h1>
-              <p className="mt-4 text-lg/8 text-mist-700">
-                {t("subtitle", {
-                  defaultValue:
-                    "Latest updates, tutorials, and insights about internationalization.",
-                })}
-              </p>
-            </div>
-            <Link
-              to="/$locale"
-              params={{ locale }}
-              className="inline-flex items-center gap-1 text-sm font-medium text-mist-700 hover:text-mist-950 shrink-0"
-            >
-              {t("backToHome", { defaultValue: "Back to home" })}
-              <SpriteIcon name="arrow-right" className="w-4 h-4" />
-            </Link>
-          </div>
+      <main>
+        <PageHero
+          titleId="blog-title"
+          title={t("title")}
+          subtitle={t("subtitle")}
+          secondary={{ label: t("backToHome"), href: `/${locale}/` }}
+        />
 
-          {/* Posts Grid */}
+        <Divider />
+
+        <Section labelledBy="blog-title">
           {posts?.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <BlogGrid>
               {posts.map((post: BlogPostListItem) => (
                 <BlogCard key={post.slug} post={post} locale={locale} />
               ))}
-            </div>
+            </BlogGrid>
           ) : (
-            <div className="rounded-xl bg-mist-950/[0.025] p-12 text-center">
-              <div className="mx-auto max-w-md">
-                <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-mist-100 flex items-center justify-center">
-                  <IconPageText className="h-6 w-6 text-mist-400" />
-                </div>
-                <h3 className="text-base font-medium text-mist-950">
-                  {t("noPosts.title", { defaultValue: "No posts yet" })}
-                </h3>
-                <p className="mt-2 text-sm text-mist-600">
-                  {t("noPosts.description", {
-                    defaultValue: "Check back soon for new content!",
-                  })}
-                </p>
-              </div>
-            </div>
+            <BlogEmptyState title={t("noPosts.title")} description={t("noPosts.description")}>
+              <Link to="/$locale/blog/" params={{ locale }} className="btn btn-dark btn-sm">
+                {t("backToBlog")}
+              </Link>
+            </BlogEmptyState>
           )}
 
-          {/* Pagination */}
           {posts?.length > 0 && (
             <Pagination
               currentPage={currentPage}
@@ -198,7 +179,7 @@ function PaginatedBlogPage() {
               locale={locale}
             />
           )}
-        </div>
+        </Section>
       </main>
       <RelatedPages currentPage="blog" locale={locale} variant="educational" />
       <Footer />
@@ -213,24 +194,17 @@ function PaginatedBlogNotFound() {
   return (
     <div className="bg-white">
       <Header className="bg-white" />
-      <main className="py-24 sm:py-32">
-        <div className="mx-auto max-w-2xl px-6 text-center">
-          <h1 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            {t("notFound.title", { defaultValue: "Page not found" })}
-          </h1>
-          <p className="mt-4 text-lg text-mist-600">
-            {t("notFound.description", {
-              defaultValue: "The page you're looking for doesn't exist.",
-            })}
-          </p>
-          <Link
-            to="/$locale/blog"
-            params={{ locale }}
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
+      <main>
+        <Section>
+          <BlogEmptyState
+            title={t("notFound.title")}
+            description={t("notFound.description")}
           >
-            {t("backToBlog", { defaultValue: "Back to Blog" })}
-          </Link>
-        </div>
+            <Link to="/$locale/blog/" params={{ locale }} className="btn btn-dark btn-sm">
+              {t("backToBlog")}
+            </Link>
+          </BlogEmptyState>
+        </Section>
       </main>
       <Footer />
     </div>

@@ -3,7 +3,6 @@ import {
   Scripts,
   createRootRouteWithContext,
   Outlet,
-  Link,
   redirect,
   useRouter,
 } from "@tanstack/react-router";
@@ -21,6 +20,8 @@ import { detectLocale } from "@better-i18n/core";
 import { getRequestHeader } from "@tanstack/react-start/server";
 import { i18nConfig } from "../i18n.config";
 import { filterMessagesByPath, getCdnNamespacesForPage, extractPagePath } from "../lib/page-namespaces";
+import { NotFoundPage as StatusNotFound } from "@/components/ErrorPage";
+import { ClientErrorReporter } from "@/components/ClientErrorReporter";
 import { storeMessages, readMessages } from "../lib/ssr-messages";
 import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
@@ -28,7 +29,6 @@ import { MarketingLayout } from "../components/MarketingLayout";
 import { SvgSprite } from "../components/SvgSprite";
 import { CookieBanner } from "../components/CookieBanner";
 import { WebMcpRegistrar } from "../components/WebMcpRegistrar";
-import { IconArrowLeft } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 import { lazy, Suspense } from "react";
 
 const LazyHelpwayWidget = lazy(() =>
@@ -310,34 +310,17 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function NotFoundPage() {
   const t = useTranslations("common");
-  const { locale } = Route.useRouteContext();
 
+  /* Shell, robots directive and the destination list live in one place with the
+     500 page (src/components/ErrorPage.tsx) so the two cannot drift apart. Copy
+     stays here because it is translated; layout is not this file's business. */
   return (
     <MarketingLayout showCTA={false} bgClassName="bg-white">
-      <div className="py-24 sm:py-32">
-        <div className="mx-auto max-w-2xl px-6 text-center">
-          <p className="font-display text-6xl font-medium tracking-[-0.02em] text-mist-300 sm:text-8xl">
-            404
-          </p>
-          <h1 className="mt-4 font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            {t("notFound.title", { defaultValue: "Page not found" })}
-          </h1>
-          <p className="mt-4 text-lg text-mist-600">
-            {t("notFound.description", {
-              defaultValue:
-                "The page you're looking for doesn't exist or has been moved.",
-            })}
-          </p>
-          <Link
-            to="/$locale/"
-            params={{ locale }}
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-          >
-            <IconArrowLeft className="size-4" />
-            {t("notFound.backHome", { defaultValue: "Back to Home" })}
-          </Link>
-        </div>
-      </div>
+      <StatusNotFound
+        title={t("notFound.title")}
+        lede={t("notFound.description")}
+        backHome={t("notFound.backHome")}
+      />
     </MarketingLayout>
   );
 }
@@ -441,7 +424,8 @@ function RootComponent() {
               }}
             >
               <Outlet />
-              <CookieBanner />
+              <ClientErrorReporter />
+          <CookieBanner />
               <WebMcpRegistrar locale={locale} />
             </ContentProvider>
           </BetterI18nProvider>

@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { MarketingLayout } from "@/components/MarketingLayout";
+import { Divider } from "@/components/ui/page";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 
@@ -43,21 +43,32 @@ function ForProductTeamsPage() {
   const { locale } = Route.useParams();
 
   return (
-    <div className="bg-mist-100">
-      <Header />
-      <main>
+    <MarketingLayout showCTA={false}>
         <Suspense fallback={null}>
+          <Divider />
+
           <ProductHero />
+          <Divider />
+
           <ProductPainPoints />
+          <Divider />
+
           <ProductPainPromiseProof />
+          <Divider />
+
           <ProductWorkflow />
+          <Divider />
+
           <ProductFeatures />
+          <Divider />
+
           <ProductCollaboration />
-          <RelatedPages currentPage="for-product-teams" locale={locale} variant="for" />
+          <Divider />
+
           <ProductCTA />
-        </Suspense>
-      </main>
-      <Footer />
-    </div>
+          <Divider />
+
+          <RelatedPages currentPage="for-product-teams" locale={locale} variant="for" />        </Suspense>
+    </MarketingLayout>
   );
 }

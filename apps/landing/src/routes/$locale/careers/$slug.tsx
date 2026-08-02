@@ -105,7 +105,7 @@ function PositionDetail({ position, t }: { position: JobPosition; t: T }) {
         <span className="text-xs font-medium text-mist-400 uppercase tracking-wider">
           {t(`department.${position.department}`, position.department)}
         </span>
-        <h1 className="mt-2 font-display text-3xl/[1.15] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.15]">
+        <h1 className="section-h2 mt-2">
           {position.title}
         </h1>
         <p className="mt-3 text-sm text-mist-500">
@@ -174,7 +174,7 @@ function GeneralApplication({ t }: { t: T }) {
     <>
       <div className="mb-10">
         <span className="text-xs font-medium text-mist-400 uppercase tracking-wider">General</span>
-        <h1 className="mt-2 font-display text-3xl/[1.15] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.15]">
+        <h1 className="section-h2 mt-2">
           {t("general.title", "General Application")}
         </h1>
         <p className="mt-3 text-sm text-mist-600 max-w-lg">
@@ -328,7 +328,7 @@ function CareerNotFound() {
   return (
     <MarketingLayout showCTA={false}>
       <div className="mx-auto max-w-2xl px-6 py-24 text-center">
-        <p className="font-display text-2xl font-medium text-mist-950">{t("notFound.title", "Position not found")}</p>
+        <p className="section-h2">{t("notFound.title", "Position not found")}</p>
         <p className="mt-3 text-sm text-mist-600">{t("notFound.description", "This position may have been filled or removed.")}</p>
         <Link to="/$locale/careers/" params={{ locale }} className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-mist-950 px-5 py-2 text-sm font-medium text-white hover:bg-mist-800 transition-colors">
           {t("notFound.back", "View all positions")}

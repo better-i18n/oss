@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { MarketingLayout } from "@/components/MarketingLayout";
+import { Divider } from "@/components/ui/page";
 import DeveloperHero from "@/components/developers/DeveloperHero";
 import DeveloperPainPoints from "@/components/developers/DeveloperPainPoints";
 import DeveloperQuotes from "@/components/developers/DeveloperQuotes";
@@ -76,21 +76,34 @@ function ForDevelopersPage() {
   const { locale } = Route.useParams();
 
   return (
-    <div className="bg-mist-100">
-      <Header />
-      <main>
+    <MarketingLayout showCTA={false}>
         <DeveloperHero />
+        <Divider />
+
         <DeveloperPainPoints />
+        <Divider />
+
         <DeveloperQuotes />
+        <Divider />
+
         <DeveloperCLIDemo />
+        <Divider />
+
         <DeveloperPainPromiseProof />
+        <Divider />
+
         <DeveloperWorkflow />
+        <Divider />
+
         <DeveloperRoleIntegration />
+        <Divider />
+
         <DeveloperIDESupport />
-        <RelatedPages currentPage="for-developers" locale={locale} variant="for" />
+        <Divider />
+
         <DeveloperResources />
-      </main>
-      <Footer />
-    </div>
+        <Divider />
+
+        <RelatedPages currentPage="for-developers" locale={locale} variant="for" />    </MarketingLayout>
   );
 }

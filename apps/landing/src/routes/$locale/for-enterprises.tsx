@@ -1,16 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { personaLoader, personaHead } from "@/lib/cms-persona-helpers";
 import { CmsPersonaPage, CmsPersonaNotFound } from "@/components/CmsPersonaPage";
+import { EnterpriseFlow } from "@/components/personas/PersonaFlows";
 
 export const Route = createFileRoute("/$locale/for-enterprises")({
   loader: ({ params }) => personaLoader("for-enterprises", params.locale),
   head: ({ loaderData }) => personaHead(loaderData),
-  component: () => {
-    const data = Route.useLoaderData();
-    return <CmsPersonaPage {...data} />;
-  },
-  notFoundComponent: () => {
-    const { locale } = Route.useParams();
-    return <CmsPersonaNotFound locale={locale} slug="for-enterprises" />;
-  },
+  component: ForEnterprisesPage,
+  notFoundComponent: ForEnterprisesNotFound,
 });
+
+/* Named functions rather than inline arrows: `component: () => { … }` is a
+   real component — TanStack renders it — but static analysis cannot see that
+   through the route-options object, so every `Route.useLoaderData()` inside one
+   reads as a hook called outside a component (react-doctor rules-of-hooks). */
+function ForEnterprisesPage() {
+  const data = Route.useLoaderData();
+  return <CmsPersonaPage {...data} heroVisual={<EnterpriseFlow />} />;
+}
+
+function ForEnterprisesNotFound() {
+  const { locale } = Route.useParams();
+  return <CmsPersonaNotFound locale={locale} slug="for-enterprises" />;
+}

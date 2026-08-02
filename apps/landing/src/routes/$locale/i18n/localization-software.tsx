@@ -7,6 +7,7 @@ import { PillarBlogPosts } from "@/components/PillarBlogPosts";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { loadPillarBlogPosts } from "@/lib/pillar-blog-loader";
 import { useT } from "@/lib/i18n";
+import { ClosingCta, Divider } from "@/components/ui/page";
 
 const PILLAR_KEYWORDS = ["localization", "software", "tool"] as const;
 
@@ -39,114 +40,114 @@ export const Route = createFileRoute("/$locale/i18n/localization-software")({
 });
 
 const keyFeatures = [
-  { icon: "code-brackets", titleKey: "features.tmsCat.title", descKey: "features.tmsCat.description", defaultTitle: "TMS & CAT Integration", defaultDesc: "Combine translation management workflows with computer-assisted translation tools for end-to-end localization." },
-  { icon: "zap", titleKey: "features.apiCicd.title", descKey: "features.apiCicd.description", defaultTitle: "API & CI/CD Integration", defaultDesc: "Connect your localization platform directly to your development pipeline with REST APIs and CI/CD plugins." },
-  { icon: "shield-check", titleKey: "features.glossaryMemory.title", descKey: "features.glossaryMemory.description", defaultTitle: "Glossary & Translation Memory", defaultDesc: "Maintain consistency across projects with shared glossaries and leverage translation memory to reduce costs." },
-  { icon: "group", titleKey: "features.collaboration.title", descKey: "features.collaboration.description", defaultTitle: "Team Collaboration", defaultDesc: "Enable translators, reviewers, and developers to work together in real time with role-based access control." },
+  { icon: "code-brackets", titleKey: "i18n.localizationSoftware.features.tmsCat.title", descKey: "i18n.localizationSoftware.features.tmsCat.description" },
+  { icon: "zap", titleKey: "i18n.localizationSoftware.features.apiCicd.title", descKey: "i18n.localizationSoftware.features.apiCicd.description" },
+  { icon: "shield-check", titleKey: "i18n.localizationSoftware.features.glossaryMemory.title", descKey: "i18n.localizationSoftware.features.glossaryMemory.description" },
+  { icon: "group", titleKey: "i18n.localizationSoftware.features.collaboration.title", descKey: "i18n.localizationSoftware.features.collaboration.description" },
 ];
 
 function LocalizationSoftwarePage() {
-  const t = useT("marketing.i18n.localizationSoftware");
+  const t = useT("marketing");
   const tCommon = useT("marketing");
   const { locale } = Route.useParams();
   const { pillarPosts } = Route.useLoaderData();
 
   const benefits = [
-    { key: "benefits.list.fasterRelease", defaultValue: "Ship multilingual features faster with automated translation workflows" },
-    { key: "benefits.list.consistentQuality", defaultValue: "Maintain consistent translation quality across all languages" },
-    { key: "benefits.list.reducedCosts", defaultValue: "Reduce localization costs with translation memory and AI assistance" },
-    { key: "benefits.list.devIntegration", defaultValue: "Integrate localization directly into your development pipeline" },
-    { key: "benefits.list.scalability", defaultValue: "Scale from two languages to twenty without proportional cost increases" },
-    { key: "benefits.list.translationMemory", defaultValue: "Leverage translation memory to avoid retranslating unchanged content" },
+    { key: "i18n.localizationSoftware.benefits.list.fasterRelease" },
+    { key: "i18n.localizationSoftware.benefits.list.consistentQuality" },
+    { key: "i18n.localizationSoftware.benefits.list.reducedCosts" },
+    { key: "i18n.localizationSoftware.benefits.list.devIntegration" },
+    { key: "i18n.localizationSoftware.benefits.list.scalability" },
+    { key: "i18n.localizationSoftware.benefits.list.translationMemory" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Evaluate & Select", defaultDesc: "Compare TMS and CAT tool options against your tech stack, language pairs, and team size requirements." },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Integrate & Configure", defaultDesc: "Connect the platform to your code repository, CI/CD pipeline, and content management system." },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Onboard & Train", defaultDesc: "Set up user roles, import existing translations, and train your team on the new workflow." },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Launch & Iterate", defaultDesc: "Go live with automated translation workflows and continuously optimize based on quality metrics and throughput data." },
+    { number: "1", titleKey: "i18n.localizationSoftware.process.step1.title", descKey: "i18n.localizationSoftware.process.step1.description" },
+    { number: "2", titleKey: "i18n.localizationSoftware.process.step2.title", descKey: "i18n.localizationSoftware.process.step2.description" },
+    { number: "3", titleKey: "i18n.localizationSoftware.process.step3.title", descKey: "i18n.localizationSoftware.process.step3.description" },
+    { number: "4", titleKey: "i18n.localizationSoftware.process.step4.title", descKey: "i18n.localizationSoftware.process.step4.description" },
   ];
 
   const relatedPages = [
-    { name: "Software Localization", href: "/$locale/i18n/software-localization", description: t("related.softwareLocalization", { defaultValue: "Complete guide to localizing software for global markets" }) },
-    { name: "Content Localization", href: "/$locale/i18n/content-localization", description: t("related.contentLocalization", { defaultValue: "Adapting content for different markets and audiences" }) },
-    { name: "Translation Management System", href: "/$locale/i18n/translation-management-system", description: t("related.tms", { defaultValue: "How a TMS centralizes your entire localization workflow" }) },
-    { name: "Best TMS", href: "/$locale/i18n/best-tms", description: t("related.bestTms", { defaultValue: "Compare the top TMS platforms side by side" }) },
+    { name: "Software Localization", href: "/$locale/i18n/software-localization", description: t("i18n.localizationSoftware.related.softwareLocalization") },
+    { name: "Content Localization", href: "/$locale/i18n/content-localization", description: t("i18n.localizationSoftware.related.contentLocalization") },
+    { name: "Translation Management System", href: "/$locale/i18n/translation-management-system", description: t("i18n.localizationSoftware.related.tms") },
+    { name: "Best TMS", href: "/$locale/i18n/best-tms", description: t("i18n.localizationSoftware.related.bestTms") },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
+            <div className="eyebrow mb-5 flex items-center gap-2">
               <SpriteIcon name="settings-gear" className="size-4" />
-              <span>{t("badge", { defaultValue: "Localization Software" })}</span>
+              <span>{t("i18n.localizationSoftware.badge")}</span>
             </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("hero.title", { defaultValue: "Localization Software: Platforms and Tools That Power Global Products" })}
+            <h1 className="section-h2">
+              {t("i18n.localizationSoftware.hero.title")}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "Localization software encompasses the platforms, TMS tools, and CAT environments that engineering and content teams use to manage multilingual products. Whether you're localizing Japanese to English content or scaling from two languages to twenty, the right software determines how efficiently you can ship." })}
+              {t("i18n.localizationSoftware.hero.subtitle")}
             </p>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("definition.title", { defaultValue: "What Is Localization Software?" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.localizationSoftware.definition.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph1", { defaultValue: "Localization software refers to the category of tools designed specifically to manage the translation, cultural adaptation, and deployment of multilingual content. Unlike generic project management tools, localization software understands the relationship between source strings, target languages, translation memory, and glossaries." })}
+                {t("i18n.localizationSoftware.definition.paragraph1")}
               </p>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph2", { defaultValue: "The category divides into Translation Management Systems (TMS) — which handle workflow, assignments, and delivery — and Computer-Assisted Translation (CAT) tools, which aid human translators with segment-by-segment editing, terminology lookup, and quality assurance checks. Many modern platforms combine both." })}
+                {t("i18n.localizationSoftware.definition.paragraph2")}
               </p>
               <p className="text-mist-700 leading-relaxed">
-                {t("definition.paragraph3", { defaultValue: "This page focuses specifically on the software platforms themselves — the tools your team installs, subscribes to, and integrates with your codebase. It is distinct from the practice of software localization, which describes the work of adapting a software product for a new market." })}
+                {t("i18n.localizationSoftware.definition.paragraph3")}
               </p>
             </div>
-            <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
+            <div className="mt-10 lg:mt-0">
               <h3 className="text-lg font-medium text-mist-950 mb-4">
-                {t("tmsVsCat.title", { defaultValue: "TMS vs. CAT Tools: What's the Difference?" })}
+                {t("i18n.localizationSoftware.tmsVsCat.title")}
               </h3>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("tmsVsCat.paragraph1", { defaultValue: "A Translation Management System (TMS) orchestrates the end-to-end localization workflow: it receives source content, routes tasks to translators or AI engines, tracks progress, enforces deadlines, and delivers translated output to your production systems." })}
+                {t("i18n.localizationSoftware.tmsVsCat.paragraph1")}
               </p>
               <p className="text-mist-700 leading-relaxed">
-                {t("tmsVsCat.paragraph2", { defaultValue: "A CAT tool is the editing environment where translators do their work. It segments source text, displays translation memory matches, enforces glossaries, and runs QA checks. Popular standalone CAT tools include SDL Trados and memoQ — while many cloud TMS platforms now include built-in CAT editors." })}
+                {t("i18n.localizationSoftware.tmsVsCat.paragraph2")}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("features.title", { defaultValue: "Key Features to Look For in Localization Software" })}
+            <h2 className="section-h2">
+              {t("i18n.localizationSoftware.features.title")}
             </h2>
             <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("features.subtitle", { defaultValue: "Evaluate every platform against these capabilities before committing to a subscription or integration project." })}
+              {t("i18n.localizationSoftware.features.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {keyFeatures.map((feature) => (
-              <div key={feature.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
-                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
+              <div key={feature.titleKey}>
+                <div className="mb-3 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   <SpriteIcon name={feature.icon as SpriteIconName} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
+                  {t(feature.titleKey)}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(feature.descKey, { defaultValue: feature.defaultDesc })}
+                  {t(feature.descKey)}
                 </p>
               </div>
             ))}
@@ -154,39 +155,39 @@ function LocalizationSoftwarePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("deployment.title", { defaultValue: "Cloud vs. On-Premise Localization Software" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.localizationSoftware.deployment.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("deployment.paragraph1", { defaultValue: "Cloud-based localization software — typically delivered as SaaS — offers instant access, automatic updates, and pay-as-you-go pricing. Teams working across time zones benefit from real-time collaboration without server infrastructure overhead. Most modern platforms, including those targeting Japanese to English and Russian translation workflows, are cloud-first." })}
+                {t("i18n.localizationSoftware.deployment.paragraph1")}
               </p>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("deployment.paragraph2", { defaultValue: "On-premise solutions give enterprises with strict data residency requirements full control over their translation assets. They carry higher setup costs and require dedicated IT resources, but are sometimes mandated in regulated industries such as healthcare, finance, or government." })}
+                {t("i18n.localizationSoftware.deployment.paragraph2")}
               </p>
               <p className="text-mist-700 leading-relaxed">
-                {t("deployment.paragraph3", { defaultValue: "Hybrid models — cloud orchestration with on-premise data storage — are gaining traction as enterprises seek the speed of SaaS without sacrificing compliance. Evaluate your data classification requirements before choosing a deployment model." })}
+                {t("i18n.localizationSoftware.deployment.paragraph3")}
               </p>
             </div>
             <div className="mt-10 lg:mt-0">
               <h3 className="font-display text-lg font-medium text-mist-950 mb-6">
-                {t("pricing.title", { defaultValue: "Localization Software Pricing Models" })}
+                {t("i18n.localizationSoftware.pricing.title")}
               </h3>
               <div className="space-y-4">
                 <div className="p-4 rounded-xl bg-mist-50 border border-mist-100">
-                  <h4 className="text-sm font-medium text-mist-950 mb-1">{t("pricing.perWord.title", { defaultValue: "Per-Word Pricing" })}</h4>
-                  <p className="text-sm text-mist-700">{t("pricing.perWord.description", { defaultValue: "Common for managed translation services. Costs scale directly with content volume — predictable but can become expensive for large sites." })}</p>
+                  <h4 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.localizationSoftware.pricing.perWord.title")}</h4>
+                  <p className="text-sm text-mist-700">{t("i18n.localizationSoftware.pricing.perWord.description")}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-mist-50 border border-mist-100">
-                  <h4 className="text-sm font-medium text-mist-950 mb-1">{t("pricing.subscription.title", { defaultValue: "Monthly Subscription" })}</h4>
-                  <p className="text-sm text-mist-700">{t("pricing.subscription.description", { defaultValue: "Fixed monthly fee based on seat count, project volume, or managed keys. Predictable costs that suit teams with steady translation throughput." })}</p>
+                  <h4 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.localizationSoftware.pricing.subscription.title")}</h4>
+                  <p className="text-sm text-mist-700">{t("i18n.localizationSoftware.pricing.subscription.description")}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-mist-50 border border-mist-100">
-                  <h4 className="text-sm font-medium text-mist-950 mb-1">{t("pricing.usageBased.title", { defaultValue: "Usage-Based Pricing" })}</h4>
-                  <p className="text-sm text-mist-700">{t("pricing.usageBased.description", { defaultValue: "Pay for API calls, AI translation credits, or CDN bandwidth consumed. Ideal for startups with variable translation loads." })}</p>
+                  <h4 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.localizationSoftware.pricing.usageBased.title")}</h4>
+                  <p className="text-sm text-mist-700">{t("i18n.localizationSoftware.pricing.usageBased.description")}</p>
                 </div>
               </div>
             </div>
@@ -194,23 +195,23 @@ function LocalizationSoftwarePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("benefits.title", { defaultValue: "Benefits of Dedicated Localization Software" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.localizationSoftware.benefits.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed">
-                {t("benefits.subtitle", { defaultValue: "Teams that adopt purpose-built localization software ship multilingual features faster, maintain higher translation quality, and reduce per-locale operational costs compared to ad-hoc spreadsheet or manual workflows." })}
+                {t("i18n.localizationSoftware.benefits.subtitle")}
               </p>
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
                 {benefits.map((benefit) => (
                   <li key={benefit.key} className="flex items-start gap-3">
-                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(benefit.key, { defaultValue: benefit.defaultValue })}</span>
+                    <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
+                    <span className="text-mist-700">{t(benefit.key)}</span>
                   </li>
                 ))}
               </ul>
@@ -219,27 +220,27 @@ function LocalizationSoftwarePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("process.title", { defaultValue: "Integrating Localization Software into Your Dev Workflow" })}
+            <h2 className="section-h2">
+              {t("i18n.localizationSoftware.process.title")}
             </h2>
             <p className="mt-3 text-mist-700">
-              {t("process.subtitle", { defaultValue: "Successful adoption follows a clear sequence from evaluation through production deployment." })}
+              {t("i18n.localizationSoftware.process.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {processSteps.map((step) => (
               <div key={step.number} className="text-center p-6">
-                <div className="size-10 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium mx-auto mb-4">
+                <div className="mb-3 block text-[11px] font-medium tabular-nums text-mist-400">
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
+                  {t(step.titleKey)}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: step.defaultDesc })}
+                  {t(step.descKey)}
                 </p>
               </div>
             ))}
@@ -247,38 +248,38 @@ function LocalizationSoftwarePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Better I18N: Modern Localization Software for Developer Teams" })}
+            <h2 className="section-h2 mb-6">
+              {t("i18n.localizationSoftware.solution.title")}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better I18N is cloud-based localization software built for engineering teams. It ships with AST-powered key discovery, a built-in AI translation engine, GitHub sync, and a global CDN — covering everything from Japanese to English translation workflows through to French and Russian localization, all with free-tier access." })}
+              {t("i18n.localizationSoftware.solution.content")}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature1.title", { defaultValue: "AST Key Discovery" })}
+                  {t("i18n.localizationSoftware.solution.feature1.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature1.description", { defaultValue: "Automatically detect every translation key in your codebase — no manual extraction scripts or missed strings." })}
+                  {t("i18n.localizationSoftware.solution.feature1.description")}
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature2.title", { defaultValue: "CI/CD Native" })}
+                  {t("i18n.localizationSoftware.solution.feature2.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature2.description", { defaultValue: "GitHub Actions and CLI integrations keep your translation files in sync with every pull request and release." })}
+                  {t("i18n.localizationSoftware.solution.feature2.description")}
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature3.title", { defaultValue: "MCP Support" })}
+                  {t("i18n.localizationSoftware.solution.feature3.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature3.description", { defaultValue: "Model Context Protocol support lets AI assistants in your IDE read and write translations directly from your editor." })}
+                  {t("i18n.localizationSoftware.solution.feature3.description")}
                 </p>
               </div>
             </div>
@@ -289,54 +290,40 @@ function LocalizationSoftwarePage() {
 
       <SeeAlso currentSlug="localization-software" locale={locale} />
       <PillarBlogPosts posts={pillarPosts} locale={locale} />
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}</h2>
+      <section className="border-t border-mist-200">
+        <div className="section">
+          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics")}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {relatedPages.map((page) => (
               <Link
                 key={page.href}
                 to={page.href}
                 params={{ locale }}
-                className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+                className="group flex items-start justify-between gap-3"
               >
                 <div>
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600" />
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
-        <div className="mx-auto max-w-2xl text-center px-6">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("cta.title", { defaultValue: "Try the Localization Software Built for Developers" })}
-          </h2>
-          <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Set up Better I18N in minutes, connect your repository, and ship multilingual features without slowing down your release cycle." })}
-          </p>
-          <div className="mt-8 flex justify-center gap-4 flex-wrap">
-            <a
-              href="https://dash.better-i18n.com"
-              aria-label="Start using Better I18N localization software for free"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
-            >
-              {t("cta.primary", { defaultValue: "Get Started Free" })}
-            </a>
-            <a
-              href="https://docs.better-i18n.com"
-              aria-label="Read the Better I18N documentation for localization software"
-              className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-            >
-              {t("cta.secondary", { defaultValue: "Read the Docs" })}
-            </a>
-          </div>
-        </div>
-      </section>
+      <Divider />
+
+      {/* The ask closes the page. Was a `bg-mist-950` band with `rounded-xl
+          mx-6` — a floating dark card on a white document, carrying its own
+          container and its own button scale. <ClosingCta /> is the one closing
+          shape in the grammar. */}
+      <ClosingCta
+        title={t("i18n.localizationSoftware.cta.title")}
+        subtitle={t("i18n.localizationSoftware.cta.subtitle")}
+        primary={{ label: t("i18n.localizationSoftware.cta.primary"), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t("i18n.localizationSoftware.cta.secondary"), href: "https://docs.better-i18n.com" }}
+      />
     </MarketingLayout>
   );
 }

@@ -183,7 +183,8 @@ function ChangelogEntryPage() {
   return (
     <div>
       <Header />
-      <main className="mx-auto max-w-3xl px-6 pt-24 pb-16 sm:pt-32 lg:px-8">
+      <main className="section">
+      <div className="max-w-[68ch]">
         {/* Breadcrumb */}
         <nav className="mb-8 flex items-center gap-1.5 text-sm text-mist-400">
           <Link
@@ -222,7 +223,7 @@ function ChangelogEntryPage() {
         </div>
 
         {/* Title */}
-        <h1 className="mb-6 text-balance text-4xl font-medium leading-snug text-mist-950 sm:text-5xl">
+        <h1 className="mb-6 max-w-[24ch] text-balance font-medium leading-[1.1] tracking-[-0.03em] text-mist-950" style={{ fontSize: "var(--text-h2)" }}>
           {entry.title}
         </h1>
 
@@ -240,7 +241,7 @@ function ChangelogEntryPage() {
               <div key={`section-${sectionIndex}`}>
                 {/* Section Heading */}
                 {section.title ? (
-                  <h2 className="mt-8 scroll-m-28 text-xl font-semibold tracking-tight text-mist-950">
+                  <h2 className="mt-8 scroll-m-28 text-xl font-medium tracking-tight text-mist-950">
                     {section.title}
                   </h2>
                 ) : null}
@@ -334,7 +335,8 @@ function ChangelogEntryPage() {
             {t("seeAll", { defaultValue: "See all changelog entries" })} &rarr;
           </Link>
         </div>
-      </main>
+      </div>
+    </main>
 
       <RelatedPages currentPage="changelog" locale={locale} variant="resources" />
       <Footer />
@@ -351,17 +353,17 @@ function ChangelogEntryNotFound() {
     <div>
       <Header />
       <main className="py-24 sm:py-32">
-        <div className="mx-auto max-w-2xl px-6 text-center">
-          <p className="font-display text-3xl font-medium tracking-tight text-mist-950 sm:text-4xl">
+        <div className="max-w-[52ch]">
+          <p className="section-h2 tracking-tight">
             Release not found
           </p>
-          <p className="mt-4 text-lg text-mist-600">
+          <p className="section-p mt-3">
             The changelog entry you&apos;re looking for doesn&apos;t exist.
           </p>
           <Link
             to="/$locale/changelog/"
             params={{ locale }}
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-mist-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
+            className="btn btn-dark btn-lg mt-8"
           >
             &larr; Back to Changelog
           </Link>

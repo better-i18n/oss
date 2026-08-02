@@ -14,8 +14,10 @@ import {
   type PricingRow,
   type DxComparisonItem,
 } from "@/components/ComparisonTable";
+import { ComparisonDisclaimer } from "@/components/ComparisonDisclaimer";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import { SectionHeader } from "@/components/ui/page";
 
 const pageLoader = createPageLoader();
 
@@ -140,16 +142,20 @@ function CrowdinVsLokalisePage() {
       />
 
       {/* Feature Matrix */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-5xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-10">
-            {t("compare.crowdinVsLokalise.features.title")}
-          </h2>
+      <section>
+        <div className="section">
+          <SectionHeader
+            eyebrow={t("compare.crowdinVsLokalise.features.eyebrow")}
+            title={t("compare.crowdinVsLokalise.features.title")}
+            subtitle={t("compare.crowdinVsLokalise.features.subtitle")}
+          />
+          <div className="mt-8">
           <MultiComparisonTable
             competitors={[...COMPETITORS]}
             features={features}
             featureLabel={t("compare.featureLabel")}
           />
+          </div>
         </div>
       </section>
 
@@ -169,23 +175,23 @@ function CrowdinVsLokalisePage() {
 
       {/* Related Topics */}
       <ComparisonRelatedTopics
-        heading={t("compare.crowdinVsLokalise.relatedTopics", { defaultValue: "Learn More" })}
+        heading={t("compare.crowdinVsLokalise.relatedTopics")}
         locale={locale}
         links={[
           {
             to: "/$locale/compare/crowdin",
-            title: t("compare.crowdinVsLokalise.related.crowdin", { defaultValue: "Better I18N vs Crowdin" }),
-            description: t("compare.crowdinVsLokalise.related.crowdinDesc", { defaultValue: "Detailed two-way comparison with Crowdin" }),
+            title: t("compare.crowdinVsLokalise.related.crowdin"),
+            description: t("compare.crowdinVsLokalise.related.crowdinDesc"),
           },
           {
             to: "/$locale/compare/lokalise",
-            title: t("compare.crowdinVsLokalise.related.lokalise", { defaultValue: "Better I18N vs Lokalise" }),
-            description: t("compare.crowdinVsLokalise.related.lokaliseDesc", { defaultValue: "Detailed two-way comparison with Lokalise" }),
+            title: t("compare.crowdinVsLokalise.related.lokalise"),
+            description: t("compare.crowdinVsLokalise.related.lokaliseDesc"),
           },
           {
             to: "/$locale/features",
-            title: t("compare.crowdinVsLokalise.related.features", { defaultValue: "All Features" }),
-            description: t("compare.crowdinVsLokalise.related.featuresDesc", { defaultValue: "Explore the full Better I18N platform" }),
+            title: t("compare.crowdinVsLokalise.related.features"),
+            description: t("compare.crowdinVsLokalise.related.featuresDesc"),
           },
         ]}
       />
@@ -204,6 +210,8 @@ function CrowdinVsLokalisePage() {
         primaryCTA={t("compare.crowdinVsLokalise.cta.button")}
         primaryHref="https://dash.better-i18n.com"
       />
+
+      <ComparisonDisclaimer />
     </MarketingLayout>
   );
 }

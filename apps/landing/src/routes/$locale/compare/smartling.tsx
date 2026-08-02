@@ -11,10 +11,12 @@ import {
   ComparisonRelatedTopics,
   type ComparisonFeature,
 } from "@/components/ComparisonTable";
+import { ComparisonDisclaimer } from "@/components/ComparisonDisclaimer";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import { UserComplaints } from "@/components/UserComplaints";
 import { WhySwitchSection } from "@/components/WhySwitchSection";
+import { Divider, SectionHeader } from "@/components/ui/page";
 
 export const Route = createFileRoute("/$locale/compare/smartling")({
   loader: createPageLoader(),
@@ -100,8 +102,8 @@ function SmartlingComparisonPage() {
         subtitle={t("compare.smartling.hero.subtitle")}
       />
 
-      <section className="pb-16">
-        <div className="mx-auto max-w-4xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <ComparisonTable
             competitorName="Smartling"
             features={features}
@@ -113,18 +115,21 @@ function SmartlingComparisonPage() {
       <UserComplaints
         competitor="Smartling"
         complaints={[
-          { source: "G2", quote: t("compare.smartling.userComplaints.1.quote"), category: t("compare.smartling.userComplaints.1.category") },
-          { source: "Capterra", quote: t("compare.smartling.userComplaints.2.quote"), category: t("compare.smartling.userComplaints.2.category") },
-          { source: "G2", quote: t("compare.smartling.userComplaints.3.quote"), category: t("compare.smartling.userComplaints.3.category") },
+          { quote: t("compare.smartling.userComplaints.1.quote"), category: t("compare.smartling.userComplaints.1.category") },
+          { quote: t("compare.smartling.userComplaints.2.quote"), category: t("compare.smartling.userComplaints.2.category") },
+          { quote: t("compare.smartling.userComplaints.3.quote"), category: t("compare.smartling.userComplaints.3.category") },
         ]}
       />
 
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-12">
-            {t("compare.smartling.whyBetter.title")}
-          </h2>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+      <Divider />
+      <section>
+        <div className="section">
+          <SectionHeader
+            eyebrow={t("compare.smartling.whyBetter.eyebrow")}
+            title={t("compare.smartling.whyBetter.title")}
+            subtitle={t("compare.smartling.whyBetter.subtitle")}
+          />
+          <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
             <Differentiator
               icon={<SpriteIcon name="code" className="w-5 h-5" />}
               title={t("compare.smartling.whyBetter.developerFirst.title")}
@@ -167,37 +172,23 @@ function SmartlingComparisonPage() {
       />
 
       <ComparisonRelatedTopics
-        heading={t("compare.smartling.relatedTopics", {
-          defaultValue: "Learn More",
-        })}
+        heading={t("compare.smartling.relatedTopics")}
         locale={locale}
         links={[
           {
             to: "/$locale/what-is",
-            title: t("compare.smartling.related.whatIsI18n", {
-              defaultValue: "What is i18n?",
-            }),
-            description: t("compare.smartling.related.whatIsI18nDesc", {
-              defaultValue: "Understanding internationalization fundamentals",
-            }),
+            title: t("compare.smartling.related.whatIsI18n"),
+            description: t("compare.smartling.related.whatIsI18nDesc"),
           },
           {
             to: "/$locale/i18n/react",
-            title: t("compare.smartling.related.react", {
-              defaultValue: "React i18n",
-            }),
-            description: t("compare.smartling.related.reactDesc", {
-              defaultValue: "Integrate translations into your React app",
-            }),
+            title: t("compare.smartling.related.react"),
+            description: t("compare.smartling.related.reactDesc"),
           },
           {
             to: "/$locale/features",
-            title: t("compare.smartling.related.features", {
-              defaultValue: "All Features",
-            }),
-            description: t("compare.smartling.related.featuresDesc", {
-              defaultValue: "Explore the full Better I18N platform",
-            }),
+            title: t("compare.smartling.related.features"),
+            description: t("compare.smartling.related.featuresDesc"),
           },
         ]}
       />
@@ -214,6 +205,8 @@ function SmartlingComparisonPage() {
         primaryCTA={t("compare.smartling.cta.button")}
         primaryHref="https://dash.better-i18n.com"
       />
+
+      <ComparisonDisclaimer />
     </MarketingLayout>
   );
 }

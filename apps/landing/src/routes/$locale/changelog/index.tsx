@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 import { RelatedPages } from "@/components/RelatedPages";
@@ -32,8 +32,10 @@ import {
 export const Route = createFileRoute("/$locale/changelog/")({
   loader: async ({ context, params }) => {
     const locale = params.locale as "en" | "tr";
-    const { filterMessages } = await import("@/lib/page-namespaces");
-    const [allMessages, releases] = await Promise.all([
+    // Three independent fetches — the namespace helper import used to sit on
+    // its own serial await in front of this batch.
+    const [{ filterMessages }, allMessages, releases] = await Promise.all([
+      import("@/lib/page-namespaces"),
       getMessages({ project: i18nConfig.project, locale: context.locale }),
       withTimeout(getChangelogs(locale), 4000, []),
     ]);
@@ -77,7 +79,11 @@ function ChangelogPage() {
 
   const [highlightedSlug, setHighlightedSlug] = useState<string | null>(null);
   const hasScrolled = useRef(false);
-  const observedEntries = useRef(new Set<string>());
+  // Lazy init: `new Set()` as a direct argument is constructed on EVERY render
+  // and thrown away; the ref only keeps the first one.
+  const observedEntries = useRef<Set<string> | null>(null);
+  observedEntries.current ??= new Set<string>();
+
 
   // Analytics: page view + engaged time
   useEffect(() => {
@@ -98,6 +104,12 @@ function ChangelogPage() {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
+
+  // One index instead of a linear .find() per expand event.
+  const releasesBySlug = useMemo(
+    () => new Map(releases.map((r: ChangelogEntry) => [r.slug, r])),
+    [releases],
+  );
 
   // Scroll to hash target and highlight it
   useEffect(() => {
@@ -125,17 +137,18 @@ function ChangelogPage() {
   // Analytics: track changelog entry visibility via IntersectionObserver
   useEffect(() => {
     if (!releases?.length) return;
-    observedEntries.current = new Set<string>();
+    const seen = new Set<string>();
+    observedEntries.current = seen;
 
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           const slug = entry.target.id;
-          if (!slug || observedEntries.current.has(slug)) continue;
-          observedEntries.current.add(slug);
+          if (!slug || seen.has(slug)) continue;
+          seen.add(slug);
 
-          const release = releases.find((r: ChangelogEntry) => r.slug === slug);
+          const release = releasesBySlug.get(slug);
           trackChangelogEntryExpand({
             slug,
             version: release?.version ?? undefined,
@@ -150,15 +163,16 @@ function ChangelogPage() {
     for (const el of articles) observer.observe(el);
 
     return () => observer.disconnect();
-  }, [releases]);
+  }, [releases, releasesBySlug]);
 
   return (
     <div>
       <Header />
-      <main className="mx-auto max-w-3xl px-6 pt-24 pb-16 sm:pt-32 lg:px-8">
+      <main className="section">
+      <div className="max-w-[68ch]">
         {/* Page Header */}
         <div className="mb-16">
-          <h1 className="font-display text-4xl font-medium tracking-tight text-balance text-mist-950 sm:text-5xl">
+          <h1 className="section-h2 tracking-tight">
             {t("title")}
           </h1>
           <p className="mt-4 text-lg text-mist-500">
@@ -179,23 +193,19 @@ function ChangelogPage() {
               <article
                 key={entry.slug}
                 id={entry.slug}
-                className={`relative py-12 first:pt-0 scroll-mt-24 transition-colors duration-700 ${
-                  highlightedSlug === entry.slug
-                    ? "-mx-4 rounded-2xl bg-mist-50/80 px-4 ring-1 ring-mist-200"
-                    : ""
-                }`}
+                className={`relative scroll-mt-24 border-t border-black/[0.06] py-10 transition-colors duration-700 first:border-t-0 first:pt-0 ${ highlightedSlug === entry.slug ? "-mx-4 border-l-2 border-l-mist-900 bg-black/[0.02] px-4" : "" }`}
               >
                 {/* Separator */}
                 {index > 0 && (
                   <div className="absolute inset-x-0 top-0">
-                    <div className="border-t border-dashed border-mist-200" />
+                    <div className="border-t border-black/[0.06]" />
                   </div>
                 )}
 
                 {/* Version + Date */}
                 <div className="mb-5 flex items-center gap-3">
                   {entry.version ? (
-                    <span className="inline-flex items-center border border-dashed border-mist-300 bg-mist-50 px-2.5 py-1 font-mono text-sm text-mist-700">
+                    <span className="inline-flex items-center rounded-sm border border-black/[0.07] bg-mist-50 px-2 py-0.5 font-mono text-[11px] text-mist-600">
                       {entry.version}
                     </span>
                   ) : null}
@@ -207,11 +217,11 @@ function ChangelogPage() {
                 </div>
 
                 {/* Title — links to individual changelog page */}
-                <h2 className="mb-6 text-balance text-3xl font-medium leading-snug text-mist-950">
+                <h2 className="mb-5 text-balance text-[22px] font-medium leading-snug tracking-[-0.02em] text-mist-900">
                   <Link
                     to="/$locale/changelog/$slug/"
                     params={{ locale, slug: entry.slug }}
-                    className="hover:text-blue-600 transition-colors"
+                    className="hover:text-mist-900 transition-colors"
                   >
                     {entry.title}
                   </Link>
@@ -233,7 +243,7 @@ function ChangelogPage() {
                       >
                         {/* Section Heading */}
                         {section.title ? (
-                          <h3 className="mt-8 scroll-m-28 text-xl font-semibold tracking-tight text-mist-950">
+                          <h3 className="mt-8 scroll-m-28 text-xl font-medium tracking-tight text-mist-950">
                             {section.title}
                           </h3>
                         ) : null}
@@ -293,12 +303,13 @@ function ChangelogPage() {
           })}
 
           {(!releases || releases.length === 0) && (
-            <div className="py-20 text-center text-mist-400">
-              {t("noEntries", { defaultValue: "No changelog entries yet." })}
+            <div className="py-12 text-center text-mist-400">
+              {t("noEntries")}
             </div>
           )}
         </div>
-      </main>
+      </div>
+    </main>
       <RelatedPages currentPage="changelog" locale={locale} variant="resources" />
       <Footer />
     </div>

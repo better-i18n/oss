@@ -4,6 +4,7 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import { ClosingCta, Divider } from "@/components/ui/page";
 
 export const Route = createFileRoute(
   "/$locale/i18n/react-native-localization",
@@ -27,81 +28,81 @@ export const Route = createFileRoute(
 });
 
 const coreFeatures = [
-  { icon: "rocket", titleKey: "features.expoSupport.title", descKey: "features.expoSupport.description", defaultTitle: "First-Class Expo Support", defaultDesc: "Works seamlessly with Expo's managed and bare workflows. No native module linking required — just install and start translating." },
-  { icon: "settings-gear", titleKey: "features.deviceLocale.title", descKey: "features.deviceLocale.description", defaultTitle: "Device Locale Detection", defaultDesc: "Automatically detects the user's device language and region settings on both iOS and Android, with graceful fallback to your default locale." },
-  { icon: "zap", titleKey: "features.offlineCaching.title", descKey: "features.offlineCaching.description", defaultTitle: "Offline Translation Caching", defaultDesc: "Translations are cached locally on the device so your app works flawlessly in airplane mode, subways, and areas with poor connectivity." },
-  { icon: "code-brackets", titleKey: "features.typeSafe.title", descKey: "features.typeSafe.description", defaultTitle: "Type-Safe SDK", defaultDesc: "Full TypeScript support with autocomplete for translation keys. Missing keys are caught at compile time, not discovered by users in production." },
-  { icon: "sparkles-soft", titleKey: "features.otaUpdates.title", descKey: "features.otaUpdates.description", defaultTitle: "OTA Translation Updates", defaultDesc: "Push new translations and languages to production without resubmitting to the App Store or Google Play. Updates go live in seconds via CDN." },
+  { icon: "rocket", titleKey: "i18n.reactNativeLocalization.features.expoSupport.title", descKey: "i18n.reactNativeLocalization.features.expoSupport.description" },
+  { icon: "settings-gear", titleKey: "i18n.reactNativeLocalization.features.deviceLocale.title", descKey: "i18n.reactNativeLocalization.features.deviceLocale.description" },
+  { icon: "zap", titleKey: "i18n.reactNativeLocalization.features.offlineCaching.title", descKey: "i18n.reactNativeLocalization.features.offlineCaching.description" },
+  { icon: "code-brackets", titleKey: "i18n.reactNativeLocalization.features.typeSafe.title", descKey: "i18n.reactNativeLocalization.features.typeSafe.description" },
+  { icon: "sparkles-soft", titleKey: "i18n.reactNativeLocalization.features.otaUpdates.title", descKey: "i18n.reactNativeLocalization.features.otaUpdates.description" },
 ];
 
 function ReactNativeLocalizationPage() {
-  const t = useT("marketing.i18n.reactNativeLocalization");
+  const t = useT("marketing");
   const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const challenges = [
-    { key: "challenges.list.bundleSize", defaultValue: "Keeping translation bundle size small for fast app downloads" },
-    { key: "challenges.list.offlineFirst", defaultValue: "Supporting offline-first usage when network is unavailable" },
-    { key: "challenges.list.platformFormats", defaultValue: "Handling platform-specific date, number, and currency formats on iOS vs Android" },
-    { key: "challenges.list.rtlSupport", defaultValue: "Implementing right-to-left layout support for Arabic, Hebrew, and other RTL languages" },
-    { key: "challenges.list.deepLinking", defaultValue: "Maintaining locale-aware deep linking and navigation across app screens" },
+    { key: "i18n.reactNativeLocalization.challenges.list.bundleSize" },
+    { key: "i18n.reactNativeLocalization.challenges.list.offlineFirst" },
+    { key: "i18n.reactNativeLocalization.challenges.list.platformFormats" },
+    { key: "i18n.reactNativeLocalization.challenges.list.rtlSupport" },
+    { key: "i18n.reactNativeLocalization.challenges.list.deepLinking" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "workflow.step1.title", descKey: "workflow.step1.description", defaultTitle: "Install the SDK", defaultDesc: "Add the Better I18N package to your React Native or Expo project and wrap your root component with the translation provider." },
-    { number: "2", titleKey: "workflow.step2.title", descKey: "workflow.step2.description", defaultTitle: "Extract Keys", defaultDesc: "Run the CLI to scan your components and automatically extract all translation keys into your resource files." },
-    { number: "3", titleKey: "workflow.step3.title", descKey: "workflow.step3.description", defaultTitle: "Translate with AI", defaultDesc: "Use AI-powered translation to instantly generate translations for all target languages, then review and refine as needed." },
-    { number: "4", titleKey: "workflow.step4.title", descKey: "workflow.step4.description", defaultTitle: "Deploy via CDN", defaultDesc: "Push translations to the global CDN. Your app fetches the latest translations automatically — no app store resubmission required." },
+    { number: "1", titleKey: "i18n.reactNativeLocalization.workflow.step1.title", descKey: "i18n.reactNativeLocalization.workflow.step1.description" },
+    { number: "2", titleKey: "i18n.reactNativeLocalization.workflow.step2.title", descKey: "i18n.reactNativeLocalization.workflow.step2.description" },
+    { number: "3", titleKey: "i18n.reactNativeLocalization.workflow.step3.title", descKey: "i18n.reactNativeLocalization.workflow.step3.description" },
+    { number: "4", titleKey: "i18n.reactNativeLocalization.workflow.step4.title", descKey: "i18n.reactNativeLocalization.workflow.step4.description" },
   ];
 
   const relatedPages = [
-    { name: "React i18n", href: "/$locale/i18n/react", description: t("related.react", { defaultValue: "Internationalize React apps with hooks, context, and type-safe translations" }) },
-    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("related.localizationSoftware", { defaultValue: "Platforms and software for managing localization at scale" }) },
-    { name: "For Developers", href: "/$locale/i18n/for-developers", description: t("related.forDevelopers", { defaultValue: "Developer-first localization with CLI, SDK, and CI/CD integrations" }) },
-    { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("related.websiteLocalization", { defaultValue: "Localizing your web application for global markets" }) },
+    { name: "React i18n", href: "/$locale/i18n/react", description: t("i18n.reactNativeLocalization.related.react") },
+    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("i18n.reactNativeLocalization.related.localizationSoftware") },
+    { name: "For Developers", href: "/$locale/i18n/for-developers", description: t("i18n.reactNativeLocalization.related.forDevelopers") },
+    { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("i18n.reactNativeLocalization.related.websiteLocalization") },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
+            <div className="eyebrow mb-5 flex items-center gap-2">
               <SpriteIcon name="rocket" className="size-4" />
-              <span>{t("badge", { defaultValue: "React Native & Expo" })}</span>
+              <span>{t("i18n.reactNativeLocalization.badge")}</span>
             </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("hero.title", { defaultValue: "React Native & Expo Localization: Ship Your Mobile App in Every Language" })}
+            <h1 className="section-h2">
+              {t("i18n.reactNativeLocalization.hero.title")}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "Localizing a React Native or Expo app means more than translating strings. You need device locale detection, offline-ready translations, platform-specific formatting, and a way to update translations without resubmitting to the App Store or Google Play. Better I18N handles all of it." })}
+              {t("i18n.reactNativeLocalization.hero.subtitle")}
             </p>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("features.title", { defaultValue: "Core Features for Mobile Localization" })}
+            <h2 className="section-h2">
+              {t("i18n.reactNativeLocalization.features.title")}
             </h2>
             <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("features.subtitle", { defaultValue: "Everything you need to ship a fully localized React Native or Expo app to users worldwide." })}
+              {t("i18n.reactNativeLocalization.features.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {coreFeatures.map((feature) => (
-              <div key={feature.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
-                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
+              <div key={feature.titleKey} >
+                <div className="mb-3 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   <SpriteIcon name={feature.icon as SpriteIconName} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(feature.titleKey, { defaultValue: feature.defaultTitle })}
+                  {t(feature.titleKey)}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(feature.descKey, { defaultValue: feature.defaultDesc })}
+                  {t(feature.descKey)}
                 </p>
               </div>
             ))}
@@ -109,81 +110,81 @@ function ReactNativeLocalizationPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("challenges.title", { defaultValue: "Mobile-Specific Localization Challenges" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.reactNativeLocalization.challenges.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-6">
-                {t("challenges.intro", { defaultValue: "Mobile apps face unique constraints that web apps do not. Limited bandwidth, offline usage, platform differences between iOS and Android, and app store review cycles all affect how you approach localization." })}
+                {t("i18n.reactNativeLocalization.challenges.intro")}
               </p>
               <ul className="space-y-4">
                 {challenges.map((challenge) => (
                   <li key={challenge.key} className="flex items-start gap-3">
-                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(challenge.key, { defaultValue: challenge.defaultValue })}</span>
+                    <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
+                    <span className="text-mist-700">{t(challenge.key)}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
+            <div className="mt-10 lg:mt-0">
               <h3 className="text-lg font-medium text-mist-950 mb-4">
-                {t("challenges.rtl.title", { defaultValue: "RTL Layout Support" })}
+                {t("i18n.reactNativeLocalization.challenges.rtl.title")}
               </h3>
               <p className="text-sm text-mist-700 mb-4">
-                {t("challenges.rtl.paragraph1", { defaultValue: "Arabic, Hebrew, and other right-to-left languages require mirrored layouts, flipped icons, and adjusted text alignment. React Native provides I18nManager for toggling RTL, but coordinating that with your translation system requires careful integration." })}
+                {t("i18n.reactNativeLocalization.challenges.rtl.paragraph1")}
               </p>
               <p className="text-sm text-mist-700">
-                {t("challenges.rtl.paragraph2", { defaultValue: "Better I18N detects the writing direction from the active locale and exposes it through the useLocale hook, so your layout can adapt automatically without manual RTL checks in every component." })}
+                {t("i18n.reactNativeLocalization.challenges.rtl.paragraph2")}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("integration.title", { defaultValue: "How Better I18N Integrates with Expo & React Native" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.reactNativeLocalization.integration.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("integration.paragraph1", { defaultValue: "The Better I18N CLI scans your .tsx and .jsx components to extract translation keys automatically. It works the same way on mobile components as it does on web — no configuration changes needed when you add React Native to an existing project." })}
+                {t("i18n.reactNativeLocalization.integration.paragraph1")}
               </p>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("integration.paragraph2", { defaultValue: "AI-powered translation understands mobile context. Button labels, push notification copy, and in-app messages are translated with the right tone and length constraints for small screens. Translations are delivered through a global CDN optimized for mobile bandwidth." })}
+                {t("i18n.reactNativeLocalization.integration.paragraph2")}
               </p>
               <p className="text-mist-700 leading-relaxed">
-                {t("integration.paragraph3", { defaultValue: "OTA translation updates mean you can fix a typo, add a new language, or refine a translation without going through the App Store or Google Play review process. Your users get the latest translations the next time the app fetches from the CDN." })}
+                {t("i18n.reactNativeLocalization.integration.paragraph3")}
               </p>
             </div>
             <div className="mt-10 lg:mt-0">
               <h3 className="font-display text-lg font-medium text-mist-950 mb-6">
-                {t("devExperience.title", { defaultValue: "Developer Experience" })}
+                {t("i18n.reactNativeLocalization.devExperience.title")}
               </h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <SpriteIcon name="code-brackets" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
-                    <h4 className="text-sm font-medium text-mist-950 mb-1">{t("devExperience.hooks.title", { defaultValue: "useTranslations Hook" })}</h4>
-                    <p className="text-sm text-mist-600">{t("devExperience.hooks.description", { defaultValue: "Access translated strings in any React Native component with full TypeScript autocomplete. Keys are type-checked at build time so missing translations surface as compile errors, not runtime bugs." })}</p>
+                    <h4 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.reactNativeLocalization.devExperience.hooks.title")}</h4>
+                    <p className="text-sm text-mist-600">{t("i18n.reactNativeLocalization.devExperience.hooks.description")}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <SpriteIcon name="settings-gear" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
-                    <h4 className="text-sm font-medium text-mist-950 mb-1">{t("devExperience.locale.title", { defaultValue: "useLocale & useFormatter" })}</h4>
-                    <p className="text-sm text-mist-600">{t("devExperience.locale.description", { defaultValue: "Get and set the current locale, detect writing direction, and format numbers, dates, and currencies according to the user's locale — all through a single, consistent API." })}</p>
+                    <h4 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.reactNativeLocalization.devExperience.locale.title")}</h4>
+                    <p className="text-sm text-mist-600">{t("i18n.reactNativeLocalization.devExperience.locale.description")}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <SpriteIcon name="sparkles-soft" className="size-5 text-mist-700 mt-0.5 shrink-0" />
                   <div>
-                    <h4 className="text-sm font-medium text-mist-950 mb-1">{t("devExperience.fallback.title", { defaultValue: "Fallback Locale Handling" })}</h4>
-                    <p className="text-sm text-mist-600">{t("devExperience.fallback.description", { defaultValue: "When a user's device locale is not fully supported, Better I18N falls back gracefully — first to a regional variant, then to the base language, then to your default locale. No blank screens, ever." })}</p>
+                    <h4 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.reactNativeLocalization.devExperience.fallback.title")}</h4>
+                    <p className="text-sm text-mist-600">{t("i18n.reactNativeLocalization.devExperience.fallback.description")}</p>
                   </div>
                 </div>
               </div>
@@ -192,27 +193,27 @@ function ReactNativeLocalizationPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("workflow.title", { defaultValue: "Integration Workflow" })}
+            <h2 className="section-h2">
+              {t("i18n.reactNativeLocalization.workflow.title")}
             </h2>
             <p className="mt-3 text-mist-700">
-              {t("workflow.subtitle", { defaultValue: "From first install to production-ready localization in four steps." })}
+              {t("i18n.reactNativeLocalization.workflow.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {processSteps.map((step) => (
               <div key={step.number} className="text-center p-6">
-                <div className="size-10 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium mx-auto mb-4">
+                <div className="mb-3 block text-[11px] font-medium tabular-nums text-mist-400">
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
+                  {t(step.titleKey)}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: step.defaultDesc })}
+                  {t(step.descKey)}
                 </p>
               </div>
             ))}
@@ -220,38 +221,38 @@ function ReactNativeLocalizationPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Better I18N: Mobile Localization Made Seamless" })}
+            <h2 className="section-h2 mb-6">
+              {t("i18n.reactNativeLocalization.solution.title")}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better I18N treats mobile as a first-class platform. The same CLI, dashboard, and AI translation engine that powers your web localization works identically for React Native and Expo — so your team manages all platforms from one place without duplicating effort." })}
+              {t("i18n.reactNativeLocalization.solution.content")}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div >
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature1.title", { defaultValue: "OTA Updates" })}
+                  {t("i18n.reactNativeLocalization.solution.feature1.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature1.description", { defaultValue: "Push translation updates to production without app store resubmission. New languages and copy fixes go live in seconds through the CDN." })}
+                  {t("i18n.reactNativeLocalization.solution.feature1.description")}
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div >
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature2.title", { defaultValue: "Offline-Ready" })}
+                  {t("i18n.reactNativeLocalization.solution.feature2.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature2.description", { defaultValue: "Translations are cached locally on the device. Your app works flawlessly in airplane mode, subways, and areas with poor connectivity." })}
+                  {t("i18n.reactNativeLocalization.solution.feature2.description")}
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div >
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature3.title", { defaultValue: "Unified Platform" })}
+                  {t("i18n.reactNativeLocalization.solution.feature3.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature3.description", { defaultValue: "Manage web and mobile translations in a single dashboard. Share translation memory across platforms so you never pay to translate the same string twice." })}
+                  {t("i18n.reactNativeLocalization.solution.feature3.description")}
                 </p>
               </div>
             </div>
@@ -259,54 +260,40 @@ function ReactNativeLocalizationPage() {
         </div>
       </section>
 
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}</h2>
+      <section className="border-t border-mist-200">
+        <div className="section">
+          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics")}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {relatedPages.map((page) => (
               <Link
                 key={page.href}
                 to={page.href}
                 params={{ locale }}
-                className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+                className="group flex flex-col gap-1"
               >
                 <div>
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600" />
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
-        <div className="mx-auto max-w-2xl text-center px-6">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("cta.title", { defaultValue: "Localize Your Mobile App in Minutes" })}
-          </h2>
-          <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Better I18N gives React Native and Expo developers the tools to ship localized apps to every market — with OTA updates, offline support, and type-safe SDKs out of the box." })}
-          </p>
-          <div className="mt-8 flex justify-center gap-4 flex-wrap">
-            <a
-              href="https://dash.better-i18n.com"
-              aria-label="Start using Better I18N for React Native localization for free"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
-            >
-              {t("cta.primary", { defaultValue: "Get Started Free" })}
-            </a>
-            <a
-              href="https://docs.better-i18n.com"
-              aria-label="Read the Better I18N documentation for mobile localization"
-              className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-            >
-              {t("cta.secondary", { defaultValue: "Read the Docs" })}
-            </a>
-          </div>
-        </div>
-      </section>
+      <Divider />
+
+      {/* The ask closes the page. Was a `bg-mist-950` band with `rounded-xl
+          mx-6` — a floating dark card on a white document, carrying its own
+          container and its own button scale. <ClosingCta /> is the one closing
+          shape in the grammar. */}
+      <ClosingCta
+        title={t("i18n.reactNativeLocalization.cta.title")}
+        subtitle={t("i18n.reactNativeLocalization.cta.subtitle")}
+        primary={{ label: t("i18n.reactNativeLocalization.cta.primary"), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t("i18n.reactNativeLocalization.cta.secondary"), href: "https://docs.better-i18n.com" }}
+      />
     </MarketingLayout>
   );
 }

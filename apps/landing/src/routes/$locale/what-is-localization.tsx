@@ -60,14 +60,14 @@ function WhatIsLocalizationPage() {
   return (
     <MarketingLayout showCTA={true}>
       {/* Hero Section */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mist-100 text-mist-700 text-sm font-medium mb-6">
+            <div className="eyebrow mb-5 flex items-center gap-2">
               <SpriteIcon name="globe" className="size-4" />
               {t("badge")}
             </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1] lg:text-6xl/[1.1]">
+            <h1 className="section-h2">
               {t("hero.title")}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
@@ -78,11 +78,11 @@ function WhatIsLocalizationPage() {
       </section>
 
       {/* Definition Section */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
+              <h2 className="section-h2 mb-6">
                 {t("definition.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
@@ -95,7 +95,7 @@ function WhatIsLocalizationPage() {
                 {t("definition.paragraph3")}
               </p>
             </div>
-            <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
+            <div className="mt-10 lg:mt-0">
               <h3 className="text-lg font-medium text-mist-950 mb-4">{t("etymology.title")}</h3>
               <p className="text-mist-700 leading-relaxed mb-4">
                 {t("etymology.content")}
@@ -109,10 +109,10 @@ function WhatIsLocalizationPage() {
       </section>
 
       {/* Elements of Localization */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
+            <h2 className="section-h2">
               {t("elements.title")}
             </h2>
             <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
@@ -121,8 +121,8 @@ function WhatIsLocalizationPage() {
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {elements.map((element) => (
-              <div key={element.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
-                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
+              <div key={element.titleKey}>
+                <div className="mb-3 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   {typeof element.icon === "string" ? <SpriteIcon name={element.icon as SpriteIconName} className="size-5" /> : <element.icon className="size-5" />}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">{t(element.titleKey)}</h3>
@@ -134,10 +134,10 @@ function WhatIsLocalizationPage() {
       </section>
 
       {/* Types of Localization */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
+            <h2 className="section-h2">
               {t("types.title")}
             </h2>
             <p className="mt-3 text-mist-700">
@@ -146,7 +146,7 @@ function WhatIsLocalizationPage() {
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {types.map((type) => (
-              <div key={type.titleKey} className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div key={type.titleKey}>
                 <h3 className="text-base font-medium text-mist-950 mb-2">{t(type.titleKey)}</h3>
                 <p className="text-sm text-mist-700 leading-relaxed">{t(type.descKey)}</p>
               </div>
@@ -156,11 +156,11 @@ function WhatIsLocalizationPage() {
       </section>
 
       {/* Benefits */}
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
+              <h2 className="section-h2 mb-6">
                 {t("benefits.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed">
@@ -171,7 +171,7 @@ function WhatIsLocalizationPage() {
               <ul className="space-y-4">
                 {benefits.map((benefitKey) => (
                   <li key={benefitKey} className="flex items-start gap-3">
-                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                     <span className="text-mist-700">{t(benefitKey)}</span>
                   </li>
                 ))}
@@ -182,10 +182,10 @@ function WhatIsLocalizationPage() {
       </section>
 
       {/* Localization Process */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
+            <h2 className="section-h2">
               {t("process.title")}
             </h2>
             <p className="mt-3 text-mist-700">
@@ -202,53 +202,53 @@ function WhatIsLocalizationPage() {
       </section>
 
       {/* Related Topics */}
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section className="border-t border-mist-200">
+        <div className="section">
           <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics")}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Link
-              to="/$locale/what-is-internationalization"
+              to="/$locale/what-is-internationalization/"
               params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+              className="group flex items-start justify-between gap-3"
             >
               <div>
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.i18n")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.i18nDesc")}</p>
               </div>
-              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600" />
             </Link>
             <Link
-              to="/$locale/what-is"
+              to="/$locale/what-is/"
               params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+              className="group flex items-start justify-between gap-3"
             >
               <div>
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.overview")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.overviewDesc")}</p>
               </div>
-              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600" />
             </Link>
             <Link
-              to="/$locale/i18n"
+              to="/$locale/i18n/"
               params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+              className="group flex items-start justify-between gap-3"
             >
               <div>
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.frameworks")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.frameworksDesc")}</p>
               </div>
-              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600" />
             </Link>
             <Link
-              to="/$locale/compare"
+              to="/$locale/compare/"
               params={{ locale }}
-              className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+              className="group flex items-start justify-between gap-3"
             >
               <div>
                 <h3 className="text-sm font-medium text-mist-950">{tCommon("whatIs.links.compare")}</h3>
                 <p className="text-xs text-mist-500 mt-1">{tCommon("whatIs.links.compareDesc")}</p>
               </div>
-              <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+              <SpriteIcon name="arrow-right" className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600" />
             </Link>
           </div>
         </div>
@@ -260,7 +260,7 @@ function WhatIsLocalizationPage() {
 function ProcessStep({ number, title, description }: { number: string; title: string; description: string }) {
   return (
     <div className="text-center p-6">
-      <div className="size-10 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium mx-auto mb-4">
+      <div className="mb-3 block text-[11px] font-medium tabular-nums text-mist-400">
         {number}
       </div>
       <h3 className="text-base font-medium text-mist-950 mb-2">{title}</h3>

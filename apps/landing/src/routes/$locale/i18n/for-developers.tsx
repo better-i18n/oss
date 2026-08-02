@@ -1,9 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
+import { GuideMark } from "@/lib/i18n-guide-icons";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { CodeBlock } from "@/components/CodeBlock";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import { ClosingCta, Divider } from "@/components/ui/page";
+import { i18nGuideRoute } from "@/lib/i18n-guide-routes";
 export const Route = createFileRoute("/$locale/i18n/for-developers")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
@@ -58,13 +62,13 @@ function ForDevelopersSeoPage() {
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
       {/* Hero */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
+            <div className="eyebrow mb-5 flex items-center gap-2">
               <span>{t("i18n.forDevelopers.badge")}</span>
             </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
+            <h1 className="section-h2">
               {t("i18n.forDevelopers.hero.title")}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
@@ -75,19 +79,27 @@ function ForDevelopersSeoPage() {
       </section>
 
       {/* Features Grid */}
-      <section className="pb-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <section>
+        <div className="section">
+          {/* The grid used to sit directly under the h1 with no heading of its
+              own — an h1 → h3 jump, and a section that opened with a card grid
+              instead of a SectionHeader. */}
+          <p className="eyebrow">{t("i18n.forDevelopers.features.eyebrow")}</p>
+          <h2 className="section-h2">{t("i18n.forDevelopers.features.title")}</h2>
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Bare columns + the shared 22px mark tile; the old version was a
+                bordered card wrapping a tinted icon tile — a box in a box. */}
             {features.map((feature) => (
-              <div
-                key={feature.title}
-                className="rounded-2xl border border-mist-200 bg-white p-6"
-              >
-                <div className="w-10 h-10 rounded-lg bg-mist-100 flex items-center justify-center mb-4">
-                  <SpriteIcon name={feature.icon as SpriteIconName} className="w-5 h-5 text-mist-600" />
-                </div>
-                <h3 className="text-base font-medium text-mist-950">{feature.title}</h3>
-                <p className="mt-2 text-sm text-mist-600">{feature.description}</p>
+              <div key={feature.title}>
+                <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
+                  <SpriteIcon name={feature.icon as SpriteIconName} className="size-3.5" />
+                </span>
+                <h3 className="mt-3 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                  {feature.title}
+                </h3>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>
@@ -95,14 +107,20 @@ function ForDevelopersSeoPage() {
       </section>
 
       {/* Code Example */}
-      <section className="py-16 bg-mist-50">
+      <section className="bg-mist-50">
         <div className="mx-auto max-w-4xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
+          <h2 className="section-h2 mb-4">
             {t("i18n.forDevelopers.codeExample.title")}
           </h2>
           <p className="text-mist-600 mb-6">{t("i18n.forDevelopers.codeExample.description")}</p>
-          <div className="bg-mist-950 rounded-xl p-6 overflow-x-auto code-block">
-            <pre className="text-sm text-mist-100 font-mono whitespace-pre">{`# Install the SDK
+          {/* Was a `bg-mist-950` slab with `text-mist-100` on top: the only
+              dark surface in this section, and no syntax colour at all.
+              `CodeBlock` tokenises at build time, so the three hues cost no
+              runtime JavaScript (rule/code-blocks-are-tokenised-at-build). */}
+          <CodeBlock
+            lang="bash"
+            filename="terminal"
+            code={`# Install the SDK
 npm install @better-i18n/next
 
 # Configure your project
@@ -117,21 +135,21 @@ import { useTranslations } from '@better-i18n/use-intl';
 function Component() {
   const t = useT('common');
   return <h1>{t('welcome')}</h1>;
-}`}</pre>
-          </div>
+}`}
+          />
         </div>
       </section>
 
       {/* CDN Performance */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
-                {t("i18n.forDevelopers.cdn.title", { defaultValue: "Edge CDN Performance" })}
+              <h2 className="section-h2 mb-4">
+                {t("i18n.forDevelopers.cdn.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("i18n.forDevelopers.cdn.description", { defaultValue: "Translations are served from Cloudflare's global edge network with aggressive caching and smart invalidation so your users always get the fastest possible load times." })}
+                {t("i18n.forDevelopers.cdn.description")}
               </p>
             </div>
             <div className="mt-8 lg:mt-0 space-y-3">
@@ -144,7 +162,7 @@ function Component() {
                 { label: "Edge Locations", detail: "North America, Europe, and Asia Pacific" },
                 { label: "Immutable Assets", detail: "1-year cache for static assets like flags" },
               ].map((item) => (
-                <div key={item.label} className="flex items-start gap-3 p-3 rounded-lg bg-mist-50 border border-mist-100">
+                <div key={item.label} className="flex items-start gap-3 border-t border-black/[0.05] py-3 first:border-t-0 first:pt-0">
                   <SpriteIcon name="zap" className="w-4 h-4 text-mist-600 mt-0.5 shrink-0" />
                   <div>
                     <span className="text-sm font-medium text-mist-950">{item.label}</span>
@@ -158,42 +176,44 @@ function Component() {
       </section>
 
       {/* API & Webhooks */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section className="bg-mist-50">
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <div className="w-10 h-10 rounded-lg bg-mist-100 flex items-center justify-center mb-4">
+              <div className="mb-3 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                 <SpriteIcon name="api-connection" className="w-5 h-5 text-mist-600" />
               </div>
-              <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
-                {t("i18n.forDevelopers.api.title", { defaultValue: "REST API & Webhooks" })}
+              <h2 className="section-h2 mb-4">
+                {t("i18n.forDevelopers.api.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("i18n.forDevelopers.api.description", { defaultValue: "Programmatic access to every platform function. Manage projects, keys, and languages from your own tooling or CI pipeline." })}
+                {t("i18n.forDevelopers.api.description")}
               </p>
-              <div className="bg-mist-950 rounded-xl p-4 overflow-x-auto code-block">
-                <pre className="text-sm text-mist-100 font-mono whitespace-pre">{`// REST API methods
+              <CodeBlock
+                lang="tsx"
+                filename="rest-api"
+                code={`// REST API methods
 listProjects()
 getProject(id)
 addLanguage(projectId, locale)
 listKeys(projectId)
 createKeys(projectId, keys[])
 updateKeys(projectId, keys[])
-deleteKeys(projectId, keyIds[])`}</pre>
-              </div>
+deleteKeys(projectId, keyIds[])`}
+              />
             </div>
             <div className="mt-8 lg:mt-0 space-y-4">
-              <div className="p-4 rounded-xl bg-white border border-mist-200">
-                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.forDevelopers.api.webhooks.title", { defaultValue: "Webhook Events" })}</h3>
-                <p className="text-sm text-mist-600">{t("i18n.forDevelopers.api.webhooks.description", { defaultValue: "Receive push events when syncs complete, translations are published, or keys are modified." })}</p>
+              <div >
+                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.forDevelopers.api.webhooks.title")}</h3>
+                <p className="text-sm text-mist-600">{t("i18n.forDevelopers.api.webhooks.description")}</p>
               </div>
-              <div className="p-4 rounded-xl bg-white border border-mist-200">
-                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.forDevelopers.api.batch.title", { defaultValue: "Batch Operations" })}</h3>
-                <p className="text-sm text-mist-600">{t("i18n.forDevelopers.api.batch.description", { defaultValue: "Create, update, or delete multiple keys in a single request. Each key is tracked by a unique UUID across syncs." })}</p>
+              <div >
+                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.forDevelopers.api.batch.title")}</h3>
+                <p className="text-sm text-mist-600">{t("i18n.forDevelopers.api.batch.description")}</p>
               </div>
-              <div className="p-4 rounded-xl bg-white border border-mist-200">
-                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.forDevelopers.api.sync.title", { defaultValue: "Sync Status Tracking" })}</h3>
-                <p className="text-sm text-mist-600">{t("i18n.forDevelopers.api.sync.description", { defaultValue: "Monitor sync jobs through pending, in-progress, completed, and failed states. Soft-deleted keys are preserved with timestamps for auditing." })}</p>
+              <div >
+                <h3 className="text-sm font-medium text-mist-950 mb-1">{t("i18n.forDevelopers.api.sync.title")}</h3>
+                <p className="text-sm text-mist-600">{t("i18n.forDevelopers.api.sync.description")}</p>
               </div>
             </div>
           </div>
@@ -201,13 +221,13 @@ deleteKeys(projectId, keyIds[])`}</pre>
       </section>
 
       {/* Developer Experience */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
-            {t("i18n.forDevelopers.dx.title", { defaultValue: "Developer Experience" })}
+      <section>
+        <div className="section">
+          <h2 className="section-h2 mb-4">
+            {t("i18n.forDevelopers.dx.title")}
           </h2>
           <p className="text-mist-700 mb-8 max-w-2xl">
-            {t("i18n.forDevelopers.dx.description", { defaultValue: "Built for developers who care about type safety, debugging, and performance observability." })}
+            {t("i18n.forDevelopers.dx.description")}
           </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
@@ -220,9 +240,11 @@ deleteKeys(projectId, keyIds[])`}</pre>
               { title: "Error Handlers", desc: "Custom callbacks for missing translation keys" },
               { title: "Locale Callbacks", desc: "Event hooks for locale switching and changes" },
             ].map((item) => (
-              <div key={item.title} className="rounded-2xl border border-mist-200 bg-white p-5">
-                <h3 className="text-sm font-medium text-mist-950">{item.title}</h3>
-                <p className="mt-1 text-sm text-mist-600">{item.desc}</p>
+              <div key={item.title}>
+                <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                  {item.title}
+                </h3>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -230,31 +252,31 @@ deleteKeys(projectId, keyIds[])`}</pre>
       </section>
 
       {/* Infrastructure */}
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="w-10 h-10 rounded-lg bg-mist-100 flex items-center justify-center mb-4">
+      <section className="bg-mist-50">
+        <div className="section">
+          <div className="mb-3 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
             <SpriteIcon name="shield-check" className="w-5 h-5 text-mist-600" />
           </div>
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-4">
-            {t("i18n.forDevelopers.infra.title", { defaultValue: "Infrastructure" })}
+          <h2 className="section-h2 mb-4">
+            {t("i18n.forDevelopers.infra.title")}
           </h2>
           <p className="text-mist-700 mb-8 max-w-2xl">
-            {t("i18n.forDevelopers.infra.description", { defaultValue: "Production-grade infrastructure with built-in security, redundancy, and multi-datacenter support." })}
+            {t("i18n.forDevelopers.infra.description")}
           </p>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="p-5 rounded-xl bg-white border border-mist-200">
+            <div >
               <h3 className="text-sm font-medium text-mist-950 mb-1">Cloudflare Workers</h3>
               <p className="text-sm text-mist-600">Edge computing with built-in DDoS protection and global distribution</p>
             </div>
-            <div className="p-5 rounded-xl bg-white border border-mist-200">
+            <div >
               <h3 className="text-sm font-medium text-mist-950 mb-1">Cloudflare R2 Storage</h3>
               <p className="text-sm text-mist-600">Object storage for translation files with zero egress fees</p>
             </div>
-            <div className="p-5 rounded-xl bg-white border border-mist-200">
+            <div >
               <h3 className="text-sm font-medium text-mist-950 mb-1">PlanetScale Database</h3>
               <p className="text-sm text-mist-600">Serverless MySQL with automatic backups and branching</p>
             </div>
-            <div className="p-5 rounded-xl bg-white border border-mist-200">
+            <div >
               <h3 className="text-sm font-medium text-mist-950 mb-1">Multi-Datacenter</h3>
               <p className="text-sm text-mist-600">Redundant deployment across regions for high availability</p>
             </div>
@@ -263,9 +285,9 @@ deleteKeys(projectId, keyIds[])`}</pre>
       </section>
 
       {/* Framework Links */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.1] mb-8">
+      <section>
+        <div className="section">
+          <h2 className="section-h2 mb-8">
             {t("i18n.forDevelopers.frameworks.title")}
           </h2>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
@@ -277,43 +299,39 @@ deleteKeys(projectId, keyIds[])`}</pre>
               { name: "Angular", slug: "angular" },
               { name: "Svelte", slug: "svelte" },
             ].map((fw) => (
+              // A framework named in a list carries its real mark, and the row
+              // itself carries no box (motto 2 + 5).
               <Link
                 key={fw.slug}
-                to={`/$locale/i18n/${fw.slug}`}
+                to={i18nGuideRoute(fw.slug)}
                 params={{ locale }}
-                className="flex items-center justify-center gap-2 p-4 bg-white rounded-xl border border-mist-100 hover:border-mist-300 hover:shadow transition-all"
+                className="group flex items-center gap-2.5"
               >
-                <span className="text-sm font-medium text-mist-950">{fw.name}</span>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400" />
+                <GuideMark slug={fw.slug} group="frameworks" />
+                <span className="text-[14px] font-medium tracking-[-0.015em] text-mist-900 transition-colors group-hover:text-mist-600">
+                  {fw.name}
+                </span>
+                <SpriteIcon
+                  name="arrow-right"
+                  className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
+                />
               </Link>
             ))}
           </div>
         </div>
       </section>
+      <Divider />
 
-      {/* CTA */}
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
-        <div className="mx-auto max-w-2xl text-center px-6">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("i18n.forDevelopers.cta.title")}
-          </h2>
-          <p className="mt-4 text-lg text-mist-300">{t("i18n.forDevelopers.cta.subtitle")}</p>
-          <div className="mt-8 flex justify-center gap-4 flex-wrap">
-            <a
-              href="https://dash.better-i18n.com"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
-            >
-              {t("i18n.forDevelopers.cta.primary")}
-            </a>
-            <a
-              href="https://docs.better-i18n.com"
-              className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-            >
-              {t("i18n.forDevelopers.cta.secondary")}
-            </a>
-          </div>
-        </div>
-      </section>
+      {/* The ask closes the page. Was a `bg-mist-950` band with `rounded-xl
+          mx-6` — a floating dark card on a white document, with its own
+          container and its own button scale. <ClosingCta /> is the one closing
+          shape in the grammar. */}
+      <ClosingCta
+        title={t("i18n.forDevelopers.cta.title")}
+        subtitle={t("i18n.forDevelopers.cta.subtitle")}
+        primary={{ label: t("i18n.forDevelopers.cta.primary"), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t("i18n.forDevelopers.cta.secondary"), href: "https://docs.better-i18n.com" }}
+      />
     </MarketingLayout>
   );
 }

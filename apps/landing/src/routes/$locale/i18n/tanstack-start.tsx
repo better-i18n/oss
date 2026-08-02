@@ -9,6 +9,7 @@ import {
   OtherFrameworks,
 } from "@/components/FrameworkComparison";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/$locale/i18n/tanstack-start")({
   loader: createPageLoader(),
@@ -30,23 +31,30 @@ export const Route = createFileRoute("/$locale/i18n/tanstack-start")({
   component: TanStackStartI18nPage,
 });
 
+/* Key suffixes, not copy — resolved with t() in the component. */
+const FEATURE_KEYS = [
+  "ssrHydration",
+  "noFlash",
+  "dynamicLocale",
+  "pathRouting",
+  "typeSafety",
+  "detection",
+];
+
 function TanStackStartI18nPage() {
+  const t = useT("marketing");
   const { locale } = Route.useParams();
 
   const setupSteps = [
     {
       step: 1,
-      title: "Install packages",
-      description:
-        "Install @better-i18n/use-intl and use-intl. No additional build plugins or Babel transforms required.",
+      id: "step1",
       code: "npm install @better-i18n/use-intl use-intl",
       fileName: "terminal",
     },
     {
       step: 2,
-      title: "Load messages server-side",
-      description:
-        "Fetch translations in the root loader so they are available on the very first server render. No separate API call from the client.",
+      id: "step2",
       code: `// app/routes/__root.tsx
 import { getMessages } from '@better-i18n/use-intl/server';
 
@@ -63,9 +71,7 @@ export const Route = createRootRoute({
     },
     {
       step: 3,
-      title: "Wrap with BetterI18nProvider",
-      description:
-        "Pass the loader data into BetterI18nProvider. The provider hydrates the client with the same messages loaded on the server.",
+      id: "step3",
       code: `// app/routes/__root.tsx (continued)
 import { BetterI18nProvider } from '@better-i18n/use-intl';
 
@@ -85,9 +91,7 @@ export function RootComponent() {
     },
     {
       step: 4,
-      title: "Use in routes",
-      description:
-        "Call useTranslations() in any route component. The same hook works on both client and server components.",
+      id: "step4",
       code: `// app/routes/about.tsx
 import { useTranslations } from '@better-i18n/use-intl';
 
@@ -104,43 +108,44 @@ export default function AboutPage() {
     },
   ];
 
-  const features = [
-    "SSR hydration — server-loaded messages hydrate client without re-fetch",
-    "No content flash — translated content on the very first render",
-    "Dynamic locale — language list from CDN manifest, no hardcoding",
-    "Path-based routing — /tr/about, /de/about URL structure",
-    "Full-stack type safety — loader and component share the same type system",
-    "Cookie + header detection — URL → cookie → Accept-Language fallback chain",
-  ];
+  /* Copy from the CDN; the code samples and file names stay in the file
+     because they are code, not copy. `id` is the key path segment. */
+  const steps = setupSteps.map((step) => ({
+    ...step,
+    title: t(`i18n.tanstackStart.setup.${step.id}.title`),
+    description: t(`i18n.tanstackStart.setup.${step.id}.description`),
+  }));
+
+  const features = FEATURE_KEYS.map((k) => t(`i18n.tanstackStart.features.${k}`));
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
       <FrameworkHero
-        title="TanStack Start i18n — Full-Stack Localization"
-        subtitle="Add internationalization to your TanStack Start app with SSR support, automatic locale detection, and type-safe translations that work on both client and server."
-        badgeText="TanStack Start i18n"
+        title={t("i18n.tanstackStart.hero.title")}
+        subtitle={t("i18n.tanstackStart.hero.subtitle")}
+        badgeText={t("i18n.tanstackStart.hero.badge")}
       />
 
-      <SetupGuide title="Set up in 4 steps" steps={setupSteps} />
+      <SetupGuide title={t("i18n.tanstackStart.setup.title")} steps={steps} />
 
       <FeatureList
-        title="Why use Better I18N with TanStack Start?"
+        title={t("i18n.tanstackStart.featuresTitle")}
         features={features}
       />
 
       <OtherFrameworks
-        title="Other frameworks"
+        title={t("i18n.tanstackStart.otherFrameworks")}
         currentFramework="tanstack-start"
         locale={locale}
       />
 
       <FrameworkCTA
-        title="Build a multilingual TanStack Start app"
-        subtitle="Manage all your translations in one dashboard with AI-powered suggestions, context-aware translations, and CDN delivery."
-        primaryCTA="Get started free"
+        title={t("i18n.tanstackStart.cta.title")}
+        subtitle={t("i18n.tanstackStart.cta.subtitle")}
+        primaryCTA={t("i18n.tanstackStart.cta.primary")}
         primaryHref="https://dash.better-i18n.com"
-        secondaryCTA="Read the docs"
+        secondaryCTA={t("i18n.tanstackStart.cta.secondary")}
         secondaryHref="https://docs.better-i18n.com/frameworks/tanstack-start"
       />
     </MarketingLayout>

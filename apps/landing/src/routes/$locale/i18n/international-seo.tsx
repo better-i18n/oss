@@ -5,6 +5,16 @@ import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import {
+  ClosingCta,
+  Divider,
+  PageHero,
+  Section,
+  SectionHeader,
+} from "@/components/ui/page";
+
+/** Three solution features, keyed by suffix under `solution.*`. */
+const SOLUTION_FEATURES = ["feature1", "feature2", "feature3"] as const;
 
 export const Route = createFileRoute("/$locale/i18n/international-seo")({
   loader: createPageLoader(),
@@ -26,272 +36,249 @@ export const Route = createFileRoute("/$locale/i18n/international-seo")({
 });
 
 const pillars = [
-  { icon: "magnifying-glass", titleKey: "pillars.keywordResearch.title", descKey: "pillars.keywordResearch.description", defaultTitle: "Keyword Research", defaultDesc: "Conduct localized keyword research for each target market to discover how users actually search in their language and region." },
-  { icon: "rocket", titleKey: "pillars.contentLocalization.title", descKey: "pillars.contentLocalization.description", defaultTitle: "Content Localization", defaultDesc: "Adapt your content beyond translation to match cultural norms, local references, and search behavior in each market." },
-  { icon: "chart", titleKey: "pillars.technicalSeo.title", descKey: "pillars.technicalSeo.description", defaultTitle: "Technical SEO", defaultDesc: "Implement hreflang tags, canonical URLs, sitemaps, and proper URL structures to signal language targeting to search engines." },
-  { icon: "group", titleKey: "pillars.linkBuilding.title", descKey: "pillars.linkBuilding.description", defaultTitle: "Link Building", defaultDesc: "Acquire backlinks from authoritative local sources in each target market to build regional domain authority." },
+  { icon: "magnifying-glass", titleKey: "i18n.internationalSeo.pillars.keywordResearch.title", descKey: "i18n.internationalSeo.pillars.keywordResearch.description" },
+  { icon: "rocket", titleKey: "i18n.internationalSeo.pillars.contentLocalization.title", descKey: "i18n.internationalSeo.pillars.contentLocalization.description" },
+  { icon: "chart", titleKey: "i18n.internationalSeo.pillars.technicalSeo.title", descKey: "i18n.internationalSeo.pillars.technicalSeo.description" },
+  { icon: "group", titleKey: "i18n.internationalSeo.pillars.linkBuilding.title", descKey: "i18n.internationalSeo.pillars.linkBuilding.description" },
 ];
 
 function InternationalSeoPage() {
-  const t = useT("marketing.i18n.internationalSeo");
+  const t = useT("marketing");
   const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const checklist = [
-    { key: "checklist.marketResearch", defaultValue: "Conduct market research for target regions" },
-    { key: "checklist.competitorAnalysis", defaultValue: "Analyze local competitors in each market" },
-    { key: "checklist.keywordLocalization", defaultValue: "Localize keywords for each target language" },
-    { key: "checklist.hreflangTags", defaultValue: "Implement hreflang tags across all pages" },
-    { key: "checklist.localizedContent", defaultValue: "Create culturally adapted localized content" },
-    { key: "checklist.technicalAudit", defaultValue: "Run a technical SEO audit for international pages" },
-    { key: "checklist.linkBuilding", defaultValue: "Build local backlinks in each target region" },
-    { key: "checklist.analyticsTracking", defaultValue: "Set up per-region analytics tracking" },
+    { key: "i18n.internationalSeo.checklist.marketResearch" },
+    { key: "i18n.internationalSeo.checklist.competitorAnalysis" },
+    { key: "i18n.internationalSeo.checklist.keywordLocalization" },
+    { key: "i18n.internationalSeo.checklist.hreflangTags" },
+    { key: "i18n.internationalSeo.checklist.localizedContent" },
+    { key: "i18n.internationalSeo.checklist.technicalAudit" },
+    { key: "i18n.internationalSeo.checklist.linkBuilding" },
+    { key: "i18n.internationalSeo.checklist.analyticsTracking" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Market Research", defaultDesc: "Identify high-potential markets using search volume data, competitive analysis, and business alignment criteria." },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Technical Foundation", defaultDesc: "Set up URL structure, hreflang tags, and international sitemaps before publishing localized content." },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Content Localization", defaultDesc: "Localize your highest-impact pages first, ensuring keyword research drives every translation decision." },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Monitor & Optimize", defaultDesc: "Track per-market rankings, organic traffic, and conversion rates to iteratively improve your strategy." },
+    { number: "1", titleKey: "i18n.internationalSeo.process.step1.title", descKey: "i18n.internationalSeo.process.step1.description" },
+    { number: "2", titleKey: "i18n.internationalSeo.process.step2.title", descKey: "i18n.internationalSeo.process.step2.description" },
+    { number: "3", titleKey: "i18n.internationalSeo.process.step3.title", descKey: "i18n.internationalSeo.process.step3.description" },
+    { number: "4", titleKey: "i18n.internationalSeo.process.step4.title", descKey: "i18n.internationalSeo.process.step4.description" },
   ];
 
   const relatedPages = [
-    { name: "Multilingual SEO", href: "/$locale/i18n/multilingual-seo", description: t("related.multilingualSeo", { defaultValue: "Core fundamentals of multilingual SEO optimization" }) },
-    { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("related.websiteLocalization", { defaultValue: "Localizing your web application for global markets" }) },
-    { name: "Translation Solutions", href: "/$locale/i18n/translation-solutions", description: t("related.translationSolutions", { defaultValue: "Compare platforms and tools for translation" }) },
-    { name: "Cultural Adaptation", href: "/$locale/i18n/cultural-adaptation", description: t("related.culturalAdaptation", { defaultValue: "Adapting content for different cultural contexts" }) },
+    { name: "Multilingual SEO", href: "/$locale/i18n/multilingual-seo", description: t("i18n.internationalSeo.related.multilingualSeo") },
+    { name: "Website Localization", href: "/$locale/i18n/website-localization", description: t("i18n.internationalSeo.related.websiteLocalization") },
+    { name: "Translation Solutions", href: "/$locale/i18n/translation-solutions", description: t("i18n.internationalSeo.related.translationSolutions") },
+    { name: "Cultural Adaptation", href: "/$locale/i18n/cultural-adaptation", description: t("i18n.internationalSeo.related.culturalAdaptation") },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
-              <SpriteIcon name="globe" className="size-4" />
-              <span>{t("badge", { defaultValue: "International SEO" })}</span>
-            </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("hero.title", { defaultValue: "International SEO Strategy: Rank Globally and Grow Beyond Borders" })}
-            </h1>
-            <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "International SEO is the discipline of optimizing your website to attract organic traffic from multiple countries and language markets. Whether you are an SEO specialist entering new regions or a business deploying its first international SEO strategy, this guide covers market research, technical SEO checklist essentials, and SEO basics for global audiences." })}
+      <PageHero
+        titleId="intl-seo-hero"
+        title={t("i18n.internationalSeo.hero.title")}
+        subtitle={t("i18n.internationalSeo.hero.subtitle")}
+      />
+
+      <Divider />
+
+      {/* Definition + opportunity. Two prose blocks that alternated white /
+          mist-50 to fake a boundary; the aside was a tinted card. Now two
+          columns split by the gap, every paragraph kept. */}
+      <Section labelledBy="intl-seo-definition">
+        <SectionHeader
+          id="intl-seo-definition"
+          eyebrow={t("i18n.internationalSeo.eyebrow.definition")}
+          title={t("i18n.internationalSeo.definition.title")}
+        />
+        <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-16">
+          <div className="flex flex-col gap-4">
+            <p className="text-[14px] leading-relaxed text-mist-600">
+              {t("i18n.internationalSeo.definition.paragraph1")}
+            </p>
+            <p className="text-[14px] leading-relaxed text-mist-600">
+              {t("i18n.internationalSeo.definition.paragraph2")}
+            </p>
+            <p className="text-[14px] leading-relaxed text-mist-600">
+              {t("i18n.internationalSeo.definition.paragraph3")}
+            </p>
+          </div>
+          <div>
+            <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+              {t("i18n.internationalSeo.opportunity.title")}
+            </h3>
+            <p className="mt-3 text-[13px] leading-relaxed text-mist-600">
+              {t("i18n.internationalSeo.opportunity.content")}
+            </p>
+            <p className="mt-2 text-[13px] leading-relaxed text-mist-600">
+              {t("i18n.internationalSeo.opportunity.content2")}
             </p>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
-            <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("definition.title", { defaultValue: "What Is International SEO?" })}
-              </h2>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph1", { defaultValue: "International SEO is the process of optimizing your website so that search engines like Google can identify which countries and languages you want to target. An effective international SEO strategy ensures that your pages rank for the right search queries in the right markets — not just in your home country." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph2", { defaultValue: "SEO tips for international markets differ significantly from domestic SEO. You must conduct separate keyword research for each language, adapt your content to cultural norms, implement proper hreflang signals, and build local authority through region-specific link acquisition." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed">
-                {t("definition.paragraph3", { defaultValue: "This SEO checklist for international expansion addresses the technical, content, and authority dimensions of global search visibility. From SEO basics like page titles to advanced structured data for international audiences, this guide equips you with everything an SEO specialist needs." })}
-              </p>
-            </div>
-            <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
-              <h3 className="text-lg font-medium text-mist-950 mb-4">
-                {t("opportunity.title", { defaultValue: "The International SEO Opportunity" })}
+      <Divider />
+
+      {/* Four pillars — bare columns with the shared 22px mark tile. */}
+      <Section labelledBy="intl-seo-pillars">
+        <SectionHeader
+          id="intl-seo-pillars"
+          eyebrow={t("i18n.internationalSeo.eyebrow.pillars")}
+          title={t("i18n.internationalSeo.pillars.title")}
+          subtitle={t("i18n.internationalSeo.pillars.subtitle")}
+        />
+        <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+          {pillars.map((pillar) => (
+            <div key={pillar.titleKey}>
+              <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
+                <SpriteIcon name={pillar.icon as SpriteIconName} className="size-3.5" />
+              </span>
+              <h3 className="mt-3 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                {t(pillar.titleKey)}
               </h3>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("opportunity.content", { defaultValue: "Search engines process over 8 billion queries daily, and over 60% originate in non-English languages. Businesses that implement a structured international SEO strategy capture organic traffic from markets where paid advertising costs are lower and organic competition is less mature." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed">
-                {t("opportunity.content2", { defaultValue: "Markets like Brazil, Germany, Japan, and South Korea each have unique search behaviors and preferred platforms. An international SEO specialist who understands these nuances can unlock traffic channels completely ignored by English-only competitors." })}
+              <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">
+                {t(pillar.descKey)}
               </p>
             </div>
-          </div>
+          ))}
         </div>
-      </section>
+      </Section>
 
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("pillars.title", { defaultValue: "The Four Pillars of International SEO" })}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("pillars.subtitle", { defaultValue: "Every successful international SEO strategy rests on these core disciplines. Neglecting any one will limit your global ranking potential." })}
+      <Divider />
+
+      {/* Checklist + tips. The checkmarks were emerald — a hue carrying no
+          information; the list is already a list. */}
+      <Section labelledBy="intl-seo-checklist">
+        <SectionHeader
+          id="intl-seo-checklist"
+          eyebrow={t("i18n.internationalSeo.eyebrow.checklist")}
+          title={t("i18n.internationalSeo.checklist.title")}
+          subtitle={t("i18n.internationalSeo.checklist.subtitle")}
+        />
+        <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-16">
+          <ul className="flex flex-col">
+            {checklist.map((item) => (
+              <li
+                key={item.key}
+                className="flex items-start gap-3 border-t border-black/[0.05] py-3 first:border-t-0 first:pt-0"
+              >
+                <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
+                <span className="text-[13px] leading-relaxed text-mist-700">{t(item.key)}</span>
+              </li>
+            ))}
+          </ul>
+          <div>
+            <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+              {t("i18n.internationalSeo.seoTips.title")}
+            </h3>
+            <p className="mt-3 text-[13px] leading-relaxed text-mist-600">
+              {t("i18n.internationalSeo.seoTips.content")}
+            </p>
+            <p className="mt-2 text-[13px] leading-relaxed text-mist-600">
+              {t("i18n.internationalSeo.seoTips.content2")}
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {pillars.map((pillar) => (
-              <div key={pillar.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
-                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
-                  <SpriteIcon name={pillar.icon as SpriteIconName} className="size-5" />
-                </div>
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(pillar.titleKey, { defaultValue: pillar.defaultTitle })}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(pillar.descKey, { defaultValue: pillar.defaultDesc })}
-                </p>
-              </div>
-            ))}
-          </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
-            <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("checklist.title", { defaultValue: "International SEO Checklist" })}
-              </h2>
-              <p className="text-mist-700 leading-relaxed mb-6">
-                {t("checklist.subtitle", { defaultValue: "Use this SEO checklist as a foundation for every new market you enter. Each item represents a distinct task that affects your international search visibility." })}
-              </p>
-              <ul className="space-y-4">
-                {checklist.map((item) => (
-                  <li key={item.key} className="flex items-start gap-3">
-                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(item.key, { defaultValue: item.defaultValue })}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
-              <h3 className="text-lg font-medium text-mist-950 mb-4">
-                {t("seoTips.title", { defaultValue: "SEO Tips for International Markets" })}
+      <Divider />
+
+      {/* Process — four numbered beats, no centring and no filled discs. */}
+      <Section labelledBy="intl-seo-process">
+        <SectionHeader
+          id="intl-seo-process"
+          eyebrow={t("i18n.internationalSeo.eyebrow.process")}
+          title={t("i18n.internationalSeo.process.title")}
+          subtitle={t("i18n.internationalSeo.process.subtitle")}
+        />
+        <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+          {processSteps.map((step) => (
+            <div key={step.number}>
+              <span className="text-[11px] font-medium tabular-nums text-mist-400">
+                {`0${step.number}`}
+              </span>
+              <h3 className="mt-2 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                {t(step.titleKey)}
               </h3>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("seoTips.content", { defaultValue: "Conduct localized keyword research in each target language — never rely on direct translation of English keywords. Search intent varies significantly by market. Germans may search more formally, while Brazilian users prefer conversational queries." })}
-              </p>
-              <p className="text-mist-700 leading-relaxed">
-                {t("seoTips.content2", { defaultValue: "Analyze local competitors, not global ones. A site ranking #1 in Germany for your category may use strategies entirely different from what works in the US. Study their domain structure, backlink profile, and content depth." })}
+              <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">
+                {t(step.descKey)}
               </p>
             </div>
-          </div>
+          ))}
         </div>
-      </section>
+      </Section>
 
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("process.title", { defaultValue: "International SEO Strategy Rollout" })}
-            </h2>
-            <p className="mt-3 text-mist-700">
-              {t("process.subtitle", { defaultValue: "A phased approach to launching international SEO without disrupting existing rankings." })}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {processSteps.map((step) => (
-              <div key={step.number} className="text-center p-6">
-                <div className="size-10 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium mx-auto mb-4">
-                  {step.number}
-                </div>
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
-                </h3>
-                <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: step.defaultDesc })}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Divider />
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "How Better I18N Accelerates International SEO" })}
-            </h2>
-            <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better I18N provides the localization infrastructure that powers international SEO at scale. When your translation pipeline is fast and accurate, you can enter new markets faster, keep content freshness signals strong, and maintain keyword relevance across every language variant your site serves." })}
-            </p>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature1.title", { defaultValue: "Localized Meta Tags" })}
-                </h3>
-                <p className="text-sm text-mist-700">
-                  {t("solution.feature1.description", { defaultValue: "Translate and localize page titles, meta descriptions, and OG tags with SEO-aware AI that understands keyword placement." })}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature2.title", { defaultValue: "Continuous Translation" })}
-                </h3>
-                <p className="text-sm text-mist-700">
-                  {t("solution.feature2.description", { defaultValue: "Automatically translate new content as it is published so your international pages never lag behind your primary language." })}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature3.title", { defaultValue: "Market Entry Speed" })}
-                </h3>
-                <p className="text-sm text-mist-700">
-                  {t("solution.feature3.description", { defaultValue: "Launch full multilingual SEO coverage for a new locale in days, not months, with AI-assisted workflows and developer SDKs." })}
-                </p>
-              </div>
+      {/* Solution — three tinted cards became three bare columns. */}
+      <Section labelledBy="intl-seo-solution">
+        <SectionHeader
+          id="intl-seo-solution"
+          eyebrow={t("i18n.internationalSeo.eyebrow.solution")}
+          title={t("i18n.internationalSeo.solution.title")}
+          subtitle={t("i18n.internationalSeo.solution.content")}
+        />
+        <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-3">
+          {SOLUTION_FEATURES.map((id) => (
+            <div key={id}>
+              <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                {t(`i18n.internationalSeo.solution.${id}.title`)}
+              </h3>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">
+                {t(`i18n.internationalSeo.solution.${id}.description`)}
+              </p>
             </div>
-          </div>
+          ))}
         </div>
-      </section>
+      </Section>
 
+      <Divider />
 
       <SeeAlso currentSlug="international-seo" locale={locale} />
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {relatedPages.map((page) => (
-              <Link
-                key={page.href}
-                to={page.href}
-                params={{ locale }}
-                className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
-              >
-                <div>
-                  <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
-                  <p className="text-xs text-mist-500 mt-1">{page.description}</p>
-                </div>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
-        <div className="mx-auto max-w-2xl text-center px-6">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("cta.title", { defaultValue: "Build Your International SEO Foundation Today" })}
-          </h2>
-          <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Give your international SEO strategy the localization infrastructure it needs to scale across every market." })}
-          </p>
-          <div className="mt-8 flex justify-center gap-4 flex-wrap">
-            <a
-              href="https://dash.better-i18n.com"
-              aria-label="Get started with Better I18N for international SEO"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
+      <Divider />
+
+      {/* Related topics — bare columns, no per-item box. */}
+      <Section labelledBy="intl-seo-related">
+        <h2 id="intl-seo-related" className="text-[11px] font-medium text-mist-400">
+          {tCommon("whatIs.relatedTopics")}
+        </h2>
+        <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+          {relatedPages.map((page) => (
+            <Link
+              key={page.href}
+              to={page.href}
+              params={{ locale }}
+              className="group flex flex-col gap-1"
             >
-              {t("cta.primary", { defaultValue: "Get Started Free" })}
-            </a>
-            <a
-              href="https://docs.better-i18n.com"
-              className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-            >
-              {t("cta.secondary", { defaultValue: "Read the Docs" })}
-            </a>
-          </div>
+              <span className="flex items-center gap-1.5">
+                <span className="text-[15px] font-medium tracking-[-0.015em] text-mist-900 transition-colors group-hover:text-mist-600">
+                  {page.name}
+                </span>
+                <SpriteIcon
+                  name="arrow-right"
+                  className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
+                />
+              </span>
+              <span className="text-[13px] leading-relaxed text-mist-600">
+                {page.description}
+              </span>
+            </Link>
+          ))}
         </div>
-      </section>
+      </Section>
+
+      <Divider />
+
+      {/* The ask closes the page, before RelatedPages — the dark slab band is
+          gone; ClosingCta is the one closing shape in the grammar. */}
+      <ClosingCta
+        title={t("i18n.internationalSeo.cta.title")}
+        subtitle={t("i18n.internationalSeo.cta.subtitle")}
+        primary={{ label: t("i18n.internationalSeo.cta.primary"), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t("i18n.internationalSeo.cta.secondary"), href: "https://docs.better-i18n.com" }}
+      />
     </MarketingLayout>
   );
 }

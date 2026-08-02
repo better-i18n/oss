@@ -5,6 +5,7 @@ import { BackToHub } from "@/components/BackToHub";
 import { SeeAlso } from "@/components/SeeAlso";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import { ClosingCta, Divider } from "@/components/ui/page";
 
 export const Route = createFileRoute("/$locale/i18n/translation-solutions")({
   loader: createPageLoader(),
@@ -26,101 +27,101 @@ export const Route = createFileRoute("/$locale/i18n/translation-solutions")({
 });
 
 const solutionTypes = [
-  { icon: "rocket", titleKey: "types.saas.title", descKey: "types.saas.description", defaultTitle: "SaaS Translation Platforms", defaultDesc: "Cloud-based platforms with dashboards for managing translations, translation memory, and team collaboration across multiple languages." },
-  { icon: "code-brackets", titleKey: "types.api.title", descKey: "types.api.description", defaultTitle: "Translation APIs", defaultDesc: "Programmatic interfaces that let developers integrate machine or AI translation directly into applications, pipelines, and custom workflows." },
-  { icon: "api-connection", titleKey: "types.plugins.title", descKey: "types.plugins.description", defaultTitle: "CMS & Framework Plugins", defaultDesc: "Drop-in integrations for WordPress, Shopify, Next.js, and other platforms that add translation capabilities without custom development." },
-  { icon: "sparkles-soft", titleKey: "types.aiNative.title", descKey: "types.aiNative.description", defaultTitle: "AI-Native Translation Tools", defaultDesc: "Solutions built around large language models that provide context-aware, glossary-enforced translations with quality approaching professional human translators." },
+  { icon: "rocket", titleKey: "i18n.translationSolutions.types.saas.title", descKey: "i18n.translationSolutions.types.saas.description" },
+  { icon: "code-brackets", titleKey: "i18n.translationSolutions.types.api.title", descKey: "i18n.translationSolutions.types.api.description" },
+  { icon: "api-connection", titleKey: "i18n.translationSolutions.types.plugins.title", descKey: "i18n.translationSolutions.types.plugins.description" },
+  { icon: "sparkles-soft", titleKey: "i18n.translationSolutions.types.aiNative.title", descKey: "i18n.translationSolutions.types.aiNative.description" },
 ];
 
 function TranslationSolutionsPage() {
-  const t = useT("marketing.i18n.translationSolutions");
+  const t = useT("marketing");
   const tCommon = useT("marketing");
   const { locale } = Route.useParams();
 
   const evaluationCriteria = [
-    { key: "criteria.list.languageCoverage", defaultValue: "Language coverage — number of supported languages and regional variants" },
-    { key: "criteria.list.integrationOptions", defaultValue: "Integration options — APIs, SDKs, CMS plugins, and CI/CD pipeline support" },
-    { key: "criteria.list.translationMemory", defaultValue: "Translation memory — reuse of previously approved translations to save cost and maintain consistency" },
-    { key: "criteria.list.documentSupport", defaultValue: "Document support — ability to translate PDFs, Word files, and spreadsheets with formatting preserved" },
-    { key: "criteria.list.aiQuality", defaultValue: "AI translation quality — contextual accuracy, glossary enforcement, and domain specialization" },
-    { key: "criteria.list.pricingModel", defaultValue: "Pricing model — per-word, per-seat, or volume-based pricing that aligns with your usage patterns" },
+    { key: "i18n.translationSolutions.criteria.list.languageCoverage" },
+    { key: "i18n.translationSolutions.criteria.list.integrationOptions" },
+    { key: "i18n.translationSolutions.criteria.list.translationMemory" },
+    { key: "i18n.translationSolutions.criteria.list.documentSupport" },
+    { key: "i18n.translationSolutions.criteria.list.aiQuality" },
+    { key: "i18n.translationSolutions.criteria.list.pricingModel" },
   ];
 
   const processSteps = [
-    { number: "1", titleKey: "process.step1.title", descKey: "process.step1.description", defaultTitle: "Assess Requirements", defaultDesc: "Identify your target languages, content volume, integration needs, and whether you need real-time or batch translation workflows." },
-    { number: "2", titleKey: "process.step2.title", descKey: "process.step2.description", defaultTitle: "Evaluate Platforms", defaultDesc: "Compare shortlisted solutions against your criteria — run test translations, check API documentation, and assess glossary and memory features." },
-    { number: "3", titleKey: "process.step3.title", descKey: "process.step3.description", defaultTitle: "Pilot and Integrate", defaultDesc: "Run a pilot with one language pair and a representative content set, then integrate the solution into your development and publishing workflow." },
-    { number: "4", titleKey: "process.step4.title", descKey: "process.step4.description", defaultTitle: "Scale and Optimize", defaultDesc: "Expand to all target languages, refine glossaries, tune translation memory, and set up ongoing quality review processes." },
+    { number: "1", titleKey: "i18n.translationSolutions.process.step1.title", descKey: "i18n.translationSolutions.process.step1.description" },
+    { number: "2", titleKey: "i18n.translationSolutions.process.step2.title", descKey: "i18n.translationSolutions.process.step2.description" },
+    { number: "3", titleKey: "i18n.translationSolutions.process.step3.title", descKey: "i18n.translationSolutions.process.step3.description" },
+    { number: "4", titleKey: "i18n.translationSolutions.process.step4.title", descKey: "i18n.translationSolutions.process.step4.description" },
   ];
 
   const relatedPages = [
-    { name: "Website Translation", href: "/$locale/i18n/website-translation", description: t("related.websiteTranslation", { defaultValue: "Comprehensive guide to translating websites into any language" }) },
-    { name: "Translation Management System", href: "/$locale/i18n/translation-management-system", description: t("related.tms", { defaultValue: "Centralize your localization workflow with a TMS" }) },
-    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("related.localizationSoftware", { defaultValue: "Platforms and software for managing localization at scale" }) },
-    { name: "Content Localization", href: "/$locale/i18n/content-localization", description: t("related.contentLocalization", { defaultValue: "Adapting content for different markets and audiences" }) },
+    { name: "Website Translation", href: "/$locale/i18n/website-translation", description: t("i18n.translationSolutions.related.websiteTranslation") },
+    { name: "Translation Management System", href: "/$locale/i18n/translation-management-system", description: t("i18n.translationSolutions.related.tms") },
+    { name: "Localization Software", href: "/$locale/i18n/localization-software", description: t("i18n.translationSolutions.related.localizationSoftware") },
+    { name: "Content Localization", href: "/$locale/i18n/content-localization", description: t("i18n.translationSolutions.related.contentLocalization") },
   ];
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-mist-100 px-3 py-1 text-sm text-mist-700 mb-6">
+            <div className="eyebrow mb-5 flex items-center gap-2">
               <SpriteIcon name="settings-gear" className="size-4" />
-              <span>{t("badge", { defaultValue: "Translation Solutions" })}</span>
+              <span>{t("i18n.translationSolutions.badge")}</span>
             </div>
-            <h1 className="font-display text-4xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-5xl/[1.1]">
-              {t("hero.title", { defaultValue: "Translation Solutions: Choose the Right Platform for Your Needs" })}
+            <h1 className="section-h2">
+              {t("i18n.translationSolutions.hero.title")}
             </h1>
             <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle", { defaultValue: "From translating English to Hindi and Mandarin Chinese to handling document translation and image translation workflows, the right translation solution transforms how you reach global audiences. This guide compares every type of platform so you can make an informed decision." })}
+              {t("i18n.translationSolutions.hero.subtitle")}
             </p>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("definition.title", { defaultValue: "What Are Website Translation Solutions?" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.translationSolutions.definition.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph1", { defaultValue: "Translation solutions are software platforms, APIs, and managed services that help businesses convert website content, documents, and multimedia into other languages. The category spans simple plugins that overlay machine translation onto existing pages through to enterprise-grade translation management systems with full workflow automation." })}
+                {t("i18n.translationSolutions.definition.paragraph1")}
               </p>
               <p className="text-mist-700 leading-relaxed mb-4">
-                {t("definition.paragraph2", { defaultValue: "Modern translation platforms handle far more than text. When you need to translate an image to English, extract text from PDFs, or convert Mexican Spanish regional copy, a capable solution provides the pipeline from source extraction through to quality-checked delivery. Key capabilities include translation memory, glossary management, and context-aware AI models." })}
+                {t("i18n.translationSolutions.definition.paragraph2")}
               </p>
               <p className="text-mist-700 leading-relaxed">
-                {t("definition.paragraph3", { defaultValue: "The distinction between real-time and batch translation is critical for choosing the right tool. SaaS products with dynamic content — pricing, notifications, user-generated content — need real-time translation APIs. Marketing pages and documentation work well with batch workflows that include human review before publishing." })}
+                {t("i18n.translationSolutions.definition.paragraph3")}
               </p>
             </div>
-            <div className="mt-10 lg:mt-0 p-8 rounded-2xl bg-mist-50 border border-mist-100">
+            <div className="mt-10 lg:mt-0">
               <h3 className="text-lg font-medium text-mist-950 mb-4">
-                {t("useCases.title", { defaultValue: "Common Translation Use Cases" })}
+                {t("i18n.translationSolutions.useCases.title")}
               </h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2 text-sm text-mist-700">
                   <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
-                  {t("useCases.hindi", { defaultValue: "Translating English to Hindi for the 600M+ Hindi-speaking market" })}
+                  {t("i18n.translationSolutions.useCases.hindi")}
                 </li>
                 <li className="flex items-start gap-2 text-sm text-mist-700">
                   <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
-                  {t("useCases.mandarin", { defaultValue: "English to Mandarin Chinese for Asia-Pacific expansion" })}
+                  {t("i18n.translationSolutions.useCases.mandarin")}
                 </li>
                 <li className="flex items-start gap-2 text-sm text-mist-700">
                   <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
-                  {t("useCases.documents", { defaultValue: "Bulk document translation for legal, compliance, and marketing materials" })}
+                  {t("i18n.translationSolutions.useCases.documents")}
                 </li>
                 <li className="flex items-start gap-2 text-sm text-mist-700">
                   <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
-                  {t("useCases.images", { defaultValue: "Translating images with embedded text for social media and ads" })}
+                  {t("i18n.translationSolutions.useCases.images")}
                 </li>
                 <li className="flex items-start gap-2 text-sm text-mist-700">
                   <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
-                  {t("useCases.mexicanSpanish", { defaultValue: "English to Mexican Spanish for LATAM market localization" })}
+                  {t("i18n.translationSolutions.useCases.mexicanSpanish")}
                 </li>
               </ul>
             </div>
@@ -128,27 +129,27 @@ function TranslationSolutionsPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("types.title", { defaultValue: "Types of Translation Solutions" })}
+            <h2 className="section-h2">
+              {t("i18n.translationSolutions.types.title")}
             </h2>
             <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("types.subtitle", { defaultValue: "Each category of solution fits different team sizes, technical requirements, and translation volumes." })}
+              {t("i18n.translationSolutions.types.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {solutionTypes.map((type) => (
-              <div key={type.titleKey} className="p-6 rounded-xl bg-white border border-mist-200">
-                <div className="size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700 mb-4">
+              <div key={type.titleKey}>
+                <div className="mb-3 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   <SpriteIcon name={type.icon as SpriteIconName} className="size-5" />
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(type.titleKey, { defaultValue: type.defaultTitle })}
+                  {t(type.titleKey)}
                 </h3>
                 <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(type.descKey, { defaultValue: type.defaultDesc })}
+                  {t(type.descKey)}
                 </p>
               </div>
             ))}
@@ -156,23 +157,23 @@ function TranslationSolutionsPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
             <div>
-              <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-                {t("criteria.title", { defaultValue: "How to Evaluate Translation Solutions" })}
+              <h2 className="section-h2 mb-6">
+                {t("i18n.translationSolutions.criteria.title")}
               </h2>
               <p className="text-mist-700 leading-relaxed">
-                {t("criteria.subtitle", { defaultValue: "Assess translation platforms against these criteria to find the solution that fits your language pairs, volume, and integration requirements." })}
+                {t("i18n.translationSolutions.criteria.subtitle")}
               </p>
             </div>
             <div className="mt-8 lg:mt-0">
               <ul className="space-y-4">
                 {evaluationCriteria.map((criterion) => (
                   <li key={criterion.key} className="flex items-start gap-3">
-                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-mist-700">{t(criterion.key, { defaultValue: criterion.defaultValue })}</span>
+                    <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
+                    <span className="text-mist-700">{t(criterion.key)}</span>
                   </li>
                 ))}
               </ul>
@@ -181,69 +182,69 @@ function TranslationSolutionsPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-mist-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("multimedia.title", { defaultValue: "Handling Multimedia and Document Translation" })}
+            <h2 className="section-h2">
+              {t("i18n.translationSolutions.multimedia.title")}
             </h2>
             <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("multimedia.subtitle", { defaultValue: "Modern translation solutions must handle more than plain text — images, documents, and videos all require specialized workflows." })}
+              {t("i18n.translationSolutions.multimedia.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <div className="p-6 rounded-xl bg-white border border-mist-200">
+            <div>
               <SpriteIcon name="group" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
-                {t("multimedia.documents.title", { defaultValue: "Document Translation" })}
+                {t("i18n.translationSolutions.multimedia.documents.title")}
               </h3>
               <p className="text-sm text-mist-700 leading-relaxed">
-                {t("multimedia.documents.description", { defaultValue: "Translate PDFs, Word documents, and spreadsheets while preserving original formatting. Batch document translation is essential for legal, HR, and compliance teams operating across multiple jurisdictions." })}
+                {t("i18n.translationSolutions.multimedia.documents.description")}
               </p>
             </div>
-            <div className="p-6 rounded-xl bg-white border border-mist-200">
+            <div>
               <SpriteIcon name="sparkles-soft" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
-                {t("multimedia.images.title", { defaultValue: "Image Text Translation" })}
+                {t("i18n.translationSolutions.multimedia.images.title")}
               </h3>
               <p className="text-sm text-mist-700 leading-relaxed">
-                {t("multimedia.images.description", { defaultValue: "OCR-powered solutions detect and translate text embedded in images — essential for translating image content to English for social media assets, infographics, and product packaging photos." })}
+                {t("i18n.translationSolutions.multimedia.images.description")}
               </p>
             </div>
-            <div className="p-6 rounded-xl bg-white border border-mist-200">
+            <div>
               <SpriteIcon name="rocket" className="size-6 text-mist-700 mb-3" />
               <h3 className="text-base font-medium text-mist-950 mb-2">
-                {t("multimedia.ai.title", { defaultValue: "Emerging AI Translation" })}
+                {t("i18n.translationSolutions.multimedia.ai.title")}
               </h3>
               <p className="text-sm text-mist-700 leading-relaxed">
-                {t("multimedia.ai.description", { defaultValue: "Large language models now translate with contextual understanding that rivals professional translators for most content types — making AI-native translation solutions the fastest-growing category in the market." })}
+                {t("i18n.translationSolutions.multimedia.ai.description")}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-mist-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="text-center mb-12">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl">
-              {t("process.title", { defaultValue: "Implementing a Translation Solution" })}
+            <h2 className="section-h2">
+              {t("i18n.translationSolutions.process.title")}
             </h2>
             <p className="mt-3 text-mist-700">
-              {t("process.subtitle", { defaultValue: "A structured approach to selecting and rolling out translation tooling across your organization." })}
+              {t("i18n.translationSolutions.process.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {processSteps.map((step) => (
               <div key={step.number} className="text-center p-6">
-                <div className="size-10 rounded-full bg-mist-950 text-white flex items-center justify-center text-sm font-medium mx-auto mb-4">
+                <div className="mb-3 block text-[11px] font-medium tabular-nums text-mist-400">
                   {step.number}
                 </div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(step.titleKey, { defaultValue: step.defaultTitle })}
+                  {t(step.titleKey)}
                 </h3>
                 <p className="text-sm text-mist-600">
-                  {t(step.descKey, { defaultValue: step.defaultDesc })}
+                  {t(step.descKey)}
                 </p>
               </div>
             ))}
@@ -251,38 +252,38 @@ function TranslationSolutionsPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section>
+        <div className="section">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-display text-2xl font-medium text-mist-950 sm:text-3xl mb-6">
-              {t("solution.title", { defaultValue: "Better I18N: The Developer-First Translation Solution" })}
+            <h2 className="section-h2 mb-6">
+              {t("i18n.translationSolutions.solution.title")}
             </h2>
             <p className="text-mist-700 leading-relaxed mb-8">
-              {t("solution.content", { defaultValue: "Better I18N is built for engineering teams that want an AI-native translation solution that fits into their existing workflow. Scan your codebase for strings, translate to Hindi, Mandarin, Mexican Spanish, and 100+ other languages with context-aware AI, then push updates without a new deployment." })}
+              {t("i18n.translationSolutions.solution.content")}
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature1.title", { defaultValue: "Real-Time & Batch Translation" })}
+                  {t("i18n.translationSolutions.solution.feature1.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature1.description", { defaultValue: "Serve live translations via CDN or batch-translate entire namespaces on demand — your choice of delivery model." })}
+                  {t("i18n.translationSolutions.solution.feature1.description")}
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature2.title", { defaultValue: "API-First Architecture" })}
+                  {t("i18n.translationSolutions.solution.feature2.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature2.description", { defaultValue: "Full REST and SDK access means you can integrate Better I18N into any CI/CD pipeline, CMS, or custom workflow." })}
+                  {t("i18n.translationSolutions.solution.feature2.description")}
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-mist-50 border border-mist-100">
+              <div>
                 <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t("solution.feature3.title", { defaultValue: "Glossary & Memory" })}
+                  {t("i18n.translationSolutions.solution.feature3.title")}
                 </h3>
                 <p className="text-sm text-mist-700">
-                  {t("solution.feature3.description", { defaultValue: "Translation memory reuses approved segments automatically, while glossaries enforce brand-specific terminology across all language pairs." })}
+                  {t("i18n.translationSolutions.solution.feature3.description")}
                 </p>
               </div>
             </div>
@@ -292,54 +293,40 @@ function TranslationSolutionsPage() {
 
 
       <SeeAlso currentSlug="translation-solutions" locale={locale} />
-      <section className="py-12 border-t border-mist-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics", { defaultValue: "Related Topics" })}</h2>
+      <section className="border-t border-mist-200">
+        <div className="section">
+          <h2 className="text-lg font-medium text-mist-950 mb-6">{tCommon("whatIs.relatedTopics")}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {relatedPages.map((page) => (
               <Link
                 key={page.href}
                 to={page.href}
                 params={{ locale }}
-                className="group flex items-center justify-between p-4 rounded-xl border border-mist-200 bg-white hover:border-mist-300 hover:shadow-md transition-all"
+                className="group flex items-start justify-between gap-3"
               >
                 <div>
                   <h3 className="text-sm font-medium text-mist-950">{page.name}</h3>
                   <p className="text-xs text-mist-500 mt-1">{page.description}</p>
                 </div>
-                <SpriteIcon name="arrow-right" className="w-4 h-4 text-mist-400 group-hover:text-mist-600 group-hover:translate-x-1 transition-all" />
+                <SpriteIcon name="arrow-right" className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600" />
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 bg-mist-950 rounded-3xl mx-6 lg:mx-10 mb-16">
-        <div className="mx-auto max-w-2xl text-center px-6">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-white sm:text-4xl/[1.1]">
-            {t("cta.title", { defaultValue: "Find Your Translation Solution Today" })}
-          </h2>
-          <p className="mt-4 text-lg text-mist-300">
-            {t("cta.subtitle", { defaultValue: "Better I18N gives you AI translation, developer SDKs, and global CDN delivery in one platform — free to start." })}
-          </p>
-          <div className="mt-8 flex justify-center gap-4 flex-wrap">
-            <a
-              href="https://dash.better-i18n.com"
-              aria-label="Start using Better I18N translation solutions for free"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-mist-950 hover:bg-mist-100 transition-colors"
-            >
-              {t("cta.primary", { defaultValue: "Get Started Free" })}
-            </a>
-            <a
-              href="https://docs.better-i18n.com"
-              aria-label="Read the Better I18N documentation for translation solutions"
-              className="rounded-full border border-mist-600 px-6 py-3 text-sm font-medium text-white hover:bg-mist-800 transition-colors"
-            >
-              {t("cta.secondary", { defaultValue: "Read the Docs" })}
-            </a>
-          </div>
-        </div>
-      </section>
+      <Divider />
+
+      {/* The ask closes the page. Was a `bg-mist-950` band with `rounded-xl
+          mx-6` — a floating dark card on a white document, carrying its own
+          container and its own button scale. <ClosingCta /> is the one closing
+          shape in the grammar. */}
+      <ClosingCta
+        title={t("i18n.translationSolutions.cta.title")}
+        subtitle={t("i18n.translationSolutions.cta.subtitle")}
+        primary={{ label: t("i18n.translationSolutions.cta.primary"), href: "https://dash.better-i18n.com" }}
+        secondary={{ label: t("i18n.translationSolutions.cta.secondary"), href: "https://docs.better-i18n.com" }}
+      />
     </MarketingLayout>
   );
 }

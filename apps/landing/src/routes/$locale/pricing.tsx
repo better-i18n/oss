@@ -10,6 +10,7 @@ import { getPricingPlans } from "@/lib/content";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 import { filterMessages } from "@/lib/page-namespaces";
+import { Divider, FaqSection } from "@/components/ui/page";
 
 export const Route = createFileRoute("/$locale/pricing")({
   loader: async ({ context }) => {
@@ -55,6 +56,8 @@ export const Route = createFileRoute("/$locale/pricing")({
   component: PricingPage,
 });
 
+const FAQ_KEYS = ["tryFree", "payment", "changePlans", "enterprise", "discounts"] as const;
+
 function PricingPage() {
   const t = useTranslations("pricingPage");
   const { locale } = Route.useParams();
@@ -65,56 +68,28 @@ function PricingPage() {
       {/* Pricing Section — use h1 on dedicated pricing page */}
       <Pricing headingLevel="h1" plans={plans} />
 
+      <Divider />
+
       {/* Pricing Comparison Table */}
       <PricingComparison />
 
-      {/* FAQ Section */}
-      <section className="py-16">
-        <div className="mx-auto max-w-3xl px-6 lg:px-10">
-          <h2 className="font-display text-2xl font-medium text-mist-950 mb-8 text-center">
-            {t("faq.title")}
-          </h2>
-          <div className="space-y-4">
-            <FAQItem
-              question={t("faq.tryFree.question")}
-              answer={t("faq.tryFree.answer")}
-            />
-            <FAQItem
-              question={t("faq.payment.question")}
-              answer={t("faq.payment.answer")}
-            />
-            <FAQItem
-              question={t("faq.changePlans.question")}
-              answer={t("faq.changePlans.answer")}
-            />
-            <FAQItem
-              question={t("faq.enterprise.question")}
-              answer={t("faq.enterprise.answer")}
-            />
-            <FAQItem
-              question={t("faq.discounts.question")}
-              answer={t("faq.discounts.answer")}
-            />
-          </div>
-        </div>
-      </section>
+      <Divider />
+
+      {/* FAQ — the shared archetype, identical to the home page's */}
+      <FaqSection
+        eyebrow={t("faq.eyebrow")}
+        title={t("faq.title")}
+        items={FAQ_KEYS.map((key) => ({
+          id: key,
+          question: t(`faq.${key}.question`),
+          answer: t(`faq.${key}.answer`),
+        }))}
+      />
+
+      <Divider />
 
       {/* Related Pages */}
       <RelatedPages currentPage="pricing" locale={locale} variant="content" />
     </MarketingLayout>
-  );
-}
-
-function FAQItem({ question, answer }: { question: string; answer: string }) {
-  return (
-    <details className="border-b border-mist-200 pb-6 group">
-      <summary className="text-base font-medium text-mist-950 cursor-pointer list-none flex items-center justify-between">
-        {question}
-        <span className="text-mist-400 group-open:rotate-180 transition-transform text-sm">
-          &#9662;
-        </span>
-      </summary>
-      <p className="mt-3 text-sm text-mist-700 leading-relaxed">{answer}</p>
-    </details>
   );
 }

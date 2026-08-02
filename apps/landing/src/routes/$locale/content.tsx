@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { testimonialAvatar } from "@/lib/testimonials";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
@@ -94,18 +95,16 @@ function ContentPage() {
           label: t("hero.ctaSecondary"),
           href: "https://docs.better-i18n.com/content",
         }}
-        visual={<ModelVisual t={t} />}
+        visual={<ContentFlow t={t} />}
       />
 
       <Divider />
 
-      {/* The product's own flow, the same shape the framework pages use: every
-          source of content converges on one platform and leaves through one
-          edge. Added on request ("ürünü anlattığımız bloklar bu sayfalara da
-          gelsin"); the existing ModelVisual and QueryVisual are untouched below.
-          Every label is an existing contentPage key — no new copy. */}
+      {/* The flow moved up into the hero's visual slot (it is the page's answer
+          to "what is this"), so this band now carries the model card that used to
+          sit there — the detail belongs after the overview, not before it. */}
       <Section>
-        <ContentFlow t={t} />
+        <ModelVisual t={t} />
       </Section>
 
       <Divider />
@@ -224,10 +223,6 @@ function ContentPage() {
 
       <Divider />
 
-      <RelatedPages currentPage="features" locale={locale} variant="content" />
-
-      <Divider />
-
       <ClosingCta
         eyebrow={t("closing.eyebrow")}
         title={t("closing.title")}
@@ -241,6 +236,10 @@ function ContentPage() {
           href: "https://docs.better-i18n.com/content",
         }}
       />
+
+      <Divider />
+
+      <RelatedPages currentPage="features" locale={locale} variant="content" />
     </MarketingLayout>
   );
 }
@@ -253,8 +252,14 @@ function ContentPage() {
  * tile. Geometry, motion and reduced-motion handling belong to <FlowHero />.
  */
 function ContentFlow({ t }: { t: (key: string) => string }) {
-  const entryCard = (locale: string) => (
-    <FlowCard eyebrow={t("capabilities.localized.title")} corner={<LocaleFlag locale={locale} size={14} />}>
+  // The three locale cards are one fan-out, not three separate facts: the first
+  // names the operation, the other two are the same operation in another locale.
+  // Printing "Per-field localization" three times reads as a rendering bug.
+  const entryCard = (locale: string, labelled?: boolean) => (
+    <FlowCard
+      eyebrow={labelled ? t("capabilities.localized.title") : undefined}
+      corner={<LocaleFlag locale={locale} size={14} />}
+    >
       <FlowMono>{`blog-posts · ${locale}`}</FlowMono>
       <div style={{ marginTop: 4 }}>
         <FlowText muted>{t("visual.localized")}</FlowText>
@@ -289,7 +294,7 @@ function ContentFlow({ t }: { t: (key: string) => string }) {
         <FlowCard key="publish" eyebrow={t("capabilities.publish.title")}>
           <FlowText>{t("visual.entry")}</FlowText>
         </FlowCard>,
-        <div key="tr">{entryCard("tr")}</div>,
+        <div key="tr">{entryCard("tr", true)}</div>,
         <div key="de">{entryCard("de")}</div>,
         <div key="ja">{entryCard("ja")}</div>,
         <FlowCard key="mcp" eyebrow={t("capabilities.mcp.title")}>
@@ -308,6 +313,7 @@ function ContentTestimonial() {
       quote={tq("2.quote")}
       name={tq("2.name")}
       role={tq("2.title")}
+      avatar={testimonialAvatar(2)}
       patternId="dots-content"
     />
   );
@@ -355,25 +361,46 @@ function ModelVisual({ t }: { t: (key: string) => string }) {
           </div>
         </div>
 
-        <div className="divide-y divide-black/[0.05]">
-          <p className="px-5 py-2.5 text-[11px] font-medium text-mist-400">
+        {/* `flex` + a growing spacer, not a plain stack: the left pane lists five
+            fields and this one lists three entries, so as a bare column it
+            bottomed out ~30px early and left the wider half of the card looking
+            unfinished. The summary strip is pinned to the bottom edge, which
+            both fills the column and closes it the way the left pane's last row
+            does. Its numbers are counted from ENTRIES rather than written down,
+            so they cannot drift from the rows above them. */}
+        <div className="flex flex-col">
+          <p className="border-b border-black/[0.05] px-5 py-2.5 text-[11px] font-medium text-mist-400">
             {t("visual.entry")}
           </p>
-          {ENTRIES.map((e) => (
-            <div key={e.lang} className="flex items-center gap-3 px-5 py-3">
-              <span className="w-16 shrink-0 text-[11px] font-medium text-mist-400">
-                {e.lang}
-              </span>
-              <span className="min-w-0 flex-1 truncate text-[13px] text-mist-800">
-                {e.value}
-              </span>
-              <span
-                className={`shrink-0 text-[11px] ${ e.status === "published" ? "text-emerald-600" : "text-mist-400" }`}
-              >
-                {e.status}
-              </span>
-            </div>
-          ))}
+          <div className="flex flex-1 flex-col divide-y divide-black/[0.05]">
+            {ENTRIES.map((e) => (
+              <div key={e.lang} className="flex items-center gap-3 px-5 py-3">
+                <span className="w-16 shrink-0 text-[11px] font-medium text-mist-400">
+                  {e.lang}
+                </span>
+                <span className="min-w-0 flex-1 truncate text-[13px] text-mist-800">
+                  {e.value}
+                </span>
+                {/* Status is a word, so it is set as one. It used to be
+                    emerald-on-published, which made the hue look like it encoded
+                    something the label does not already say
+                    (rule/neutral-ink-accent-is-identity-only); the live row is
+                    now the one in full ink and the draft is the muted one. */}
+                <span
+                  className={`shrink-0 text-[11px] ${
+                    e.status === "published" ? "text-mist-700" : "text-mist-400"
+                  }`}
+                >
+                  {e.status}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-auto border-t border-black/[0.05] bg-black/[0.015] px-5 py-3">
+            <p className="font-mono text-[11px] text-mist-500">
+              {`${ENTRIES.length} locales · ${ENTRIES.filter((e) => e.status === "published").length} published · ${ENTRIES.filter((e) => e.status !== "published").length} draft`}
+            </p>
+          </div>
         </div>
       </div>
     </div>

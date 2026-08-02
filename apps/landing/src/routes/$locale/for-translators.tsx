@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { MarketingLayout } from "@/components/MarketingLayout";
+import { Divider } from "@/components/ui/page";
 import TranslatorHero from "@/components/translators/TranslatorHero";
 import TranslatorPainPoints from "@/components/translators/TranslatorPainPoints";
 import TranslatorFeatures from "@/components/translators/TranslatorFeatures";
@@ -41,19 +41,28 @@ function ForTranslatorsPage() {
   const { locale } = Route.useParams();
 
   return (
-    <div className="bg-mist-100">
-      <Header />
-      <main>
+    <MarketingLayout showCTA={false}>
         <TranslatorHero />
+        <Divider />
+
         <TranslatorPainPoints />
+        <Divider />
+
         <TranslatorPainPromiseProof />
+        <Divider />
+
         <TranslatorFeatures />
+        <Divider />
+
         <TranslatorDeepLSection />
+        <Divider />
+
         <TranslatorWorkflow />
-        <RelatedPages currentPage="for-translators" locale={locale} variant="for" />
+        <Divider />
+
         <TranslatorCTA />
-      </main>
-      <Footer />
-    </div>
+        <Divider />
+
+        <RelatedPages currentPage="for-translators" locale={locale} variant="for" />    </MarketingLayout>
   );
 }

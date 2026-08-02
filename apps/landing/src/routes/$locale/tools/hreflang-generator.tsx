@@ -180,7 +180,7 @@ function HreflangGeneratorPage() {
             <p className="text-xs text-mist-500">
               The root URL of your site. Locale codes will be appended as path
               segments (e.g.{" "}
-              <code className="rounded bg-mist-100 px-1 py-0.5 font-mono text-[11px]">
+              <code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 font-mono text-[11px]">
                 /en/
               </code>
               ).
@@ -226,13 +226,16 @@ function HreflangGeneratorPage() {
           {/* Validation warnings */}
           {warnings.length > 0 && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-              <h3 className="mb-2 text-sm font-semibold text-amber-800">
+              <h3 className="mb-2 text-sm font-medium text-amber-800">
                 Validation Warnings
               </h3>
               <ul className="flex flex-col gap-1.5">
-                {warnings.map((w, i) => (
+                {/* Keyed by the warning text, not the index: the list is
+                    recomputed on every input change, so an index key makes React
+                    reuse a row whose content has been replaced. */}
+                {warnings.map((w) => (
                   <li
-                    key={i}
+                    key={`${w.type}:${w.message}`}
                     className="flex items-start gap-2 text-sm text-amber-800"
                   >
                     <svg
@@ -279,7 +282,7 @@ function HreflangGeneratorPage() {
         <div className="flex flex-col gap-4">
           {/* Format tabs */}
           <div
-            className="inline-flex rounded-lg border border-mist-200 bg-mist-100 p-1"
+            className="inline-flex rounded-lg border border-black/[0.07] bg-mist-50 p-1"
             role="tablist"
             aria-label="Output format"
           >
@@ -355,7 +358,7 @@ function HreflangGeneratorPage() {
             <div className="rounded-xl border border-mist-200 bg-mist-50 p-4 text-sm text-mist-700">
               <strong className="text-mist-950">How to use:</strong> Paste these
               tags inside the{" "}
-              <code className="rounded bg-mist-200 px-1 font-mono text-[11px]">
+              <code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 font-mono text-[11px]">
                 &lt;head&gt;
               </code>{" "}
               element of <em>every</em> localised page — each page must
@@ -365,15 +368,15 @@ function HreflangGeneratorPage() {
           {activeTab === "xml" && selectedLocales.length > 0 && (
             <div className="rounded-xl border border-mist-200 bg-mist-50 p-4 text-sm text-mist-700">
               <strong className="text-mist-950">How to use:</strong> Add the{" "}
-              <code className="rounded bg-mist-200 px-1 font-mono text-[11px]">
+              <code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 font-mono text-[11px]">
                 xmlns:xhtml
               </code>{" "}
               namespace to your{" "}
-              <code className="rounded bg-mist-200 px-1 font-mono text-[11px]">
+              <code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 font-mono text-[11px]">
                 &lt;urlset&gt;
               </code>{" "}
               element and include a{" "}
-              <code className="rounded bg-mist-200 px-1 font-mono text-[11px]">
+              <code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 font-mono text-[11px]">
                 &lt;url&gt;
               </code>{" "}
               block like this for each page in your sitemap.
@@ -383,7 +386,7 @@ function HreflangGeneratorPage() {
             <div className="rounded-xl border border-mist-200 bg-mist-50 p-4 text-sm text-mist-700">
               <strong className="text-mist-950">How to use:</strong> Set this
               value as the{" "}
-              <code className="rounded bg-mist-200 px-1 font-mono text-[11px]">
+              <code className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 font-mono text-[11px]">
                 Link
               </code>{" "}
               HTTP response header on your server. Useful when you cannot modify
