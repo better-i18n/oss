@@ -141,8 +141,17 @@ function IntegrationsIndex({ locale }: { locale: string }) {
             <h1 className="section-h2 mt-6 max-w-2xl lg:text-[2.9rem]/[1.02]">
               {t("hero.title")}
             </h1>
+            {/* `hero.lede`, not `hero.titleHighlight`. On this page the string
+                is the paragraph under the h1, but the old name told every
+                translator it was the second half of the heading — so twenty of
+                them split the sentence and the h1 shipped as a fragment
+                ("Integriert sich in Ihren", "Se integra con tu"). The name is
+                the spec a translator reads; it has to match the role. The old
+                key stays published so nothing breaks mid-deploy, and the other
+                pages that DO use titleHighlight as a heading continuation
+                (features, what-is, about) are untouched. */}
             <p className="section-p mt-3 max-w-2xl">
-              {t("hero.titleHighlight")}
+              {t("hero.lede")}
             </p>
             <p className="mt-5 max-w-xl text-sm/7 text-mist-700">
               {t("hero.subtitle")}

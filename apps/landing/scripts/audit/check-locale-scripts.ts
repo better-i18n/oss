@@ -67,6 +67,8 @@ const CDN = "https://cdn.better-i18n.com/better-i18n/landing";
 const EXTRA_LOCALE_PROBES = ["pt"];
 
 /**
+ * `fragment-h1` is the second defect class we hit: a heading that is a
+ * sentence in English and half a sentence in twenty other languages.
  * `wrong-language` is the defect this script exists for: a string published
  * under a locale it is not written in. `orthography` is a real but softer
  * finding — right language, wrong code point. `coverage` is a locale with
@@ -75,7 +77,12 @@ const EXTRA_LOCALE_PROBES = ["pt"];
  * along for free; it never fails the run, because 25% of every locale is
  * legitimately awaiting translation.
  */
-type Severity = "wrong-language" | "orthography" | "coverage" | "untranslated";
+type Severity =
+  | "wrong-language"
+  | "fragment-h1"
+  | "orthography"
+  | "coverage"
+  | "untranslated";
 
 interface Finding {
   readonly locale: string;
@@ -151,8 +158,60 @@ const BRAND_TOKENS = [
  */
 const RO_CEDILLA = /[şŞţŢ]/u;
 
-/** A value that is a path, a command or an identifier rather than a sentence. */
-const CODE_SHAPED = /^[\w@./:{}$#\\[\]()\s|>-]+$/u;
+/* ── Fragment headings ─────────────────────────────────────────────
+   A page's h1 is its strongest on-page signal, and /integrations/ shipped one
+   that stopped mid-clause in twenty locales: "Integriert sich in Ihren",
+   "Se integra con tu", "Tích hợp với". The cause was a key called
+   `hero.titleHighlight` that this page rendered as a separate paragraph, so
+   every translator read the name and split the sentence across the two.
+
+   Thresholds come from scanning all 23 locales before they were written down,
+   not from a guess:
+
+     en  52 chars, ends "."     tr  52 chars, ends "."   ← intact
+     de  24  es 17  fr 17  it 21  pl 21  ru 21  nl 17  cs 20
+     ro  16  uk 20  id 19  ms 19  vi 12  th 10  hi 26  he 8
+     ja   4  zh-hans 5  fa 25                             ← every one a fragment
+     ko  10, ends ":"                                     ← deliberate lead-in
+
+   Two things follow. A short heading is not by itself a defect — Japanese and
+   Chinese headings are legitimately a third the length of English — so the rule
+   is comparative: the English source ends a sentence and the translation does
+   not, AND the translation is far shorter than its own script's norm. And the
+   Korean colon is excluded by name, because a lead-in that ends in ":" is a
+   choice, not a truncation. */
+
+/** Sentence-ending punctuation, by script family. */
+const SENTENCE_END = /[.!?。！？؟।]$/u;
+
+/** A colon or dash ends a deliberate lead-in, not a truncated sentence. */
+const LEAD_IN_END = /[:：—-]$/u;
+
+/** Scripts that pack a sentence into far fewer characters than Latin does. */
+const DENSE_SCRIPT = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\p{Script=Thai}]/u;
+
+/** Key paths whose value is rendered as an h1. */
+const HEADING_KEY = /(^|\.)hero\.title$/;
+
+/**
+ * A value that is a path, a command or an identifier rather than a sentence.
+ *
+ * The first version was `/^[\w@./:{}$#\\[\]()\s|>-]+$/`, which matched any string
+ * made of ASCII letters and spaces — so "Integriert sich in Ihren" and
+ * "Se integra con tu" were classified as code and skipped, and seven of the
+ * nineteen broken headings went unreported by the very check written to find
+ * them. A sentence is now only treated as code when it carries a symbol that
+ * prose does not: a slash, an @, a brace, a colon-slash, or no spaces at all.
+ */
+const CODE_SHAPED = (value: string): boolean => {
+  const hasSymbol = /[@/{}$#\\[\]|=<>]/u.test(value);
+  const hasSpace = /\s/u.test(value);
+  /* A run of CJK or Thai has no spaces either — "あなたの" is a sentence
+     fragment, not an identifier — so a space-free string only counts as code
+     when it is ASCII or carries a symbol. */
+  const asciiOnly = /^[\x20-\x7E]*$/u.test(value);
+  return hasSymbol || (!hasSpace && asciiOnly);
+};
 
 /**
  * A list of example URLs. `example.com/en/, example.com/fr/` is the same string
@@ -229,7 +288,7 @@ function inspect(
   for (const [key, value] of entries) {
     const path = `${namespace}.${key}`;
     if (NAME_PATH.test(key) || INTENTIONAL_TURKISH.has(path)) continue;
-    if (!value.trim() || CODE_SHAPED.test(value) || URL_SAMPLE.test(value)) continue;
+    if (!value.trim() || CODE_SHAPED(value) || URL_SAMPLE.test(value)) continue;
 
     // 1. a letter that belongs to another language in our set
     for (const marker of ALPHABET_MARKERS) {
@@ -254,6 +313,28 @@ function inspect(
         reason: "Turkish cedilla instead of Romanian comma-below",
         sample: value.slice(0, 70),
       });
+    }
+
+    /* A heading that trails off. Comparative, because "short" alone is not a
+       defect in every writing system. */
+    if (HEADING_KEY.test(key)) {
+      const source = english.get(`${namespace}.${key}`) ?? "";
+      const trimmed = value.trim();
+      /* 0.55, not 0.5: Hindi came in at exactly half the English length
+         (26 of 52) and a strict `<` let it through. */
+      const ratioLimit = DENSE_SCRIPT.test(trimmed) ? 0.3 : 0.55;
+      const tooShort = source.length > 0 && trimmed.length / source.length < ratioLimit;
+      const unfinished = !SENTENCE_END.test(trimmed) && !LEAD_IN_END.test(trimmed);
+
+      if (SENTENCE_END.test(source.trim()) && unfinished && tooShort) {
+        findings.push({
+          locale,
+          path,
+          severity: "fragment-h1",
+          reason: `h1 is ${trimmed.length} chars against ${source.length} in English and does not end a sentence`,
+          sample: trimmed.slice(0, 70),
+        });
+      }
     }
 
     const expected = SCRIPTS[locale];
@@ -426,6 +507,7 @@ async function main() {
   };
 
   const wrong = report("wrong-language", "WRONG LANGUAGE");
+  const fragments = report("fragment-h1", "FRAGMENT H1");
   const orthography = report("orthography", "ORTHOGRAPHY");
   const coverage = report("coverage", "COVERAGE GAP");
   const untranslated = report("untranslated", "UNTRANSLATED (information, not a failure)");
@@ -437,7 +519,7 @@ async function main() {
   for (const [l, n] of scale) console.log(`  ${l.padEnd(9)} ${String(n).padStart(6)}`);
   console.log("");
 
-  if (wrong === 0 && orthography === 0 && coverage === 0) {
+  if (wrong === 0 && fragments === 0 && orthography === 0 && coverage === 0) {
     console.log(
       untranslated === 0
         ? "locale scripts: clean"
