@@ -51,13 +51,31 @@
 const CDN = "https://cdn.better-i18n.com/better-i18n/landing";
 
 /**
+ * Locales to probe beyond the manifest.
+ *
+ * Keep this list short and justified, because the CDN cannot tell you a locale
+ * is missing: every path under the project answers 200 with `{}`, including
+ * codes we have never shipped (`sv`, `da`, `zh-hant` all return an empty object).
+ * So "the file exists" proves nothing and an empty result only means something
+ * for a locale we know is configured in the project.
+ *
+ * `pt` is here because it is exactly that case: a project language with 1,681
+ * translations in the platform whose CDN files are empty and which the manifest
+ * does not list, so the site serves no Portuguese at all. Confirming this class
+ * of bug needs the platform's language list; this probe is the cheap half.
+ */
+const EXTRA_LOCALE_PROBES = ["pt"];
+
+/**
  * `wrong-language` is the defect this script exists for: a string published
  * under a locale it is not written in. `orthography` is a real but softer
- * finding — right language, wrong code point. `untranslated` is a coverage
- * signal that rides along for free; it never fails the run, because 25% of
- * every locale is legitimately awaiting translation.
+ * finding — right language, wrong code point. `coverage` is a locale with
+ * almost nothing in it, which would otherwise pass this audit by having no
+ * strings to be wrong about. `untranslated` is a coverage signal that rides
+ * along for free; it never fails the run, because 25% of every locale is
+ * legitimately awaiting translation.
  */
-type Severity = "wrong-language" | "orthography" | "untranslated";
+type Severity = "wrong-language" | "orthography" | "coverage" | "untranslated";
 
 interface Finding {
   readonly locale: string;
@@ -146,6 +164,49 @@ const URL_SAMPLE = /^(?:[\w.-]+\.(?:com|org|net|io|de|fr|co\.uk)[\w/-]*[\s,、�
 function stripBrands(value: string): string {
   let out = value;
   for (const token of BRAND_TOKENS) out = out.split(token).join(" ");
+  return out;
+}
+
+/**
+ * Fetch with a retry and a concurrency cap.
+ *
+ * The first version fired every locale's namespaces through Promise.all: ~3,200
+ * requests at once, of which a handful always failed on the socket. A failed
+ * fetch was silently skipped, which undercounted the locale — Spanish came back
+ * as 2,523 strings against a 6,694 median and would have been reported as a
+ * coverage gap that does not exist. A check that invents findings under load is
+ * worse than no check, so failures are retried and, if they still fail, counted
+ * and reported rather than folded into the totals.
+ */
+const CONCURRENCY = 8;
+
+async function fetchJson(url: string): Promise<{ data: unknown | null; failed: boolean }> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await fetch(url);
+      if (res.status === 404) return { data: null, failed: false };
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return { data: await res.json(), failed: false };
+    } catch {
+      if (attempt === 2) return { data: null, failed: true };
+      await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
+    }
+  }
+  return { data: null, failed: true };
+}
+
+/** Map with a bounded number of in-flight requests. */
+async function mapLimit<T, R>(items: readonly T[], fn: (item: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(CONCURRENCY, items.length) }, async () => {
+      while (next < items.length) {
+        const i = next++;
+        out[i] = await fn(items[i]);
+      }
+    }),
+  );
   return out;
 }
 
@@ -259,34 +320,90 @@ async function main() {
   /* The English file, flattened once: the yardstick for "was this ever
      translated". */
   const english = new Map<string, string>();
-  await Promise.all(
-    namespaces.map(async (ns) => {
-      const res = await fetch(`${CDN}/en/${ns}.json`);
-      if (!res.ok) return;
-      try {
-        for (const [k, v] of walk(await res.json())) english.set(`${ns}.${k}`, v);
-      } catch {
-        /* a namespace with no English file cannot be a yardstick; skip it */
-      }
-    }),
-  );
+  await mapLimit(namespaces, async (ns) => {
+    const { data } = await fetchJson(`${CDN}/en/${ns}.json`);
+    if (data) for (const [k, v] of walk(data)) english.set(`${ns}.${k}`, v);
+  });
 
   const findings: Finding[] = [];
-  for (const locale of locales) {
-    const files = await Promise.all(
-      namespaces.map(async (ns) => {
-        const res = await fetch(`${CDN}/${locale}/${ns}.json`);
-        if (!res.ok) return [ns, null] as const;
-        try {
-          return [ns, (await res.json()) as unknown] as const;
-        } catch {
-          return [ns, null] as const;
-        }
-      }),
-    );
+  /** Strings actually scanned per locale — the evidence behind a coverage gap. */
+  const scanned = new Map<string, number>();
+  /** Namespaces that could not be read at all, so their absence proves nothing. */
+  const fetchFailures = new Map<string, number>();
+  /** Namespace files that answered 200 for this locale, empty or not. */
+  const present = new Map<string, number>();
+
+  for (const locale of [...locales, ...EXTRA_LOCALE_PROBES.filter((l) => !locales.includes(l))]) {
+    const files = await mapLimit(namespaces, async (ns) => {
+      const { data, failed } = await fetchJson(`${CDN}/${locale}/${ns}.json`);
+      return [ns, data, failed] as const;
+    });
+    const unreachable = files.filter(([, , failed]) => failed).length;
+    if (unreachable > 0) fetchFailures.set(locale, unreachable);
+    /* A file that answers 200 exists; one that 404s never did. The difference
+       matters: an empty file on the CDN is a locale that looks alive to anything
+       reading URLs, while a 404 is simply a language we do not ship. */
+    present.set(locale, files.filter(([, data]) => data !== null).length);
+    let count = 0;
     for (const [ns, data] of files) {
       if (!data) continue;
-      findings.push(...inspect(locale, ns, walk(data), english));
+      const entries = walk(data);
+      count += entries.length;
+      findings.push(...inspect(locale, ns, entries, english));
+    }
+    scanned.set(locale, count);
+  }
+
+  /* A locale is a coverage gap when it holds less than half the median locale.
+     Half, not a fixed number, because the corpus grows: today the median is
+     ~6,700 strings and `ar` has 12, which is not a borderline call. Anything
+     genuinely near the line deserves a human look rather than a tighter
+     threshold. */
+  for (const [locale, count] of fetchFailures) {
+    console.log(`  note: ${count} namespace file(s) unreadable for ${locale}; its count is a floor, not a total`);
+  }
+
+  const counts = [...scanned.values()].filter((n) => n > 0).sort((a, b) => a - b);
+  const median = counts.length ? counts[Math.floor(counts.length / 2)] : 0;
+  for (const [locale, count] of scanned) {
+    const listed = locales.includes(locale);
+
+    if (count === 0) {
+      /* Empty is only evidence for a locale we expect to exist. For anything
+         else the CDN's blanket 200 `{}` would make every typo look like a bug. */
+      if (listed || EXTRA_LOCALE_PROBES.includes(locale)) {
+        findings.push({
+          locale,
+          path: "(whole locale)",
+          severity: "coverage",
+          reason: listed
+            ? "served by the manifest but every namespace file is empty"
+            : "every namespace file is empty and the manifest does not list it — nothing is served",
+          sample: "",
+        });
+      }
+      continue;
+    }
+
+    if (median > 0 && count < median / 2) {
+      findings.push({
+        locale,
+        path: "(whole locale)",
+        severity: "coverage",
+        reason: `${count} strings scanned, median ${median} — locale is far behind the rest`,
+        sample: "",
+      });
+      continue;
+    }
+
+    if (!listed) {
+      findings.push({
+        locale,
+        path: "(whole locale)",
+        severity: "coverage",
+        reason: `${count} strings on the CDN but the manifest does not list this locale — nothing is served`,
+        sample: "",
+      });
     }
   }
 
@@ -310,9 +427,17 @@ async function main() {
 
   const wrong = report("wrong-language", "WRONG LANGUAGE");
   const orthography = report("orthography", "ORTHOGRAPHY");
-  const untranslated = report("untranslated", "UNTRANSLATED (coverage, not a failure)");
+  const coverage = report("coverage", "COVERAGE GAP");
+  const untranslated = report("untranslated", "UNTRANSLATED (information, not a failure)");
 
-  if (wrong === 0 && orthography === 0) {
+  /* Always print what was scanned. A check that stays silent because it had
+     nothing to read looks exactly like a check that passed. */
+  const scale = [...scanned.entries()].sort((a, b) => b[1] - a[1]);
+  console.log(`scanned (median ${median}):`);
+  for (const [l, n] of scale) console.log(`  ${l.padEnd(9)} ${String(n).padStart(6)}`);
+  console.log("");
+
+  if (wrong === 0 && orthography === 0 && coverage === 0) {
     console.log(
       untranslated === 0
         ? "locale scripts: clean"
