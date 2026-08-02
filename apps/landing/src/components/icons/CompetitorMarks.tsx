@@ -51,13 +51,29 @@ const MARKS: Record<CompetitorKey, Mark> = {
   locize: { asset: "locize.png", letter: "L", hue: "#2f8fd4", label: "Locize" },
 };
 
+/**
+ * `tone` decides whether the vendor's own colours are shown.
+ *
+ * "brand" is the default and the honest one: an unmodified mark, which is what
+ * nominative use rests on and what the note above promises.
+ *
+ * "ink" desaturates it, and exists for exactly one surface: the pricing matrix
+ * header, where four logos sit in a row of narrow columns. There, four corporate
+ * palettes inside our own comparison read as four brands competing for the eye
+ * on our page (rule/neutral-ink-accent-is-identity-only). Desaturation is a
+ * rendering treatment, not a redraw — the shape and proportions are untouched —
+ * but it IS a departure from "we do not restyle", so it stays scoped to that one
+ * table rather than becoming the default.
+ */
 export function CompetitorMark({
   competitor,
   size = 28,
+  tone = "brand",
   className,
 }: {
   competitor: CompetitorKey;
   size?: number;
+  tone?: "brand" | "ink";
   className?: string;
 }) {
   const mark = MARKS[competitor];
@@ -79,7 +95,12 @@ export function CompetitorMark({
           loading="lazy"
           decoding="async"
           className="object-contain"
-          style={{ width: Math.round(size * 0.64), height: Math.round(size * 0.64) }}
+          style={{
+            width: Math.round(size * 0.64),
+            height: Math.round(size * 0.64),
+            filter: tone === "ink" ? "grayscale(1) contrast(0.85)" : undefined,
+            opacity: tone === "ink" ? 0.75 : undefined,
+          }}
         />
       </span>
     );
@@ -93,9 +114,11 @@ export function CompetitorMark({
         width: size,
         height: size,
         fontSize: Math.round(size * 0.45),
-        color: mark.hue,
-        background: `color-mix(in srgb, ${mark.hue} 8%, white)`,
-        borderColor: `color-mix(in srgb, ${mark.hue} 18%, white)`,
+        color: tone === "ink" ? "var(--color-mist-600, #666)" : mark.hue,
+        background:
+          tone === "ink" ? "rgba(0,0,0,0.03)" : `color-mix(in srgb, ${mark.hue} 8%, white)`,
+        borderColor:
+          tone === "ink" ? "rgba(0,0,0,0.07)" : `color-mix(in srgb, ${mark.hue} 18%, white)`,
       }}
     >
       {mark.letter}

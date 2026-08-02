@@ -184,6 +184,17 @@ const RO_CEDILLA = /[şŞţŢ]/u;
 /** Sentence-ending punctuation, by script family. */
 const SENTENCE_END = /[.!?。！？؟।]$/u;
 
+/**
+ * Languages that end a sentence with a space, not a mark.
+ *
+ * Thai, Lao, Khmer and Burmese have no full stop in ordinary prose: the sentence
+ * boundary is whitespace. Requiring terminal punctuation there would report a
+ * correct translation forever — it did once already, on the Thai h1
+ * "การผสานรวมที่เข้ากับวิธีทำงานของทีมผลิตภัณฑ์", which is a complete sentence.
+ * For these locales the length ratio carries the signal on its own.
+ */
+const NO_TERMINAL_PUNCTUATION = new Set(["th", "lo", "km", "my"]);
+
 /** A colon or dash ends a deliberate lead-in, not a truncated sentence. */
 const LEAD_IN_END = /[:：—-]$/u;
 
@@ -324,14 +335,18 @@ function inspect(
          (26 of 52) and a strict `<` let it through. */
       const ratioLimit = DENSE_SCRIPT.test(trimmed) ? 0.3 : 0.55;
       const tooShort = source.length > 0 && trimmed.length / source.length < ratioLimit;
-      const unfinished = !SENTENCE_END.test(trimmed) && !LEAD_IN_END.test(trimmed);
+      const unfinished = NO_TERMINAL_PUNCTUATION.has(locale)
+        ? true
+        : !SENTENCE_END.test(trimmed) && !LEAD_IN_END.test(trimmed);
 
       if (SENTENCE_END.test(source.trim()) && unfinished && tooShort) {
         findings.push({
           locale,
           path,
           severity: "fragment-h1",
-          reason: `h1 is ${trimmed.length} chars against ${source.length} in English and does not end a sentence`,
+          reason: NO_TERMINAL_PUNCTUATION.has(locale)
+            ? `h1 is ${trimmed.length} chars against ${source.length} in English`
+            : `h1 is ${trimmed.length} chars against ${source.length} in English and does not end a sentence`,
           sample: trimmed.slice(0, 70),
         });
       }

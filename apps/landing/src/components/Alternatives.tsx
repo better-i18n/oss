@@ -107,11 +107,19 @@ export default function Alternatives() {
                   <span className="flex min-w-0 items-start gap-3">
                     <CompetitorMark competitor={alt.key as CompetitorKey} />
                     <span className="min-w-0">
-                    <span className="block text-[15px] font-medium tracking-[-0.015em] text-mist-900">
-                      {alt.name}
-                    </span>
+                      <span className="block text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                        {alt.name}
+                      </span>
                       <span className="mt-1.5 block text-[13px] leading-5 text-mist-600">
                         {t(`${alt.key}.description`)}
+                      </span>
+                      {/* One hard number per card, and not a new claim: this is
+                          the entry price our own comparison page for that vendor
+                          already publishes, read off their public pricing page.
+                          A card that only says "powerful platform" gives the
+                          reader nothing to act on. */}
+                      <span className="mt-1.5 block text-[12px] tabular-nums text-mist-400">
+                        {t(`${alt.key}.entryPrice`)}
                       </span>
                     </span>
                   </span>
@@ -127,6 +135,10 @@ export default function Alternatives() {
                 as insecurity. This line is the section's posture: they are good
                 tools, we are a different shape. It also sets up the comparison
                 pages, which are written the same way. */}
+            {/* Where the numbers come from. A price without a source is a
+                claim; with one it is a citation. */}
+            <p className="mt-4 text-[12px] leading-5 text-mist-400">{t("entryPriceNote")}</p>
+
             <p className="section-p mt-5 text-[13px]">{t("respectNote")}</p>
           </div>
         </div>

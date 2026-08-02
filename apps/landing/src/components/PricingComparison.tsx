@@ -1,5 +1,6 @@
 import { useT } from "@/lib/i18n";
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { CompetitorMark, type CompetitorKey } from "@/components/icons/CompetitorMarks";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -23,8 +24,21 @@ const VENDOR_LABELS: Record<Vendor, string> = {
 };
 
 /**
- * Render the vendor label. Better I18N is special-cased to show our logo
- * + branded wordmark; competitors render as plain text.
+ * Vendor column header: the product's mark next to its name.
+ *
+ * Naming a product without showing its mark was the odd one out here — every
+ * other surface that names a competitor shows it (rule/name-a-thing-with-its-mark),
+ * and this table named three of them in plain text while we alone got a logo.
+ *
+ * The competitor marks render in ink rather than their own colours. Four
+ * corporate palettes across four narrow columns would put their brands, not the
+ * comparison, in front of the reader — on our page
+ * (rule/neutral-ink-accent-is-identity-only).
+ *
+ * Our row still leads, and not by colour: the logo is full strength, the
+ * wordmark sits at the same weight the highlighted column uses everywhere else.
+ * On a narrow viewport the mark is dropped rather than the name — a logo the
+ * reader cannot place is decoration, the name is the information.
  */
 function VendorHeader({ vendor }: { vendor: Vendor }) {
   if (vendor === "betterI18n") {
@@ -41,7 +55,19 @@ function VendorHeader({ vendor }: { vendor: Vendor }) {
       </span>
     );
   }
-  return <span>{VENDOR_LABELS[vendor]}</span>;
+
+  return (
+    <span className="inline-flex items-center justify-center gap-2">
+      {/* The wrapper carries the breakpoint, not the mark: CompetitorMark's own
+          class list starts with `flex`, so a `hidden sm:flex` passed through
+          `className` lands next to it and the two display utilities fight —
+          measured, the mark stayed visible below 640px. */}
+      <span className="hidden sm:inline-flex">
+        <CompetitorMark competitor={vendor as CompetitorKey} size={20} tone="ink" />
+      </span>
+      <span>{VENDOR_LABELS[vendor]}</span>
+    </span>
+  );
 }
 
 type Item =
