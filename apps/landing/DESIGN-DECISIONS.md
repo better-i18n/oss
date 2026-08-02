@@ -15,6 +15,42 @@ as one product. We adopt the contract, not just the colors.
 
 ---
 
+## rule/the-motto
+Scope: every change to this app, checked by the author before asking for review
+Rule: five sentences, in this order of authority. They are the compressed form of
+the rules below, and where a detailed rule seems to disagree, the motto wins.
+1. **One container.** No hand-rolled `max-w` + `px` + `py` trio; `.section` or
+   `.frame`. The page is already a frame.
+2. **No box inside a box.** A list item has no border, fill or padding of its own
+   — bare columns and gap. A TABLE is the exception: there the lines *are* the
+   structure.
+3. **The only transition is `<Divider />`.** No alternating background, no
+   gradient, no margin standing in for a rule. The page is white; separation is a
+   hairline.
+4. **Colour exists only when it carries information.** Neutral ink; accent only
+   for pillar identity, link/focus, and code tokens (there hue *is* the
+   information). No decorative colour, no bold — hierarchy is size plus ink.
+5. **Name a thing with its mark.** Vendor → `CompetitorMark`, framework →
+   `FrameworkIcons` / `GuideMark`, locale → `LocaleFlag`. One size, one tile,
+   everywhere.
+
+Two invariants sit alongside it:
+ (a) inline i18n `defaultValue` is **forbidden** — `useT` humanises a missing key
+     and never reads it, so a fallback is dead code that hides the gap. Put the
+     key on the CDN.
+ (b) **no SEO loss** — copy, headings, structured data, `seo/pages.ts`,
+     `llms-txt.ts` and URLs survive; what changes is the shell and the type.
+
+Self-check before every PR: `npx tsc --noEmit` · `npx react-doctor@latest .
+--diff main` (Correctness / State / Performance at zero) ·
+`./scripts/audit/run-audit.sh --only <path>` (h1, zero placeholders, meta
+lengths, canonical, hreflang, overflow, LCP).
+Why: the rules below are long enough that an agent reads the one nearest its task
+and misses the other nine. Five sentences fit in working memory, so they get
+applied without being looked up.
+Evidence: user, 2026-08-01. Known false positive in the audit: the `no JSON-LD` /
+`JSON-LD parse error` lines are a TanStack 1.149 bug, not ours — do not chase them.
+
 ## rule/one-container
 Scope: every marketing page and section
 Rule: horizontal containment comes from `.frame` (no vertical rhythm) or
@@ -412,6 +448,64 @@ Exceptions: the instrument surfaces listed above.
 Decision: user delegated 2026-08-01 ("grammar'ı SAYFA KABUĞUNA uygula … aracın
 kendi UI'ında okunabilirliği bozacak şekilde zorlamayı deneme").
 
+## rule/listed-items-are-not-cards
+Scope: any list of repeated items rendered from `.map()` — link lists, release
+lists, quote lists, related-post lists, competitor lists
+Rule: the items get NO border, NO fill and NO padding of their own. They are bare
+columns separated by `gap` alone. Hierarchy inside an item comes from type size and
+ink, exactly like the prose around it.
+Why: the page is already a bordered frame (`FrameLines` + `.section` vertical
+rules), and `.section` already supplies the padding. Giving each item its own
+border and inset stacks a third box inside the second one, and the eye reads the
+borders before it reads the content. Applied one by one to the changelog band,
+testimonials, related posts and the comparison hub — each time the section got
+quieter and easier to scan without losing any structure.
+Evidence: `Changelog.tsx`, `Testimonials.tsx`, `blog/$slug.tsx` (related),
+`compare/index.tsx` (competitor list); user decision 2026-08-01 ("bu tarz
+kartlarda da border olmasın, zaten border içinde bir tasarım üstünde çalışıyoruz").
+Bad: `<Link className="rounded-xl border border-black/[0.07] p-5">` inside a `.map()`
+Good: `<div className="grid gap-8 sm:grid-cols-2">` + `<Link className="flex flex-col gap-2.5">`
+Exceptions: a **table** keeps its rules — there the lines are the structure, not
+decoration (the comparison matrix). A hairline cell grid is still correct when the
+cells form a matrix of equal units (framework support, feature grids), not when
+they are a list of links.
+
+## rule/name-a-thing-with-its-mark
+Scope: anywhere a third-party product, framework or locale is named
+Rule: put its real mark next to the name, at one size, on a neutral ground —
+`<CompetitorMark>` for vendors, `FrameworkIcons` for frameworks, `<LocaleFlag>`
+for locales. Same tile, same size everywhere; the mark is never resized or
+recoloured per surface.
+Why: a name is a string, a mark is recognisable at a glance — in a matrix header,
+a menu row or a comparison card the mark is what lets someone find their own stack
+without reading. It also stops each surface from inventing its own treatment.
+Evidence: comparison matrix headers and cards, Alternatives, OtherComparisons, the
+navbar Integrations menu, the app-preview locale chips; user decision 2026-08-01
+("bu marklar çok beğendim, diğer yerleri de böyle").
+Exceptions: none — if we have no licensed asset, `CompetitorMark` falls back to a
+monogram in the same tile.
+
+## rule/how-it-works-is-a-converging-flow
+Scope: any section that answers "how does this work" — product pillar heroes,
+persona pages, feature explainers
+Rule: use `FlowHero` (`src/components/visuals/FlowHero.tsx`). Inputs sit around the
+edge as `FlowCard`s, the platform sits in the centre, one accent pulse runs edge →
+centre. Do not build a new diagram per page: pass different cards. A hero takes it
+through `PageHero`'s existing `visual` slot; a mid-page section renders it inside
+`<Section>` under a `SectionHeader`.
+Why: every page invented its own answer — a row of five emoji tiles joined by grey
+bars, a screenshot of our own docs, a dashboard mock. None of them said what the
+product does, and each one had to be maintained separately. The converging diagram
+is the shape the reference implementation uses for its product heroes, and it is
+legible in one glance: many sources, one place, one direction.
+Constraints: pure SVG/CSS (no JS, free at SSG time), animation off under
+`prefers-reduced-motion` with the finished frame visible, one accent hue, and no
+externally hosted imagery.
+Evidence: `content.tsx` (`ContentFlow`), `for-product-teams` (`ProductWorkflow`),
+`what-is` (`I18nFlowHero`); user decision 2026-08-01 ("böyle döşeyelim her yere").
+Exceptions: a **before/after** comparison is a different question and uses
+`ProcessCompare` (two lanes on one rail), not this.
+
 ## Coverage gaps (no decision yet — do not invent one)
 
 - ~~**~150 strings hardcoded in page files, awaiting keys.**~~ **Closed for
@@ -479,6 +573,42 @@ kendi UI'ında okunabilirliği bozacak şekilde zorlamayı deneme").
   `text-base` h3) instead of `FaqList` / `FaqSection`. Worth unifying, but the
   FAQ JSON-LD is generated from the same literals, so the copy move and the
   component move should happen in one change, not two.
+
+- ~~**No Locize comparison page.**~~ **Closed** (2026-08-01): `/compare/locize/`
+  shipped on the `compare/crowdin.tsx` skeleton. Locize had published their own
+  "Locize vs. Better i18n" page while we had nothing, so that query was theirs
+  alone. Their page is unusually fair — it opens with what we do well and cites
+  our own docs for the gaps — and the decision taken here is that **the only
+  credible reply to a fair page is a fair page**: four of fourteen matrix rows
+  resolve to an em dash on *our* side (translator tooling, translation memory,
+  non-JSON formats in the platform, data residency), the MCP row on the compare
+  index now reads ✓ for them, and `compare.locize.fits.*` is a whole section
+  telling the reader to choose Locize when i18next lineage, non-JSON formats,
+  translator workflow or EU residency is what decides it. Claiming a translation
+  memory we do not have is a thirty-second fact-check away from costing the page
+  its credibility, which is worth more than the row.
+
+  New rule this establishes, worth keeping: **when a competitor's comparison of
+  us is accurate, confirm it in our own words instead of countering it.** The
+  page still converts — it just converts on the reader trusting the matrix.
+
+- **Still open — `ComparisonRelatedTopics` is a link list with hairline cells.**
+  Every `/compare/*` page ends with it, and under
+  `rule/listed-items-are-not-cards` its three link cells should be bare gap
+  columns like `SeeAlso` now is. It lives in `ComparisonTable.tsx`, which is
+  owned elsewhere, so the seven compare pages still render a bordered link grid
+  at the bottom while their own sections do not. One edit in that file closes it
+  for all seven. `OtherComparisons` in the same file is the same shape.
+
+- **Phantom NULL-namespace keys are still being created by something.** Eight
+  showed up under `developerFeatures.*` (BETTER-260 class: a row whose `key`
+  is the full dotted path and whose `namespace_id` is NULL, shadowing the real
+  key so the CDN file ships without it — which is why `UseCases` rendered from
+  `defaultValue` for four cards). Deleted and republished on 2026-08-01, and
+  `listKeys` still flags `meta.home.description`, `meta.privacy.description` and
+  `meta.features.description` as phantoms in the `default` namespace. They are
+  harmless today because the real `meta.*` keys win, but the generator that
+  writes them has not been found. Worth a platform-side fix, not a landing fix.
 
 - **Data-quality bug found while creating keys**: a key literally named
   `marketing.Expo i18n` exists (the key *name* is the English text). `createKeys`

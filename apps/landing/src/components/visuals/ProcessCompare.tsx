@@ -53,84 +53,6 @@ export interface ProcessCompareProps {
   readonly title: string;
 }
 
-function Chevron() {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="mt-[3px] shrink-0 text-mist-300"
-    >
-      <path d="m9 18 6-6-6-6" />
-    </svg>
-  );
-}
-
-function Lane({
-  label,
-  steps,
-  isBetter,
-  accent,
-}: {
-  label: string;
-  steps: readonly ProcessStep[];
-  isBetter: boolean;
-  accent?: string;
-}) {
-  return (
-    <div className="min-w-0">
-      <p className="flex items-center gap-2 text-[11px] font-medium text-mist-400">
-        {isBetter && accent ? (
-          <span
-            aria-hidden
-            className="size-1.5 shrink-0 rounded-full"
-            style={{ background: accent }}
-          />
-        ) : null}
-        {label}
-      </p>
-
-      {/* Scrolls inside itself: a long lane must never widen the page. */}
-      <div className="mt-3 overflow-x-auto">
-        <ol className="flex min-w-max items-start gap-3">
-          {steps.map((step, index) => (
-            <li key={`${step.label}-${index}`} className="flex items-start gap-3">
-              <span
-                className={`block max-w-[22ch] ${isBetter ? "process-step-in" : ""}`}
-                style={isBetter ? { animationDelay: `${index * 90}ms` } : undefined}
-              >
-                <span
-                  className={`block text-[13px] leading-[1.45] ${
-                    step.dropped
-                      ? "text-mist-400 line-through decoration-mist-300"
-                      : isBetter
-                        ? "text-mist-900"
-                        : "text-mist-600"
-                  }`}
-                >
-                  {step.label}
-                </span>
-                {step.meta ? (
-                  <span className="mt-1 block text-[11px] tabular-nums text-mist-400">
-                    {step.meta}
-                  </span>
-                ) : null}
-              </span>
-              {index < steps.length - 1 ? <Chevron /> : null}
-            </li>
-          ))}
-        </ol>
-      </div>
-    </div>
-  );
-}
-
 export function ProcessCompare({
   manual,
   better,
@@ -158,12 +80,75 @@ export function ProcessCompare({
         }
       `}</style>
 
-      <div className="flex flex-col gap-7">
-        <Lane label={manual.label} steps={manual.steps} isBetter={false} />
-        {/* One hairline between the lanes — the comparison is the point, so it
-            gets a single rule, not a box around each lane. */}
-        <div className="border-t border-black/[0.07]" />
-        <Lane label={better.label} steps={better.steps} isBetter accent={accent} />
+      <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+        {/* Left: the manual process as hairline rows — no boxes, the same list
+            shape the /content/ page uses for its argument column. */}
+        <div>
+          <p className="text-[11px] font-medium text-mist-400">{manual.label}</p>
+          <ol className="mt-4 flex flex-col">
+            {manual.steps.map((step, index) => (
+              <li
+                key={`${step.label}-${index}`}
+                className="flex items-baseline gap-3 border-t border-black/[0.05] py-3 first:border-t-0 first:pt-0"
+              >
+                <span className="w-4 shrink-0 text-[10px] tabular-nums text-mist-300">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="min-w-0">
+                  <span
+                    className={`block text-[13px] leading-[1.5] ${
+                      step.dropped
+                        ? "text-mist-400 line-through decoration-mist-300"
+                        : "text-mist-700"
+                    }`}
+                  >
+                    {step.label}
+                  </span>
+                  {step.meta ? (
+                    <span className="mt-0.5 block text-[11px] tabular-nums text-mist-400">
+                      {step.meta}
+                    </span>
+                  ) : null}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {/* Right: ours, in a framed panel — one container, hairline cells. */}
+        <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
+          <div className="flex items-center gap-2 border-b border-black/[0.05] px-4 py-2.5">
+            <span
+              aria-hidden
+              className="size-1.5 shrink-0 rounded-full"
+              style={{ background: accent }}
+            />
+            <span className="text-[11px] font-medium text-mist-600">{better.label}</span>
+          </div>
+          <ol className="flex flex-col">
+            {better.steps.map((step, index) => (
+              <li
+                key={`${step.label}-${index}`}
+                className="process-step-in flex items-baseline gap-3 border-t border-black/[0.05] px-4 py-3 first:border-t-0"
+                style={{ animationDelay: `${index * 90}ms` }}
+              >
+                <span className="w-4 shrink-0 text-[10px] tabular-nums text-mist-300">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[13px] leading-[1.5] text-mist-900">
+                    {step.label}
+                  </span>
+                  {step.meta ? (
+                    <span className="mt-0.5 block text-[11px] tabular-nums text-mist-400">
+                      {step.meta}
+                    </span>
+                  ) : null}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
 
       {dropped > 0 ? (
