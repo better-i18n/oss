@@ -6,7 +6,7 @@ import {
   redirect,
   useRouter,
 } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   BetterI18nProvider,
@@ -23,13 +23,7 @@ import { i18nConfig } from "../i18n.config";
 import { filterMessagesByPath, getCdnNamespacesForPage, extractPagePath } from "../lib/page-namespaces";
 import { NotFoundPage as StatusNotFound } from "@/components/ErrorPage";
 import { ClientErrorReporter } from "@/components/ClientErrorReporter";
-import { storeMessages, readMessages } from "../lib/ssr-messages";
-import {
-  getClientMessagesSnapshot,
-  getServerMessagesSnapshot,
-  mergeClientMessages,
-  subscribeClientMessages,
-} from "../lib/client-messages";
+import { storeMessages } from "../lib/ssr-messages";
 import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
@@ -133,6 +127,8 @@ interface RouterContext {
   locale: string;
   locales: string[];
   requestId: string; // Unique per SSR request — keys into ssrMessagesByRequest
+  /** This page's namespaces, refreshed by beforeLoad on every navigation. */
+  messages?: Messages;
 }
 
 /**
@@ -244,35 +240,36 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     });
     storeMessages(requestId, allMessages);
 
-    /* Client navigation: beforeLoad runs again for every path, but the root
-       LOADER — the thing that hands messages to the component — does not.
-       Without this line the provider keeps the hydration script tag, i.e. the
-       first page's namespaces, and every key the new page introduces renders
-       humanised. */
-    mergeClientMessages(locale, allMessages as Record<string, unknown>);
-
-    return { locale, locales, requestId };
-  },
-
-  loader: async ({ context, location }) => {
-    const allMessages = readMessages(context.requestId) ?? await getMessages({
-      project: i18nConfig.project,
-      locale: context.locale,
-      namespaces: getCdnNamespacesForPage(extractPagePath(location.pathname)) ?? undefined,
-    });
+    /* The messages ride in the route CONTEXT, not the loader.
+       `beforeLoad` re-runs on every client navigation; the root loader does not,
+       because the root match is never recreated and `loaderDeps` on a root route
+       only sees `search` — the compiler is explicit about it:
+       "Property 'location' is missing in type 'FullSearchSchemaOption'".
+       So the loader could not be keyed on the page path, and it was the loader
+       that carried messages to the provider: the app kept the FIRST page's
+       namespaces and every key the next page introduced rendered humanised.
+       Context is the router's own per-navigation channel, so the data travels
+       the same path the router already walks. */
     const messages = filterMessagesByPath(allMessages, location.pathname);
 
-    const isSSR = typeof document === "undefined";
-    if (isSSR) {
-      // SSR: store in per-request Map, keep out of loader data (avoids dehydration).
+    return { locale, locales, requestId, messages };
+  },
+
+  loader: async ({ context }) => {
+    /* beforeLoad already built this page's messages and put them in context; the
+       loader's only remaining job is the SSR hand-off, because the render reads
+       from a per-request Map rather than from dehydrated loader data. */
+    const messages = context.messages;
+
+    if (typeof document === "undefined" && messages) {
       if (ssrMessagesByRequest.size >= SSR_MAP_MAX_SIZE) {
         const firstKey = ssrMessagesByRequest.keys().next().value;
         if (firstKey) ssrMessagesByRequest.delete(firstKey);
       }
       ssrMessagesByRequest.set(context.requestId, messages);
     }
-    // SSR: messages=undefined (tiny in dehydration). Client nav: messages=full data.
-    return { locale: context.locale, messages: isSSR ? undefined : messages };
+
+    return { locale: context.locale };
   },
 
   head: () => {
@@ -389,38 +386,23 @@ function RootComponent() {
     [router],
   );
 
-  const loaderData = Route.useLoaderData();
+  const routeContext = Route.useRouteContext();
 
   // SSR: per-request Map (race-free across concurrent CF Worker requests)
   // Client hydration: <script id="__i18n_messages__"> tag from SSR HTML
   // Client navigation: loader data (fresh messages for the new page)
-  /* Namespaces fetched during client navigation. The base set below is whatever
-     the document was rendered with; this carries what the current page needs on
-     top of it. Read through useSyncExternalStore so the provider re-renders the
-     moment a top-up lands. */
-  const topUp = useSyncExternalStore(
-    subscribeClientMessages,
-    getClientMessagesSnapshot,
-    getServerMessagesSnapshot,
-  );
-
-  const baseMessages = (() => {
+  /* Server: the per-request Map, race-free across concurrent Worker requests.
+     Client: the route context, which beforeLoad refreshes on every navigation.
+     The hydration script tag is the fallback for the very first paint, before
+     any client beforeLoad has run. */
+  const messages = (() => {
     if (typeof document === "undefined") {
       const msgs = ssrMessagesByRequest.get(requestId);
       if (msgs) ssrMessagesByRequest.delete(requestId);
       return msgs;
     }
-    return loaderData.messages ?? getClientMessages();
+    return routeContext.messages ?? getClientMessages();
   })();
-
-  /* Merge, never replace: the document's namespaces were built for this locale
-     and stay authoritative, and the top-up only carries what they lack. */
-  const messages = useMemo(() => {
-    const extra = topUp.messages as Messages | undefined;
-    if (!baseMessages) return extra && Object.keys(extra).length > 0 ? extra : baseMessages;
-    if (!extra || Object.keys(extra).length === 0) return baseMessages;
-    return { ...extra, ...baseMessages } as Messages;
-  }, [baseMessages, topUp]);
 
   useEffect(() => {
     if (import.meta.env.DEV) {
