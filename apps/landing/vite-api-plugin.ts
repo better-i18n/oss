@@ -11,6 +11,13 @@ import type { Plugin, Connect } from "vite";
 export function apiDevPlugin(): Plugin {
   let proxy: Awaited<ReturnType<typeof import("wrangler").getPlatformProxy>> | null = null;
 
+  // Keep this list in sync with the `path ===` branches in handleApiRoute below.
+  const OWNED_PATHS = ["/api/apply", "/api/comments"];
+  const ownsPath = (rawUrl: string) => {
+    const pathname = rawUrl.split("?")[0].replace(/\/$/, "");
+    return OWNED_PATHS.includes(pathname);
+  };
+
   return {
     name: "api-dev-proxy",
     apply: "serve",
@@ -21,7 +28,12 @@ export function apiDevPlugin(): Plugin {
       console.log("[api-dev] Local D1/R2 bindings ready");
 
       server.middlewares.use(async (req: Connect.IncomingMessage, res, next) => {
-        if (!req.url?.startsWith("/api/") || !proxy) return next();
+        // Only claim the paths this plugin actually implements. It used to
+        // claim ALL of /api/*, so every other API route defined as a TanStack
+        // server route (src/routes/api/changelog.ts, status.ts) got a
+        // {"error":"Not found"} 404 in dev and never reached its handler —
+        // which silently blanked the home changelog section on the client.
+        if (!req.url || !proxy || !ownsPath(req.url)) return next();
 
         try {
           const url = new URL(req.url, `http://localhost:${server.config.server.port || 3001}`);

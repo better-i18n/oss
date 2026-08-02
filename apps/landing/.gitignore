@@ -15,3 +15,6 @@ todos.json
 
 # Build-time generated blog indexes (one per locale)
 public/blog-index-*.json
+
+# Whole-site audit output (scripts/audit/run-audit.sh)
+.audit/

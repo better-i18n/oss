@@ -9,8 +9,12 @@ import tailwindcss from "@tailwindcss/vite";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { apiDevPlugin } from "./vite-api-plugin";
 
-export default defineConfig(async ({ mode }) => {
+export default defineConfig(async ({ mode, command }) => {
   const env = loadEnv(mode, process.cwd(), "");
+  // "build" → Rollup bundles the SSR output; "serve" → Vite's dev module runner
+  // evaluates SSR modules one by one. The two disagree about CommonJS, which is
+  // why `ssr.noExternal` below is build-only. See the comment there.
+  const isBuild = command === "build";
 
   const apiKey = env.BETTER_I18N_CONTENT_API_KEY;
   const project = env.BETTER_I18N_PROJECT;
@@ -119,11 +123,24 @@ export default defineConfig(async ({ mode }) => {
     // makes html-dom-parser pick its DOM-based build — fatal on Workers (no
     // `document`). Every blog page SSR throws `This browser does not support
     // document.implementation.createHTMLDocument`. Pin the SSR resolver to
-    // workerd/node conditions so the server build (htmlparser2-backed) wins,
-    // and inline both packages with noExternal so Vite — not the runtime —
-    // performs the resolution.
+    // workerd/node conditions so the server build (htmlparser2-backed) wins.
     ssr: {
-      noExternal: ["html-react-parser", "html-dom-parser"],
+      // BUILD-ONLY. Both packages are CommonJS, and the two SSR pipelines
+      // disagree about what to do with that:
+      //
+      //   build → Rollup inlines them and its commonjs transform rewrites
+      //           `exports`/`require` into ESM. Needed here so Vite (not the
+      //           Workers runtime) performs the condition-pinned resolution
+      //           above — Workers has no CJS loader.
+      //   serve → Vite's dev module runner evaluates each inlined module as
+      //           real ESM with no CJS transform. html-react-parser/lib/index.js
+      //           touches `exports` on line 7, so it threw
+      //           `ReferenceError: exports is not defined`, React caught it and
+      //           "switched to client rendering", and every /blog/$slug and
+      //           /features/$slug page shipped an EMPTY <body> to crawlers.
+      //
+      // Left external in dev, Node requires them as the CJS they actually are.
+      noExternal: isBuild ? ["html-react-parser", "html-dom-parser"] : [],
       resolve: {
         conditions: ["workerd", "node", "import", "module", "default"],
         externalConditions: [
