@@ -50,13 +50,13 @@ import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 
 const loadBlogPost = createServerFn({ method: "GET" })
-  .inputValidator((data: { slug: string; locale: string }) => data)
+  .validator((data: { slug: string; locale: string }) => data)
   .handler(async ({ data }) => {
     return getBlogPost(data.slug, data.locale);
   });
 
 const loadRelatedPosts = createServerFn({ method: "GET" })
-  .inputValidator(
+  .validator(
     (data: { slug: string; category: string | null; locale: string }) => data,
   )
   .handler(async ({ data }) => {

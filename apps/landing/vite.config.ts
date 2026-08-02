@@ -217,27 +217,6 @@ export default defineConfig(async ({ mode, command }) => {
             }
           : undefined,
       }),
-      // Workaround: TanStack Start registers the virtual module
-      // "tanstack-start-injected-head-scripts:v" only for the server
-      // environment. The client also imports router-manifest.js which
-      // references it, causing a resolution failure. This shim MUST be
-      // placed AFTER tanstackStart() so the server resolves the real
-      // module (with React Refresh preamble), and only the client
-      // fallthrough gets this empty stub.
-      // Remove when TanStack Start aligns package versions.
-      {
-        name: "tanstack-start-head-scripts-shim",
-        resolveId(id) {
-          if (id === "tanstack-start-injected-head-scripts:v") {
-            return "\0virtual:tss-head-scripts";
-          }
-        },
-        load(id) {
-          if (id === "\0virtual:tss-head-scripts") {
-            return "export const injectedHeadScripts = undefined;";
-          }
-        },
-      } satisfies Plugin,
       viteReact(),
       ViteMinifyPlugin({
         collapseWhitespace: true,

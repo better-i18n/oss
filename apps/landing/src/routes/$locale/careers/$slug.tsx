@@ -8,7 +8,7 @@ import { useT } from "@/lib/i18n";
 import { getJobPosition, type JobPosition } from "@/lib/content";
 
 const loadPosition = createServerFn({ method: "GET" })
-  .inputValidator((data: { slug: string; locale: string }) => data)
+  .validator((data: { slug: string; locale: string }) => data)
   .handler(async ({ data }) => getJobPosition(data.slug, data.locale));
 
 export const Route = createFileRoute("/$locale/careers/$slug")({

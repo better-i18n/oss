@@ -18,13 +18,13 @@ import {
 // ─── Server Functions ────────────────────────────────────────────────
 
 export const loadPersonaPage = createServerFn({ method: "GET" })
-  .inputValidator((data: { slug: string; locale: string }) => data)
+  .validator((data: { slug: string; locale: string }) => data)
   .handler(async ({ data }) => {
     return getMarketingPage(data.slug, data.locale);
   });
 
 export const loadRelatedPersonas = createServerFn({ method: "GET" })
-  .inputValidator((data: { slug: string; locale: string }) => data)
+  .validator((data: { slug: string; locale: string }) => data)
   .handler(async ({ data }) => {
     const pages = await getMarketingPages(data.locale, "persona");
     return pages.filter((p) => p.slug !== data.slug).slice(0, 6);

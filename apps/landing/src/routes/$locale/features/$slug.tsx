@@ -27,13 +27,13 @@ import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 
 const loadFeaturePage = createServerFn({ method: "GET" })
-  .inputValidator((data: { slug: string; locale: string }) => data)
+  .validator((data: { slug: string; locale: string }) => data)
   .handler(async ({ data }) => {
     return getMarketingPage(data.slug, data.locale);
   });
 
 const loadRelatedFeatures = createServerFn({ method: "GET" })
-  .inputValidator((data: { slug: string; locale: string }) => data)
+  .validator((data: { slug: string; locale: string }) => data)
   .handler(async ({ data }) => {
     const pages = await getMarketingPages(data.locale, "feature");
     return pages.filter((p) => p.slug !== data.slug).slice(0, 6);

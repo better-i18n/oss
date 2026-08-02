@@ -6,7 +6,7 @@ import {
   redirect,
   useRouter,
 } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   BetterI18nProvider,
@@ -17,12 +17,19 @@ import { ContentProvider } from "@better-i18n/content/adapters/react";
 import type { Messages } from "@better-i18n/use-intl";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { detectLocale } from "@better-i18n/core";
+import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
 import { i18nConfig } from "../i18n.config";
 import { filterMessagesByPath, getCdnNamespacesForPage, extractPagePath } from "../lib/page-namespaces";
 import { NotFoundPage as StatusNotFound } from "@/components/ErrorPage";
 import { ClientErrorReporter } from "@/components/ClientErrorReporter";
 import { storeMessages, readMessages } from "../lib/ssr-messages";
+import {
+  getClientMessagesSnapshot,
+  getServerMessagesSnapshot,
+  mergeClientMessages,
+  subscribeClientMessages,
+} from "../lib/client-messages";
 import { fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
@@ -134,6 +141,37 @@ interface RouterContext {
  */
 const BYPASS_LOCALE_CHECK = new Set(["api", "brand"]);
 
+/**
+ * Locale hints carried by the incoming request: the Cloudflare geo header and a
+ * previously-set locale cookie.
+ *
+ * This is isomorphic rather than a `typeof document === "undefined"` guard.
+ * `__root.tsx` is reachable from the client entry, and Start 1.171's
+ * import-protection plugin refuses `@tanstack/react-start/server` in the client
+ * bundle — it reads imports statically and cannot see a runtime guard. Splitting
+ * the two implementations lets the compiler drop the server branch, and its
+ * import with it, from the client build.
+ *
+ * On the client there is no incoming request to read, so it answers with
+ * nothing and locale detection falls back to the default.
+ */
+const readRequestLocaleHints = createIsomorphicFn()
+  .client((): { countryCode?: string; cookieLocale?: string } => ({}))
+  .server((): { countryCode?: string; cookieLocale?: string } => {
+    try {
+      const cookieHeader = getRequestHeader("Cookie") ?? "";
+      const cookieMatch = /preferred-locale=([^;]+)/.exec(cookieHeader);
+      return {
+        countryCode: getRequestHeader("X-Country") ?? undefined,
+        cookieLocale: cookieMatch?.[1],
+      };
+    } catch {
+      // Outside a request context (the dev server's first pass) the accessor
+      // throws; no hints is the correct answer, not a crash.
+      return {};
+    }
+  });
+
 export const Route = createRootRouteWithContext<RouterContext>()({
   staleTime: 0, // locale değişince loader'ın yeniden çalışması gerekiyor
   beforeLoad: async ({ location }) => {
@@ -155,20 +193,15 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       const search = location.searchStr || "";
       const hash = location.hash || "";
 
-      // Detect locale: cookie (manual user choice) > geo (CF X-Country) > default
+      // Detect locale: cookie (manual user choice) > geo (CF X-Country) > default.
+      // The hints come from `readRequestLocaleHints`, which is isomorphic: on the
+      // client there is no incoming request to read, so it returns nothing.
       let countryCode: string | undefined;
       let cookieLocale: string | undefined;
-      if (typeof document === "undefined") {
-        try {
-          countryCode = getRequestHeader("X-Country") ?? undefined;
-          const cookieHeader = getRequestHeader("Cookie") ?? "";
-          const cookieMatch = /preferred-locale=([^;]+)/.exec(cookieHeader);
-          if (cookieMatch?.[1] && locales.includes(cookieMatch[1])) {
-            cookieLocale = cookieMatch[1];
-          }
-        } catch {
-          // getRequestHeader may throw outside request context (dev server)
-        }
+      const hints = readRequestLocaleHints();
+      countryCode = hints.countryCode;
+      if (hints.cookieLocale && locales.includes(hints.cookieLocale)) {
+        cookieLocale = hints.cookieLocale;
       }
 
       const { locale: detectedLocale } = detectLocale({
@@ -210,6 +243,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       namespaces: cdnNamespaces,
     });
     storeMessages(requestId, allMessages);
+
+    /* Client navigation: beforeLoad runs again for every path, but the root
+       LOADER — the thing that hands messages to the component — does not.
+       Without this line the provider keeps the hydration script tag, i.e. the
+       first page's namespaces, and every key the new page introduces renders
+       humanised. */
+    mergeClientMessages(locale, allMessages as Record<string, unknown>);
 
     return { locale, locales, requestId };
   },
@@ -354,7 +394,17 @@ function RootComponent() {
   // SSR: per-request Map (race-free across concurrent CF Worker requests)
   // Client hydration: <script id="__i18n_messages__"> tag from SSR HTML
   // Client navigation: loader data (fresh messages for the new page)
-  const messages = (() => {
+  /* Namespaces fetched during client navigation. The base set below is whatever
+     the document was rendered with; this carries what the current page needs on
+     top of it. Read through useSyncExternalStore so the provider re-renders the
+     moment a top-up lands. */
+  const topUp = useSyncExternalStore(
+    subscribeClientMessages,
+    getClientMessagesSnapshot,
+    getServerMessagesSnapshot,
+  );
+
+  const baseMessages = (() => {
     if (typeof document === "undefined") {
       const msgs = ssrMessagesByRequest.get(requestId);
       if (msgs) ssrMessagesByRequest.delete(requestId);
@@ -362,6 +412,15 @@ function RootComponent() {
     }
     return loaderData.messages ?? getClientMessages();
   })();
+
+  /* Merge, never replace: the document's namespaces were built for this locale
+     and stay authoritative, and the top-up only carries what they lack. */
+  const messages = useMemo(() => {
+    const extra = topUp.messages as Messages | undefined;
+    if (!baseMessages) return extra && Object.keys(extra).length > 0 ? extra : baseMessages;
+    if (!extra || Object.keys(extra).length === 0) return baseMessages;
+    return { ...extra, ...baseMessages } as Messages;
+  }, [baseMessages, topUp]);
 
   useEffect(() => {
     if (import.meta.env.DEV) {

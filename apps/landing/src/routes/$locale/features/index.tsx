@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/page";
 
 const loadFeaturePages = createServerFn({ method: "GET" })
-  .inputValidator((data: { locale: string }) => data)
+  .validator((data: { locale: string }) => data)
   .handler(async ({ data }) => {
     return getMarketingPages(data.locale, "feature");
   });
