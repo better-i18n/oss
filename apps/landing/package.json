@@ -10,7 +10,8 @@
     "prebuild": "bun run --filter @better-i18n/core build && bun run --filter @better-i18n/use-intl build && bun run --filter @better-i18n/content build",
     "deploy": "bun run build && wrangler deploy",
     "logs": "wrangler tail",
-    "test": "vitest run"
+    "test": "vitest run",
+    "audit:locales": "bun scripts/audit/check-locale-scripts.ts"
   },
   "dependencies": {
     "@better-i18n/content": "workspace:*",
