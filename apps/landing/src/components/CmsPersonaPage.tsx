@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import BlogContent from "@/components/blog/BlogContent";
@@ -40,12 +41,28 @@ interface CmsPersonaPageProps {
   page: MarketingPage;
   locale: string;
   relatedPersonas: MarketingPageListItem[];
+  /**
+   * The persona's own "how it works" diagram, rendered in `PageHero`'s existing
+   * `visual` slot (rule/how-it-works-is-a-converging-flow: a hero takes the flow
+   * through that slot). Optional because the visual is per-persona and lives in
+   * the route file — this template stays generic and never picks a diagram.
+   */
+  heroVisual?: ReactNode;
+  /**
+   * A figure that belongs mid-page rather than in the hero — used by
+   * `/for-startups/`, whose argument is a before/after comparison and therefore
+   * takes `ProcessCompare` under its own SectionHeader instead of a flow.
+   * Rendered after the CMS body, before the sibling-persona index.
+   */
+  bodyVisual?: ReactNode;
 }
 
 export function CmsPersonaPage({
   page,
   locale,
   relatedPersonas,
+  heroVisual,
+  bodyVisual,
 }: CmsPersonaPageProps) {
   const t = useT("persona");
   /* Only personas that still have a route can be linked. */
@@ -64,6 +81,7 @@ export function CmsPersonaPage({
           label: t("hero.bookDemo"),
           href: "https://cal.com/better-i18n/30min?overlayCalendar=true",
         }}
+        visual={heroVisual}
       />
 
       {page.bodyHtml && (
@@ -76,6 +94,13 @@ export function CmsPersonaPage({
               <BlogContent html={page.bodyHtml} locale={locale} className={PROSE_CLASS} />
             </article>
           </Section>
+        </>
+      )}
+
+      {bodyVisual && (
+        <>
+          <Divider />
+          {bodyVisual}
         </>
       )}
 

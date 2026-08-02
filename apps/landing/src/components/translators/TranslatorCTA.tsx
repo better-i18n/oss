@@ -5,9 +5,9 @@ export default function TranslatorCTA() {
   const t = useTranslations("translators");
 
   return (
-    <section className="py-16 lg:py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="relative overflow-hidden rounded-3xl bg-mist-950 px-8 py-16 lg:px-16 lg:py-20">
+    <section>
+      <div className="section">
+        <div className="relative overflow-hidden rounded-xl bg-mist-950 px-8 py-16 lg:px-16 lg:py-20">
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />

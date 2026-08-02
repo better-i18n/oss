@@ -1,131 +1,90 @@
-"use client";
-
 import { useTranslations } from "@better-i18n/use-intl";
-import { motion } from "framer-motion";
+import { Section, SectionHeader } from "@/components/ui/page";
+import { FlowHero, FlowCard, FlowMono, FlowText } from "@/components/visuals/FlowHero";
+import { LocaleFlag } from "@/components/ui/locale-flag";
 
-// Static workflow visualization
-// TODO: Replace with Remotion animation when ready
-// const RemotionWorkflowPlayer = lazy(() => import("./remotion/WorkflowPlayer"));
-
-function WorkflowStatic({
-  steps,
-}: {
-  steps: Array<{ title: string; description: string; icon: string }>;
-}) {
-  return (
-    <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-2">
-      {steps.map((step, idx) => (
-        <div key={idx} className="flex items-center gap-2 lg:gap-0">
-          <motion.div
-            className="flex flex-col items-center text-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: idx * 0.15 }}
-          >
-            <div className="w-16 h-16 rounded-2xl bg-white border border-mist-200 flex items-center justify-center text-2xl mb-3 shadow-sm">
-              {step.icon}
-            </div>
-            <span className="text-sm font-medium text-mist-950">
-              {step.title}
-            </span>
-            <span className="text-xs text-mist-500 mt-1">
-              {step.description}
-            </span>
-          </motion.div>
-
-          {/* Connector Arrow */}
-          {idx < steps.length - 1 && (
-            <motion.div
-              className="hidden lg:block w-8 h-0.5 bg-mist-200 mx-2"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.15 + 0.1 }}
-            />
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
+/**
+ * "How it works" for /for-product-teams/, as the converging flow diagram.
+ *
+ * It used to be a horizontal row of five emoji tiles joined by 2px grey bars,
+ * inside a hand-rolled `max-w-[1400px]` wrapper, with a three-dot legend under a
+ * `border-mist-100` rule. Emoji as product iconography, a centred header the rest
+ * of the site left behind, and a container that broke the frame.
+ *
+ * Now it is `FlowHero` — the same shape the reference implementation uses for its
+ * product heroes and the shape we standardised on: the inputs sit around the edge,
+ * the platform sits in the middle, and one accent pulse runs edge → centre. Every
+ * label is still a published key from `product-teams`, so no copy was invented
+ * here; only the shape changed. (Decision 2026-08-01: "böyle döşeyelim her yere".)
+ */
 export default function ProductWorkflow() {
   const t = useTranslations("product-teams");
 
-  const steps = [
-    {
-      title: t("workflow.steps.merged.title"),
-      description: t("workflow.steps.merged.description"),
-      icon: "📝",
-    },
-    {
-      title: t("workflow.steps.synced.title"),
-      description: t("workflow.steps.synced.description"),
-      icon: "🔄",
-    },
-    {
-      title: t("workflow.steps.translate.title"),
-      description: t("workflow.steps.translate.description"),
-      icon: "🤖",
-    },
-    {
-      title: t("workflow.steps.review.title"),
-      description: t("workflow.steps.review.description"),
-      icon: "👀",
-    },
-    {
-      title: t("workflow.steps.publish.title"),
-      description: t("workflow.steps.publish.description"),
-      icon: "🚀",
-    },
-  ];
-
   return (
-    <section id="workflow" className="px-2 py-16 lg:py-24">
-      <div className="w-full mx-auto max-w-[1400px]">
-        <div className="px-6 lg:px-10">
-          {/* Section Header */}
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-2xl/[1.2] font-semibold tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.2]">
-              {t("workflow.title")}
-            </h2>
-            <p className="mt-4 text-base text-mist-600">
-              {t("workflow.description")}
-            </p>
-          </div>
+    <section id="workflow">
+      <Section>
+        <SectionHeader
+          eyebrow={t("workflow.eyebrow")}
+          title={t("workflow.title")}
+          subtitle={t("workflow.description")}
+        />
 
-          {/* Workflow Animation Container */}
-          <div className="bg-white rounded-2xl border border-mist-200 p-8 lg:p-12">
-            {/* Use static version for now, Remotion will enhance it */}
-            <WorkflowStatic steps={steps} />
-
-            {/* Timeline indicator */}
-            <div className="mt-8 pt-6 border-t border-mist-100">
-              <div className="flex items-center justify-center gap-8 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-mist-300" />
-                  <span className="text-mist-500">
-                    {t("workflow.legend.developer")}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-blue-500" />
-                  <span className="text-mist-500">
-                    {t("workflow.legend.automated")}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                  <span className="text-mist-500">
-                    {t("workflow.legend.productTeam")}
-                  </span>
-                </div>
+        <FlowHero
+          pillar="sync"
+          title={t("workflow.title")}
+          center={{
+            mark: (
+              <img
+                src="/brand/logo.svg"
+                alt=""
+                width={26}
+                height={26}
+                style={{ width: 26, height: 26 }}
+              />
+            ),
+            label: "Better I18N",
+            sublabel: t("workflow.legend.automated"),
+          }}
+          cards={[
+            <FlowCard key="merged" eyebrow={t("workflow.steps.merged.title")}>
+              <FlowMono>git merge → main</FlowMono>
+              <div style={{ marginTop: 4 }}>
+                <FlowText muted>{t("workflow.steps.merged.description")}</FlowText>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </FlowCard>,
+            <FlowCard key="synced" eyebrow={t("workflow.steps.synced.title")}>
+              <FlowText>{t("workflow.steps.synced.description")}</FlowText>
+            </FlowCard>,
+            <FlowCard key="translate" eyebrow={t("workflow.steps.translate.title")}>
+              <FlowText>{t("workflow.steps.translate.description")}</FlowText>
+            </FlowCard>,
+            <FlowCard key="review" eyebrow={t("workflow.steps.review.title")}>
+              <FlowText>{t("workflow.steps.review.description")}</FlowText>
+            </FlowCard>,
+            <FlowCard
+              key="tr"
+              eyebrow={t("workflow.steps.publish.title")}
+              corner={<LocaleFlag locale="tr" size={14} />}
+            >
+              <FlowMono>tr · published</FlowMono>
+            </FlowCard>,
+            <FlowCard
+              key="de"
+              eyebrow={t("workflow.steps.publish.title")}
+              corner={<LocaleFlag locale="de" size={14} />}
+            >
+              <FlowMono>de · published</FlowMono>
+            </FlowCard>,
+            <FlowCard
+              key="ja"
+              eyebrow={t("workflow.steps.publish.title")}
+              corner={<LocaleFlag locale="ja" size={14} />}
+            >
+              <FlowMono>ja · published</FlowMono>
+            </FlowCard>,
+          ]}
+        />
+      </Section>
     </section>
   );
 }

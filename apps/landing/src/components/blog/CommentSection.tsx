@@ -16,18 +16,42 @@ export default function CommentSection({ slug }: { slug: string }) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [formOpen, setFormOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  // `status` cannot guard re-entry on its own: setStatus is async, so a double
+  // Enter/click posts the same comment twice before the disabled button
+  // re-renders. A ref flips synchronously.
+  const submittingRef = useRef(false);
 
+  /* Comments load after mount rather than in the route loader on purpose: they
+     are user-generated, carry no SEO weight, and must never delay or block the
+     article render. What the effect DOES owe is a cleanup — without one, a
+     slug change mid-flight lands the previous post's comments. */
   useEffect(() => {
-    fetch(`/api/comments?slug=${encodeURIComponent(slug)}`)
-      .then((r) => r.json() as Promise<{ comments: Comment[] }>)
+    const controller = new AbortController();
+    setLoading(true);
+
+    fetch(`/api/comments?slug=${encodeURIComponent(slug)}`, {
+      signal: controller.signal,
+    })
+      .then((r) => {
+        // Without this the API's HTML error page reaches .json(), throws, and
+        // gets swallowed below — rendering "no comments yet" on a failed load.
+        if (!r.ok) throw new Error(`comments: ${r.status}`);
+        return r.json() as Promise<{ comments: Comment[] }>;
+      })
       .then((data) => setComments(data.comments || []))
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
   }, [slug]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formRef.current) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setStatus("submitting");
 
     const fd = new FormData(formRef.current);
@@ -48,6 +72,8 @@ export default function CommentSection({ slug }: { slug: string }) {
       formRef.current.reset();
     } catch {
       setStatus("error");
+    } finally {
+      submittingRef.current = false;
     }
   };
 

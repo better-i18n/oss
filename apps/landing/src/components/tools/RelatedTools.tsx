@@ -23,15 +23,15 @@ export function RelatedTools({
   if (related.length === 0) return null;
 
   return (
-    <section className="border-t border-mist-200 py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section className="border-t border-mist-200">
+      <div className="section">
         <div className="mb-8">
           <div className="mb-4 flex justify-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-mist-200 bg-white px-3 py-1 text-xs font-bold uppercase tracking-[0.22em] text-mist-600">
+            <span className="inline-flex items-center gap-2 rounded-full border border-mist-200 bg-white px-3 py-1 text-xs font-medium uppercase tracking-[0.22em] text-mist-600">
               More Tools
             </span>
           </div>
-          <h2 className="text-center font-display text-2xl/[1.08] font-medium tracking-[-0.02em] text-mist-950 sm:text-3xl/[1.04]">
+          <h2 className="section-h2 text-center">
             {title}
           </h2>
           <p className="mt-3 text-center text-sm leading-6 text-mist-600">

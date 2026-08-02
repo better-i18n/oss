@@ -30,14 +30,14 @@ export default function Integrations() {
   const t = useT("integrations");
 
   return (
-    <section id="integrations" className="py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section id="integrations">
+      <div className="section">
         <div className="text-center mb-12">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            {t("title", { defaultValue: "Integrations That Fit Your Stack" })}
+          <h2 className="section-h2">
+            {t("title")}
           </h2>
-          <p className="mt-4 text-lg text-mist-700 max-w-2xl mx-auto">
-            {t("subtitle", { defaultValue: "Connect Better I18N to your existing tools and workflows." })}
+          <p className="section-p mt-3 max-w-2xl mx-auto">
+            {t("subtitle")}
           </p>
         </div>
 
@@ -48,7 +48,7 @@ export default function Integrations() {
                 key={integration.key}
                 className="flex items-start gap-4 p-6 rounded-xl border border-mist-200 bg-white"
               >
-                <div className="flex-shrink-0 size-10 rounded-lg bg-mist-100 flex items-center justify-center text-mist-700">
+                <div className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600 text-mist-700">
                   {integration.spriteName ? (
                     <SpriteIcon name={integration.spriteName} className="size-5" />
                   ) : (
@@ -57,10 +57,10 @@ export default function Integrations() {
                 </div>
                 <div>
                   <h3 className="text-base font-medium text-mist-950">
-                    {t(`${integration.key}.title`, { defaultValue: integration.title })}
+                    {t(`${integration.key}.title`)}
                   </h3>
                   <p className="mt-1 text-sm text-mist-600">
-                    {t(`${integration.key}.description`, { defaultValue: integration.description })}
+                    {t(`${integration.key}.description`)}
                   </p>
                 </div>
               </div>

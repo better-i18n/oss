@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { slugify } from "./BlogContent";
 import { useT } from "@/lib/i18n";
 
@@ -45,15 +45,21 @@ function extractHeadings(html: string): TocItem[] {
  */
 export default function TableOfContents({ html }: TableOfContentsProps) {
   const t = useT("blog");
-  const headings = extractHeadings(html);
+  // Parsing the body HTML with a regex on every render is wasted work, and an
+  // unstable `headings` array is why the scroll-spy effect could not honestly
+  // list its dependency. Memoising on `html` fixes both.
+  const headings = useMemo(() => extractHeadings(html), [html]);
   const [activeId, setActiveId] = useState<string>("");
 
   useEffect(() => {
     if (headings.length < 3) return;
 
-    const elements = headings
-      .map((h) => document.getElementById(h.id))
-      .filter(Boolean) as HTMLElement[];
+    // flatMap instead of map().filter(Boolean): one pass, and it narrows the
+    // type without a cast that would lie if an id ever went missing.
+    const elements = headings.flatMap((h) => {
+      const el = document.getElementById(h.id);
+      return el ? [el] : [];
+    });
 
     if (elements.length === 0) return;
 
@@ -73,28 +79,29 @@ export default function TableOfContents({ html }: TableOfContentsProps) {
     }
 
     return () => observer.disconnect();
-  }, [headings.length]);
+  }, [headings]);
 
   if (headings.length < 3) return null;
 
   return (
-    <nav aria-label="Table of contents" className="text-sm">
-      <h2 className="font-medium text-mist-900 mb-4 text-xs uppercase tracking-wider">
-        {t("tableOfContents", "Contents")}
-      </h2>
-      <ul className="space-y-1 border-l border-mist-100">
+    <nav aria-label="Table of contents">
+      <p className="eyebrow">{t("tableOfContents")}</p>
+      {/* The active marker is a 1px rule on the left, not a filled chip: the rail
+          sits beside the prose and a tinted background would read as a second
+          content block competing with the article. */}
+      <ul className="mt-3 border-l border-black/[0.06]">
         {headings.map((heading) => {
           const isActive = activeId === heading.id;
           return (
             <li key={heading.id}>
               <a
                 href={`#${heading.id}`}
-                className={`block py-1.5 transition-colors leading-snug border-l-2 -ml-px ${
-                  heading.level === 3 ? "pl-6 text-[13px]" : "pl-4"
+                className={`-ml-px block border-l leading-snug transition-colors ${
+                  heading.level === 3 ? "py-1 pl-5 text-[12px]" : "py-1.5 pl-3.5 text-[13px]"
                 } ${
                   isActive
-                    ? "text-mist-950 border-mist-950 font-medium"
-                    : "text-mist-500 border-transparent hover:text-mist-950 hover:border-mist-950"
+                    ? "border-mist-900 font-medium text-mist-900"
+                    : "border-transparent text-mist-500 hover:border-mist-300 hover:text-mist-900"
                 }`}
               >
                 {heading.text}

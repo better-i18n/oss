@@ -13,7 +13,7 @@ export function ToolCard({ tool, locale }: ToolCardProps) {
     <Link
       to={`/$locale/${tool.href}` as never}
       params={{ locale } as any}
-      className="group block rounded-2xl border border-mist-200 bg-white p-6 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+      className="group block rounded-xl border border-mist-200 bg-white p-6 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:shadow-md"
       aria-label={tool.fallbackTitle}
     >
       <div className="mb-4 flex size-11 items-center justify-center rounded-xl border border-mist-100 bg-mist-50 text-mist-700 shadow-sm">

@@ -22,16 +22,16 @@ export default function PlatformMetrics() {
   const t = useTranslations("aboutPage");
 
   return (
-    <section className="py-16 bg-white">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <h2 className="font-display text-2xl font-medium text-mist-950 mb-12 text-center">
+    <section className="bg-white">
+      <div className="section">
+        <h2 className="section-h2 mb-12 text-center">
           {t("platformMetrics.title")}
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-8 lg:gap-12">
           {METRIC_KEYS.map((key) => (
             <div key={key} className="text-center">
-              <span className="block text-3xl lg:text-4xl font-bold text-mist-950">
+              <span className="block text-3xl lg:text-4xl font-medium text-mist-950">
                 {METRIC_VALUES[key]}
               </span>
               <span className="mt-2 block text-sm text-mist-600">

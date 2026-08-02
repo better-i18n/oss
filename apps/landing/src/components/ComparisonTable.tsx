@@ -1,5 +1,6 @@
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { CompetitorMark, type CompetitorKey } from "@/components/icons/CompetitorMarks";
+import { ProductTile } from "@/components/ui/product-tile";
 import { featureIcon } from "@/components/icons/feature-icons";
 import { SupportMark, markState, type MarkState } from "@/components/SupportMark";
 import { Link } from "@tanstack/react-router";
@@ -83,6 +84,53 @@ function useMarkLabels(): Record<MarkState, string> {
     no: t("marks.no"),
     partial: t("marks.partial"),
   };
+}
+
+/**
+ * Vendors we ship a mark for. A name outside this list renders as text rather
+ * than crashing or inventing a logo for a product we hold no asset for.
+ * `"Better I18N"` deliberately resolves to `undefined` here — ours is a
+ * ProductTile, not a competitor mark.
+ */
+const MARKED_VENDORS = [
+  "crowdin",
+  "lokalise",
+  "phrase",
+  "transifex",
+  "smartling",
+  "xtm",
+  "locize",
+] as const;
+
+function vendorKey(name: string): CompetitorKey | undefined {
+  const slug = name.toLowerCase().replace(/\s+/g, "");
+  return (MARKED_VENDORS as readonly string[]).includes(slug)
+    ? (slug as CompetitorKey)
+    : undefined;
+}
+
+/** Our own name, wherever it appears in a competitor list. */
+function isOurs(name: string): boolean {
+  return name.toLowerCase().replace(/[\s-]+/g, "") === "betteri18n";
+}
+
+/**
+ * A product name with its mark: one size, one tile, everywhere
+ * (rule/name-a-thing-with-its-mark). Both hero badges use it, so the marks in a
+ * headline match the marks in the matrix below it.
+ */
+function NamedProduct({ name }: { name: string }) {
+  const key = vendorKey(name);
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {isOurs(name) ? (
+        <ProductTile product="i18n" size="sm" className="size-[18px] rounded-[5px]" />
+      ) : key ? (
+        <CompetitorMark competitor={key} size={18} />
+      ) : null}
+      <span className="text-mist-900">{name}</span>
+    </span>
+  );
 }
 
 /** The small "vs Crowdin" label above a comparison headline. */
@@ -258,9 +306,9 @@ export function ThreeWayHero({ competitors, title, subtitle }: ThreeWayHeroProps
         <div className="max-w-3xl">
           <VsBadge>
             {competitors.map((name, i) => (
-              <span key={name}>
-                {i > 0 && <span className="mx-1 text-mist-400">vs</span>}
-                <span className="text-mist-900">{name}</span>
+              <span key={name} className="inline-flex items-center">
+                {i > 0 && <span className="mx-1.5 text-mist-400">vs</span>}
+                <NamedProduct name={name} />
               </span>
             ))}
           </VsBadge>
@@ -286,7 +334,7 @@ export function ComparisonHero({ competitorName, title, subtitle }: ComparisonHe
         <div className="max-w-3xl">
           <VsBadge>
             <span className="text-mist-400">vs</span>
-            <span className="text-mist-900">{competitorName}</span>
+            <NamedProduct name={competitorName} />
           </VsBadge>
 
           <h1 className="section-h2">{title}</h1>
@@ -521,7 +569,7 @@ export function CTASection({ title, subtitle, primaryCTA, primaryHref }: CTASect
             <div className="mt-6">
               <a
                 href={primaryHref}
-                className="inline-flex items-center rounded-md bg-white px-4 py-2 text-[13px] font-medium text-mist-950 transition-colors hover:bg-mist-100"
+                className="inline-flex items-center rounded-md bg-white px-4 py-2 text-[13px] font-medium text-mist-950 transition-colors hover:bg-black/[0.03]"
               >
                 {primaryCTA}
               </a>

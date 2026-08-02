@@ -2,172 +2,260 @@ import { lazy, Suspense } from "react";
 import { useT } from "@/lib/i18n";
 import { Link, useParams } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { Frame, Section } from "@/components/ui/page";
 
-// Demo is interactive, below-the-fold on mobile, and pulls in 5 sub-components
-// + mock data (~6KB). Lazy-load it so the hero text + CTA hydrate first and the
-// LCP candidate (h1) doesn't wait on Demo's parse/execute.
-// See BETTER-265.
-const LazyDemo = lazy(() =>
-  import("../demo").then((m) => ({ default: m.Demo })),
+// The hero panel shows a static replica of the translation editor (see
+// app-preview/AppPreview.tsx) instead of the interactive AI drawer: the drawer
+// demonstrated one feature, the editor screen shows what the product IS.
+// Still lazy-loaded so the hero text + CTA hydrate first and the LCP candidate
+// (h1) doesn't wait on the panel's parse/execute. See BETTER-265.
+const LazyAppPreview = lazy(() =>
+  import("./app-preview").then((m) => ({ default: m.AppPreview })),
 );
 
-const DemoFallback = () => (
-  <div aria-hidden="true" className="w-full h-full" />
+const PanelFallback = () => (
+  <div aria-hidden="true" className="h-full w-full" />
 );
 
+/**
+ * Hero — flat, centred, on white.
+ *
+ * The previous hero was a full-bleed gradient "wallpaper" with white text and
+ * the product demo absolutely positioned off the right edge. That reads as a
+ * different product from every section below it. This version follows the page
+ * grammar: the headline sits in the frame, and the product appears *under* it
+ * as a framed panel (rule/white-page-hairline-separation, DESIGN-DECISIONS.md).
+ *
+ * The email capture survives the restyle — it is a conversion mechanism, not
+ * decoration — but it is now a hairline field on white instead of a glass pill.
+ */
 export default function Hero() {
   const t = useT("hero");
   const { locale } = useParams({ strict: false });
 
   return (
-    <section aria-labelledby="hero-title" className="flex flex-col gap-16 px-2 pb-16 lg:gap-20 mx-auto w-full max-w-[1400px]">
-      {/* Wallpaper Background - relative for absolute positioning of drawer */}
-      <div className="wallpaper rounded-lg relative overflow-hidden w-full flex flex-col min-[900px]:block min-[900px]:min-h-[780px]">
-        {/* Content Container */}
-        <div className="px-6 lg:px-10 h-full min-[900px]:min-h-[780px] min-[900px]:flex min-[900px]:flex-col min-[900px]:justify-center relative z-10 lg:z-auto">
-          <div className="flex items-center">
-            {/* Left: Text Content - Vertically centered */}
-            <div className="flex shrink-0 flex-col items-start justify-center gap-4 pt-16 pb-8 min-[900px]:py-0 max-w-full lg:max-w-[calc(100%-620px)] xl:max-w-[calc(100%-750px)]">
-              {/* Announcement Badge */}
-              <Link
-                to="/$locale/changelog/"
-                params={{ locale: locale || "en" }}
-                className="inline-flex items-center gap-x-3 rounded-full bg-white/10 px-3 py-1.5 text-sm text-white/80 hover:bg-white/15 transition-colors"
+    <>
+      <Section labelledBy="hero-title" style={{ paddingTop: 72, paddingBottom: 0 }}>
+        <div className="flex flex-col items-start gap-4 sm:items-center">
+          <Link
+            to="/$locale/changelog/"
+            params={{ locale: locale || "en" }}
+            className="inline-flex items-center gap-x-2.5 rounded-sm border border-black/[0.06] bg-mist-50 px-2.5 py-1 text-xs text-mist-600 transition-colors hover:border-black/[0.1]"
+          >
+            <span>{t("badge")}</span>
+            <span className="h-3 w-px bg-black/[0.08]" />
+            <span className="inline-flex items-center gap-1 font-medium text-mist-900">
+              {t("learnMore")}
+              <SpriteIcon name="chevron-right" className="size-3.5" />
+            </span>
+          </Link>
+
+          <h1
+            id="hero-title"
+            className="max-w-[20ch] font-medium leading-[1.08] tracking-[-0.03em] text-mist-950 sm:text-center"
+            style={{ fontSize: "clamp(36px, 4.5vw, 52px)", textWrap: "balance" }}
+          >
+            {t("title")}
+          </h1>
+
+          <p
+            className="max-w-[44ch] leading-relaxed text-mist-600 sm:text-center"
+            style={{ fontSize: "var(--text-sub)" }}
+          >
+            {t("subtitle")}
+          </p>
+
+          {/* Email capture — hairline field, dark submit. Same job, quiet register. */}
+          <div className="mt-2 flex w-full max-w-[400px] items-center rounded-[10px] border border-black/[0.12] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-colors focus-within:border-black/25">
+            <input
+              type="email"
+              aria-label={t("inputPlaceholder")}
+              placeholder={t("inputPlaceholder")}
+              className="min-w-0 flex-1 bg-transparent py-2.5 pl-4 text-sm text-mist-950 placeholder:text-mist-400 focus:outline-none"
+            />
+            <button type="submit" className="btn btn-dark m-1 shrink-0">
+              {t("cta")}
+              <SpriteIcon name="arrow-right" className="size-4" />
+            </button>
+          </div>
+        </div>
+      </Section>
+
+      {/* Product panel — the hero's proof, framed rather than floated off-edge.
+          Geometry matches the reference implementation: 18px radius, a single
+          hairline, and one deep soft shadow doing all the elevation work. */}
+      <Frame style={{ paddingTop: 32, paddingBottom: 48 }}>
+        <div className="overflow-hidden rounded-[18px] border border-black/[0.08] bg-white shadow-[0_32px_80px_-16px_rgba(0,0,0,0.12)]">
+          <div className="h-[620px] max-[900px]:h-[520px]">
+            <Suspense fallback={<PanelFallback />}>
+              <LazyAppPreview />
+            </Suspense>
+          </div>
+        </div>
+      </Frame>
+
+      {/* Trust band — dot-grid ground, label on the left, two rows drifting in
+          opposite directions. Full-bleed inside the frame, so `!p-0` and the
+          band supplies its own padding (rule/one-container exception). */}
+      <Frame style={{ paddingTop: 8, paddingBottom: 40 }}>
+        <div className="logos-card">
+          <svg className="logos-dots" width="100%" height="100%" aria-hidden="true">
+            <defs>
+              <pattern
+                id="dots-trust"
+                x="-1"
+                y="-1"
+                width="12"
+                height="12"
+                patternUnits="userSpaceOnUse"
               >
-                <span>{t("badge", { defaultValue: "AI-Powered Translations" })}</span>
-                <span className="h-3 w-px bg-white/20" />
-                <span className="inline-flex items-center gap-1 font-medium text-white">
-                  {t("learnMore", { defaultValue: "Learn more" })}
-                  <SpriteIcon name="chevron-right" className="w-3.5 h-3.5" />
-                </span>
-              </Link>
+                <rect x="1" y="1" width="2" height="2" fill="currentColor" />
+              </pattern>
+            </defs>
+            <rect fill="url(#dots-trust)" width="100%" height="100%" />
+          </svg>
 
-              <h1
-                id="hero-title"
-                className="text-3xl/[1.1] font-semibold tracking-[-0.02em] text-white sm:text-4xl/[1.1] lg:text-[3rem]/[1.1]"
-                style={{ textWrap: "balance" }}
-              >
-                {t("title", { defaultValue: "Translate with AI. Ship with confidence." })}
-              </h1>
+          <div className="logos-content">
+            <div className="logos-layout">
+              <p className="logos-label">{t("trustedBy")}</p>
 
-              <p className="max-w-xl text-base/7 text-white/70">
-                {t("subtitle", { defaultValue: "Context-aware AI translations, Git-native sync, and instant CDN delivery. Go global without the overhead." })}
-              </p>
-
-              {/* Email Signup Form */}
-              <div className="flex w-full max-w-sm items-center rounded-full border border-white/20 bg-white/10 focus-within:border-white/40 transition-colors">
-                <input
-                  type="email"
-                  aria-label={t("inputPlaceholder", { defaultValue: "Enter your work email" })}
-                  placeholder={t("inputPlaceholder", { defaultValue: "Enter your work email" })}
-                  className="min-w-0 flex-1 text-sm pl-5 py-3 bg-transparent text-white placeholder:text-white/50 focus:outline-none"
-                />
-                <button className="shrink-0 m-1 inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-white/90 transition-colors whitespace-nowrap">
-                  {t("cta", { defaultValue: "Get Started" })}
-                  <SpriteIcon name="arrow-right" className="w-4 h-4" />
-                </button>
+              <div className="logo-rows">
+                {LOGO_ROWS.map((row, rowIndex) => (
+                  <div
+                    key={rowIndex}
+                    className={`logo-grid ${rowIndex === 1 ? "logo-row--reverse" : ""}`}
+                    // The first row carries the accessible name; the second is a
+                    // continuation of the same list, not a new landmark.
+                    aria-label={rowIndex === 0 ? "Trusted by leading companies" : undefined}
+                    aria-hidden={rowIndex === 1 ? true : undefined}
+                  >
+                    {/* Two identical tracks make the loop seamless; each track
+                        repeats the row so a short row still fills 1160px. */}
+                    {[0, 1].map((trackIndex) => (
+                      <div key={trackIndex} className="logo-track">
+                        {[...row, ...row].map((logo, idx) => (
+                          <TrustLogo key={`${logo.name}-${trackIndex}-${idx}`} logo={logo} />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
-
-        {/* AI Drawer - Desktop: Absolute to wallpaper, right side, with top padding */}
-        <div className="hidden min-[900px]:block absolute right-0 top-20 bottom-0">
-          <div
-            className="rounded-tl-2xl bg-white h-full w-[600px] xl:w-[700px]"
-            style={{
-              boxShadow:
-                "0 28px 70px rgba(0, 0, 0, 0.25), 0 14px 32px rgba(0, 0, 0, 0.15)",
-            }}
-          >
-            <Suspense fallback={<DemoFallback />}>
-              <LazyDemo />
-            </Suspense>
-          </div>
-        </div>
-
-        {/* Mobile Demo - below 900px, centered */}
-        <div className="min-[900px]:hidden relative px-4 pb-10">
-          <div
-            className="rounded-xl bg-white mx-auto overflow-hidden"
-            style={{
-              boxShadow:
-                "0 28px 70px rgba(0, 0, 0, 0.25), 0 14px 32px rgba(0, 0, 0, 0.15)",
-              maxWidth: "100%",
-              height: "600px",
-            }}
-          >
-            <Suspense fallback={<DemoFallback />}>
-              <LazyDemo />
-            </Suspense>
-          </div>
-        </div>
-      </div>
-
-      {/* Logo Grid Footer */}
-      <div aria-label="Trusted by leading companies" className="w-full mt-[-24px] mb-8 overflow-hidden">
-        <div className="logo-grid">
-          {[0, 1].map((i) => (
-            <div key={i} className="logo-track">
-              {/* Carna */}
-              <a href="http://carna.ai/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
-                <img
-                  src="/carna.webp"
-                  alt="Carna - Better I18N customer"
-                  width={112}
-                  height={28}
-                  loading="lazy"
-                  className="h-7 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity"
-                />
-              </a>
-              {/* Nomad Work */}
-              <a href="https://hellonomad.app/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
-                <img
-                  src="/nomadwork.webp"
-                  alt="Nomad Work - Better I18N customer"
-                  width={112}
-                  height={28}
-                  loading="lazy"
-                  className="h-7 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity"
-                />
-              </a>
-              {/* Hellospace */}
-              <a href="https://hellospace.world/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
-                <img
-                  src="/hellospace.webp"
-                  alt="Hellospace - Better I18N customer"
-                  width={112}
-                  height={28}
-                  loading="lazy"
-                  className="h-7 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity"
-                />
-              </a>
-              {/* Masraff */}
-              <a href="https://masraff.ai" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
-                <img
-                  src="/masraff.webp"
-                  alt="Masraff - Better I18N customer"
-                  width={28}
-                  height={28}
-                  loading="lazy"
-                  className="h-7 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity"
-                />
-              </a>
-              {/* Cloudflare */}
-              <a href="https://www.cloudflare.com/" target="_blank" rel="noopener noreferrer" className="flex h-8 items-center justify-center shrink-0">
-                <img
-                  src="/cloudflare.webp"
-                  alt="Cloudflare - Better I18N customer"
-                  width={112}
-                  height={28}
-                  loading="lazy"
-                  className="h-7 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity"
-                />
-              </a>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+      </Frame>
+    </>
   );
 }
+
+/**
+ * One customer in the trust band.
+ *
+ * Two shapes, because customers publish two kinds of asset: a wordmark (use it
+ * as-is) or a square mark only (pair it with the name set in our own type). A
+ * bare glyph would leave half the wall unreadable, which is the opposite of what
+ * a logo wall is for.
+ */
+type TrustLogoItem = {
+  readonly name: string;
+  readonly href: string;
+  /** Wordmark asset — rendered alone. */
+  readonly wordmark?: string;
+  /** Square mark — rendered next to `name`. */
+  readonly mark?: string;
+  readonly width?: number;
+  /**
+   * Some customers only publish a white-on-dark mark with the background baked
+   * in (Riuve, Rivo). Inverting it gives a dark glyph on transparent — the icon
+   * alone, no tile — which is what the rest of the wall looks like.
+   */
+  readonly invert?: boolean;
+  /**
+   * Optical height override for a wordmark, in px. Equal pixel height is not
+   * equal optical weight: Modus is a heavy geometric wordmark and at 20px it
+   * read a size larger than everything around it.
+   */
+  readonly height?: number;
+  /**
+   * Mark size override, in px (default 20). Full-bleed artwork — Rivo's icon
+   * fills its canvas edge to edge, Z5K's glyph is wide — measures larger than a
+   * mark with its own padding at the same box size.
+   */
+  readonly markSize?: number;
+};
+
+function TrustLogo({ logo }: { logo: TrustLogoItem }) {
+  return (
+    <a
+      href={logo.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`flex h-7 shrink-0 items-center justify-center grayscale transition-opacity hover:opacity-100 ${logo.wordmark ? "opacity-60" : "opacity-80"}`}
+    >
+      {logo.wordmark ? (
+        <img
+          src={logo.wordmark}
+          alt={`${logo.name} — Better I18N customer`}
+          width={logo.width ?? 112}
+          height={logo.height ?? 20}
+          loading="lazy"
+          draggable={false}
+          className="w-auto"
+          style={{ height: logo.height ?? 20 }}
+        />
+      ) : (
+        <span className="logo-lockup">
+          {/* No mark at all → wordmark only. Never render an <img> with an
+              undefined src, which is a request to the current URL. */}
+          {logo.mark && (
+            <img
+              src={logo.mark}
+              alt=""
+              width={logo.markSize ?? 20}
+              height={logo.markSize ?? 20}
+              loading="lazy"
+              draggable={false}
+              className="logo-lockup-mark"
+              style={{
+                width: logo.markSize ?? 20,
+                height: logo.markSize ?? 20,
+                ...(logo.invert ? { filter: "invert(1)" } : null),
+              }}
+            />
+          )}
+          <span className="logo-lockup-name">{logo.name}</span>
+        </span>
+      )}
+    </a>
+  );
+}
+
+/* Split across two rows rather than one long marquee: 13 customers in a single
+   row means most of them are off-screen most of the time. Marks live in
+   public/logos/customers/ — self-hosted, single ink (several of these brands
+   publish a white-on-dark logo only, so their fills were bound to
+   currentColor). */
+const LOGO_ROWS: ReadonlyArray<ReadonlyArray<TrustLogoItem>> = [
+  [
+    { name: "Carna", href: "http://carna.ai/", wordmark: "/carna.webp" },
+    { name: "Nomad", href: "https://hellonomad.app/", mark: "/logos/customers/nomadwork.svg" },
+    { name: "Hellospace", href: "https://hellospace.world/", wordmark: "/hellospace.webp" },
+    { name: "Cloudflare", href: "https://www.cloudflare.com/", wordmark: "/cloudflare.webp" },
+    { name: "Masraff", href: "https://masraff.ai", mark: "/logos/customers/masraff.svg" },
+    { name: "Helpway", href: "https://helpway.ai/", mark: "/logos/customers/helpway.svg" },
+    { name: "Riuve", href: "https://riuve.com/", mark: "/logos/customers/riuve.png", invert: true },
+  ],
+  [
+    // getsafa.com renders this asset in a 180×38 box, but the file itself is a
+    // 329×254 mark — as a "wordmark" it stretched into an unreadable glyph.
+    { name: "Safa", href: "https://getsafa.com/", mark: "/logos/customers/safa.svg" },
+    { name: "Modus", href: "https://modus.builders/", wordmark: "/logos/customers/modus.svg", width: 88, height: 17 },
+    { name: "Rivo", href: "https://hellorivo.com/", mark: "/logos/customers/rivo.png", invert: true, markSize: 19 },
+    { name: "Flof", href: "https://flof.ai/en/", mark: "/logos/customers/flof.svg" },
+    { name: "BoostYourApp", href: "https://boostyour.app/", mark: "/logos/customers/boostyour.svg" },
+    // Their own mark (confirmed by the owner — it is not the Strava badge it sits
+    // next to on their site), recoloured to single ink like the rest of the wall.
+    { name: "Z5K", href: "https://z5k.run/", mark: "/logos/customers/z5k.svg", markSize: 19 },
+  ],
+];

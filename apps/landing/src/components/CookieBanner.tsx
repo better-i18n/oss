@@ -60,13 +60,15 @@ export function CookieBanner() {
   return (
     <div
       role="dialog"
-      aria-label={t("ariaLabel", { defaultValue: "Cookie consent" })}
+      aria-label={t("ariaLabel")}
       className={cn(
         "fixed bottom-0 inset-x-0 z-50 p-4 sm:p-6",
         "animate-in slide-in-from-bottom duration-300",
       )}
     >
-      <div className="mx-auto max-w-2xl rounded-2xl border border-mist-200 bg-white p-5 sm:p-6 shadow-lg">
+      {/* A fixed overlay, not a page section — <Section>/<Frame> do not apply.
+          --shadow-card is the sanctioned elevation for a floating surface. */}
+      <div className="mx-auto max-w-2xl rounded-xl border border-black/[0.07] bg-white p-5 shadow-[var(--shadow-card)] sm:p-6">
         {view === "banner" ? (
           <BannerView
             t={t}
@@ -105,40 +107,27 @@ interface BannerViewProps {
 function BannerView({ t, locale, onAccept, onReject, onCustomize }: BannerViewProps) {
   return (
     <>
-      <p className="text-sm text-mist-700 leading-relaxed mb-4">
-        {t("message", {
-          defaultValue:
-            "We use cookies to improve your experience and analyze site traffic. You can accept all cookies, reject non-essential ones, or customize your preferences.",
-        })}{" "}
+      <p className="mb-4 text-sm leading-relaxed text-mist-600">
+        {t("message")}{" "}
         <Link
-          to="/$locale/cookies"
+          to="/$locale/cookies/"
           params={{ locale }}
           className="underline underline-offset-2 hover:text-mist-950"
         >
-          {t("learnMore", { defaultValue: "Learn more" })}
+          {t("learnMore")}
         </Link>
       </p>
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-        <button
-          type="button"
-          onClick={onAccept}
-          className="rounded-lg bg-mist-950 px-4 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors cursor-pointer"
-        >
-          {t("acceptAll", { defaultValue: "Accept All" })}
+      {/* Hand-rolled button styling replaced by the shared .btn scale — accept
+          is the primary action, the other two are peers of each other. */}
+      <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
+        <button type="button" onClick={onAccept} className="btn btn-dark btn-sm">
+          {t("acceptAll")}
         </button>
-        <button
-          type="button"
-          onClick={onReject}
-          className="rounded-lg bg-mist-950 px-4 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors cursor-pointer"
-        >
-          {t("rejectAll", { defaultValue: "Reject All" })}
+        <button type="button" onClick={onReject} className="btn btn-outline btn-sm">
+          {t("rejectAll")}
         </button>
-        <button
-          type="button"
-          onClick={onCustomize}
-          className="rounded-lg border border-mist-300 px-4 py-2.5 text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors cursor-pointer"
-        >
-          {t("customize", { defaultValue: "Customize" })}
+        <button type="button" onClick={onCustomize} className="btn btn-ghost btn-sm">
+          {t("customize")}
         </button>
       </div>
     </>
@@ -170,60 +159,46 @@ function CustomizeView({
 }: CustomizeViewProps) {
   return (
     <>
-      <h3 className="text-base font-medium text-mist-950 mb-4">
-        {t("customizeTitle", { defaultValue: "Cookie Preferences" })}
+      <h3 className="mb-4 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+        {t("customizeTitle")}
       </h3>
-      <div className="space-y-3 mb-5">
+      <div className="mb-5 space-y-2">
         {/* Essential — always on */}
         <CookieCategory
-          label={t("essential.label", { defaultValue: "Essential" })}
-          description={t("essential.description", {
-            defaultValue: "Required for the website to function. Cannot be disabled.",
-          })}
+          label={t("essential.label")}
+          description={t("essential.description")}
           checked
           disabled
         />
         {/* Analytics */}
         <CookieCategory
-          label={t("analytics.label", { defaultValue: "Analytics" })}
-          description={t("analytics.description", {
-            defaultValue: "Help us understand how visitors use our site (Google Analytics).",
-          })}
+          label={t("analytics.label")}
+          description={t("analytics.description")}
           checked={analyticsEnabled}
           onChange={onAnalyticsChange}
         />
         {/* Marketing */}
         <CookieCategory
-          label={t("marketing.label", { defaultValue: "Marketing" })}
-          description={t("marketing.description", {
-            defaultValue: "Used for ad measurement and remarketing (Google Ads).",
-          })}
+          label={t("marketing.label")}
+          description={t("marketing.description")}
           checked={marketingEnabled}
           onChange={onMarketingChange}
         />
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <Link
-          to="/$locale/cookies"
+          to="/$locale/cookies/"
           params={{ locale }}
-          className="text-sm text-mist-500 underline underline-offset-2 hover:text-mist-700"
+          className="text-[13px] text-mist-500 underline underline-offset-2 hover:text-mist-900"
         >
-          {t("cookiePolicy", { defaultValue: "Cookie Policy" })}
+          {t("cookiePolicy")}
         </Link>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={onBack}
-            className="rounded-lg border border-mist-300 px-4 py-2 text-sm font-medium text-mist-700 hover:bg-mist-50 transition-colors cursor-pointer"
-          >
-            {t("back", { defaultValue: "Back" })}
+          <button type="button" onClick={onBack} className="btn btn-outline btn-sm">
+            {t("back")}
           </button>
-          <button
-            type="button"
-            onClick={onSave}
-            className="rounded-lg bg-mist-950 px-4 py-2 text-sm font-medium text-white hover:bg-mist-800 transition-colors cursor-pointer"
-          >
-            {t("savePreferences", { defaultValue: "Save Preferences" })}
+          <button type="button" onClick={onSave} className="btn btn-dark btn-sm">
+            {t("savePreferences")}
           </button>
         </div>
       </div>
@@ -242,23 +217,35 @@ interface CookieCategoryProps {
 }
 
 function CookieCategory({ label, description, checked, disabled, onChange }: CookieCategoryProps) {
+  const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const labelId = `cookie-cat-${slug}`;
+  const descId = `cookie-cat-${slug}-desc`;
+
   return (
-    <label
+    // Not a <label>: the control is a role="switch" button, and a label can only
+    // be associated with a real form control. The switch carries its own
+    // accessible name via aria-labelledby pointing at the visible title.
+    <div
       className={cn(
-        "flex items-start justify-between gap-4 rounded-lg border p-3",
-        disabled ? "border-mist-100 bg-mist-50" : "border-mist-200",
+        "flex items-start justify-between gap-4 rounded-md border border-black/[0.07] p-3",
+        // bg-mist-50 is the sanctioned thin in-section surface; it marks the
+        // row as locked rather than as a different kind of card.
+        disabled && "bg-mist-50",
       )}
     >
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-mist-950">{label}</p>
-        <p className="text-xs text-mist-500 mt-0.5">{description}</p>
+      <div className="min-w-0 flex-1">
+        <p id={labelId} className="text-[13px] font-medium text-mist-900">{label}</p>
+        <p id={descId} className="mt-0.5 text-xs leading-relaxed text-mist-600">
+          {description}
+        </p>
       </div>
       <div className="shrink-0 pt-0.5">
         <button
           type="button"
           role="switch"
           aria-checked={checked}
-          aria-label={label}
+          aria-labelledby={labelId}
+          aria-describedby={descId}
           disabled={disabled}
           onClick={() => onChange?.(!checked)}
           className={cn(
@@ -275,6 +262,6 @@ function CookieCategory({ label, description, checked, disabled, onChange }: Coo
           />
         </button>
       </div>
-    </label>
+    </div>
   );
 }

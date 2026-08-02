@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
 import { SpriteIcon } from "@/components/SpriteIcon";
+import { GuideMark } from "@/lib/i18n-guide-icons";
+import { CompetitorMark, type CompetitorKey } from "@/components/icons/CompetitorMarks";
 
 type PageLink = {
   href: string;
@@ -81,6 +83,38 @@ const PAGE_POOL: Record<string, PageLink[]> = {
   content: contentPages,
 };
 
+/**
+ * The mark for a related-page link, derived from its href.
+ *
+ * `/i18n/{slug}/` is a guide (framework marks live in the shared guide-icon map);
+ * `/compare/{vendor}/` is a competitor. Anything else — personas, pricing,
+ * features — names no third party and correctly gets nothing, so the caller can
+ * render this unconditionally.
+ */
+function PageMark({ href }: { href: string }) {
+  const guide = /\/i18n\/([a-z0-9-]+)\/$/.exec(href);
+  if (guide) return <GuideMark slug={guide[1]} />;
+
+  const vendor = /\/compare\/([a-z0-9-]+)\/$/.exec(href);
+  if (vendor && (COMPETITOR_KEYS as readonly string[]).includes(vendor[1])) {
+    return (
+      <span className="flex size-[22px] shrink-0 items-center justify-center">
+        <CompetitorMark competitor={vendor[1] as CompetitorKey} size={22} />
+      </span>
+    );
+  }
+  return null;
+}
+
+const COMPETITOR_KEYS = [
+  "crowdin",
+  "lokalise",
+  "phrase",
+  "transifex",
+  "smartling",
+  "xtm",
+] as const;
+
 export function RelatedPages({ currentPage, locale, variant = "mixed" }: RelatedPagesProps) {
   /* All 39 labels this component needs are published keys in the
      `relatedPages` namespace, verified against
@@ -108,14 +142,20 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
           {t("title")}
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-mist-200/50">
+        {/* Bare columns split by gap: a link list's items do not carry their own
+            rules (rule/listed-items-are-not-cards). The `divide-x` this replaces
+            drew three vertical lines through four links. */}
+        <div className="grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 xl:grid-cols-4">
           {pages.map((page) => (
             <Link
               key={page.href}
               to={page.href as AllowedRoute}
               params={{ locale }}
-              className="group flex flex-col gap-2 py-5 sm:px-5 first:sm:pl-0 last:sm:pr-0"
+              className="group flex flex-col gap-2"
             >
+              {/* rule/name-a-thing-with-its-mark — a framework or vendor named
+                  here gets the same mark it has in the matrix and the hub. */}
+              <PageMark href={page.href} />
               <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900 transition-colors group-hover:text-mist-600">
                 {t(page.titleKey)}
               </h3>

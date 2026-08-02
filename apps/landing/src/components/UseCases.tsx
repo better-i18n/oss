@@ -14,6 +14,9 @@ type Feature = {
   | { icon: React.ComponentType<{ className?: string }>; spriteName?: never }
 );
 
+/* Order is load-bearing: the first four are developer tooling, the last four are
+   the use cases they serve. At 4 columns that reads as two labelled bands without
+   needing two containers or two headings. */
 const features: Feature[] = [
   { key: "typescript", spriteName: "code-brackets", title: "Type-Safe SDKs", description: "Full TypeScript support with autocompletion for every translation key." },
   { key: "cli", spriteName: "script", title: "CLI Tooling", description: "Scan your codebase, check for missing keys, and sync translations from the terminal." },
@@ -29,40 +32,54 @@ export default function UseCases() {
   const t = useT("developerFeatures");
 
   return (
-    <section id="developer-features" className="py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section id="developer-features">
+      <div className="section">
         <div className="mb-12 max-w-3xl">
-          <h2 className="font-display text-3xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 sm:text-4xl/[1.1]">
-            {t("title", { defaultValue: "Built for Developers" })}
+          <h2 className="section-h2">
+            {t("title")}
           </h2>
-          <p className="mt-4 max-w-2xl text-lg text-mist-600">
-            {t("subtitle", { defaultValue: "Developer-first tools and integrations for every use case." })}
+          <p className="section-p mt-3">
+            {t("subtitle")}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4" id="use-cases">
-          {features.map((feature) => {
-            return (
+        {/* One hairline container instead of eight cards. Cell rules follow the
+            FrameworkSupport pattern: every cell draws its own top + left rule and
+            the grid shifts -1px up/left, so the first row's and first column's
+            rules slide under the container border and get clipped. No nth-child
+            arithmetic, so no rule goes missing or doubles when the column count
+            changes. 8 items in 4 (or 2, or 1) columns is always full rows. */}
+        <div
+          id="use-cases"
+          /* No outer box — the frame already contains this block (Pricing does the
+             same). overflow-hidden still clips the shifted edge rules, so only the
+             interior hairlines remain, at every breakpoint. */
+          className="overflow-hidden"
+        >
+          <div className="-mt-px -ml-px grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            {features.map((feature) => (
               <div
                 key={feature.key}
-                className="group rounded-2xl border border-mist-200 bg-white p-6 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:-translate-y-1 hover:border-mist-200 hover:shadow-md"
+                className="flex flex-col gap-3 border-t border-l border-black/[0.05] px-5 py-6"
               >
-                <div className="mb-4 flex size-11 items-center justify-center rounded-xl border border-mist-100 bg-mist-50 shadow-sm">
+                <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   {feature.spriteName ? (
-                    <SpriteIcon name={feature.spriteName} className="size-5 text-mist-700" />
+                    <SpriteIcon name={feature.spriteName} className="size-3.5" />
                   ) : (
-                    <feature.icon className="size-5 text-mist-700" />
+                    <feature.icon className="size-3.5" />
                   )}
+                </span>
+                <div>
+                  <h3 className="text-[15px] font-medium leading-[1.3] tracking-[-0.02em] text-mist-900">
+                    {t(`${feature.key}.title`)}
+                  </h3>
+                  <p className="mt-1.5 text-[13px] leading-[1.55] text-mist-600">
+                    {t(`${feature.key}.description`)}
+                  </p>
                 </div>
-                <h3 className="text-base font-medium text-mist-950">
-                  {t(`${feature.key}.title`, { defaultValue: feature.title })}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-mist-600">
-                  {t(`${feature.key}.description`, { defaultValue: feature.description })}
-                </p>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
       </div>
     </section>

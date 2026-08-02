@@ -9,29 +9,7 @@ type BillingPeriod = "monthly" | "yearly";
 
 // ─── Label defaults (i18n fallbacks) ─────────────────────────────────
 
-const limitLabelDefaults: Record<string, string> = {
-  projects: "Projects",
-  translationKeys: "Translation keys",
-  aiMessages: "AI messages",
-  glossaryTerms: "Glossary terms",
-  contentItems: "Content items",
-  publishes: "Publishes",
-};
 
-const featureLabelDefaults: Record<string, string> = {
-  cdnHosting: "CDN hosting",
-  githubIntegration: "GitHub integration",
-  emailSupport: "Email support",
-  prioritySupport: "Priority support",
-  customDomain: "Custom domain",
-  analytics: "Analytics",
-  teamMembers: "Team members",
-  contentCms: "Content CMS",
-  aiTranslationAnalysisSuggestions: "AI translation suggestions",
-  sso: "SSO",
-  dedicatedAccountManager: "Dedicated account manager",
-  slaGuarantee: "SLA guarantee",
-};
 
 /**
  * Format a price for display.
@@ -92,15 +70,10 @@ export default function Pricing({
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <Heading className="section-h2 text-balance">
-                {t("title", {
-                  defaultValue: "Pricing to fit your business needs.",
-                })}
+                {t("title")}
               </Heading>
               <p className="section-p mt-3">
-                {t("subtitle", {
-                  defaultValue:
-                    "Start free, scale when you ship. No per-seat fees, no enterprise contracts — just transparent pricing built for teams shipping globally.",
-                })}
+                {t("subtitle")}
               </p>
             </div>
 
@@ -116,7 +89,7 @@ export default function Pricing({
                     : "text-mist-400 hover:text-mist-700"
                 )}
               >
-                {t("monthly", { defaultValue: "Monthly" })}
+                {t("monthly")}
               </button>
               <button
                 type="button"
@@ -129,7 +102,7 @@ export default function Pricing({
                     : "text-mist-400 hover:text-mist-700"
                 )}
               >
-                {t("yearly", { defaultValue: "Yearly" })}
+                {t("yearly")}
                 <span
                   className={cn(
                     "rounded-[3px] px-1.5 py-0.5 text-[10px] font-medium tabular-nums",
@@ -154,7 +127,7 @@ export default function Pricing({
 
               // Display price: CMS-driven with locale currency
               const displayPrice = isEnterprise
-                ? t("customPrice", { defaultValue: "Custom" })
+                ? t("customPrice")
                 : priceData
                   ? formatPrice(priceData.symbol, billingPeriod === "yearly"
                       ? Math.round(priceData.amount / 12)
@@ -166,10 +139,7 @@ export default function Pricing({
                 ? formatPrice(priceData.symbol, priceData.amount, priceData.currency)
                 : null;
               const billedYearlyNote = yearlyTotal
-                ? t("billedYearly", {
-                    total: yearlyTotal,
-                    defaultValue: `Billed yearly at ${yearlyTotal}`,
-                  })
+                ? t("billedYearly", {total: yearlyTotal })
                 : null;
 
               return (
@@ -181,7 +151,7 @@ export default function Pricing({
                   {isPopular ? (
                     <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-mist-600">
                       <span aria-hidden>★</span>
-                      {t("mostPopular", { defaultValue: "Most popular" })}
+                      {t("mostPopular")}
                     </p>
                   ) : (
                     <p className="text-[10px] mb-2 select-none invisible" aria-hidden>
@@ -207,12 +177,12 @@ export default function Pricing({
                       </span>
                       {!isEnterprise ? (
                         <span className="text-sm text-mist-500">
-                          {t("perMonth", { defaultValue: "/mo" })}
+                          {t("perMonth")}
                         </span>
                       ) : null}
                     </div>
                     <p className="mt-1 text-xs text-mist-500 min-h-[1rem]">
-                      {billedYearlyNote ?? (isEnterprise ? t("annualBillingOnly", { defaultValue: "Annual billing only" }) : " ")}
+                      {billedYearlyNote ?? (isEnterprise ? t("annualBillingOnly") : " ")}
                     </p>
                   </div>
 
@@ -238,14 +208,10 @@ export default function Pricing({
                         className="flex items-center justify-between gap-3 text-[13px]"
                       >
                         <span className="text-mist-600">
-                          {t(`labels.${limit.key}`, {
-                            defaultValue: limitLabelDefaults[limit.key] ?? limit.key,
-                          })}
+                          {t(`labels.${limit.key}`)}
                         </span>
                         <span className="text-mist-950 font-medium tabular-nums">
-                          {t(`limits.${limit.value}`, {
-                            defaultValue: limit.value,
-                          })}
+                          {t(`limits.${limit.value}`)}
                         </span>
                       </li>
                     ))}
@@ -256,18 +222,12 @@ export default function Pricing({
                     <p className="mt-6 text-[13px] leading-relaxed text-mist-600 text-pretty">
                       {featureRows.prevPlanName ? (
                         <span className="text-mist-500">
-                          {t("everythingInPlus", {
-                            plan: featureRows.prevPlanName,
-                            defaultValue: `Everything in ${featureRows.prevPlanName}, plus:`,
-                          })}{" "}
+                          {t("everythingInPlus", { plan: featureRows.prevPlanName })}{" "}
                         </span>
                       ) : null}
                       {featureRows.items
                         .map((feature) =>
-                          t(`labels.${feature.key}`, {
-                            defaultValue:
-                              featureLabelDefaults[feature.key] ?? feature.key,
-                          })
+                          t(`labels.${feature.key}`)
                         )
                         .join(" · ")}
                     </p>

@@ -47,9 +47,13 @@ export default function ReadingProgress({ slug }: ReadingProgressProps) {
       aria-label="Reading progress"
       className="fixed top-0 left-0 z-[100] h-0.5 w-full"
     >
+      {/* No `will-change`: it was permanent, so the browser kept this bar on its
+          own compositor layer for the whole page life to optimise an animation
+          that only runs while scrolling. Scaling a fixed-width bar composites on
+          the GPU anyway, without pinning a layer. */}
       <div
-        className="h-full bg-mist-950 will-change-[width] transition-[width] duration-75"
-        style={{ width: `${progress}%` }}
+        className="h-full origin-left bg-mist-950 transition-transform duration-75"
+        style={{ transform: `scaleX(${progress / 100})`, width: "100%" }}
       />
     </div>
   );

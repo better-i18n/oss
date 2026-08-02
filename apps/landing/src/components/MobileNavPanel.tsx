@@ -16,6 +16,22 @@ import { useState } from "react";
 
 type SectionKey = "product" | "developers" | "resources" | null;
 
+/* The drawer is the first surface a phone visitor sees, so it follows the same
+   grammar as the page behind it: white ground, hairline separation, weight-500
+   headings, neutral ink. Two shared class strings keep that consistent across
+   the ~25 rows below — a tinted `bg-mist-200` hover on one row and a hairline
+   hover on the next is exactly how the panel drifted out of the system.
+
+   ROW: full-width tap target, hover is a 3% ink wash rather than a grey fill.
+   TILE: the 36px icon holder — hairline box, no shadow. */
+const ROW =
+  "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-black/[0.03]";
+const TOP_ROW =
+  "block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 transition-colors hover:bg-black/[0.03]";
+const TILE =
+  "flex size-9 shrink-0 items-center justify-center rounded-lg border border-black/[0.07] bg-white text-mist-700";
+const ROW_LABEL = "text-sm font-medium text-mist-950";
+
 function useFocusTrap(
   containerRef: React.RefObject<HTMLElement | null>,
   isActive: boolean,
@@ -77,17 +93,27 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
     setExpandedSection((prev) => (prev === section ? null : section));
   }, []);
 
-  // Close on Escape
+  // Close on Escape.
+  //
+  // `close` is an event, not a dependency: listing it re-registers the keydown
+  // listener every time the parent hands down a new `onClose` identity, even
+  // though the effect's actual trigger is only "is the drawer open". A ref
+  // holding the latest callback keeps the listener attached once per open.
+  const closeRef = useRef(close);
+  useEffect(() => {
+    closeRef.current = close;
+  }, [close]);
+
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+      if (e.key === "Escape") closeRef.current();
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, close]);
+  }, [isOpen]);
 
   // Lock body scroll when open
   useEffect(() => {
@@ -105,33 +131,34 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
 
   return createPortal(
     <>
-      {/* Backdrop */}
+      {/* Backdrop. The drawer covers the viewport (inset-0), so this is only
+          visible during the slide transition — a plain ink wash is enough, and
+          a backdrop blur would be a filter the grammar does not use. */}
       <div
         className={cn(
-          "fixed inset-0 z-[9998] bg-black/20 backdrop-blur-sm transition-opacity duration-300",
+          "fixed inset-0 z-[9998] bg-black/20 transition-opacity duration-300",
           isOpen ? "opacity-100" : "pointer-events-none opacity-0",
         )}
         aria-hidden="true"
         onClick={close}
       />
 
-      {/* Drawer panel */}
+      {/* Drawer panel. White, not #f5f5f5: the page behind it is white, and a
+          grey drawer reads as a different application. No drop shadow either —
+          the panel is full-bleed, so a shadow would never be seen. */}
       <div
         ref={menuRef}
         id={menuId}
         role="dialog"
         aria-modal="true"
-        aria-label={t("aria.mobileNav", {
-          defaultValue: "Mobile navigation",
-        })}
+        aria-label={t("aria.mobileNav")}
         className={cn(
-          "fixed inset-0 z-[9999] flex w-full flex-col shadow-xl transition-transform duration-300 ease-in-out",
+          "fixed inset-0 z-[9999] flex w-full flex-col bg-white transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "translate-x-full",
         )}
-        style={{ backgroundColor: "#f5f5f5" }}
       >
         {/* Drawer header: logo left, close button right */}
-        <div className="flex h-[5.25rem] shrink-0 items-center justify-between px-6">
+        <div className="flex h-[5.25rem] shrink-0 items-center justify-between border-b border-black/[0.07] px-6">
           <Link
             to="/$locale/"
             params={{ locale: localeParam }}
@@ -149,8 +176,8 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
           <button
             type="button"
             onClick={close}
-            aria-label={t("aria.closeMenu", { defaultValue: "Close menu" })}
-            className="flex size-10 items-center justify-center rounded-lg text-mist-950 hover:bg-mist-200 transition-colors"
+            aria-label={t("aria.closeMenu")}
+            className="flex size-10 items-center justify-center rounded-lg text-mist-950 transition-colors hover:bg-black/[0.03]"
           >
             <svg
               className="size-6"
@@ -170,33 +197,31 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
 
         {/* Scrollable content */}
         <nav
-          aria-label={t("aria.mobileNav", {
-            defaultValue: "Mobile navigation",
-          })}
-          className="flex-1 overflow-y-auto overscroll-contain px-6 pb-6"
+          aria-label={t("aria.mobileNav")}
+          className="flex-1 overflow-y-auto overscroll-contain px-6 pb-6 pt-4"
         >
           <div className="space-y-1">
             <Link
               to="/$locale/features/"
               params={{ locale: localeParam }}
               onClick={close}
-              className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+              className={TOP_ROW}
             >
-              {t("features", { defaultValue: "Features" })}
+              {t("features")}
             </Link>
 
             <Link
               to="/$locale/tools/"
               params={{ locale: localeParam }}
               onClick={close}
-              className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+              className={TOP_ROW}
             >
-              {t("tools", { defaultValue: "Tools" })}
+              {t("tools")}
             </Link>
 
             {/* Product */}
             <AccordionSection
-              label={t("forProduct", { defaultValue: "Product" })}
+              label={t("forProduct")}
               isExpanded={expandedSection === "product"}
               onToggle={() => toggleSection("product")}
             >
@@ -205,21 +230,15 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
                   to="/$locale/for-translators/"
                   params={{ locale: localeParam }}
                   onClick={close}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-mist-200 bg-white text-mist-700 shadow-sm">
+                  <div className={TILE}>
                     <IconAiTranslate className="size-4" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-mist-950">
-                      {t("segments.translators.title", {
-                        defaultValue: "For Translators",
-                      })}
-                    </div>
-                    <div className="text-xs text-mist-700">
-                      {t("segments.translators.shortDescription", {
-                        defaultValue: "Context-rich translation environment",
-                      })}
+                    <div className={ROW_LABEL}>{t("segments.translators.title")}</div>
+                    <div className="text-xs text-mist-600">
+                      {t("segments.translators.shortDescription")}
                     </div>
                   </div>
                 </Link>
@@ -228,22 +247,15 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
                   to="/$locale/for-developers/"
                   params={{ locale: localeParam }}
                   onClick={close}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-mist-200 bg-white text-mist-700 shadow-sm">
+                  <div className={TILE}>
                     <SpriteIcon name="code-brackets" className="size-4" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-mist-950">
-                      {t("segments.developers.title", {
-                        defaultValue: "For Developers",
-                      })}
-                    </div>
-                    <div className="text-xs text-mist-700">
-                      {t("segments.developers.shortDescription", {
-                        defaultValue:
-                          "Automated sync and developer-first tools",
-                      })}
+                    <div className={ROW_LABEL}>{t("segments.developers.title")}</div>
+                    <div className="text-xs text-mist-600">
+                      {t("segments.developers.shortDescription")}
                     </div>
                   </div>
                 </Link>
@@ -252,69 +264,37 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
                   to="/$locale/for-product-teams/"
                   params={{ locale: localeParam }}
                   onClick={close}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-mist-200 bg-white text-mist-700 shadow-sm">
+                  <div className={TILE}>
                     <SpriteIcon name="rocket" className="size-4" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-mist-950">
-                      {t("segments.productTeams.title", {
-                        defaultValue: "For Product Teams",
-                      })}
-                    </div>
-                    <div className="text-xs text-mist-700">
-                      {t("segments.productTeams.shortDescription", {
-                        defaultValue: "Manage localization without the hassle",
-                      })}
+                    <div className={ROW_LABEL}>{t("segments.productTeams.title")}</div>
+                    <div className="text-xs text-mist-600">
+                      {t("segments.productTeams.shortDescription")}
                     </div>
                   </div>
                 </Link>
 
-                <div className="px-3 pt-2">
-                  <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-mist-600">
-                    {t("menu.moreSolutions", {
-                      defaultValue: "More Solutions",
-                    })}
-                  </p>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                <div className="px-3 pt-3">
+                  <p className="eyebrow">{t("menu.moreSolutions")}</p>
+                  <div className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-0.5">
                     {[
-                      {
-                        to: "/$locale/for-enterprises/" as const,
-                        key: "enterprises",
-                        label: "Enterprises",
-                      },
-                      {
-                        to: "/$locale/for-saas/" as const,
-                        key: "saas",
-                        label: "SaaS",
-                      },
-                      {
-                        to: "/$locale/for-ecommerce/" as const,
-                        key: "ecommerce",
-                        label: "E-Commerce",
-                      },
-                      {
-                        to: "/$locale/for-startups/" as const,
-                        key: "startups",
-                        label: "Startups",
-                      },
-                      {
-                        to: "/$locale/for-agencies/" as const,
-                        key: "agencies",
-                        label: "Agencies",
-                      },
+                      { to: "/$locale/for-enterprises/" as const, key: "enterprises" },
+                      { to: "/$locale/for-saas/" as const, key: "saas" },
+                      { to: "/$locale/for-ecommerce/" as const, key: "ecommerce" },
+                      { to: "/$locale/for-startups/" as const, key: "startups" },
+                      { to: "/$locale/for-agencies/" as const, key: "agencies" },
                     ].map((item) => (
                       <Link
                         key={item.to}
                         to={item.to}
                         params={{ locale: localeParam }}
                         onClick={close}
-                        className="py-1.5 text-sm text-mist-700 hover:text-mist-950 transition-colors"
+                        className="py-1.5 text-sm text-mist-600 transition-colors hover:text-mist-950"
                       >
-                        {t(`menu.solutions.${item.key}`, {
-                          defaultValue: item.label,
-                        })}
+                        {t(`menu.solutions.${item.key}`)}
                       </Link>
                     ))}
                   </div>
@@ -324,16 +304,12 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
 
             {/* Developers */}
             <AccordionSection
-              label={t("developers.title", { defaultValue: "Developers" })}
+              label={t("developers.title")}
               isExpanded={expandedSection === "developers"}
               onToggle={() => toggleSection("developers")}
             >
               <div className="space-y-1 pb-1">
-                <p className="px-3 py-1 text-xs font-medium uppercase tracking-wider text-mist-700">
-                  {t("developers.frameworkGuides", {
-                    defaultValue: "Framework Guides",
-                  })}
-                </p>
+                <p className="eyebrow px-3 py-1">{t("developers.frameworkGuides")}</p>
                 <div className="grid grid-cols-2 gap-1">
                   {[
                     { to: "/$locale/i18n/react/" as const, label: "React" },
@@ -348,8 +324,10 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
                       to={item.to}
                       params={{ locale: localeParam }}
                       onClick={close}
-                      className="rounded-lg px-3 py-2 text-sm font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+                      className="rounded-lg px-3 py-2 text-sm font-medium text-mist-950 transition-colors hover:bg-black/[0.03]"
                     >
+                      {/* Framework names are product nouns, not copy — they are
+                          the same in every locale, so they stay literal. */}
                       {item.label}
                     </Link>
                   ))}
@@ -359,11 +337,9 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
                     href="https://docs.better-i18n.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-medium text-mist-700 hover:text-mist-950 transition-colors"
+                    className="learn-more"
                   >
-                    {t("developers.viewDocs", {
-                      defaultValue: "View full documentation",
-                    })}
+                    {t("developers.viewDocs")}
                   </a>
                 </div>
               </div>
@@ -373,23 +349,23 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
               to="/$locale/pricing/"
               params={{ locale: localeParam }}
               onClick={close}
-              className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+              className={TOP_ROW}
             >
-              {t("pricing", { defaultValue: "Pricing" })}
+              {t("pricing")}
             </Link>
 
             <Link
               to="/$locale/compare/"
               params={{ locale: localeParam }}
               onClick={close}
-              className="block rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+              className={TOP_ROW}
             >
-              {t("compare", { defaultValue: "Compare" })}
+              {t("compare")}
             </Link>
 
             {/* Resources */}
             <AccordionSection
-              label={t("resources.title", { defaultValue: "Resources" })}
+              label={t("resources.title")}
               isExpanded={expandedSection === "resources"}
               onToggle={() => toggleSection("resources")}
             >
@@ -398,43 +374,33 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
                   to="/$locale/about/"
                   params={{ locale: localeParam }}
                   onClick={close}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <IconPeople className="size-4 text-mist-600" />
-                  <span className="text-sm font-medium text-mist-950">
-                    {t("resources.about.title", { defaultValue: "About Us" })}
-                  </span>
+                  <IconPeople className="size-4 text-mist-500" />
+                  <span className={ROW_LABEL}>{t("resources.about.title")}</span>
                 </Link>
 
                 <Link
                   to="/$locale/privacy/"
                   params={{ locale: localeParam }}
                   onClick={close}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <SpriteIcon name="shield-check" className="size-4 text-mist-600" />
-                  <span className="text-sm font-medium text-mist-950">
-                    {t("resources.privacy.title", {
-                      defaultValue: "Privacy Policy",
-                    })}
-                  </span>
+                  <SpriteIcon name="shield-check" className="size-4 text-mist-500" />
+                  <span className={ROW_LABEL}>{t("resources.privacy.title")}</span>
                 </Link>
 
                 <Link
                   to="/$locale/terms/"
                   params={{ locale: localeParam }}
                   onClick={close}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <SpriteIcon name="script" className="size-4 text-mist-600" />
-                  <span className="text-sm font-medium text-mist-950">
-                    {t("resources.terms.title", {
-                      defaultValue: "Terms of Service",
-                    })}
-                  </span>
+                  <SpriteIcon name="script" className="size-4 text-mist-500" />
+                  <span className={ROW_LABEL}>{t("resources.terms.title")}</span>
                 </Link>
 
-                <div className="my-1 border-t border-mist-200" />
+                <div className="my-1 border-t border-black/[0.07]" />
 
                 <button
                   type="button"
@@ -442,95 +408,79 @@ export function MobileNavPanel({ isOpen, onClose, menuId }: MobileNavPanelProps)
                     close();
                     if (typeof window !== "undefined") window.Helpway?.open();
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-mist-200 transition-colors"
+                  className={`${ROW} w-full text-left`}
                 >
-                  <LifeBuoy className="size-4 text-mist-600" />
-                  <span className="text-sm font-medium text-mist-950">
-                    {t("resources.helpCenter", { defaultValue: "Help Center" })}
-                  </span>
+                  <LifeBuoy className="size-4 text-mist-500" />
+                  <span className={ROW_LABEL}>{t("resources.helpCenter")}</span>
                 </button>
 
                 <a
                   href="https://docs.better-i18n.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <SpriteIcon name="book" className="size-4 text-mist-600" />
-                  <span className="text-sm font-medium text-mist-950">
-                    {t("documentation", { defaultValue: "Documentation" })}
-                  </span>
+                  <SpriteIcon name="book" className="size-4 text-mist-500" />
+                  <span className={ROW_LABEL}>{t("documentation")}</span>
                 </a>
 
                 <Link
                   to="/$locale/changelog/"
                   params={{ locale: localeParam }}
                   onClick={close}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <SpriteIcon name="sparkles-soft" className="size-4 text-mist-600" />
-                  <span className="text-sm font-medium text-mist-950">
-                    {t("changelog", { defaultValue: "Changelog" })}
-                  </span>
+                  <SpriteIcon name="sparkles-soft" className="size-4 text-mist-500" />
+                  <span className={ROW_LABEL}>{t("changelog")}</span>
                 </Link>
 
                 <Link
                   to="/$locale/blog/"
                   params={{ locale: localeParam }}
                   onClick={close}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <IconNewspaper className="size-4 text-mist-600" />
-                  <span className="text-sm font-medium text-mist-950">
-                    {t("blog", { defaultValue: "Blog" })}
-                  </span>
+                  <IconNewspaper className="size-4 text-mist-500" />
+                  <span className={ROW_LABEL}>{t("blog")}</span>
                 </Link>
 
                 <a
                   href="https://docs.better-i18n.com/api"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <SpriteIcon name="api-connection" className="size-4 text-mist-600" />
-                  <span className="text-sm font-medium text-mist-950">
-                    {t("apiReference", { defaultValue: "API Reference" })}
-                  </span>
+                  <SpriteIcon name="api-connection" className="size-4 text-mist-500" />
+                  <span className={ROW_LABEL}>{t("apiReference")}</span>
                 </a>
 
                 <a
                   href="https://status.better-i18n.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <IconLiveActivity className="size-4 text-mist-600" />
-                  <span className="text-sm font-medium text-mist-950">
-                    {t("status", { defaultValue: "Status" })}
-                  </span>
+                  <IconLiveActivity className="size-4 text-mist-500" />
+                  <span className={ROW_LABEL}>{t("status")}</span>
                 </a>
 
                 <Link
                   to="/$locale/what-is/"
                   params={{ locale: localeParam }}
                   onClick={close}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-mist-200 transition-colors"
+                  className={ROW}
                 >
-                  <SpriteIcon name="globe" className="size-4 text-mist-600" />
-                  <span className="text-sm font-medium text-mist-950">
-                    {t("resources.whatIsI18n", {
-                      defaultValue: "What is i18n?",
-                    })}
-                  </span>
+                  <SpriteIcon name="globe" className="size-4 text-mist-500" />
+                  <span className={ROW_LABEL}>{t("resources.whatIsI18n")}</span>
                 </Link>
               </div>
             </AccordionSection>
           </div>
 
-          <div className="mt-6 border-t border-mist-200 pt-6">
+          <div className="mt-6 border-t border-black/[0.07] pt-6">
             <div className="flex items-center justify-between px-3">
-              <span className="text-sm font-medium text-mist-700">
-                {t("language", { defaultValue: "Language" })}
+              <span className="text-sm font-medium text-mist-600">
+                {t("language")}
               </span>
               <LanguageSwitcher />
             </div>
@@ -562,13 +512,13 @@ function AccordionSection({
         onClick={onToggle}
         aria-expanded={isExpanded}
         aria-controls={contentId}
-        className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-base font-medium text-mist-950 hover:bg-mist-200 transition-colors"
+        className={`${TOP_ROW} flex w-full items-center justify-between`}
       >
         {label}
         <SpriteIcon
           name="chevron-bottom"
           className={cn(
-            "size-4 text-mist-600 transition-transform duration-200",
+            "size-4 text-mist-400 transition-transform duration-200",
             isExpanded && "rotate-180",
           )}
         />

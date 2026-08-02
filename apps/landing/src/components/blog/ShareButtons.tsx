@@ -42,14 +42,14 @@ export default function ShareButtons({ url, title, slug }: ShareButtonsProps) {
     });
   }
 
+  // Hairline tiles, not filled circles: these sit in the rail next to the TOC,
+  // where three grey discs would out-weigh the navigation they sit beside. The
+  // "Share" label is supplied by the caller's eyebrow, so it is not repeated here.
   const buttonClass =
-    "inline-flex items-center justify-center w-9 h-9 rounded-full bg-mist-50 text-mist-500 hover:bg-mist-100 hover:text-mist-700 transition-colors";
+    "inline-flex size-8 items-center justify-center rounded-md border border-black/[0.07] text-mist-500 transition-colors hover:bg-black/[0.02] hover:text-mist-900";
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm text-mist-400 mr-1">
-        {t("share", { defaultValue: "Share" })}
-      </span>
+    <div className="flex items-center gap-1.5">
       <button
         type="button"
         onClick={shareOnTwitter}
@@ -70,12 +70,12 @@ export default function ShareButtons({ url, title, slug }: ShareButtonsProps) {
         type="button"
         onClick={copyLink}
         className={buttonClass}
-        aria-label={copied ? t("linkCopied", { defaultValue: "Copied!" }) : "Copy link"}
+        aria-label={copied ? t("linkCopied") : "Copy link"}
       >
         {copied ? (
-          <Check className="w-4 h-4 text-green-600" />
+          <Check className="size-4 text-mist-900" />
         ) : (
-          <Link2 className="w-4 h-4" />
+          <Link2 className="size-4" />
         )}
       </button>
     </div>

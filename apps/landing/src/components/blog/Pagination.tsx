@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
 
@@ -5,16 +6,6 @@ interface PaginationProps {
   readonly currentPage: number;
   readonly totalPages: number;
   readonly locale: string;
-}
-
-/**
- * Build the URL for a given blog page number.
- * Page 1 → /{locale}/blog/
- * Page N → /{locale}/blog/page/{N}/
- */
-function getPageUrl(locale: string, page: number): string {
-  if (page === 1) return `/${locale}/blog/`;
-  return `/${locale}/blog/page/${page}/`;
 }
 
 /**
@@ -52,6 +43,48 @@ function getPageNumbers(
   return result;
 }
 
+/**
+ * A link to one blog page.
+ *
+ * Page 1 and page N are two DIFFERENT routes, so this branches on the number
+ * instead of interpolating a path. Passing a built string to `to` type-errors
+ * against the router's generated `to` union (and silently produces dead links
+ * when the route tree changes), which is why there is no `getPageUrl` here.
+ */
+function PageLink({
+  locale,
+  page,
+  className,
+  children,
+  ariaLabel,
+}: {
+  locale: string;
+  page: number;
+  className: string;
+  children: ReactNode;
+  ariaLabel?: string;
+}) {
+  if (page === 1) {
+    return (
+      <Link to="/$locale/blog/" params={{ locale }} className={className} aria-label={ariaLabel}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <Link
+      to="/$locale/blog/page/$page/"
+      params={{ locale, page: String(page) }}
+      className={className}
+      aria-label={ariaLabel}
+    >
+      {children}
+    </Link>
+  );
+}
+
+const CELL = "flex h-9 items-center justify-center border-l border-black/[0.05] px-3.5 text-[13px] transition-colors first:border-l-0";
+
 export default function Pagination({
   currentPage,
   totalPages,
@@ -66,33 +99,30 @@ export default function Pagination({
   const hasNext = currentPage < totalPages;
 
   return (
-    <nav
-      aria-label="Blog pagination"
-      className="mt-12 flex items-center justify-center"
-    >
-      <div className="inline-flex items-center divide-x divide-mist-200 rounded-lg border border-mist-200 bg-white text-sm">
-        {/* Previous */}
+    // aria-label stays literal: "Blog pagination" is on the sanctioned
+    // ignoreStrings list in i18n.config.ts, alongside the other structural
+    // landmark names ("Main navigation", "Site footer", "Table of contents").
+    <nav aria-label="Blog pagination" className="mt-8 flex justify-center">
+      {/* One clipped hairline strip — cells divide themselves with a left rule,
+          same grammar as the card grid. No shadow, no pill. */}
+      <div className="flex overflow-hidden rounded-xl border border-black/[0.07] bg-white">
         {hasPrev ? (
-          <Link
-            to={getPageUrl(locale, currentPage - 1)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-mist-700 hover:bg-mist-50 transition-colors rounded-l-lg"
+          <PageLink
+            locale={locale}
+            page={currentPage - 1}
+            className={`${CELL} text-mist-700 hover:bg-black/[0.02]`}
           >
-            <span aria-hidden="true" className="text-xs">&larr;</span>
-            <span className="hidden sm:inline">{t("pagination.previous", { defaultValue: "Previous" })}</span>
-          </Link>
+            {t("pagination.previous")}
+          </PageLink>
         ) : (
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-2 text-mist-300 cursor-not-allowed rounded-l-lg">
-            <span aria-hidden="true" className="text-xs">&larr;</span>
-            <span className="hidden sm:inline">{t("pagination.previous", { defaultValue: "Previous" })}</span>
-          </span>
+          <span className={`${CELL} text-mist-300`}>{t("pagination.previous")}</span>
         )}
 
-        {/* Page numbers */}
         {pageNumbers.map((pageNum, idx) =>
           pageNum === -1 ? (
             <span
-              key={`ellipsis-${idx}`}
-              className="hidden sm:inline-flex items-center justify-center w-10 py-2 text-mist-400 select-none"
+              key={`ellipsis-${idx === 0 ? "lead" : "tail"}`}
+              className={`${CELL} hidden text-mist-400 select-none sm:flex`}
               aria-hidden="true"
             >
               &hellip;
@@ -100,36 +130,33 @@ export default function Pagination({
           ) : pageNum === currentPage ? (
             <span
               key={pageNum}
-              className="inline-flex items-center justify-center w-10 py-2 font-medium text-mist-950 bg-mist-50"
+              className={`${CELL} bg-black/[0.03] font-medium text-mist-900 tabular-nums`}
               aria-current="page"
             >
               {pageNum}
             </span>
           ) : (
-            <Link
+            <PageLink
               key={pageNum}
-              to={getPageUrl(locale, pageNum)}
-              className="hidden sm:inline-flex items-center justify-center w-10 py-2 text-mist-500 hover:bg-mist-50 hover:text-mist-950 transition-colors"
+              locale={locale}
+              page={pageNum}
+              className={`${CELL} hidden tabular-nums text-mist-500 hover:bg-black/[0.02] hover:text-mist-900 sm:flex`}
             >
               {pageNum}
-            </Link>
+            </PageLink>
           ),
         )}
 
-        {/* Next */}
         {hasNext ? (
-          <Link
-            to={getPageUrl(locale, currentPage + 1)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-mist-700 hover:bg-mist-50 transition-colors rounded-r-lg"
+          <PageLink
+            locale={locale}
+            page={currentPage + 1}
+            className={`${CELL} text-mist-700 hover:bg-black/[0.02]`}
           >
-            <span className="hidden sm:inline">{t("pagination.next", { defaultValue: "Next" })}</span>
-            <span aria-hidden="true" className="text-xs">&rarr;</span>
-          </Link>
+            {t("pagination.next")}
+          </PageLink>
         ) : (
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-2 text-mist-300 cursor-not-allowed rounded-r-lg">
-            <span className="hidden sm:inline">{t("pagination.next", { defaultValue: "Next" })}</span>
-            <span aria-hidden="true" className="text-xs">&rarr;</span>
-          </span>
+          <span className={`${CELL} text-mist-300`}>{t("pagination.next")}</span>
         )}
       </div>
     </nav>

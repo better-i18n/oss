@@ -4,66 +4,79 @@ import type { BlogPostListItem } from "@/lib/content";
 interface BlogCardProps {
   post: BlogPostListItem;
   locale: string;
-  priority?: boolean;
 }
+
+/* One Intl formatter per locale, built once. Constructing a formatter inside
+   render costs ~0.1ms per card — negligible alone, but this grid renders 24 of
+   them per page and the object is immutable, so there is no reason to rebuild. */
+const dateFormatters = new Map<string, Intl.DateTimeFormat>();
 
 function formatShortDate(dateStr: string, locale: string): string {
-  return new Date(dateStr).toLocaleDateString(locale, {
-    month: "short",
-    day: "numeric",
-  });
+  let fmt = dateFormatters.get(locale);
+  if (!fmt) {
+    fmt = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" });
+    dateFormatters.set(locale, fmt);
+  }
+  return fmt.format(new Date(dateStr));
 }
 
+/**
+ * One cell of the blog grid.
+ *
+ * The cell draws its own top + left hairline; the parent grid shifts itself
+ * -1px up/left so the first row's and first column's rules slide under the
+ * container border and get clipped. That keeps the pattern breakpoint-
+ * independent — no nth-child arithmetic to break when the column count changes.
+ *
+ * No cover art of any kind: no image, no placeholder panel, no tint. The card is
+ * category → title → excerpt → byline. `banner_image` still exists on the CMS
+ * model and is still read by the article page and OG meta; the listing simply
+ * does not use it. There is consequently no `priority` prop — it existed only to
+ * set `loading="eager"` on the first cover.
+ */
 export default function BlogCard({ post, locale }: BlogCardProps) {
   return (
     <Link
-      to="/$locale/blog/$slug"
+      to="/$locale/blog/$slug/"
       params={{ locale, slug: post.slug }}
-      className="group flex flex-col py-7"
+      className="group flex flex-col border-t border-l border-black/[0.05] transition-colors hover:bg-black/[0.02]"
     >
-      {/* Category + Date */}
-      <div className="flex items-center justify-between mb-3">
-        {post.category ? (
-          <span className="text-[13px]/[1.4] text-mist-500">{post.category}</span>
-        ) : <span />}
-        {post.publishedAt && (
-          <time className="text-[13px]/[1.4] text-mist-400" dateTime={post.publishedAt}>
-            {formatShortDate(post.publishedAt, locale)}
-          </time>
+      <div className="flex flex-1 flex-col px-5 py-5">
+        {post.category && (
+          <p className="text-[11px] font-medium text-mist-400">{post.category}</p>
         )}
-      </div>
 
-      {/* Title */}
-      <h2 className="text-[16px]/[1.35] font-semibold tracking-[-0.015em] text-mist-950 group-hover:text-mist-600 transition-colors md:text-[18px]/[1.3]">
-        {post.title}
-      </h2>
+        <h2 className="mt-2 text-[15px] font-medium leading-[1.35] tracking-[-0.015em] text-mist-900">
+          {post.title}
+        </h2>
 
-      {/* Excerpt */}
-      {post.excerpt && (
-        <p className="mt-2.5 text-[14px]/[1.6] text-mist-500 line-clamp-3">
-          {post.excerpt}
-        </p>
-      )}
+        {post.excerpt && (
+          <p className="mt-1.5 line-clamp-2 flex-1 text-[13px] leading-5 text-mist-600">
+            {post.excerpt}
+          </p>
+        )}
 
-      {/* Author */}
-      {post.authorName && (
-        <div className="flex items-center gap-2 mt-auto pt-4">
+        <div className="mt-4 flex items-center gap-2">
           {post.authorAvatar ? (
             <img
               src={post.authorAvatar}
               alt=""
               width={20}
               height={20}
-              className="size-5 rounded-full object-cover [image-orientation:from-image]"
+              loading="lazy"
+              className="size-5 shrink-0 rounded-full border border-black/[0.06] object-cover [image-orientation:from-image]"
             />
-          ) : (
-            <div className="size-5 rounded-full bg-mist-200 flex items-center justify-center text-[9px] font-semibold text-mist-600">
-              {post.authorName.charAt(0).toUpperCase()}
-            </div>
+          ) : null}
+          {post.authorName && (
+            <span className="truncate text-[12px] text-mist-500">{post.authorName}</span>
           )}
-          <span className="text-[13px]/[1.4] text-mist-500">{post.authorName}</span>
+          {post.publishedAt && (
+            <time className="ml-auto shrink-0 text-[12px] tabular-nums text-mist-400" dateTime={post.publishedAt}>
+              {formatShortDate(post.publishedAt, locale)}
+            </time>
+          )}
         </div>
-      )}
+      </div>
     </Link>
   );
 }

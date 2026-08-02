@@ -22,6 +22,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -79,13 +80,18 @@ export function MegaMenu({ label, children }: MegaMenuProps) {
     setOpen(true);
   }, [cancelClose]);
 
-  const ctxValue: MegaMenuContext = {
-    open,
-    onTriggerEnter,
-    onTriggerLeave: scheduleClose,
-    onPanelEnter: cancelClose,
-    onPanelLeave: scheduleClose,
-  };
+  // Memoised: a fresh object here re-renders every panel item on each parent
+  // render, and the panels hold dozens of rows.
+  const ctxValue = useMemo<MegaMenuContext>(
+    () => ({
+      open,
+      onTriggerEnter,
+      onTriggerLeave: scheduleClose,
+      onPanelEnter: cancelClose,
+      onPanelLeave: scheduleClose,
+    }),
+    [open, onTriggerEnter, scheduleClose, cancelClose],
+  );
 
   return (
     <Ctx.Provider value={ctxValue}>
@@ -111,16 +117,13 @@ function MegaMenuTrigger({ label }: { label: string }) {
       onMouseLeave={onTriggerLeave}
       onFocus={onTriggerEnter}
       onBlur={onTriggerLeave}
-      className="inline-flex items-center gap-1 text-sm/7 font-medium text-mist-950 hover:text-mist-600"
+      className="nav-link"
       data-state={open ? "open" : "closed"}
     >
       {label}
       <SpriteIcon
         name="chevron-bottom"
-        className={cn(
-          "w-4 h-4 text-mist-600 transition-transform duration-200",
-          open && "rotate-180 text-mist-950",
-        )}
+        className={cn("nav-chevron", open && "rotate-180")}
       />
     </button>
   );
@@ -157,16 +160,101 @@ export function MegaMenuPanel({
     >
       <div
         className={cn(
-          // Single white panel — strong layered shadow + faint top highlight
-          // simulates depth without a second visible border ring.
-          "bg-white rounded-2xl border border-mist-200 overflow-hidden",
-          "shadow-[0_1px_0_0_rgba(255,255,255,0.5)_inset,0_24px_64px_-24px_rgba(15,23,42,0.22),0_8px_24px_-12px_rgba(15,23,42,0.08)]",
+          // Single white panel on a hairline border. Depth comes from the
+          // layered --shadow-dropdown, never from a heavier border or a ring.
+          "overflow-hidden rounded-2xl border border-black/[0.08] bg-white",
+          "shadow-[var(--shadow-dropdown)]",
           widthClass,
         )}
       >
         {children}
       </div>
     </div>
+  );
+}
+
+// ─── Split panel + rail ──────────────────────────────────────────────
+
+/**
+ * Two-column panel: primary content on the left, a tinted rail of secondary
+ * links on the right.
+ *
+ * Why this exists: stacking a card section (icon tile + two-line description)
+ * on top of a pill section (bare 13px row) put two densities in one panel, so
+ * the same menu read as "one big area and one small one". The split makes the
+ * hierarchy the *layout's* job — left column is the primary offer, right rail is
+ * navigation — and lets every row inside the rail share one uniform density.
+ */
+export function MegaMenuSplit({
+  children,
+  railWidth = "300px",
+}: {
+  children: ReactNode;
+  railWidth?: string;
+}) {
+  return (
+    <div
+      className="grid"
+      style={{ gridTemplateColumns: `minmax(0,1fr) ${railWidth}` }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** The tinted secondary column. Holds only <MegaMenuRailGroup> children. */
+export function MegaMenuRail({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-4 border-l border-black/[0.06] bg-mist-50 px-3 py-4 max-lg:hidden">
+      {children}
+    </div>
+  );
+}
+
+/** A labelled group of uniform rail rows. */
+export function MegaMenuRailGroup({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <p className="mb-1.5 px-2 text-[11px] font-medium text-mist-400">{label}</p>
+      <div className="flex flex-col">{children}</div>
+    </div>
+  );
+}
+
+const railRowClass =
+  "group/rail flex items-center gap-2.5 rounded-md px-2 py-1.5 transition-colors hover:bg-black/[0.04]";
+
+function RailInner({ icon, label }: { icon?: ReactNode; label: string }) {
+  return (
+    <>
+      {icon && (
+        <span className="flex size-4 shrink-0 items-center justify-center text-mist-400 transition-colors group-hover/rail:text-mist-600">
+          {icon}
+        </span>
+      )}
+      <span className="min-w-0 flex-1 truncate text-[13px] text-mist-700 transition-colors group-hover/rail:text-mist-900">
+        {label}
+      </span>
+    </>
+  );
+}
+
+/** Rail row → internal route. One density for every secondary link. */
+export function MegaMenuRailLink(
+  props: { icon?: ReactNode; label: string } & InternalLinkProps,
+) {
+  const { icon, label, to, params } = props;
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    <Link to={to} params={params as any} className={railRowClass}>
+      <RailInner icon={icon} label={label} />
+    </Link>
   );
 }
 
@@ -217,14 +305,16 @@ export function MegaMenuSection({
   return (
     <div
       className={cn(
-        "px-3 py-3",
-        !noDivider && "border-t border-mist-100 first:border-t-0",
+        "px-1.5 py-2",
+        !noDivider && "border-t border-black/[0.06] first:border-t-0",
       )}
     >
       {label && (
         <p
           className={cn(
-            "px-1 mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-mist-500",
+            // 11px, medium, subtle — no uppercase, no letter-spacing. Caps +
+            // wide tracking read as a UI chrome label; this should read as quiet prose.
+            "mb-2 px-3 text-[11px] font-medium text-mist-400",
             "group-data-[state=open]/panel:animate-in group-data-[state=open]/panel:fade-in-0 group-data-[state=open]/panel:duration-200 group-data-[state=open]/panel:fill-mode-both",
           )}
         >
@@ -242,10 +332,15 @@ interface MegaMenuCardProps {
   icon: ReactNode;
   title: string;
   description: string;
+  /**
+   * Render the icon as-is instead of inside the tinted tile. Use for icons that
+   * already carry their own shape and colour — product tiles, brand marks.
+   */
+  plainIcon?: boolean;
 }
 
 const cardClassName =
-  "group/card flex items-start gap-3 p-3 rounded-lg hover:bg-mist-50 transition-colors";
+  "group/card flex items-start gap-3.5 rounded-xl p-3 transition-colors hover:bg-black/[0.03]";
 
 function staggerClasses(index?: number) {
   if (index === undefined) return "";
@@ -253,37 +348,30 @@ function staggerClasses(index?: number) {
   return cn(ITEM_ENTER, delay);
 }
 
-function CardInner({ icon, title, description }: MegaMenuCardProps) {
+function CardInner({ icon, title, description, plainIcon }: MegaMenuCardProps) {
   return (
     <>
+      {plainIcon ? (
+        <span className="shrink-0 pt-0.5">{icon}</span>
+      ) : (
       <div
         className={cn(
-          // Base — soft inset gradient that reads as "raised" without a hard border
-          "flex-shrink-0 size-11 rounded-xl flex items-center justify-center text-mist-700",
-          "bg-gradient-to-br from-mist-50 to-white border border-mist-200",
-          "shadow-[0_1px_0_rgba(15,23,42,0.04)]",
-          // Smooth multi-property transition
-          "transition-[transform,box-shadow,background,border-color,color] duration-300 ease-out",
-          // Hover — gradient flips, border darkens, icon container lifts slightly
-          "group-hover/card:from-white group-hover/card:to-mist-50",
-          "group-hover/card:border-mist-300 group-hover/card:text-mist-950",
-          "group-hover/card:shadow-[0_6px_16px_-6px_rgba(15,23,42,0.18)]",
-          "group-hover/card:scale-[1.04] group-hover/card:-rotate-1",
+          // Flat tinted tile on a hairline. No gradient, no lift, no rotation —
+          // the row's own hover tint is the whole feedback.
+          "flex size-10 flex-shrink-0 items-center justify-center rounded-[10px] text-mist-600",
+          "border border-black/[0.06] bg-[var(--color-canvas)]",
+          "transition-[background,border-color,color] duration-150",
+          "group-hover/card:border-black/[0.08] group-hover/card:bg-[#ebebea] group-hover/card:text-mist-900",
         )}
       >
         {icon}
       </div>
-      <div className="flex-1 min-w-0 pt-0.5">
-        <div className="flex items-center gap-1.5">
-          <span className="text-sm font-medium text-mist-950 transition-transform duration-200 group-hover/card:translate-x-0.5">
-            {title}
-          </span>
-          <SpriteIcon
-            name="arrow-right"
-            className="size-3 text-mist-400 -translate-x-1 opacity-0 transition-all duration-200 group-hover/card:translate-x-0 group-hover/card:opacity-100 group-hover/card:text-mist-700"
-          />
-        </div>
-        <div className="text-xs text-mist-600 leading-relaxed mt-0.5">
+      )}
+      <div className="min-w-0 flex-1 pt-0.5">
+        <span className="block text-sm font-medium leading-tight tracking-[-0.015em] text-mist-900">
+          {title}
+        </span>
+        <div className="mt-1 text-[13px] leading-snug text-mist-400">
           {description}
         </div>
       </div>
@@ -307,7 +395,7 @@ type InternalLinkProps = {
 };
 
 export function MegaMenuCard(props: MegaMenuCardProps & InternalLinkProps) {
-  const { icon, title, description, to, params, index } = props;
+  const { icon, title, description, plainIcon, to, params, index } = props;
   return (
     <Link
       to={to}
@@ -315,7 +403,7 @@ export function MegaMenuCard(props: MegaMenuCardProps & InternalLinkProps) {
       params={params as any}
       className={cn(cardClassName, staggerClasses(index))}
     >
-      <CardInner icon={icon} title={title} description={description} />
+      <CardInner icon={icon} title={title} description={description} plainIcon={plainIcon} />
     </Link>
   );
 }
@@ -330,10 +418,10 @@ export function MegaMenuCardExternal(
     rel?: string;
   },
 ) {
-  const { icon, title, description, href, target, rel } = props;
+  const { icon, title, description, plainIcon, href, target, rel } = props;
   return (
     <a href={href} target={target} rel={rel} className={cardClassName}>
-      <CardInner icon={icon} title={title} description={description} />
+      <CardInner icon={icon} title={title} description={description} plainIcon={plainIcon} />
     </a>
   );
 }
@@ -343,49 +431,54 @@ export function MegaMenuCardExternal(
 interface MegaMenuPillProps {
   icon: ReactNode;
   label: string;
+  /**
+   * Drop the tinted icon tile and show the glyph inline. Use when the icon is a
+   * weak signal (generic industry/utility glyphs) — a tile promotes it to the
+   * same weight as a product mark, which is exactly what it shouldn't have.
+   */
+  bareIcon?: boolean;
 }
 
 const pillClassName =
-  "group/pill flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-mist-50 transition-colors";
+  "group/pill flex items-center gap-3 rounded-[10px] px-3 py-2.5 transition-colors hover:bg-black/[0.03]";
 
 function PillInner({
   icon,
   label,
   external,
+  bareIcon,
 }: MegaMenuPillProps & { external?: boolean }) {
   return (
     <>
+      {bareIcon ? (
+        <span className="flex size-4 shrink-0 items-center justify-center text-mist-400 transition-colors group-hover/pill:text-mist-600">
+          {icon}
+        </span>
+      ) : (
       <span
         className={cn(
-          "flex size-7 items-center justify-center rounded-md text-mist-700",
-          "bg-mist-50 border border-mist-200",
-          "transition-[transform,background,border-color,color] duration-200 ease-out",
-          "group-hover/pill:bg-white group-hover/pill:border-mist-300 group-hover/pill:text-mist-950",
-          "group-hover/pill:scale-[1.08]",
+          "flex size-7 items-center justify-center rounded-md text-mist-600",
+          "border border-black/[0.06] bg-[var(--color-canvas)]",
+          "transition-[background,border-color,color] duration-150",
+          "group-hover/pill:border-black/[0.08] group-hover/pill:bg-[#ebebea] group-hover/pill:text-mist-900",
         )}
       >
         {icon}
       </span>
-      <span className="flex-1 text-sm font-medium text-mist-800 group-hover/pill:text-mist-950 transition-colors">
+      )}
+      <span className="flex-1 text-[13px] font-medium text-mist-700 transition-colors group-hover/pill:text-mist-900">
         {label}
       </span>
-      {external ? (
-        // External link icon — hints "opens in new tab"
-        <IconArrowUpRight
-          className="size-3 text-mist-400 opacity-0 -translate-y-0.5 translate-x-0.5 transition-all duration-200 group-hover/pill:opacity-100 group-hover/pill:translate-y-0 group-hover/pill:translate-x-0 group-hover/pill:text-mist-700"
-        />
-      ) : (
-        <SpriteIcon
-          name="arrow-right"
-          className="size-3 text-mist-400 -translate-x-1 opacity-0 transition-all duration-200 group-hover/pill:translate-x-0 group-hover/pill:opacity-100 group-hover/pill:text-mist-700"
-        />
+      {/* Only off-site links earn an affordance icon; internal ones stay quiet. */}
+      {external && (
+        <IconArrowUpRight className="size-3 -translate-y-0.5 translate-x-0.5 text-mist-400 opacity-0 transition-[opacity,transform,color] duration-200 group-hover/pill:translate-x-0 group-hover/pill:translate-y-0 group-hover/pill:opacity-100 group-hover/pill:text-mist-600" />
       )}
     </>
   );
 }
 
 export function MegaMenuPill(props: MegaMenuPillProps & InternalLinkProps) {
-  const { icon, label, to, params, index } = props;
+  const { icon, label, bareIcon, to, params, index } = props;
   return (
     <Link
       to={to}
@@ -393,7 +486,7 @@ export function MegaMenuPill(props: MegaMenuPillProps & InternalLinkProps) {
       params={params as any}
       className={cn(pillClassName, staggerClasses(index))}
     >
-      <PillInner icon={icon} label={label} />
+      <PillInner icon={icon} label={label} bareIcon={bareIcon} />
     </Link>
   );
 }
@@ -408,7 +501,7 @@ export function MegaMenuPillExternal(
     index?: number;
   },
 ) {
-  const { icon, label, href, target, rel, external, index } = props;
+  const { icon, label, bareIcon, href, target, rel, external, index } = props;
   return (
     <a
       href={href}
@@ -416,7 +509,7 @@ export function MegaMenuPillExternal(
       rel={rel}
       className={cn(pillClassName, staggerClasses(index))}
     >
-      <PillInner icon={icon} label={label} external={external} />
+      <PillInner icon={icon} label={label} external={external} bareIcon={bareIcon} />
     </a>
   );
 }
@@ -428,14 +521,14 @@ export function MegaMenuPillExternal(
 export function MegaMenuPillButton(
   props: MegaMenuPillProps & { onClick: () => void; index?: number },
 ) {
-  const { icon, label, onClick, index } = props;
+  const { icon, label, bareIcon, onClick, index } = props;
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(pillClassName, "text-left w-full", staggerClasses(index))}
     >
-      <PillInner icon={icon} label={label} />
+      <PillInner icon={icon} label={label} bareIcon={bareIcon} />
     </button>
   );
 }
@@ -449,11 +542,9 @@ interface MegaMenuFooterProps {
 
 export function MegaMenuFooter({ primary, secondary }: MegaMenuFooterProps) {
   return (
-    <div className="px-4 py-3 border-t border-mist-100 bg-mist-50/40 flex items-center justify-between gap-4">
-      <div className="text-sm font-medium text-mist-950">{primary}</div>
-      {secondary && (
-        <div className="text-sm text-mist-600">{secondary}</div>
-      )}
+    <div className="flex items-center justify-between gap-4 border-t border-black/[0.06] bg-mist-50 px-5 py-3.5">
+      <div className="text-[13px] font-medium text-mist-600">{primary}</div>
+      {secondary && <div className="text-[13px] text-mist-400">{secondary}</div>}
     </div>
   );
 }

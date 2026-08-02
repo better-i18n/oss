@@ -57,10 +57,10 @@ export function AIFeatureCard() {
   return (
     <div
       ref={ref}
-      className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-shadow duration-200 hover:shadow-md"
+      className="flex h-full flex-col"
     >
       <div className="p-1.5">
-        <div className="h-[320px] bg-mist-50 rounded-xl border border-mist-200/60 px-5 pt-6 pb-4 flex flex-col shrink-0 relative">
+        <div className="relative flex h-[300px] shrink-0 flex-col rounded-lg bg-black/[0.02] px-4 pt-5 pb-4">
           {/* Assistant header — Better I18N logo + model badge */}
           <div className="flex items-center gap-2.5 mb-4">
             <span
@@ -74,7 +74,7 @@ export function AIFeatureCard() {
               />
             </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-[11px] font-semibold text-mist-900">
+              <span className="text-[11px] font-medium text-mist-900">
                 Better AI
               </span>
               <span className="text-[10px] text-mist-400 font-mono">
@@ -84,7 +84,7 @@ export function AIFeatureCard() {
           </div>
 
           {/* Tool-call shell */}
-          <div className="flex-1 bg-white rounded-xl border border-mist-200 shadow-sm overflow-hidden flex flex-col min-h-0">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-black/[0.07] bg-white">
             {/* Tool header */}
             <div className="flex items-center gap-2 px-3 py-2 border-b border-mist-100">
               <AnimatePresence mode="wait">
@@ -97,7 +97,7 @@ export function AIFeatureCard() {
                     className="flex items-center gap-1.5 w-full"
                   >
                     <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden />
-                    <code className="text-[10px] font-mono text-mist-900 font-semibold">
+                    <code className="text-[10px] font-mono text-mist-900 font-medium">
                       proposeTranslations
                     </code>
                     <span className="text-[9px] text-mist-500 tabular-nums ml-auto">
@@ -168,14 +168,25 @@ export function AIFeatureCard() {
             </motion.div>
 
             {/* Target language rows */}
-            <div className="flex-1 px-2 py-1.5 space-y-0.5 overflow-hidden min-h-0">
+            <div className="flex min-h-0 flex-1 flex-col justify-start gap-0.5 overflow-hidden px-2 py-1.5">
               {TARGETS.map((row, i) => {
                 const visible = i < visibleTargets;
                 const streamingThisRow =
                   isStreaming && i === TARGETS.length - 1;
                 return (
-                  <motion.div
-                    key={row.code}
+                  <div key={row.code} className="relative">
+                    {/* Skeleton twin. Each row fades in on its own beat, so at
+                        beat 0 this list would be one blank block inside the
+                        panel. A hairline bar in the same geometry keeps the
+                        list's shape readable; it sits outside the animated
+                        element (which is opacity-0) and shifts no layout. */}
+                    {!visible && (
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-x-4 top-1/2 h-[7px] -translate-y-1/2 rounded-full bg-black/[0.07]"
+                      />
+                    )}
+                    <motion.div
                     initial={reduced ? false : { opacity: 0, y: 4 }}
                     animate={
                       visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 4 }
@@ -204,7 +215,8 @@ export function AIFeatureCard() {
                         }}
                       />
                     )}
-                  </motion.div>
+                    </motion.div>
+                  </div>
                 );
               })}
             </div>
@@ -228,7 +240,7 @@ export function AIFeatureCard() {
                   size="xs"
                   tabIndex={-1}
                   className={cn(
-                    "h-6 px-2 text-[10px] font-semibold transition-[background-color]",
+                    "h-6 px-2 text-[10px] font-medium transition-[background-color]",
                     approved
                       ? "bg-emerald-600 text-white hover:bg-emerald-700"
                       : "bg-mist-900 text-white hover:bg-mist-800",
@@ -253,11 +265,11 @@ export function AIFeatureCard() {
       </div>
 
       {/* Card footer — title + description */}
-      <div className="px-6 pt-2 pb-5 flex-1 flex flex-col">
-        <h3 className="text-sm font-semibold text-mist-950">
+      <div className="flex flex-1 flex-col px-1 pt-4 pb-1">
+        <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
           {t("title")}
         </h3>
-        <p className="mt-1.5 text-sm text-mist-600 leading-relaxed text-pretty">
+        <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600 text-pretty">
           {t("description")}
         </p>
       </div>

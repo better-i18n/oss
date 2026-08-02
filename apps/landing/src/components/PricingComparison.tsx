@@ -491,24 +491,28 @@ function CellValue({
   highlight: boolean;
   t: ReturnType<typeof useT>;
 }) {
+  /* Support marks are 14px strokes in neutral ink. The filled dark disc read as
+     a badge and made the Better I18N column look like a promo band; the absent
+     state is a hairline rather than an em-dash so both marks share one weight. */
   if (value === true) {
     return (
       <span
+        role="img"
         aria-label="Included"
-        className={
-          highlight
-            ? "inline-flex size-4 items-center justify-center rounded-full bg-mist-950 text-white"
-            : "inline-flex size-4 items-center justify-center text-mist-500"
-        }
+        className="inline-flex items-center justify-center"
       >
-        <SpriteIcon name="checkmark" className="size-2.5" />
+        <SpriteIcon
+          name="checkmark"
+          className={highlight ? "size-3.5 text-mist-900" : "size-3.5 text-mist-500"}
+          aria-hidden="true"
+        />
       </span>
     );
   }
   if (value === false) {
     return (
-      <span aria-label="Not available" className="text-mist-300 text-sm">
-        —
+      <span role="img" aria-label="Not available" className="inline-flex items-center justify-center">
+        <span className="block h-px w-2.5 bg-mist-300" aria-hidden="true" />
       </span>
     );
   }
@@ -517,7 +521,7 @@ function CellValue({
       <span
         className={
           highlight
-            ? "text-[13px] font-medium text-mist-950 tabular-nums"
+            ? "text-[13px] font-medium text-mist-900 tabular-nums"
             : "text-[13px] text-mist-600 tabular-nums"
         }
       >
@@ -529,12 +533,10 @@ function CellValue({
   return (
     <span
       className={
-        highlight
-          ? "text-[13px] font-medium text-mist-950"
-          : "text-[13px] text-mist-600"
+        highlight ? "text-[13px] font-medium text-mist-900" : "text-[13px] text-mist-600"
       }
     >
-      {t(`comparison.values.${value.i18n}`, { defaultValue: value.fb })}
+      {t(`comparison.values.${value.i18n}`)}
     </span>
   );
 }
@@ -545,32 +547,30 @@ export function PricingComparison() {
   const t = useT("pricing");
 
   return (
-    <section id="compare-pricing" className="py-20 sm:py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section id="compare-pricing">
+      <div className="section">
         {/* Header — left-aligned, mirrors Pricing block */}
-        <div className="max-w-3xl mb-12">
-          <h2 className="font-display text-3xl/[1.08] font-medium tracking-[-0.03em] text-mist-950 sm:text-4xl/[1.04] text-balance">
-            {t("comparison.title", {
-              defaultValue: "Why teams choose Better I18N over legacy TMS",
-            })}
+        <div className="max-w-3xl">
+          <h2 className="section-h2">
+            {t("comparison.title")}
           </h2>
-          <p className="mt-5 text-lg text-mist-600 text-pretty">
-            {t("comparison.subtitle", {
-              defaultValue:
-                "Better I18N delivers the same translation memory and review workflows — with native AI, edge CDN delivery, and a modern stack — without the enterprise contract.",
-            })}
+          <p className="section-p mt-3">
+            {t("comparison.subtitle")}
           </p>
         </div>
 
-        {/* Comparison table — framed, mirrors Pricing block aesthetic */}
-        <div className="rounded-3xl border border-mist-200/70 bg-white p-1.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+        {/* One clipped hairline container. The outer padded "tray" (rounded-3xl +
+            shadow + inner 6px inset) is gone: the table border IS the frame, so
+            the Better I18N column no longer needs rounded corners tracked
+            against the last row. */}
+        <div className="mt-8 overflow-hidden rounded-xl border border-black/[0.07] bg-white">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] border-collapse">
-              {/* Vendor header row */}
-              <thead className="bg-white">
+              {/* Vendor header row — 11px mist-400, no caps/letter-spacing */}
+              <thead>
                 <tr>
-                  <th className="text-left text-xs font-medium uppercase tracking-wider text-mist-500 px-5 py-4 w-[40%]">
-                    {t("comparison.featureLabel", { defaultValue: "Feature" })}
+                  <th className="w-[40%] px-4 py-3 text-left text-[11px] font-medium text-mist-400">
+                    {t("comparison.featureLabel")}
                   </th>
                   {VENDORS.map((vendor) => {
                     const highlight = vendor === "betterI18n";
@@ -578,11 +578,7 @@ export function PricingComparison() {
                       <th
                         key={vendor}
                         scope="col"
-                        className={
-                          highlight
-                            ? "text-center text-sm font-semibold text-mist-950 px-4 py-4 bg-mist-50/60 rounded-t-xl"
-                            : "text-center text-sm font-medium text-mist-700 px-4 py-4"
-                        }
+                        className={`px-4 py-3 text-center text-[11px] font-medium ${ highlight ? "bg-black/[0.02] text-mist-900" : "text-mist-400" }`}
                       >
                         <VendorHeader vendor={vendor} />
                       </th>
@@ -593,59 +589,39 @@ export function PricingComparison() {
 
               {/* Body — interleaves section labels and feature rows */}
               <tbody>
-                {ITEMS.map((item, idx) => {
+                {ITEMS.map((item) => {
                   if (item.type === "section") {
                     return (
-                      <tr
-                        key={`section-${item.key}-${idx}`}
-                        className="border-t border-mist-200/70"
-                      >
-                        <td
-                          colSpan={1}
-                          className="px-5 pt-6 pb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-mist-500"
-                        >
-                          {t(`comparison.${item.key}`, {
-                            defaultValue: item.fb,
-                          })}
+                      /* `item.key` is unique across ITEMS (e.g. "sections.pricing"),
+                         so the row index is not needed — and an index key would
+                         break if a group were ever inserted mid-matrix. */
+                      <tr key={item.key} className="border-t border-black/[0.05]">
+                        <td className="px-4 pt-5 pb-2 text-[11px] font-medium text-mist-400">
+                          {t(`comparison.${item.key}`)}
                         </td>
-                        {/* Highlight column continues even on section rows */}
-                        <td className="bg-mist-50/60" colSpan={1} />
-                        <td colSpan={2} />
+                        {/* The emphasis column runs unbroken through group labels */}
+                        <td className="bg-black/[0.02]" />
+                        <td colSpan={VENDORS.length - 1} />
                       </tr>
                     );
                   }
 
-                  // Feature row
-                  // Detect whether this is the LAST feature row of the
-                  // entire matrix to round Better I18N column's bottom corners.
-                  const isLastRow = idx === ITEMS.length - 1;
-
                   return (
-                    <tr key={item.key} className="border-t border-mist-100">
+                    <tr key={item.key} className="border-t border-black/[0.05]">
                       <th
                         scope="row"
-                        className="text-left text-[13px] font-normal text-mist-700 px-5 py-3"
+                        className="px-4 py-3 text-left text-[13px] font-normal text-mist-700"
                       >
-                        {t(`comparison.${item.key}`, {
-                          defaultValue: item.fb,
-                        })}
+                        {t(`comparison.${item.key}`)}
                       </th>
                       {VENDORS.map((vendor) => {
                         const highlight = vendor === "betterI18n";
                         return (
                           <td
                             key={vendor}
-                            className={
-                              highlight
-                                ? `text-center px-4 py-3.5 bg-mist-50/60 ${isLastRow ? "rounded-b-xl" : ""}`
-                                : "text-center px-4 py-3.5"
-                            }
+                            className={`px-4 py-3 text-center ${ highlight ? "bg-black/[0.02]" : "" }`}
                           >
-                            <CellValue
-                              value={item.cells[vendor]}
-                              highlight={highlight}
-                              t={t}
-                            />
+                            <CellValue value={item.cells[vendor]} highlight={highlight} t={t} />
                           </td>
                         );
                       })}
@@ -658,11 +634,8 @@ export function PricingComparison() {
         </div>
 
         {/* Disclaimer */}
-        <p className="mt-5 text-xs text-mist-500 text-center">
-          {t("comparison.disclaimer", {
-            defaultValue:
-              "Based on publicly available pricing and feature documentation as of 2026.",
-          })}
+        <p className="mt-4 text-[11px] text-mist-400">
+          {t("comparison.disclaimer")}
         </p>
       </div>
     </section>

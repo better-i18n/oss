@@ -13,12 +13,12 @@ export function ToolHero({ title, titleHighlight, description, subtitle, eyebrow
     <div className="text-center py-16 sm:py-20">
       {eyebrow && (
         <div className="mb-6 flex justify-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-mist-200 bg-white px-3 py-1 text-xs font-bold uppercase tracking-[0.22em] text-mist-600">
+          <span className="inline-flex items-center gap-2 rounded-full border border-mist-200 bg-white px-3 py-1 text-xs font-medium uppercase tracking-[0.22em] text-mist-600">
             {eyebrow}
           </span>
         </div>
       )}
-      <h1 className="font-display text-4xl/[1.06] font-medium tracking-[-0.03em] text-mist-950 sm:text-5xl mb-5">
+      <h1 className="section-h2 mb-5">
         {title}
         {titleHighlight && (
           <span className="text-mist-500"> {titleHighlight}</span>

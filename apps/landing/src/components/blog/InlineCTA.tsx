@@ -97,27 +97,19 @@ export default function InlineCTA({
 
   return (
     <aside
-      className="my-10 not-prose overflow-hidden rounded-2xl bg-mist-950"
+      className="my-10 not-prose overflow-hidden rounded-xl bg-mist-950"
       aria-label={title}
     >
-      <div className="relative px-7 py-7 sm:px-8 sm:py-8">
-        {/* Decorative radial glow */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-30"
-          aria-hidden="true"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 80% at 100% 110%, rgba(255,255,255,0.12) 0%, transparent 70%)",
-          }}
-        />
-
-        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+      {/* No radial glow and no shimmer: the grammar allows no gradients, and a
+          moving highlight on a CTA inside an article competes with the prose. */}
+      <div className="px-7 py-7 sm:px-8 sm:py-8">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           {/* Rotating text */}
           <div
             className="min-w-0 transition-opacity duration-300"
             style={{ opacity: fading ? 0 : 1 }}
           >
-            <p className="text-[15px] font-semibold leading-snug text-white">
+            <p className="text-[15px] font-medium leading-snug text-white">
               {title}
             </p>
             <p className="mt-1.5 text-sm leading-relaxed text-white/60">
@@ -125,25 +117,13 @@ export default function InlineCTA({
             </p>
           </div>
 
-          {/* Shimmer CTA button */}
           <a
             href={ctaUrl}
             onClick={handleCtaClick}
-            className="relative inline-flex shrink-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-mist-950 transition-all hover:bg-white/90 hover:shadow-lg"
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-md bg-white px-5 py-2.5 text-sm font-medium text-mist-950 transition-colors hover:bg-white/90"
           >
-            {/* Shimmer sweep */}
-            <span
-              className="pointer-events-none absolute inset-0 -translate-x-full"
-              aria-hidden="true"
-              style={{
-                background:
-                  "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.6) 50%, transparent 60%)",
-                animation: "shimmer-sweep 2.5s ease-in-out infinite",
-                animationDelay: "1s",
-              }}
-            />
-            <span className="relative">{ctaText}</span>
-            <SpriteIcon name="arrow-right" className="relative w-4 h-4" />
+            {ctaText}
+            <SpriteIcon name="arrow-right" className="size-4" />
           </a>
         </div>
       </div>

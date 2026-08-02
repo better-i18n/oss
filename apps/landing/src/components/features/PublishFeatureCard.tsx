@@ -66,17 +66,17 @@ export function PublishFeatureCard() {
   return (
     <div
       ref={ref}
-      className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-shadow duration-200 hover:shadow-md"
+      className="flex h-full flex-col"
     >
       <div className="p-1.5">
-        <div className="h-[320px] bg-mist-50 rounded-xl border border-mist-200/60 px-5 pt-6 pb-4 flex flex-col shrink-0">
+        <div className="flex h-[300px] shrink-0 flex-col rounded-lg bg-black/[0.02] px-4 pt-5 pb-4">
         {/* Header — status + counts + duration */}
         <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2 min-w-0">
             <motion.span
               aria-hidden
               className={`size-1.5 rounded-full ${
-                allDone ? "bg-emerald-500" : "bg-blue-500"
+                allDone ? "bg-mist-900" : "bg-mist-400"
               }`}
               animate={
                 !allDone && !reduced
@@ -91,14 +91,14 @@ export function PublishFeatureCard() {
             />
             <span
               className={`text-[11px] font-medium capitalize ${
-                allDone ? "text-emerald-600" : "text-blue-600"
+                allDone ? "text-mist-900" : "text-mist-500"
               }`}
             >
               {allDone ? t("statusCompleted") : t("statusRunning")}
             </span>
             <span className="text-mist-300 text-[11px]">·</span>
             <span className="text-[11px] text-mist-700 truncate">
-              <span className="font-semibold tabular-nums">47</span>{" "}
+              <span className="font-medium tabular-nums">47</span>{" "}
               {t("translationsLabel")}
             </span>
           </div>
@@ -116,7 +116,7 @@ export function PublishFeatureCard() {
         </div>
 
         {/* Activity log — 7 sequential steps */}
-        <div className="bg-white rounded-xl border border-mist-200 shadow-sm px-4 py-3 overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-black/[0.07] bg-white px-4 py-3">
           <div className="space-y-0">
             {STEPS.map((step, i) => {
               const isLast = i === STEPS.length - 1;
@@ -143,9 +143,9 @@ export function PublishFeatureCard() {
                       aria-hidden
                       className={`size-1.5 rounded-full mt-2 shrink-0 transition-colors duration-300 ${
                         status === "completed"
-                          ? "bg-emerald-500"
+                          ? "bg-mist-900"
                           : status === "active"
-                            ? "bg-blue-500"
+                            ? "bg-mist-500"
                             : "bg-mist-300"
                       }`}
                       animate={
@@ -160,10 +160,10 @@ export function PublishFeatureCard() {
                       }}
                     />
                     {!isLast && (
-                      <div className="w-px flex-1 bg-mist-200 mt-1 relative overflow-hidden">
+                      <div className="w-px flex-1 bg-black/[0.07] mt-1 relative overflow-hidden">
                         <motion.div
                           aria-hidden
-                          className="absolute inset-0 bg-emerald-400 origin-top"
+                          className="absolute inset-0 bg-mist-900 origin-top"
                           initial={false}
                           animate={{
                             scaleY: status === "completed" ? 1 : 0,
@@ -221,7 +221,7 @@ export function PublishFeatureCard() {
             ease: EASE_OUT,
             delay: allDone ? 0.25 : 0,
           }}
-          className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-mist-100/70 border border-mist-200/70"
+          className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-mist-50 border border-black/[0.07]/70"
         >
           <span aria-hidden className="text-mist-500 shrink-0">
             <svg
@@ -245,11 +245,11 @@ export function PublishFeatureCard() {
         </div>
       </div>
 
-      <div className="px-6 pt-2 pb-5 flex-1 flex flex-col">
-        <h3 className="text-sm font-semibold text-mist-950">
+      <div className="flex flex-1 flex-col px-1 pt-4 pb-1">
+        <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
           {t("title")}
         </h3>
-        <p className="mt-1.5 text-sm text-mist-600 leading-relaxed text-pretty">
+        <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600 text-pretty">
           {t("description")}
         </p>
       </div>

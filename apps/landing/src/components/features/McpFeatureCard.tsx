@@ -107,18 +107,18 @@ export function McpFeatureCard() {
   return (
     <div
       ref={ref}
-      className="flex flex-col h-full bg-white border border-mist-200 rounded-2xl overflow-hidden shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-shadow duration-200 hover:shadow-md"
+      className="flex h-full flex-col"
     >
       <div className="p-1.5">
-        <div className="h-[320px] bg-mist-50 rounded-xl border border-mist-200/60 px-5 pt-6 pb-4 flex flex-col shrink-0">
+        <div className="flex h-[300px] shrink-0 flex-col rounded-lg bg-black/[0.02] px-4 pt-5 pb-4">
         {/* Tab strip with sliding underline indicator */}
-        <div className="relative flex items-center gap-1 mb-3 border-b border-mist-200">
+        <div className="relative mb-3 flex items-center gap-0.5 overflow-x-auto border-b border-black/[0.06] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {TABS.map((tab, i) => {
             const isActive = i === beatIndex;
             return (
               <div
                 key={tab.id}
-                className={`relative flex items-center gap-1.5 px-2 py-2 text-[10px] font-medium whitespace-nowrap transition-colors ${
+                className={`relative flex shrink-0 items-center gap-1 px-1.5 py-2 text-[10px] font-medium whitespace-nowrap transition-colors ${
                   isActive ? "text-mist-900" : "text-mist-500"
                 }`}
               >
@@ -141,7 +141,7 @@ export function McpFeatureCard() {
         </div>
 
         {/* Code block — filename header + content body */}
-        <div className="flex-1 bg-white rounded-xl border border-mist-200 shadow-sm overflow-hidden flex flex-col min-h-0">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-black/[0.07] bg-white">
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-mist-100">
             <AnimatePresence mode="wait">
               <motion.span
@@ -185,11 +185,11 @@ export function McpFeatureCard() {
         </div>
       </div>
 
-      <div className="px-6 pt-2 pb-5 flex-1 flex flex-col">
-        <h3 className="text-sm font-semibold text-mist-950">
+      <div className="flex flex-1 flex-col px-1 pt-4 pb-1">
+        <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
           {t("title")}
         </h3>
-        <p className="mt-1.5 text-sm text-mist-600 leading-relaxed text-pretty">
+        <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600 text-pretty">
           {t("description")}
         </p>
       </div>

@@ -1,175 +1,225 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
 import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
+import { BentoList, BentoRow } from "@/components/ui/page";
 
 import { FlagIcon } from "./features/FlagIcon";
 
-type Tone = "translators" | "developers" | "productTeams";
+/* ------------------------------------------------------------------ */
+/* Mini previews — one per persona, decorative hints of the real         */
+/* product surface. Density is the point: a panel holding three rows in   */
+/* a 600px column reads as an unfinished placeholder, so each panel runs  */
+/* a full row list + a meta footer, the way the reference marketing        */
+/* mockups do (rows carry a value AND a meta line, panel closes with a     */
+/* status footer).                                                        */
+/*                                                                        */
+/* Neutral ink throughout (rule/neutral-ink-accent-is-identity-only):     */
+/* the only "accent" is ink weight — mist-900 for done, mist-400 for       */
+/* partial, mist-200 for missing. The old green/amber/red coverage triad   */
+/* and the red/amber/green terminal lights were decoration pretending to   */
+/* be data, and next to an otherwise grey page they were the loudest       */
+/* thing in the section.                                                  */
+/* ------------------------------------------------------------------ */
 
-const TONES: Record<
-  Tone,
-  {
-    iconBg: string;
-    iconBorder: string;
-    iconText: string;
-    panelBg: string;
-    checkText: string;
-  }
-> = {
-  translators: {
-    iconBg: "bg-sky-50",
-    iconBorder: "border-sky-100",
-    iconText: "text-sky-700",
-    panelBg: "bg-gradient-to-br from-sky-50/40 via-white to-mist-50/60",
-    checkText: "text-sky-600",
-  },
-  developers: {
-    iconBg: "bg-indigo-50",
-    iconBorder: "border-indigo-100",
-    iconText: "text-indigo-700",
-    panelBg: "bg-gradient-to-br from-indigo-50/40 via-white to-mist-50/60",
-    checkText: "text-indigo-600",
-  },
-  productTeams: {
-    iconBg: "bg-amber-50",
-    iconBorder: "border-amber-100",
-    iconText: "text-amber-700",
-    panelBg: "bg-gradient-to-br from-amber-50/40 via-white to-mist-50/60",
-    checkText: "text-amber-600",
-  },
+/* Source term + its locale rows, as the glossary really stores them:
+   one source, approved translations, AI suggestions, and the ones still
+   waiting for a human. */
+const GLOSSARY_ROWS: {
+  country: string;
+  value: string;
+  status: string;
+  state: "source" | "approved" | "ai" | "review";
+}[] = [
+  { country: "gb", value: "API Key", status: "source", state: "source" },
+  { country: "tr", value: "API Anahtarı", status: "approved", state: "approved" },
+  { country: "de", value: "API-Schlüssel", status: "approved", state: "approved" },
+  { country: "fr", value: "Clé API", status: "AI", state: "ai" },
+  { country: "es", value: "Clave de API", status: "AI", state: "ai" },
+  { country: "it", value: "Chiave API", status: "needs review", state: "review" },
+  { country: "nl", value: "API-sleutel", status: "needs review", state: "review" },
+];
+
+const GLOSSARY_VALUE_INK: Record<string, string> = {
+  source: "text-mist-500 italic",
+  approved: "text-mist-900",
+  ai: "text-mist-700",
+  review: "text-mist-700",
 };
-
-/* ------------------------------------------------------------------ */
-/* Mini previews — one per persona, decorative product hints.          */
-/* Live inside the framed panel, beneath the description.              */
-/* ------------------------------------------------------------------ */
 
 function TranslatorsPreview() {
   return (
-    <div className="rounded-lg border border-mist-200/80 bg-white/80 backdrop-blur-sm overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+    <div className="w-full overflow-hidden rounded-lg border border-black/[0.06] bg-white">
       {/* Glossary entry header */}
-      <div className="flex items-center gap-2 px-3 py-1.5 border-b border-mist-100">
+      <div className="flex items-center gap-2 border-b border-black/[0.05] px-3 py-1.5">
         <span aria-hidden className="size-1.5 rounded-full bg-mist-400" />
-        <code className="text-[10px] font-mono text-mist-700">api.key</code>
-        <span className="ml-auto text-[8px] uppercase tracking-wider text-mist-400">
+        <code className="font-mono text-[10px] text-mist-700">auth.apiKey</code>
+        <span className="ml-auto text-[10px] font-medium text-mist-400">
           Glossary
         </span>
       </div>
-      {/* 3 language rows — source · approved · AI-suggested */}
-      <div className="px-3 py-2 space-y-1.5">
-        <div className="flex items-center gap-2">
-          <FlagIcon countryCode="gb" className="w-3 h-2" />
-          <span className="text-[10px] text-mist-500 italic">API Key</span>
-          <span className="ml-auto text-[9px] text-mist-400">source</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <FlagIcon countryCode="tr" className="w-3 h-2" />
-          <span className="text-[11px] text-mist-900">API Anahtarı</span>
-          <span className="ml-auto text-[9px] text-mist-500">approved</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <FlagIcon countryCode="de" className="w-3 h-2" />
-          <span className="text-[11px] text-mist-900">API-Schlüssel</span>
-          <span className="ml-auto text-[9px] text-mist-500 italic">AI</span>
-        </div>
+      {/* Locale rows — source · approved · AI-suggested · needs review */}
+      <div className="divide-y divide-black/[0.04]">
+        {GLOSSARY_ROWS.map((row) => (
+          <div
+            key={row.country}
+            className="flex items-center gap-2 px-3 py-[5px]"
+          >
+            <FlagIcon countryCode={row.country} className="h-2 w-3 shrink-0" />
+            <span className={`truncate text-[11px] ${GLOSSARY_VALUE_INK[row.state]}`}>
+              {row.value}
+            </span>
+            <span
+              className={`ml-auto shrink-0 text-[9px] ${ row.state === "review" ? "text-mist-700" : "text-mist-400" }`}
+            >
+              {row.status}
+            </span>
+          </div>
+        ))}
+      </div>
+      {/* Status footer — what the glossary is actually enforcing */}
+      <div className="border-t border-black/[0.05] bg-mist-50 px-3 py-1.5">
+        <span className="text-[10px] font-medium text-mist-400">
+          glossary: 42 terms · enforced in 9 locales
+        </span>
       </div>
     </div>
   );
 }
+
+/* Tool names are the real ones exposed by @better-i18n/mcp — a made-up tool
+   list would be the one detail a developer reading this section would catch. */
+const MCP_TOOLS = "listKeys · createKeys · getTranslations · publishTranslations · getPendingChanges";
 
 function DevelopersPreview() {
   return (
-    <div className="rounded-lg border border-mist-200/80 bg-mist-100/70 overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-      {/* Terminal chrome — traffic lights */}
-      <div className="flex items-center gap-1.5 px-3 py-1.5 border-b border-mist-200/70">
-        <span aria-hidden className="size-1.5 rounded-full bg-rose-300/80" />
-        <span aria-hidden className="size-1.5 rounded-full bg-amber-300/80" />
-        <span aria-hidden className="size-1.5 rounded-full bg-emerald-300/80" />
-        <span className="ml-auto text-[9px] font-mono text-mist-400">
+    <div className="w-full overflow-hidden rounded-lg border border-black/[0.06] bg-mist-50">
+      {/* Terminal chrome */}
+      <div className="flex items-center gap-1.5 border-b border-black/[0.05] px-3 py-1.5">
+        <span aria-hidden className="size-1.5 rounded-full bg-mist-300" />
+        <span aria-hidden className="size-1.5 rounded-full bg-black/[0.12]" />
+        <span aria-hidden className="size-1.5 rounded-full bg-black/[0.12]" />
+        <span className="ml-auto font-mono text-[9px] text-mist-400">
           claude · mcp
         </span>
       </div>
-      {/* Terminal body */}
-      <pre className="px-3 py-2 text-[10px] font-mono leading-[1.6] text-mist-700 whitespace-pre">
-        <span className="text-emerald-600">$</span>{" "}
-        <span className="text-indigo-700">claude mcp</span>{" "}
+      {/* Terminal body — one realistic session: connect, inspect, propose,
+          publish. Ink weight carries the hierarchy: command mist-900,
+          tool call mist-700, results mist-500, punctuation mist-400. */}
+      <pre className="px-3 py-2 font-mono text-[10px] leading-[1.65] whitespace-pre text-mist-700">
+        <span className="text-mist-400">$</span>{" "}
+        <span className="text-mist-900">claude mcp</span>{" "}
         <span className="text-mist-700">better-i18n</span>
         {"\n"}
+        <span className="text-mist-400">  connected · 12 tools</span>
+        {"\n"}
         <span className="text-mist-400">  ▸ </span>
-        <span className="text-amber-700">proposeTranslations</span>
-        <span className="text-mist-400">(</span>
-        <span className="text-emerald-700">"auth.login"</span>
+        <span className="text-mist-900">listKeys</span>
+        <span className="text-mist-400">(namespace: </span>
+        <span className="text-mist-700">"auth"</span>
         <span className="text-mist-400">)</span>
         {"\n"}
-        <span className="text-emerald-600">✓</span>{" "}
-        <span className="text-mist-500">3 translations · 240ms</span>
+        <span className="text-mist-500">    18 keys · 3 missing locales</span>
+        {"\n"}
+        <span className="text-mist-400">  ▸ </span>
+        <span className="text-mist-900">proposeTranslations</span>
+        <span className="text-mist-400">(</span>
+        <span className="text-mist-700">"auth.login"</span>
+        <span className="text-mist-400">)</span>
+        {"\n"}
+        <span className="text-mist-500">    tr · de · fr — glossary applied</span>
+        {"\n"}
+        <span className="text-mist-400">  ▸ </span>
+        <span className="text-mist-900">publishTranslations</span>
+        <span className="text-mist-400">(locales: 3)</span>
+        {"\n"}
+        <span className="text-mist-900">✓</span>{" "}
+        <span className="text-mist-500">3 translations · 240ms · cdn purged</span>
       </pre>
+      {/* Status footer — the rest of the toolbelt */}
+      <div className="border-t border-black/[0.05] bg-white px-3 py-1.5">
+        <span className="block truncate font-mono text-[9px] text-mist-400">
+          {MCP_TOOLS}
+        </span>
+      </div>
     </div>
   );
 }
 
+/* Coverage per locale. Module scope: static data and pure mappers, nothing
+   rebuilt per render. Six locales + the rolled-up total is what the real
+   dashboard shows — three rows read as a sample, not as a status board. */
+const COVERAGE_ROWS = [
+  { country: "de", pct: 100 },
+  { country: "es", pct: 92 },
+  { country: "fr", pct: 73 },
+  { country: "it", pct: 54 },
+  { country: "tr", pct: 28 },
+  { country: "nl", pct: 12 },
+];
+
+const COVERAGE_TOTAL = Math.round(
+  COVERAGE_ROWS.reduce((sum, row) => sum + row.pct, 0) / COVERAGE_ROWS.length,
+);
+
+/* Status is carried by ink weight, not hue: done reads darkest, partial mid,
+   gap barely there. Same information, none of the traffic-light noise. */
+const coverageBarColor = (pct: number) =>
+  pct >= 100 ? "bg-mist-900" : pct >= 50 ? "bg-mist-400" : "bg-mist-200";
+
+const coverageTextColor = (pct: number) =>
+  pct >= 100 ? "text-mist-900" : pct >= 50 ? "text-mist-600" : "text-mist-400";
+
 function ProductTeamsPreview() {
-  // Color thresholds match the platform's coverage convention:
-  //   ≥90 emerald (shipped)  ·  50–89 amber (in progress)  ·  <50 red (gap)
-  const ROWS = [
-    { country: "de", pct: 100 },
-    { country: "fr", pct: 73 },
-    { country: "tr", pct: 28 },
-  ];
-  const barColor = (pct: number) =>
-    pct >= 90
-      ? "bg-emerald-500"
-      : pct >= 50
-        ? "bg-amber-400"
-        : "bg-rose-400";
-  const textColor = (pct: number) =>
-    pct >= 90
-      ? "text-emerald-700"
-      : pct >= 50
-        ? "text-amber-700"
-        : "text-rose-600";
   return (
-    <div className="rounded-lg border border-mist-200/80 bg-white/80 backdrop-blur-sm overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+    <div className="w-full overflow-hidden rounded-lg border border-black/[0.06] bg-white">
       {/* Header chrome — mirrors Translators panel for visual parity */}
-      <div className="flex items-center gap-2 px-3 py-1.5 border-b border-mist-100">
-        <span aria-hidden className="size-1.5 rounded-full bg-emerald-400" />
-        <code className="text-[10px] font-mono text-mist-700">coverage</code>
-        <span className="ml-auto text-[8px] uppercase tracking-wider text-mist-400">
+      <div className="flex items-center gap-2 border-b border-black/[0.05] px-3 py-1.5">
+        <span aria-hidden className="size-1.5 rounded-full bg-mist-400" />
+        <code className="font-mono text-[10px] text-mist-700">coverage</code>
+        <span className="ml-auto text-[10px] font-medium text-mist-400">
           Live
         </span>
       </div>
-      {/* Body — 3 progress rows, matches Translators body padding */}
-      <div className="px-3 py-2 space-y-1.5">
-        {ROWS.map((row) => (
-          <div key={row.country} className="flex items-center gap-2">
-            <FlagIcon countryCode={row.country} className="w-3.5 h-2.5" />
-            <div className="flex-1 h-1 rounded-full bg-mist-100 overflow-hidden">
+      {/* Body — one row per locale: flag, bar, percentage */}
+      <div className="divide-y divide-black/[0.04]">
+        {COVERAGE_ROWS.map((row) => (
+          <div key={row.country} className="flex items-center gap-2 px-3 py-[5px]">
+            <FlagIcon countryCode={row.country} className="h-2.5 w-3.5 shrink-0" />
+            <div className="h-1 flex-1 overflow-hidden rounded-full bg-black/[0.06]">
               <div
-                className={`h-full ${barColor(row.pct)} rounded-full`}
+                className={`h-full ${coverageBarColor(row.pct)} rounded-full`}
                 style={{ width: `${row.pct}%` }}
               />
             </div>
             <span
-              className={`text-[9px] font-mono tabular-nums w-7 text-right font-semibold ${textColor(row.pct)}`}
+              className={`w-7 shrink-0 text-right font-mono text-[9px] font-medium tabular-nums ${coverageTextColor(row.pct)}`}
             >
               {row.pct}%
             </span>
           </div>
         ))}
       </div>
+      {/* Rolled-up total — the number a product team actually reports */}
+      <div className="flex items-center gap-2 border-t border-black/[0.05] bg-mist-50 px-3 py-1.5">
+        <span className="text-[10px] font-medium text-mist-400">
+          total coverage · {COVERAGE_ROWS.length} of 25 locales
+        </span>
+        <span className="ml-auto font-mono text-[10px] font-medium tabular-nums text-mist-900">
+          {COVERAGE_TOTAL}%
+        </span>
+      </div>
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/* Card                                                                */
+/* Segment row                                                         */
 /* ------------------------------------------------------------------ */
 
-type SegmentCardProps = {
+type SegmentRowProps = {
   iconName: SpriteIconName;
   id: string;
   namespace: string;
-  tone: Tone;
   preview: React.ReactNode;
   to:
     | "/$locale/for-developers/"
@@ -178,17 +228,19 @@ type SegmentCardProps = {
   locale: string;
 };
 
-function SegmentCard({
+/* One row per persona: copy on the left, product hint on the right, split by a
+   single hairline. Rows carry their own top rule and the stack is shifted -1px
+   up, so the first rule slides under the container border and is clipped —
+   the same trick as the grids elsewhere, minus nth-child arithmetic. */
+function SegmentRow({
   iconName,
   id,
   locale,
   namespace,
-  tone,
   preview,
   to,
-}: SegmentCardProps) {
+}: SegmentRowProps) {
   const t = useT(namespace);
-  const palette = TONES[tone];
 
   const features = [
     t("feature1Title"),
@@ -201,60 +253,53 @@ function SegmentCard({
       id={id}
       to={to}
       params={{ locale }}
-      className="group flex h-full scroll-mt-24 flex-col rounded-2xl border border-mist-200 bg-white shadow-[0_18px_50px_-40px_rgba(15,23,42,0.28)] transition-shadow duration-200 hover:border-mist-300 hover:shadow-md overflow-hidden"
+      className="group grid scroll-mt-24 grid-cols-1 border-t border-black/[0.05] transition-colors hover:bg-black/[0.015] lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)]"
     >
-      {/* Inner framed panel — content-sized; outer card aligns via grid + mt-auto on list */}
-      <div className="p-1.5 flex-1 flex flex-col">
-        <div
-          className={`rounded-xl border border-mist-200/60 ${palette.panelBg} px-5 pt-5 pb-5 flex flex-col flex-1`}
-        >
-          {/* Header row — icon + arrow */}
-          <div className="flex items-start justify-between gap-4 mb-4">
-            <div
-              className={`flex size-10 shrink-0 items-center justify-center rounded-xl border ${palette.iconBorder} ${palette.iconBg} ${palette.iconText} shadow-[0_1px_2px_rgba(15,23,42,0.04)]`}
-            >
-              <SpriteIcon name={iconName} className="size-4.5" />
-            </div>
-            <div className="rounded-full border border-mist-200 bg-white p-1.5 text-mist-400 transition-colors group-hover:text-mist-700">
-              <SpriteIcon
-                name="arrow-right"
-                className="size-3.5 transition-transform group-hover:translate-x-0.5"
-              />
-            </div>
-          </div>
+      <div className="flex flex-col gap-4 px-6 py-6">
+        <div className="flex items-center gap-2">
+          <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
+            <SpriteIcon name={iconName} className="size-3.5" />
+          </span>
+          <span className="text-[11px] font-medium text-mist-400">
+            {t("statusBadge")}
+          </span>
+        </div>
 
-          {/* Eyebrow + title + description — min-h reserves uniform space across 2- and 3-line variants */}
-          <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-mist-500">
-              {t("statusBadge")}
-            </p>
-            <h3 className="mt-2 text-sm font-semibold text-mist-950">
-              {t("title")}
-            </h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-mist-600 text-pretty min-h-[4.125rem]">
-              {t("description")}
-            </p>
-          </div>
+        <div>
+          <h3 className="flex items-center gap-1.5 text-[15px] font-medium tracking-[-0.02em] text-mist-900">
+            {t("title")}
+            <SpriteIcon
+              name="chevron-right"
+              className="size-3.5 shrink-0 text-mist-400 transition-transform duration-150 group-hover:translate-x-0.5"
+            />
+          </h3>
+          <p className="mt-1.5 max-w-[52ch] text-[13px] leading-[1.55] text-mist-600">
+            {t("description")}
+          </p>
+        </div>
 
-          {/* Mini preview — min-h reserves uniform vertical space; previews sit naturally at top */}
-          <div className="mt-4 min-h-[6rem] [&>div]:w-full">
-            {preview}
-          </div>
+        <div className="mt-auto pt-1">
+          <BentoList>
+            {features.map((feature) => (
+              <BentoRow
+                key={feature}
+                icon={<SpriteIcon name="checkmark" className="size-3" />}
+              >
+                {feature}
+              </BentoRow>
+            ))}
+          </BentoList>
         </div>
       </div>
 
-      {/* Feature list — mt-auto pins it to card bottom across all 3 cards */}
-      <ul className="mt-auto px-6 pt-3 pb-5 space-y-2">
-        {features.map((feature) => (
-          <li key={feature} className="flex items-center gap-2.5">
-            <SpriteIcon
-              name="checkmark"
-              className="size-3 shrink-0 text-mist-400"
-            />
-            <span className="text-sm text-mist-700">{feature}</span>
-          </li>
-        ))}
-      </ul>
+      {/* The panel is content-height and vertically centred rather than
+          stretched: a stretched shell would just move the dead space inside
+          the panel. Density comes from the row lists, and whatever height is
+          left over is split evenly above and below instead of pooling under
+          the panel. */}
+      <div className="flex items-center border-black/[0.05] px-6 pb-6 lg:border-l lg:py-6">
+        {preview}
+      </div>
     </Link>
   );
 }
@@ -265,46 +310,45 @@ export default function UserSegments() {
   const currentLocale = locale || "en";
 
   return (
-    <section className="py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section>
+      <div className="section">
         <div className="space-y-12">
           <div className="max-w-2xl">
-            <h2 className="font-display text-3xl/[1.08] font-medium tracking-[-0.03em] text-mist-950 sm:text-4xl/[1.04] text-balance">
+            <h2 className="section-h2 text-balance">
               {t("title")}
             </h2>
-            <p className="mt-4 text-lg text-mist-600 text-pretty">
+            <p className="section-p mt-3">
               {t("subtitle")}
             </p>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-3">
-            <SegmentCard
-              id="for-translators"
-              namespace="segments.translators"
-              iconName="globe"
-              tone="translators"
-              preview={<TranslatorsPreview />}
-              to="/$locale/for-translators/"
-              locale={currentLocale}
-            />
-            <SegmentCard
-              id="for-developers"
-              namespace="segments.developers"
-              iconName="code"
-              tone="developers"
-              preview={<DevelopersPreview />}
-              to="/$locale/for-developers/"
-              locale={currentLocale}
-            />
-            <SegmentCard
-              id="for-product-teams"
-              namespace="segments.productTeams"
-              iconName="group"
-              tone="productTeams"
-              preview={<ProductTeamsPreview />}
-              to="/$locale/for-product-teams/"
-              locale={currentLocale}
-            />
+          <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
+            <div className="-mt-px">
+              <SegmentRow
+                id="for-translators"
+                namespace="segments.translators"
+                iconName="globe"
+                preview={<TranslatorsPreview />}
+                to="/$locale/for-translators/"
+                locale={currentLocale}
+              />
+              <SegmentRow
+                id="for-developers"
+                namespace="segments.developers"
+                iconName="code"
+                preview={<DevelopersPreview />}
+                to="/$locale/for-developers/"
+                locale={currentLocale}
+              />
+              <SegmentRow
+                id="for-product-teams"
+                namespace="segments.productTeams"
+                iconName="group"
+                preview={<ProductTeamsPreview />}
+                to="/$locale/for-product-teams/"
+                locale={currentLocale}
+              />
+            </div>
           </div>
         </div>
       </div>

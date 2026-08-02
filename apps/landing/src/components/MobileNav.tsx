@@ -36,12 +36,8 @@ export function MobileNav() {
         onClick={toggle}
         aria-expanded={isOpen}
         aria-controls={MENU_ID}
-        aria-label={
-          isOpen
-            ? t("aria.closeMenu", { defaultValue: "Close menu" })
-            : t("aria.openMenu", { defaultValue: "Open menu" })
-        }
-        className="relative z-50 flex size-10 items-center justify-center rounded-lg text-mist-950 hover:bg-mist-200 transition-colors"
+        aria-label={isOpen ? t("aria.closeMenu") : t("aria.openMenu")}
+        className="relative z-50 flex size-10 items-center justify-center rounded-lg text-mist-950 transition-colors hover:bg-black/[0.03]"
       >
         <svg
           className="size-6"

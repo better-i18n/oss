@@ -11,6 +11,7 @@ import {
   TlsLockIcon,
 } from "./icons/ComplianceIcons";
 import { useT } from "@/lib/i18n";
+import { CompetitorMark, type CompetitorKey } from "@/components/icons/CompetitorMarks";
 
 interface ComplianceBadgeProps {
   label: string;
@@ -20,8 +21,9 @@ interface ComplianceBadgeProps {
 }
 
 function ComplianceBadge({ label, icon, href, external }: ComplianceBadgeProps) {
+  // Hairline chip, not a pill button — these are evidence, not calls to action.
   const className =
-    "inline-flex items-center gap-1.5 rounded-full border border-mist-200 bg-white px-3 py-1.5 text-xs font-medium text-mist-600 hover:border-mist-300 hover:text-mist-800 transition-colors";
+    "inline-flex items-center gap-1.5 rounded-sm border border-black/[0.06] bg-white px-2.5 py-1 text-[11px] font-medium text-mist-400 transition-colors hover:border-black/[0.1] hover:text-mist-600";
 
   if (external) {
     return (
@@ -41,7 +43,14 @@ function ComplianceBadge({ label, icon, href, external }: ComplianceBadgeProps) 
 }
 
 type FooterLink =
-  | { key: string; label: string; href: string; localeAware?: boolean }
+  | {
+      key: string;
+      label: string;
+      href: string;
+      localeAware?: boolean;
+      /** Vendor whose mark renders before the label (rule/name-a-thing-with-its-mark). */
+      mark?: CompetitorKey;
+    }
   | { key: string; label: string; action: string };
 
 interface FooterLinkGroup {
@@ -56,6 +65,8 @@ const footerLinks: FooterLinkGroup[] = [
     categoryTitle: "Product",
     links: [
       { key: "features", label: "Features", href: "/$locale/features/" },
+      { key: "content", label: "Better Content", href: "/$locale/content/" },
+      { key: "analytics", label: "Better Analytics", href: "/$locale/analytics/" },
       { key: "pricing", label: "Pricing", href: "/$locale/pricing/" },
       { key: "integrations", label: "Integrations", href: "/$locale/integrations/" },
     ],
@@ -91,10 +102,10 @@ const footerLinks: FooterLinkGroup[] = [
     categoryTitle: "Compare",
     links: [
       { key: "overview", label: "All Comparisons", href: "/$locale/compare/" },
-      { key: "crowdin", label: "vs Crowdin", href: "/$locale/compare/crowdin/" },
-      { key: "lokalise", label: "vs Lokalise", href: "/$locale/compare/lokalise/" },
-      { key: "phrase", label: "vs Phrase", href: "/$locale/compare/phrase/" },
-      { key: "transifex", label: "vs Transifex", href: "/$locale/compare/transifex/" },
+      { key: "crowdin", mark: "crowdin", label: "vs Crowdin", href: "/$locale/compare/crowdin/" },
+      { key: "lokalise", mark: "lokalise", label: "vs Lokalise", href: "/$locale/compare/lokalise/" },
+      { key: "phrase", mark: "phrase", label: "vs Phrase", href: "/$locale/compare/phrase/" },
+      { key: "transifex", mark: "transifex", label: "vs Transifex", href: "/$locale/compare/transifex/" },
     ],
   },
   {
@@ -155,17 +166,39 @@ export default function Footer() {
   const t = useT("footer");
 
   return (
-    <footer aria-label="Site footer" className="py-16">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-8 mb-12">
+    <footer aria-label="Site footer" className="relative z-[1]">
+      {/* Brand + links live inside the frame; the bottom bar spans full width so
+          its rule reads as the page's closing edge (mirrors the header). */}
+      <div className="footer-inner">
+        <div className="px-8 pt-12 max-sm:px-5">
+          <Link
+            to="/$locale/"
+            params={{ locale: currentLocale }}
+            className="site-logo mb-3"
+          >
+            <img
+              src="/brand/logo.svg"
+              alt="Better I18N"
+              width={22}
+              height={22}
+              className="size-[22px]"
+            />
+            Better I18N
+          </Link>
+          <p className="max-w-[36ch] text-[13px] leading-relaxed text-mist-400">
+            {t("tagline")}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 px-8 py-10 sm:grid-cols-4 max-sm:px-5">
           {footerLinks.map((group) => (
             <div key={group.category}>
-              <h3 className="text-sm font-medium text-mist-950 mb-4">
-                {t(`${group.category}.title`, { defaultValue: group.categoryTitle })}
+              <h3 className="mb-4 text-xs font-medium tracking-[-0.01em] text-mist-900">
+                {t(`${group.category}.title`)}
               </h3>
-              <ul className="space-y-3 text-sm text-mist-700">
+              <ul className="flex flex-col gap-2.5">
                 {group.links.map((link) => {
-                  const label = t(`${group.category}.${link.key}`, { defaultValue: link.label });
+                  const label = t(`${group.category}.${link.key}`);
 
                   if ("action" in link) {
                     return (
@@ -173,7 +206,7 @@ export default function Footer() {
                         <button
                           type="button"
                           onClick={() => window.dispatchEvent(new Event("bi18n:show-cookie-banner"))}
-                          className="hover:text-mist-950 cursor-pointer"
+                          className="footer-link cursor-pointer"
                         >
                           {label}
                         </button>
@@ -192,17 +225,31 @@ export default function Footer() {
                           href={resolvedHref}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group/link flex items-center gap-1.5 hover:text-mist-950"
+                          className="footer-link group/link inline-flex items-center gap-1.5"
                         >
                           {label}
-                          <IconSquareArrowTopRight className="w-3 h-3 opacity-0 group-hover/link:opacity-50 transition-opacity" />
+                          <IconSquareArrowTopRight className="size-3 opacity-0 transition-opacity group-hover/link:opacity-40" />
                         </a>
                       ) : (
                         <Link
                           to={href}
                           params={{ locale: currentLocale }}
-                          className="hover:text-mist-950"
+                          className={
+                            "mark" in link
+                              ? "footer-link inline-flex items-center gap-2"
+                              : "footer-link"
+                          }
                         >
+                          {/* A vendor name gets its own mark, at one size, on the
+                              same neutral tile as everywhere else
+                              (rule/name-a-thing-with-its-mark). */}
+                          {"mark" in link && (
+                            <CompetitorMark
+                              competitor={link.mark as CompetitorKey}
+                              size={16}
+                              className="!rounded-[4px]"
+                            />
+                          )}
                           {label}
                         </Link>
                       )}
@@ -213,24 +260,8 @@ export default function Footer() {
             </div>
           ))}
         </div>
-        <div className="pt-8 border-t border-mist-200 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <span className="text-sm text-mist-700">
-            {t("copyright", { defaultValue: "© 2026 Better i18n, Inc." })}
-          </span>
-          <div className="flex items-center gap-4">
-            <a
-              href="/llms.txt"
-              className="text-sm text-mist-500 hover:text-mist-900 transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              LLMs.txt
-            </a>
-            <LanguageSwitcher />
-          </div>
-        </div>
-        {/* Compliance Badges — below copyright, left-aligned */}
-        <div className="mt-6 flex flex-wrap items-center gap-2">
+        {/* Compliance badges — evidence row, inside the frame above the rule. */}
+        <div className="flex flex-wrap items-center gap-1.5 px-8 pb-10 max-sm:px-5">
           <ComplianceBadge
             label="GDPR"
             icon={<GdprIcon className="w-5 h-3.5 shrink-0 rounded-[2px]" />}
@@ -247,21 +278,68 @@ export default function Footer() {
             href={`/${currentLocale}/privacy/#brazil`}
           />
           <ComplianceBadge
-            label={t("badges.consentMode", { defaultValue: "Google Consent Mode v2" })}
+            label={t("badges.consentMode")}
             icon={<GoogleIcon className="w-3.5 h-3.5 shrink-0" />}
             href={`/${currentLocale}/cookies/#consentMode`}
           />
           <ComplianceBadge
-            label={t("badges.usStateLaws", { defaultValue: "US State Privacy Laws" })}
+            label={t("badges.usStateLaws")}
             icon={<UsPrivacyIcon className="w-3.5 h-3.5 shrink-0" />}
             href={`/${currentLocale}/privacy/#us-state-laws`}
           />
           <ComplianceBadge
-            label={t("badges.encryption", { defaultValue: "TLS 1.3 Encrypted" })}
+            label={t("badges.encryption")}
             icon={<TlsLockIcon className="w-3.5 h-3.5 shrink-0" />}
             href="https://docs.better-i18n.com/security"
             external
           />
+        </div>
+      </div>
+
+      <div className="footer-bottom-wrap">
+        <div className="footer-bottom-inner">
+          <span className="text-xs text-mist-400">
+            {t("copyright")}
+          </span>
+          <div className="flex items-center gap-4">
+            <a
+              href="/llms.txt"
+              className="footer-social text-xs"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LLMs.txt
+            </a>
+            <LanguageSwitcher />
+            {/* Both of these leave the site, so they open in a new tab and carry
+                `noopener` — the LLMs.txt link beside them already did, and two
+                links in the same row behaving differently is the kind of thing a
+                reader notices without being able to name. `noopener` is the
+                security half: without it the opened page gets `window.opener`
+                and can navigate this tab somewhere else. */}
+            <a
+              href="https://x.com/betteri18n"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-social"
+              aria-label="X (Twitter)"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+            <a
+              href="https://github.com/better-i18n"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-social"
+              aria-label="GitHub"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
     </footer>

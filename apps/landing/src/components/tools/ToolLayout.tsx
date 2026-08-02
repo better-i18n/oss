@@ -54,7 +54,7 @@ export function ToolLayout({
       showCTA={false}
       breadcrumbs={breadcrumbs}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="section">
         <ToolHero
           title={title}
           titleHighlight={titleHighlight}
@@ -64,17 +64,17 @@ export function ToolLayout({
         />
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10">{children}</div>
+      <div className="section">{children}</div>
 
       {faqItems && faqItems.length > 0 && <ToolFAQ items={faqItems} />}
 
       <RelatedTools currentSlug={currentSlug} locale={locale} />
 
       {ctaText && (
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <div className="section">
           <div className="py-16 sm:py-20">
-            <div className="bg-mist-50 rounded-2xl p-10 sm:p-14 text-center">
-              <h2 className="font-display text-2xl/[1.1] font-medium tracking-[-0.02em] text-mist-950 mb-4">
+            <div className="bg-mist-50 rounded-xl p-10 sm:p-14 text-center">
+              <h2 className="section-h2 mb-4">
                 Ready to scale your i18n?
               </h2>
               <p className="text-mist-700 mb-6 max-w-lg mx-auto">{ctaText}</p>

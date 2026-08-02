@@ -27,13 +27,22 @@ import type { ReactNode } from "react";
  * upgrade path and this file's `Token` shape matches its idea of the job.
  *
  * COLOUR
- * Tokens are coloured from the `mist` scale only — keyword mist-950, plain
- * mist-700, string mist-600, number mist-600, comment mist-400, punctuation
- * mist-300. No rainbow theme and no accent hue: rule/neutral-ink-accent-is-identity-only
- * reserves colour for pillar identity and link/focus states, and a token is
- * neither. Hierarchy inside a snippet comes from ink weight, exactly like the
- * prose around it. (The palette has one accent slot free if we ever decide a
- * snippet needs it — it would be a one-line change here, nowhere else.)
+ * Three hues, taken from the pillar palette, plus grey for everything else:
+ * keyword violet-700 (PILLAR_META.ai), string green-700 (sync), number
+ * orange-700 (content), comment mist-400, punctuation mist-300, plain mist-700.
+ *
+ * This is a deliberate exception to rule/neutral-ink-accent-is-identity-only, and
+ * it fits the rule's own reasoning. That rule exists because colour was being used
+ * as decoration — "carrying no information". In a code block the opposite is true:
+ * hue IS the information, it is what separates a string from an identifier at a
+ * glance. An all-grey snippet is not restrained, it is unhighlighted — measured on
+ * /en/i18n/nextjs/, 56 of 72 tokens in one block rendered mist-300, which reads as
+ * plain text with noise.
+ *
+ * Constraints that keep it from becoming a rainbow theme: only three hues, all
+ * already in the design system (no new tokens), the 700 step so 12px text stays
+ * AA on white, and comments/punctuation/plain stay grey so the colour marks
+ * meaning rather than every second character.
  *
  * An unknown language renders as plain escaped text rather than guessing, so a
  * wrong `lang` can never mangle a customer-facing snippet.
@@ -46,10 +55,10 @@ type Token = { kind: TokenKind; value: string };
 export type CodeLang = "tsx" | "ts" | "js" | "json" | "bash" | "text";
 
 const TOKEN_INK: Record<TokenKind, string> = {
-  keyword: "text-mist-950",
-  string: "text-mist-600",
+  keyword: "text-violet-700",
+  string: "text-green-700",
+  number: "text-orange-700",
   comment: "text-mist-400",
-  number: "text-mist-600",
   punctuation: "text-mist-300",
   plain: "text-mist-700",
 };

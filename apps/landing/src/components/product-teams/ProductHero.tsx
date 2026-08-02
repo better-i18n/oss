@@ -42,7 +42,7 @@ export default function ProductHero() {
               transition={{ duration: 0.5 }}
             >
               {/* Badge */}
-              <span className="inline-flex w-fit items-center gap-2 rounded-sm border border-black/[0.06] bg-mist-50 px-2.5 py-1 text-xs text-mist-600">
+              <span className="inline-flex w-fit items-center gap-x-2.5 rounded-sm border border-black/[0.06] bg-mist-50 px-2.5 py-1 text-xs text-mist-600 transition-colors hover:border-black/[0.1]">
                 <IconEarth className="size-4" />
                 {t("hero.badge")}
               </span>
@@ -62,7 +62,7 @@ export default function ProductHero() {
               </p>
 
               {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-4 mt-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <a
                   href="https://dash.better-i18n.com"
                   className="btn btn-dark btn-lg"
@@ -72,7 +72,7 @@ export default function ProductHero() {
                 </a>
                 <a
                   href="#workflow"
-                  className="learn-more"
+                  className="btn btn-outline btn-lg"
                 >
                   {t("hero.cta.secondary")}
                   <SpriteIcon name="chevron-right" className="size-4" />

@@ -149,7 +149,7 @@ export function LocaleSelector({
                     </span>
                     <span className="flex-1 truncate">{locale.englishName}</span>
                     {locale.direction === "rtl" && (
-                      <span className="rounded bg-mist-100 px-1.5 py-0.5 text-[10px] font-medium uppercase text-mist-500">
+                      <span className="rounded-md border border-black/[0.07] bg-mist-50 px-1.5 py-0.5 text-[10px] font-medium uppercase text-mist-500">
                         RTL
                       </span>
                     )}

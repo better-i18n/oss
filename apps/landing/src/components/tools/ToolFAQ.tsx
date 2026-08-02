@@ -40,8 +40,8 @@ export function ToolFAQ({
   };
 
   return (
-    <section className="py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section>
+      <div className="section">
         {includeSchema && (
           <script
             type="application/ld+json"
@@ -51,10 +51,10 @@ export function ToolFAQ({
 
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-16">
           <div className="lg:w-[38%] lg:flex-shrink-0 lg:pt-2">
-            <div className="inline-flex items-center rounded-full border border-mist-200 bg-white px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-mist-600">
+            <div className="inline-flex items-center rounded-full border border-mist-200 bg-white px-3 py-1 text-xs font-medium text-mist-600">
               FAQ
             </div>
-            <h2 className="mt-4 font-display text-3xl/[1.08] font-medium tracking-[-0.03em] text-mist-950 sm:text-4xl/[1.04]">
+            <h2 className="section-h2 mt-4">
               {title}
             </h2>
           </div>

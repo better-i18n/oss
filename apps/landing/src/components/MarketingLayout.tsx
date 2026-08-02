@@ -3,6 +3,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import CTA from "./CTA";
 import { MarketingBreadcrumb, type BreadcrumbItem } from "./MarketingBreadcrumb";
+import { Frame, FrameLines } from "./ui/page";
 import { cn } from "@better-i18n/ui/lib/utils";
 import { useT } from "@/lib/i18n";
 
@@ -25,7 +26,7 @@ interface MarketingLayoutProps {
 export function MarketingLayout({
   children,
   headerClassName,
-  bgClassName = "bg-mist-100",
+  bgClassName = "bg-white",
   showCTA = true,
   breadcrumbs,
 }: MarketingLayoutProps) {
@@ -33,18 +34,21 @@ export function MarketingLayout({
 
   return (
     <div className={cn("min-h-screen", bgClassName)}>
+      {/* Continuous 1160px frame rules behind the whole page — the shell that
+          makes every section read as one column. Fixed + non-interactive. */}
+      <FrameLines />
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-mist-950 focus:text-sm focus:font-medium"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-[var(--shadow-card)] focus:text-mist-950 focus:text-sm focus:font-medium"
       >
         {t("skipToContent", "Skip to content")}
       </a>
       <Header className={headerClassName} />
-      <main id="main-content">
+      <main id="main-content" className="relative z-[1]">
         {breadcrumbs && breadcrumbs.length > 0 && (
-          <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+          <Frame style={{ paddingTop: 24 }}>
             <MarketingBreadcrumb items={breadcrumbs} />
-          </div>
+          </Frame>
         )}
         {children}
       </main>

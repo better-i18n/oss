@@ -38,7 +38,7 @@ export function CodeOutput({
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-mist-200 bg-mist-950">
+    <div className="overflow-hidden rounded-xl border border-mist-200 bg-mist-950">
       <div className="flex items-center justify-between border-b border-mist-800 bg-mist-50/[0.05] px-4 py-2.5">
         <span className="text-xs font-medium text-mist-400">
           {label ?? language}

@@ -70,7 +70,7 @@ export function CitationFAQ({ question, answer, id }: CitationFAQProps) {
       id={`faq-${safeId}`}
       className="my-4"
     >
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
         {question}
       </h3>
       <p className="text-base leading-relaxed text-gray-700 dark:text-gray-300">

@@ -27,44 +27,47 @@ export default function Features() {
   const { locale } = useParams({ strict: false });
 
   return (
-    <section id="features" className="py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section id="features">
+      <div className="section">
         <div className="flex flex-col gap-12">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-2xl">
-              <h2 className="font-display text-3xl/[1.08] font-medium tracking-[-0.03em] text-mist-950 sm:text-4xl/[1.04] text-balance">
-                {t("title", {
-                  defaultValue: "Küresel ölçekte yayınlamak için tek platform.",
-                })}
+          <div className="max-w-2xl">
+            <div>
+              <h2 className="section-h2 text-balance">
+                {t("title")}
               </h2>
-              <p className="mt-4 text-lg text-mist-600 text-pretty">
-                {t("subtitle", {
-                  defaultValue:
-                    "Çevirin. Yönetin. Yayınlayın. Tüm dilleri tek panelden kontrol edin.",
-                })}
+              <p className="section-p mt-3">
+                {t("subtitle")}
               </p>
             </div>
+            {/* Section-level secondary action belongs under the lede it qualifies,
+                not floated to the far right where it reads as unrelated chrome. */}
             <Link
               to="/$locale/features/"
               params={{ locale: locale || "en" }}
-              className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-mist-700 hover:text-mist-950 transition-colors"
+              className="learn-more mt-5 w-fit"
             >
-              {t("seeHowItWorks", { defaultValue: "Nasıl çalıştığını görün" })}
-              <SpriteIcon name="arrow-right" className="w-4 h-4" />
+              {t("seeHowItWorks")}
+              <SpriteIcon name="arrow-right" className="size-3.5" />
             </Link>
           </div>
 
-          <Stagger className="grid grid-cols-1 gap-5 lg:grid-cols-3 items-stretch">
-            <StaggerItem className="h-full">
-              <AIFeatureCard />
-            </StaggerItem>
-            <StaggerItem className="h-full">
-              <PublishFeatureCard />
-            </StaggerItem>
-            <StaggerItem className="h-full">
-              <McpFeatureCard />
-            </StaggerItem>
-          </Stagger>
+          {/* Three columns split by hairlines, not three floating cards: the demo
+              wells carry the visual weight, so a card border around each one was a
+              second frame competing with them. overflow-hidden clips the shifted
+              edge rules so only the interior verticals show. */}
+          <div>
+            <Stagger className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-3">
+              <StaggerItem className="h-full">
+                <AIFeatureCard />
+              </StaggerItem>
+              <StaggerItem className="h-full">
+                <PublishFeatureCard />
+              </StaggerItem>
+              <StaggerItem className="h-full">
+                <McpFeatureCard />
+              </StaggerItem>
+            </Stagger>
+          </div>
         </div>
       </div>
     </section>

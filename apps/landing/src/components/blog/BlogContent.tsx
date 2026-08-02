@@ -97,7 +97,7 @@ function CopyButton({ code }: { code: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="p-1.5 rounded-md text-mist-400 hover:text-mist-600 dark:hover:text-mist-200 hover:bg-mist-200 dark:hover:bg-mist-800 transition-colors"
+      className="p-1.5 rounded-md text-mist-400 hover:text-mist-600 dark:hover:text-mist-200 hover:bg-black/[0.06] dark:hover:bg-mist-800 transition-colors"
       title="Copy code"
       aria-label="Copy code"
     >

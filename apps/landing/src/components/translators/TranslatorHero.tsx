@@ -6,15 +6,14 @@ export default function TranslatorHero() {
   const t = useTranslations("translators");
 
   return (
-    <section className="px-2 pt-8 pb-16 lg:pb-24">
-      <div className="w-full mx-auto max-w-[1400px]">
-        <div className="px-6 lg:px-10 py-12 lg:py-16">
+    <section>
+      <div className="section">
           {/* Stacked layout: Text on top, Video below */}
           <div className="flex flex-col gap-12 lg:gap-16">
             {/* Text Content - Left Aligned, Dark Text */}
             <div className="flex flex-col gap-6 max-w-3xl">
               {/* Badge */}
-              <span className="inline-flex items-center gap-2 rounded-full bg-mist-200 px-3 py-1.5 text-sm text-mist-700 w-fit">
+              <span className="inline-flex w-fit items-center gap-x-2.5 rounded-sm border border-black/[0.06] bg-mist-50 px-2.5 py-1 text-xs text-mist-600 transition-colors hover:border-black/[0.1]">
                 <SpriteIcon name="sparkles-soft" className="size-4" />
                 {t("hero.badge")}
               </span>
@@ -34,17 +33,17 @@ export default function TranslatorHero() {
               </p>
 
               {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-4 mt-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <a
                   href="https://dash.better-i18n.com"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-mist-950 px-6 py-3 text-sm font-medium text-white hover:bg-mist-900 transition-colors"
+                  className="btn btn-dark btn-lg"
                 >
                   {t("hero.cta.primary")}
                   <SpriteIcon name="arrow-right" className="size-4" />
                 </a>
                 <a
                   href="#features"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-mist-600 hover:text-mist-950 transition-colors"
+                  className="btn btn-outline btn-lg"
                 >
                   {t("hero.cta.secondary")}
                   <SpriteIcon name="chevron-right" className="size-4" />
@@ -57,7 +56,6 @@ export default function TranslatorHero() {
             <TranslatorProcess />
           </div>
         </div>
-      </div>
     </section>
   );
 }

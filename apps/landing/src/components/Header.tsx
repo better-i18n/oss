@@ -12,26 +12,22 @@ import {
   IconConsoleSimple,
   IconArrowUpRight,
 } from "@central-icons-react/round-outlined-radius-2-stroke-2";
-import {
-  NextjsIcon,
-  ReactIcon,
-  VueIcon,
-  NuxtIcon,
-  AngularIcon,
-  SvelteIcon,
-  ExpoIcon,
-  TanStackIcon,
-} from "@/components/icons/FrameworkIcons";
 import { LifeBuoy } from "lucide-react";
+import { guideIcon } from "@/lib/i18n-guide-icons";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { useT } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ProductTile } from "./ui/product-tile";
 import {
   MegaMenu,
   MegaMenuPanel,
   MegaMenuSection,
   MegaMenuCard,
+  MegaMenuRail,
+  MegaMenuRailGroup,
+  MegaMenuRailLink,
+  MegaMenuSplit,
   MegaMenuPill,
   MegaMenuPillExternal,
   MegaMenuPillButton,
@@ -75,10 +71,16 @@ export default function Header({ className }: { className?: string }) {
       import("@helpway/react").catch(() => {});
     };
     if (ric) {
-      ric(warm, { timeout: 4000 });
-    } else {
-      setTimeout(warm, 3000);
+      const handle = ric(warm, { timeout: 4000 });
+      return () => {
+        const cic = (window as Window & { cancelIdleCallback?: (h: number) => void })
+          .cancelIdleCallback;
+        cic?.(handle);
+      };
     }
+    // Own the timer: without cleanup an unmount mid-delay still fires the import.
+    const timer = setTimeout(warm, 3000);
+    return () => clearTimeout(timer);
   }, []);
 
   // Open Helpway widget via global API (window.Helpway.open). The widget
@@ -143,125 +145,135 @@ export default function Header({ className }: { className?: string }) {
   const isStatusOk = !statusData?.status || statusData.status === "operational";
 
   return (
-    <header className={cn("sticky top-0 z-40 bg-mist-100", className)}>
+    <header className={cn("site-header", className)}>
       <nav aria-label="Main navigation">
-        <div className="mx-auto flex h-[5.25rem] max-w-7xl items-center gap-4 px-6 lg:px-10">
+        <div className="header-inner">
+          {/* The frame's corner ticks, continuing the vertical rules downward. */}
+          <span className="header-tick header-tick--l" aria-hidden="true" />
+          <span className="header-tick header-tick--r" aria-hidden="true" />
+
           <div className="flex flex-1 items-center">
             <Link
               to="/$locale/"
               params={{ locale: locale || "en" }}
-              className="inline-flex items-center gap-2.5"
+              className="site-logo"
             >
               <img
                 src="/brand/logo.svg"
                 alt="Better I18N - Translation Management Platform"
-                width={28}
-                height={28}
-                className="w-8 h-7 text-black dark:text-white"
+                width={24}
+                height={24}
+                className="size-6"
               />
-              <span className="font-display font-semibold text-[19px]">
-                Better I18N
-              </span>
+              Better I18N
             </Link>
           </div>
-          <div className="hidden lg:flex items-center gap-8">
+          {/* Centred nav — the frame is the page's spine, so the nav sits on it. */}
+          <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-px lg:flex">
             {/* Product Mega Menu */}
-            <MegaMenu label={t("forProduct", { defaultValue: "Product" })}>
-              <MegaMenuPanel widthClass="w-[640px]">
-                <MegaMenuSection
-                  label={t("menu.whoItsFor", { defaultValue: "Who it's for" })}
-                  noDivider
-                  layoutClass="grid grid-cols-2 gap-1"
-                >
-                  <MegaMenuCard
-                    index={0}
-                    to="/$locale/for-developers/"
-                    params={{ locale: locale || "en" }}
-                    icon={<SpriteIcon name="code-brackets" className="size-5" />}
-                    title={t("segments.developers.title", {
-                      defaultValue: "For Developers",
-                    })}
-                    description={t("segments.developers.shortDescription", {
-                      defaultValue: "Type-safe SDKs, MCP & Git workflow",
-                    })}
-                  />
-                  <MegaMenuCard
-                    index={1}
-                    to="/$locale/for-translators/"
-                    params={{ locale: locale || "en" }}
-                    icon={<IconAiTranslate className="size-5" />}
-                    title={t("segments.translators.title", {
-                      defaultValue: "For Translators",
-                    })}
-                    description={t("segments.translators.shortDescription", {
-                      defaultValue: "Context-rich CAT environment + AI",
-                    })}
-                  />
-                  <MegaMenuCard
-                    index={2}
-                    to="/$locale/for-product-teams/"
-                    params={{ locale: locale || "en" }}
-                    icon={<SpriteIcon name="rocket" className="size-5" />}
-                    title={t("segments.productTeams.title", {
-                      defaultValue: "For Product Teams",
-                    })}
-                    description={t("segments.productTeams.shortDescription", {
-                      defaultValue: "Manage localization without the hassle",
-                    })}
-                  />
-                  <MegaMenuCard
-                    index={3}
-                    to="/$locale/for-enterprises/"
-                    params={{ locale: locale || "en" }}
-                    icon={<IconPeople className="size-5" />}
-                    title={t("segments.enterprises.title", {
-                      defaultValue: "For Enterprises",
-                    })}
-                    description={t("segments.enterprises.shortDescription", {
-                      defaultValue: "Localization at enterprise scale",
-                    })}
-                  />
-                </MegaMenuSection>
+            <MegaMenu label={t("forProduct")}>
+              <MegaMenuPanel widthClass="w-[700px]">
+                {/* cal.com-style split: the products carry the weight on the
+                    left, every secondary route sits in the tinted rail at one
+                    uniform density. Previously personas were cards (icon tile +
+                    two-line description) stacked above industry pills (bare 13px
+                    rows), so one panel held two different densities and read as
+                    "one big block and one small one". */}
+                <MegaMenuSplit railWidth="248px">
+                  <MegaMenuSection
+                    label={t("menu.products")}
+                    noDivider
+                    layoutClass="flex flex-col gap-0.5"
+                  >
+                    <MegaMenuCard
+                      index={0}
+                      to="/$locale/features/"
+                      params={{ locale: locale || "en" }}
+                      icon={<ProductTile product="i18n" size="md" />}
+                      plainIcon
+                      title={t("products.i18n.title")}
+                      description={t("products.i18n.description")}
+                    />
+                    <MegaMenuCard
+                      index={1}
+                      to="/$locale/content/"
+                      params={{ locale: locale || "en" }}
+                      icon={<ProductTile product="content" size="md" />}
+                      plainIcon
+                      title={t("products.content.title")}
+                      description={t("products.content.description")}
+                    />
+                    <MegaMenuCard
+                      index={2}
+                      to="/$locale/analytics/"
+                      params={{ locale: locale || "en" }}
+                      icon={<ProductTile product="analytics" size="md" />}
+                      plainIcon
+                      title={t("products.analytics.title")}
+                      description={t("products.analytics.description")}
+                    />
+                  </MegaMenuSection>
 
-                <MegaMenuSection
-                  label={t("menu.byIndustry", { defaultValue: "By industry" })}
-                  layoutClass="grid grid-cols-3 gap-1"
-                >
-                  <MegaMenuPill
-                    index={4}
-                    to="/$locale/for-startups/"
-                    params={{ locale: locale || "en" }}
-                    icon={<SpriteIcon name="zap" className="size-4" />}
-                    label={t("menu.solutions.startups", {
-                      defaultValue: "Startups",
-                    })}
-                  />
-                  <MegaMenuPill
-                    index={5}
-                    to="/$locale/for-saas/"
-                    params={{ locale: locale || "en" }}
-                    icon={<IconCloudySparkle className="size-4" />}
-                    label={t("menu.solutions.saas", { defaultValue: "SaaS" })}
-                  />
-                  <MegaMenuPill
-                    index={6}
-                    to="/$locale/for-ecommerce/"
-                    params={{ locale: locale || "en" }}
-                    icon={<SpriteIcon name="chart" className="size-4" />}
-                    label={t("menu.solutions.ecommerce", {
-                      defaultValue: "E-Commerce",
-                    })}
-                  />
-                  <MegaMenuPill
-                    index={7}
-                    to="/$locale/for-agencies/"
-                    params={{ locale: locale || "en" }}
-                    icon={<SpriteIcon name="group" className="size-4" />}
-                    label={t("menu.solutions.agencies", {
-                      defaultValue: "Agencies",
-                    })}
-                  />
-                </MegaMenuSection>
+                  <MegaMenuRail>
+                    <MegaMenuRailGroup
+                      label={t("menu.whoItsFor")}
+                    >
+                      <MegaMenuRailLink
+                        to="/$locale/for-developers/"
+                        params={{ locale: locale || "en" }}
+                        icon={<SpriteIcon name="code-brackets" className="size-4" />}
+                        label={t("segments.developers.title")}
+                      />
+                      <MegaMenuRailLink
+                        to="/$locale/for-translators/"
+                        params={{ locale: locale || "en" }}
+                        icon={<IconAiTranslate className="size-4" />}
+                        label={t("segments.translators.title")}
+                      />
+                      <MegaMenuRailLink
+                        to="/$locale/for-product-teams/"
+                        params={{ locale: locale || "en" }}
+                        icon={<SpriteIcon name="rocket" className="size-4" />}
+                        label={t("segments.productTeams.title")}
+                      />
+                      <MegaMenuRailLink
+                        to="/$locale/for-enterprises/"
+                        params={{ locale: locale || "en" }}
+                        icon={<IconPeople className="size-4" />}
+                        label={t("segments.enterprises.title")}
+                      />
+                    </MegaMenuRailGroup>
+
+                    <MegaMenuRailGroup
+                      label={t("menu.byIndustry")}
+                    >
+                      <MegaMenuRailLink
+                        to="/$locale/for-startups/"
+                        params={{ locale: locale || "en" }}
+                        icon={<SpriteIcon name="zap" className="size-4" />}
+                        label={t("menu.solutions.startups")}
+                      />
+                      <MegaMenuRailLink
+                        to="/$locale/for-saas/"
+                        params={{ locale: locale || "en" }}
+                        icon={<IconCloudySparkle className="size-4" />}
+                        label={t("menu.solutions.saas")}
+                      />
+                      <MegaMenuRailLink
+                        to="/$locale/for-ecommerce/"
+                        params={{ locale: locale || "en" }}
+                        icon={<SpriteIcon name="chart" className="size-4" />}
+                        label={t("menu.solutions.ecommerce")}
+                      />
+                      <MegaMenuRailLink
+                        to="/$locale/for-agencies/"
+                        params={{ locale: locale || "en" }}
+                        icon={<SpriteIcon name="group" className="size-4" />}
+                        label={t("menu.solutions.agencies")}
+                      />
+                    </MegaMenuRailGroup>
+                  </MegaMenuRail>
+                </MegaMenuSplit>
 
                 <MegaMenuFooter
                   primary={
@@ -270,7 +282,7 @@ export default function Header({ className }: { className?: string }) {
                       params={{ locale: locale || "en" }}
                       className="inline-flex items-center gap-1 hover:text-mist-700 transition-colors"
                     >
-                      {t("features", { defaultValue: "All features" })}
+                      {t("features")}
                       <SpriteIcon name="arrow-right" className="size-3.5" />
                     </Link>
                   }
@@ -281,155 +293,74 @@ export default function Header({ className }: { className?: string }) {
                       rel="noopener noreferrer"
                       className="hover:text-mist-950 transition-colors"
                     >
-                      {t("menu.scheduleDemo", {
-                        defaultValue: "Schedule a demo",
-                      })}
+                      {t("menu.scheduleDemo")}
                     </a>
                   }
                 />
               </MegaMenuPanel>
             </MegaMenu>
             {/* Integrations Mega Menu (merged Developers + Integrations) */}
-            <MegaMenu label={t("integrations.title", { defaultValue: "Integrations" })}>
-              <MegaMenuPanel widthClass="w-[680px]">
-                <MegaMenuSection
-                  label={t("integrations.frameworkSdks", {
-                    defaultValue: "Framework SDKs",
-                  })}
-                  noDivider
-                  layoutClass="grid grid-cols-3 gap-1"
-                >
-                  <MegaMenuPill
-                    index={0}
-                    to="/$locale/i18n/react/"
-                    params={{ locale: locale || "en" }}
-                    icon={<ReactIcon className="size-4" />}
-                    label="React"
-                  />
-                  <MegaMenuPill
-                    index={1}
-                    to="/$locale/i18n/nextjs/"
-                    params={{ locale: locale || "en" }}
-                    icon={<NextjsIcon className="size-4" />}
-                    label="Next.js"
-                  />
-                  <MegaMenuPill
-                    index={2}
-                    to="/$locale/i18n/vue/"
-                    params={{ locale: locale || "en" }}
-                    icon={<VueIcon className="size-4" />}
-                    label="Vue"
-                  />
-                  <MegaMenuPill
-                    index={3}
-                    to="/$locale/i18n/nuxt/"
-                    params={{ locale: locale || "en" }}
-                    icon={<NuxtIcon className="size-4" />}
-                    label="Nuxt"
-                  />
-                  <MegaMenuPill
-                    index={4}
-                    to="/$locale/i18n/angular/"
-                    params={{ locale: locale || "en" }}
-                    icon={<AngularIcon className="size-4" />}
-                    label="Angular"
-                  />
-                  <MegaMenuPill
-                    index={5}
-                    to="/$locale/i18n/svelte/"
-                    params={{ locale: locale || "en" }}
-                    icon={<SvelteIcon className="size-4" />}
-                    label="Svelte"
-                  />
-                  <MegaMenuPill
-                    index={6}
-                    to="/$locale/i18n/expo/"
-                    params={{ locale: locale || "en" }}
-                    icon={<ExpoIcon className="size-4" />}
-                    label="Expo"
-                  />
-                  <MegaMenuPill
-                    index={7}
-                    to="/$locale/i18n/tanstack-start/"
-                    params={{ locale: locale || "en" }}
-                    icon={<TanStackIcon className="size-4" />}
-                    label="TanStack"
-                  />
-                  <MegaMenuPill
-                    index={8}
-                    to="/$locale/i18n/server/"
-                    params={{ locale: locale || "en" }}
-                    icon={<IconConsoleSimple className="size-4" />}
-                    label="Hono / Node"
-                  />
-                </MegaMenuSection>
+            <MegaMenu label={t("integrations.title")}>
+              <MegaMenuPanel widthClass="w-[720px]">
+                <MegaMenuSplit railWidth="248px">
+                  <MegaMenuSection
+                    label={t("integrations.frameworkSdks")}
+                    noDivider
+                    layoutClass="grid grid-cols-3 gap-0.5"
+                  >
+                    <MegaMenuPill index={0} to="/$locale/i18n/react/" params={{ locale: locale || "en" }} icon={guideIcon("react")} label="React" />
+                    <MegaMenuPill index={1} to="/$locale/i18n/nextjs/" params={{ locale: locale || "en" }} icon={guideIcon("nextjs")} label="Next.js" />
+                    <MegaMenuPill index={2} to="/$locale/i18n/vue/" params={{ locale: locale || "en" }} icon={guideIcon("vue")} label="Vue" />
+                    <MegaMenuPill index={3} to="/$locale/i18n/nuxt/" params={{ locale: locale || "en" }} icon={guideIcon("nuxt")} label="Nuxt" />
+                    <MegaMenuPill index={4} to="/$locale/i18n/angular/" params={{ locale: locale || "en" }} icon={guideIcon("angular")} label="Angular" />
+                    <MegaMenuPill index={5} to="/$locale/i18n/svelte/" params={{ locale: locale || "en" }} icon={guideIcon("svelte")} label="Svelte" />
+                    <MegaMenuPill index={6} to="/$locale/i18n/expo/" params={{ locale: locale || "en" }} icon={guideIcon("expo")} label="Expo" />
+                    <MegaMenuPill index={7} to="/$locale/i18n/tanstack-start/" params={{ locale: locale || "en" }} icon={guideIcon("tanstack-start")} label="TanStack" />
+                    <MegaMenuPill index={8} to="/$locale/i18n/server/" params={{ locale: locale || "en" }} icon={<IconConsoleSimple className="size-4" />} label="Hono / Node" />
+                  </MegaMenuSection>
 
-                <MegaMenuSection
-                  label={t("integrations.aiTranslation", {
-                    defaultValue: "AI & Machine Translation",
-                  })}
-                  layoutClass="grid grid-cols-2 gap-1"
-                >
-                  <MegaMenuCard
-                    index={9}
-                    to="/$locale/integrations/$slug/"
-                    params={{ locale: locale || "en", slug: "mcp-server" }}
-                    icon={<IconModelcontextprotocol className="size-5" />}
-                    title={t("integrations.featured.mcp-server.name", {
-                      defaultValue: "MCP Server",
-                    })}
-                    description={t("integrations.featured.mcp-server.description", {
-                      defaultValue: "AI agents manage translations natively",
-                    })}
-                  />
-                  <MegaMenuCard
-                    index={10}
-                    to="/$locale/integrations/$slug/"
-                    params={{ locale: locale || "en", slug: "ai-translation" }}
-                    icon={<IconAiTranslate className="size-5" />}
-                    title={t("integrations.featured.ai-translation.name", {
-                      defaultValue: "AI Translation",
-                    })}
-                    description={t("integrations.featured.ai-translation.description", {
-                      defaultValue: "Multi-provider LLM translation pipeline",
-                    })}
-                  />
-                </MegaMenuSection>
+                  <MegaMenuRail>
+                    <MegaMenuRailGroup
+                      label={t("integrations.aiTranslation")}
+                    >
+                      <MegaMenuRailLink
+                        to="/$locale/integrations/$slug/"
+                        params={{ locale: locale || "en", slug: "mcp-server" }}
+                        icon={<IconModelcontextprotocol className="size-4" />}
+                        label={t("integrations.featured.mcp-server.name")}
+                      />
+                      <MegaMenuRailLink
+                        to="/$locale/integrations/$slug/"
+                        params={{ locale: locale || "en", slug: "ai-translation" }}
+                        icon={<IconAiTranslate className="size-4" />}
+                        label={t("integrations.featured.ai-translation.name")}
+                      />
+                    </MegaMenuRailGroup>
 
-                <MegaMenuSection
-                  label={t("integrations.devTools", {
-                    defaultValue: "Developer Tools",
-                  })}
-                  layoutClass="grid grid-cols-3 gap-1"
-                >
-                  <MegaMenuPill
-                    index={11}
-                    to="/$locale/integrations/$slug/"
-                    params={{ locale: locale || "en", slug: "github" }}
-                    icon={<IconGithub className="size-4" />}
-                    label={t("integrations.featured.github.name", {
-                      defaultValue: "GitHub Sync",
-                    })}
-                  />
-                  <MegaMenuPill
-                    index={12}
-                    to="/$locale/integrations/$slug/"
-                    params={{ locale: locale || "en", slug: "cli" }}
-                    icon={<IconConsoleSimple className="size-4" />}
-                    label={t("integrations.featured.cli.name", {
-                      defaultValue: "CLI",
-                    })}
-                  />
-                  <MegaMenuPill
-                    index={13}
-                    to="/$locale/integrations/$slug/"
-                    params={{ locale: locale || "en", slug: "global-cdn" }}
-                    icon={<IconCloudySparkle className="size-4" />}
-                    label={t("integrations.featured.global-cdn.name", {
-                      defaultValue: "Global CDN",
-                    })}
-                  />
-                </MegaMenuSection>
+                    <MegaMenuRailGroup
+                      label={t("integrations.devTools")}
+                    >
+                      <MegaMenuRailLink
+                        to="/$locale/integrations/$slug/"
+                        params={{ locale: locale || "en", slug: "github" }}
+                        icon={<IconGithub className="size-4" />}
+                        label={t("integrations.featured.github.name")}
+                      />
+                      <MegaMenuRailLink
+                        to="/$locale/integrations/$slug/"
+                        params={{ locale: locale || "en", slug: "cli" }}
+                        icon={<IconConsoleSimple className="size-4" />}
+                        label={t("integrations.featured.cli.name")}
+                      />
+                      <MegaMenuRailLink
+                        to="/$locale/integrations/$slug/"
+                        params={{ locale: locale || "en", slug: "global-cdn" }}
+                        icon={<IconCloudySparkle className="size-4" />}
+                        label={t("integrations.featured.global-cdn.name")}
+                      />
+                    </MegaMenuRailGroup>
+                  </MegaMenuRail>
+                </MegaMenuSplit>
 
                 <MegaMenuFooter
                   primary={
@@ -438,9 +369,7 @@ export default function Header({ className }: { className?: string }) {
                       params={{ locale: locale || "en" }}
                       className="inline-flex items-center gap-1 hover:text-mist-700 transition-colors"
                     >
-                      {t("integrations.exploreAll", {
-                        defaultValue: "All integrations",
-                      })}
+                      {t("integrations.exploreAll")}
                       <SpriteIcon name="arrow-right" className="size-3.5" />
                     </Link>
                   }
@@ -452,7 +381,7 @@ export default function Header({ className }: { className?: string }) {
                       className="inline-flex items-center gap-1 hover:text-mist-950 transition-colors"
                     >
                       <SpriteIcon name="book" className="size-3.5" />
-                      {t("documentation", { defaultValue: "Documentation" })}
+                      {t("documentation")}
                     </a>
                   }
                 />
@@ -462,99 +391,94 @@ export default function Header({ className }: { className?: string }) {
             <Link
               to="/$locale/pricing/"
               params={{ locale: locale || "en" }}
-              className="text-sm/7 font-medium text-mist-950 hover:text-mist-600"
+              className="nav-link"
             >
-              {t("pricing", { defaultValue: "Pricing" })}
+              {t("pricing")}
             </Link>
             {/* Resources Mega Menu */}
-            <MegaMenu label={t("resources.title", { defaultValue: "Resources" })}>
-              <MegaMenuPanel widthClass="w-[600px]">
-                <MegaMenuSection
-                  label={t("resources.learn", { defaultValue: "Learn" })}
-                  noDivider
-                  layoutClass="grid grid-cols-2 gap-1"
-                >
-                  <MegaMenuCard
-                    index={0}
-                    to="/$locale/what-is/"
-                    params={{ locale: locale || "en" }}
-                    icon={<SpriteIcon name="book" className="size-5" />}
-                    title={t("resources.whatIsI18n", {
-                      defaultValue: "What is i18n?",
-                    })}
-                    description={t("resources.whatIsI18nDesc", {
-                      defaultValue: "Complete guide to i18n & l10n",
-                    })}
-                  />
-                  <MegaMenuCard
-                    index={1}
-                    to="/$locale/blog/"
-                    params={{ locale: locale || "en" }}
-                    icon={<IconNewspaper className="size-5" />}
-                    title={t("blog", { defaultValue: "Blog" })}
-                    description={t("resources.blogDesc", {
-                      defaultValue: "Engineering & localization insights",
-                    })}
-                  />
-                </MegaMenuSection>
+            <MegaMenu label={t("resources.title")}>
+              <MegaMenuPanel widthClass="w-[660px]">
+                <MegaMenuSplit railWidth="248px">
+                  <MegaMenuSection
+                    label={t("resources.learn")}
+                    noDivider
+                    layoutClass="flex flex-col gap-0.5"
+                  >
+                    <MegaMenuCard
+                      index={0}
+                      to="/$locale/what-is/"
+                      params={{ locale: locale || "en" }}
+                      icon={<SpriteIcon name="globe" className="size-5" />}
+                      title={t("resources.whatIsI18n")}
+                      description={t("resources.whatIsI18nDesc")}
+                    />
+                    <MegaMenuCard
+                      index={1}
+                      to="/$locale/i18n/complete-guide/"
+                      params={{ locale: locale || "en" }}
+                      icon={<SpriteIcon name="book" className="size-5" />}
+                      title={t("resources.completeGuide")}
+                      description={t("resources.completeGuideDesc")}
+                    />
+                    <MegaMenuCard
+                      index={2}
+                      to="/$locale/blog/"
+                      params={{ locale: locale || "en" }}
+                      icon={<IconNewspaper className="size-5" />}
+                      title={t("blog")}
+                      description={t("resources.blogDesc")}
+                    />
+                  </MegaMenuSection>
 
-                <MegaMenuSection
-                  label={t("resources.tools", { defaultValue: "Tools & utilities" })}
-                  layoutClass="grid grid-cols-3 gap-1"
-                >
-                  <MegaMenuPill
-                    index={2}
-                    to="/$locale/tools/"
-                    params={{ locale: locale || "en" }}
-                    icon={<SpriteIcon name="code-brackets" className="size-4" />}
-                    label={t("resources.freeTools", {
-                      defaultValue: "Free Tools",
-                    })}
-                  />
-                  <MegaMenuPill
-                    index={3}
-                    to="/$locale/compare/"
-                    params={{ locale: locale || "en" }}
-                    icon={<SpriteIcon name="sparkles-soft" className="size-4" />}
-                    label={t("compare", { defaultValue: "Compare" })}
-                  />
-                  <MegaMenuPill
-                    index={4}
-                    to="/$locale/changelog/"
-                    params={{ locale: locale || "en" }}
-                    icon={<SpriteIcon name="sparkles-soft" className="size-4" />}
-                    label={t("changelog", { defaultValue: "Changelog" })}
-                  />
-                </MegaMenuSection>
+                  <MegaMenuRail>
+                    <MegaMenuRailGroup label={t("resources.toolsUpdates")}>
+                      <MegaMenuRailLink
+                        to="/$locale/tools/"
+                        params={{ locale: locale || "en" }}
+                        icon={<SpriteIcon name="code-brackets" className="size-4" />}
+                        label={t("resources.freeTools")}
+                      />
+                      <MegaMenuRailLink
+                        to="/$locale/compare/"
+                        params={{ locale: locale || "en" }}
+                        icon={<SpriteIcon name="chart" className="size-4" />}
+                        label={t("compare")}
+                      />
+                      <MegaMenuRailLink
+                        to="/$locale/changelog/"
+                        params={{ locale: locale || "en" }}
+                        icon={<SpriteIcon name="rocket" className="size-4" />}
+                        label={t("changelog")}
+                      />
+                    </MegaMenuRailGroup>
 
-                <MegaMenuSection
-                  label={t("resources.support", { defaultValue: "Support & company" })}
-                  layoutClass="grid grid-cols-3 gap-1"
-                >
-                  <MegaMenuPillButton
-                    onClick={openHelpWidget}
-                    icon={<LifeBuoy className="size-4" />}
-                    label={t("resources.helpCenter", {
-                      defaultValue: "Help Center",
-                    })}
-                  />
-                  <MegaMenuPillExternal
-                    href="https://docs.better-i18n.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    external
-                    icon={<SpriteIcon name="book" className="size-4" />}
-                    label={t("documentation", {
-                      defaultValue: "Documentation",
-                    })}
-                  />
-                  <MegaMenuPill
-                    to="/$locale/about/"
-                    params={{ locale: locale || "en" }}
-                    icon={<IconPeople className="size-4" />}
-                    label={t("resources.about.title", { defaultValue: "About" })}
-                  />
-                </MegaMenuSection>
+                    <MegaMenuRailGroup
+                      label={t("resources.support")}
+                    >
+                      <MegaMenuRailLink
+                        to="/$locale/about/"
+                        params={{ locale: locale || "en" }}
+                        icon={<IconPeople className="size-4" />}
+                        label={t("resources.about.title")}
+                      />
+                      <MegaMenuPillExternal
+                        href="https://docs.better-i18n.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        external
+                        bareIcon
+                        icon={<SpriteIcon name="script" className="size-4" />}
+                        label={t("documentation")}
+                      />
+                      <MegaMenuPillButton
+                        onClick={openHelpWidget}
+                        bareIcon
+                        icon={<LifeBuoy className="size-4" />}
+                        label={t("resources.helpCenter")}
+                      />
+                    </MegaMenuRailGroup>
+                  </MegaMenuRail>
+                </MegaMenuSplit>
 
                 <MegaMenuFooter
                   primary={
@@ -564,9 +488,7 @@ export default function Header({ className }: { className?: string }) {
                       className="inline-flex items-center gap-1.5 hover:text-mist-700 transition-colors"
                     >
                       <LifeBuoy className="size-3.5" />
-                      {t("resources.contactSupport", {
-                        defaultValue: "Contact support",
-                      })}
+                      {t("resources.contactSupport")}
                     </button>
                   }
                   secondary={
@@ -583,11 +505,12 @@ export default function Header({ className }: { className?: string }) {
                         )}
                       />
                       {isStatusOk
-                        ? t("resources.allOperational", {
-                            defaultValue: "All systems operational",
-                          })
-                        : t("status", { defaultValue: "Status" })}
-                      <IconArrowUpRight className="size-3 text-mist-400 opacity-0 -translate-y-0.5 translate-x-0.5 transition-all duration-200 group-hover/status:opacity-100 group-hover/status:translate-y-0 group-hover/status:translate-x-0 group-hover/status:text-mist-700" />
+                        ? t("resources.allOperational")
+                        : t("status")}
+                      {/* Named properties instead of `transition-all`: the
+                          latter also animates layout properties, so any hover
+                          re-style on this row costs a paint it doesn't need. */}
+                      <IconArrowUpRight className="size-3 -translate-y-0.5 translate-x-0.5 text-mist-400 opacity-0 transition-[opacity,transform,color] duration-200 group-hover/status:translate-x-0 group-hover/status:translate-y-0 group-hover/status:text-mist-700 group-hover/status:opacity-100" />
                     </a>
                   }
                 />
@@ -596,24 +519,35 @@ export default function Header({ className }: { className?: string }) {
             <Link
               to="/$locale/careers/"
               params={{ locale: locale || "en" }}
-              className="text-sm/7 font-medium text-mist-950 hover:text-mist-600 inline-flex items-center gap-1.5"
+              className="nav-link"
             >
-              {t("hiring", { defaultValue: "Hiring" })}
-              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              {t("hiring")}
+              <span className="ml-0.5 size-1.5 rounded-full bg-emerald-500" />
             </Link>
           </div>
-          <div className="hidden lg:flex flex-1 items-center justify-end gap-4">
+          <div className="hidden flex-1 items-center justify-end gap-3 lg:flex">
             <LanguageSwitcher />
-            <div className="flex shrink-0 items-center gap-5">
-              <a
-                href="https://dash.better-i18n.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-full bg-mist-950 px-4 py-1.5 text-sm/7 font-medium text-white hover:bg-mist-800"
+            <a
+              href="https://dash.better-i18n.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-dark"
+            >
+              {t("getStarted")}
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
               >
-                {t("getStarted", { defaultValue: "Get Started" })}
-              </a>
-            </div>
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
           </div>
           <MobileNav />
         </div>

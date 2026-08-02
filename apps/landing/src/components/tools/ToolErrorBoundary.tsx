@@ -38,7 +38,7 @@ export class ToolErrorBoundary extends Component<
       const { toolName } = this.props;
       return (
         <div className="flex min-h-[300px] flex-col items-center justify-center gap-6 rounded-xl border border-mist-200 bg-mist-50 px-6 py-16 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-mist-100">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-black/[0.07]">
             <svg
               className="h-6 w-6 text-mist-600"
               viewBox="0 0 24 24"
