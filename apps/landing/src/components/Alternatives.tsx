@@ -10,6 +10,18 @@ const alternatives = [
   { key: "transifex", name: "Transifex", href: "/$locale/compare/transifex/" },
 ];
 
+/**
+ * Vendors whose entry price was read off their own pricing page and confirmed —
+ * checked 2 August 2026 in a browser, because all four pages render their
+ * numbers with JavaScript and a plain fetch returns none.
+ *
+ * Phrase is absent on purpose: their pricing page showed no figure at all, so
+ * there is nothing to cite. A number we cannot see on the vendor's own page is
+ * not one to print next to their name — a missing line is a gap, an invented
+ * one is a liability.
+ */
+const VERIFIED_ENTRY_PRICE = new Set(["crowdin", "lokalise", "transifex"]);
+
 /* Six claims, not three: this list carries the section's whole argument, and
    three lines left the column visually short next to four competitor cells.
    Keys only — the copy lives on the CDN (no inline fallbacks). */
@@ -118,9 +130,11 @@ export default function Alternatives() {
                           already publishes, read off their public pricing page.
                           A card that only says "powerful platform" gives the
                           reader nothing to act on. */}
-                      <span className="mt-1.5 block text-[12px] tabular-nums text-mist-400">
-                        {t(`${alt.key}.entryPrice`)}
-                      </span>
+                      {VERIFIED_ENTRY_PRICE.has(alt.key) && (
+                        <span className="mt-1.5 block text-[12px] tabular-nums text-mist-400">
+                          {t(`${alt.key}.entryPrice`)}
+                        </span>
+                      )}
                     </span>
                   </span>
                   <SpriteIcon
