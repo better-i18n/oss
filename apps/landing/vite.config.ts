@@ -27,7 +27,7 @@ export default defineConfig(async ({ mode, command }) => {
       const { fetchSeoData, generatePages } = await import("./src/seo/generate-pages");
       const { generateAllLlmsTxtFiles } = await import("./src/seo/llms-txt");
       const { generateBlogIndexes } = await import("./src/seo/generate-blog-indexes");
-      const { readFileSync } = await import("node:fs");
+      const { readFileSync, writeFileSync } = await import("node:fs");
 
       // 1. Generate blog indexes FIRST (uses direct REST API with cache bypass).
       //    The SDK client's edge cache returns stale data (1 of 255 posts), so
@@ -65,6 +65,33 @@ export default defineConfig(async ({ mode, command }) => {
 
       pages = generatePages(data);
       llmsFiles = generateAllLlmsTxtFiles(data.blogPosts, data.locales, data.i18nMessages);
+
+      /**
+       * Hand the noindex URLs to `scripts/fix-sitemap.ts` instead of dropping
+       * their pages before the plugin sees them.
+       *
+       * "Keep it out of the sitemap" and "don't build static HTML for it" are
+       * two different decisions, and this build used to make one flag answer
+       * both: the `pages` array below was filtered by `!sitemap.noindex`, and
+       * that array is also the candidate list `prerender.filter` chooses from
+       * (we set `crawlLinks: false`, and auto-discovery finds nothing because
+       * every route is `/$locale/...`). So a page marked out of the sitemap was
+       * never offered for prerendering, whatever its own `prerender` flag said.
+       * Five pages lost their static HTML that way — about, careers, privacy,
+       * terms, cookies — and were server-rendered on every request instead,
+       * measured at 12.4s TTFB for /en/careers/ in production.
+       *
+       * The sitemap is now filtered where we already own that step, after the
+       * XML exists, so the two decisions stay separate.
+       */
+      const noindexUrls = pages
+        .filter((p) => p.sitemap?.noindex)
+        .map((p) => p.path);
+      writeFileSync(
+        ".seo-noindex.json",
+        JSON.stringify(noindexUrls, null, 2),
+      );
+      console.log(`[SEO] noindex paths handed to fix-sitemap: ${noindexUrls.length}`);
     } catch (error) {
       console.error("[SEO] Build-time generation failed:", error);
     }
@@ -192,8 +219,10 @@ export default defineConfig(async ({ mode, command }) => {
         projects: ["./tsconfig.json"],
       }),
       tanstackStart({
+        /* Every page, noindex included — see the note next to `.seo-noindex.json`
+           above. This array is the prerender candidate list, so filtering it is
+           how five pages silently lost their static HTML. */
         pages: pages
-          .filter((p) => !p.sitemap.noindex)
           .map((p) => ({
           path: p.path,
           sitemap: {

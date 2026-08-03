@@ -18,3 +18,4 @@ public/blog-index-*.json
 
 # Whole-site audit output (scripts/audit/run-audit.sh)
 .audit/
+.seo-noindex.json
