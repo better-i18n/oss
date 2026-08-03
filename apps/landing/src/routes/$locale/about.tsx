@@ -1,9 +1,41 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
+import { CompetitorLandscape } from "@/components/CompetitorLandscape";
 import PlatformMetrics from "@/components/PlatformMetrics";
+import {
+  PageHero,
+  Section,
+  SectionHeader,
+  Divider,
+  BentoList,
+  BentoRow,
+  FeatureRow,
+  FeatureColumn,
+  ClosingCta,
+} from "@/components/ui/page";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
-import { useTranslations } from "@better-i18n/use-intl";
+import { useT } from "@/lib/i18n";
+
+/**
+ * `/about` is a positioning page, not a company page.
+ *
+ * It used to be a mission statement, a three-paragraph "born from frustration"
+ * story and a six-card values grid. None of that answered the question the
+ * page actually ranks for: what is this company, and why does it exist next to
+ * Crowdin, Lokalise, Phrase and Transifex.
+ *
+ * Every claim about a competitor on this page comes from the `alternatives`
+ * namespace, which is where our comparison pages already publish them, with
+ * their entry prices read off each vendor's own pricing page on 2 August 2026.
+ * No competitor claim is authored here. See `CompetitorLandscape`.
+ */
+
+/** Our own pricing policy, in the order the argument needs. */
+const PRICING_RULES = ["freeTier", "openSource", "seats", "words"] as const;
+
+/** The three layers the infrastructure argument rests on. */
+const LAYERS = ["cdn", "sdk", "agents"] as const;
 
 export const Route = createFileRoute("/$locale/about")({
   loader: createPageLoader(),
@@ -16,7 +48,8 @@ export const Route = createFileRoute("/$locale/about")({
       pageType: "educational",
       structuredDataOptions: {
         title: "About Better I18N",
-        description: "Learn about the team behind Better I18N — our mission, values, and why we are building developer-first translation management.",
+        description:
+          "Why Better I18N exists, how it differs from Crowdin, Lokalise, Phrase and Transifex on pricing and delivery, and where the platform is going.",
       },
     });
   },
@@ -24,81 +57,138 @@ export const Route = createFileRoute("/$locale/about")({
 });
 
 function AboutPage() {
-  const t = useTranslations("aboutPage");
+  const t = useT("aboutPage");
+  const tAlt = useT("alternatives");
+  const tCta = useT("cta");
   const { locale } = Route.useParams();
 
-  const values = [
-    { titleKey: "values.developerFirst.title", descKey: "values.developerFirst.description" },
-    { titleKey: "values.qualityMatters.title", descKey: "values.qualityMatters.description" },
-    { titleKey: "values.globalByDefault.title", descKey: "values.globalByDefault.description" },
-    { titleKey: "values.openTransparent.title", descKey: "values.openTransparent.description" },
-    { titleKey: "values.speedReliability.title", descKey: "values.speedReliability.description" },
-    { titleKey: "values.privacyFirst.title", descKey: "values.privacyFirst.description" },
-  ];
-
   return (
-    <MarketingLayout showCTA={true}>
-      {/* Hero Section */}
-      <section>
-        <div className="section">
-          <div className="max-w-3xl">
-            <h1 className="section-h2">
-              {t("hero.title")}
-              <span className="block text-mist-600">{t("hero.titleHighlight")}</span>
-            </h1>
-            <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("hero.subtitle")}
-            </p>
-          </div>
+    <MarketingLayout showCTA={false}>
+      <PageHero
+        titleId="about-hero-title"
+        title={t("positioning.hero.title")}
+        subtitle={t("positioning.hero.subtitle")}
+        primary={{ label: t("positioning.hero.ctaPrimary"), href: `/${locale}/features/` }}
+        secondary={{ label: t("positioning.hero.ctaSecondary"), href: `/${locale}/compare/` }}
+      />
+
+      <Divider />
+
+      {/* 1. Why we started. The existing story paragraphs are indexed copy and
+             survive the rewrite; what changed is that they now sit under a
+             claim instead of standing in for one. */}
+      <Section labelledBy="origin-title">
+        <SectionHeader
+          id="origin-title"
+          eyebrow={t("positioning.origin.eyebrow")}
+          title={t("positioning.origin.title")}
+          subtitle={t("positioning.origin.lede")}
+          titleMaxWidth="24ch"
+        />
+        <div className="mt-8 flex max-w-[68ch] flex-col gap-4 text-[15px] leading-relaxed text-mist-700">
+          <p>{t("story.paragraph1")}</p>
+          <p>{t("story.paragraph2")}</p>
+          <p>{t("story.paragraph3")}</p>
         </div>
-      </section>
+      </Section>
 
-      {/* Platform Metrics */}
-      <PlatformMetrics />
+      <Divider />
 
-      {/* Story Section */}
-      <section className="bg-white">
-        <div className="mx-auto max-w-3xl px-6 lg:px-10">
-          <h2 className="section-h2 mb-8">
-            {t("story.title")}
-          </h2>
-          <div className="prose prose-mist max-w-none text-mist-700">
-            <p>{t("story.paragraph1")}</p>
-            <p className="mt-4">{t("story.paragraph2")}</p>
-            <p className="mt-4">{t("story.paragraph3")}</p>
-          </div>
+      {/* 2. The category. Same evidence the home page shows, same keys. */}
+      <Section labelledBy="category-title">
+        <SectionHeader
+          id="category-title"
+          eyebrow={t("positioning.category.eyebrow")}
+          title={t("positioning.category.title")}
+          subtitle={t("positioning.category.lede")}
+          titleMaxWidth="24ch"
+        />
+        <div className="mt-10">
+          <CompetitorLandscape showLabel={false} />
         </div>
-      </section>
+      </Section>
 
-      {/* Values Section */}
-      <section>
-        <div className="section">
-          <h2 className="section-h2 mb-12 text-center">
-            {t("values.title")}
-          </h2>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {values.map((value) => (
-              <ValueCard
-                key={value.titleKey}
-                title={t(value.titleKey)}
-                description={t(value.descKey)}
+      <Divider />
+
+      {/* 3. Pricing policy. The numbers being argued against are the entry
+             prices in the section above, so this one carries no figures of its
+             own: our price lives on /pricing and nowhere else. */}
+      <Section labelledBy="pricing-title">
+        <SectionHeader
+          id="pricing-title"
+          eyebrow={t("positioning.pricing.eyebrow")}
+          title={t("positioning.pricing.title")}
+          subtitle={t("positioning.pricing.lede")}
+          titleMaxWidth="24ch"
+        />
+        <div className="mt-8 max-w-[68ch]">
+          <BentoList>
+            {PRICING_RULES.map((rule) => (
+              <BentoRow key={rule}>{t(`positioning.pricing.rules.${rule}`)}</BentoRow>
+            ))}
+          </BentoList>
+          <Link to="/$locale/pricing/" params={{ locale }} className="btn btn-outline btn-lg mt-8 w-fit">
+            {t("positioning.pricing.cta")}
+          </Link>
+        </div>
+      </Section>
+
+      <Divider />
+
+      {/* 4. Where this goes. The claim is structural, not a slogan: if
+             localization is infrastructure, it has to be reachable the way
+             infrastructure is reachable. */}
+      <Section labelledBy="future-title">
+        <SectionHeader
+          id="future-title"
+          eyebrow={t("positioning.future.eyebrow")}
+          title={t("positioning.future.title")}
+          subtitle={t("positioning.future.lede")}
+          titleMaxWidth="26ch"
+        />
+        <div className="mt-10">
+          <FeatureRow>
+            {LAYERS.map((layer) => (
+              <FeatureColumn
+                key={layer}
+                title={t(`positioning.future.layers.${layer}.title`)}
+                description={t(`positioning.future.layers.${layer}.body`)}
               />
             ))}
-          </div>
+          </FeatureRow>
         </div>
-      </section>
+        <p className="mt-10 max-w-[62ch] text-[17px] leading-relaxed tracking-[-0.015em] text-mist-900">
+          {t("positioning.future.close")}
+        </p>
+      </Section>
 
-      {/* Related Pages */}
+      <Divider />
+
+      {/* 5. What exists today, so the argument above is measured against a
+             shipped platform rather than a roadmap. */}
+      <Section labelledBy="metrics-title">
+        <SectionHeader
+          id="metrics-title"
+          eyebrow={t("positioning.metrics.eyebrow")}
+          title={t("platformMetrics.title")}
+          subtitle={tAlt("benefit6")}
+        />
+        <div className="mt-10">
+          <PlatformMetrics />
+        </div>
+      </Section>
+
+      <Divider />
+
+      <ClosingCta
+        title={t("positioning.cta.title")}
+        subtitle={t("positioning.cta.subtitle")}
+        primary={{ label: t("positioning.cta.primary"), href: "https://app.better-i18n.com/signup" }}
+        secondary={{ label: t("positioning.cta.secondary"), href: "https://docs.better-i18n.com" }}
+        customers={{ label: tCta("trustedBy") }}
+      />
+
       <RelatedPages currentPage="about" locale={locale} variant="mixed" />
     </MarketingLayout>
-  );
-}
-
-function ValueCard({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="p-6 rounded-xl bg-white border border-mist-200">
-      <h3 className="text-base font-medium text-mist-950">{title}</h3>
-      <p className="mt-2 text-sm text-mist-700 leading-relaxed">{description}</p>
-    </div>
   );
 }
