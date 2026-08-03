@@ -66,9 +66,21 @@ for (const file of sitemapFiles) {
       '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">',
       '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
     )
-    .replaceAll(/ xmlns=""/g, "")
-    // Remove bare root URL — it 301-redirects to /{defaultLocale}/ and should not be in sitemap
-    .replace(/\s*<url>\s*<loc>https:\/\/better-i18n\.com\/<\/loc>\s*<\/url>/g, "");
+    .replaceAll(/ xmlns=""/g, "");
+
+  /* Remove the bare root URL: it 302-redirects to /{locale}/, so listing it
+     asks Google to index a redirect.
+
+     The rule this replaces required the block to be exactly
+     `<url><loc>…</loc></url>` and matched nothing, because the real entry also
+     carries lastmod, changefreq, priority and a set of xhtml:link alternates.
+     Verified against the deployed sitemap, which still contained the bare root.
+     `urlBlockPattern` tolerates any children. */
+  {
+    const before = fixed;
+    fixed = fixed.replace(urlBlockPattern("/"), "");
+    if (fixed !== before) droppedUrls++;
+  }
 
   // Remove the built-but-unadvertised paths.
   for (const p of excludedPaths) {
