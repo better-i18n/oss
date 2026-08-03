@@ -12,6 +12,7 @@ export type SpriteIconName =
   | "code-brackets"
   | "group"
   | "zap"
+  | "webhook"
   | "settings-gear"
   | "magnifying-glass"
   | "sparkles-soft"

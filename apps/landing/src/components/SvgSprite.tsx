@@ -57,6 +57,26 @@ export function SvgSprite() {
           <path d="M19.5657 9H13.5C13.2239 9 13 8.77614 13 8.5V2.40139C13 1.90668 12.3584 1.71242 12.084 2.12404L4.01823 14.2226C3.79672 14.5549 4.03491 15 4.43426 15H10.5C10.7761 15 11 15.2239 11 15.5V21.5986C11 22.0933 11.6416 22.2876 11.916 21.876L19.9818 9.77735C20.2033 9.44507 19.9651 9 19.5657 9Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
         </symbol>
 
+        {/* Webhook — three arms meeting at a hub: an event leaving us and
+            arriving somewhere you chose. Added to the shared sprite rather than
+            reusing `zap`, which is already the automation API's mark:
+            rule/name-a-thing-with-its-mark means one thing, one glyph. */}
+        <symbol id="sprite-webhook" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M9.5 9a3.5 3.5 0 1 1 4.9 3.2M14.5 15a3.5 3.5 0 1 1-3.2-4.9M12 18.5a3.5 3.5 0 1 1-1.7-6.5"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M12 5.5v4M18 15.5h-4M6.5 15.5h4"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </symbol>
+
         {/* IconSettingsGear1 */}
         <symbol id="sprite-settings-gear" viewBox="0 0 24 24" fill="none">
           <path d="M18.9805 6.92648L12.9805 3.55152C12.3717 3.20906 11.6283 3.20906 11.0195 3.55152L5.01949 6.92646C4.38973 7.28069 4 7.94707 4 8.66962V15.3305C4 16.0531 4.38975 16.7194 5.01954 17.0737L11.0195 20.4484C11.6283 20.7908 12.3717 20.7908 12.9805 20.4483L18.9805 17.0734C19.6103 16.7192 20 16.0528 20 15.3302V8.66964C20 7.94709 19.6103 7.28072 18.9805 6.92648Z" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="round" />

@@ -358,6 +358,19 @@ export default function Header({ className }: { className?: string }) {
                         icon={<IconCloudySparkle className="size-4" />}
                         label={t("integrations.featured.global-cdn.name")}
                       />
+                      {/* Webhooks were already load-bearing everywhere else —
+                          the status page tracks delivery as its own service, the
+                          pricing matrix has a row for them, the comparison pages
+                          claim parity on them, and the Next.js adapter ships a
+                          revalidate handler that consumes one. The single place
+                          a reader goes to ask "what can I connect" was the only
+                          place that never mentioned them. */}
+                      <MegaMenuRailLink
+                        to="/$locale/integrations/$slug/"
+                        params={{ locale: locale || "en", slug: "webhooks" }}
+                        icon={<SpriteIcon name="webhook" className="size-4" />}
+                        label={t("integrations.featured.webhooks.name")}
+                      />
                     </MegaMenuRailGroup>
                   </MegaMenuRail>
                 </MegaMenuSplit>
