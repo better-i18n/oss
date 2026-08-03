@@ -13,7 +13,9 @@ import { guideIcon } from "@/lib/i18n-guide-icons";
 import {
   ClosingCta,
   Divider,
+  FeatureCell,
   FeatureColumn,
+  FeatureGrid,
   FeatureRow,
   PageHero,
   Section,
@@ -99,7 +101,7 @@ function ContentPage() {
         }}
         secondary={{
           label: t("hero.ctaSecondary"),
-          href: "https://docs.better-i18n.com/content",
+          href: "https://docs.better-i18n.com/sdk/quick-start",
         }}
         visual={<ContentFlow t={t} />}
       />
@@ -115,27 +117,35 @@ function ContentPage() {
 
       <Divider />
 
+      {/* The header used to span the full width with the two columns beneath
+          it, which left the visual starting halfway down the section with a
+          band of empty page to its right — it read as an afterthought rather
+          than as the answer to the claim. The header now sits INSIDE the left
+          column, so the visual starts level with the h2 and the eye reads
+          claim → evidence across, not down. */}
       <Section>
-        <SectionHeader
-          eyebrow={t("query.eyebrow")}
-          title={t("query.title")}
-          subtitle={t("query.subtitle")}
-        />
-        <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-          <ul className="flex flex-col">
-            {[
-              t("query.point.one"),
-              t("query.point.two"),
-              t("query.point.three"),
-            ].map((point) => (
-              <li
-                key={point}
-                className="border-t border-black/[0.05] py-3 text-[13px] leading-relaxed text-mist-700 first:border-t-0"
-              >
-                {point}
-              </li>
-            ))}
-          </ul>
+        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+          <div>
+            <SectionHeader
+              eyebrow={t("query.eyebrow")}
+              title={t("query.title")}
+              subtitle={t("query.subtitle")}
+            />
+            <ul className="mt-8 flex flex-col">
+              {[
+                t("query.point.one"),
+                t("query.point.two"),
+                t("query.point.three"),
+              ].map((point) => (
+                <li
+                  key={point}
+                  className="border-t border-black/[0.05] py-3 text-[13px] leading-relaxed text-mist-700 first:border-t-0"
+                >
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
           <QueryVisual />
         </div>
       </Section>
@@ -148,22 +158,18 @@ function ContentPage() {
           title={t("capabilities.title")}
           subtitle={t("capabilities.subtitle")}
         />
-        <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Was a hand-rolled grid with `px-5` on every cell and a `-ml-px`
+            trick to hide the outer rule. The trick hid the border but not the
+            padding, so "Content models" started 20px right of the h2 above it
+            and the whole block read as a card sitting on the section instead
+            of the section's own content. <FeatureGrid> zeroes that edge per
+            row. */}
+        <div className="mt-8">
+          <FeatureGrid>
             {capabilities.map((c) => (
-              <div
-                key={c.title}
-                className="border-t border-l border-black/[0.05] px-5 py-4"
-              >
-                <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
-                  {c.title}
-                </h3>
-                <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">
-                  {c.description}
-                </p>
-              </div>
+              <FeatureCell key={c.title} title={c.title} description={c.description} />
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
 
@@ -175,13 +181,15 @@ function ContentPage() {
           title={t("frameworks.title")}
           subtitle={t("frameworks.subtitle")}
         />
-        <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Same grid, same rule as Capabilities above. This one keeps bespoke
+            cell contents (a mark and a monospace package name rather than a
+            heading and a paragraph), so it composes <FeatureGrid> with raw
+            `.feat-cell` children instead of <FeatureCell> — the alignment
+            still comes from one place. */}
+        <div className="mt-8">
+          <FeatureGrid>
             {frameworks.map((f) => (
-              <div
-                key={f.key}
-                className="border-t border-l border-black/[0.05] px-5 py-4"
-              >
+              <div key={f.key} className="feat-cell">
                 <p className="flex items-center gap-2 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                   {/* One decision for the whole grid, not per cell: Vanilla JS
                       has no mark, and reserving the slot only where a mark
@@ -201,7 +209,7 @@ function ContentPage() {
                 </p>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
 
@@ -250,7 +258,7 @@ function ContentPage() {
         }}
         secondary={{
           label: t("closing.ctaSecondary"),
-          href: "https://docs.better-i18n.com/content",
+          href: "https://docs.better-i18n.com/sdk/quick-start",
         }}
       />
 

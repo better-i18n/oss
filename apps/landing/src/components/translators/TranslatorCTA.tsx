@@ -49,13 +49,13 @@ export default function TranslatorCTA() {
                   {t("cta.resources.docs")}
                 </a>
                 <a
-                  href="https://docs.better-i18n.com/glossary"
+                  href="https://docs.better-i18n.com/admin/translations"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
                   {t("cta.resources.glossary")}
                 </a>
                 <a
-                  href="https://docs.better-i18n.com/ai-chat"
+                  href="https://docs.better-i18n.com/mcp/ai-assistants"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
                   {t("cta.resources.aiChat")}

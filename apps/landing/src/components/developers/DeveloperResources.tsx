@@ -53,7 +53,7 @@ const resourceKeys = [
   },
   {
     key: "sdk",
-    href: "https://docs.better-i18n.com/sdk",
+    href: "https://docs.better-i18n.com/sdk/quick-start",
     icon: <SpriteIcon name="code-brackets" className="size-3.5" />,
   },
   {

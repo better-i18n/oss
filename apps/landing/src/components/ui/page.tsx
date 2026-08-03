@@ -284,6 +284,41 @@ export function FeatureColumn({
   );
 }
 
+/**
+ * `FeatureRow` for more items than fit on one line.
+ *
+ * Use this instead of a hand-rolled `grid` whenever a section lists six or
+ * eight capabilities. The reason is alignment, not convenience: a hand-rolled
+ * grid gives every cell the same horizontal padding, so the first cell of each
+ * row sits ~28px inside the section's left edge while the `<h2>` above it sits
+ * at 0. Two left edges in one section is what makes the grid read as a card
+ * dropped onto the page rather than part of it, and it is the specific defect
+ * this primitive exists to prevent (`rule/one-container`).
+ *
+ * `.feat-grid` decides the flush edge per ROW, and moves the nth-child cycle
+ * with the column count at each breakpoint — see styles.css.
+ */
+export function FeatureGrid({ children }: { children: ReactNode }) {
+  return <div className="feat-grid">{children}</div>;
+}
+
+export function FeatureCell({
+  title,
+  description,
+}: {
+  title: ReactNode;
+  description: ReactNode;
+}) {
+  return (
+    <div className="feat-cell">
+      <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
+        {title}
+      </h3>
+      <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">{description}</p>
+    </div>
+  );
+}
+
 /** Tinted hairline rows — for enumerations that would otherwise become a wall of bullets. */
 export function BentoList({ children }: { children: ReactNode }) {
   return <div className="flex flex-col gap-1.5">{children}</div>;

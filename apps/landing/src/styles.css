@@ -741,6 +741,86 @@ label:has(input:not([disabled]), button:not([disabled])) {
   color: var(--color-ink);
 }
 
+/* ─── Feature grid: feat-row's rule, carried across several rows ────
+   `.feat-row` zeroes the outer padding with :first-child / :last-child,
+   which is correct for ONE row and wrong for a wrapping grid: only the
+   very first cell goes flush, so every later row starts 28px inside the
+   section's left edge while the h2 above it starts at 0. That offset is
+   what makes a capability grid read as a floating card instead of part
+   of the section.
+
+   Here the edge is decided per ROW, with nth-child, so the first cell of
+   every row lines up with the heading and the last cell of every row
+   ends on the measure. The column count changes at the same two
+   breakpoints as .feat-row, and the nth-child cycle changes with it —
+   they have to move together, which is why the rules sit next to each
+   other in this file rather than in a page. */
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.feat-grid > .feat-cell {
+  padding: var(--space-5) 28px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
+}
+/* First column of every row: flush with the section edge, no rule to its
+   left (there is nothing there to separate it from). */
+.feat-grid > .feat-cell:nth-child(3n + 1) {
+  padding-left: 0;
+  border-left: none;
+}
+.feat-grid > .feat-cell:nth-child(3n) {
+  padding-right: 0;
+}
+/* The top row needs no rule: the gap under the lede already separates it,
+   and a line there would read as the grid being a boxed thing. */
+.feat-grid > .feat-cell:nth-child(-n + 3) {
+  border-top: none;
+  padding-top: 0;
+}
+@media (max-width: 820px) {
+  .feat-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .feat-grid > .feat-cell:nth-child(3n + 1),
+  .feat-grid > .feat-cell:nth-child(3n) {
+    padding-left: 28px;
+    padding-right: 28px;
+    border-left: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .feat-grid > .feat-cell:nth-child(-n + 3) {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    padding-top: var(--space-5);
+  }
+  .feat-grid > .feat-cell:nth-child(2n + 1) {
+    padding-left: 0;
+    border-left: none;
+  }
+  .feat-grid > .feat-cell:nth-child(2n) {
+    padding-right: 0;
+  }
+  .feat-grid > .feat-cell:nth-child(-n + 2) {
+    border-top: none;
+    padding-top: 0;
+  }
+}
+@media (max-width: 520px) {
+  .feat-grid {
+    grid-template-columns: 1fr;
+  }
+  .feat-grid > .feat-cell {
+    padding-inline: 0;
+    border-left: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    padding-top: var(--space-5);
+  }
+  .feat-grid > .feat-cell:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+}
+
 /* ─── Feature row: N columns split by vertical hairlines ─────────── */
 .feat-row {
   display: grid;

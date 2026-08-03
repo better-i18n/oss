@@ -95,7 +95,7 @@ function AnalyticsPage() {
         }}
         secondary={{
           label: t("hero.ctaSecondary"),
-          href: "https://docs.better-i18n.com/content/analytics",
+          href: "https://docs.better-i18n.com/sdk/analytics",
         }}
         visual={<ViewsVisual t={t} />}
       />
@@ -250,7 +250,7 @@ function AnalyticsPage() {
         }}
         secondary={{
           label: t("closing.ctaSecondary"),
-          href: "https://docs.better-i18n.com/content/analytics",
+          href: "https://docs.better-i18n.com/sdk/analytics",
         }}
       />
 
