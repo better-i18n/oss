@@ -23,7 +23,7 @@
 
 import { useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
-import { CTA_CUSTOMERS } from "@/lib/customers";
+import { CustomerProof } from "@/components/CustomerProof";
 
 /* ─── Pillars ──────────────────────────────────────────────────────
    The product surfaces a detail page can belong to. Colour is allowed
@@ -505,78 +505,44 @@ export function ClosingCta({
 }) {
   return (
     <Section>
-      {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-      <h2 className="section-h2" style={{ maxWidth: "24ch" }}>
-        {title}
-      </h2>
-      {subtitle && (
-        <p className="section-p" style={{ marginTop: 12 }}>
-          {subtitle}
-        </p>
-      )}
-      <div className="flex flex-wrap items-center gap-2" style={{ marginTop: 24 }}>
-        <a className="btn btn-dark btn-lg" href={primary.href}>
-          {primary.label}
-        </a>
-        {secondary && (
-          <a className="btn btn-outline btn-lg" href={secondary.href}>
-            {secondary.label}
-          </a>
-        )}
-      </div>
-
-      {customers && (
-        <div style={{ marginTop: 32 }}>
-          <p className="text-[11px] font-medium text-mist-400">{customers.label}</p>
-          {/* One ink, one size, no cards — the same treatment as the hero band,
-              just shorter. Wraps rather than scrolling: this row is proof, not a
-              marquee, so it must be readable at rest. */}
-          <div className="mt-3 flex flex-wrap items-center gap-x-8 gap-y-4">
-            {CTA_CUSTOMERS.map((customer) => (
-              <a
-                key={customer.name}
-                href={customer.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`flex h-6 shrink-0 items-center gap-2 grayscale transition-opacity hover:opacity-100 ${
-                  customer.wordmark ? "opacity-55" : "opacity-75"
-                }`}
-              >
-                {customer.wordmark ? (
-                  <img
-                    src={customer.wordmark}
-                    alt={`${customer.name} — Better I18N customer`}
-                    width={customer.width ?? 96}
-                    height={customer.height ?? 18}
-                    loading="lazy"
-                    className="w-auto"
-                    style={{ height: customer.height ?? 18 }}
-                  />
-                ) : (
-                  <>
-                    <img
-                      src={customer.mark}
-                      alt=""
-                      width={customer.markSize ?? 18}
-                      height={customer.markSize ?? 18}
-                      loading="lazy"
-                      className="shrink-0 object-contain"
-                      style={{
-                        width: customer.markSize ?? 18,
-                        height: customer.markSize ?? 18,
-                        ...(customer.invert ? { filter: "invert(1)" } : null),
-                      }}
-                    />
-                    <span className="text-[14px] font-medium tracking-[-0.02em] whitespace-nowrap text-mist-950">
-                      {customer.name}
-                    </span>
-                  </>
-                )}
+      {/* Two columns when there is proof to show: the ask on the left, who
+          already runs on this on the right. The logos used to sit in a row under
+          the buttons while the band's whole right half stayed empty — which
+          framed the proof as a footnote to the CTA when, at the point someone is
+          deciding, it is part of the argument. Without customers the band stays
+          a single column, so nothing reflows on the pages that pass none. */}
+      <div
+        className={
+          customers
+            ? "grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)]"
+            : undefined
+        }
+      >
+        <div>
+          {eyebrow && <p className="eyebrow">{eyebrow}</p>}
+          <h2 className="section-h2" style={{ maxWidth: "24ch" }}>
+            {title}
+          </h2>
+          {subtitle && (
+            <p className="section-p" style={{ marginTop: 12 }}>
+              {subtitle}
+            </p>
+          )}
+          <div className="flex flex-wrap items-center gap-2" style={{ marginTop: 24 }}>
+            <a className="btn btn-dark btn-lg" href={primary.href}>
+              {primary.label}
+            </a>
+            {secondary && (
+              <a className="btn btn-outline btn-lg" href={secondary.href}>
+                {secondary.label}
               </a>
-            ))}
+            )}
           </div>
         </div>
-      )}
+
+        {customers && <CustomerProof label={customers.label} />}
+      </div>
     </Section>
   );
 }
+
