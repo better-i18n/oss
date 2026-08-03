@@ -48,6 +48,7 @@ import {
 import { getLocaleTier } from "@/seo/locale-tiers";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
+import { assetImage } from "@/lib/asset-image";
 
 const loadBlogPost = createServerFn({ method: "GET" })
   .validator((data: { slug: string; locale: string }) => data)
@@ -300,7 +301,7 @@ function BlogPostPage() {
               <div className="mt-4 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
                 {post.authorAvatar ? (
                   <img
-                    src={post.authorAvatar}
+                    src={assetImage(post.authorAvatar, 28)}
                     alt=""
                     width={28}
                     height={28}
@@ -404,7 +405,7 @@ function BlogPostPage() {
                   <div className="mt-3 flex items-center gap-2.5">
                     {post.authorAvatar ? (
                       <img
-                        src={post.authorAvatar}
+                        src={assetImage(post.authorAvatar, 32)}
                         alt=""
                         width={32}
                         height={32}

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { BlogPostListItem } from "@/lib/content";
+import { assetImage } from "@/lib/asset-image";
 
 interface BlogCardProps {
   post: BlogPostListItem;
@@ -59,7 +60,7 @@ export default function BlogCard({ post, locale }: BlogCardProps) {
         <div className="mt-4 flex items-center gap-2">
           {post.authorAvatar ? (
             <img
-              src={post.authorAvatar}
+              src={assetImage(post.authorAvatar, 20)}
               alt=""
               width={20}
               height={20}

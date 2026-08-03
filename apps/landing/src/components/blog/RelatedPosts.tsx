@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { BlogPostListItem } from "@/lib/content";
 import { useT } from "@/lib/i18n";
 import { SectionHeader } from "@/components/ui/page";
+import { assetImage } from "@/lib/asset-image";
 
 interface RelatedPostsProps {
   posts: BlogPostListItem[];
@@ -44,7 +45,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
             <div className="mt-3 flex items-center gap-2">
               {post.authorAvatar ? (
                 <img
-                  src={post.authorAvatar}
+                  src={assetImage(post.authorAvatar, 18)}
                   alt=""
                   width={18}
                   height={18}
