@@ -9,6 +9,7 @@ import { FlowHero, FlowCard, FlowMono, FlowText } from "@/components/visuals/Flo
 import { LocaleFlag } from "@/components/ui/locale-flag";
 import { PageTestimonial } from "@/components/ui/page";
 import { useTranslations } from "@better-i18n/use-intl";
+import { guideIcon } from "@/lib/i18n-guide-icons";
 import {
   ClosingCta,
   Divider,
@@ -51,6 +52,11 @@ function ContentPage() {
     { key: "svelte", name: "Svelte", adapter: "@better-i18n/content/adapters/svelte" },
     { key: "vanilla", name: "Vanilla JS", adapter: "@better-i18n/content" },
   ];
+
+  /* Marks come from the same source the i18n hub and RelatedPages read, so a
+     framework wears the same logo wherever it is named
+     (rule/name-a-thing-with-its-mark). */
+  const marksInGrid = frameworks.some((f) => guideIcon(f.key) !== null);
 
   const capabilities = [
     {
@@ -176,7 +182,18 @@ function ContentPage() {
                 key={f.key}
                 className="border-t border-l border-black/[0.05] px-5 py-4"
               >
-                <p className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                <p className="flex items-center gap-2 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+                  {/* One decision for the whole grid, not per cell: Vanilla JS
+                      has no mark, and reserving the slot only where a mark
+                      exists would drop that one name out of line with the rest.
+                      Reserving it unconditionally would be just as wrong on a
+                      grid where nothing has a mark — six empty boxes. So: if any
+                      item in the group has one, every item keeps the slot. */}
+                  {marksInGrid && (
+                    <span className="flex size-4 shrink-0 items-center justify-center">
+                      {guideIcon(f.key)}
+                    </span>
+                  )}
                   {f.name}
                 </p>
                 <p className="mt-1.5 truncate font-mono text-[11px] text-mist-400">
