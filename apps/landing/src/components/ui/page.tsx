@@ -232,12 +232,25 @@ export function FeatureRow({ children }: { children: ReactNode }) {
 export function FeatureColumn({
   icon,
   label,
+  plainIcon,
   title,
   description,
   action,
 }: {
   icon?: ReactNode;
   label?: string;
+  /**
+   * Render `icon` as given, without the 22px tinted box.
+   *
+   * The default chrome exists for line-art glyphs, which need a surface to sit
+   * on. A mark that already carries its own shape — `<ProductTile>` draws a
+   * gradient tile with its own radius and shadow, `<CompetitorMark>` a wordmark
+   * — would be a coloured container inside a grey one, which reads as a mistake
+   * rather than as emphasis. Same escape hatch, same name, as the one
+   * `Header.tsx` uses for the product menu (`plainIcon` there too), so the two
+   * places that show a product mark agree instead of each inventing a wrapper.
+   */
+  plainIcon?: boolean;
   title: ReactNode;
   description: ReactNode;
   action?: { label: string; href: string; icon?: ReactNode };
@@ -247,18 +260,22 @@ export function FeatureColumn({
       {(icon || label) && (
         <div className="flex items-center gap-2">
           {icon && (
-            <span
-              className="flex shrink-0 items-center justify-center border border-black/[0.04]"
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: "var(--radius-sm)",
-                background: "rgba(0,0,0,0.03)",
-                color: "var(--color-muted-ink)",
-              }}
-            >
-              {icon}
-            </span>
+            plainIcon ? (
+              icon
+            ) : (
+              <span
+                className="flex shrink-0 items-center justify-center border border-black/[0.04]"
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: "var(--radius-sm)",
+                  background: "rgba(0,0,0,0.03)",
+                  color: "var(--color-muted-ink)",
+                }}
+              >
+                {icon}
+              </span>
+            )
           )}
           {label && (
             <span className="text-[11px] font-medium text-mist-600">{label}</span>

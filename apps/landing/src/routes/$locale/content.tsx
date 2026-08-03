@@ -7,6 +7,7 @@ import { useT } from "@/lib/i18n";
 import { HighlightedCode } from "@/components/CodeBlock";
 import { FlowHero, FlowCard, FlowMono, FlowText } from "@/components/visuals/FlowHero";
 import { LocaleFlag } from "@/components/ui/locale-flag";
+import { ProductTile } from "@/components/ui/product-tile";
 import { useTranslations } from "@better-i18n/use-intl";
 import { guideIcon } from "@/lib/i18n-guide-icons";
 import {
@@ -221,19 +222,32 @@ function ContentPage() {
           title={t("pair.title")}
           subtitle={t("pair.subtitle")}
         />
+        {/* Each column names one of our three products, so each one wears that
+            product's tile — the same <ProductTile> the header's product menu
+            shows, at the same size, so a reader who opened the menu recognises
+            the mark here without reading the label
+            (rule/name-a-thing-with-its-mark). `plainIcon` because the tile is
+            already a shaped, coloured object; the default 22px grey box would
+            put a container around a container. */}
         <div className="mt-8">
           <FeatureRow>
             <FeatureColumn
+              icon={<ProductTile product="i18n" size="sm" />}
+              plainIcon
               label={t("pair.i18n.label")}
               title={t("pair.i18n.title")}
               description={t("pair.i18n.description")}
             />
             <FeatureColumn
+              icon={<ProductTile product="content" size="sm" />}
+              plainIcon
               label={t("pair.content.label")}
               title={t("pair.content.title")}
               description={t("pair.content.description")}
             />
             <FeatureColumn
+              icon={<ProductTile product="analytics" size="sm" />}
+              plainIcon
               label={t("pair.analytics.label")}
               title={t("pair.analytics.title")}
               description={t("pair.analytics.description")}
