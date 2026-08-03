@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
 import { SpriteIcon } from "@/components/SpriteIcon";
-import { GuideMark } from "@/lib/i18n-guide-icons";
+import { GuideMark, guideIcon } from "@/lib/i18n-guide-icons";
 import { CompetitorMark, type CompetitorKey } from "@/components/icons/CompetitorMarks";
 
 type PageLink = {
@@ -106,6 +106,28 @@ function PageMark({ href }: { href: string }) {
   return null;
 }
 
+/**
+ * Does this link have a mark at all?
+ *
+ * Whether a card shows a mark is a per-link fact, but whether the ROW leaves
+ * room for one has to be a per-group decision. When only some links in a row
+ * had a mark, the ones without started their title 22px higher and the row read
+ * as broken — visible on `/content/`, where two of four "Explore more" links
+ * name a framework and two name an SEO topic.
+ *
+ * So the group asks this once: if any link in it carries a mark, every card
+ * reserves the same slot. If none do, nobody reserves anything and no empty
+ * boxes appear. Aligning by reserving space unconditionally would have traded
+ * one visual defect for another.
+ */
+function hasMark(href: string): boolean {
+  const guide = /\/i18n\/([a-z0-9-]+)\/$/.exec(href);
+  if (guide) return guideIcon(guide[1]) !== null;
+
+  const vendor = /\/compare\/([a-z0-9-]+)\/$/.exec(href);
+  return Boolean(vendor && (COMPETITOR_KEYS as readonly string[]).includes(vendor[1]));
+}
+
 const COMPETITOR_KEYS = [
   "crowdin",
   "lokalise",
@@ -135,6 +157,9 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
 
   if (pages.length === 0) return null;
 
+  // One decision for the whole row — see hasMark.
+  const marksInRow = pages.some((page) => hasMark(page.href));
+
   return (
     <section className="border-t border-mist-200/50">
       <div className="section">
@@ -154,8 +179,14 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
               className="group flex flex-col gap-2"
             >
               {/* rule/name-a-thing-with-its-mark — a framework or vendor named
-                  here gets the same mark it has in the matrix and the hub. */}
-              <PageMark href={page.href} />
+                  here gets the same mark it has in the matrix and the hub. The
+                  slot is reserved for the whole row or for none of it, so the
+                  titles sit on one line either way (see hasMark). */}
+              {marksInRow && (
+                <span className="flex h-[22px] items-center">
+                  <PageMark href={page.href} />
+                </span>
+              )}
               <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900 transition-colors group-hover:text-mist-600">
                 {t(page.titleKey)}
               </h3>

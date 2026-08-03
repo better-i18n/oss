@@ -566,7 +566,12 @@ const allFrameworks = [
   { name: "iOS", slug: "ios" },
   { name: "Flutter", slug: "flutter" },
   { name: "TanStack Start", slug: "tanstack-start" },
-  { name: "Server / Hono", slug: "server" },
+  /* "Server / Hono" was one entry until /i18n/hono/ existed. Leaving Hono
+     inside the server label would have pointed every framework page at the
+     generic server guide for a query the dedicated page now answers. */
+  { name: "Server", slug: "server" },
+  { name: "Hono", slug: "hono" },
+  { name: "Rust", slug: "rust" },
 ];
 
 export function OtherFrameworks({ title, currentFramework, locale }: OtherFrameworksProps) {
