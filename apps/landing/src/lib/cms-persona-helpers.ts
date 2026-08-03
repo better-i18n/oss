@@ -7,6 +7,7 @@ import {
   getAlternateLinks,
   getCanonicalLink,
   buildOgImageUrl,
+  truncateTitle,
 } from "@/lib/meta";
 import { getCachedLocales } from "@/lib/locales";
 import {
@@ -110,7 +111,12 @@ export function personaHead(loaderData?: {
 
   return {
     meta: [
-      { title: `${page?.title || label} - Better I18N` },
+      /* Through the shared truncation, not a hand-rolled string: these pages
+         build their head outside getPageHead(), so they were the only ones
+         whose titles ran past 60 characters (Enterprise 64, E-Commerce 64,
+         Startups 62). The CMS title leads and the brand suffix is what gives
+         way, which is the same rule every other page follows. */
+      { title: truncateTitle(`${page?.title || label} - Better I18N`) },
       { name: "description", content: excerpt },
       { property: "og:title", content: page?.title || "" },
       { property: "og:description", content: excerpt },

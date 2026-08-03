@@ -52,6 +52,12 @@ function getNestedValue(obj: MetaMessages, path: string): string | undefined {
  * (e.g. "| Better I18N" or "- Better I18N"), remove it first.
  * If still too long, hard-truncate with ellipsis.
  */
+/**
+ * Keep a <title> inside 60 characters, dropping the brand suffix before cutting
+ * words. Already re-exported at the bottom of this file; the CMS-driven persona
+ * pages build their own head and were the only ones shipping 62-64 character
+ * titles, so they now call this instead of formatting their own string.
+ */
 function truncateTitle(title: string): string {
   if (title.length <= MAX_TITLE_LENGTH) return title;
 
