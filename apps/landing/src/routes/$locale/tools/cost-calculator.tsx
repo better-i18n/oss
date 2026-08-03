@@ -470,10 +470,17 @@ function CostCalculatorPage() {
             </div>
           </div>
 
-          {/* Savings highlight */}
-          <div className="flex items-center gap-4 rounded-xl border border-green-200 bg-green-50 px-6 py-4">
+          {/* Savings highlight.
+              Neutral ink, not green. `rule/tools-grammar-stops-at-the-tool`
+              reserves hue inside the instrument for tool STATE — a validation
+              warning or an error, where the colour IS the message. A savings
+              figure is not state: it is a number this page already prints three
+              times, and the sentence next to it already says "save". The same
+              correction was applied to <CostCard /> above; this band was the one
+              green surface left on the page. */}
+          <div className="flex items-center gap-4 rounded-xl border border-black/[0.07] bg-mist-50 px-6 py-4">
             <svg
-              className="h-5 w-5 flex-shrink-0 text-green-600"
+              className="h-5 w-5 flex-shrink-0 text-mist-500"
               viewBox="0 0 20 20"
               fill="currentColor"
               aria-hidden="true"
@@ -485,10 +492,10 @@ function CostCalculatorPage() {
               />
             </svg>
             <div>
-              <p className="text-sm font-medium text-green-900">
+              <p className="text-sm font-medium text-mist-950">
                 Save up to {savingsPercent}% with Better I18N
               </p>
-              <p className="text-xs text-green-700">
+              <p className="text-xs text-mist-600">
                 Compared to professional human translation at the same quality level.
               </p>
             </div>

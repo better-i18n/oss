@@ -233,7 +233,10 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   ],
 
   // ─── Tools hub (no custom namespaces — UI is hardcoded English) ──
-  ["tools", { namespaces: [] }],
+  // The hub's own section labels live under `tools.hub.*`; before that this
+  // route loaded no namespace at all because every string was an English
+  // literal (rule/client-messages-must-cover-every-key-the-page-renders).
+  ["tools", { namespaces: ["tools"] }],
 ]);
 
 /**
