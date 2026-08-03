@@ -9,6 +9,7 @@ import {
   ClosingCta,
   Divider,
   FaqSection,
+  FeatureGrid,
   PageHero,
   Section,
   SectionHeader,
@@ -240,9 +241,9 @@ function CompleteGuideI18nPage() {
           subtitle={t(k("concepts.subtitle"))}
         />
 
-        <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 lg:grid-cols-2">
-            <article className="border-t border-l border-black/[0.05] px-5 py-5 lg:pl-0">
+        <div className="mt-8">
+          <FeatureGrid cols="lg:grid-cols-2" inset={20} padY={20}>
+            <article className="feat-cell">
               <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                 {t(k("i18nVsL10n.i18n.title"))}
               </h3>
@@ -252,7 +253,7 @@ function CompleteGuideI18nPage() {
                 <p>{t(k("i18nVsL10n.i18n.paragraph3"))}</p>
               </div>
             </article>
-            <article className="border-t border-l border-black/[0.05] px-5 py-5">
+            <article className="feat-cell">
               <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                 {t(k("i18nVsL10n.l10n.title"))}
               </h3>
@@ -262,18 +263,15 @@ function CompleteGuideI18nPage() {
                 <p>{t(k("i18nVsL10n.l10n.paragraph3"))}</p>
               </div>
             </article>
-          </div>
+          </FeatureGrid>
         </div>
 
-        <div className="mt-8 overflow-hidden">
-          <ul
-            role="list"
-            className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-          >
+        <div className="mt-8">
+          <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-3" as="ul" inset={20} padY={16}>
             {keyConcepts.map((concept) => (
               <li
                 key={concept.key}
-                className="border-t border-l border-black/[0.05] px-5 py-4"
+                className="feat-cell"
               >
                 <div className="flex items-center gap-2">
                   <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-500">
@@ -291,7 +289,7 @@ function CompleteGuideI18nPage() {
                 </p>
               </li>
             ))}
-          </ul>
+          </FeatureGrid>
         </div>
       </Section>
 
@@ -374,12 +372,12 @@ function CompleteGuideI18nPage() {
           title={t(k("tms.title"))}
           subtitle={t(k("tms.subtitle"))}
         />
-        <div className="mt-8 overflow-hidden">
-          <ul role="list" className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2">
+        <div className="mt-8">
+          <FeatureGrid cols="sm:grid-cols-2" as="ul" inset={20} padY={16}>
             {tmsCriteria.map((criterion) => (
               <li
                 key={criterion.key}
-                className="border-t border-l border-black/[0.05] px-5 py-4"
+                className="feat-cell"
               >
                 <div className="flex items-center gap-2">
                   <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-500">
@@ -397,7 +395,7 @@ function CompleteGuideI18nPage() {
                 </p>
               </li>
             ))}
-          </ul>
+          </FeatureGrid>
         </div>
       </Section>
 
@@ -413,15 +411,12 @@ function CompleteGuideI18nPage() {
           subtitle={t(k("mistakes.subtitle"))}
         />
 
-        <div className="mt-8 overflow-hidden">
-          <ul
-            role="list"
-            className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-          >
+        <div className="mt-8">
+          <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-4" as="ul" inset={20} padY={16}>
             {commonMistakes.map((mistake) => (
               <li
                 key={mistake.key}
-                className="border-t border-l border-black/[0.05] px-5 py-4"
+                className="feat-cell"
               >
                 <div className="flex items-center gap-2">
                   <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-500">
@@ -439,7 +434,7 @@ function CompleteGuideI18nPage() {
                 </p>
               </li>
             ))}
-          </ul>
+          </FeatureGrid>
         </div>
 
         <div className="mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">

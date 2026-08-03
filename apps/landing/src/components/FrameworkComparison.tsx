@@ -7,6 +7,7 @@ import { HighlightedCode, type CodeLang } from "@/components/CodeBlock";
 import {
   Divider,
   FeatureColumn,
+  FeatureGrid,
   FeatureRow,
   Frame,
   Section,
@@ -35,10 +36,6 @@ import {
  *   - Code blocks are one component (`CodeBlock`) with one treatment, instead of
  *     the light-vs-dark split the setup guide and the code sections used to have.
  */
-
-const HAIRLINE_CELL = "border-t border-l border-black/[0.05]";
-/** Bare clip box: no border, no radius — the frame is the only container. */
-const HAIRLINE_GRID = "overflow-hidden";
 
 /* ─── Section opening ─────────────────────────────────────────────────── */
 
@@ -226,12 +223,12 @@ export function FeatureList({
 
         {/* One hairline table of supported capabilities, not a card per line.
             Correct at any feature count and any column count. */}
-        <div className={`mt-8 ${HAIRLINE_GRID}`}>
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8">
+          <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-3" inset={16} padY={12}>
             {features.map((feature) => (
               <div
                 key={feature}
-                className={`flex items-start gap-2.5 px-4 py-3 ${HAIRLINE_CELL}`}
+                className="feat-cell flex items-start gap-2.5"
               >
                 <SpriteIcon
                   name="checkmark"
@@ -241,7 +238,7 @@ export function FeatureList({
                 <span className="text-[13px] leading-relaxed text-mist-700">{feature}</span>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
     </>
@@ -390,10 +387,10 @@ export function LibraryIntegration({
             </FeatureRow>
           </div>
         ) : (
-          <div className={`mt-8 ${HAIRLINE_GRID}`}>
-            <div className="-mt-px -ml-px grid grid-cols-1 lg:grid-cols-2">
+          <div className="mt-8">
+            <FeatureGrid cols="lg:grid-cols-2" inset={20} padY={20}>
               {libraries.map((lib) => (
-                <div key={lib.name} className={`px-5 py-5 ${HAIRLINE_CELL}`}>
+                <div key={lib.name} className="feat-cell">
                   <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                     Better I18N + {lib.name}
                   </h3>
@@ -412,7 +409,7 @@ export function LibraryIntegration({
                   </div>
                 </div>
               ))}
-            </div>
+            </FeatureGrid>
           </div>
         )}
       </Section>
@@ -584,8 +581,8 @@ export function OtherFrameworks({ title, currentFramework, locale }: OtherFramew
             whole opening it needs, so no eyebrow/h2 pair here. */}
         <h2 className="text-[11px] font-medium text-mist-400">{title}</h2>
 
-        <div className={`mt-4 ${HAIRLINE_GRID}`}>
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4">
+          <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-3" inset={16} padY={12}>
             {others.map((framework) => (
               <Link
                 key={framework.slug}
@@ -608,7 +605,7 @@ export function OtherFrameworks({ title, currentFramework, locale }: OtherFramew
                     | "/$locale/i18n/server/"
                 }
                 params={{ locale }}
-                className={`group flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-black/[0.02] ${HAIRLINE_CELL}`}
+                className="feat-cell group flex items-center justify-between gap-3 transition-colors hover:bg-black/[0.02]"
               >
                 {/* rule/name-a-thing-with-its-mark: a framework named in a list
                     carries its real mark, same tile and size as everywhere else. */}
@@ -625,7 +622,7 @@ export function OtherFrameworks({ title, currentFramework, locale }: OtherFramew
                 />
               </Link>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
     </>
@@ -660,17 +657,17 @@ export function FrameworkFAQ({
 
         {/* Two columns on wide screens: an 8-question FAQ in one 52ch column
             ran longer than the rest of the page put together. */}
-        <div className={`mt-8 ${HAIRLINE_GRID}`}>
-          <div className="-mt-px -ml-px grid grid-cols-1 lg:grid-cols-2">
+        <div className="mt-8">
+          <FeatureGrid cols="lg:grid-cols-2" inset={20} padY={20}>
             {items.map((item) => (
-              <div key={item.question} className={`px-5 py-5 ${HAIRLINE_CELL}`}>
+              <div key={item.question} className="feat-cell">
                 <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                   {item.question}
                 </h3>
                 <p className="mt-2 text-[13px] leading-relaxed text-mist-600">{item.answer}</p>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
     </>

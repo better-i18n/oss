@@ -1,4 +1,5 @@
 import { useT } from "@/lib/i18n";
+import { FeatureGrid } from "@/components/ui/page";
 import {
   IconBag,
   IconPhone,
@@ -56,11 +57,11 @@ export default function UseCases() {
              interior hairlines remain, at every breakpoint. */
           className="overflow-hidden"
         >
-          <div className="-mt-px -ml-px grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <FeatureGrid cols="auto-rows-fr sm:grid-cols-2 lg:grid-cols-4" padY={24}>
             {features.map((feature) => (
               <div
                 key={feature.key}
-                className="flex flex-col gap-3 border-t border-l border-black/[0.05] px-5 py-6"
+                className="feat-cell flex flex-col gap-3"
               >
                 <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   {feature.spriteName ? (
@@ -79,7 +80,7 @@ export default function UseCases() {
                 </div>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </div>
     </section>

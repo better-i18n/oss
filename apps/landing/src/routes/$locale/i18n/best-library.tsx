@@ -8,6 +8,7 @@ import { i18nGuideRoute } from "@/lib/i18n-guide-routes";
 import {
   ClosingCta,
   Divider,
+  FeatureGrid,
   SectionHeader,
 } from "@/components/ui/page";
 import { GuideMark } from "@/lib/i18n-guide-icons";
@@ -158,20 +159,20 @@ function BestLibraryPage() {
               hairline cells stay. They had `gap-4` as well, which floated every
               rule instead of letting neighbours share one; the -1px shift plus a
               clip box is what makes a matrix out of them. */}
-          <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="mt-8">
+          <FeatureGrid cols="grid-cols-2 sm:grid-cols-3 lg:grid-cols-6" inset={16} padY={16}>
             {["react", "nextjs", "vue", "nuxt", "angular", "svelte"].map((fw) => (
               <Link
                 key={fw}
                 to={i18nGuideRoute(fw)}
                 params={{ locale }}
-                className="group flex items-center justify-center gap-2 border-t border-l border-black/[0.05] p-4 transition-colors hover:bg-black/[0.02]"
+                className="feat-cell group flex items-center justify-center gap-2 transition-colors hover:bg-black/[0.02]"
               >
                 <GuideMark slug={fw} />
                 <span className="text-[13px] font-medium capitalize text-mist-900">{fw}</span>
               </Link>
             ))}
-          </div>
+          </FeatureGrid>
           </div>
         </div>
       </section>

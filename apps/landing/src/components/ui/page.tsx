@@ -285,21 +285,62 @@ export function FeatureColumn({
 }
 
 /**
- * `FeatureRow` for more items than fit on one line.
+ * `FeatureRow` for more items than fit on one line — a hairline grid whose
+ * first column lines up with the section's heading.
  *
- * Use this instead of a hand-rolled `grid` whenever a section lists six or
- * eight capabilities. The reason is alignment, not convenience: a hand-rolled
- * grid gives every cell the same horizontal padding, so the first cell of each
- * row sits ~28px inside the section's left edge while the `<h2>` above it sits
- * at 0. Two left edges in one section is what makes the grid read as a card
- * dropped onto the page rather than part of it, and it is the specific defect
- * this primitive exists to prevent (`rule/one-container`).
+ * Use this instead of a hand-rolled `grid` for any enumeration of cells. The
+ * reason is alignment, not convenience: a hand-rolled grid gives every cell the
+ * same horizontal padding, so the first cell of each row sits ~28px inside the
+ * section's left edge while the `<h2>` above it sits at 0. Two left edges in
+ * one section is what makes a grid read as a card dropped onto the page rather
+ * than part of it, and it is the defect this exists to prevent
+ * (`rule/one-container`).
  *
- * `.feat-grid` decides the flush edge per ROW, and moves the nth-child cycle
- * with the column count at each breakpoint — see styles.css.
+ * `cols` takes the responsive ramp as Tailwind classes because the ramp is a
+ * per-section judgement — four short labels want four columns, four sentences
+ * want two — while the alignment is not. `grid-cols-1` is always applied, so
+ * pass only the breakpoints above it. The mechanism is column-count blind (see
+ * `.feat-grid` in styles.css), so any ramp aligns without configuration.
  */
-export function FeatureGrid({ children }: { children: ReactNode }) {
-  return <div className="feat-grid">{children}</div>;
+export function FeatureGrid({
+  cols = "sm:grid-cols-2 lg:grid-cols-3",
+  inset,
+  padY,
+  as = "div",
+  children,
+}: {
+  /** `ul` when the cells are `<li>` — several of these grids are genuinely
+   *  lists and a screen reader should still be told how many items there are.
+   *  Grid display does not remove list semantics in the browsers we support,
+   *  but the element has to be right in the first place. */
+  as?: "div" | "ul";
+  /** Breakpoints above `grid-cols-1`. Other grid utilities (`auto-rows-fr`)
+   *  may ride along — the string is appended verbatim. */
+  cols?: string;
+  /** Horizontal cell inset. Lower it for dense strips: five columns of two
+   *  words each do not want 28px of air. The bleed follows automatically, so
+   *  changing this cannot break the alignment. */
+  inset?: number;
+  padY?: number;
+  children: ReactNode;
+}) {
+  const vars: Record<string, string> = {};
+  if (inset !== undefined) vars["--feat-inset"] = `${inset}px`;
+  if (padY !== undefined) vars["--feat-pad-y"] = `${padY}px`;
+
+  const Grid = as;
+
+  return (
+    <div className="feat-grid-bleed">
+      <Grid
+        role={as === "ul" ? "list" : undefined}
+        className={`feat-grid grid grid-cols-1 ${cols}`}
+        style={vars as CSSProperties}
+      >
+        {children}
+      </Grid>
+    </div>
+  );
 }
 
 export function FeatureCell({

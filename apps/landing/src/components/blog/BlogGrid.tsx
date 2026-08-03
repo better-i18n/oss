@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { FeatureGrid } from "@/components/ui/page";
 
 /**
  * The blog grid container.
@@ -19,10 +20,10 @@ import type { ReactNode } from "react";
  */
 export function BlogGrid({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-hidden bg-white">
-      <div className="-mt-px -ml-px grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="bg-white">
+      <FeatureGrid cols="auto-rows-fr sm:grid-cols-2 lg:grid-cols-3">
         {children}
-      </div>
+      </FeatureGrid>
     </div>
   );
 }

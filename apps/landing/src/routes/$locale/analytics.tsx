@@ -8,7 +8,10 @@ import { useT } from "@/lib/i18n";
 import { HighlightedCode } from "@/components/CodeBlock";
 import { FlowHero, FlowCard, FlowMono, FlowText } from "@/components/visuals/FlowHero";
 import { LocaleFlag } from "@/components/ui/locale-flag";
-import { PageTestimonial } from "@/components/ui/page";
+import {
+  FeatureGrid,
+  PageTestimonial,
+} from "@/components/ui/page";
 import { useTranslations } from "@better-i18n/use-intl";
 import {
   ClosingCta,
@@ -159,12 +162,12 @@ function AnalyticsPage() {
           title={t("tracked.title")}
           subtitle={t("tracked.subtitle")}
         />
-        <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8">
+          <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-4" inset={20} padY={16}>
             {tracked.map((item) => (
               <div
                 key={item.title}
-                className="border-t border-l border-black/[0.05] px-5 py-4"
+                className="feat-cell"
               >
                 <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
                   {item.title}
@@ -174,7 +177,7 @@ function AnalyticsPage() {
                 </p>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
 
@@ -186,12 +189,12 @@ function AnalyticsPage() {
           title={t("safety.title")}
           subtitle={t("safety.subtitle")}
         />
-        <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2">
+        <div className="mt-8">
+          <FeatureGrid cols="sm:grid-cols-2" inset={20} padY={16}>
             {safety.map((item) => (
               <div
                 key={item.title}
-                className="border-t border-l border-black/[0.05] px-5 py-4"
+                className="feat-cell"
               >
                 <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
                   {item.title}
@@ -201,7 +204,7 @@ function AnalyticsPage() {
                 </p>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
 
@@ -453,11 +456,11 @@ function TransportVisual({ t }: { t: (key: string) => string }) {
 
   return (
     <div className="overflow-hidden">
-      <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-3">
+      <FeatureGrid cols="sm:grid-cols-3" inset={20} padY={20}>
         {STEPS.map((s, i) => (
           <div
             key={s.name}
-            className="flex flex-col gap-2 border-t border-l border-black/[0.05] px-5 py-5"
+            className="feat-cell flex flex-col gap-2"
           >
             <div className="flex items-center gap-2">
               <StepNumber n={i + 1} />
@@ -476,7 +479,7 @@ function TransportVisual({ t }: { t: (key: string) => string }) {
             )}
           </div>
         ))}
-      </div>
+      </FeatureGrid>
     </div>
   );
 }

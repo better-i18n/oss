@@ -1,4 +1,5 @@
 import { useT } from "@/lib/i18n";
+import { FeatureGrid } from "@/components/ui/page";
 import type { ReactNode } from "react";
 
 /* ─── Shared statistics archetype ───────────────────────────────────
@@ -49,12 +50,12 @@ export function StatColumns({
   columns: 3 | 4;
 }) {
   return (
-    <div className="overflow-hidden">
-      <div className={`-mt-px -ml-px grid auto-rows-fr grid-cols-1 ${COLUMN_CLASS[columns]}`}>
+    <div>
+      <FeatureGrid cols={`auto-rows-fr ${COLUMN_CLASS[columns]}`} padY={24}>
         {stats.map((stat) => (
           <div
             key={stat.id}
-            className="flex flex-col gap-3 border-t border-l border-black/[0.05] px-5 py-6"
+            className="feat-cell flex flex-col gap-3"
           >
             <p className="text-[40px] font-medium leading-none tracking-[-0.03em] tabular-nums text-mist-950">
               {stat.value}
@@ -76,7 +77,7 @@ export function StatColumns({
             )}
           </div>
         ))}
-      </div>
+      </FeatureGrid>
     </div>
   );
 }

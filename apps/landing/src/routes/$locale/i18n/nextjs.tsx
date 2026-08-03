@@ -9,6 +9,7 @@ import { PillarBlogPosts } from "@/components/PillarBlogPosts";
 import {
   ClosingCta,
   Divider,
+  FeatureGrid,
   PageHero,
   Section,
   SectionHeader,
@@ -206,11 +207,11 @@ function IsrFlowVisual() {
 
       {/* Strategies */}
       <div className="overflow-hidden border-t border-black/[0.05]">
-        <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-3">
+        <FeatureGrid cols="sm:grid-cols-3" inset={16} padY={12}>
           {REVALIDATION_MODES.map((row) => (
             <div
               key={row.mode}
-              className="flex flex-col gap-1.5 border-t border-l border-black/[0.05] px-4 py-3"
+              className="feat-cell flex flex-col gap-1.5"
             >
               <code className="w-fit rounded-sm bg-black/[0.03] px-1.5 py-0.5 font-mono text-[11px] text-mist-700">
                 {row.mode}
@@ -219,7 +220,7 @@ function IsrFlowVisual() {
               <span className="mt-auto font-mono text-[10px] text-mist-400">{row.worst}</span>
             </div>
           ))}
-        </div>
+        </FeatureGrid>
       </div>
     </div>
   );
@@ -952,12 +953,12 @@ function NextjsI18nPage() {
           eyebrow={t("i18n.nextjs.eyebrow.capabilities")}
           title={t("i18n.nextjs.featuresTitle")}
         />
-        <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8">
+          <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-3" inset={16} padY={12}>
             {features.map((feature) => (
               <div
                 key={feature}
-                className="flex items-start gap-2.5 border-t border-l border-black/[0.05] px-4 py-3"
+                className="feat-cell flex items-start gap-2.5"
               >
                 <SpriteIcon
                   name="checkmark"
@@ -967,7 +968,7 @@ function NextjsI18nPage() {
                 <span className="text-[13px] leading-relaxed text-mist-700">{feature}</span>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
 

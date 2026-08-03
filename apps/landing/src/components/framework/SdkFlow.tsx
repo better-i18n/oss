@@ -1,5 +1,9 @@
 import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
-import { Divider, Section } from "@/components/ui/page";
+import {
+  Divider,
+  FeatureGrid,
+  Section,
+} from "@/components/ui/page";
 
 /**
  * SdkFlow — "where does a string actually come from" as a diagram.
@@ -133,12 +137,12 @@ function SdkFlow({
 
         {/* Fallback chain — ordered, so the numbers carry the meaning */}
         <p className="mt-8 mb-3 text-[11px] font-medium text-mist-400">{fallbackLabel}</p>
-        <div className="overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+        <div>
+          <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-5" inset={14} padY={12}>
             {fallbacks.map((layer, index) => (
               <div
                 key={layer}
-                className="flex items-baseline gap-2.5 border-t border-l border-black/[0.05] px-3.5 py-3"
+                className="feat-cell flex items-baseline gap-2.5"
               >
                 <span className="w-3 shrink-0 font-mono text-[10px] tabular-nums text-mist-400">
                   {index + 1}
@@ -146,7 +150,7 @@ function SdkFlow({
                 <span className="text-[12px] leading-[1.45] text-mist-700">{layer}</span>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
 
         {/* Publish path — the write direction */}
@@ -154,12 +158,12 @@ function SdkFlow({
         <FlowRow nodes={publishPath} />
 
         {/* The numbers behind the diagram */}
-        <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8">
+          <FeatureGrid cols="grid-cols-2 lg:grid-cols-4" inset={16} padY={16}>
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="flex flex-col gap-1.5 border-t border-l border-black/[0.05] px-4 py-4"
+                className="feat-cell flex flex-col gap-1.5"
               >
                 <span className="text-[28px] font-medium leading-none tracking-[-0.03em] tabular-nums text-mist-950">
                   {stat.value}
@@ -167,7 +171,7 @@ function SdkFlow({
                 <span className="text-[11px] font-medium text-mist-400">{stat.label}</span>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
     </>

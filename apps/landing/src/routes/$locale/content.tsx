@@ -7,7 +7,6 @@ import { useT } from "@/lib/i18n";
 import { HighlightedCode } from "@/components/CodeBlock";
 import { FlowHero, FlowCard, FlowMono, FlowText } from "@/components/visuals/FlowHero";
 import { LocaleFlag } from "@/components/ui/locale-flag";
-import { PageTestimonial } from "@/components/ui/page";
 import { useTranslations } from "@better-i18n/use-intl";
 import { guideIcon } from "@/lib/i18n-guide-icons";
 import {
@@ -18,6 +17,7 @@ import {
   FeatureGrid,
   FeatureRow,
   PageHero,
+  PageTestimonial,
   Section,
   SectionHeader,
 } from "@/components/ui/page";

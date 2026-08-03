@@ -16,6 +16,7 @@ import {
   ClosingCta,
   Divider,
   FaqSection,
+  FeatureGrid,
   PageHero,
   Section,
   SectionHeader,
@@ -213,8 +214,8 @@ function LocizeComparisonPage() {
           title={t("compare.locize.whyBetter.title")}
           subtitle={t("compare.locize.whySwitch.subtitle")}
         />
-        <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 lg:grid-cols-3">
+        <div className="mt-8">
+          <FeatureGrid cols="lg:grid-cols-3" inset={20} padY={24}>
             {[
               { icon: "code", key: "codeNative" },
               { icon: "robot", key: "agentNative" },
@@ -222,7 +223,7 @@ function LocizeComparisonPage() {
             ].map((item) => (
               <div
                 key={item.key}
-                className="flex flex-col gap-3 border-t border-l border-black/[0.05] px-5 py-6"
+                className="feat-cell flex flex-col gap-3"
               >
                 <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   <SpriteIcon
@@ -241,7 +242,7 @@ function LocizeComparisonPage() {
                 </div>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
 
@@ -395,12 +396,12 @@ function LocizeComparisonPage() {
           title={t("compare.locize.fits.title")}
           subtitle={t("compare.locize.fits.subtitle")}
         />
-        <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2">
+        <div className="mt-8">
+          <FeatureGrid cols="sm:grid-cols-2" inset={20} padY={24}>
             {["i18next", "formats", "translators", "compliance"].map((item) => (
               <div
                 key={item}
-                className="flex gap-3 border-t border-l border-black/[0.05] px-5 py-6"
+                className="feat-cell flex gap-3"
               >
                 <span className="mt-0.5">
                   <CompetitorMark competitor="locize" size={22} />
@@ -415,7 +416,7 @@ function LocizeComparisonPage() {
                 </div>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
 

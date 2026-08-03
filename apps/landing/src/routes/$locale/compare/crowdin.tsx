@@ -16,6 +16,7 @@ import {
   ClosingCta,
   Divider,
   FaqSection,
+  FeatureGrid,
   PageHero,
   Section,
   SectionHeader,
@@ -203,8 +204,8 @@ function CrowdinComparisonPage() {
           title={t("compare.crowdin.whyBetter.title")}
           subtitle={t("compare.crowdin.whySwitch.subtitle")}
         />
-        <div className="mt-8 overflow-hidden">
-          <div className="-mt-px -ml-px grid grid-cols-1 lg:grid-cols-3">
+        <div className="mt-8">
+          <FeatureGrid cols="lg:grid-cols-3" inset={20} padY={24}>
             {[
               { icon: "code", key: "developerFirst" },
               { icon: "robot", key: "mcpNative" },
@@ -212,7 +213,7 @@ function CrowdinComparisonPage() {
             ].map((item) => (
               <div
                 key={item.key}
-                className="flex flex-col gap-3 border-t border-l border-black/[0.05] px-5 py-6"
+                className="feat-cell flex flex-col gap-3"
               >
                 <span className="flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
                   <SpriteIcon
@@ -231,7 +232,7 @@ function CrowdinComparisonPage() {
                 </div>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
 
