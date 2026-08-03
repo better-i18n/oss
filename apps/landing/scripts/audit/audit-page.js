@@ -133,6 +133,52 @@ for (const url of BATCH) {
   }
   await sleep(800);
 
+  /* ---- head settle -------------------------------------------------------
+     The loop above watches the BODY. The head is populated on a different beat:
+     TanStack swaps <head> when the route resolves, and on a busy dev server a
+     route can render its error component first and recover a moment later. The
+     body loop sees that error page - it has an h1 and steady text - and stops.
+
+     That is how pages carrying a correct canonical, a 164-character description
+     and four JSON-LD blocks were reported as having none of them: 17 of 77 in
+     one run, a different 14 in the next. Three separate ghost-finding waves in
+     this harness have come from measuring before the page finished (thin body,
+     then the fixed sleep, now this), and each one cost someone a day chasing a
+     defect that did not exist.
+
+     So: wait for the head to stop changing, and never accept the error head.
+     Do not "simplify" this away - a check that reports phantom failures is worse
+     than no check, because people stop trusting the real findings too. */
+  /* Ceiling kept low on purpose: a healthy head settles in two readings (~0.8s),
+     and the shards run inside an `aside repl` session that dies if it overruns.
+     A 12s ceiling here killed 6 of 8 shards on the first attempt — the audit
+     reported 35 pages instead of 77. Slow-but-correct is still a broken check
+     when it never finishes. */
+  let headKey = '';
+  let headStable = 0;
+  for (let waited = 0; waited < 4000; waited += 400) {
+    let snap = { key: '', failed: true };
+    try {
+      snap = await page.evaluate(() => {
+        const title = document.title || '';
+        return {
+          key: [
+            title,
+            document.querySelector('link[rel="canonical"]')?.getAttribute('href') ?? '',
+            document.querySelector('meta[name="description"]')?.getAttribute('content')?.length ?? 0,
+            document.querySelectorAll('script[type="application/ld+json"]').length,
+          ].join('|'),
+          // The app's error boundary sets this title; it is never a real page.
+          failed: /failed to load/i.test(title),
+        };
+      });
+    } catch {}
+    headStable = snap.key && snap.key === headKey && !snap.failed ? headStable + 1 : 0;
+    headKey = snap.key;
+    if (headStable >= 2) break;
+    await sleep(400);
+  }
+
   let audit;
   try {
     audit = await page.evaluate(([words, suffixSource]) => {
