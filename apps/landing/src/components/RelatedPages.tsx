@@ -88,8 +88,12 @@ const PAGE_POOL: Record<string, PageLink[]> = {
  *
  * `/i18n/{slug}/` is a guide (framework marks live in the shared guide-icon map);
  * `/compare/{vendor}/` is a competitor. Anything else — personas, pricing,
- * features — names no third party and correctly gets nothing, so the caller can
- * render this unconditionally.
+ * features — names no third party and gets nothing.
+ *
+ * Only rendered inside a `MARKED_VARIANTS` row, where the caller has already
+ * verified every link resolves to a mark, so `null` here is a data error rather
+ * than a normal outcome — and one the caller has already absorbed by dropping
+ * the slot for the whole row.
  */
 function PageMark({ href }: { href: string }) {
   const guide = /\/i18n\/([a-z0-9-]+)\/$/.exec(href);
@@ -107,18 +111,30 @@ function PageMark({ href }: { href: string }) {
 }
 
 /**
- * Does this link have a mark at all?
+ * The variants whose every entry names a third party, and therefore the only
+ * ones that show marks (`rule/related-pages-marks-are-per-variant`).
  *
- * Whether a card shows a mark is a per-link fact, but whether the ROW leaves
- * room for one has to be a per-group decision. When only some links in a row
- * had a mark, the ones without started their title 22px higher and the row read
- * as broken — visible on `/content/`, where two of four "Explore more" links
- * name a framework and two name an SEO topic.
+ * `frameworks` lists React / Next.js / Vue, `compare` lists Crowdin / Lokalise /
+ * Phrase — in both, the mark IS the fastest way to find your own stack, which is
+ * what `rule/name-a-thing-with-its-mark` is for. Every other variant lists our
+ * own pages ("Pricing", "For Developers", "Multilingual SEO"): there is no third
+ * party to mark, and a category glyph next to "Pricing" would be decoration
+ * carrying no information — the same reason colour is identity-only here
+ * (`rule/neutral-ink-accent-is-identity-only`).
+ */
+const MARKED_VARIANTS = new Set(["frameworks", "compare"]);
+
+/**
+ * Does this link resolve to a mark?
  *
- * So the group asks this once: if any link in it carries a mark, every card
- * reserves the same slot. If none do, nobody reserves anything and no empty
- * boxes appear. Aligning by reserving space unconditionally would have traded
- * one visual defect for another.
+ * Used to VERIFY the variant's promise, not to discover it. `MARKED_VARIANTS`
+ * declares the intent; this checks the data still honours it, and the caller
+ * demands `every` rather than `some`. That inversion is the whole fix: `some`
+ * reserved a slot the moment ONE link had a mark, so the other cards rendered an
+ * empty 22px box — a mark on some cards and a hole on others, which is the
+ * half-state this component was reported for. With `every`, a variant whose data
+ * has drifted (a slug added to `SLUG_SPRITES`, a vendor without a logo) drops
+ * marks for the whole row instead of producing a ragged one.
  */
 function hasMark(href: string): boolean {
   const guide = /\/i18n\/([a-z0-9-]+)\/$/.exec(href);
@@ -157,8 +173,9 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
 
   if (pages.length === 0) return null;
 
-  // One decision for the whole row — see hasMark.
-  const marksInRow = pages.some((page) => hasMark(page.href));
+  // One decision for the whole row, taken at the variant — see MARKED_VARIANTS.
+  const marksInRow =
+    MARKED_VARIANTS.has(variant) && pages.every((page) => hasMark(page.href));
 
   return (
     <section className="border-t border-mist-200/50">
@@ -179,9 +196,10 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
               className="group flex flex-col gap-2"
             >
               {/* rule/name-a-thing-with-its-mark — a framework or vendor named
-                  here gets the same mark it has in the matrix and the hub. The
-                  slot is reserved for the whole row or for none of it, so the
-                  titles sit on one line either way (see hasMark). */}
+                  here gets the same mark it has in the matrix and the hub.
+                  Either every card in this row carries one or none does, so no
+                  card ever renders an empty slot
+                  (rule/related-pages-marks-are-per-variant). */}
               {marksInRow && (
                 <span className="flex h-[22px] items-center">
                   <PageMark href={page.href} />
@@ -190,7 +208,16 @@ export function RelatedPages({ currentPage, locale, variant = "mixed" }: Related
               <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900 transition-colors group-hover:text-mist-600">
                 {t(page.titleKey)}
               </h3>
-              <p className="text-[13px] leading-relaxed text-mist-500 line-clamp-2">
+              {/* Two lines are reserved whether the copy needs them or not.
+                  The description is clamped at two, so a one-line card used to
+                  leave the leftover space between itself and the arrow — the
+                  arrow stayed level (mt-auto pins it to the bottom of an equal-
+                  height card) but the GAP above it changed from card to card,
+                  and a row where the same gap is three different sizes reads as
+                  drift. Reserving the clamp height makes every card the same
+                  shape, so the rhythm holds regardless of copy length.
+                  42px = 2 × 13px at leading-relaxed, measured. */}
+              <p className="min-h-[42px] text-[13px] leading-relaxed text-mist-500 line-clamp-2">
                 {t(page.descKey)}
               </p>
               <span className="mt-auto flex items-center gap-1 text-[11px] text-mist-400 transition-colors group-hover:text-mist-600">

@@ -514,7 +514,7 @@ export function ClosingCta({
       <div
         className={
           customers
-            ? "grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)]"
+            ? "grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.62fr)]"
             : undefined
         }
       >

@@ -44,6 +44,12 @@ export default function CTA() {
           label: t("bookDemo"),
           href: "https://cal.com/better-i18n/30min?overlayCalendar=true",
         }}
+        /* The proof column, on the one band that ends every page. It was already
+           built for /for-product-teams/ and doing nothing on the other 103 — and
+           the closing ask is exactly where "who already runs on this" carries its
+           weight. The band lays out two columns only when this is passed, so the
+           pages that opt out are untouched. */
+        customers={{ label: t("trustedBy") }}
       />
     </>
   );
