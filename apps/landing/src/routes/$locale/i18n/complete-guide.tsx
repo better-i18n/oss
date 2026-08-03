@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
 import { GuideMark, guideIcon } from "@/lib/i18n-guide-icons";
+import { StepNumber } from "@/components/ui/step-number";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
@@ -690,9 +691,7 @@ function ProcessVisual({
       <ol className="divide-y divide-black/[0.05]">
         {steps.map((step) => (
           <li key={step.number} className="flex items-start gap-4 px-5 py-4">
-            <span className="w-6 shrink-0 pt-0.5 font-mono text-[11px] tabular-nums text-mist-400">
-              {step.number}
-            </span>
+            <StepNumber n={step.number} />
             <span className="min-w-0">
               <span className="block text-[13px] font-medium text-mist-900">
                 {step.title}

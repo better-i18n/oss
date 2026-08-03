@@ -1,4 +1,5 @@
 import { useTranslations } from "@better-i18n/use-intl";
+import { StepNumber } from "@/components/ui/step-number";
 import type { Pillar } from "@/components/ui/page";
 
 /**
@@ -88,12 +89,10 @@ export function ProcessCompare({
           <ol className="mt-4 flex flex-col">
             {manual.steps.map((step, index) => (
               <li
-                key={`${step.label}-${index}`}
+                key={step.label}
                 className="flex items-baseline gap-3 border-t border-black/[0.05] py-3 first:border-t-0 first:pt-0"
               >
-                <span className="w-4 shrink-0 text-[10px] tabular-nums text-mist-300">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
+                <StepNumber n={index + 1} />
                 <span className="min-w-0">
                   <span
                     className={`block text-[13px] leading-[1.5] ${
@@ -128,13 +127,11 @@ export function ProcessCompare({
           <ol className="flex flex-col">
             {better.steps.map((step, index) => (
               <li
-                key={`${step.label}-${index}`}
+                key={step.label}
                 className="process-step-in flex items-baseline gap-3 border-t border-black/[0.05] px-4 py-3 first:border-t-0"
                 style={{ animationDelay: `${index * 90}ms` }}
               >
-                <span className="w-4 shrink-0 text-[10px] tabular-nums text-mist-300">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
+                <StepNumber n={index + 1} />
                 <span className="min-w-0">
                   <span className="block text-[13px] leading-[1.5] text-mist-900">
                     {step.label}

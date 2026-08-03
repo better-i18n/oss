@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { StepNumber } from "@/components/ui/step-number";
 import { useState } from "react";
 import { RelatedPages } from "@/components/RelatedPages";
 import { MarketingLayout } from "@/components/MarketingLayout";
@@ -189,9 +190,7 @@ function IntegrationDetailPage() {
                 key={step}
                 className="flex items-baseline gap-3 border-t border-black/[0.05] py-4 first:border-t-0 first:pt-0"
               >
-                <span className="w-4 shrink-0 text-[10px] tabular-nums text-mist-300">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
+                <StepNumber n={index + 1} />
                 <span className="min-w-0">
                   <span className="block text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                     {t(`detail.setup.steps.${step}.title`)}
@@ -408,9 +407,7 @@ function WorkflowRow({ step, title, body }: { step: string; title: string; body:
     <div className="flex flex-col">
       {/* The step index as a tabular number, not a filled disc: the sequence is
           the information, the tint was not. */}
-      <span className="text-[11px] font-medium tabular-nums text-mist-400">
-        {step.padStart(2, "0")}
-      </span>
+      <StepNumber n={step} />
       <h3 className="mt-2 text-[15px] font-medium tracking-[-0.015em] text-mist-900">{title}</h3>
       <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">{body}</p>
     </div>

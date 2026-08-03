@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
+import { StepNumber } from "@/components/ui/step-number";
 import { createFileRoute } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { CompetitorMark } from "@/components/icons/CompetitorMarks";
 import { ProductTile } from "@/components/ui/product-tile";
+import { SupportMark, markState, useMarkLabels } from "@/components/ui/support-mark";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
 import {
@@ -130,39 +132,13 @@ function VersusMarks() {
   );
 }
 
-/* The same 18px hairline tile BentoRow uses in ui/page.tsx, so a yes/no in the
-   matrix reads like every other "included" marker on the site instead of a bare
-   glyph. A capability the other product does not have gets an em-dash bar, not a
-   red cross: the claim is "not available", not "bad product" — and on a page
-   whose whole credibility rests on being fair about a competitor, that
-   distinction is the point. Prose cells keep plain text; only discrete
-   yes/no values get a tile. */
-/** A cell whose published value is just an em dash means "not available". */
-function isEmDash(value: ReactNode): boolean {
-  return typeof value === "string" && value.trim() === "\u2014";
-}
-
-function FeatureTile({ state }: { state: "yes" | "no" }) {
-  return (
-    <span className="flex size-[18px] shrink-0 items-center justify-center rounded-[5px] border border-black/[0.06] bg-white">
-      <svg
-        width="10"
-        height="10"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={state === "yes" ? "text-mist-500" : "text-mist-300"}
-        aria-hidden="true"
-      >
-        <path d={state === "yes" ? "M20 6 9 17l-5-5" : "M5 12h14"} />
-      </svg>
-    </span>
-  );
-}
-
+/* A yes/no in the matrix uses the shared <SupportMark> tile, so a capability
+   claim reads the same here as in every other table on the site
+   (rule/one-support-mark). A capability the other product does not have gets the
+   tile's minus, not a red cross: the claim is "not available", not "bad
+   product" — and on a page whose whole credibility rests on being fair about a
+   competitor, that distinction is the point. Prose cells keep plain text; only
+   discrete yes/no values get a tile, which `markState` decides. */
 function MatrixCell({
   children,
   tone,
@@ -170,13 +146,18 @@ function MatrixCell({
   children: ReactNode;
   tone: "ours" | "theirs";
 }) {
+  const markLabels = useMarkLabels();
+  /* The published value carries the state: an em dash means "not available".
+     Anything with content is prose and stays prose. */
+  const state = typeof children === "string" ? markState(children) : undefined;
+
   return (
     <td
       className={`border-t border-l border-black/[0.05] px-4 py-3 align-top text-[13px] leading-[1.5] ${
         tone === "ours" ? "text-mist-900" : "text-mist-600"
       }`}
     >
-      {isEmDash(children) ? <FeatureTile state="no" /> : children}
+      {state ? <SupportMark state={state} label={markLabels[state]} /> : children}
     </td>
   );
 }
@@ -187,6 +168,9 @@ function MatrixCell({
    the data, and a route to corrections — but the wording is ours. */
 function CrowdinComparisonPage() {
   const t = useT("marketing");
+  /* The "what you get" list makes the same capability claim the matrix does,
+     so it uses the same tile and the same accessible names. */
+  const markLabels = useMarkLabels();
   const { locale } = Route.useParams();
   const { pillarPosts } = Route.useLoaderData();
 
@@ -375,7 +359,7 @@ function CrowdinComparisonPage() {
                     className="flex items-start gap-2.5 border-t border-black/[0.05] py-3"
                   >
                     <span className="mt-px">
-                      <FeatureTile state="yes" />
+                      <SupportMark state="yes" label={markLabels.yes} />
                     </span>
                     <div className="min-w-0">
                       <p className="text-[13px] font-medium text-mist-900">
@@ -409,9 +393,7 @@ function CrowdinComparisonPage() {
                 index === 0 ? "pt-0" : "border-t border-black/[0.05]"
               }`}
             >
-              <span className="mt-0.5 w-4 shrink-0 font-mono text-[11px] tabular-nums text-mist-400">
-                {index + 1}
-              </span>
+              <StepNumber n={index + 1} />
               <div className="min-w-0 flex-1">
                 <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                   {t(`compare.crowdin.migration.steps.${step}.title`)}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { StepNumber } from "@/components/ui/step-number";
 import { Link } from "@tanstack/react-router";
 import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
 import { GuideMark } from "@/lib/i18n-guide-icons";
@@ -457,9 +458,7 @@ export function SetupGuide({
               key={step.step}
               className={`flex gap-4 py-6 ${ index === 0 ? "pt-0" : "border-t border-black/[0.05]" }`}
             >
-              <span className="mt-0.5 w-4 shrink-0 font-mono text-[11px] tabular-nums text-mist-400">
-                {step.step}
-              </span>
+              <StepNumber n={step.step} />
               <div className="min-w-0 flex-1">
                 <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                   {step.title}

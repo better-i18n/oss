@@ -18,29 +18,28 @@ const METRIC_VALUES: Record<(typeof METRIC_KEYS)[number], string> = {
   sdks: "6",
 };
 
+/**
+ * The numbers only. The section, its heading and its container belong to the
+ * caller — this used to ship its own `<section className="bg-white">` plus a
+ * centred `section-h2`, which meant the block decided the page's heading level
+ * and painted a tinted band that `rule/white-page-hairline-separation` and
+ * `rule/section-opens-with-header` both put on the page, not on a component.
+ */
 export default function PlatformMetrics() {
   const t = useTranslations("aboutPage");
 
   return (
-    <section className="bg-white">
-      <div className="section">
-        <h2 className="section-h2 mb-12 text-center">
-          {t("platformMetrics.title")}
-        </h2>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 lg:gap-12">
-          {METRIC_KEYS.map((key) => (
-            <div key={key} className="text-center">
-              <span className="block text-3xl lg:text-4xl font-medium text-mist-950">
-                {METRIC_VALUES[key]}
-              </span>
-              <span className="mt-2 block text-sm text-mist-600">
-                {t(`platformMetrics.items.${key}`)}
-              </span>
-            </div>
-          ))}
+    <dl className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3 lg:gap-x-12">
+      {METRIC_KEYS.map((key) => (
+        <div key={key}>
+          <dd className="text-3xl font-medium tabular-nums tracking-[-0.02em] text-mist-950 lg:text-4xl">
+            {METRIC_VALUES[key]}
+          </dd>
+          <dt className="mt-2 text-sm text-mist-600">
+            {t(`platformMetrics.items.${key}`)}
+          </dt>
         </div>
-      </div>
-    </section>
+      ))}
+    </dl>
   );
 }

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { StepNumber } from "@/components/ui/step-number";
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
@@ -284,9 +285,7 @@ function Step({
     <div
       className={`flex gap-4 py-6 ${index === 1 ? "pt-0" : "border-t border-black/[0.05]"}`}
     >
-      <span className="mt-0.5 w-4 shrink-0 font-mono text-[11px] tabular-nums text-mist-400">
-        {index}
-      </span>
+      <StepNumber n={index} />
       <div className="min-w-0 flex-1">
         <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">{title}</h3>
         <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">{description}</p>

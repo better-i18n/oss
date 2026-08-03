@@ -2,7 +2,8 @@ import { SpriteIcon } from "@/components/SpriteIcon";
 import { CompetitorMark, type CompetitorKey } from "@/components/icons/CompetitorMarks";
 import { ProductTile } from "@/components/ui/product-tile";
 import { featureIcon } from "@/components/icons/feature-icons";
-import { SupportMark, markState, type MarkState } from "@/components/SupportMark";
+import { SupportMark, markState, useMarkLabels, type MarkState } from "@/components/ui/support-mark";
+import { StepNumber } from "@/components/ui/step-number";
 import { Link } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
 
@@ -74,16 +75,6 @@ function FeatureValue({
       {value}
     </span>
   );
-}
-
-/** The three mark labels, read once per table (screen readers only). */
-function useMarkLabels(): Record<MarkState, string> {
-  const t = useT("compare");
-  return {
-    yes: t("marks.yes"),
-    no: t("marks.no"),
-    partial: t("marks.partial"),
-  };
 }
 
 /**
@@ -159,6 +150,23 @@ interface ComparisonTableProps {
   featureLabel?: string;
 }
 
+/**
+ * react-doctor's `prefer-tag-over-role` fires on the `role="table"` below and it
+ * is knowingly not followed here — do not "fix" it without reading this.
+ *
+ * The rule is right in general: `<table>` gives screen readers semantics that
+ * ARIA only imitates. But this grid is laid out with `grid grid-cols-3`, and
+ * overriding `display` on `<tr>`/`<td>` is exactly what strips table semantics
+ * out of the accessibility tree in Chrome and Safari. Swapping the tags in and
+ * keeping the grid would leave us with markup that LOOKS correct and announces
+ * nothing — strictly worse than what is here.
+ *
+ * So the choice is: real tags with `table-layout: fixed`, or ARIA roles with the
+ * grid. This takes the second, and pays for it by applying the roles COMPLETELY
+ * — table / row / columnheader / cell, no gaps — which is what makes the ARIA
+ * path equivalent rather than decorative. Moving to real tags is a layout
+ * rewrite across six compare pages, not a lint fix.
+ */
 export function ComparisonTable({ competitorName, features, featureLabel }: ComparisonTableProps) {
   const t = useT("compare");
   const labels = useMarkLabels();
@@ -498,13 +506,13 @@ export function MigrationSection({ title, subtitle, steps }: MigrationSectionPro
         <p className="section-p mt-3">{subtitle}</p>
 
         {/* Hairline step list — the step number is a bordered marker, not a
-            filled dark disc, so the column reads as an index not a badge row. */}
+            filled dark disc, so the column reads as an index not a badge row.
+            This treatment is now <StepNumber> and is the one every ordered
+            sequence on the site uses (rule/step-numbers-are-one-marker). */}
         <div className="-mt-px mt-8 overflow-hidden rounded-xl border border-black/[0.07] bg-white">
           {steps.map((step, i) => (
             <div key={step.title} className={`flex gap-4 px-4 py-4 ${i === 0 ? "" : ROW_RULE}`}>
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-md border border-black/[0.06] bg-mist-50 text-[11px] font-medium text-mist-600">
-                {i + 1}
-              </span>
+              <StepNumber n={i + 1} />
               <div className="min-w-0">
                 <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                   {step.title}

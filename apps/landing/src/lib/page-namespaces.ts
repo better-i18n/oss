@@ -98,13 +98,33 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   ],
 
   // ─── Core pages ─────────────────────────────────────────────
-  ["pricing", { namespaces: ["pricing", "pricingPage", "relatedPages"] }],
+  // `compare` travels with `/pricing` because <PricingComparison /> renders the
+  // shared <SupportMark>, whose accessible names are the `compare.marks.*` keys
+  // every comparison table uses. Without it `useT` humanises them and a screen
+  // reader hears "Yes" / "No" in English on all 22 locales instead of the
+  // translated "Supported" / "Not available".
+  //
+  // `compare.marks` is a sub-path SPEC, not a CDN address: getCdnNamespacesForPage
+  // takes `spec.split(".")[0]` and fetches `compare.json`, while the filter keeps
+  // only the `marks` subtree. So the page pays for one file it already needs and
+  // ships three strings instead of the whole namespace.
+  [
+    "pricing",
+    {
+      namespaces: ["pricing", "pricingPage", "relatedPages", "compare.marks"],
+    },
+  ],
   ["features", { namespaces: ["featuresPage", "relatedPages"] }],
   [
     "integrations",
     { namespaces: ["integrationsPage", "integrations", "relatedPages"] },
   ],
-  ["about", { namespaces: ["aboutPage", "relatedPages"] }],
+  // `/about` argues from the same competitor evidence the home page shows —
+  // <CompetitorLandscape /> reads the `alternatives` namespace, so that subtree
+  // travels with the page (rule/client-messages-must-cover-every-key-the-page-
+  // renders). `cta` is already in SHARED_NAMESPACES, which is where the
+  // customer-proof label comes from.
+  ["about", { namespaces: ["aboutPage", "alternatives", "relatedPages"] }],
   ["careers", { namespaces: ["careersPage", "relatedPages"] }],
   ["status", { namespaces: ["statusPage"] }],
   // <RelatedPages /> renders in MarketingLayout on the changelog index, so the

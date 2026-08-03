@@ -7,7 +7,7 @@ import { SITE_URL } from "@/lib/meta";
 import { useT } from "@/lib/i18n";
 import { ClosingCta, Divider, PageHero, Section, SectionHeader } from "@/components/ui/page";
 import { CompetitorMark, type CompetitorKey } from "@/components/icons/CompetitorMarks";
-import { SupportMark, markState } from "@/components/SupportMark";
+import { SupportMark, markState, useMarkLabels } from "@/components/ui/support-mark";
 import { featureIcon } from "@/components/icons/feature-icons";
 
 /** Compare routes as literals. A template path (`/$locale/compare/${slug}`) is
@@ -89,12 +89,9 @@ function ComparePage() {
   const t = useT("marketing");
   const { locale } = Route.useParams();
   /* Screen-reader names for the three mark states. The glyphs in MATRIX_ROWS are
-     data, not text, so the tile needs a translated label of its own. */
-  const markLabels = {
-    yes: t("compare.marks.yes"),
-    no: t("compare.marks.no"),
-    partial: t("compare.marks.partial"),
-  };
+     data, not text, so the tile needs a translated label of its own — read from
+     the hook that ships with the mark rather than re-spelling the keys here. */
+  const markLabels = useMarkLabels();
 
   return (
     <MarketingLayout showCTA={false}>

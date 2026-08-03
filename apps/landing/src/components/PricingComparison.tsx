@@ -1,6 +1,6 @@
 import { useT } from "@/lib/i18n";
-import { SpriteIcon } from "@/components/SpriteIcon";
 import { CompetitorMark, type CompetitorKey } from "@/components/icons/CompetitorMarks";
+import { SupportMark, useMarkLabels } from "@/components/ui/support-mark";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -9,8 +9,8 @@ type Vendor = (typeof VENDORS)[number];
 
 /**
  * Cell semantics:
- *   true            → ✓ (full support)
- *   false           → — (not available)
+ *   true            → <SupportMark state="yes">  (full support)
+ *   false           → <SupportMark state="no">   (not available)
  *   string          → literal text, NOT translated (e.g. prices "$290 / mo", counts "8+")
  *   { i18n, fb }    → translated cell value via `comparison.values.{i18n}` key
  */
@@ -517,30 +517,23 @@ function CellValue({
   highlight: boolean;
   t: ReturnType<typeof useT>;
 }) {
-  /* Support marks are 14px strokes in neutral ink. The filled dark disc read as
-     a badge and made the Better I18N column look like a promo band; the absent
-     state is a hairline rather than an em-dash so both marks share one weight. */
-  if (value === true) {
-    return (
-      <span
-        role="img"
-        aria-label="Included"
-        className="inline-flex items-center justify-center"
-      >
-        <SpriteIcon
-          name="checkmark"
-          className={highlight ? "size-3.5 text-mist-900" : "size-3.5 text-mist-500"}
-          aria-hidden="true"
-        />
-      </span>
-    );
-  }
-  if (value === false) {
-    return (
-      <span role="img" aria-label="Not available" className="inline-flex items-center justify-center">
-        <span className="block h-px w-2.5 bg-mist-300" aria-hidden="true" />
-      </span>
-    );
+  const markLabels = useMarkLabels();
+
+  /* Included / not-included uses the shared <SupportMark> tile
+     (rule/one-support-mark). This table used to draw its own pair — a 14px
+     sprite check for yes and a 1px hairline bar for no — which made the same
+     claim look different here than in the comparison matrices two clicks away.
+     It also hardcoded English accessible names ("Included" / "Not available"),
+     so every non-English reader on a screen reader heard English; the tile's
+     labels are published `compare.marks.*` keys.
+
+     The `highlight` column no longer changes the mark's ink. Our column leads by
+     weight and by the wordmark, not by a darker check — a state that means the
+     same thing must look the same in every column, or the table is arguing
+     rather than comparing. */
+  if (typeof value === "boolean") {
+    const state = value ? "yes" : "no";
+    return <SupportMark state={state} label={markLabels[state]} />;
   }
   if (typeof value === "string") {
     return (

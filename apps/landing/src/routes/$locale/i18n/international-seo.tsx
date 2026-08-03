@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { StepNumber } from "@/components/ui/step-number";
 import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
@@ -195,9 +196,7 @@ function InternationalSeoPage() {
         <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           {processSteps.map((step) => (
             <div key={step.number}>
-              <span className="text-[11px] font-medium tabular-nums text-mist-400">
-                {`0${step.number}`}
-              </span>
+              <StepNumber n={step.number} />
               <h3 className="mt-2 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                 {t(step.titleKey)}
               </h3>

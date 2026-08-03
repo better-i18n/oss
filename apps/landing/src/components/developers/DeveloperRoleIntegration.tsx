@@ -1,5 +1,5 @@
 import { useTranslations } from "@better-i18n/use-intl";
-import { SupportMark } from "@/components/SupportMark";
+import { SupportMark, useMarkLabels } from "@/components/ui/support-mark";
 
 const workflowStepKeys = [
   { key: "addKey", kept: true },
@@ -16,11 +16,11 @@ const eliminatedCount = workflowStepKeys.filter((step) => !step.kept).length;
 
 export default function DeveloperRoleIntegration() {
   const t = useTranslations("developers");
-  const tc = useTranslations("compare");
-  /* The mark's accessible name comes from the same two keys the comparison
-     tables use, so a screen reader hears one vocabulary for "we have this" /
-     "we do not" across the whole site. */
-  const markLabels = { yes: tc("marks.yes"), no: tc("marks.no") };
+  /* The mark's accessible name comes from the hook that ships with the mark, so
+     a screen reader hears one vocabulary for "we have this" / "we do not"
+     across the whole site — it used to re-read the same `compare.marks.*` keys
+     itself. */
+  const markLabels = useMarkLabels();
 
   return (
     <section>

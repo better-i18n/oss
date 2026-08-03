@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { StepNumber } from "@/components/ui/step-number";
 import { testimonialAvatar } from "@/lib/testimonials";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
@@ -459,9 +460,7 @@ function TransportVisual({ t }: { t: (key: string) => string }) {
             className="flex flex-col gap-2 border-t border-l border-black/[0.05] px-5 py-5"
           >
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-medium tabular-nums text-mist-400">
-                {`0${i + 1}`}
-              </span>
+              <StepNumber n={i + 1} />
               <span className="font-mono text-[13px] text-mist-900">{s.name}</span>
             </div>
             <p className="text-[13px] leading-relaxed text-mist-600">{s.note}</p>

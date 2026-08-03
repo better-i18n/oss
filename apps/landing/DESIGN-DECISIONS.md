@@ -531,6 +531,52 @@ logo; `variant="mixed"` — four bare title/description columns, no slot at all.
 Exceptions: none. A new variant joins `MARKED_VARIANTS` only if every entry in
 it names a third party we hold a mark for.
 
+## rule/one-support-mark
+Scope: any surface stating whether a capability exists — comparison matrices,
+the compare hub, the pricing table, persona workflow lists
+Rule: use `<SupportMark state label>` from `src/components/ui/support-mark.tsx`.
+Three states (`yes` / `partial` / `no`), one 18px tile, one geometry, no colour.
+Normalise raw data with `markState()` (booleans, `✓ ✗ ~`, and an em-dash all map
+in one place) and take the accessible name from `useMarkLabels()`. Never draw a
+check or a minus inline, and never vary the mark's ink by column — a state that
+means the same thing must look the same everywhere, or the table is arguing
+rather than comparing.
+Why: the same claim was drawn three ways — this tile, a near-identical
+`FeatureTile` copied into five comparison pages with different ink and different
+path data, and `PricingComparison`'s own sprite-check-plus-hairline-bar. Two of
+the three were unreadable to a screen reader: `FeatureTile` had no accessible
+name at all, and the pricing table hardcoded English ones, so all 22 locales
+heard "Included" / "Not available" in English.
+Evidence: `src/components/ui/support-mark.tsx`; user decision 2026-08-03 ("bu
+pricing listelerindeki check alanlarinda bizim reusable check box'i kullanalim",
+"buradaki checked/unchecked durumu bunu HER YERDE kullanacagiz").
+Bad: `<span className="size-[18px] …"><svg><path d="M20 6 9 17l-5-5"/></svg></span>`
+Good: `<SupportMark state="yes" label={markLabels.yes} />`
+Exceptions: a cell with real content — a price, "8+", a plan name — is text, not
+a state. `markState()` returns `undefined` for it and the caller renders text.
+
+## rule/step-numbers-are-one-marker
+Scope: any ordered sequence — migration steps, setup flows, process lists,
+guide walkthroughs
+Rule: use `<StepNumber n>` from `src/components/ui/step-number.tsx`. A bordered
+`mist-50` square, two tabular digits, one size. Pass a 1-based index or the
+page's own `"01"` datum; padding happens inside. It is `aria-hidden` — the
+ordering lives in the markup (`<ol>`) and the content lives in the step's title.
+Why: four renderings of one idea — this bordered box in `MigrationSection`, a
+10px `mist-300` bare number in `ProcessCompare` and the integration setup list,
+an 11px `mist-400` bare number on five pages, and a `font-mono mist-400` one in
+the comparison and framework guides. All were written inline at the call site,
+so "the step marker" had no definition to change. Bordered rather than a filled
+dark disc: a disc reads as a badge, a thing with a status, while a sequence is
+an index (the reasoning already recorded in `MigrationSection` and `WorkflowRow`).
+Evidence: `src/components/ui/step-number.tsx`, 19 call sites; user decision
+2026-08-03 ("buradaki 1,2,3,4'leri de oyle kutu icine alabiliriz HER YERDE").
+Bad: `<span className="w-4 text-[10px] tabular-nums text-mist-300">{String(i+1).padStart(2,"0")}</span>`
+Good: `<StepNumber n={i + 1} />`
+Exceptions: a number composed INTO a label rather than marking a step — the
+`01 —— Deep dive` card meta on `/features` and the `${step} · ${badge}` eyebrow
+there. Those are text inside a phrase, and a box would break the phrase.
+
 ## Coverage gaps (no decision yet — do not invent one)
 
 - ~~**~150 strings hardcoded in page files, awaiting keys.**~~ **Closed for

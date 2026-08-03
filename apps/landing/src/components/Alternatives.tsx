@@ -1,26 +1,7 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
 import { SpriteIcon } from "@/components/SpriteIcon";
-import { CompetitorMark, type CompetitorKey } from "@/components/icons/CompetitorMarks";
-
-const alternatives = [
-  { key: "crowdin", name: "Crowdin", href: "/$locale/compare/crowdin/" },
-  { key: "lokalise", name: "Lokalise", href: "/$locale/compare/lokalise/" },
-  { key: "phrase", name: "Phrase", href: "/$locale/compare/phrase/" },
-  { key: "transifex", name: "Transifex", href: "/$locale/compare/transifex/" },
-];
-
-/**
- * Vendors whose entry price was read off their own pricing page and confirmed —
- * checked 2 August 2026 in a browser, because all four pages render their
- * numbers with JavaScript and a plain fetch returns none.
- *
- * Phrase is absent on purpose: their pricing page showed no figure at all, so
- * there is nothing to cite. A number we cannot see on the vendor's own page is
- * not one to print next to their name — a missing line is a gap, an invented
- * one is a liability.
- */
-const VERIFIED_ENTRY_PRICE = new Set(["crowdin", "lokalise", "transifex"]);
+import { CompetitorLandscape } from "@/components/CompetitorLandscape";
 
 /* Six claims, not three: this list carries the section's whole argument, and
    three lines left the column visually short next to four competitor cells.
@@ -91,70 +72,11 @@ export default function Alternatives() {
             </Link>
           </div>
 
-          {/* Right: four bare columns, gap only — no container, no per-item cell.
-              This was a hairline grid inside a rounded container until
-              rule/listed-items-are-not-cards: a competitor list is a list of
-              links, and the page is already a bordered frame, so the container
-              was a second box and each cell a third. The mark plus ink weight
-              carries the grouping now. The comparison MATRIX keeps its rules —
-              there the lines are the structure, which is the rule's exception. */}
-          <div>
-            <p className="text-[11px] font-medium text-mist-400">
-              {t("competitorsLabel")}
-            </p>
-            <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-x-10">
-              {alternatives.map((alt) => (
-                <Link
-                  key={alt.key}
-                  to={
-                    alt.href as
-                      | "/$locale/compare/crowdin/"
-                      | "/$locale/compare/lokalise/"
-                      | "/$locale/compare/phrase/"
-                      | "/$locale/compare/transifex/"
-                  }
-                  params={{ locale: currentLocale }}
-                  className="group flex items-start justify-between gap-3"
-                >
-                  <span className="flex min-w-0 items-start gap-3">
-                    <CompetitorMark competitor={alt.key as CompetitorKey} />
-                    <span className="min-w-0">
-                      <span className="block text-[15px] font-medium tracking-[-0.015em] text-mist-900">
-                        {alt.name}
-                      </span>
-                      <span className="mt-1.5 block text-[13px] leading-5 text-mist-600">
-                        {t(`${alt.key}.description`)}
-                      </span>
-                      {/* One hard number per card, and not a new claim: this is
-                          the entry price our own comparison page for that vendor
-                          already publishes, read off their public pricing page.
-                          A card that only says "powerful platform" gives the
-                          reader nothing to act on. */}
-                      {VERIFIED_ENTRY_PRICE.has(alt.key) && (
-                        <span className="mt-1.5 block text-[12px] tabular-nums text-mist-400">
-                          {t(`${alt.key}.entryPrice`)}
-                        </span>
-                      )}
-                    </span>
-                  </span>
-                  <SpriteIcon
-                    name="chevron-right"
-                    className="mt-0.5 size-3.5 shrink-0 text-mist-400 transition-transform duration-150 group-hover:translate-x-0.5"
-                  />
-                </Link>
-              ))}
-            </div>
-
-            {/* Naming a competitor without acknowledging what they do well reads
-                as insecurity. This line is the section's posture: they are good
-                tools, we are a different shape. It also sets up the comparison
-                pages, which are written the same way. */}
-            {/* Where the numbers come from. A price without a source is a
-                claim; with one it is a citation. */}
-            <p className="mt-4 text-[12px] leading-5 text-mist-400">{t("entryPriceNote")}</p>
-
-            <p className="section-p mt-5 text-[13px]">{t("respectNote")}</p>
-          </div>
+          {/* Right: the vendor columns, their descriptions and their verified
+              entry prices now live in <CompetitorLandscape /> — the same block
+              the positioning section on /about renders, so a price is fixed in
+              one place. */}
+          <CompetitorLandscape />
         </div>
       </div>
     </section>

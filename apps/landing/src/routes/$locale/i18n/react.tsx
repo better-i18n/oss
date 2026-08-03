@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { StepNumber } from "@/components/ui/step-number";
 import { testimonialAvatar } from "@/lib/testimonials";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
@@ -177,9 +178,7 @@ function ReactI18nPage() {
           {SETUP_STEPS.map((step, i) => (
             <div key={step.id}>
               <div className="flex items-baseline gap-3">
-                <span className="text-[11px] font-medium tabular-nums text-mist-400">
-                  {`0${i + 1}`}
-                </span>
+                <StepNumber n={i + 1} />
                 <div className="min-w-0">
                   <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                     {t(`i18n.react.setup.${step.id}.title`)}
@@ -421,9 +420,7 @@ function RuntimeVisual({ t }: { t: (key: string) => string }) {
             className="flex flex-col gap-2 border-t border-l border-black/[0.05] px-5 py-5"
           >
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-medium tabular-nums text-mist-400">
-                {`0${i + 1}`}
-              </span>
+              <StepNumber n={i + 1} />
               <span className="truncate font-mono text-[12px] text-mist-900">{s.code}</span>
             </div>
             <p className="text-[13px] leading-relaxed text-mist-600">
