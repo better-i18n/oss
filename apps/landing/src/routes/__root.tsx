@@ -15,7 +15,7 @@ import {
 } from "@better-i18n/use-intl";
 import { ContentProvider } from "@better-i18n/content/adapters/react";
 import type { Messages } from "@better-i18n/use-intl";
-import { getMessages } from "@better-i18n/use-intl/server";
+import { getMessages, parseAcceptLanguage } from "@better-i18n/use-intl/server";
 import { detectLocale } from "@better-i18n/core";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
@@ -151,15 +151,27 @@ const BYPASS_LOCALE_CHECK = new Set(["api", "brand"]);
  * On the client there is no incoming request to read, so it answers with
  * nothing and locale detection falls back to the default.
  */
+type LocaleHints = {
+  countryCode?: string;
+  cookieLocale?: string;
+  /** Languages the client actually asked for, most-preferred first. */
+  acceptLanguages?: string[];
+};
+
 const readRequestLocaleHints = createIsomorphicFn()
-  .client((): { countryCode?: string; cookieLocale?: string } => ({}))
-  .server((): { countryCode?: string; cookieLocale?: string } => {
+  .client((): LocaleHints => ({}))
+  .server((): LocaleHints => {
     try {
       const cookieHeader = getRequestHeader("Cookie") ?? "";
       const cookieMatch = /preferred-locale=([^;]+)/.exec(cookieHeader);
       return {
         countryCode: getRequestHeader("X-Country") ?? undefined,
         cookieLocale: cookieMatch?.[1],
+        // Read at last: this header was never consulted, which is why a request
+        // carrying `Accept-Language: en-US` was still answered with Indonesian.
+        acceptLanguages: parseAcceptLanguage(
+          getRequestHeader("Accept-Language"),
+        ),
       };
     } catch {
       // Outside a request context (the dev server's first pass) the accessor
@@ -189,27 +201,62 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       const search = location.searchStr || "";
       const hash = location.hash || "";
 
-      // Detect locale: cookie (manual user choice) > geo (CF X-Country) > default.
-      // The hints come from `readRequestLocaleHints`, which is isomorphic: on the
-      // client there is no incoming request to read, so it returns nothing.
-      let countryCode: string | undefined;
-      let cookieLocale: string | undefined;
+      /**
+       * Detection order here is: cookie > Accept-Language > geo > default.
+       *
+       * Two things were wrong before. `Accept-Language` was never read at all,
+       * so a request that said "I want English" was answered with the language
+       * of the IP it came from — measured: `Accept-Language: en-US,en;q=0.9`
+       * from an Indonesian address returned `/id/` with `<html lang="id">`.
+       * A stated preference is a fact about the reader; geography is a guess
+       * about them, and the guess was outranking the fact.
+       *
+       * The order is resolved HERE rather than in `detectLocale`, whose own
+       * priority is `path > cookie > geo > header > default`. That function
+       * ships in `@better-i18n/core` to customers, and reordering its
+       * precedence would change behaviour for every app that depends on it —
+       * a breaking change dressed as a fix. So the call site withholds
+       * `countryCode` once a header preference has matched, which produces the
+       * order we want out of the function we already publish.
+       */
       const hints = readRequestLocaleHints();
-      countryCode = hints.countryCode;
-      if (hints.cookieLocale && locales.includes(hints.cookieLocale)) {
-        cookieLocale = hints.cookieLocale;
-      }
+      const cookieLocale =
+        hints.cookieLocale && locales.includes(hints.cookieLocale)
+          ? hints.cookieLocale
+          : undefined;
+
+      /* First language the client asked for that we actually publish. Matched
+         on the base tag too, so `pt-BR` finds `pt` and `zh-Hans-CN` finds
+         `zh-hans` — the CDN stores lowercase BCP 47. */
+      const headerLocale = hints.acceptLanguages?.find((tag) => {
+        const lower = tag.toLowerCase();
+        return locales.includes(lower) || locales.includes(lower.split("-")[0]!);
+      });
+      const headerMatch = headerLocale
+        ? locales.includes(headerLocale.toLowerCase())
+          ? headerLocale.toLowerCase()
+          : headerLocale.toLowerCase().split("-")[0]
+        : undefined;
 
       const { locale: detectedLocale } = detectLocale({
         project: i18nConfig.project,
         defaultLocale: i18nConfig.defaultLocale,
         availableLocales: locales,
         cookieLocale,
-        countryCode,
+        headerLocale: headerMatch,
+        // Withheld when the reader stated a language — see above.
+        countryCode: headerMatch ? undefined : hints.countryCode,
       });
 
-      // Cache warming: pre-load messages before redirect so loader gets a TtlCache hit
-      await getMessages({ project: i18nConfig.project, locale: detectedLocale }).catch(() => {});
+      /* The `await getMessages()` that used to sit here is gone.
+         It pre-warmed the TtlCache "so the loader gets a hit", but it did that
+         on the critical path of a response whose entire body is a Location
+         header — the redirect needs no messages. Measured on production, the
+         root URL took 8.5s to return its 302 because of this line, and the
+         warm it bought is a gamble: the redirected request is a new request
+         that may land on a different isolate, where the module-level cache it
+         warmed does not exist. A guaranteed multi-second cost for a possible
+         saving is the wrong trade on the most-requested URL of the site. */
 
       const targetPath = location.pathname === "/" ? "" : location.pathname;
       throw redirect({
