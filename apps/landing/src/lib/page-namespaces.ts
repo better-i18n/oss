@@ -124,7 +124,13 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   // travels with the page (rule/client-messages-must-cover-every-key-the-page-
   // renders). `cta` is already in SHARED_NAMESPACES, which is where the
   // customer-proof label comes from.
-  ["about", { namespaces: ["aboutPage", "alternatives", "relatedPages"] }],
+  // `testimonials` travels with it too: <PageTestimonial /> renders quote 2 as
+  // the proof for the positioning claim, and without the subtree `useT`
+  // humanizes it to "Quote" on screen.
+  [
+    "about",
+    { namespaces: ["aboutPage", "alternatives", "testimonials", "relatedPages"] },
+  ],
   ["careers", { namespaces: ["careersPage", "relatedPages"] }],
   ["status", { namespaces: ["statusPage"] }],
   // <RelatedPages /> renders in MarketingLayout on the changelog index, so the

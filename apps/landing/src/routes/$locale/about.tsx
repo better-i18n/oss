@@ -12,10 +12,12 @@ import {
   BentoRow,
   FeatureRow,
   FeatureColumn,
+  PageTestimonial,
   ClosingCta,
 } from "@/components/ui/page";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
+import { testimonialAvatar } from "@/lib/testimonials";
 
 /**
  * `/about` is a positioning page, not a company page.
@@ -60,6 +62,7 @@ function AboutPage() {
   const t = useT("aboutPage");
   const tAlt = useT("alternatives");
   const tCta = useT("cta");
+  const tQuote = useT("testimonials");
   const { locale } = Route.useParams();
 
   return (
@@ -161,6 +164,24 @@ function AboutPage() {
           {t("positioning.future.close")}
         </p>
       </Section>
+
+      <Divider />
+
+      {/* The claim above is ours; this is someone else saying it happened.
+          Quote 2 of four, chosen because it is the only one that names the
+          mechanism this section argues for: "we push translations and they're
+          live instantly, no deploys, no cache invalidation". The other three
+          are about AI coverage and language count, which is a different
+          argument. Copy and caption come from the published `testimonials`
+          namespace, the face from `testimonialAvatar` — no quote is authored
+          here (see src/lib/testimonials.ts). */}
+      <PageTestimonial
+        quote={tQuote("2.quote")}
+        name={tQuote("2.name")}
+        role={tQuote("2.title")}
+        avatar={testimonialAvatar(2)}
+        patternId="dots-about"
+      />
 
       <Divider />
 
