@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { PILLAR_META, type Pillar } from "@/components/ui/page";
+import { HighlightedCode, type CodeLang } from "@/components/CodeBlock";
 
 /**
  * FlowHero — the "many sources converge on one platform" hero diagram.
@@ -281,12 +282,17 @@ export function FlowCard({
         }}
       >
         {icon && <span style={{ display: "flex", color: "#a3a3a3" }}>{icon}</span>}
+        {/* Sentence case, not uppercase. Every card in the diagram shouted its
+            label, and a page where nine small labels are all-caps at once reads
+            as louder than the content they introduce — the eyebrow is there to
+            name the value under it, not to compete with it. The `.eyebrow`
+            class the rest of the site uses is not uppercase either; this was
+            the one place that disagreed. */}
         <span
           style={{
-            fontSize: 10,
+            fontSize: 10.5,
             fontWeight: 500,
-            letterSpacing: "0.055em",
-            textTransform: "uppercase",
+            letterSpacing: "0.01em",
             color: "#a3a3a3",
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -302,8 +308,32 @@ export function FlowCard({
   );
 }
 
-/** Monospace line — a translation key, a file path, a branch name. */
-export function FlowMono({ children }: { children: ReactNode }) {
+/**
+ * Monospace line — a translation key, a file path, an API call.
+ *
+ * When the line is code, it is tokenised with the same highlighter and the same
+ * three hues the code blocks use (`TOKEN_INK`): a chained call rendered in flat
+ * grey inside a diagram about an SDK asks the reader to parse it themselves,
+ * while every other code on the site is coloured. Passing `lang` opts in; a bare
+ * key or file path stays plain, because colouring `blog-posts · tr` would invent
+ * syntax that is not there.
+ */
+export function FlowMono({
+  children,
+  lang,
+}: {
+  children: ReactNode;
+  lang?: CodeLang;
+}) {
+  if (lang && typeof children === "string") {
+    return (
+      <HighlightedCode
+        code={children}
+        lang={lang}
+        className="font-mono text-[12px] leading-[1.45] tracking-[-0.01em] break-words [overflow-wrap:anywhere] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden"
+      />
+    );
+  }
   return (
     <p
       style={{

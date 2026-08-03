@@ -300,13 +300,13 @@ function ContentFlow({ t }: { t: (key: string) => string }) {
           <FlowMono>{t("visual.model")}</FlowMono>
         </FlowCard>,
         <FlowCard key="query" eyebrow={t("query.title")}>
-          <FlowMono>.from(&quot;blog-posts&quot;).language(&quot;tr&quot;)</FlowMono>
+          <FlowMono lang="ts">{`.from("blog-posts").language("tr")`}</FlowMono>
           <div style={{ marginTop: 4 }}>
             <FlowText muted>{t("query.point.two")}</FlowText>
           </div>
         </FlowCard>,
         <FlowCard key="relations" eyebrow={t("capabilities.relations.title")}>
-          <FlowMono>.expand([&quot;author&quot;, &quot;category&quot;])</FlowMono>
+          <FlowMono lang="ts">{`.expand(["author", "category"])`}</FlowMono>
         </FlowCard>,
         <FlowCard key="publish" eyebrow={t("capabilities.publish.title")}>
           <FlowText>{t("visual.entry")}</FlowText>
@@ -315,7 +315,7 @@ function ContentFlow({ t }: { t: (key: string) => string }) {
         <div key="de">{entryCard("de")}</div>,
         <div key="ja">{entryCard("ja")}</div>,
         <FlowCard key="mcp" eyebrow={t("capabilities.mcp.title")}>
-          <FlowMono>createContentEntry()</FlowMono>
+          <FlowMono lang="ts">createContentEntry()</FlowMono>
         </FlowCard>,
       ]}
     />
