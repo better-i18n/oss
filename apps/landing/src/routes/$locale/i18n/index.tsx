@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
-import { GuideMark, type GuideGroup } from "@/lib/i18n-guide-icons";
+import { GuideMark, guideIcon, type GuideGroup } from "@/lib/i18n-guide-icons";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, formatStructuredData, createPageLoader } from "@/lib/page-seo";
 import { getOrganizationSchema, getComparisonSchema } from "@/lib/structured-data";
@@ -86,6 +86,8 @@ const frameworks: HubLink[] = [
   { slug: "ios", key: "ios" },
   { slug: "flutter", key: "flutter" },
   { slug: "server", key: "server" },
+  { slug: "hono", key: "hono" },
+  { slug: "rust", key: "rust" },
 ];
 
 const topics: HubLink[] = [
@@ -210,6 +212,18 @@ function HubGrid({
   columns: 3 | 4;
 }) {
   const t = useT("marketing");
+  /**
+   * One decision for the whole grid, not per card — the same rule
+   * `RelatedPages` applies with `marksInRow`.
+   *
+   * `GuideMark` renders `null` when a slug has no icon, and a null mark
+   * collapses its wrapper to zero width: the card's title then starts 22px
+   * left of every neighbour and the column reads as broken. `/i18n/hono/` and
+   * `/i18n/rust/` are exactly that case — the icon map has no mark for either.
+   * So if ANY item in the group has a mark, the slot is reserved for ALL of
+   * them; if none does, no space is reserved anywhere.
+   */
+  const marksInGroup = items.some((item) => guideIcon(item.slug, group, "size-3.5") !== null);
   const gridCols =
     columns === 3
       ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
@@ -232,9 +246,11 @@ function HubGrid({
               {/* <GuideMark /> rather than a local tile: rule/name-a-thing-with-
                   its-mark wants ONE tile at one size everywhere a framework is
                   named, and this grid inventing its own was how that drifts. */}
-              <span className="mt-0.5">
-                <GuideMark slug={item.slug} group={group} />
-              </span>
+              {marksInGroup && (
+                <span className="mt-0.5 flex size-[22px] shrink-0 items-center justify-center">
+                  <GuideMark slug={item.slug} group={group} />
+                </span>
+              )}
               <span className="min-w-0">
                 <span className="block text-[13px] font-medium text-mist-900">
                   {t(`i18n.index.${group}.${item.key}.name`)}

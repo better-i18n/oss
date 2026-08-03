@@ -506,6 +506,31 @@ Evidence: `content.tsx` (`ContentFlow`), `for-product-teams` (`ProductWorkflow`)
 Exceptions: a **before/after** comparison is a different question and uses
 `ProcessCompare` (two lanes on one rail), not this.
 
+## rule/related-pages-marks-are-per-variant
+Scope: `<RelatedPages>` — the "Explore more" link row at the foot of most pages
+Rule: whether a row shows marks is decided by its `variant`, never per link.
+`frameworks` and `compare` show a mark on **every** card; `for`, `resources`,
+`educational`, `content` and `mixed` show one on **none**. The row asks
+`pages.every(hasMark)`, not `pages.some(...)`, so a variant whose data has
+drifted loses marks entirely rather than rendering a ragged row.
+Why: `rule/name-a-thing-with-its-mark` earns its keep where the mark is how you
+find your own stack — a row of frameworks or of vendors. Everywhere else this
+component lists OUR pages ("Pricing", "For Developers", "Multilingual SEO"),
+where a category glyph is decoration carrying no information, the same reason
+colour is identity-only (`rule/neutral-ink-accent-is-identity-only`). The
+previous per-link rule produced the worst of both: a mark on some cards and an
+empty 22px slot on others, because `hasMark` consulted `SLUG_SPRITES` — so
+adding a slug to an icon table silently changed a layout.
+Evidence: `src/components/RelatedPages.tsx` (`MARKED_VARIANTS`); supersedes the
+per-row reservation in 97e42b4, which fixed the alignment but kept the
+half-state; user report 2026-08-03 ("bazılarında ikon var bazılarında yok").
+Bad: `variant="content"` where two of four links resolve to a sprite and two
+render an empty slot.
+Good: `variant="compare"` — Crowdin, Lokalise and Phrase each with their own
+logo; `variant="mixed"` — four bare title/description columns, no slot at all.
+Exceptions: none. A new variant joins `MARKED_VARIANTS` only if every entry in
+it names a third party we hold a mark for.
+
 ## Coverage gaps (no decision yet — do not invent one)
 
 - ~~**~150 strings hardcoded in page files, awaiting keys.**~~ **Closed for

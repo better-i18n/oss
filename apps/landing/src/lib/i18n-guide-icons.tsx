@@ -59,6 +59,11 @@ const BRAND_MARKS: Record<string, (p: { className?: string }) => ReactNode> = {
   flutter: FlutterIcon,
   // Not a framework page, but it IS the React ecosystem — the mark is accurate.
   "react-intl": ReactIcon,
+  // Same reasoning: React Native is React. Expo has its own mark and its own
+  // guide, so this slug must not borrow it — Expo is one way to build RN, not
+  // the same thing. Without an entry here this slug was the single gap in a
+  // list that is otherwise all brand marks (the complete-guide framework grid).
+  "react-native-localization": ReactIcon,
 };
 
 /**

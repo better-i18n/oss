@@ -25,7 +25,20 @@ export type SpriteIconName =
   | "script"
   | "code"
   | "book"
-  | "chevron-bottom";
+  | "chevron-bottom"
+  /* Added so `what-is` could stop mixing two icon families in one row: four of
+     its six "what i18n covers" cells imported @central-icons-react components
+     directly while two used the sprite, which forced a `typeof icon === "string"`
+     branch at the call site and put two stroke treatments side by side. Same
+     package, same style axis (round-outlined / radius-2 / stroke-2) as every
+     symbol above — this widens the one source rather than keeping a second. */
+  | "images"
+  | "calendar"
+  | "files"
+  | "translate"
+  | "cloud"
+  | "devices"
+  | "bag";
 
 interface SpriteIconProps extends SVGProps<SVGSVGElement> {
   readonly name: SpriteIconName;

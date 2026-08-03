@@ -15,12 +15,6 @@ import {
 } from "@/components/ui/page";
 import { FlowHero, FlowCard, FlowMono, FlowText } from "@/components/visuals/FlowHero";
 import { LocaleFlag } from "@/components/ui/locale-flag";
-import {
-  IconCalendar1,
-  IconTranslate,
-  IconImages1,
-  IconFiles,
-} from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/what-is")({
   // `testimonials` travels with the page because <PageTestimonial /> renders a
@@ -95,14 +89,23 @@ const COMPARISON_ROW_KEYS = [
   "example",
 ] as const;
 
-const COVERS_ITEMS = [
-  { icon: IconImages1, key: "ui" },
-  { icon: IconCalendar1, key: "dateTime" },
+/**
+ * Every icon on this page is a sprite name — one family, one stroke treatment.
+ *
+ * Four of these six used to be @central-icons-react components imported straight
+ * into the route while the other two were sprite strings, so the cell had to ask
+ * `typeof icon === "string"` and the grid put two different stroke renderings in
+ * one row. The four missing glyphs now live in `SvgSprite.tsx` like the rest, so
+ * the branch and the second import are gone.
+ */
+const COVERS_ITEMS: ReadonlyArray<{ icon: SpriteIconName; key: string }> = [
+  { icon: "images", key: "ui" },
+  { icon: "calendar", key: "dateTime" },
   { icon: "code-brackets", key: "encoding" },
   { icon: "settings-gear", key: "numbers" },
-  { icon: IconFiles, key: "content" },
-  { icon: IconTranslate, key: "plurals" },
-] as const;
+  { icon: "files", key: "content" },
+  { icon: "translate", key: "plurals" },
+];
 
 /** The two definitions, side by side. `formula` is notation, not copy. */
 const DEFINITIONS = [
@@ -110,7 +113,21 @@ const DEFINITIONS = [
   { id: "l10nDef", formula: "l10n = l + (10 letters) + n" },
 ] as const;
 
-const USE_CASE_KEYS = ["saas", "mobile", "ecommerce"] as const;
+/**
+ * Use cases carry the same tile as `COVERS_ITEMS` above.
+ *
+ * They were the only icon-less group on a page whose other two groups (scope
+ * cells, platform benefits) both lead with one, so the section read as unfinished
+ * rather than as a deliberate plain list. The glyphs stay category-level and
+ * honest — a cloud for SaaS, devices for mobile, a bag for commerce — which is
+ * all the sprite can claim; the translated title and description still carry the
+ * meaning (`feature-icons.ts`: the icon is a scanning aid, never information).
+ */
+const USE_CASES: ReadonlyArray<{ icon: SpriteIconName; key: string }> = [
+  { icon: "cloud", key: "saas" },
+  { icon: "devices", key: "mobile" },
+  { icon: "bag", key: "ecommerce" },
+];
 
 /** Static — nothing here depends on render state, so it is built once. */
 const BENEFITS = [
@@ -255,11 +272,7 @@ function WhatIsPage() {
                 className="flex flex-col border-t border-l border-black/[0.05] px-5 py-5"
               >
                 <span className="flex size-7 items-center justify-center rounded-md border border-black/[0.06] text-mist-600">
-                  {typeof item.icon === "string" ? (
-                    <SpriteIcon name={item.icon} className="size-3.5" />
-                  ) : (
-                    <item.icon className="size-3.5" />
-                  )}
+                  <SpriteIcon name={item.icon} className="size-3.5" />
                 </span>
                 <h3 className="mt-3 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                   {t(`covers.${item.key}.title`)}
@@ -324,9 +337,12 @@ function WhatIsPage() {
           subtitle={t("useCases.subtitle")}
         />
         <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-3">
-          {USE_CASE_KEYS.map((key) => (
+          {USE_CASES.map(({ icon, key }) => (
             <div key={key}>
-              <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">
+              <span className="flex size-7 items-center justify-center rounded-md border border-black/[0.06] text-mist-600">
+                <SpriteIcon name={icon} className="size-3.5" />
+              </span>
+              <h3 className="mt-3 text-[15px] font-medium tracking-[-0.015em] text-mist-900">
                 {t(`useCases.${key}.title`)}
               </h3>
               <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">

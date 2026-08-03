@@ -153,6 +153,56 @@ export function SvgSprite() {
         <symbol id="sprite-chevron-bottom" viewBox="0 0 24 24" fill="none">
           <path d="M20 9L13.4142 15.5858C12.6332 16.3668 11.3669 16.3668 10.5858 15.5858L4 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </symbol>
+
+        {/* IconImages1 */}
+        <symbol id="sprite-images" viewBox="0 0 24 24" fill="none">
+          <path d="M4 14.2105L6.84488 12.0821C7.66137 11.5378 8.75215 11.6663 9.41987 12.3853C10.9123 13.9926 12.6426 15.4538 15 15.4538C17.1727 15.4538 18.6125 14.6485 20 13.261M6 20H18C19.1046 20 20 19.1046 20 18V6C20 4.89543 19.1046 4 18 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20ZM17 9C17 10.1046 16.1046 11 15 11C13.8954 11 13 10.1046 13 9C13 7.89543 13.8954 7 15 7C16.1046 7 17 7.89543 17 9Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </symbol>
+
+        {/* IconCalendar1 */}
+        <symbol id="sprite-calendar" viewBox="0 0 24 24" fill="none">
+          <path d="M4 7C4 5.89543 4.89543 5 6 5H18C19.1046 5 20 5.89543 20 7V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M4 10H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M8 5V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M16 5V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </symbol>
+
+        {/* IconFiles */}
+        <symbol id="sprite-files" viewBox="0 0 24 24" fill="none">
+          <path d="M10 3H13.7574C14.553 3 15.3161 3.31607 15.8787 3.87868L19.1213 7.12132C19.6839 7.68393 20 8.44699 20 9.24264V16C20 17.1046 19.1046 18 18 18H10C8.89543 18 8 17.1046 8 16V5C8 3.89543 8.89543 3 10 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M17 18V19C17 20.1046 16.1046 21 15 21H7C5.89543 21 5 20.1046 5 19V8C5 6.89543 5.89543 6 7 6H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M15 3V6C15 7.10457 15.8954 8 17 8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </symbol>
+
+        {/* IconTranslate */}
+        <symbol id="sprite-translate" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6L12 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M8 6V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M12.0008 14.0003C8.11407 13.0287 6.11567 10.6408 5.54688 6.37793" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M4.0001 13.9998C7.88484 13.0286 9.88317 10.6426 10.4531 6.38379" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M14.5 17.0002H19.5M13 19.0002L16.0784 11.6891C16.4219 10.8732 17.5781 10.8732 17.9216 11.6891L21 19.0002" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </symbol>
+
+        {/* IconCloud */}
+        <symbol id="sprite-cloud" viewBox="0 0 24 24" fill="none">
+          <path d="M7 19C4.23858 19 2 16.7614 2 14C2 11.4673 3.88316 9.37436 6.32568 9.04508C7.13649 6.69118 9.37075 5 12 5C15.3137 5 18 7.68629 18 11C20.2091 11 22 12.7909 22 15C22 17.2091 20.2091 19 18 19H7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </symbol>
+
+        {/* IconDevices */}
+        <symbol id="sprite-devices" viewBox="0 0 24 24" fill="none">
+          <path d="M13 11C13 9.89543 13.8954 9 15 9H20C21.1046 9 22 9.89543 22 11V19C22 20.1046 21.1046 21 20 21H15C13.8954 21 13 20.1046 13 19V11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M20 9V6C20 4.89543 19.1046 4 18 4H6C4.89543 4 4 4.89543 4 6V16H2V18C2 19.1046 2.89543 20 4 20H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M4 16H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M17 18H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </symbol>
+
+        {/* IconBag */}
+        <symbol id="sprite-bag" viewBox="0 0 24 24" fill="none">
+          <path d="M19 8H5C3.89543 8 3 8.89543 3 10V18C3 19.1046 3.89543 20 5 20H19C20.1046 20 21 19.1046 21 18V10C21 8.89543 20.1046 8 19 8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M8.00391 8V6C8.00391 4.89543 8.89934 4 10.0039 4H14.0039C15.1085 4 16.0039 4.89543 16.0039 6V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M3 13H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M12 13L12.0039 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </symbol>
       </defs>
     </svg>
   );

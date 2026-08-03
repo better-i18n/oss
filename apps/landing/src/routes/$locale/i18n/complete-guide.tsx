@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
+import { GuideMark, guideIcon } from "@/lib/i18n-guide-icons";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
@@ -116,6 +117,23 @@ const frameworkGuides: Array<{ name: string; href: string; descKey: string }> = 
   },
   { name: "Nuxt", href: "/$locale/i18n/nuxt", descKey: "frameworks.nuxt" },
 ];
+
+/** The `/i18n/{slug}` segment of a guide href — the key `guideIcon` is keyed by. */
+const guideSlug = (href: string) => href.split("/").filter(Boolean).pop() ?? "";
+
+/**
+ * All eight guides carry a mark, or none of them does.
+ *
+ * Same invariant as `rule/related-pages-marks-are-per-variant`: a grid where six
+ * names have a logo and two have a gap reads as broken, and reserving an empty
+ * slot to align them just trades one defect for another. Computed from the icon
+ * map rather than assumed, so adding a guide without a mark degrades the whole
+ * grid to plain text — visible, and a prompt to add the mark — instead of
+ * silently producing a ragged row.
+ */
+const frameworkMarks = frameworkGuides.every(
+  (guide) => guideIcon(guideSlug(guide.href)) !== null,
+);
 
 /**
  * File formats as a hairline comparison table rather than six cards: the reader
@@ -467,12 +485,20 @@ function CompleteGuideI18nPage() {
                 params={{ locale }}
                 className="group flex items-start justify-between gap-3"
               >
-                <span className="min-w-0">
-                  <span className="block text-[13px] font-medium text-mist-900">
-                    {guide.name}
-                  </span>
-                  <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
-                    {t(k(guide.descKey))}
+                {/* rule/name-a-thing-with-its-mark — this grid names eight
+                    frameworks in plain text while the navbar, the /i18n hub and
+                    RelatedPages all show their marks. Marks come from the same
+                    `guideIcon` map those surfaces read, so a guide can never
+                    carry one treatment here and another there. */}
+                <span className="flex min-w-0 items-start gap-2.5">
+                  {frameworkMarks && <GuideMark slug={guideSlug(guide.href)} />}
+                  <span className="min-w-0">
+                    <span className="block text-[13px] font-medium text-mist-900">
+                      {guide.name}
+                    </span>
+                    <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
+                      {t(k(guide.descKey))}
+                    </span>
                   </span>
                 </span>
                 <SpriteIcon
