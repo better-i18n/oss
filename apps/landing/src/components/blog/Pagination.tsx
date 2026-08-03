@@ -123,7 +123,11 @@ export default function Pagination({
     // landmark names ("Main navigation", "Site footer", "Table of contents").
     <nav
       aria-label="Blog pagination"
-      className="mt-10 flex items-center justify-between gap-4 border-t border-black/[0.07] pt-5"
+      /* No top rule. The grid above already closes with its own hairline on the
+         last row, so a border here drew a second line a few pixels below the
+         first. Spacing separates the pagination from the list — a rule would
+         only be a third edge in a stack that already has two. */
+      className="mt-10 flex items-center justify-between gap-4 pt-5"
     >
       {/* Disabled steps are <span>, never <a>: a link that goes nowhere is a
           keyboard trap in miniature — it takes a tab stop, announces as a link

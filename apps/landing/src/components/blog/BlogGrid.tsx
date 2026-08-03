@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { FeatureGrid } from "@/components/ui/page";
 
 /**
  * The blog grid container.
@@ -17,13 +16,21 @@ import { FeatureGrid } from "@/components/ui/page";
  * `overflow-hidden` stays — it is the clip, not a frame. Without it the -1px
  * shift stops hiding the first row's top rule and the first column's left rule,
  * and the grid grows an edge on two sides only.
+ *
+ * NOT <FeatureGrid>, and this is the reason: that primitive bleeds the grid a
+ * full cell-inset to the left (`-(inset + 1px)`) and relies on every child
+ * carrying `.feat-cell`, whose matching padding puts the content back on the
+ * measure. The children here arrive from the caller as finished cards with
+ * their own padding, so the bleed shifted them 29px left with nothing to
+ * compensate and the clip ate the first column's avatars and first characters.
+ * A 1px shift is all this grid needs, because its cells own their rules.
  */
 export function BlogGrid({ children }: { children: ReactNode }) {
   return (
-    <div className="bg-white">
-      <FeatureGrid cols="auto-rows-fr sm:grid-cols-2 lg:grid-cols-3">
+    <div className="overflow-hidden bg-white">
+      <div className="-mt-px -ml-px grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {children}
-      </FeatureGrid>
+      </div>
     </div>
   );
 }
