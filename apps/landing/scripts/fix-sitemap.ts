@@ -19,31 +19,38 @@ if (sitemapFiles.length === 0) {
 }
 
 /**
- * Paths the build decided not to advertise, written by `vite.config.ts`.
+ * Locale-prefixed paths that were BUILT but must not be advertised, written by
+ * `vite.config.ts` from `sitemap.excludeFromSitemap`.
  *
- * They are excluded HERE, from the finished XML, rather than by withholding
- * their pages from the plugin — because that same page list is the prerender
- * candidate list. Filtering it meant "keep this out of the sitemap" silently
- * also meant "never build static HTML for this", and five pages (about,
- * careers, privacy, terms, cookies) were server-rendered on every request as a
- * result. Two decisions, two places.
+ * They are removed here, from the finished XML, rather than by withholding
+ * their pages from the plugin — because that page list is also the prerender
+ * candidate list. Withholding them is what made "keep this out of the sitemap"
+ * silently mean "never build static HTML for this", and left five pages
+ * (about, careers, privacy, terms, cookies) server-rendered on every request.
  *
- * Missing file is not an error: a dev or partial build never writes it, and a
+ * Missing file is not an error: a dev or partial build never writes one, and a
  * sitemap with a few extra URLs is a far smaller problem than a build that
  * refuses to finish.
  */
-const noindexFile = path.join(process.cwd(), ".seo-noindex.json");
-const noindexPaths: string[] = existsSync(noindexFile)
-  ? (JSON.parse(readFileSync(noindexFile, "utf-8")) as string[])
+const excludeFile = path.join(process.cwd(), ".seo-noindex.json");
+const excludedPaths: string[] = existsSync(excludeFile)
+  ? (JSON.parse(readFileSync(excludeFile, "utf-8")) as string[])
   : [];
 
-/** `about` -> matches https://better-i18n.com/{any-locale}/about/ */
-const noindexUrlPattern = (p: string) =>
+/**
+ * The `<url>` block for one already-locale-prefixed path (e.g. `/en/about/`).
+ *
+ * Anchored on the exact `<loc>` so `/en/about/` cannot also match a longer path
+ * that merely starts with it, and the `(?!</url>)` guard keeps the match inside
+ * a single block instead of swallowing everything up to the last `</url>` in
+ * the file.
+ */
+const urlBlockPattern = (p: string) =>
   new RegExp(
-    `\\s*<url>(?:(?!</url>)[\\s\\S])*?<loc>https://better-i18n\\.com/[a-z-]+(?:/${p.replace(
+    `\\s*<url>(?:(?!</url>)[\\s\\S])*?<loc>https://better-i18n\\.com${p.replace(
       /[.*+?^${}()|[\]\\]/g,
       "\\$&",
-    )})?/</loc>[\\s\\S]*?</url>`,
+    )}</loc>(?:(?!</url>)[\\s\\S])*?</url>`,
     "g",
   );
 
@@ -63,14 +70,12 @@ for (const file of sitemapFiles) {
     // Remove bare root URL — it 301-redirects to /{defaultLocale}/ and should not be in sitemap
     .replace(/\s*<url>\s*<loc>https:\/\/better-i18n\.com\/<\/loc>\s*<\/url>/g, "");
 
-  // Drop the noindex paths, in every locale.
-  for (const p of noindexPaths) {
-    if (!p) continue; // the home page is handled by the rule above
+  // Remove the built-but-unadvertised paths.
+  for (const p of excludedPaths) {
+    if (!p || p === "/") continue; // bare root is handled by the rule above
     const before = fixed;
-    fixed = fixed.replace(noindexUrlPattern(p), "");
-    if (fixed !== before) {
-      droppedUrls += (before.length - fixed.length > 0 ? 1 : 0);
-    }
+    fixed = fixed.replace(urlBlockPattern(p), "");
+    if (fixed !== before) droppedUrls++;
   }
 
   if (fixed !== xml) {
@@ -83,5 +88,10 @@ console.log(
   `[SEO] Sitemap xhtml namespace düzeltildi: ${fixedCount}/${sitemapFiles.length} dosya`,
 );
 console.log(
-  `[SEO] noindex paths excluded from sitemap: ${noindexPaths.length} (${droppedUrls} matched)`,
+  `[SEO] built but kept out of sitemap: ${excludedPaths.length} paths, ${droppedUrls} <url> blocks removed`,
 );
+if (excludedPaths.length > 0 && droppedUrls === 0) {
+  console.warn(
+    "[SEO] none matched — the sitemap may be advertising pages marked sitemap:false",
+  );
+}

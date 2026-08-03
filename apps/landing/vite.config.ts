@@ -84,14 +84,16 @@ export default defineConfig(async ({ mode, command }) => {
        * The sitemap is now filtered where we already own that step, after the
        * XML exists, so the two decisions stay separate.
        */
-      const noindexUrls = pages
-        .filter((p) => p.sitemap?.noindex)
+      const excludedUrls = pages
+        .filter((p) => p.sitemap?.excludeFromSitemap)
         .map((p) => p.path);
       writeFileSync(
         ".seo-noindex.json",
-        JSON.stringify(noindexUrls, null, 2),
+        JSON.stringify(excludedUrls, null, 2),
       );
-      console.log(`[SEO] noindex paths handed to fix-sitemap: ${noindexUrls.length}`);
+      console.log(
+        `[SEO] paths built but kept out of the sitemap: ${excludedUrls.length}`,
+      );
     } catch (error) {
       console.error("[SEO] Build-time generation failed:", error);
     }
@@ -219,10 +221,17 @@ export default defineConfig(async ({ mode, command }) => {
         projects: ["./tsconfig.json"],
       }),
       tanstackStart({
-        /* Every page, noindex included — see the note next to `.seo-noindex.json`
-           above. This array is the prerender candidate list, so filtering it is
-           how five pages silently lost their static HTML. */
+        /* `noindex` pages are still filtered out here, deliberately: those are
+           thin-content and tier-3 LOCALES (3516 locale-paths at last count), and
+           prerendering HTML we ask Google not to index would multiply build time
+           for pages nobody should land on.
+
+           What is no longer filtered is `excludeFromSitemap` — the five pages
+           carrying `sitemap: false`. They now reach this array, and therefore
+           the prerender candidate list, and are removed from the sitemap XML
+           afterwards by scripts/fix-sitemap.ts. See generate-pages.ts. */
         pages: pages
+          .filter((p) => !p.sitemap.noindex)
           .map((p) => ({
           path: p.path,
           sitemap: {

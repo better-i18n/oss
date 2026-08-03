@@ -30,7 +30,17 @@ export interface SitemapConfig {
   readonly changefreq: ChangeFreq;
   readonly lastmod?: string;
   readonly alternateRefs: readonly AlternateRef[];
+  /** Thin-content or tier-3 locale: keep out of the sitemap AND out of prerender. */
   readonly noindex?: boolean;
+  /**
+   * `sitemap: false` in MARKETING_PAGES — keep out of the sitemap, but BUILD it.
+   *
+   * Distinct from `noindex` on purpose. `noindex` is a per-locale verdict about
+   * content quality and those pages are not worth prerendering; this is a
+   * per-page decision not to advertise a URL we still want served fast.
+   * `scripts/fix-sitemap.ts` strips these from the XML after it is written.
+   */
+  readonly excludeFromSitemap?: boolean;
 }
 
 export interface PageEntry {
@@ -168,13 +178,25 @@ export function generateMarketingPages(
   // Tier 3 locales are excluded from sitemap generation
   const sitemapLocales = locales.filter((l) => getLocaleTier(l) !== "tier3");
 
-  // Pages with sitemap: false are excluded from sitemap generation
-  // but may still be prerendered (they remain routable).
-  const sitemapPages = MARKETING_PAGES.filter(
-    (p) => !("sitemap" in p) || p.sitemap !== false,
-  );
+  /* `sitemap: false` means "don't advertise this URL", and it used to be
+     implemented by dropping the page here. The comment on that filter said the
+     page "may still be prerendered" — it could not. This function's output IS
+     the prerender candidate list (vite.config.ts hands it to `tanstackStart`,
+     whose `prerender.filter` only chooses among candidates), so a page that
+     never became a PageEntry never became static HTML either.
 
-  return sitemapPages.flatMap((page) => {
+     Five pages were affected — about, careers, privacy, terms, cookies — and
+     were server-rendered on every request instead. Measured on production, TTFB
+     with transfer excluded: /en/careers/ 12.4s, /en/about/ 9.3-10.9s, against
+     186-841ms for a prerendered page. privacy/terms/cookies are linked from the
+     footer of every page, which is exactly where a crawler goes next.
+
+     They are now emitted like any other page and carry `excludeFromSitemap`,
+     which `scripts/fix-sitemap.ts` uses to strip them from the finished XML.
+     The two decisions are separate: one flag no longer answers both. */
+  return MARKETING_PAGES.flatMap((page) => {
+    const excludeFromSitemap = "sitemap" in page && page.sitemap === false;
+
     // hreflang alternates only reference locales present in the sitemap
     const alternateRefs = buildAlternateRefs(sitemapLocales, (locale) =>
       buildPageUrl(locale, page.path),
@@ -201,6 +223,7 @@ export function generateMarketingPages(
           lastmod,
           alternateRefs,
           ...(shouldNoindex ? { noindex: true } : {}),
+          ...(excludeFromSitemap ? { excludeFromSitemap: true } : {}),
         },
         prerender: shouldPrerender ? { enabled: true } : undefined,
       };
