@@ -84,7 +84,7 @@ function ToolsHubPage() {
       <section className="section">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {TOOL_REGISTRY.map((tool) => (
-            <ToolCard key={tool.slug} tool={tool} locale={locale} />
+            <ToolCard key={tool.slug} tool={tool} locale={locale} headingLevel={2} />
           ))}
         </div>
       </section>

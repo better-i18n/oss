@@ -6,9 +6,20 @@ import type { ToolMeta } from "@/lib/tools/types";
 interface ToolCardProps {
   readonly tool: ToolMeta;
   readonly locale: string;
+  /**
+   * Which heading level the card's title is.
+   *
+   * The card is used in two places at two depths: on the tools hub it sits
+   * directly under the page h1, and inside <RelatedTools /> it sits under that
+   * block's own h2. A card cannot know which, so it does not guess — hardcoding
+   * h3 skipped a level on the hub, and hardcoding h2 would duplicate one here.
+   * Size comes from the class either way; the tag is only ever about outline.
+   */
+  readonly headingLevel?: 2 | 3;
 }
 
-export function ToolCard({ tool, locale }: ToolCardProps) {
+export function ToolCard({ tool, locale, headingLevel = 3 }: ToolCardProps) {
+  const Heading = `h${headingLevel}` as "h2" | "h3";
   return (
     <Link
       to={`/$locale/${tool.href}` as never}
@@ -19,9 +30,9 @@ export function ToolCard({ tool, locale }: ToolCardProps) {
       <div className="mb-4 flex size-11 items-center justify-center rounded-xl border border-mist-100 bg-mist-50 text-mist-700 shadow-sm">
         {tool.icon}
       </div>
-      <h3 className="font-display text-lg/[1.3] font-medium text-mist-950 mb-2">
+      <Heading className="font-display text-lg/[1.3] font-medium text-mist-950 mb-2">
         {tool.fallbackTitle}
-      </h3>
+      </Heading>
       <p className="text-sm/6 text-mist-600">{tool.fallbackDescription}</p>
       <div className="mt-4 flex items-center gap-1 text-sm font-medium text-mist-700 group-hover:text-mist-950 transition-colors">
         Try it free

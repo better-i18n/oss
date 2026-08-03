@@ -128,7 +128,11 @@ for (const url of BATCH) {
     } catch {}
     stable = len > 0 && len === lastLen ? stable + 1 : 0;
     lastLen = len;
-    if (hasH1 && stable >= 2) break;
+    // Three readings, not two. The changelog body arrives from the CMS in one
+    // burst after a pause: two equal readings at 69 characters satisfied "it
+    // stopped growing" while the real 28,689 were still in flight, and the page
+    // was reported as a 67-character stub. A pause is not an ending.
+    if (hasH1 && stable >= 3) break;
     await sleep(600);
   }
   await sleep(800);
