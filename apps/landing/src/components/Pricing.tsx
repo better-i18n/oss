@@ -1,6 +1,7 @@
 import { cn } from "@better-i18n/ui/lib/utils";
 import { useT } from "@/lib/i18n";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { AnimatedPrice } from "@/components/pricing/AnimatedPrice";
 import { type PricingPlan, getDisplayPrice } from "@/lib/content";
 
 // ─── Types ───────────────────────────────────────────────────────────
@@ -26,6 +27,19 @@ function formatPrice(symbol: string, amount: number, currency: string): string {
     : `${prefix}${amount.toFixed(2)}`;
 }
 
+/**
+ * The number a plan shows for a period. Yearly plans advertise the per-month
+ * equivalent, so the divide-by-12 lives here rather than being repeated at the
+ * render site and again wherever the width is measured.
+ */
+function monthlyAmount(
+  priceData: { amount: number } | null | undefined,
+  period: BillingPeriod,
+): number {
+  if (!priceData) return 0;
+  return period === "yearly" ? Math.round(priceData.amount / 12) : priceData.amount;
+}
+
 // ─── Main Component ──────────────────────────────────────────────────
 
 export default function Pricing({
@@ -43,6 +57,34 @@ export default function Pricing({
      h3 there skipped a level (h1 → h3), which is what the audit flagged. On the
      home page the section is an h2 and the cards stay h3. */
   const CardHeading = headingLevel === "h1" ? "h2" : "h3";
+
+  /**
+   * Width reserved for every price in the row, in `ch`.
+   *
+   * Decided once for the SET of plans and for BOTH billing periods, so the
+   * column never resizes when the figure changes — "$9" and "$49" occupy the
+   * same box. Measuring per cell would move the column on every toggle, which
+   * is the usual way a counter breaks a layout.
+   *
+   * This sits ABOVE the `!plans` early return, and has to: a hook after a
+   * conditional return means React counts two hooks on the render where the
+   * loader has not supplied plans yet and three on the render after it, which
+   * throws "Rendered more hooks than during the previous render" the moment CMS
+   * data arrives late. Hence the `?? []` — the guard belongs inside the hook,
+   * not in front of it.
+   */
+  const priceWidthCh = useMemo(() => {
+    let widest = 1;
+    for (const plan of plans ?? []) {
+      for (const period of ["monthly", "yearly"] as const) {
+        const data = getDisplayPrice(plan, period);
+        if (!data) continue;
+        const text = formatPrice(data.symbol, monthlyAmount(data, period), data.currency);
+        widest = Math.max(widest, text.length);
+      }
+    }
+    return widest;
+  }, [plans]);
 
   // If no CMS plans provided, render nothing (data should come from loader)
   if (!plans || plans.length === 0) return null;
@@ -172,9 +214,22 @@ export default function Pricing({
                   {/* Price */}
                   <div className="mt-6">
                     <div className="flex items-baseline gap-1.5">
-                      <span className="text-[40px] font-medium leading-none tracking-[-0.03em] text-mist-900 tabular-nums">
-                        {displayPrice}
-                      </span>
+                      {/* A plan with a numeric price counts to its next value;
+                          Enterprise ("Custom") has no number to count. */}
+                      {isEnterprise || !priceData ? (
+                        <span className="text-[40px] font-medium leading-none tracking-[-0.03em] text-mist-900 tabular-nums">
+                          {displayPrice}
+                        </span>
+                      ) : (
+                        <AnimatedPrice
+                          value={monthlyAmount(priceData, billingPeriod)}
+                          format={(amount) =>
+                            formatPrice(priceData.symbol, amount, priceData.currency)
+                          }
+                          minCh={priceWidthCh}
+                          className="text-[40px] font-medium leading-none tracking-[-0.03em] text-mist-900 tabular-nums"
+                        />
+                      )}
                       {!isEnterprise ? (
                         <span className="text-sm text-mist-500">
                           {t("perMonth")}
