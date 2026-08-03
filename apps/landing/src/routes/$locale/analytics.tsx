@@ -127,7 +127,7 @@ function AnalyticsPage() {
             ].map((point) => (
               <li
                 key={point}
-                className="border-t border-black/[0.05] py-3 text-[13px] leading-relaxed text-mist-700 first:border-t-0 first:pt-0"
+                className="border-t border-black/[0.05] py-3 text-[13px] leading-relaxed text-mist-700 first:border-t-0"
               >
                 {point}
               </li>
