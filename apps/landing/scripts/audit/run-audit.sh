@@ -96,7 +96,7 @@ esac
 SCRIPT_BODY="$(cat scripts/audit/audit-page.js)"
 split -l "$BATCH_SIZE" "$URL_FILE" "$OUT_DIR/batch-$STAMP-"
 
-MAX_PARALLEL=3
+MAX_PARALLEL=2
 pids=()
 for batch in "$OUT_DIR/batch-$STAMP-"*; do
   # Wait for a free slot: more than ~3 concurrent browsers starves the dev server
@@ -112,7 +112,7 @@ echo "▸ ${#pids[@]} browser sessions running…"
 for pid in "${pids[@]}"; do wait "$pid"; done
 
 # ── 3. merge + report ────────────────────────────────────────────────────────
-REPORT="$REPORT" python3 - "$OUT_DIR/batch-$STAMP-"*.log <<'PY'
+REPORT="$REPORT" URL_TOTAL="$TOTAL" python3 - "$OUT_DIR/batch-$STAMP-"*.log <<'PY'
 import json, os, pathlib, re, sys
 
 rows = []
@@ -137,15 +137,21 @@ def findings(r):
     if r.get("placeholderTotal"):            f.append("PLACEHOLDER " + ",".join(f"{k}×{v}" for k, v in r["placeholders"].items()))
     if r.get("consoleErrors"):               f.append(f"console×{len(r['consoleErrors'])}")
     if r.get("failedRequests"):              f.append(f"reqfail×{len(r['failedRequests'])}")
-    if not r.get("canonical"):               f.append("no canonical")
-    if not (r.get("descLen") or 0):          f.append("no description")
-    elif not 50 <= r["descLen"] <= 165:      f.append(f"desc {r['descLen']}c")
-    if not (r.get("titleLen") or 0):         f.append("no title")
-    elif not 15 <= r["titleLen"] <= 65:      f.append(f"title {r['titleLen']}c")
-    if not (r.get("og") or {}).get("image"): f.append("no og:image")
-    if not r.get("ldTypes"):                 f.append("no JSON-LD")
-    if r.get("ldErrors"):                    f.append("JSON-LD parse error")
-    if (r.get("alternates") or 0) == 0:      f.append("no hreflang")
+    # Head-derived checks are only meaningful if the head settled. When it did
+    # not, say so once instead of reporting five invented defects: a page whose
+    # <head> we never finished reading is unmeasured, not broken.
+    if r.get("headSettled") is False:
+        f.append("HEAD NOT SETTLED (head checks skipped)")
+    else:
+        if not r.get("canonical"):               f.append("no canonical")
+        if not (r.get("descLen") or 0):          f.append("no description")
+        elif not 50 <= r["descLen"] <= 165:      f.append(f"desc {r['descLen']}c")
+        if not (r.get("titleLen") or 0):         f.append("no title")
+        elif not 15 <= r["titleLen"] <= 65:      f.append(f"title {r['titleLen']}c")
+        if not (r.get("og") or {}).get("image"): f.append("no og:image")
+        if not r.get("ldTypes"):                 f.append("no JSON-LD")
+        if r.get("ldErrors"):                    f.append("JSON-LD parse error")
+        if (r.get("alternates") or 0) == 0:      f.append("no hreflang")
     if r.get("hScroll"):                     f.append("H-SCROLL " + ",".join(r.get("overflowing") or []))
     if (r.get("lcpMs") or 0) > 2500:         f.append(f"LCP {r['lcpMs']}ms")
     if (r.get("transferKb") or 0) > 1500:    f.append(f"{r['transferKb']}KB")
@@ -170,6 +176,20 @@ for r in sorted(rows, key=lambda r: len(findings(r)), reverse=True):
 lcps = [r["lcpMs"] for r in rows if r.get("lcpMs")]
 kbs = [r["transferKb"] for r in rows if r.get("transferKb")]
 print("─" * 118)
+
+# Coverage before quality. A batch that dies takes its whole slice of URLs with
+# it, and the run then reports a smaller, cleaner-looking site: "56 pages · 0
+# with findings" hid three dead batches and the ~24 pages they were carrying.
+# A number that shrinks silently is the same failure as a locale whose file is
+# too small to scan — nothing to look at is not the same as nothing wrong.
+intended = int(os.environ.get("URL_TOTAL") or 0)
+measured = len([r for r in rows if not r.get("fatal")])
+dead = [r for r in rows if str(r.get("fatal") or "").startswith("no RESULT")]
+if intended and measured < intended:
+    print(f"⚠ COVERAGE {measured}/{intended} urls measured — "
+          f"{intended - measured} never ran ({len(dead)} batch(es) died). "
+          f"Findings below describe the pages that DID run.")
+
 print(f"{len(rows)} pages · {clean} clean · {len(rows)-clean} with findings")
 if lcps:
     lcps.sort()

@@ -154,6 +154,12 @@ for (const url of BATCH) {
      A 12s ceiling here killed 6 of 8 shards on the first attempt — the audit
      reported 35 pages instead of 77. Slow-but-correct is still a broken check
      when it never finishes. */
+  /* Whether the head settled is reported alongside the head itself.
+     An unsettled head used to fall through as `descLen: 0`, i.e. "this page has
+     no description" — a quality finding invented by a measurement failure. Ten
+     pages were accused of it in one run; all ten had a correct 148-169 character
+     description when opened by hand. "I could not measure this" and "this is
+     wrong" are different sentences and the report has to say which one it means. */
   let headKey = '';
   let headStable = 0;
   for (let waited = 0; waited < 4000; waited += 400) {
@@ -178,6 +184,7 @@ for (const url of BATCH) {
     if (headStable >= 2) break;
     await sleep(400);
   }
+  const headSettled = headStable >= 2;
 
   let audit;
   try {
@@ -326,6 +333,7 @@ for (const url of BATCH) {
   results.push({
     url,
     openMs,
+    headSettled,
     consoleErrors: consoleErrors.slice(0, 4),
     failedRequests: failedRequests.slice(0, 4),
     ...audit,
