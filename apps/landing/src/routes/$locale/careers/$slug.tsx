@@ -1,11 +1,13 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { useState, useRef } from "react";
+import { useId, useRef, useState } from "react";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { PageHero, Section, SectionHeader, Divider } from "@/components/ui/page";
 import { getPageHead, getCareersPageStructuredData } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import { getJobPosition, type JobPosition } from "@/lib/content";
+import { formatSalaryRange, toJobPostingOptions } from "@/lib/job-posting";
 
 const loadPosition = createServerFn({ method: "GET" })
   .validator((data: { slug: string; locale: string }) => data)
@@ -19,9 +21,13 @@ export const Route = createFileRoute("/$locale/careers/$slug")({
 
     if (!position && params.slug !== "general") throw notFound();
 
-    const { getMessages } = await import("@better-i18n/use-intl/server");
-    const { i18nConfig } = await import("@/i18n.config");
-    const { filterMessages } = await import("@/lib/page-namespaces");
+    // The three module imports are independent of each other, so they resolve
+    // together instead of forming a three-step waterfall before the fetch.
+    const [{ getMessages }, { i18nConfig }, { filterMessages }] = await Promise.all([
+      import("@better-i18n/use-intl/server"),
+      import("@/i18n.config"),
+      import("@/lib/page-namespaces"),
+    ]);
     const allMessages = await getMessages({ project: i18nConfig.project, locale: context.locale });
     const messages = filterMessages(allMessages, ["careersPage", "meta", "breadcrumbs"]);
     return { position, messages, locale: params.locale };
@@ -40,6 +46,9 @@ export const Route = createFileRoute("/$locale/careers/$slug")({
       });
     }
 
+    const summary = position.summary
+      || `Join Better I18N as ${position.title}. ${position.location} · ${position.type}.`;
+
     return getPageHead({
       messages: loaderData?.messages || {},
       locale,
@@ -47,28 +56,21 @@ export const Route = createFileRoute("/$locale/careers/$slug")({
       pathname,
       metaFallback: {
         title: `${position.title} — Better I18N Careers`,
-        description: position.summary || `Join Better I18N as ${position.title}. ${position.location} · ${position.type}.`,
+        description: summary,
         ogTitle: `${position.title} — Better I18N`,
-        ogDescription: position.summary || `Join Better I18N as ${position.title}. ${position.location} · ${position.type}.`,
+        ogDescription: summary,
       },
-      customStructuredData: getCareersPageStructuredData([{
-        title: position.title,
-        description: position.summary,
-        employmentType: "FULL_TIME",
-        location: "Remote",
-        remote: true,
-        baseSalary: {
-          minValue: position.salaryMin,
-          maxValue: position.salaryMax,
-          currency: "USD",
-          unitText: "YEAR",
-        },
-      }]),
+      customStructuredData: getCareersPageStructuredData(
+        [toJobPostingOptions(position)],
+        locale,
+      ),
     });
   },
   component: CareerDetailPage,
   notFoundComponent: CareerNotFound,
 });
+
+type T = ReturnType<typeof useT>;
 
 function CareerDetailPage() {
   const { position, locale } = Route.useLoaderData();
@@ -76,113 +78,150 @@ function CareerDetailPage() {
 
   return (
     <MarketingLayout showCTA={false}>
-      <div className="mx-auto max-w-3xl px-6 lg:px-10 pt-10 pb-16">
-        <Link
-          to="/$locale/careers/"
-          params={{ locale }}
-          className="inline-flex items-center gap-1.5 text-sm text-mist-500 hover:text-mist-700 transition-colors mb-8"
-        >
-          <SpriteIcon name="arrow-right" className="size-3 rotate-180" />
-          {t("detail.back", "All positions")}
-        </Link>
-
-        {!position ? (
-          <GeneralApplication t={t} />
-        ) : (
-          <PositionDetail position={position} t={t} />
-        )}
-      </div>
+      {position ? (
+        <PositionDetail position={position} locale={locale} t={t} />
+      ) : (
+        <GeneralApplication locale={locale} t={t} />
+      )}
     </MarketingLayout>
   );
 }
 
-type T = ReturnType<typeof useT>;
+function PositionDetail({
+  position,
+  locale,
+  t,
+}: {
+  position: JobPosition;
+  locale: string;
+  t: T;
+}) {
+  const salary = formatSalaryRange(position);
 
-function PositionDetail({ position, t }: { position: JobPosition; t: T }) {
   return (
     <>
-      <div className="mb-10">
-        <span className="text-xs font-medium text-mist-400 uppercase tracking-wider">
-          {t(`department.${position.department}`, position.department)}
-        </span>
-        <h1 className="section-h2 mt-2">
-          {position.title}
-        </h1>
-        <p className="mt-3 text-sm text-mist-500">
-          {position.location} · {position.type} · ${(position.salaryMin / 1000).toFixed(0)}K–${(position.salaryMax / 1000).toFixed(0)}K
-        </p>
-      </div>
+      <PageHero
+        title={position.title}
+        subtitle={position.summary || position.about}
+        // The ask sits at the top as well as the bottom: the requirement lists
+        // in between are long enough that a reader who has already decided
+        // should not have to scroll past them to find the form.
+        primary={{ label: t("form.title"), href: "#apply" }}
+        secondary={{ label: t("detail.back"), href: `/${locale}/careers/` }}
+        visual={
+          <dl className="flex flex-wrap gap-x-16 gap-y-6 border-t border-black/[0.07] pt-6">
+            <Fact label={t("detail.meta.department")} value={t(`department.${position.department}`)} />
+            <Fact label={t("detail.meta.location")} value={position.location} />
+            <Fact label={t("detail.meta.type")} value={position.type} />
+            {/* The CMS holds the range, so the page prints it. Hiding a number
+                the entry already carries only makes a candidate ask for it. */}
+            {salary && <Fact label={t("detail.meta.salary")} value={salary} numeric />}
+          </dl>
+        }
+      />
 
-      <p className="text-sm text-mist-700 leading-relaxed">{position.about}</p>
+      <Divider />
 
-      {position.responsibilities.length > 0 && (
-        <div className="mt-10">
-          <h2 className="text-base font-medium text-mist-950 mb-4">
-            {t("detail.whatYoullDo", "What you'll do")}
-          </h2>
-          <ul className="space-y-2">
-            {position.responsibilities.map((item, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-sm text-mist-700 leading-relaxed">
-                <span className="mt-2 size-1 rounded-full bg-mist-400 shrink-0" />
-                {item}
-              </li>
-            ))}
-          </ul>
+      <Section labelledBy="role-title">
+        <SectionHeader
+          id="role-title"
+          eyebrow={t("detail.eyebrow.role")}
+          title={t("detail.aboutTitle")}
+          subtitle={position.about}
+          titleMaxWidth="26ch"
+        />
+
+        <div className="mt-10 flex flex-col gap-10">
+          <RequirementList title={t("detail.whatYoullDo")} items={position.responsibilities} />
+          <RequirementList title={t("detail.requirements")} items={position.requirements} />
+          <RequirementList title={t("detail.niceToHave")} items={position.niceToHave} muted />
         </div>
-      )}
+      </Section>
 
-      {position.requirements.length > 0 && (
-        <div className="mt-10">
-          <h2 className="text-base font-medium text-mist-950 mb-4">
-            {t("detail.requirements", "You may be a fit if")}
-          </h2>
-          <ul className="space-y-2">
-            {position.requirements.map((item, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-sm text-mist-700 leading-relaxed">
-                <span className="mt-2 size-1 rounded-full bg-mist-400 shrink-0" />
-                {item}
-              </li>
-            ))}
-          </ul>
+      <Divider />
+
+      <Section id="apply" labelledBy="apply-title">
+        <SectionHeader
+          id="apply-title"
+          eyebrow={t("detail.eyebrow.apply")}
+          title={t("form.title")}
+        />
+        <div className="mt-8 max-w-[62ch]">
+          <ApplicationForm t={t} defaultRole={position.title} />
         </div>
-      )}
-
-      {position.niceToHave.length > 0 && (
-        <div className="mt-10">
-          <h2 className="text-base font-medium text-mist-950 mb-4">
-            {t("detail.niceToHave", "Nice to have")}
-          </h2>
-          <ul className="space-y-2">
-            {position.niceToHave.map((item, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-sm text-mist-500 leading-relaxed">
-                <span className="mt-2 size-1 rounded-full bg-mist-300 shrink-0" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <hr className="my-12 border-mist-200" />
-      <ApplicationForm t={t} defaultRole={position.title} />
+      </Section>
     </>
   );
 }
 
-function GeneralApplication({ t }: { t: T }) {
+function GeneralApplication({ locale, t }: { locale: string; t: T }) {
   return (
     <>
-      <div className="mb-10">
-        <span className="text-xs font-medium text-mist-400 uppercase tracking-wider">General</span>
-        <h1 className="section-h2 mt-2">
-          {t("general.title", "General Application")}
-        </h1>
-        <p className="mt-3 text-sm text-mist-600 max-w-lg">
-          {t("general.description", "Don't see a fit? Tell us what you'd work on.")}
-        </p>
-      </div>
-      <ApplicationForm t={t} defaultRole="General" />
+      <PageHero
+        title={t("general.title")}
+        subtitle={t("general.description")}
+        primary={{ label: t("form.title"), href: "#apply" }}
+        secondary={{ label: t("detail.back"), href: `/${locale}/careers/` }}
+      />
+
+      <Divider />
+
+      <Section id="apply" labelledBy="apply-title">
+        <SectionHeader
+          id="apply-title"
+          eyebrow={t("general.eyebrow")}
+          title={t("form.title")}
+        />
+        <div className="mt-8 max-w-[62ch]">
+          <ApplicationForm t={t} defaultRole="General" />
+        </div>
+      </Section>
     </>
+  );
+}
+
+function Fact({ label, value, numeric }: { label: string; value: string; numeric?: boolean }) {
+  return (
+    <div>
+      <dt className="text-xs text-mist-500">{label}</dt>
+      <dd
+        className={`mt-1 text-[15px] font-medium tracking-[-0.015em] text-mist-900${numeric ? " tabular-nums" : ""}`}
+      >
+        {value}
+      </dd>
+    </div>
+  );
+}
+
+/** One heading plus its bullets. Renders nothing when the CMS list is empty. */
+function RequirementList({
+  title,
+  items,
+  muted,
+}: {
+  title: string;
+  items: string[];
+  muted?: boolean;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <div>
+      <h3 className="text-[15px] font-medium tracking-[-0.015em] text-mist-900">{title}</h3>
+      <ul className="mt-3 flex max-w-[68ch] flex-col gap-2">
+        {items.map((item) => (
+          <li
+            key={item}
+            className={`flex items-start gap-2.5 text-sm leading-relaxed ${muted ? "text-mist-500" : "text-mist-700"}`}
+          >
+            <span
+              className={`mt-2 size-1 shrink-0 rounded-full ${muted ? "bg-mist-300" : "bg-mist-400"}`}
+              aria-hidden="true"
+            />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -194,10 +233,16 @@ function ApplicationForm({ t, defaultRole }: { t: T; defaultRole: string }) {
   const [dragActive, setDragActive] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const submittingRef = useRef(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!formRef.current) return;
+    // The button is disabled while submitting, but a form also submits on
+    // Enter. The guard is a ref, not `status`: `setStatus` does not apply
+    // synchronously, so two fast submits would both read "idle" and post the
+    // same application twice.
+    if (!formRef.current || submittingRef.current) return;
+    submittingRef.current = true;
     setStatus("submitting");
     try {
       const res = await fetch("/api/apply", { method: "POST", body: new FormData(formRef.current) });
@@ -206,6 +251,9 @@ function ApplicationForm({ t, defaultRole }: { t: T; defaultRole: string }) {
       formRef.current.reset();
       setFileInfo(null);
     } catch {
+      // Released only on failure: after a success the form is replaced by the
+      // confirmation, so there is nothing left to submit twice.
+      submittingRef.current = false;
       setStatus("error");
     }
   };
@@ -224,101 +272,122 @@ function ApplicationForm({ t, defaultRole }: { t: T; defaultRole: string }) {
 
   if (status === "success") {
     return (
-      <div className="rounded-xl border border-mist-200 bg-white p-8 text-center">
-        <svg viewBox="0 0 24 24" fill="none" className="size-10 mx-auto mb-3" aria-hidden="true">
-          <circle cx="12" cy="12" r="11" className="stroke-emerald-200" strokeWidth="2" />
-          <path d="M7.5 12.5l3 3 6-6.5" className="stroke-emerald-600" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <h3 className="text-base font-medium text-mist-950">{t("form.success.title", "Application received")}</h3>
-        <p className="mt-1.5 text-sm text-mist-500">{t("form.success.message", "We'll review your application and get back to you within a few days.")}</p>
+      <div className="border-t border-black/[0.07] pt-8">
+        <p className="text-[15px] font-medium text-mist-950">{t("form.success.title")}</p>
+        <p className="mt-1.5 text-sm leading-relaxed text-mist-600">{t("form.success.message")}</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <h2 className="text-base font-medium text-mist-950 mb-6">{t("form.title", "Apply for this role")}</h2>
-      <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
-        <input type="text" name="website" tabIndex={-1} autoComplete="off" className="absolute -left-[9999px] opacity-0" aria-hidden="true" />
-        <input type="hidden" name="role" value={defaultRole} />
+    <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <input type="text" name="website" tabIndex={-1} autoComplete="off" className="absolute -left-[9999px] opacity-0" aria-hidden="true" />
+      <input type="hidden" name="role" value={defaultRole} />
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field label={t("form.name", "Name")} required>
-            <input type="text" name="name" required className={inputCls} placeholder="Jane Doe" />
-          </Field>
-          <Field label={t("form.email", "Email")} required>
-            <input type="email" name="email" required className={inputCls} placeholder="jane@example.com" />
-          </Field>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label={t("form.name")} required>
+          {(id) => <input id={id} type="text" name="name" required className={inputCls} placeholder="Jane Doe" />}
+        </Field>
+        <Field label={t("form.email")} required>
+          {(id) => <input id={id} type="email" name="email" required className={inputCls} placeholder="jane@example.com" />}
+        </Field>
+      </div>
+
+      <Field label={t("form.cv")}>
+        {/* Drag and drop is a shortcut, not the interaction: the zone is
+            focusable and answers Enter/Space, so a keyboard can reach the file
+            picker the same way a pointer does. */}
+        {(id) => (
+        <div
+          role={fileInfo ? undefined : "button"}
+          tabIndex={fileInfo ? undefined : 0}
+          className={`rounded-lg border border-dashed bg-white px-4 py-5 transition-colors ${fileInfo ? "border-black/[0.12]" : `cursor-pointer ${dragActive ? "border-mist-400" : "border-black/[0.12] hover:border-mist-400"}`}`}
+          onDragOver={(e) => { if (!fileInfo) { e.preventDefault(); setDragActive(true); } }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={(e) => { if (!fileInfo) handleFileDrop(e); else e.preventDefault(); }}
+          onClick={() => { if (!fileInfo) fileRef.current?.click(); }}
+          onKeyDown={(e) => {
+            if (fileInfo || (e.key !== "Enter" && e.key !== " ")) return;
+            e.preventDefault();
+            fileRef.current?.click();
+          }}
+        >
+          <input id={id} ref={fileRef} type="file" name="cv" accept=".pdf,.doc,.docx" className="hidden" onChange={(e) => {
+            const f = e.target.files?.[0];
+            setFileInfo(f ? { name: f.name, size: f.size, type: f.type } : null);
+          }} />
+          {fileInfo ? (
+            <div className="flex items-center gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-md border border-black/[0.07] bg-mist-50 font-mono text-[11px] font-medium uppercase text-mist-600">
+                {fileInfo.name.split(".").pop()}
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-mist-800">{fileInfo.name}</p>
+                <p className="text-xs tabular-nums text-mist-500">{(fileInfo.size / 1024).toFixed(0)} KB</p>
+              </div>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setFileInfo(null); if (fileRef.current) fileRef.current.value = ""; }}
+                className="ml-auto shrink-0 text-xs text-mist-500 hover:text-mist-800"
+              >
+                {t("form.removeFile")}
+              </button>
+            </div>
+          ) : (
+            <div>
+              <p className="text-sm text-mist-600">{t("form.dropCV")}</p>
+              <p className="mt-0.5 text-xs text-mist-500">PDF, DOCX — max 5MB</p>
+            </div>
+          )}
         </div>
-
-        <Field label={t("form.cv", "Resume")}>
-          <div
-            className={`rounded-lg border-2 border-dashed px-4 py-5 transition-colors bg-white ${fileInfo ? "border-mist-200" : `cursor-pointer ${dragActive ? "border-mist-400" : "border-mist-200 hover:border-mist-300"}`}`}
-            onDragOver={(e) => { if (!fileInfo) { e.preventDefault(); setDragActive(true); } }}
-            onDragLeave={() => setDragActive(false)}
-            onDrop={(e) => { if (!fileInfo) handleFileDrop(e); else e.preventDefault(); }}
-            onClick={() => { if (!fileInfo) fileRef.current?.click(); }}
-          >
-            <input ref={fileRef} type="file" name="cv" accept=".pdf,.doc,.docx" className="hidden" onChange={(e) => {
-              const f = e.target.files?.[0];
-              setFileInfo(f ? { name: f.name, size: f.size, type: f.type } : null);
-            }} />
-            {fileInfo ? (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center size-10 rounded-lg bg-mist-100 shrink-0">
-                  <span className="text-xs font-mono font-medium text-mist-600 uppercase">
-                    {fileInfo.name.split(".").pop()}
-                  </span>
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm text-mist-800 font-medium truncate">{fileInfo.name}</p>
-                  <p className="text-xs text-mist-400">{(fileInfo.size / 1024).toFixed(0)} KB</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); setFileInfo(null); if (fileRef.current) fileRef.current.value = ""; }}
-                  className="ml-auto text-mist-400 hover:text-mist-600 text-xs shrink-0"
-                >
-                  {t("form.removeFile", "Remove")}
-                </button>
-              </div>
-            ) : (
-              <div className="text-center">
-                <p className="text-sm text-mist-500">{t("form.dropCV", "Drop file or click to upload")}</p>
-                <p className="text-xs text-mist-400 mt-0.5">PDF, DOCX — max 5MB</p>
-              </div>
-            )}
-          </div>
-        </Field>
-
-        <Field label={t("form.linkedin", "LinkedIn URL")}>
-          <input type="url" name="linkedin" className={inputCls} placeholder="https://linkedin.com/in/..." />
-        </Field>
-
-        <Field label={t("form.message", "Tell us about a project you're proud of")}>
-          <textarea name="message" rows={4} className={`${inputCls} resize-none`} placeholder={t("form.messagePlaceholder", "What excites you about this role? Share links to projects, GitHub, portfolio...")} />
-        </Field>
-
-        {status === "error" && (
-          <p className="text-sm text-red-600">{t("form.error", "Something went wrong. Please try again or email tech@better-i18n.com.")}</p>
         )}
+      </Field>
 
-        <button type="submit" disabled={status === "submitting"} className="w-full sm:w-auto rounded-full bg-mist-950 px-8 py-2.5 text-sm font-medium text-white hover:bg-mist-800 transition-colors disabled:opacity-50">
-          {status === "submitting" ? t("form.submitting", "Submitting...") : t("form.submit", "Submit application →")}
-        </button>
-      </form>
-    </div>
+      <Field label={t("form.linkedin")}>
+        {(id) => <input id={id} type="url" name="linkedin" className={inputCls} placeholder="https://linkedin.com/in/..." />}
+      </Field>
+
+      <Field label={t("form.message")}>
+        {(id) => <textarea id={id} name="message" rows={4} className={`${inputCls} resize-none`} placeholder={t("form.messagePlaceholder")} />}
+      </Field>
+
+      {/* Red is the message here, not decoration — the form failed. */}
+      {status === "error" && (
+        <p className="text-sm text-red-600" role="alert">{t("form.error")}</p>
+      )}
+
+      <button type="submit" disabled={status === "submitting"} className="btn btn-dark btn-lg w-fit disabled:opacity-50">
+        {status === "submitting" ? t("form.submitting") : t("form.submit")}
+      </button>
+    </form>
   );
 }
 
-const inputCls = "block w-full rounded-lg border border-mist-200 bg-white px-3 py-2 text-sm text-mist-950 placeholder:text-mist-400 focus:border-mist-400 focus:ring-1 focus:ring-mist-400 focus:outline-none";
+const inputCls = "block w-full rounded-lg border border-black/[0.12] bg-white px-3 py-2 text-sm text-mist-950 placeholder:text-mist-400 focus:border-mist-400 focus:ring-1 focus:ring-mist-400 focus:outline-none";
 
-function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+/**
+ * The label is associated by `htmlFor`, not by wrapping — so the field passes
+ * its generated id to the control it owns. The placeholders in this form are
+ * examples ("Jane Doe"), and an example is not a label.
+ */
+function Field({
+  label,
+  required,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  children: (id: string) => React.ReactNode;
+}) {
+  const id = useId();
   return (
-    <label className="block">
-      <span className="text-sm text-mist-700">{label}{required && <span className="text-mist-400">*</span>}</span>
-      <div className="mt-1.5">{children}</div>
-    </label>
+    <div>
+      <label htmlFor={id} className="block text-sm text-mist-700">
+        {label}
+        {required && <span className="text-mist-400">*</span>}
+      </label>
+      <div className="mt-1.5">{children(id)}</div>
+    </div>
   );
 }
 
@@ -327,13 +396,14 @@ function CareerNotFound() {
   const { locale } = Route.useParams();
   return (
     <MarketingLayout showCTA={false}>
-      <div className="mx-auto max-w-2xl px-6 py-24 text-center">
-        <p className="section-h2">{t("notFound.title", "Position not found")}</p>
-        <p className="mt-3 text-sm text-mist-600">{t("notFound.description", "This position may have been filled or removed.")}</p>
-        <Link to="/$locale/careers/" params={{ locale }} className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-mist-950 px-5 py-2 text-sm font-medium text-white hover:bg-mist-800 transition-colors">
-          {t("notFound.back", "View all positions")}
+      <Section>
+        <h1 className="section-h2" style={{ maxWidth: "20ch" }}>{t("notFound.title")}</h1>
+        <p className="section-p" style={{ marginTop: 12 }}>{t("notFound.description")}</p>
+        <Link to="/$locale/careers/" params={{ locale }} className="btn btn-dark btn-lg mt-6 w-fit">
+          <SpriteIcon name="arrow-right" className="size-3.5 rotate-180" aria-hidden="true" />
+          {t("notFound.back")}
         </Link>
-      </div>
+      </Section>
     </MarketingLayout>
   );
 }
