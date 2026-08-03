@@ -1,8 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { trackCtaClick } from "@/lib/analytics-events";
+
+/**
+ * The ask inside an article.
+ *
+ * Two things changed and both are about volume. The panel was
+ * `overflow-hidden rounded-xl bg-mist-950` — a dark slab dropped into a white
+ * page, which the motto rules out outright; it is now the page's own hairline
+ * frame with the article's own type sizes, so it reads as a paragraph with a
+ * border rather than an advertisement.
+ *
+ * And the copy no longer rotates. A 5s `setInterval` swapping the headline
+ * behind a 300ms fade is motion competing with prose the reader is in the middle
+ * of — the loudest thing on the page was the CTA moving. The five messages are
+ * still all in use; the article picks one deterministically from its slug, so a
+ * given post always shows the same line (no timer, no fade, no server/client
+ * mismatch, and no `prefers-reduced-motion` special case to get wrong).
+ */
 
 interface InlineCTAProps {
   readonly title: string;
@@ -46,21 +62,10 @@ export default function InlineCTA({
   variant = "default",
   slug,
 }: InlineCTAProps) {
-  const [index, setIndex] = useState(0);
-  const [fading, setFading] = useState(false);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFading(true);
-      setTimeout(() => {
-        setIndex((prev) => (prev + 1) % ROTATING_MESSAGES.length);
-        setFading(false);
-      }, 300);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const { title, description } = ROTATING_MESSAGES[index];
+  /* Stable per article: sum of the slug's char codes, so the same post always
+     shows the same message and SSR and hydration agree. */
+  const seed = (slug ?? "").split("").reduce((n, c) => n + c.charCodeAt(0), 0);
+  const { title, description } = ROTATING_MESSAGES[seed % ROTATING_MESSAGES.length]!;
   const ctaText = "Get started free";
 
   const handleCtaClick = () => {
@@ -96,36 +101,30 @@ export default function InlineCTA({
   }
 
   return (
+    /* One frame, one padding step. `p-6` matches the article's own left gutter,
+       so the panel sits on the prose measure instead of indenting inside it. */
     <aside
-      className="my-10 not-prose overflow-hidden rounded-xl bg-mist-950"
+      className="my-10 not-prose rounded-xl border border-black/[0.07] bg-white p-6"
       aria-label={title}
     >
-      {/* No radial glow and no shimmer: the grammar allows no gradients, and a
-          moving highlight on a CTA inside an article competes with the prose. */}
-      <div className="px-7 py-7 sm:px-8 sm:py-8">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          {/* Rotating text */}
-          <div
-            className="min-w-0 transition-opacity duration-300"
-            style={{ opacity: fading ? 0 : 1 }}
-          >
-            <p className="text-[15px] font-medium leading-snug text-white">
-              {title}
-            </p>
-            <p className="mt-1.5 text-sm leading-relaxed text-white/60">
-              {description}
-            </p>
-          </div>
-
-          <a
-            href={ctaUrl}
-            onClick={handleCtaClick}
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-md bg-white px-5 py-2.5 text-sm font-medium text-mist-950 transition-colors hover:bg-white/90"
-          >
-            {ctaText}
-            <SpriteIcon name="arrow-right" className="size-4" />
-          </a>
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <p className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
+            {title}
+          </p>
+          <p className="mt-1.5 max-w-[52ch] text-[13px] leading-relaxed text-mist-600">
+            {description}
+          </p>
         </div>
+
+        <a
+          href={ctaUrl}
+          onClick={handleCtaClick}
+          className="btn btn-dark btn-sm shrink-0"
+        >
+          {ctaText}
+          <SpriteIcon name="arrow-right" className="size-4" />
+        </a>
       </div>
     </aside>
   );

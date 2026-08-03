@@ -30,6 +30,24 @@ function isHRPElement(node: unknown): node is HRPElement {
 }
 
 /**
+ * The same HTML parser this component renders with, exported so the table of
+ * contents can read headings from the parsed tree instead of re-deriving them.
+ *
+ * It used to match `<h[123]>(.*?)</h\1>` with a regex and strip tags from the
+ * capture. That yields the raw source text, entities and all: a heading written
+ * as `&quot;I need this&quot;` reached the sidebar as the literal characters
+ * `&quot;…&quot;`, because React escapes the ampersand on the way out. Decoding
+ * those by hand would only move the guesswork — the parser already knows how,
+ * and sharing it means the sidebar and the article can never disagree about
+ * what a heading says.
+ *
+ * The CJS unwrap above is why this is re-exported rather than imported directly
+ * at the call site: doing that dance twice invites the two copies to drift.
+ */
+export const parseHtmlToDom: typeof import("html-react-parser").htmlToDOM =
+  parserModule.htmlToDOM ?? parserModule.default?.htmlToDOM;
+
+/**
  * Convert a text string into a URL-friendly slug for anchor linking.
  * Exported for reuse by TableOfContents component.
  */
@@ -271,9 +289,14 @@ export default function BlogContent({ html, className, locale }: BlogContentProp
 }
 
 /**
- * Recursively extract text content from a DOM node
+ * Recursively extract text content from a DOM node.
+ *
+ * Exported because the table of contents must slugify a heading the *same* way
+ * this component does — the sidebar link and the `id` it jumps to are the same
+ * string or the anchor is dead. Two implementations of "the text of a heading"
+ * is one implementation too many.
  */
-function getTextContent(node: DOMNode): string {
+export function getTextContent(node: DOMNode): string {
   // Text nodes have a 'data' property
   if ("data" in node && typeof node.data === "string") {
     return node.data;

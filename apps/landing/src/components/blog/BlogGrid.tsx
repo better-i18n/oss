@@ -3,14 +3,23 @@ import type { ReactNode } from "react";
 /**
  * The blog grid container.
  *
- * One clipped hairline box holding N cells — the same shape FrameworkSupport and
- * Alternatives use. Cells draw their own top/left rules and the inner grid is
- * shifted -1px up/left, so the leading rules are clipped by the container border
- * and the pattern survives every column-count change without nth-child math.
+ * Cells draw their own top/left rules and the inner grid is shifted -1px up/left,
+ * so the leading rules land outside the clip and disappear — the pattern survives
+ * every column-count change without nth-child math.
+ *
+ * There is no border on this container. It used to carry
+ * `rounded-xl border border-black/[0.07]`, which framed a grid whose cells are
+ * already hairlined: measured on `/en/blog/`, a card in the top-left read 1px of
+ * container border plus its own 1px top and left rule. Two frames around one
+ * thing is rule/one-container, and the outer one is the one that goes.
+ *
+ * `overflow-hidden` stays — it is the clip, not a frame. Without it the -1px
+ * shift stops hiding the first row's top rule and the first column's left rule,
+ * and the grid grows an edge on two sides only.
  */
 export function BlogGrid({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
+    <div className="overflow-hidden bg-white">
       <div className="-mt-px -ml-px grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {children}
       </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { slugify } from "./BlogContent";
+import { slugify, parseHtmlToDom, getTextContent } from "./BlogContent";
 import { useT } from "@/lib/i18n";
 
 interface TocItem {
@@ -13,29 +13,43 @@ interface TableOfContentsProps {
 }
 
 /**
- * Extract h1, h2 and h3 headings from raw HTML content.
- * h1 headings are treated as h2 level since BlogContent downlevels them.
- * Strips inner HTML tags to get plain text, then generates
- * matching slug ids via the shared slugify function.
+ * Extract h1, h2 and h3 headings from the post body.
+ *
+ * Parsed with BlogContent's own parser and read with its own text extractor, so
+ * the sidebar and the article agree by construction: same heading text, same
+ * slug, live anchors. h1 is reported as level 2 because BlogContent downlevels
+ * it (the page template already owns the only h1).
  */
 function extractHeadings(html: string): TocItem[] {
-  const headingRegex = /<(h[123])[^>]*>(.*?)<\/\1>/gi;
   const items: TocItem[] = [];
-  let match;
 
-  while ((match = headingRegex.exec(html)) !== null) {
-    const tag = match[1].toLowerCase();
-    // h1 is downleveled to h2 by BlogContent, so treat as level 2
-    const level: 2 | 3 = tag === "h3" ? 3 : 2;
-    // Strip HTML tags from heading text
-    const text = match[2].replace(/<[^>]*>/g, "").trim();
-    if (text) {
-      items.push({ id: slugify(text), text, level });
+  // Read the heading text out of the parsed tree rather than the source string.
+  // A regex over raw HTML hands back whatever the author wrote — `&quot;` stays
+  // `&quot;`, and React escapes the ampersand again on render, so the sidebar
+  // showed `&quot;I need this&quot;` while the article showed `"I need this"`.
+  // The parser decodes entities as part of parsing; nothing here has to know
+  // which entities exist.
+  const walk = (nodes: readonly unknown[]): void => {
+    for (const node of nodes) {
+      const el = node as { type?: string; name?: string; data?: string; children?: unknown[] };
+      if (el.type === "tag" && el.name && /^h[123]$/.test(el.name)) {
+        // getTextContent is BlogContent's own — the sidebar link and the `id` it
+        // jumps to have to be slugified from the identical string.
+        const text = getTextContent(node as never).trim();
+        if (text) {
+          // BlogContent downlevels h1 to h2, so the sidebar mirrors that.
+          items.push({ id: slugify(text), text, level: el.name === "h3" ? 3 : 2 });
+        }
+        continue;
+      }
+      if (el.children?.length) walk(el.children);
     }
-  }
+  };
 
+  walk(parseHtmlToDom(html) as unknown as readonly unknown[]);
   return items;
 }
+
 
 /**
  * Renders a table of contents navigation from blog post HTML.

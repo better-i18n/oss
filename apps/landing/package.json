@@ -11,6 +11,7 @@
     "deploy": "bun run build && wrangler deploy",
     "logs": "wrangler tail",
     "test": "vitest run",
+    "audit:keys": "bun scripts/audit/check-keys.ts",
     "audit:locales": "bun scripts/audit/check-locale-scripts.ts"
   },
   "dependencies": {

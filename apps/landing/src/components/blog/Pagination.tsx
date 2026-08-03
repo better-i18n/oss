@@ -64,26 +64,45 @@ function PageLink({
   children: ReactNode;
   ariaLabel?: string;
 }) {
+  /* Measured on `/en/blog/page/2/`, the nav announced THREE current pages:
+     `<span>2</span>` from this component, plus `Previous` and `1` — both of
+     which point at `/en/blog/`, and TanStack marks a link active on a PREFIX
+     match by default, so the list root counts as active on every page of the
+     list. `exact: true` scopes that to the real current page; `activeProps: {}`
+     then leaves the marking entirely to us. One nav, one current page. */
+  const common = {
+    className,
+    "aria-label": ariaLabel,
+    activeOptions: { exact: true },
+    activeProps: {},
+  } as const;
   if (page === 1) {
     return (
-      <Link to="/$locale/blog/" params={{ locale }} className={className} aria-label={ariaLabel}>
+      <Link to="/$locale/blog/" params={{ locale }} {...common}>
         {children}
       </Link>
     );
   }
   return (
-    <Link
-      to="/$locale/blog/page/$page/"
-      params={{ locale, page: String(page) }}
-      className={className}
-      aria-label={ariaLabel}
-    >
+    <Link to="/$locale/blog/page/$page/" params={{ locale, page: String(page) }} {...common}>
       {children}
     </Link>
   );
 }
 
-const CELL = "flex h-9 items-center justify-center border-l border-black/[0.05] px-3.5 text-[13px] transition-colors first:border-l-0";
+/**
+ * Page numbers are text, not cells.
+ *
+ * The previous version drew a clipped hairline strip and gave every page its own
+ * bordered cell with a tinted `bg-black/[0.03]` on the current one. That is a
+ * `.map()` producing boxes (rule/listed-items-are-not-cards) and a fill carrying
+ * state that the ink could carry instead. Now: one hairline above the row, bare
+ * numbers, and the current page marked by WEIGHT and DARKNESS — mist-900 at 500
+ * against mist-400 at 400 — not by a background (rule/neutral-ink-accent-is-
+ * identity-only reserves fill and hue for identity, link and focus).
+ */
+const NUM = "tabular-nums text-[13px] transition-colors";
+const STEP = "text-[13px] transition-colors";
 
 export default function Pagination({
   currentPage,
@@ -102,27 +121,31 @@ export default function Pagination({
     // aria-label stays literal: "Blog pagination" is on the sanctioned
     // ignoreStrings list in i18n.config.ts, alongside the other structural
     // landmark names ("Main navigation", "Site footer", "Table of contents").
-    <nav aria-label="Blog pagination" className="mt-8 flex justify-center">
-      {/* One clipped hairline strip — cells divide themselves with a left rule,
-          same grammar as the card grid. No shadow, no pill. */}
-      <div className="flex overflow-hidden rounded-xl border border-black/[0.07] bg-white">
-        {hasPrev ? (
-          <PageLink
-            locale={locale}
-            page={currentPage - 1}
-            className={`${CELL} text-mist-700 hover:bg-black/[0.02]`}
-          >
-            {t("pagination.previous")}
-          </PageLink>
-        ) : (
-          <span className={`${CELL} text-mist-300`}>{t("pagination.previous")}</span>
-        )}
+    <nav
+      aria-label="Blog pagination"
+      className="mt-10 flex items-center justify-between gap-4 border-t border-black/[0.07] pt-5"
+    >
+      {/* Disabled steps are <span>, never <a>: a link that goes nowhere is a
+          keyboard trap in miniature — it takes a tab stop, announces as a link
+          and does nothing. */}
+      {hasPrev ? (
+        <PageLink
+          locale={locale}
+          page={currentPage - 1}
+          className={`${STEP} text-mist-700 hover:text-mist-950`}
+        >
+          {t("pagination.previous")}
+        </PageLink>
+      ) : (
+        <span className={`${STEP} text-mist-300`}>{t("pagination.previous")}</span>
+      )}
 
+      <div className="flex items-center gap-3.5">
         {pageNumbers.map((pageNum, idx) =>
           pageNum === -1 ? (
             <span
               key={`ellipsis-${idx === 0 ? "lead" : "tail"}`}
-              className={`${CELL} hidden text-mist-400 select-none sm:flex`}
+              className={`${NUM} hidden text-mist-300 select-none sm:inline`}
               aria-hidden="true"
             >
               &hellip;
@@ -130,7 +153,7 @@ export default function Pagination({
           ) : pageNum === currentPage ? (
             <span
               key={pageNum}
-              className={`${CELL} bg-black/[0.03] font-medium text-mist-900 tabular-nums`}
+              className={`${NUM} font-medium text-mist-900`}
               aria-current="page"
             >
               {pageNum}
@@ -140,25 +163,25 @@ export default function Pagination({
               key={pageNum}
               locale={locale}
               page={pageNum}
-              className={`${CELL} hidden tabular-nums text-mist-500 hover:bg-black/[0.02] hover:text-mist-900 sm:flex`}
+              className={`${NUM} hidden text-mist-400 hover:text-mist-900 sm:inline`}
             >
               {pageNum}
             </PageLink>
           ),
         )}
-
-        {hasNext ? (
-          <PageLink
-            locale={locale}
-            page={currentPage + 1}
-            className={`${CELL} text-mist-700 hover:bg-black/[0.02]`}
-          >
-            {t("pagination.next")}
-          </PageLink>
-        ) : (
-          <span className={`${CELL} text-mist-300`}>{t("pagination.next")}</span>
-        )}
       </div>
+
+      {hasNext ? (
+        <PageLink
+          locale={locale}
+          page={currentPage + 1}
+          className={`${STEP} text-mist-700 hover:text-mist-950`}
+        >
+          {t("pagination.next")}
+        </PageLink>
+      ) : (
+        <span className={`${STEP} text-mist-300`}>{t("pagination.next")}</span>
+      )}
     </nav>
   );
 }

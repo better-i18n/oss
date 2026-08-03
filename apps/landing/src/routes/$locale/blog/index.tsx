@@ -120,17 +120,23 @@ function BlogPage() {
     <div className="bg-white">
       <Header className="bg-white" />
       <main>
-        {/* The filter pills belong to the hero: they scope the collection the
-            hero just introduced, so they ride in the hero's `visual` slot rather
-            than opening a section of their own (a section must open with a
-            SectionHeader). */}
+        {/* The filter rides in the hero's `visual` slot: it scopes the
+            collection the hero just introduced, and a section must open with a
+            SectionHeader, which a control strip does not have.
+
+            The space ABOVE it is not set here — `page.tsx:189` gives the slot
+            `marginTop: 56` ("a separate beat from the copy"). Rendering the row
+            after `<PageHero>` instead was measured at 160px, because the hero's
+            own bottom padding then lands between the two; the slot is the
+            tighter of the two options available without editing `page.tsx`.
+            Only the gap BETWEEN items is ours, and it is 6px. */}
         <PageHero
           titleId="blog-title"
           title={t("title")}
           subtitle={t("subtitle")}
           visual={
             categories.length > 0 ? (
-              <nav aria-label={t("filterLabel")} className="flex flex-wrap items-center gap-2">
+              <nav aria-label={t("filterLabel")} className="flex flex-wrap items-center gap-x-1.5 gap-y-2">
                 <button
                   type="button"
                   onClick={() => handleCategoryClick(null)}
@@ -188,26 +194,36 @@ function BlogPage() {
           {hasPosts &&
             (selectedCategory ? (
               filteredTotalPages > 1 && (
+                /* Same grammar as the routed <Pagination>: one hairline, steps
+                   at the edges, position in the middle. These are <button>s
+                   rather than links because the filtered set only exists in
+                   memory, so `disabled` is the correct affordance here — it
+                   removes the tab stop the way a <span> does for the links. */
                 <nav
                   aria-label="Blog pagination"
-                  className="mt-8 flex items-center justify-center gap-2"
+                  className="mt-10 flex items-center justify-between gap-4 border-t border-black/[0.07] pt-5"
                 >
                   <button
                     type="button"
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="btn btn-outline btn-sm disabled:opacity-40"
+                    className="text-[13px] text-mist-700 transition-colors hover:text-mist-950 disabled:text-mist-300 disabled:hover:text-mist-300"
                   >
                     {t("pagination.previous")}
                   </button>
-                  <span className="px-2 text-[13px] tabular-nums text-mist-500">
-                    {currentPage} / {filteredTotalPages}
+                  <span
+                    aria-current="page"
+                    className="text-[13px] tabular-nums text-mist-400"
+                  >
+                    <span className="font-medium text-mist-900">{currentPage}</span>
+                    {" / "}
+                    {filteredTotalPages}
                   </span>
                   <button
                     type="button"
                     onClick={() => setCurrentPage((p) => Math.min(filteredTotalPages, p + 1))}
                     disabled={currentPage === filteredTotalPages}
-                    className="btn btn-outline btn-sm disabled:opacity-40"
+                    className="text-[13px] text-mist-700 transition-colors hover:text-mist-950 disabled:text-mist-300 disabled:hover:text-mist-300"
                   >
                     {t("pagination.next")}
                   </button>
