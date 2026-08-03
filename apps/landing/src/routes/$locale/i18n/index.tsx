@@ -23,11 +23,24 @@ import { Divider, PageHero, Section, SectionHeader } from "@/components/ui/page"
  *     interior rules, -1px shift, bare clip box), so 41 links read as one index.
  *
  * i18n: everything user-facing on this page is a key under
- * `marketing.i18n.index.*` — hero, the four section titles and eyebrows, and the
- * name + description of all 41 links. The 82 item keys were created for this
- * page; before that the labels only rendered through `defaultValue`, which is
+ * `marketing.i18n.index.*` — hero, the section titles and eyebrows, and the
+ * name + description of every link. The item keys were created for this page;
+ * before that the labels only rendered through `defaultValue`, which is
  * forbidden here (the CDN source_text is the only source of truth). The arrays
  * below therefore carry a slug and a key stem, never a string.
+ *
+ * Coverage (issue #196, "a guide nothing links to is a guide Google
+ * discounts"): 37 guide routes exist under `/i18n/` and this hub linked 29 of
+ * them. All four guides absent from the first three pages of a
+ * `site:better-i18n.com` search — django, ruby, javascript, android — were in
+ * the unlinked eight. The remaining four were doctor, cli-code-scanning,
+ * react-native-localization and complete-guide. All eight are linked now:
+ *   - five are framework/platform guides and join `frameworks`;
+ *   - doctor and cli-code-scanning are OUR TOOLING, not a framework and not a
+ *     concept, so they get their own group instead of being filed under one
+ *     (see `tooling` below);
+ *   - complete-guide is a pillar page, so it is the hero's own call to action
+ *     rather than the 30th cell of a grid.
  */
 
 export const Route = createFileRoute("/$locale/i18n/")({
@@ -50,6 +63,14 @@ export const Route = createFileRoute("/$locale/i18n/")({
         { name: "iOS Localization", description: "SwiftUI and String Catalog localization for iOS apps", url: `${SITE_URL}/en/i18n/ios` },
         { name: "Flutter Localization", description: "ARB-based localization for Flutter apps", url: `${SITE_URL}/en/i18n/flutter` },
         { name: "Server-Side i18n", description: "Middleware-driven localization for APIs and edge runtimes", url: `${SITE_URL}/en/i18n/server` },
+        // The five guides this hub used to omit from its own link set. A list
+        // that names thirteen of eighteen framework guides is not a list of our
+        // framework guides.
+        { name: "React Native Localization", description: "Device locale, offline cache and over-the-air translation updates", url: `${SITE_URL}/en/i18n/react-native-localization` },
+        { name: "Android i18n", description: "strings.xml resources and Jetpack Compose localization", url: `${SITE_URL}/en/i18n/android` },
+        { name: "JavaScript i18n", description: "The Intl API and ICU MessageFormat with no framework", url: `${SITE_URL}/en/i18n/javascript` },
+        { name: "Django i18n", description: "gettext, .po files and locale middleware for Python apps", url: `${SITE_URL}/en/i18n/django` },
+        { name: "Ruby on Rails i18n", description: "YAML locale files and the Rails I18n API", url: `${SITE_URL}/en/i18n/ruby` },
       ],
     });
 
@@ -88,6 +109,29 @@ const frameworks: HubLink[] = [
   { slug: "server", key: "server" },
   { slug: "hono", key: "hono" },
   { slug: "rust", key: "rust" },
+  // Added for issue #196. `react-native-localization` sits next to `expo` on
+  // purpose: Expo is one way to build React Native, not a synonym for it, and
+  // both pages exist.
+  { slug: "react-native-localization", key: "reactNative" },
+  { slug: "android", key: "android" },
+  { slug: "javascript", key: "javascript" },
+  { slug: "django", key: "django" },
+  { slug: "ruby", key: "ruby" },
+];
+
+/**
+ * Our own tooling, not a framework and not a concept.
+ *
+ * `/i18n/doctor` and `/i18n/cli-code-scanning` document what our CLI does to a
+ * codebase. Filing them under `frameworks` would have the framework grid claim
+ * that Django and "i18n Doctor" are the same kind of thing; filing them under
+ * `topics` would bury them among buyer-intent pages (best-tms, best-library).
+ * Two items is a short section, and a short section that answers one question is
+ * better than two links in the wrong place.
+ */
+const tooling: HubLink[] = [
+  { slug: "doctor", key: "doctor" },
+  { slug: "cli-code-scanning", key: "cliCodeScanning" },
 ];
 
 const topics: HubLink[] = [
@@ -137,6 +181,13 @@ function I18nIndexPage() {
         titleId="i18n-hub-hero-title"
         title={t("i18n.index.hero.title")}
         subtitle={t("i18n.index.hero.subtitle")}
+        // `/i18n/complete-guide` is the pillar page of this whole set, so it is
+        // the hub's most prominent link rather than one more cell in a grid of
+        // fifty. It was previously linked from nowhere on this page.
+        primary={{
+          label: t("i18n.index.hero.completeGuideCta"),
+          href: `/${locale}/i18n/complete-guide/`,
+        }}
       />
 
       <Divider />
@@ -148,6 +199,17 @@ function I18nIndexPage() {
           title={t("i18n.index.frameworks.title")}
         />
         <HubGrid items={frameworks} group="frameworks" locale={locale} columns={3} />
+      </Section>
+
+      <Divider />
+
+      <Section labelledBy="i18n-hub-tooling">
+        <SectionHeader
+          id="i18n-hub-tooling"
+          eyebrow={t("i18n.index.tooling.eyebrow")}
+          title={t("i18n.index.tooling.title")}
+        />
+        <HubGrid items={tooling} group="tooling" locale={locale} columns={3} />
       </Section>
 
       <Divider />

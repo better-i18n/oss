@@ -109,7 +109,8 @@ function getSeoRedirect(pathname: string): string | null {
 interface Env {
   ASSETS: { fetch: (request: Request | string) => Promise<Response> };
   DB: D1Database;
-  UPLOADS: R2Bucket;
+  /** Optional: absent while R2 is disabled on the account. See the CV handler. */
+  UPLOADS?: R2Bucket;
   NOTIFICATION_EMAIL?: string;
   BREVO_API_KEY?: string;
   [key: string]: unknown;
@@ -285,6 +286,22 @@ async function handleApplication(
       }
       if (!ALLOWED_CV_TYPES.has(cv.type)) {
         return jsonResponse({ error: "CV must be PDF or DOCX" }, 400);
+      }
+      /* The binding is declared and present in production. This guard exists
+         for the case where it is not — a deploy to an account without the
+         bucket, or a local run without it — because the failure mode matters:
+         `await undefined.put()` would 500 the ENTIRE submission, and writing
+         the row without the file would tell an applicant their CV arrived when
+         it did not. An attachment is therefore refused loudly; applications
+         without one are unaffected, since the upload was always optional. */
+      if (!env.UPLOADS) {
+        return jsonResponse(
+          {
+            error:
+              "File uploads are temporarily unavailable. Please submit without a CV and email it to us, or try again later.",
+          },
+          503,
+        );
       }
       const ext = cv.name.split(".").pop() || "pdf";
       r2Key = `cv/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;

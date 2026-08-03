@@ -42,7 +42,13 @@ export type GuideGroup =
   | "frameworks"
   | "topics"
   | "localizationGuides"
-  | "seoGuides";
+  | "seoGuides"
+  /**
+   * Our own tooling: `/i18n/doctor` and `/i18n/cli-code-scanning`. They are not
+   * frameworks and not concepts, so they get their own group rather than being
+   * filed under one. See the group's comment in `routes/$locale/i18n/index.tsx`.
+   */
+  | "tooling";
 
 /** Real brand marks. A slug here always wins over its group default. */
 const BRAND_MARKS: Record<string, (p: { className?: string }) => ReactNode> = {
@@ -74,6 +80,12 @@ const SLUG_SPRITES: Record<string, SpriteIconName> = {
   // Frameworks without a brand mark in the sprite set:
   ios: "code-brackets", // no Apple glyph — generic SDK mark
   server: "api-connection", // the Hono / Node server guide
+  android: "devices", // no Android glyph — the honest signal is "mobile"
+
+  // Tooling. Both are our own CLI, so the mark says what the tool does rather
+  // than which vendor made it:
+  doctor: "shield-check", // it reports a health score, not a scan result
+  "cli-code-scanning": "script", // a terminal command over your source tree
 
   // Topics:
   "best-tms": "chart",
@@ -107,6 +119,7 @@ const GROUP_SPRITES: Record<GuideGroup, SpriteIconName> = {
   topics: "code-brackets",
   localizationGuides: "globe",
   seoGuides: "magnifying-glass",
+  tooling: "settings-gear",
 };
 
 /**
