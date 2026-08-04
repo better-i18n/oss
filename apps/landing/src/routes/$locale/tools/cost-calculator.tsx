@@ -269,7 +269,6 @@ function CostCalculatorPage() {
       locale={locale}
       faqItems={faqItems}
       breadcrumbs={breadcrumbs}
-      ctaText="Start translating now — first 1,000 keys free"
     >
       {/* Step indicator */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">

@@ -423,8 +423,6 @@ function ICUPlaygroundPage() {
       locale={locale}
       faqItems={FAQ_ITEMS}
       breadcrumbs={breadcrumbs}
-      ctaText="Manage all your ICU messages in Better I18N"
-      ctaHref="https://dash.better-i18n.com"
     >
       {/* Top toolbar */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">

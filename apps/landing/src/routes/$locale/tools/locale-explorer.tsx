@@ -147,7 +147,6 @@ function LocaleExplorerPage() {
       locale={locale}
       faqItems={faqItems}
       breadcrumbs={breadcrumbs}
-      ctaText="Support all these locales with Better I18N"
     >
       {/* Search + Filters */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -226,21 +225,13 @@ function LocaleExplorerPage() {
         )}
       </div>
 
-      {/* CTA Banner */}
-      <div className="mt-10 rounded-xl border border-mist-200 bg-mist-950 px-6 py-8 text-center">
-        <p className="font-display text-xl font-medium text-white">
-          Support all these locales with zero config
-        </p>
-        <p className="mt-2 text-sm text-mist-400">
-          Better I18N auto-detects your locales and syncs translations across every region.
-        </p>
-        <a
-          href="https://dash.better-i18n.com"
-          className="mt-5 inline-flex items-center justify-center rounded-xl border border-black/[0.07] bg-white px-5 py-2.5 text-sm font-medium text-mist-950 transition-colors hover:bg-black/[0.03]"
-        >
-          Try Better I18N free
-        </a>
-      </div>
+      {/* The dark CTA banner that used to sit here is gone. It was a SECOND
+          closing ask on a page that already ends with the shared <CTA /> band,
+          and all three of its strings were English literals in the JSX —
+          "Support all these locales with zero config", the sentence under it
+          and "Try Better I18N free" — so 21 locales were served English inside
+          a page about locale support. The shared band says the same thing in
+          every language. */}
     </ToolLayout>
   );
 }

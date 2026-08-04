@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { ToolLayout } from "@/components/tools/ToolLayout";
 import { LocaleSelector } from "@/components/tools/LocaleSelector";
 import { CodeOutput } from "@/components/tools/CodeOutput";
+import { useT } from "@/lib/i18n";
 import {
   generateHreflangHtml,
   generateHreflangSitemap,
@@ -80,6 +81,7 @@ const FAQ_ITEMS = [
 
 function HreflangGeneratorPage() {
   const { locale } = Route.useParams();
+  const t = useT("tools");
 
   const [baseUrl, setBaseUrl] = useState("https://example.com");
   const [selectedLocales, setSelectedLocales] = useState<readonly string[]>([
@@ -147,17 +149,50 @@ function HreflangGeneratorPage() {
     <ToolLayout
       title="Hreflang Tag Generator & Validator"
       description="Generate and validate hreflang tags for multilingual SEO in HTML, XML sitemap, and HTTP header formats."
-      subtitle="Free browser-based tool — no sign-up required"
+      /* `subtitle` is what sits directly above the tool, so it has to say what
+         the tool DOES. It used to read "Free browser-based tool — no sign-up
+         required", which describes the price and the hosting and answers
+         nothing: that is the class of sentence that leaves Google reaching for
+         the closing CTA as a snippet (issue #196). */
+      subtitle={t("hreflang.intro")}
       currentSlug="hreflang-generator"
       locale={locale}
       faqItems={FAQ_ITEMS}
       breadcrumbs={[
-        { label: "Free Tools", href: "/tools" },
+        // Was `/tools` with no locale segment, which 404s on every locale.
+        { label: "Free Tools", href: `/${locale}/tools` },
         { label: "Hreflang Generator" },
       ]}
-      ctaText="Auto-generate hreflang with Better I18N"
-      ctaHref="https://dash.better-i18n.com"
+      /* No closing-band props: ToolLayout now leaves `showCTA` at its default
+         and closes with MarketingLayout's shared <CTA />, whose copy is already
+         translated in the `cta` namespace. A per-page `ctaText` was the thing
+         that shipped English to 22 locales, so passing one back would undo it. */
     >
+      {/* Where to go next. Bare links, no cards and no grid: three links do not
+          need a layout, and a self-padded card dropped into <FeatureGrid />
+          without `.feat-cell` shifts the grid and clips its first column.
+          <RelatedTools /> already covers the sibling TOOLS; these two are the
+          neighbours it cannot know about — the locale reference this tool's
+          codes come from, and the SEO guide that explains why hreflang matters. */}
+      <p className="mb-8 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-mist-500">
+        <span>{t("hreflang.seeAlso")}</span>
+        <Link
+          to="/$locale/tools/locale-explorer/"
+          params={{ locale }}
+          className="font-medium text-mist-950 underline decoration-mist-300 underline-offset-4"
+        >
+          {t("seeAlso.localeExplorer")}
+        </Link>
+        <span aria-hidden="true" className="text-mist-300">·</span>
+        <Link
+          to="/$locale/i18n/international-seo/"
+          params={{ locale }}
+          className="font-medium text-mist-950 underline decoration-mist-300 underline-offset-4"
+        >
+          {t("seeAlso.internationalSeo")}
+        </Link>
+      </p>
+
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* ── Left column: inputs ── */}
         <div className="flex flex-col gap-6">

@@ -213,7 +213,6 @@ function LocaleDetailPage() {
       currentSlug="locale-explorer"
       locale={locale}
       breadcrumbs={breadcrumbs}
-      ctaText="This locale is supported by Better I18N"
     >
       <div className="space-y-10">
 

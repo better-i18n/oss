@@ -23,8 +23,9 @@
  *   3. The closing band was hand-rolled — `bg-mist-50 rounded-xl p-10
  *      text-center` — with an English `<h2>` ("Ready to scale your i18n?") and
  *      an English link label ("Get started free") baked into the JSX. Both
- *      shipped untranslated to all 22 locales. It now uses `<ClosingCta>`, the
- *      same band as every other page, with copy from the caller.
+ *      shipped untranslated to all 22 locales. The page now closes with the
+ *      shared `<CTA />` band that MarketingLayout renders on the other 104
+ *      pages, whose copy lives in the already-translated `cta` namespace.
  *
  *   4. Sections were `<div className="section">` with no dividers, so the page
  *      had no boundaries. `<Section>` + `<Divider />` now.
@@ -35,7 +36,7 @@
  */
 
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { ClosingCta, Divider, PageHero, Section } from "@/components/ui/page";
+import { Divider, PageHero, Section } from "@/components/ui/page";
 import { ToolFAQ } from "./ToolFAQ";
 import { RelatedTools } from "./RelatedTools";
 import type { ReactNode } from "react";
@@ -69,11 +70,6 @@ interface ToolLayoutProps {
   readonly locale: string;
   readonly faqItems?: readonly FAQItem[];
   readonly breadcrumbs?: readonly BreadcrumbItem[];
-  /** Closing band copy. Omitted means no closing band. */
-  readonly ctaText?: string;
-  readonly ctaTitle?: string;
-  readonly ctaLabel?: string;
-  readonly ctaHref?: string;
 }
 
 export function ToolLayout({
@@ -87,15 +83,20 @@ export function ToolLayout({
   locale,
   faqItems,
   breadcrumbs,
-  ctaText,
-  ctaTitle,
-  ctaLabel,
-  ctaHref = "https://dash.better-i18n.com",
 }: ToolLayoutProps) {
   return (
     /* White, like every other page. The dividers below do the separating that
-       `bg-mist-50` used to attempt. */
-    <MarketingLayout showCTA={false} breadcrumbs={breadcrumbs}>
+       `bg-mist-50` used to attempt.
+
+       `showCTA` is left at its default, so these pages close with the same
+       <CTA /> band MarketingLayout renders on the other 104 — which is the
+       point. The hand-rolled band this replaces took its copy from a `ctaText`
+       prop that every caller filled with an English literal ("Manage all your
+       ICU messages in Better I18N" and four others), so 22 locales were served
+       English. The shared band's copy lives in the `cta` namespace and is
+       already translated everywhere. A generic line that a reader can actually
+       read beats a specific one they cannot. */
+    <MarketingLayout breadcrumbs={breadcrumbs}>
       <PageHero
         pillarLabel={eyebrow}
         titleId="tool-hero-title"
@@ -127,17 +128,6 @@ export function ToolLayout({
 
       <Divider />
       <RelatedTools currentSlug={currentSlug} locale={locale} />
-
-      {ctaText && (
-        <>
-          <Divider />
-          <ClosingCta
-            title={ctaTitle ?? ctaText}
-            subtitle={ctaTitle ? ctaText : undefined}
-            primary={{ label: ctaLabel ?? "Start free", href: ctaHref }}
-          />
-        </>
-      )}
     </MarketingLayout>
   );
 }

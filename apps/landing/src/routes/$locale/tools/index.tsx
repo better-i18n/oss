@@ -4,7 +4,6 @@ import { getFAQSchema, getOrganizationSchema } from "@/lib/structured-data";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { ToolCard } from "@/components/tools/ToolCard";
 import {
-  ClosingCta,
   Divider,
   FaqSection,
   PageHero,
@@ -22,7 +21,7 @@ import { useT } from "@/lib/i18n";
  * closing CTA with hand-written button classes. It is a marketing page around
  * the tools, not a tool itself, so `rule/tools-grammar-stops-at-the-tool` puts
  * all of it under the page grammar with no exemption: PageHero → Divider →
- * Section(SectionHeader) → FaqSection → ClosingCta.
+ * Section(SectionHeader) → FaqSection → the shared CTA band.
  *
  * The FAQ moves to the shared `<FaqSection>` — `FaqList`'s own contract says
  * there must be exactly one FAQ archetype in this codebase, and `ToolFAQ` was a
@@ -119,7 +118,7 @@ function ToolsHubPage() {
   ];
 
   return (
-    <MarketingLayout showCTA={false} breadcrumbs={breadcrumbs}>
+    <MarketingLayout breadcrumbs={breadcrumbs}>
       <PageHero
         titleId="tools-hero-title"
         // The h1 is the page's existing indexed copy and stays a literal like
@@ -152,24 +151,15 @@ function ToolsHubPage() {
 
       <FaqSection
         eyebrow={t("hub.faqEyebrow")}
-        title="Questions about the free tools"
+        title={t("hub.faqTitle")}
         items={FAQ_ITEMS}
       />
 
-      <Divider />
-
-      <ClosingCta
-        title="Ready to scale your i18n?"
-        subtitle="Try Better I18N — first 1,000 keys free. Type-safe SDKs, AI-powered translations, and real-time collaboration for your whole team."
-        primary={{
-          label: "Try Better I18N — first 1,000 keys free",
-          href: "https://dash.better-i18n.com",
-        }}
-        secondary={{
-          label: "Book a demo",
-          href: "https://cal.com/better-i18n/30min?overlayCalendar=true",
-        }}
-      />
+      {/* The hub closes with the shared <CTA /> band from MarketingLayout, not
+          its own <ClosingCta>. The hand-written one had four English literals in
+          the JSX — title, subtitle, and both button labels — so 21 locales were
+          served English. The shared band's copy lives in the `cta` namespace and
+          is already translated everywhere. */}
     </MarketingLayout>
   );
 }
