@@ -124,7 +124,7 @@ function ToolsHubPage() {
         // The h1 is the page's existing indexed copy and stays a literal like
         // the rest of this route's pre-existing English (see the i18n note at
         // the end of this file). The lede is newly authored, so it is a key.
-        title="Free i18n & Localization Tools"
+        title={t("hub.heroTitle")}
         subtitle={t("hub.heroSubtitle")}
       />
 

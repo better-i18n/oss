@@ -590,21 +590,11 @@ function ICUPlaygroundPage() {
             </pre>
           </div>
 
-          {/* CTA */}
-          <div className="rounded-xl border border-mist-200 bg-gradient-to-br from-mist-50 to-white p-5">
-            <p className="text-sm font-medium text-mist-900">
-              Managing hundreds of ICU messages?
-            </p>
-            <p className="mt-1 text-sm text-mist-600">
-              Better I18N handles validation, delivery, and AI-powered translations — so your team ships faster.
-            </p>
-            <a
-              href="https://dash.better-i18n.com"
-              className="mt-3 inline-flex items-center justify-center rounded-xl bg-mist-950 px-4 py-2 text-sm font-medium text-white hover:bg-mist-800"
-            >
-              Try Better I18N free
-            </a>
-          </div>
+          {/* A third closing ask used to sit here — a gradient panel with three
+              more English literals ("Managing hundreds of ICU messages?", the
+              sentence under it, "Try Better I18N free"). The page already ends
+              with the shared <CTA /> band, so this was the second ask on the
+              page and the only one that was English in 21 locales. */}
         </div>
       </div>
     </ToolLayout>

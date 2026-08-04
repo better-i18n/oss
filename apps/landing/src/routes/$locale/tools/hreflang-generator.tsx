@@ -159,8 +159,10 @@ function HreflangGeneratorPage() {
       locale={locale}
       faqItems={FAQ_ITEMS}
       breadcrumbs={[
-        // Was `/tools` with no locale segment, which 404s on every locale.
-        { label: "Free Tools", href: `/${locale}/tools` },
+        /* Locale-less on purpose. MarketingLayout's breadcrumb prepends the
+           locale itself, so `/${locale}/tools` renders as `/en/en/tools/`.
+           Measured before and after — this is why the href looks wrong here. */
+        { label: "Free Tools", href: "/tools" },
         { label: "Hreflang Generator" },
       ]}
       /* No closing-band props: ToolLayout now leaves `showCTA` at its default

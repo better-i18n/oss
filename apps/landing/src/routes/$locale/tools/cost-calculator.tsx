@@ -626,21 +626,11 @@ function CostCalculatorPage() {
             </div>
           </div>
 
-          {/* CTA banner */}
-          <div className="rounded-xl border border-mist-200 bg-mist-950 px-6 py-8 text-center">
-            <p className="font-display text-xl font-medium text-white">
-              Start translating now — first 1,000 keys free
-            </p>
-            <p className="mt-2 text-sm text-mist-400">
-              No credit card required. Get AI-powered translations with context-aware quality.
-            </p>
-            <a
-              href="https://dash.better-i18n.com"
-              className="mt-5 inline-flex items-center justify-center rounded-xl border border-black/[0.07] bg-white px-5 py-2.5 text-sm font-medium text-mist-950 transition-colors hover:bg-black/[0.03]"
-            >
-              Get started free
-            </a>
-          </div>
+          {/* A dark CTA banner used to sit here with three English literals
+              ("Start translating now — first 1,000 keys free", the sentence
+              under it, "Get started free"). It was the second closing ask on a
+              page that already ends with the shared <CTA /> band, and the only
+              one that stayed English in 21 locales. */}
         </div>
       )}
     </ToolLayout>
