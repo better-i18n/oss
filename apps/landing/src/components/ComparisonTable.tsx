@@ -665,6 +665,17 @@ export function ComparisonRelatedTopics({
   );
 }
 
+/**
+ * Every comparison page we publish — the source for the cross-links at the foot
+ * of each one.
+ *
+ * It has to list ALL of them or the omitted page gets no inbound link from any
+ * sibling. Locize was added to the site (route, mark, footer entry) without
+ * being added here, so `/compare/locize/` was reachable only from the footer
+ * while the other six linked to each other. On a set of pages whose whole job
+ * is to rank, one of them sitting outside the cluster is a real cost, not a
+ * cosmetic one.
+ */
 const allComparisons: readonly { name: string; slug: CompetitorKey }[] = [
   { name: "Crowdin", slug: "crowdin" },
   { name: "Lokalise", slug: "lokalise" },
@@ -672,6 +683,7 @@ const allComparisons: readonly { name: string; slug: CompetitorKey }[] = [
   { name: "Transifex", slug: "transifex" },
   { name: "Smartling", slug: "smartling" },
   { name: "XTM", slug: "xtm" },
+  { name: "Locize", slug: "locize" },
 ];
 
 interface OtherComparisonsProps {
@@ -684,12 +696,18 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
   const t = useT("compare");
   const others = allComparisons.filter((c) => c.slug !== currentSlug);
 
+  /* The heading was `text-[11px] text-mist-400` — the same grey micro-label its
+     sibling `ComparisonRelatedTopics` carried until an hour ago. Fixing one and
+     leaving the other in the same file is how a page ends up with two
+     differently-sized headings for two adjacent blocks: "Keep Reading" at 18px
+     directly above "Other Comparisons" at 11px. Both are sections. */
   return (
-    <section>
-      <div className="section">
-        <h2 className="text-[11px] font-medium text-mist-400">{title}</h2>
+    <Section labelledBy="other-comparisons">
+      <h2 id="other-comparisons" className="text-lg font-medium text-mist-950">
+        {title}
+      </h2>
 
-        <div className="mt-8 grid gap-x-10 gap-y-6 grid-cols-1 sm:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
             {others.map((competitor) => (
               <Link
                 key={competitor.slug}
@@ -703,6 +721,7 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
                     | "/$locale/compare/transifex/"
                     | "/$locale/compare/smartling/"
                     | "/$locale/compare/xtm/"
+                    | "/$locale/compare/locize/"
                 }
                 params={{ locale }}
                 /* The visible row is the vendor's own mark plus its name — with
@@ -723,8 +742,7 @@ export function OtherComparisons({ currentSlug, locale, title }: OtherComparison
                 />
               </Link>
             ))}
-          </div>
       </div>
-    </section>
+    </Section>
   );
 }

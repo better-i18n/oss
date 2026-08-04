@@ -9,6 +9,8 @@ import { ProductTile } from "@/components/ui/product-tile";
 import {
   ClosingCta,
   Divider,
+  PageHero,
+  Section,
   SectionHeader,
 } from "@/components/ui/page";
 
@@ -79,26 +81,23 @@ function BestTmsPage() {
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
-      {/* Hero */}
-      <section>
-        <div className="section">
-          <div className="max-w-3xl">
-            <div className="mb-6 inline-flex w-fit items-center rounded-md border border-black/[0.07] bg-white px-2.5 py-1 text-[11px] font-medium text-mist-600">
-              <span>{t("i18n.bestTms.badge")}</span>
-            </div>
-            <h1 className="section-h2">
-              {t("i18n.bestTms.hero.title")}
-            </h1>
-            <p className="section-p mt-5">
-              {t("i18n.bestTms.hero.subtitle")}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* Was a hand-rolled hero — its own bordered pill badge, `section-h2`
+          doing an h1's work (so the page opened a type size smaller than every
+          other page), and no <Divider /> before the next section. That missing
+          divider is why the frame's corner ticks did not line up between the
+          hero and "The shortlist": there was no boundary drawn there at all,
+          while every later section had one. <PageHero> is the one opening
+          shape. */}
+      <PageHero
+        pillar="sync"
+        pillarLabel={t("i18n.bestTms.badge")}
+        title={t("i18n.bestTms.hero.title")}
+        subtitle={t("i18n.bestTms.hero.subtitle")}
+      />
+      <Divider />
 
       {/* Platforms Comparison */}
-      <section>
-        <div className="section">
+      <Section>
           {/* The vendor list used to start straight at h3, so the outline went
               h1 → h3 with no h2 in between (audit: "heading jump"). A section
               opens with its header anyway (rule/section-opens-with-header), and
@@ -169,13 +168,11 @@ function BestTmsPage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
+      </Section>
 
       {/* What to look for */}
       <Divider />
-      <section>
-        <div className="section">
+      <Section>
           <h2 className="section-h2 mb-8">
             What to look for in a TMS in 2026
           </h2>
@@ -212,13 +209,11 @@ function BestTmsPage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </Section>
 
       {/* FAQ */}
       <Divider />
-      <section>
-        <div className="section">
+      <Section>
           <h2 className="section-h2 mb-10">
             Frequently Asked Questions
           </h2>
@@ -260,13 +255,11 @@ function BestTmsPage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </Section>
 
       {/* Related Topics */}
       <Divider />
-      <section>
-        <div className="section">
+      <Section>
           <SectionHeader
             eyebrow={t("i18n.relatedLinks.eyebrow")}
             title={t("whatIs.relatedTopics")}
@@ -338,8 +331,7 @@ function BestTmsPage() {
               />
             </Link>
           </div>
-        </div>
-      </section>
+        </Section>
 
       {/* CTA */}
       <Divider />

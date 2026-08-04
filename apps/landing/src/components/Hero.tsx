@@ -66,10 +66,45 @@ export default function Hero() {
             {t("subtitle")}
           </p>
 
-          {/* Email capture — hairline field, dark submit. Same job, quiet register. */}
-          <div className="mt-2 flex w-full max-w-[400px] items-center rounded-[10px] border border-black/[0.12] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-colors focus-within:border-black/25">
+          {/*
+            Email capture — hairline field, dark submit. Same job, quiet register.
+
+            This was a `<div>` holding an unnamed input and a `type="submit"`
+            button. A submit button outside a `<form>` is inert HTML, and there
+            was no form, no onSubmit, no action and no state anywhere in this
+            file — so typing an email and clicking the highest-intent button on
+            the site did literally nothing. It is a real `<form>` now.
+
+            Where it goes: the dashboard's signup, with the address carried in
+            `?email=`. That is the point of asking here rather than just showing
+            a button — the visitor commits by typing, and should not be asked
+            for the same address again on the next screen. If the dashboard
+            ignores the parameter the visitor still lands on signup, which is
+            where all 54 other CTAs on this site send them, so this cannot be
+            worse than the button it replaces. Reading `?email=` on the dash
+            side is the other half of this and is not in this repo.
+
+            `method="get"` with an explicit handler rather than a bare GET
+            action: a plain GET would post `?email=` from the browser's own form
+            serialisation and lose the trailing path, and we want the value
+            trimmed and the field name fixed regardless of markup.
+          */}
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              const email = new FormData(event.currentTarget).get("email");
+              const address = typeof email === "string" ? email.trim() : "";
+              const target = new URL("https://dash.better-i18n.com");
+              if (address) target.searchParams.set("email", address);
+              window.location.href = target.toString();
+            }}
+            className="mt-2 flex w-full max-w-[400px] items-center rounded-[10px] border border-black/[0.12] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-colors focus-within:border-black/25"
+          >
             <input
               type="email"
+              name="email"
+              required
+              autoComplete="email"
               aria-label={t("inputPlaceholder")}
               placeholder={t("inputPlaceholder")}
               className="min-w-0 flex-1 bg-transparent py-2.5 pl-4 text-sm text-mist-950 placeholder:text-mist-400 focus:outline-none"
@@ -78,7 +113,7 @@ export default function Hero() {
               {t("cta")}
               <SpriteIcon name="arrow-right" className="size-4" />
             </button>
-          </div>
+          </form>
         </div>
       </Section>
 
