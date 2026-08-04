@@ -9,7 +9,16 @@ import type { useTranslations } from "@better-i18n/use-intl";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
-export type Locale = "en" | "tr";
+/**
+ * A locale code as it reaches this module — already validated against the
+ * site's supported-locale list by `__root.tsx` before any route loader runs.
+ * This used to be `"en" | "tr"`, which was never a real constraint: callers
+ * cast into it with `(locale === "tr" ? "tr" : "en") as Locale`, silently
+ * collapsing every other supported locale (de, fr, es, ja, it, ko, zh-hans, ...)
+ * to English. `string` reflects what is actually known here — the real value,
+ * not a fabricated one.
+ */
+export type Locale = string;
 export type StatusTone = "new" | "updated" | "improved" | "fixed" | "security";
 
 export interface ParsedListItem {
@@ -313,7 +322,11 @@ export function parseSections(body: string | null): ParsedSection[] {
 
 export function formatReleaseDate(date: string | null | undefined, locale: Locale) {
   if (!date) return null;
-  return new Date(date).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-US", {
+  // Intl accepts bare BCP-47 language codes directly (verified: en, de, fr,
+  // es, pt, ja, tr, it, nl, ko, zh-hans all resolve to a sensible regional
+  // format) — no need to hand-map a subset and silently default the rest to
+  // English.
+  return new Date(date).toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",

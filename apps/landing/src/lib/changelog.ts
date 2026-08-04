@@ -71,45 +71,47 @@ function setCache<T>(key: string, data: T): T {
 const CHANGELOG_MODEL = "changelog-beta";
 
 /**
- * Get all changelog entries for a locale, sorted by date (newest first)
- * Fetches full content for each entry.
- * Results are cached for 5 minutes to avoid N+1 API calls on repeated requests.
+ * Get all changelog entries for a locale, sorted by date (newest first),
+ * with full body content — for the list page, which renders every entry
+ * uncollapsed (there is no expand/collapse toggle; `parseSections(entry.body)`
+ * runs for every item on every render).
+ *
+ * This used to be one list call plus one `single()` call PER entry (N+1: up to
+ * 101 requests for 100 entries), which is why the list page could not finish
+ * inside any reasonable SSR timeout. `.select("body")` asks the list endpoint
+ * itself to include body content — custom fields (version, release_date,
+ * summary, ...) are already returned flat on every list item regardless of
+ * `select`, so one call now returns everything the page renders.
+ *
+ * Results are cached for 5 minutes to avoid repeat API calls on repeated
+ * requests.
+ *
+ * Returns `null` when the API call itself fails — a caught error is not
+ * "this project has shipped nothing," it is "we do not know," same as the
+ * loader's timeout fallback one layer up. Substituting `[]` here would defeat
+ * that: the loader could tell a real timeout from a fabricated empty list,
+ * but not a fabricated empty list produced by this function's own catch.
  */
 export async function getChangelogs(
   locale: string
-): Promise<ChangelogEntry[]> {
+): Promise<ChangelogListItem[] | null> {
   const cacheKey = `changelogs:${locale}`;
-  const cached = getCached<ChangelogEntry[]>(cacheKey);
+  const cached = getCached<ChangelogListItem[]>(cacheKey);
   if (cached) return cached;
 
   try {
-    const client = getChangelogClient();
-
-    const { data: items } = await client
+    const { data } = await getChangelogClient()
       .from(CHANGELOG_MODEL)
       .language(locale)
       .eq("status", "published")
       .order("publishedAt", { ascending: false })
+      .select("body")
       .limit(100);
 
-    if (!items || items.length === 0) return [];
-
-    // Fetch full entries with content for each item
-    const results = await Promise.all(
-      items.map(async (item: ContentEntryListItem) => {
-        const { data } = await client
-          .from(CHANGELOG_MODEL)
-          .language(locale)
-          .single<ChangelogCustomFields>(item.slug);
-        return data;
-      })
-    );
-
-    const fullEntries = results.filter((e): e is ChangelogEntry => e !== null);
-    return setCache(cacheKey, fullEntries);
+    return setCache(cacheKey, (data ?? []) as ChangelogListItem[]);
   } catch (error) {
     console.error("Changelog API error:", error);
-    return [];
+    return null;
   }
 }
 
@@ -119,10 +121,16 @@ export async function getChangelogs(
  * Results are cached for 5 minutes (same as getChangelogs) so repeated SSR
  * requests within the same Worker isolate hit the in-memory cache instead of
  * making a subrequest to content.better-i18n.com on every page load.
+ *
+ * Returns `null` on a genuine API failure — see `getChangelogs` above for why
+ * `[]` is not an acceptable substitute. Callers that treat this as secondary
+ * data (homepage teaser, prev/next nav) fall back to `?? []` at the call
+ * site; that is a deliberate, visible degradation of a decorative feature,
+ * not a fabricated claim about the main content.
  */
 export async function getChangelogsMeta(
   locale: string
-): Promise<ChangelogListItem[]> {
+): Promise<ChangelogListItem[] | null> {
   const cacheKey = `changelogs-meta:${locale}`;
   const cached = getCached<ChangelogListItem[]>(cacheKey);
   if (cached) return cached;
@@ -138,7 +146,7 @@ export async function getChangelogsMeta(
     return setCache(cacheKey, (data ?? []) as ChangelogListItem[]);
   } catch (error) {
     console.error("Changelog API error:", error);
-    return [];
+    return null;
   }
 }
 

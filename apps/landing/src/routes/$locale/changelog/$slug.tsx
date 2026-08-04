@@ -46,11 +46,15 @@ interface AdjacentEntry {
 
 export const Route = createFileRoute("/$locale/changelog/$slug")({
   loader: async ({ params, context }) => {
-    const locale = params.locale as "en" | "tr";
+    // See index.tsx — `__root.tsx` already validates the locale segment
+    // against the live supported-locale list; `as string` documents that,
+    // it does not fabricate it. The old `as "en" | "tr"` cast silently
+    // dropped every other supported locale to English downstream.
+    const locale = params.locale as string;
     const slug = params.slug;
 
     const { filterMessages } = await import("@/lib/page-namespaces");
-    const [allMessages, entry, metaEntries] = await Promise.all([
+    const [allMessages, entry, metaEntriesResult] = await Promise.all([
       getMessages({ project: i18nConfig.project, locale: context.locale }),
       withTimeout(getChangelogBySlug(locale, slug), 4000, null),
       withTimeout(getChangelogsMeta(locale), 4000, []),
@@ -62,6 +66,12 @@ export const Route = createFileRoute("/$locale/changelog/$slug")({
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const messages = filterMessages(allMessages as any, ["meta", "breadcrumbs"]);
+
+    // `getChangelogsMeta` now reports `null` on a genuine fetch failure
+    // (rather than silently claiming an empty list). Prev/next navigation is
+    // decorative — degrading to "no adjacent links" here is a visible,
+    // narrow trade-off, not a claim about the entry's own content.
+    const metaEntries = metaEntriesResult ?? [];
 
     // Find adjacent entries for prev/next navigation
     const currentIndex = metaEntries.findIndex((e: ChangelogListItem) => e.slug === slug);
@@ -106,7 +116,7 @@ export const Route = createFileRoute("/$locale/changelog/$slug")({
     if (entry?.release_date) {
       ogParams.set(
         "date",
-        new Date(entry.release_date).toLocaleDateString("en-US", {
+        new Date(entry.release_date).toLocaleDateString(locale, {
           year: "numeric",
           month: "long",
           day: "numeric",
@@ -172,7 +182,7 @@ export const Route = createFileRoute("/$locale/changelog/$slug")({
 function ChangelogEntryPage() {
   const t = useTranslations("changelogPage");
   const { entry, locale, prevEntry, nextEntry } = Route.useLoaderData();
-  const typedLocale = (locale === "tr" ? "tr" : "en") as Locale;
+  const typedLocale: Locale = locale;
 
   const sections = parseSections(entry.body);
   const releaseDate = formatReleaseDate(

@@ -131,9 +131,14 @@ export const Route = createFileRoute("/$locale/")({
       ],
     };
 
+    // `getChangelogsMeta` reports `null` on a genuine fetch failure (not a
+    // silently-fabricated empty list). This teaser is decorative — falling
+    // back to `[]` here just means the homepage shows no recent-changes
+    // strip, which is a visible, narrow degradation, not a claim that
+    // nothing has shipped.
     return {
       locale: context.locale,
-      recentChangelogs: releases.slice(0, 4),
+      recentChangelogs: (releases ?? []).slice(0, 4),
       plans,
       headData,
     };

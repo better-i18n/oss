@@ -67,6 +67,14 @@ export interface ChangelogMeta {
   readonly slug: string;
   readonly title: string;
   readonly publishedAt: string | null;
+  /**
+   * Locales this entry actually has a translation for, per the CMS. Used to
+   * gate which per-locale sitemap URLs get generated for this entry — without
+   * it, every entry got a URL for every site locale regardless of whether
+   * the CMS had content there, advertising pages that silently served
+   * English (see `generateChangelogDetailPages`).
+   */
+  readonly availableLanguages: readonly string[];
 }
 
 export interface SeoData {
@@ -600,13 +608,60 @@ export async function fetchSeoData(options: {
         .map(toFeaturePageMeta)
       : [];
 
+  // The list endpoint (`getEntries`) does not return `availableLanguages` for
+  // this model — verified empirically: logging the raw item with the field
+  // requested via `fields`, and again with `fields` omitted entirely, both
+  // came back without it. The single-entry endpoint (`getEntry`) does
+  // return it (`ContentEntry.availableLanguages` is a required field on that
+  // response, unlike the optional one on `ContentEntryListItem`) — confirmed
+  // against the real API, matching the CMS's actual per-entry language data.
+  // With only ~10 changelog entries this is a one-time build-step fetch, not
+  // a per-visitor N+1 — the anti-pattern task 1 removed was N+1 racing a
+  // timeout on every page view, not N+1 in general.
   const changelogEntries: ChangelogMeta[] =
     changelogResult.status === "fulfilled"
-      ? changelogResult.value.items.map((item): ChangelogMeta => ({
-          slug: item.slug,
-          title: item.title,
-          publishedAt: item.publishedAt,
-        }))
+      ? await (async () => {
+          const items = changelogResult.value.items;
+          const detailResults = await Promise.allSettled(
+            items.map((item) => client.getEntry("changelog-beta", item.slug)),
+          );
+
+          const entries: ChangelogMeta[] = [];
+          let failures = 0;
+          detailResults.forEach((result, i) => {
+            const item = items[i];
+            if (result.status === "rejected") {
+              failures++;
+              // We could not determine this entry's languages — that is
+              // "unknown," not "translated nowhere." Skip it loudly rather
+              // than silently advertising zero locales for it.
+              console.warn(
+                `[SEO] Could not fetch availableLanguages for changelog entry "${item.slug}": ${result.reason}`,
+              );
+              return;
+            }
+            entries.push({
+              slug: item.slug,
+              title: item.title,
+              publishedAt: item.publishedAt,
+              availableLanguages: extractLanguageCodes(result.value.availableLanguages),
+            });
+          });
+
+          if (items.length > 0 && failures === items.length) {
+            // Every lookup failed — this is not "no entry has translations,"
+            // it is "we could not determine any entry's translations."
+            // Silently continuing would generate zero changelog sitemap
+            // URLs and look identical to a correct empty result, so fail
+            // the build loud instead — same philosophy as
+            // `verify-prerender.ts` failing hard on SEO regressions.
+            throw new Error(
+              `[SEO] Failed to fetch availableLanguages for all ${items.length} changelog entries — cannot generate changelog sitemap URLs.`,
+            );
+          }
+
+          return entries;
+        })()
       : [];
 
   // Fetch i18n messages for all locales (used by llms-txt and structured-data).
@@ -714,6 +769,14 @@ function generateConverterPairPages(
 /**
  * Generates individual changelog entry pages for sitemap indexing.
  * Each changelog entry gets a page at /{locale}/changelog/{slug}.
+ *
+ * This used to generate a URL for every site locale (tier1 + tier2)
+ * regardless of whether the CMS actually had a translation for that entry —
+ * advertising e.g. `/pt/changelog/v2-2-0` via hreflang when the entry had no
+ * Portuguese content, so the page silently rendered in English. It now
+ * intersects the site's sitemap-eligible locales with the entry's own
+ * `availableLanguages` from the CMS, so a URL is only ever generated for a
+ * locale that genuinely has content behind it.
  */
 function generateChangelogDetailPages(
   entries: readonly ChangelogMeta[],
@@ -726,11 +789,19 @@ function generateChangelogDetailPages(
   );
 
   return entries.flatMap((entry) => {
-    const alternateRefs = buildAlternateRefs(sitemapLocales, (locale) =>
+    const availableSet = new Set(entry.availableLanguages);
+    const entryLocales = sitemapLocales.filter((l) => availableSet.has(l));
+
+    // No translations recorded for this entry in any sitemap-eligible
+    // locale — nothing truthful to advertise, so skip it rather than
+    // falling back to "all locales" the way this used to.
+    if (entryLocales.length === 0) return [];
+
+    const alternateRefs = buildAlternateRefs(entryLocales, (locale) =>
       buildPageUrl(locale, `changelog/${entry.slug}`),
     );
 
-    return sitemapLocales.map((locale): PageEntry => {
+    return entryLocales.map((locale): PageEntry => {
       const tier = getLocaleTier(locale);
       const shouldPrerender = tier === "tier1" || tier === "tier2";
 

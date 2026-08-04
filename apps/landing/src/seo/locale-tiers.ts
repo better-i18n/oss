@@ -18,6 +18,19 @@ export const LOCALE_TIERS = {
 
 export type LocaleTier = "tier1" | "tier2" | "tier3";
 
+/**
+ * Every locale the site actually serves UI translations for (tier1 + tier2;
+ * tier3 is currently empty). This is the canonical "real" locale list —
+ * use it instead of hand-rolled two-locale unions like `"en" | "tr"` when a
+ * route or API needs to validate an incoming locale param.
+ */
+export const SUPPORTED_LOCALES = [
+  ...LOCALE_TIERS.tier1,
+  ...LOCALE_TIERS.tier2,
+] as const;
+
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+
 const TIER1_SET: ReadonlySet<string> = new Set(LOCALE_TIERS.tier1);
 const TIER2_SET: ReadonlySet<string> = new Set(LOCALE_TIERS.tier2);
 

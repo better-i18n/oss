@@ -11,7 +11,7 @@ import {
   getAlternateLinks,
   getCanonicalLink,
 } from "@/lib/meta";
-import { getChangelogs, type ChangelogEntry } from "@/lib/changelog";
+import { getChangelogs, type ChangelogListItem } from "@/lib/changelog";
 import { getDefaultStructuredData } from "@/lib/structured-data";
 import {
   trackChangelogView,
@@ -31,7 +31,11 @@ import {
 
 export const Route = createFileRoute("/$locale/changelog/")({
   loader: async ({ context, params }) => {
-    const locale = params.locale as "en" | "tr";
+    // `__root.tsx` already validates the URL's locale segment against the
+    // live supported-locale list before this loader ever runs — `as string`
+    // (not a fake `"en" | "tr"` union) just reflects that params.locale is
+    // already a real, checked locale by the time it gets here.
+    const locale = params.locale as string;
     // Three independent fetches — the namespace helper import used to sit on
     // its own serial await in front of this batch.
     const [{ filterMessages }, allMessages, releases] = await Promise.all([
@@ -88,7 +92,7 @@ function ChangelogPage() {
   const t = useTranslations("changelogPage");
   const loaderData = Route.useLoaderData();
   const { locale } = Route.useParams();
-  const typedLocale = (locale === "tr" ? "tr" : "en") as Locale;
+  const typedLocale: Locale = locale;
 
   const [highlightedSlug, setHighlightedSlug] = useState<string | null>(null);
   const hasScrolled = useRef(false);
@@ -122,7 +126,7 @@ function ChangelogPage() {
     queryFn: async () => {
       const response = await fetch(`/api/changelog?locale=${locale}`);
       if (!response.ok) throw new Error("Failed to fetch changelogs");
-      const json = (await response.json()) as { releases: ChangelogEntry[] };
+      const json = (await response.json()) as { releases: ChangelogListItem[] };
       return json.releases;
     },
     initialData: seeded,
@@ -136,7 +140,7 @@ function ChangelogPage() {
   // built from `?? []` — the empty map is correct there, unlike an empty list
   // rendered as "nothing shipped".
   const releasesBySlug = useMemo(
-    () => new Map((releases ?? []).map((r: ChangelogEntry) => [r.slug, r])),
+    () => new Map((releases ?? []).map((r: ChangelogListItem) => [r.slug, r])),
     [releases],
   );
 
@@ -211,8 +215,8 @@ function ChangelogPage() {
 
         {/* Timeline */}
         <div className="flex flex-col">
-          {releases?.map((entry: ChangelogEntry, index: number) => {
-            const sections = parseSections(entry.body);
+          {releases?.map((entry: ChangelogListItem, index: number) => {
+            const sections = parseSections(entry.body ?? null);
             const releaseDate = formatReleaseDate(
               entry.release_date || entry.publishedAt,
               typedLocale,
