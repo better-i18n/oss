@@ -36,8 +36,8 @@
  */
 
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { Divider, PageHero, Section } from "@/components/ui/page";
-import { ToolFAQ } from "./ToolFAQ";
+import { Divider, FaqSection, PageHero, Section } from "@/components/ui/page";
+import { useT } from "@/lib/i18n";
 import { RelatedTools } from "./RelatedTools";
 import type { ReactNode } from "react";
 
@@ -84,6 +84,8 @@ export function ToolLayout({
   faqItems,
   breadcrumbs,
 }: ToolLayoutProps) {
+  const t = useT("tools");
+
   return (
     /* White, like every other page. The dividers below do the separating that
        `bg-mist-50` used to attempt.
@@ -122,7 +124,26 @@ export function ToolLayout({
       {faqItems && faqItems.length > 0 && (
         <>
           <Divider />
-          <ToolFAQ items={faqItems} />
+          {/* The canonical FAQ, not the tool-specific one.
+              `ToolFAQ` was a SECOND FAQ archetype in this codebase: its own
+              accordion, its own spacing, its own JSON-LD block rendered into
+              the body. `FaqList`'s contract says there is exactly one, and the
+              /tools/ hub had already moved. Two archetypes is why this section
+              read looser than the FAQ on every other page — different padding,
+              different type scale, a centred heading where the rest of the site
+              puts the question column beside the answers.
+              The FAQPage schema is not lost: `getPageHead` already accepts
+              `faqItems` and emits `getFAQSchema` into `head()`, which is where
+              structured data belongs rather than mid-body. */}
+          <FaqSection
+            eyebrow={t("hub.faqEyebrow")}
+            title={t("faq.title")}
+            items={faqItems.map((item, i) => ({
+              id: `faq-${i}`,
+              question: item.question,
+              answer: item.answer,
+            }))}
+          />
         </>
       )}
 

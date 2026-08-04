@@ -1,5 +1,7 @@
 /** Shared types for all free tool pages. */
 
+import type { SpriteIconName } from "@/components/SpriteIcon";
+
 export interface LocaleData {
   readonly code: string;
   readonly language: string;
@@ -39,6 +41,11 @@ export interface ToolMeta {
   readonly descriptionKey: string;
   readonly fallbackTitle: string;
   readonly fallbackDescription: string;
-  readonly icon: string;
+  /**
+   * A sprite name, deliberately not `string`: the registry held emoji, and a
+   * `string` field is what let them in. The union makes the next emoji a type
+   * error instead of something a reviewer has to notice.
+   */
+  readonly icon: SpriteIconName;
   readonly href: string;
 }

@@ -28,8 +28,34 @@ const FLAG_COUNTRY: Record<string, string> = {
   ru: "ru",
 };
 
+/**
+ * The country whose flag stands for a locale, or `null` when there is none.
+ *
+ * Three cases, in order:
+ *   1. A region subtag IS a country: `en-US` → `us`, `pt-BR` → `br`. The old
+ *      code went straight to the fallback below and asked the host for
+ *      `flags/en-US/`, which 404s — every regional code was a broken image.
+ *   2. A bare language we have deliberately mapped (`ja` → `jp`).
+ *   3. Anything else: **null**. We do not guess. Naming "the country of a
+ *      language" is wrong as often as it is right (`ar` is not Saudi Arabia,
+ *      `es` is not only Spain), and a guessed flag is worse than no flag.
+ *
+ * Callers that render a LIST use this to decide once for the whole list, not
+ * per row — a flag on some rows and a gap on others breaks the column.
+ */
+export function localeFlagCountry(locale: string): string | null {
+  const region = locale.match(/-([A-Za-z]{2})$/);
+  if (region) return region[1].toLowerCase();
+  return FLAG_COUNTRY[locale.toLowerCase()] ?? null;
+}
+
 export function LocaleFlag({ locale, size = 14 }: { locale: string; size?: number }) {
-  const country = FLAG_COUNTRY[locale] ?? locale;
+  /* Deliberately still permissive: the existing callers pass codes from our own
+     locale set where the code doubles as the country (`pl`, `ro`, `cs`, `vi`),
+     and tightening this to `localeFlagCountry` alone would drop flags that
+     render today. What is NEW here is that `en-US` now resolves to `us`
+     instead of asking the host for `flags/en-US/`. */
+  const country = localeFlagCountry(locale) ?? locale.toLowerCase();
   return (
     <img
       src={`${FLAG_BASE}/${country}/w320.png`}

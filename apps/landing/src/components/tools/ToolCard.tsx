@@ -1,6 +1,7 @@
 /** Card component for the Tools Hub grid. Links to individual tool pages. */
 
 import { Link } from "@tanstack/react-router";
+import { SpriteIcon } from "@/components/SpriteIcon";
 import type { ToolMeta } from "@/lib/tools/types";
 
 interface ToolCardProps {
@@ -27,8 +28,12 @@ export function ToolCard({ tool, locale, headingLevel = 3 }: ToolCardProps) {
       className="group block rounded-xl border border-mist-200 bg-white p-6 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:shadow-md"
       aria-label={tool.fallbackTitle}
     >
+      {/* The mark is decorative: the title right below it carries the name, so
+          the icon is hidden from assistive tech (SpriteIcon sets aria-hidden)
+          and sized in `size-5` so every tile's symbol has the same optical
+          weight — emoji did not, each platform drew them at its own scale. */}
       <div className="mb-4 flex size-11 items-center justify-center rounded-xl border border-mist-100 bg-mist-50 text-mist-700 shadow-sm">
-        {tool.icon}
+        <SpriteIcon name={tool.icon} className="size-5" />
       </div>
       <Heading className="font-display text-lg/[1.3] font-medium text-mist-950 mb-2">
         {tool.fallbackTitle}

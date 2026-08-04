@@ -309,9 +309,13 @@ function resolveDynamicConfig(pagePath: string): PageConfig | null {
     return { namespaces: ["featuresPage", "relatedPages"] };
   }
 
-  // /tools/{tool} — tool pages use hardcoded strings, no custom namespaces needed
+  // /tools/{tool} — the tool INSTRUMENT is still English literals, but the page
+  // shell around it is not: the intro sentence above the tool, the "see also"
+  // links and the closing band read `tools.*`. Without the namespace `useT`
+  // humanises them and the page shows "Intro" / "Cta Title" on 21 locales
+  // (rule/client-messages-must-cover-every-key-the-page-renders).
   if (pagePath.startsWith("tools/")) {
-    return { namespaces: [] };
+    return { namespaces: ["tools"] };
   }
 
   return null;
