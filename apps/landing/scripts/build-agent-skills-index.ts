@@ -119,6 +119,8 @@ function main(): void {
 
   ensureDir(OUTPUT_DIR);
   const skills: SkillIndexEntry[] = [];
+  /* Newest source SKILL.md, for `generatedAt` — see the note at the index. */
+  let newestSourceMs = 0;
 
   for (const entry of readdirSync(SOURCE_DIR)) {
     const entryPath = path.join(SOURCE_DIR, entry);
@@ -132,6 +134,7 @@ function main(): void {
     }
 
     const body = readFileSync(skillFile, "utf-8");
+    newestSourceMs = Math.max(newestSourceMs, statSync(skillFile).mtimeMs);
     const { meta } = parseFrontmatter(body);
     const name = meta.name ?? entry;
     const description =
@@ -159,9 +162,26 @@ function main(): void {
   // Sort alphabetically for deterministic output
   skills.sort((a, b) => a.name.localeCompare(b.name));
 
+  /*
+   * `generatedAt` tracks the SOURCE, not the clock.
+   *
+   * It was `new Date().toISOString()`, two lines under a sort whose comment
+   * says "for deterministic output" — so every build rewrote this committed
+   * file with a new timestamp and left the working tree dirty, on a file whose
+   * content was otherwise byte-identical. That is churn masquerading as
+   * information: it says when the build ran, which nobody consuming a
+   * well-known index can use, while each skill already carries a `sha256` that
+   * answers the question that matters ("has this changed?").
+   *
+   * Taking the newest source `SKILL.md` mtime keeps the field (its presence may
+   * be load-bearing for a consumer — the `$schema` URL above currently 404s, so
+   * I could not confirm whether it is required, and dropping a field from a
+   * published document on a guess is worse than keeping it honest) while making
+   * it change only when a skill actually changes. Same input, same output.
+   */
   const index = {
     $schema: "https://agentskills.io/schemas/v0.2.0/index.json",
-    generatedAt: new Date().toISOString(),
+    generatedAt: new Date(newestSourceMs).toISOString(),
     skills,
   };
   writeFileSync(
