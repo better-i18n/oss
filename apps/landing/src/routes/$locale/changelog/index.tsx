@@ -37,7 +37,20 @@ export const Route = createFileRoute("/$locale/changelog/")({
     const [{ filterMessages }, allMessages, releases] = await Promise.all([
       import("@/lib/page-namespaces"),
       getMessages({ project: i18nConfig.project, locale: context.locale }),
-      withTimeout(getChangelogs(locale), 4000, []),
+      /* `null` on timeout, not `[]`.
+       *
+       * `[]` is a claim — "this project has shipped nothing" — and it was being
+       * made every time the fetch was merely slow. Downstream, React Query took
+       * that `[]` as `initialData` with a five-minute `staleTime` and
+       * `refetchOnMount: false`, so it treated the empty list as fresh and
+       * never asked again: the page stayed blank for every visitor. `null`
+       * means "we do not know", which is the truth, and is what lets the client
+       * fetch on mount instead of trusting a fabricated answer.
+       *
+       * 4s was also too tight for what `getChangelogs` does — it pulls the list
+       * and then the FULL body of every entry (up to 100) before returning, so
+       * on a list page it was racing a request it could not win. */
+      withTimeout(getChangelogs(locale), 9000, null),
     ]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const messages = filterMessages(allMessages as any, ["meta", "breadcrumbs"]);
@@ -91,7 +104,20 @@ function ChangelogPage() {
   }, [locale]);
   useEngagedTime("changelog");
 
-  const { data: releases = loaderData?.releases ?? [] } = useQuery({
+  /*
+   * `initialData` only when the server actually returned a list.
+   *
+   * It used to be `initialData: loaderData?.releases` where the loader
+   * substituted `[]` whenever its fetch was slow. React Query cannot tell a
+   * real empty list from a placeholder one, so with `staleTime: 5 * 60 * 1000`
+   * and `refetchOnMount: false` it filed the empty array as fresh data and
+   * never issued the request that would have corrected it. The loader now
+   * reports `null` for "unknown", and `undefined` here means React Query has no
+   * seed and fetches on mount — which is the recovery this query was written to
+   * provide and was silently prevented from doing.
+   */
+  const seeded = loaderData?.releases ?? undefined;
+  const { data: releases } = useQuery({
     queryKey: ["changelogs", locale],
     queryFn: async () => {
       const response = await fetch(`/api/changelog?locale=${locale}`);
@@ -99,15 +125,18 @@ function ChangelogPage() {
       const json = (await response.json()) as { releases: ChangelogEntry[] };
       return json.releases;
     },
-    initialData: loaderData?.releases,
+    initialData: seeded,
     staleTime: 5 * 60 * 1000,
-    refetchOnMount: false,
+    refetchOnMount: seeded === undefined,
     refetchOnWindowFocus: false,
   });
 
-  // One index instead of a linear .find() per expand event.
+  // One index instead of a linear .find() per expand event. `releases` is now
+  // genuinely `undefined` while the client fetch is in flight, so the map is
+  // built from `?? []` — the empty map is correct there, unlike an empty list
+  // rendered as "nothing shipped".
   const releasesBySlug = useMemo(
-    () => new Map(releases.map((r: ChangelogEntry) => [r.slug, r])),
+    () => new Map((releases ?? []).map((r: ChangelogEntry) => [r.slug, r])),
     [releases],
   );
 
@@ -302,7 +331,10 @@ function ChangelogPage() {
             );
           })}
 
-          {(!releases || releases.length === 0) && (
+          {/* Only when we KNOW the list is empty. `undefined` means the client
+              fetch is still in flight, and telling a visitor "no entries" while
+              we are still asking is the same lie the loader used to tell. */}
+          {releases?.length === 0 && (
             <div className="py-12 text-center text-mist-400">
               {t("noEntries")}
             </div>

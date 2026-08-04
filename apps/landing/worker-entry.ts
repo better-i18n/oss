@@ -215,16 +215,29 @@ async function handleApiRoute(
   }
 
   // GET /api/status — aggregate uptime state from BetterStack.
-  // Must live here: the worker short-circuits ALL /api/* above SSR (step 4a),
-  // so the TanStack server route at src/routes/api/status.ts never runs in
-  // production. Without this branch /api/status 404s and the nav status pill
-  // reads the 404 JSON as "not operational" → false red dot.
+  // Lives here rather than in a route file because it needs no app code: one
+  // upstream fetch and a fail-safe default. `src/routes/api/status.ts` also
+  // exists and would now be reachable, but this branch answers first and is
+  // the one that ships the "never paint a false outage" behaviour.
   if (path === "/api/status" && request.method === "GET") {
     return handleStatus();
   }
 
   return jsonResponse({ error: "Not found" }, 404);
 }
+
+/**
+ * The `/api/*` paths this worker implements itself.
+ *
+ * Anything not listed here falls through to SSR so its TanStack server route
+ * can answer. Adding an endpoint to `src/routes/api/` requires no change here;
+ * adding one to this file does.
+ */
+const WORKER_OWNED_API_PATHS = new Set([
+  "/api/apply",
+  "/api/comments",
+  "/api/status",
+]);
 
 const BETTERSTACK_STATUS_URL =
   "https://better-i18n.betteruptime.com/index.json";
@@ -534,8 +547,20 @@ export default {
     }
 
     // 4a. API routes — D1/R2-backed endpoints for applications + comments.
-    // Handled before prerender passthrough so /api/* never hits SSR/SSG.
-    if (url.pathname.startsWith("/api/")) {
+    // Handled before prerender passthrough so these never hit SSR/SSG.
+    //
+    // The short-circuit used to swallow the WHOLE /api/ prefix and 404 anything
+    // it did not hand-route itself, which silently killed every TanStack server
+    // route under src/routes/api/. `/api/status` was already rescued by copying
+    // its logic into this file; `/api/changelog` and `/api/client-error` were
+    // still dead in production, and `/api/changelog` is the changelog page's
+    // only client-side recovery path — so a slow SSR fetch left the page
+    // permanently empty with no way back.
+    //
+    // Owning the prefix by accident is the bug. This worker only claims the
+    // paths it actually implements; everything else under /api/ falls through
+    // to SSR, where its route file already lives and works.
+    if (WORKER_OWNED_API_PATHS.has(url.pathname)) {
       return handleApiRoute(request, url, env, ctx);
     }
 
