@@ -42,6 +42,12 @@ export const CUSTOMERS: ReadonlyArray<Customer> = [
   { name: "Flof", href: "https://flof.ai/en/", mark: "/logos/customers/flof.svg" },
   { name: "BoostYourApp", href: "https://boostyour.app/", mark: "/logos/customers/boostyour.svg" },
   { name: "Z5K", href: "https://z5k.run/", mark: "/logos/customers/z5k.svg", markSize: 19 },
+  /* Aceware already has a named testimonial in this codebase (quote 3, Eray
+     Gündoğmuş, Founding Engineer) — the wall was the one surface that did not
+     say so. `markSize: 18` because their mark is a filled tile rather than a
+     line glyph, so it reads a size larger than the outlined marks beside it at
+     the same box. */
+  { name: "Aceware", href: "https://aceware.io/en/", mark: "/logos/customers/aceware.svg", markSize: 18 },
 ];
 
 /** The subset used where space is tight (closing CTA): the most recognisable first. */

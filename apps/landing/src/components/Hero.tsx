@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { CUSTOMERS, type Customer } from "@/lib/customers";
 import { useT } from "@/lib/i18n";
 import { Link, useParams } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
@@ -157,35 +158,7 @@ export default function Hero() {
  * bare glyph would leave half the wall unreadable, which is the opposite of what
  * a logo wall is for.
  */
-type TrustLogoItem = {
-  readonly name: string;
-  readonly href: string;
-  /** Wordmark asset — rendered alone. */
-  readonly wordmark?: string;
-  /** Square mark — rendered next to `name`. */
-  readonly mark?: string;
-  readonly width?: number;
-  /**
-   * Some customers only publish a white-on-dark mark with the background baked
-   * in (Riuve, Rivo). Inverting it gives a dark glyph on transparent — the icon
-   * alone, no tile — which is what the rest of the wall looks like.
-   */
-  readonly invert?: boolean;
-  /**
-   * Optical height override for a wordmark, in px. Equal pixel height is not
-   * equal optical weight: Modus is a heavy geometric wordmark and at 20px it
-   * read a size larger than everything around it.
-   */
-  readonly height?: number;
-  /**
-   * Mark size override, in px (default 20). Full-bleed artwork — Rivo's icon
-   * fills its canvas edge to edge, Z5K's glyph is wide — measures larger than a
-   * mark with its own padding at the same box size.
-   */
-  readonly markSize?: number;
-};
-
-function TrustLogo({ logo }: { logo: TrustLogoItem }) {
+function TrustLogo({ logo }: { logo: Customer }) {
   return (
     <a
       href={logo.href}
@@ -231,31 +204,19 @@ function TrustLogo({ logo }: { logo: TrustLogoItem }) {
   );
 }
 
-/* Split across two rows rather than one long marquee: 13 customers in a single
-   row means most of them are off-screen most of the time. Marks live in
-   public/logos/customers/ — self-hosted, single ink (several of these brands
-   publish a white-on-dark logo only, so their fills were bound to
-   currentColor). */
-const LOGO_ROWS: ReadonlyArray<ReadonlyArray<TrustLogoItem>> = [
-  [
-    { name: "Carna", href: "http://carna.ai/", wordmark: "/carna.webp" },
-    { name: "Nomad", href: "https://hellonomad.app/", mark: "/logos/customers/nomadwork.svg" },
-    { name: "Hellospace", href: "https://hellospace.world/", wordmark: "/hellospace.webp" },
-    { name: "Cloudflare", href: "https://www.cloudflare.com/", wordmark: "/cloudflare.webp" },
-    { name: "Masraff", href: "https://masraff.ai", mark: "/logos/customers/masraff.svg" },
-    { name: "Helpway", href: "https://helpway.ai/", mark: "/logos/customers/helpway.svg" },
-    { name: "Riuve", href: "https://riuve.com/", mark: "/logos/customers/riuve.png", invert: true },
-  ],
-  [
-    // getsafa.com renders this asset in a 180×38 box, but the file itself is a
-    // 329×254 mark — as a "wordmark" it stretched into an unreadable glyph.
-    { name: "Safa", href: "https://getsafa.com/", mark: "/logos/customers/safa.svg" },
-    { name: "Modus", href: "https://modus.builders/", wordmark: "/logos/customers/modus.svg", width: 88, height: 17 },
-    { name: "Rivo", href: "https://hellorivo.com/", mark: "/logos/customers/rivo.png", invert: true, markSize: 19 },
-    { name: "Flof", href: "https://flof.ai/en/", mark: "/logos/customers/flof.svg" },
-    { name: "BoostYourApp", href: "https://boostyour.app/", mark: "/logos/customers/boostyour.svg" },
-    // Their own mark (confirmed by the owner — it is not the Strava badge it sits
-    // next to on their site), recoloured to single ink like the rest of the wall.
-    { name: "Z5K", href: "https://z5k.run/", mark: "/logos/customers/z5k.svg", markSize: 19 },
-  ],
+/* Two rows, not one marquee: a single row of fourteen means most of them are
+   off-screen most of the time.
+
+   The list itself comes from `lib/customers.ts` rather than being repeated here.
+   It used to be repeated, which is the drift that file was created to end — its
+   own docstring warned about exactly this ("Duplicating it meant the CTA row
+   drifted... while the band had thirteen entries"), and the band was still the
+   copy that had not migrated. Adding Aceware to the shared list changed the
+   rotating wall and left this band alone, which is how the duplication surfaced.
+   Rows are derived by halving, so the next customer lands in both surfaces from
+   one edit. */
+const HALF = Math.ceil(CUSTOMERS.length / 2);
+const LOGO_ROWS: ReadonlyArray<ReadonlyArray<Customer>> = [
+  CUSTOMERS.slice(0, HALF),
+  CUSTOMERS.slice(HALF),
 ];
