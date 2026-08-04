@@ -8,9 +8,11 @@ import { getPageHead } from "@/lib/page-seo";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 import { useT } from "@/lib/i18n";
+import { testimonialAvatar } from "@/lib/testimonials";
 import { getMarketingPages, type MarketingPageListItem } from "@/lib/content";
 import {
   ClosingCta,
+  PageTestimonial,
   Divider,
   FeatureColumn,
   FeatureRow,
@@ -54,6 +56,8 @@ export const Route = createFileRoute("/$locale/features/")({
 
 function FeaturesPage() {
   const t = useT("featuresPage");
+  const tCta = useT("cta");
+  const tTest = useT("testimonials");
   const { locale } = Route.useParams();
   const { featurePages } = Route.useLoaderData();
   const overviewCards = [
@@ -355,6 +359,28 @@ function FeaturesPage() {
           label: t("closing.ctaSecondary"),
           href: "https://cal.com/better-i18n/30min?overlayCalendar=true",
         }}
+        /* The proof column on the band that closes the page. The logos were
+           already built for /for-product-teams/ and the home page; the closing
+           ask is exactly where "who already runs on this" carries its weight,
+           and this page spends 300 lines arguing capability without ever
+           naming a user. `trustedBy` lives in the shared `cta` namespace, so
+           it is translated in all 22 locales. */
+        customers={{ label: tCta("trustedBy") }}
+      />
+
+      <Divider />
+
+      {/* A person, under the ask. The quote is published copy from the
+          `testimonials` namespace and the portrait is the real one from
+          src/lib/testimonials.ts — never a generated face, per that file's own
+          rule. Quote 3 is the one about coverage going from 60% to 100%, which
+          is the claim this page has just spent its length making. */}
+      <PageTestimonial
+        quote={tTest("3.quote")}
+        name={tTest("3.name")}
+        role={tTest("3.title")}
+        avatar={testimonialAvatar(3)}
+        patternId="dots-features"
       />
 
       <Divider />

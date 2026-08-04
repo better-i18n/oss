@@ -35,6 +35,16 @@ const PRODUCT_STYLE: Record<
 };
 
 const SIZE = {
+  /**
+   * Inline with a line of text — the footer's product links.
+   *
+   * 16px because that is what `<GuideMark>` measures, and the footer sets both
+   * in the same column: a product tile at `sm` beside a framework mark would
+   * make one list read as two, and the labels would no longer share a left
+   * edge. The glyph drops to 10px so the mark inside the smaller tile keeps the
+   * same optical weight rather than filling it.
+   */
+  xs: { box: "size-4 rounded-[5px]", glyph: 10 },
   sm: { box: "size-7 rounded-[8px]", glyph: 16 },
   md: { box: "size-11 rounded-[12px]", glyph: 24 },
 } as const;

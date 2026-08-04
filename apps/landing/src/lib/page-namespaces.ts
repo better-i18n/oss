@@ -114,7 +114,14 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
       namespaces: ["pricing", "pricingPage", "relatedPages", "compare.marks"],
     },
   ],
-  ["features", { namespaces: ["featuresPage", "relatedPages"] }],
+  /* `testimonials` travels with /features/: the page closes with
+     <PageTestimonial /> and without the subtree `useT` humanises the quote to
+     "Quote" on screen in all 22 locales. `cta` is already in
+     SHARED_NAMESPACES, which is where the customer-proof label comes from. */
+  [
+    "features",
+    { namespaces: ["featuresPage", "testimonials", "relatedPages"] },
+  ],
   [
     "integrations",
     { namespaces: ["integrationsPage", "integrations", "relatedPages"] },

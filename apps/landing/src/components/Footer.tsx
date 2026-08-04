@@ -12,6 +12,8 @@ import {
 } from "./icons/ComplianceIcons";
 import { useT } from "@/lib/i18n";
 import { CompetitorMark, type CompetitorKey } from "@/components/icons/CompetitorMarks";
+import { GuideMark } from "@/lib/i18n-guide-icons";
+import { ProductTile, type ProductKey } from "@/components/ui/product-tile";
 
 interface ComplianceBadgeProps {
   label: string;
@@ -50,6 +52,14 @@ type FooterLink =
       localeAware?: boolean;
       /** Vendor whose mark renders before the label (rule/name-a-thing-with-its-mark). */
       mark?: CompetitorKey;
+      /**
+       * Framework guide slug, for the same <GuideMark> the /i18n/ hub and
+       * RelatedPages use. A framework named in the footer wore no mark while
+       * the same name three clicks away did.
+       */
+      guide?: string;
+      /** One of our own products, for the tile the header's product menu shows. */
+      product?: ProductKey;
     }
   | { key: string; label: string; action: string };
 
@@ -63,24 +73,40 @@ const footerLinks: FooterLinkGroup[] = [
   {
     category: "product",
     categoryTitle: "Product",
+    /* Three products, and nothing else.
+       This column used to mix them with Features, Pricing and Integrations —
+       five links of which two were products, so the tiles marked half a list
+       and the heading "Product" described none of it. Those three are pages
+       ABOUT the product rather than products, and they now sit under Resources
+       where the rest of the wayfinding lives. */
     links: [
-      { key: "features", label: "Features", href: "/$locale/features/" },
-      { key: "content", label: "Better Content", href: "/$locale/content/" },
-      { key: "analytics", label: "Better Analytics", href: "/$locale/analytics/" },
-      { key: "pricing", label: "Pricing", href: "/$locale/pricing/" },
-      { key: "integrations", label: "Integrations", href: "/$locale/integrations/" },
+      { key: "i18n", label: "Better I18N", href: "/$locale/features/", product: "i18n" },
+      { key: "content", label: "Better Content", href: "/$locale/content/", product: "content" },
+      { key: "analytics", label: "Better Analytics", href: "/$locale/analytics/", product: "analytics" },
     ],
   },
   {
     category: "frameworks",
     categoryTitle: "Frameworks",
     links: [
-      { key: "react", label: "React", href: "/$locale/i18n/react/" },
-      { key: "nextjs", label: "Next.js", href: "/$locale/i18n/nextjs/" },
-      { key: "vue", label: "Vue", href: "/$locale/i18n/vue/" },
-      { key: "nuxt", label: "Nuxt", href: "/$locale/i18n/nuxt/" },
-      { key: "angular", label: "Angular", href: "/$locale/i18n/angular/" },
-      { key: "svelte", label: "Svelte", href: "/$locale/i18n/svelte/" },
+      { key: "react", label: "React", href: "/$locale/i18n/react/", guide: "react" },
+      { key: "nextjs", label: "Next.js", href: "/$locale/i18n/nextjs/", guide: "nextjs" },
+      { key: "vue", label: "Vue", href: "/$locale/i18n/vue/", guide: "vue" },
+      { key: "nuxt", label: "Nuxt", href: "/$locale/i18n/nuxt/", guide: "nuxt" },
+      { key: "angular", label: "Angular", href: "/$locale/i18n/angular/", guide: "angular" },
+      { key: "svelte", label: "Svelte", href: "/$locale/i18n/svelte/", guide: "svelte" },
+      /* Expo and React Native were absent while their guides existed and were
+         indexed. The footer is on all 104 pages, so a guide missing from it is a
+         guide with the weakest internal linking on the site — the same reason
+         four /i18n/ guides Google skips turned out to be the four the hub did
+         not link. */
+      { key: "expo", label: "Expo", href: "/$locale/i18n/expo/", guide: "expo" },
+      {
+        key: "reactNative",
+        label: "React Native",
+        href: "/$locale/i18n/react-native-localization/",
+        guide: "react-native-localization",
+      },
     ],
   },
   {
@@ -134,6 +160,10 @@ const footerLinks: FooterLinkGroup[] = [
       },
       { key: "whatIs", label: "What is i18n?", href: "/$locale/what-is/" },
       { key: "tools", label: "Free Tools", href: "/$locale/tools/" },
+      /* Moved out of Product: these describe the product, they are not one. */
+      { key: "featuresLink", label: "Features", href: "/$locale/features/" },
+      { key: "pricing", label: "Pricing", href: "/$locale/pricing/" },
+      { key: "integrations", label: "Integrations", href: "/$locale/integrations/" },
       { key: "status", label: "Status", href: "https://status.better-i18n.com" },
       { key: "changelog", label: "Changelog", href: "/$locale/changelog/" },
     ],
@@ -235,7 +265,7 @@ export default function Footer() {
                           to={href}
                           params={{ locale: currentLocale }}
                           className={
-                            "mark" in link
+                            "mark" in link || "guide" in link || "product" in link
                               ? "footer-link inline-flex items-center gap-2"
                               : "footer-link"
                           }
@@ -243,6 +273,18 @@ export default function Footer() {
                           {/* A vendor name gets its own mark, at one size, on the
                               same neutral tile as everywhere else
                               (rule/name-a-thing-with-its-mark). */}
+                          {/* A framework or a product gets the same mark it
+                              wears everywhere else, in a slot reserved at one
+                              size so the labels stay on a single left edge
+                              (rule/name-a-thing-with-its-mark). */}
+                          {"guide" in link && link.guide && (
+                            <span className="flex size-4 shrink-0 items-center justify-center">
+                              <GuideMark slug={link.guide} />
+                            </span>
+                          )}
+                          {"product" in link && link.product && (
+                            <ProductTile product={link.product} size="xs" />
+                          )}
                           {"mark" in link && (
                             <CompetitorMark
                               competitor={link.mark as CompetitorKey}
