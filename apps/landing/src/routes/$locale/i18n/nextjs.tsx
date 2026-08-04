@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { StepNumber } from "@/components/ui/step-number";
+import { SupportMark, useMarkLabels } from "@/components/ui/support-mark";
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { BackToHub } from "@/components/BackToHub";
@@ -733,6 +734,10 @@ function NextjsI18nPage() {
   const t = useT("marketing");
   const { locale } = Route.useParams();
   const { pillarPosts } = Route.useLoaderData();
+  /* The mark's accessible name — a tile with no text is nothing to a screen
+     reader. Reads the `compare` namespace, which every /i18n/* page already
+     loads (`resolveDynamicConfig`). */
+  const markLabels = useMarkLabels();
 
   const features = [
     t("i18n.nextjs.features.appRouter"),
@@ -967,16 +972,20 @@ function NextjsI18nPage() {
         />
         <div className="mt-8">
           <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-3" inset={16} padY={12}>
+            {/* <SupportMark>, not a bare sprite tick.
+             *
+             * This list makes the same claim the comparison matrices make —
+             * "this capability exists" — and the site already has one mark for
+             * that, used by `PricingComparison` and all seven /compare/* pages.
+             * A loose 3.5px checkmark here said the same thing in a different
+             * voice, which is how one vocabulary becomes three: the tick on
+             * these guides is variously mist-900, mist-400, emerald and violet
+             * at three sizes. See `rule/one-support-mark`. */}
             {features.map((feature) => (
-              <div
-                key={feature}
-                className="feat-cell flex items-start gap-2.5"
-              >
-                <SpriteIcon
-                  name="checkmark"
-                  className="mt-0.5 size-3.5 shrink-0 text-mist-900"
-                  aria-hidden="true"
-                />
+              <div key={feature} className="feat-cell flex items-start gap-2.5">
+                <span className="mt-px shrink-0">
+                  <SupportMark state="yes" label={markLabels.yes} />
+                </span>
                 <span className="text-[13px] leading-relaxed text-mist-700">{feature}</span>
               </div>
             ))}

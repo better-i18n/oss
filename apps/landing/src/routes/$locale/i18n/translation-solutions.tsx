@@ -104,23 +104,23 @@ function TranslationSolutionsPage() {
               </h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2 text-sm text-mist-700">
-                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                   {t("i18n.translationSolutions.useCases.hindi")}
                 </li>
                 <li className="flex items-start gap-2 text-sm text-mist-700">
-                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                   {t("i18n.translationSolutions.useCases.mandarin")}
                 </li>
                 <li className="flex items-start gap-2 text-sm text-mist-700">
-                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                   {t("i18n.translationSolutions.useCases.documents")}
                 </li>
                 <li className="flex items-start gap-2 text-sm text-mist-700">
-                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                   {t("i18n.translationSolutions.useCases.images")}
                 </li>
                 <li className="flex items-start gap-2 text-sm text-mist-700">
-                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                   {t("i18n.translationSolutions.useCases.mexicanSpanish")}
                 </li>
               </ul>

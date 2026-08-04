@@ -132,23 +132,23 @@ function SoftwareLocalizationPage() {
               </h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                   {t("i18n.softwareLocalization.scope.uiStrings")}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                   {t("i18n.softwareLocalization.scope.dateTime")}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                   {t("i18n.softwareLocalization.scope.layout")}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                   {t("i18n.softwareLocalization.scope.media")}
                 </li>
                 <li className="flex items-start gap-2 text-mist-700 text-sm">
-                  <SpriteIcon name="checkmark" className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                   {t("i18n.softwareLocalization.scope.legal")}
                 </li>
               </ul>
@@ -234,7 +234,7 @@ function SoftwareLocalizationPage() {
               <ul className="space-y-4">
                 {benefits.map((item) => (
                   <li key={item.key} className="flex items-start gap-3">
-                    <SpriteIcon name="checkmark" className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                     <span className="text-mist-700">{t(item.key)}</span>
                   </li>
                 ))}

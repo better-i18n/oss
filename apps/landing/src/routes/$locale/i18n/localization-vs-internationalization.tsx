@@ -136,7 +136,7 @@ function L10nVsI18nPage() {
               <ul className="space-y-3">
                 {i18nActivities.map((activity) => (
                   <li key={activity.key} className="flex items-start gap-2">
-                    <SpriteIcon name="checkmark" className="size-4 text-violet-500 mt-0.5 shrink-0" />
+                    <SpriteIcon name="checkmark" className="mt-0.5 size-3.5 shrink-0 text-mist-400" />
                     <span className="text-sm text-mist-700">{t(activity.key)}</span>
                   </li>
                 ))}
