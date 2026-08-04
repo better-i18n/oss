@@ -5,8 +5,16 @@ import { CodeBlock } from "@/components/CodeBlock";
 import { BackToHub } from "@/components/BackToHub";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
-import { ClosingCta, Divider } from "@/components/ui/page";
-import { IconStar, IconClipboard } from "@central-icons-react/round-outlined-radius-2-stroke-2";
+import {
+  ClosingCta,
+  Divider,
+  FeatureCell,
+  FeatureGrid,
+  PageHero,
+  Section,
+  SectionHeader,
+} from "@/components/ui/page";
+import { IconStar } from "@central-icons-react/round-outlined-radius-2-stroke-2";
 
 export const Route = createFileRoute("/$locale/i18n/doctor")({
   loader: createPageLoader(),
@@ -54,12 +62,21 @@ const analysisCategories = [
   },
 ];
 
+/**
+ * The grade bands, as the CLI computes them.
+ *
+ * Each row used to carry its own hue — emerald-100, emerald-50, sky, amber, red
+ * — so five of the six colours on the page were spent restating an order the
+ * numbers already state (90, 80, 70, 50, <50 reads as descending without help).
+ * `pass` survives as data because it is not decoration: it is the threshold the
+ * CI job actually gates on, and it does not track the grade letter linearly.
+ */
 const healthGrades = [
-  { grade: "A+", range: "≥ 90", result: "Pass", color: "bg-emerald-100 text-emerald-800" },
-  { grade: "A", range: "≥ 80", result: "Pass", color: "bg-emerald-50 text-emerald-700" },
-  { grade: "B", range: "≥ 70", result: "Pass", color: "bg-sky-50 text-sky-700" },
-  { grade: "C", range: "≥ 50", result: "Fail", color: "bg-amber-50 text-amber-700" },
-  { grade: "F", range: "< 50", result: "Fail", color: "bg-red-50 text-red-700" },
+  { grade: "A+", range: "≥ 90", pass: true },
+  { grade: "A", range: "≥ 80", pass: true },
+  { grade: "B", range: "≥ 70", pass: true },
+  { grade: "C", range: "≥ 50", pass: false },
+  { grade: "F", range: "< 50", pass: false },
 ];
 
 const ciFeatures = [
@@ -100,83 +117,94 @@ const commandComparison = [
   },
 ];
 
+/**
+ * `nameKey`, not `name`.
+ *
+ * These four were hardcoded English strings ("CLI & Code Scanning", "For
+ * Developers"), so the related-topics block stayed English on all twenty-two
+ * locales while the descriptions beside it translated — the one part of the
+ * page a reader uses to keep reading.
+ *
+ * The names come from the shared `relatedPages` namespace, not from new keys
+ * under `i18n.doctor.*`. That namespace is a registry of destination names that
+ * already travels with every `/i18n/*` page (`resolveDynamicConfig`) and is
+ * already translated in all twenty-two locales — three of these four were
+ * literally already in it. Minting `i18n.doctor.relatedNames.forDevelopers`
+ * beside the existing `relatedPages.forDevelopers` would have been a fourteenth
+ * copy of the string "For Developers" in this project.
+ *
+ * The descriptions stay page-local: they are written for a reader who is on the
+ * doctor page specifically, which the generic registry blurbs are not.
+ */
 const relatedPages = [
   {
-    name: "CLI & Code Scanning",
+    nameKey: "cliCodeScanning",
     href: "/$locale/i18n/cli-code-scanning",
     descKey: "i18n.doctor.related.cliCodeScanning",
   },
   {
-    name: "For Developers",
+    nameKey: "forDevelopers",
     href: "/$locale/i18n/for-developers",
     descKey: "i18n.doctor.related.forDevelopers",
   },
   {
-    name: "Localization Software",
+    nameKey: "localizationSoftware",
     href: "/$locale/i18n/localization-software",
     descKey: "i18n.doctor.related.localizationSoftware",
   },
   {
-    name: "Translation Management",
+    nameKey: "translationManagement",
     href: "/$locale/i18n/translation-management-system",
     descKey: "i18n.doctor.related.translationManagement",
   },
 ];
 
+const capabilities = [
+  { icon: <IconStar className="size-3" />, key: "healthScore" },
+  { icon: <SpriteIcon name="script" className="size-3" />, key: "lexicalScope" },
+  { icon: <SpriteIcon name="settings-gear" className="size-3" />, key: "serverComponents" },
+  { icon: <SpriteIcon name="chart" className="size-3" />, key: "configurable" },
+  { icon: <SpriteIcon name="magnifying-glass" className="size-3" />, key: "smartFiltering" },
+  { icon: <SpriteIcon name="code-brackets" className="size-3" />, key: "verboseAudit" },
+];
+
 function I18nDoctorPage() {
   const t = useT("marketing");
-  const tCommon = useT("marketing");
+  /* The destination names live in their own top-level namespace — see the
+     `relatedPages` docstring above for why they are not `marketing` keys. */
+  const tRelated = useT("relatedPages");
   const { locale } = Route.useParams();
 
   return (
     <MarketingLayout showCTA={false}>
       <BackToHub hub="i18n" locale={locale} />
-      {/* Hero */}
-      <section id="hero">
-        <div className="section">
-          <div className="max-w-3xl">
-            <div className="eyebrow mb-5 flex items-center gap-2">
-              <IconClipboard className="size-4" />
-              <span>{t("i18n.doctor.badge")}</span>
-            </div>
-            <h1 className="section-h2">
-              {t("i18n.doctor.hero.title")}
-            </h1>
-            <p className="mt-6 text-lg/8 text-mist-700 max-w-2xl">
-              {t("i18n.doctor.hero.subtitle")}
-            </p>
-            <div className="mt-8 flex gap-4 flex-wrap">
-              <a
-                href="https://dash.better-i18n.com"
-                aria-label="Start using i18n Doctor for free"
-                className="btn btn-dark btn-lg"
-              >
-                {t("i18n.doctor.hero.cta.primary")}
-              </a>
-              <a
-                href="https://docs.better-i18n.com/cli/doctor"
-                aria-label="Read i18n Doctor documentation"
-                className="btn btn-outline btn-lg"
-              >
-                {t("i18n.doctor.hero.cta.secondary")}
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Terminal Preview */}
-      <section id="preview">
-        <div className="section">
-          <div className="max-w-3xl mx-auto">
-            {/* The score panel was hand-drawn in HTML on a dark slab: block
-                characters for the bar, six hues for the grades. It is terminal
-                output, so it is now terminal text on the page's own surface,
-                with every number kept. */}
-            <CodeBlock
-              lang="bash"
-              filename="terminal"
-              code={`$ better-i18n doctor
+      {/* Was a hand-rolled hero: its own <section>, its own eyebrow div, its
+          own button pair, and `section-h2` doing the work of an h1 — so the
+          page opened one size smaller than every other page on the site.
+          <PageHero> is the one opening shape, and it takes the terminal as its
+          visual rather than leaving it stranded in a section of its own. */}
+      <PageHero
+        pillar="mcp"
+        pillarLabel={t("i18n.doctor.badge")}
+        title={t("i18n.doctor.hero.title")}
+        subtitle={t("i18n.doctor.hero.subtitle")}
+        primary={{
+          label: t("i18n.doctor.hero.cta.primary"),
+          href: "https://dash.better-i18n.com",
+        }}
+        secondary={{
+          label: t("i18n.doctor.hero.cta.secondary"),
+          href: "https://docs.better-i18n.com/cli/doctor",
+        }}
+        visual={
+          /* The score panel was hand-drawn in HTML on a dark slab: block
+             characters for the bar, six hues for the grades. It is terminal
+             output, so it is terminal text, with every number kept. */
+          <CodeBlock
+            lang="bash"
+            filename="terminal"
+            code={`$ better-i18n doctor
 
   ${t("i18n.doctor.preview.brandLine")}
 
@@ -188,257 +216,202 @@ function I18nDoctorPage() {
   Code          72   (8 issues)
   Structure    100   (clean)
   Performance   91   (1 issue)`}
-            />
-          </div>
-        </div>
-      </section>
+          />
+        }
+      />
+      <Divider />
 
-      {/* Five Analysis Categories */}
-      <section id="analysis-categories">
-        <div className="section">
-          <div className="text-center mb-12">
-            <h2 className="section-h2">
-              {t("i18n.doctor.categories.title")}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("i18n.doctor.categories.subtitle")}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Five analysis categories. Was `grid gap-6` — gutters between items,
+          which reads as five cards with the card removed. The hairline grid
+          shares its rules, so the items line up with the icon column of every
+          other grid on the site. */}
+      <Section id="analysis-categories" labelledBy="doctor-categories">
+        <SectionHeader
+          id="doctor-categories"
+          eyebrow={t("i18n.doctor.eyebrow.categories")}
+          title={t("i18n.doctor.categories.title")}
+          subtitle={t("i18n.doctor.categories.subtitle")}
+        />
+        <div className="mt-10">
+          <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-3" inset={16} padY={12}>
             {analysisCategories.map((category) => (
-              <div key={category.titleKey} >
-                <div className="mb-3 flex size-[22px] shrink-0 items-center justify-center rounded-sm border border-black/[0.04] bg-black/[0.03] text-mist-600">
-                  <SpriteIcon name={category.icon as SpriteIconName} className="size-5" />
-                </div>
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(category.titleKey)}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(category.descKey)}
-                </p>
-              </div>
+              <FeatureCell
+                key={category.titleKey}
+                icon={<SpriteIcon name={category.icon as SpriteIconName} className="size-3" />}
+                title={t(category.titleKey)}
+                description={t(category.descKey)}
+              />
             ))}
-          </div>
+          </FeatureGrid>
         </div>
-      </section>
+      </Section>
+      <Divider />
 
-      {/* Health Score */}
-      <section id="health-score">
-        <div className="section">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
-            <div>
-              <h2 className="section-h2 mb-6">
-                {t("i18n.doctor.healthScore.title")}
-              </h2>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("i18n.doctor.healthScore.paragraph1")}
-              </p>
-              <p className="text-mist-700 leading-relaxed mb-4">
-                {t("i18n.doctor.healthScore.paragraph2")}
-              </p>
-              <div className="mt-6 rounded-lg bg-mist-50 p-4 font-mono text-sm text-mist-700">
-                <div className="text-mist-500 text-xs mb-2">
-                  {t("i18n.doctor.healthScore.formulaLabel")}
-                </div>
-                <code>score = 100 - (errors × 3.0) - Σ min(rule_warnings × 0.15, 20)</code>
-              </div>
-            </div>
-            <div className="mt-10 lg:mt-0">
-              <div className="rounded-xl border border-mist-200 overflow-hidden">
-                <div className="bg-mist-50 px-4 py-3 border-b border-mist-200">
-                  <h3 className="text-sm font-medium text-mist-950">
-                    {t("i18n.doctor.healthScore.gradeTableTitle")}
-                  </h3>
-                </div>
-                <div className="divide-y divide-mist-100">
-                  {healthGrades.map((item) => (
-                    <div key={item.grade} className="flex items-center justify-between px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <span className={`inline-flex items-center justify-center size-8 rounded-lg text-sm font-medium ${item.color}`}>
-                          {item.grade}
-                        </span>
-                        <span className="text-sm text-mist-700">{item.range}</span>
-                      </div>
-                      <span
-                        className={`text-xs font-medium px-2 py-1 rounded-full ${ item.result === "Pass" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700" }`}
-                      >
-                        {item.result === "Pass"
-                          ? t("i18n.doctor.healthScore.pass")
-                          : t("i18n.doctor.healthScore.fail")}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+      {/* How the score is computed, beside the bands it produces. */}
+      <Section id="health-score" labelledBy="doctor-score">
+        <SectionHeader
+          id="doctor-score"
+          eyebrow={t("i18n.doctor.eyebrow.score")}
+          title={t("i18n.doctor.healthScore.title")}
+        />
+        <div className="mt-10 lg:grid lg:grid-cols-2 lg:gap-16 lg:items-start">
+          <div>
+            <p className="text-[15px] leading-relaxed text-mist-700">
+              {t("i18n.doctor.healthScore.paragraph1")}
+            </p>
+            <p className="mt-4 text-[15px] leading-relaxed text-mist-700">
+              {t("i18n.doctor.healthScore.paragraph2")}
+            </p>
+            {/* The formula is a quotation from the source, so it keeps the
+                mono face — but on a hairline rule rather than a filled,
+                rounded box, which was the page's only floating panel. */}
+            <div className="mt-6 border-t border-black/[0.06] pt-4">
+              <p className="eyebrow">{t("i18n.doctor.healthScore.formulaLabel")}</p>
+              <code className="mt-2 block font-mono text-[12.5px] leading-relaxed text-mist-800">
+                score = 100 - (errors × 3.0) - Σ min(rule_warnings × 0.15, 20)
+              </code>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* CI/CD Integration */}
-      <section id="ci-integration">
-        <div className="section">
-          <div className="text-center mb-12">
-            <h2 className="section-h2">
-              {t("i18n.doctor.ci.title")}
-            </h2>
-            <p className="mt-3 text-mist-700 max-w-2xl mx-auto">
-              {t("i18n.doctor.ci.subtitle")}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {ciFeatures.map((feature) => (
-              <div key={feature.titleKey} >
-                <h3 className="text-base font-medium text-mist-950 mb-2">
-                  {t(feature.titleKey)}
-                </h3>
-                <p className="text-sm text-mist-700 leading-relaxed">
-                  {t(feature.descKey)}
-                </p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-10 max-w-2xl mx-auto">
-            <CodeBlock
-              lang="bash"
-              filename=".github/workflows/i18n.yml"
-              code={`# GitHub Actions example
-- run: npx @better-i18n/cli doctor --ci --report`}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Command Comparison */}
-      <section id="commands">
-        <div className="section">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="section-h2 mb-4 text-center">
-              {t("i18n.doctor.commands.title")}
-            </h2>
-            <p className="text-mist-700 text-center mb-10 max-w-2xl mx-auto">
-              {t("i18n.doctor.commands.subtitle")}
-            </p>
-            <div className="space-y-4">
-              {/* Hairline rows, not bordered cards — one item per command. */}
-              {commandComparison.map((cmd) => (
+          {/* Was `rounded-xl border border-mist-200` with a tinted header bar
+              — a bordered card, on a page whose other tables are hairline
+              rows. Five rows do not need a container to be read as five
+              rows. */}
+          <div className="mt-10 lg:mt-0">
+            <p className="eyebrow">{t("i18n.doctor.healthScore.gradeTableTitle")}</p>
+            <dl className="mt-3">
+              {healthGrades.map((item) => (
                 <div
-                  key={cmd.commandKey}
-                  className="flex items-start gap-4 border-t border-black/[0.05] py-4 first:border-t-0 first:pt-0"
+                  key={item.grade}
+                  className="flex items-center justify-between border-t border-black/[0.06] py-3"
                 >
-                  <code className="shrink-0 rounded-md border border-black/[0.07] bg-mist-50 px-2.5 py-1 font-mono text-[12px] text-mist-900">
-                    {t(cmd.commandKey)}
-                  </code>
-                  <p className="pt-1 text-[13px] leading-relaxed text-mist-600">
-                    {t(cmd.descKey)}
-                  </p>
+                  <div className="flex items-baseline gap-3">
+                    <dt className="w-8 font-mono text-[13px] font-medium text-mist-900">
+                      {item.grade}
+                    </dt>
+                    <dd className="text-[13px] tabular-nums text-mist-600">{item.range}</dd>
+                  </div>
+                  <span
+                    className={`text-[12px] font-medium ${
+                      item.pass ? "text-emerald-700" : "text-red-700"
+                    }`}
+                  >
+                    {item.pass
+                      ? t("i18n.doctor.healthScore.pass")
+                      : t("i18n.doctor.healthScore.fail")}
+                  </span>
                 </div>
               ))}
-            </div>
+            </dl>
           </div>
         </div>
-      </section>
+      </Section>
+      <Divider />
 
-      {/* Key Features Grid */}
-      <section id="features">
-        <div className="section">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="section-h2">
-              {t("i18n.doctor.features.title")}
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
-            <div >
-              <IconStar className="size-5 text-mist-700 mb-3" />
-              <h3 className="text-base font-medium text-mist-950 mb-2">
-                {t("i18n.doctor.features.healthScore.title")}
-              </h3>
-              <p className="text-sm text-mist-700">
-                {t("i18n.doctor.features.healthScore.description")}
-              </p>
-            </div>
-            <div >
-              <SpriteIcon name="script" className="size-5 text-mist-700 mb-3" />
-              <h3 className="text-base font-medium text-mist-950 mb-2">
-                {t("i18n.doctor.features.lexicalScope.title")}
-              </h3>
-              <p className="text-sm text-mist-700">
-                {t("i18n.doctor.features.lexicalScope.description")}
-              </p>
-            </div>
-            <div >
-              <SpriteIcon name="settings-gear" className="size-5 text-mist-700 mb-3" />
-              <h3 className="text-base font-medium text-mist-950 mb-2">
-                {t("i18n.doctor.features.serverComponents.title")}
-              </h3>
-              <p className="text-sm text-mist-700">
-                {t("i18n.doctor.features.serverComponents.description")}
-              </p>
-            </div>
-            <div >
-              <SpriteIcon name="chart" className="size-5 text-mist-700 mb-3" />
-              <h3 className="text-base font-medium text-mist-950 mb-2">
-                {t("i18n.doctor.features.configurable.title")}
-              </h3>
-              <p className="text-sm text-mist-700">
-                {t("i18n.doctor.features.configurable.description")}
-              </p>
-            </div>
-            <div >
-              <SpriteIcon name="magnifying-glass" className="size-5 text-mist-700 mb-3" />
-              <h3 className="text-base font-medium text-mist-950 mb-2">
-                {t("i18n.doctor.features.smartFiltering.title")}
-              </h3>
-              <p className="text-sm text-mist-700">
-                {t("i18n.doctor.features.smartFiltering.description")}
-              </p>
-            </div>
-            <div >
-              <SpriteIcon name="code-brackets" className="size-5 text-mist-700 mb-3" />
-              <h3 className="text-base font-medium text-mist-950 mb-2">
-                {t("i18n.doctor.features.verboseAudit.title")}
-              </h3>
-              <p className="text-sm text-mist-700">
-                {t("i18n.doctor.features.verboseAudit.description")}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Related Topics */}
-      <section className="border-t border-mist-200">
-        <div className="section">
-          <h2 className="text-lg font-medium text-mist-950 mb-6">
-            {tCommon("whatIs.relatedTopics")}
-          </h2>
-          {/* Bare columns: a link list's items carry no border, fill or padding
-              of their own — the section already frames them. */}
-          <div className="grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
-            {relatedPages.map((page) => (
-              <Link
-                key={page.href}
-                to={page.href}
-                params={{ locale }}
-                className="group flex flex-col gap-1"
-              >
-                <span className="flex items-center gap-1.5">
-                  <span className="text-[15px] font-medium tracking-[-0.015em] text-mist-900 transition-colors group-hover:text-mist-600">
-                    {page.name}
-                  </span>
-                  <SpriteIcon
-                    name="arrow-right"
-                    className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
-                  />
-                </span>
-                <span className="text-[13px] leading-relaxed text-mist-600">
-                  {t(page.descKey)}
-                </span>
-              </Link>
+      <Section id="ci-integration" labelledBy="doctor-ci">
+        <SectionHeader
+          id="doctor-ci"
+          eyebrow={t("i18n.doctor.eyebrow.ci")}
+          title={t("i18n.doctor.ci.title")}
+          subtitle={t("i18n.doctor.ci.subtitle")}
+        />
+        <div className="mt-10">
+          <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-4" inset={16} padY={12}>
+            {ciFeatures.map((feature) => (
+              <FeatureCell
+                key={feature.titleKey}
+                title={t(feature.titleKey)}
+                description={t(feature.descKey)}
+              />
             ))}
-          </div>
+          </FeatureGrid>
         </div>
-      </section>
+        <div className="mt-8">
+          <CodeBlock
+            lang="bash"
+            filename=".github/workflows/i18n.yml"
+            code={`# GitHub Actions example
+- run: npx @better-i18n/cli doctor --ci --report`}
+          />
+        </div>
+      </Section>
+      <Divider />
+
+      <Section id="commands" labelledBy="doctor-commands">
+        <SectionHeader
+          id="doctor-commands"
+          eyebrow={t("i18n.doctor.eyebrow.commands")}
+          title={t("i18n.doctor.commands.title")}
+          subtitle={t("i18n.doctor.commands.subtitle")}
+        />
+        {/* Hairline rows, not bordered cards — one item per command. */}
+        <div className="mt-10">
+          {commandComparison.map((cmd) => (
+            <div
+              key={cmd.commandKey}
+              className="flex items-start gap-4 border-t border-black/[0.06] py-4"
+            >
+              <code className="shrink-0 rounded-md border border-black/[0.07] bg-mist-50 px-2.5 py-1 font-mono text-[12px] text-mist-900">
+                {t(cmd.commandKey)}
+              </code>
+              <p className="pt-1 text-[13px] leading-relaxed text-mist-600">{t(cmd.descKey)}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+      <Divider />
+
+      {/* Was six `<div>`s written out one by one, each repeating the same icon
+          and heading markup. Same six capabilities, one shape. */}
+      <Section id="features" labelledBy="doctor-features">
+        <SectionHeader
+          id="doctor-features"
+          eyebrow={t("i18n.doctor.eyebrow.capabilities")}
+          title={t("i18n.doctor.features.title")}
+        />
+        <div className="mt-10">
+          <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-3" inset={16} padY={12}>
+            {capabilities.map((cap) => (
+              <FeatureCell
+                key={cap.key}
+                icon={cap.icon}
+                title={t(`i18n.doctor.features.${cap.key}.title`)}
+                description={t(`i18n.doctor.features.${cap.key}.description`)}
+              />
+            ))}
+          </FeatureGrid>
+        </div>
+      </Section>
+      <Divider />
+
+      <Section labelledBy="doctor-related">
+        <h2 id="doctor-related" className="text-lg font-medium text-mist-950">
+          {t("whatIs.relatedTopics")}
+        </h2>
+        {/* Bare columns: a link list's items carry no border, fill or padding
+            of their own — the section already frames them. */}
+        <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+          {relatedPages.map((page) => (
+            <Link
+              key={page.href}
+              to={page.href}
+              params={{ locale }}
+              className="group flex flex-col gap-1"
+            >
+              <span className="flex items-center gap-1.5">
+                <span className="text-[15px] font-medium tracking-[-0.015em] text-mist-900 transition-colors group-hover:text-mist-600">
+                  {tRelated(page.nameKey)}
+                </span>
+                <SpriteIcon
+                  name="arrow-right"
+                  className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
+                />
+              </span>
+              <span className="text-[13px] leading-relaxed text-mist-600">{t(page.descKey)}</span>
+            </Link>
+          ))}
+        </div>
+      </Section>
       <Divider />
 
       {/* The ask closes the page. Was a `bg-mist-950` band with `rounded-xl

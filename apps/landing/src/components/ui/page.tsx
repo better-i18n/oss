@@ -361,17 +361,52 @@ export function FeatureGrid({
 }
 
 export function FeatureCell({
+  icon,
   title,
   description,
 }: {
+  /**
+   * Optional 22px marked cell.
+   *
+   * `FeatureColumn` also takes an icon, but it renders `.feat-item`, and only
+   * `.feat-grid > .feat-cell` carries the grid's padding and hairlines — a
+   * `FeatureColumn` dropped into a `FeatureGrid` lands flush on the bled-left
+   * edge with no borders, seventeen pixels left of the section heading. So
+   * "grid cell with an icon" had no spelling in the grammar, and the pages that
+   * wanted one hand-rolled the same eight lines of tinted-box markup at the
+   * call site (complete-guide, multilingual-seo, and others). This is that
+   * spelling. The box matches those hand-rolled copies exactly, so migrating
+   * them is a deletion, not a redesign.
+   */
+  icon?: ReactNode;
   title: ReactNode;
   description: ReactNode;
 }) {
   return (
     <div className="feat-cell">
-      <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
-        {title}
-      </h3>
+      {icon ? (
+        <div className="flex items-center gap-2">
+          <span
+            className="flex shrink-0 items-center justify-center border border-black/[0.04]"
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: "var(--radius-sm)",
+              background: "rgba(0,0,0,0.03)",
+              color: "var(--color-muted-ink)",
+            }}
+          >
+            {icon}
+          </span>
+          <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
+            {title}
+          </h3>
+        </div>
+      ) : (
+        <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
+          {title}
+        </h3>
+      )}
       <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">{description}</p>
     </div>
   );
