@@ -171,11 +171,21 @@ const ITEMS: Item[] = [
     },
   },
   {
+    /* We do NOT have translation memory. `betterI18n: true` here was a false
+       claim about our own product, sitting in a matrix beside three named
+       competitors — which is comparative advertising, and a worse version of
+       the mistake Lokalise's counsel wrote to us about on 2026-08-02: that one
+       was an error against a competitor, this one was in our own favour.
+       Verified by reading the product rather than the marketing: no
+       translation-memory code anywhere in packages/, and none of the 16 MCP
+       tools touches one (the only `tm` matches in the repo are `targetModel`
+       abbreviations in the content schema). Locize's own comparison page states
+       the same, and it is correct. */
     type: "row",
     key: "rows.translationMemory",
     fb: "Translation memory",
     cells: {
-      betterI18n: true,
+      betterI18n: false,
       lokalise: true,
       crowdin: true,
       phrase: true,

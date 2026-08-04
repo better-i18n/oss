@@ -61,8 +61,11 @@ function CrowdinVsLokalisePage() {
     { name: t("compare.crowdinVsLokalise.features.aiTranslation"), values: buildValues(true, true, true) },
     { name: t("compare.crowdinVsLokalise.features.gitIntegration"), values: buildValues(true, true, true) },
     { name: t("compare.crowdinVsLokalise.features.cdnDelivery"), values: buildValues(true, true, true) },
-    { name: t("compare.crowdinVsLokalise.features.inContextEditor"), values: buildValues(true, true, true) },
-    { name: t("compare.crowdinVsLokalise.features.translationMemory"), values: buildValues(true, true, true) },
+    /* Neither of the next two is ours. buildValues is (betterI18n, crowdin,
+       lokalise), so the first argument was claiming a capability we do not
+       ship. See the note in PricingComparison.tsx. */
+    { name: t("compare.crowdinVsLokalise.features.inContextEditor"), values: buildValues(false, true, true) },
+    { name: t("compare.crowdinVsLokalise.features.translationMemory"), values: buildValues(false, true, true) },
     { name: t("compare.crowdinVsLokalise.features.pluralRules"), values: buildValues(true, true, true) },
     { name: t("compare.crowdinVsLokalise.features.webhooks"), values: buildValues(true, true, true) },
     { name: t("compare.crowdinVsLokalise.features.branchingWorkflows"), values: buildValues(true, true, false) },
