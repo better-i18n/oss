@@ -98,11 +98,16 @@ export function AnimatedPrice({
   /** Currency formatting, owned by the caller. */
   format: (amount: number) => string;
   /**
-   * Reserved width in `ch`, decided for the whole ROW of plans and passed in —
-   * not measured per cell. A cell that sized itself would be 2ch wide on "$9"
-   * and 4ch on "$49", so toggling billing would shift the column and everything
-   * beside it. Same reasoning as the group-level mark slot in `HubGrid`: one
-   * decision for the set, not one per item.
+   * Reserved width in `ch`, decided by the caller from THIS plan's own two
+   * prices and passed in — not measured from the digits currently on screen. A
+   * cell that sized itself would be 2ch wide on "$9" and 3ch on "$49", so
+   * toggling billing would shove the "/mo" sideways mid-count.
+   *
+   * The caller computes this per plan, not once for the row. Reserving the
+   * row's widest string padded every cheap tier to the most expensive one's
+   * width — Free's "$0" sat in Pro's box with 33px of dead air before its
+   * "/mo". Prices live in separate grid columns, so one plan's box width cannot
+   * displace another's content; only its own suffix.
    */
   minCh: number;
   className?: string;

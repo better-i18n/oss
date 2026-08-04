@@ -59,12 +59,24 @@ export default function Pricing({
   const CardHeading = headingLevel === "h1" ? "h2" : "h3";
 
   /**
-   * Width reserved for every price in the row, in `ch`.
+   * Width reserved for each plan's price, in `ch`, keyed by plan.
    *
-   * Decided once for the SET of plans and for BOTH billing periods, so the
-   * column never resizes when the figure changes — "$9" and "$49" occupy the
-   * same box. Measuring per cell would move the column on every toggle, which
-   * is the usual way a counter breaks a layout.
+   * The reservation exists so that toggling Monthly/Yearly cannot move the
+   * "/mo" beside the figure: "$20" and "$16" have to occupy the same box or the
+   * suffix jumps mid-animation, which is the usual way a counter breaks a
+   * layout.
+   *
+   * It used to be ONE width for the whole row — the widest string across every
+   * plan AND both periods. That over-reserves for the cheap tiers: Free is "$0"
+   * in both periods (2ch) but was padded to Pro's 3ch, leaving a 33px gap
+   * before "/mo" against Pro's 10px. Measured on /en/pricing/ before this
+   * change: box 80.76px for both, ink 48px vs 71px.
+   *
+   * Per plan is the correct scope because a cell only ever animates between its
+   * OWN two values — it is never asked to render another plan's price. And the
+   * cross-plan case the row-wide version was guarding against cannot happen:
+   * each price sits in its own grid column, so a wider box in Pro has no effect
+   * on where Free's content lands.
    *
    * This sits ABOVE the `!plans` early return, and has to: a hook after a
    * conditional return means React counts two hooks on the render where the
@@ -73,17 +85,19 @@ export default function Pricing({
    * data arrives late. Hence the `?? []` — the guard belongs inside the hook,
    * not in front of it.
    */
-  const priceWidthCh = useMemo(() => {
-    let widest = 1;
+  const priceWidthByPlan = useMemo(() => {
+    const widths = new Map<string, number>();
     for (const plan of plans ?? []) {
+      let widest = 1;
       for (const period of ["monthly", "yearly"] as const) {
         const data = getDisplayPrice(plan, period);
         if (!data) continue;
         const text = formatPrice(data.symbol, monthlyAmount(data, period), data.currency);
         widest = Math.max(widest, text.length);
       }
+      widths.set(plan.planId, widest);
     }
-    return widest;
+    return widths;
   }, [plans]);
 
   // If no CMS plans provided, render nothing (data should come from loader)
@@ -226,7 +240,7 @@ export default function Pricing({
                           format={(amount) =>
                             formatPrice(priceData.symbol, amount, priceData.currency)
                           }
-                          minCh={priceWidthCh}
+                          minCh={priceWidthByPlan.get(plan.planId) ?? 1}
                           className="text-[40px] font-medium leading-none tracking-[-0.03em] text-mist-900 tabular-nums"
                         />
                       )}
