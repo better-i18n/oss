@@ -2,10 +2,11 @@ import { useState, useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { ToolLayout } from "@/components/tools/ToolLayout";
+import { useT } from "@/lib/i18n";
 import { LOCALE_DATABASE } from "@/lib/tools/locales";
 import type { LocaleData } from "@/lib/tools/types";
 
-export const Route = createFileRoute("/$locale/tools/locale-explorer")({
+export const Route = createFileRoute("/$locale/tools/locale-explorer/")({
   loader: createPageLoader(),
   head: ({ loaderData }) =>
     getPageHead({
@@ -110,6 +111,7 @@ function LocaleRow({
 
 function LocaleExplorerPage() {
   const { locale } = Route.useParams();
+  const t = useT("tools");
   const [search, setSearch] = useState("");
   const [rtlOnly, setRtlOnly] = useState(false);
   const [scriptFilter, setScriptFilter] = useState("");
@@ -142,7 +144,10 @@ function LocaleExplorerPage() {
     <ToolLayout
       title="Locale Explorer"
       description="Browse all locales with Intl API live output, CLDR plural rules, and ready-to-use framework config snippets."
-      subtitle="Free Developer Tool"
+      /* Was "Free Developer Tool", which says the price and not the thing.
+         This sentence sits directly above the table, which is where Google
+         looks for a snippet (issue #196). */
+      subtitle={t("localeExplorer.listIntro")}
       currentSlug="locale-explorer"
       locale={locale}
       faqItems={faqItems}
@@ -167,7 +172,7 @@ function LocaleExplorerPage() {
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by code, language, country…"
+            placeholder={t("localeExplorer.searchPlaceholder")}
             className="w-full rounded-xl border border-mist-200 bg-white py-2.5 pl-9 pr-4 text-sm text-mist-950 placeholder-mist-400 focus:border-mist-400 focus:outline-none focus:ring-2 focus:ring-mist-200"
           />
         </div>
@@ -188,7 +193,7 @@ function LocaleExplorerPage() {
             onClick={() => setRtlOnly((prev) => !prev)}
             className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${ rtlOnly ? "border-amber-300 bg-amber-50 text-amber-700" : "border-mist-200 bg-white text-mist-700 hover:bg-mist-50" }`}
           >
-            RTL Only
+            {t("localeExplorer.rtlOnly")}
           </button>
         </div>
       </div>
@@ -203,18 +208,18 @@ function LocaleExplorerPage() {
       {/* Table */}
       <div className="overflow-hidden rounded-xl border border-mist-200 bg-white">
         {/* Header */}
-        <div className="grid grid-cols-[minmax(80px,1fr)_minmax(140px,2fr)_minmax(100px,1fr)_80px_60px_minmax(100px,1fr)] gap-4 border-b border-mist-200 bg-mist-50 px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-mist-500">
-          <span>Code</span>
-          <span>Language</span>
-          <span>Region</span>
-          <span>Script</span>
-          <span>Dir</span>
-          <span>Sample Date</span>
+        <div className="grid grid-cols-[minmax(80px,1fr)_minmax(140px,2fr)_minmax(100px,1fr)_80px_60px_minmax(100px,1fr)] gap-4 border-b border-mist-200 bg-mist-50 px-4 py-2.5 text-xs font-medium text-mist-500">
+          <span>{t("localeExplorer.colCode")}</span>
+          <span>{t("localeExplorer.language")}</span>
+          <span>{t("localeExplorer.region")}</span>
+          <span>{t("localeExplorer.script")}</span>
+          <span>{t("localeExplorer.colDir")}</span>
+          <span>{t("localeExplorer.colSampleDate")}</span>
         </div>
 
         {filteredLocales.length === 0 ? (
           <div className="py-16 text-center text-sm text-mist-500">
-            No locales match your search.
+            {t("localeExplorer.noResults")}
           </div>
         ) : (
           <div>

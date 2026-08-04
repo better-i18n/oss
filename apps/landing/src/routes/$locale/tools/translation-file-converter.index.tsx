@@ -3,7 +3,7 @@ import { createPageLoader, getPageHead, getBreadcrumbItems } from "@/lib/page-se
 import { ToolLayout } from "@/components/tools/ToolLayout";
 import { FORMATS } from "@/lib/tools/formats";
 
-export const Route = createFileRoute("/$locale/tools/translation-file-converter")({
+export const Route = createFileRoute("/$locale/tools/translation-file-converter/")({
   loader: createPageLoader(),
   head: ({ loaderData }) => {
     return getPageHead({

@@ -177,7 +177,7 @@ function CostCard({
       </div>
 
       <div>
-        <p className="text-xs font-medium uppercase tracking-wider text-mist-500">
+        <p className="text-[13px] font-medium text-mist-500">
           One-time (initial)
         </p>
         <p className="mt-1 text-2xl font-medium text-mist-950">
@@ -189,7 +189,7 @@ function CostCard({
       </div>
 
       <div className="border-t border-mist-200 pt-4">
-        <p className="text-xs font-medium uppercase tracking-wider text-mist-500">
+        <p className="text-[13px] font-medium text-mist-500">
           Monthly maintenance
         </p>
         <p className="mt-1 text-lg font-medium text-mist-700">
@@ -509,16 +509,16 @@ function CostCalculatorPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-mist-200 bg-mist-50">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-mist-500">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-mist-500">
                       Tier
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-mist-500">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-mist-500">
                       Per language (min)
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-mist-500">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-mist-500">
                       Per language (max)
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-mist-500">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-mist-500">
                       Total ({selectedLanguages.length} lang)
                     </th>
                   </tr>
@@ -574,16 +574,16 @@ function CostCalculatorPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-mist-200 bg-mist-50">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-mist-500">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-mist-500">
                       Tier
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-mist-500">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-mist-500">
                       Monthly (min)
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-mist-500">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-mist-500">
                       Monthly (max)
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-mist-500">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-mist-500">
                       Annual estimate
                     </th>
                   </tr>

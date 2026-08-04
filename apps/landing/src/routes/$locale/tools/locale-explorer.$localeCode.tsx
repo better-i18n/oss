@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { getPageHead, createPageLoader } from "@/lib/page-seo";
 import { ToolLayout } from "@/components/tools/ToolLayout";
 import { CodeOutput } from "@/components/tools/CodeOutput";
+import { LocaleFlag, localeFlagCountry } from "@/components/ui/locale-flag";
+import { useT } from "@/lib/i18n";
 import {
   getLocaleByCode,
   getRelatedLocales,
@@ -170,6 +172,7 @@ function InfoRow({ label, value }: InfoRowProps) {
 
 function LocaleDetailPage() {
   const { locale, localeCode } = Route.useParams();
+  const t = useT("tools");
   const localeData = getLocaleByCode(localeCode);
   const relatedLocales = getRelatedLocales(localeCode);
 
@@ -209,34 +212,58 @@ function LocaleDetailPage() {
     <ToolLayout
       title={`${localeData.englishName} (${localeCode})`}
       description={`Complete reference for the ${localeCode} locale — live Intl API output, CLDR plural rules, and framework config snippets.`}
-      subtitle="Locale Reference"
+      subtitle={t("localeExplorer.reference")}
       currentSlug="locale-explorer"
       locale={locale}
       breadcrumbs={breadcrumbs}
     >
       <div className="space-y-10">
 
+        {/* The flag belongs HERE and not in the list table.
+            This page has ONE subject, so a flag either appears or it does not
+            and nothing else moves. The list is 274 rows of which only 153 carry
+            a region subtag, and a flag on 153 rows with a gap on 121 is the
+            half-state that breaks a column — measured, see the delivery note.
+            `LocaleFlag` renders nothing when the code resolves to no country,
+            so `zh-Hans` (a script, not a place) simply shows the name. */}
+        {localeFlagCountry(localeData.code) && (
+          <p className="flex items-center gap-2.5 text-[15px] text-mist-700">
+            <LocaleFlag locale={localeData.code} size={20} />
+            <span aria-hidden="true">{localeData.nativeName}</span>
+            <span className="sr-only">{localeData.englishName}</span>
+          </p>
+        )}
+
         {/* 1. Locale Metadata */}
         <section>
-          <SectionHeading>Locale Metadata</SectionHeading>
+          <SectionHeading>{t("localeExplorer.metadata")}</SectionHeading>
           <div className="overflow-hidden rounded-xl border border-mist-200 bg-white px-4">
-            <InfoRow label="BCP 47 Code" value={localeData.code} />
-            <InfoRow label="Native Name" value={localeData.nativeName} />
-            <InfoRow label="English Name" value={localeData.englishName} />
-            <InfoRow label="Language" value={localeData.language} />
-            <InfoRow label="Region" value={localeData.region ?? "None (base locale)"} />
-            <InfoRow label="Script" value={localeData.script ?? "—"} />
+            {/* "BCP 47" and "CLDR" are standard names and stay as they are;
+                only the words around them are translated. */}
+            <InfoRow label={t("localeExplorer.bcp47")} value={localeData.code} />
+            <InfoRow label={t("localeExplorer.nativeName")} value={localeData.nativeName} />
+            <InfoRow label={t("localeExplorer.englishName")} value={localeData.englishName} />
+            <InfoRow label={t("localeExplorer.language")} value={localeData.language} />
             <InfoRow
-              label="Text Direction"
-              value={localeData.direction === "rtl" ? "Right-to-Left (RTL)" : "Left-to-Right (LTR)"}
+              label={t("localeExplorer.region")}
+              value={localeData.region ?? t("localeExplorer.noRegion")}
+            />
+            <InfoRow label={t("localeExplorer.script")} value={localeData.script ?? "—"} />
+            <InfoRow
+              label={t("localeExplorer.direction")}
+              value={
+                localeData.direction === "rtl"
+                  ? t("localeExplorer.rtl")
+                  : t("localeExplorer.ltr")
+              }
             />
             <InfoRow
-              label="CLDR Plural Categories"
+              label={t("localeExplorer.pluralCategories")}
               value={localeData.pluralCategories.join(", ")}
             />
             {localeData.speakerPopulation !== null && (
               <InfoRow
-                label="Estimated Speakers"
+                label={t("localeExplorer.speakers")}
                 value={`~${new Intl.NumberFormat("en").format(localeData.speakerPopulation)}`}
               />
             )}
@@ -251,7 +278,7 @@ function LocaleDetailPage() {
             {/* Date formatting */}
             <div className="overflow-hidden rounded-xl border border-mist-200 bg-white">
               <div className="border-b border-mist-100 bg-mist-50 px-4 py-2.5">
-                <h3 className="text-xs font-medium uppercase tracking-wider text-mist-500">
+                <h3 className="text-xs font-medium text-mist-600">
                   DateTimeFormat
                 </h3>
               </div>
@@ -276,7 +303,7 @@ function LocaleDetailPage() {
             {/* Number formatting */}
             <div className="overflow-hidden rounded-xl border border-mist-200 bg-white">
               <div className="border-b border-mist-100 bg-mist-50 px-4 py-2.5">
-                <h3 className="text-xs font-medium uppercase tracking-wider text-mist-500">
+                <h3 className="text-xs font-medium text-mist-600">
                   NumberFormat
                 </h3>
               </div>
@@ -311,7 +338,7 @@ function LocaleDetailPage() {
             {/* RelativeTimeFormat */}
             <div className="overflow-hidden rounded-xl border border-mist-200 bg-white">
               <div className="border-b border-mist-100 bg-mist-50 px-4 py-2.5">
-                <h3 className="text-xs font-medium uppercase tracking-wider text-mist-500">
+                <h3 className="text-xs font-medium text-mist-600">
                   RelativeTimeFormat
                 </h3>
               </div>
@@ -328,7 +355,7 @@ function LocaleDetailPage() {
             {/* ListFormat */}
             <div className="overflow-hidden rounded-xl border border-mist-200 bg-white">
               <div className="border-b border-mist-100 bg-mist-50 px-4 py-2.5">
-                <h3 className="text-xs font-medium uppercase tracking-wider text-mist-500">
+                <h3 className="text-xs font-medium text-mist-600">
                   ListFormat
                 </h3>
               </div>
@@ -410,7 +437,7 @@ function LocaleDetailPage() {
           <section>
             <SectionHeading>Related Locales</SectionHeading>
             <div className="overflow-hidden rounded-xl border border-mist-200 bg-white">
-              <div className="grid grid-cols-[minmax(80px,1fr)_minmax(140px,2fr)_80px_60px] gap-4 border-b border-mist-200 bg-mist-50 px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-mist-500">
+              <div className="grid grid-cols-[minmax(80px,1fr)_minmax(140px,2fr)_80px_60px] gap-4 border-b border-mist-200 bg-mist-50 px-4 py-2.5 text-xs font-medium text-mist-500">
                 <span>Code</span>
                 <span>Name</span>
                 <span>Script</span>
