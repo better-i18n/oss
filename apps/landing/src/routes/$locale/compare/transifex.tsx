@@ -420,6 +420,12 @@ function TransifexComparisonPage() {
         ]}
       />
 
+      {/* Two link groups, two headings, so two sections — and the one
+          permitted transition between sections is a Divider. Without it the
+          frame drew a rule above "Keep Reading" and below "Other Comparisons"
+          but nothing between them, so the pair read as a single section with a
+          hole in the middle. */}
+      <Divider />
       <OtherComparisons
         currentSlug="transifex"
         locale={locale}
