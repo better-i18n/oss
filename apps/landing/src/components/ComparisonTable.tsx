@@ -5,7 +5,7 @@ import { featureIcon } from "@/components/icons/feature-icons";
 import { SupportMark, markState, useMarkLabels, type MarkState } from "@/components/ui/support-mark";
 import { StepNumber } from "@/components/ui/step-number";
 import { Link } from "@tanstack/react-router";
-import { ClosingCta } from "@/components/ui/page";
+import { ClosingCta, Section } from "@/components/ui/page";
 import { useT } from "@/lib/i18n";
 
 /**
@@ -615,35 +615,53 @@ export function ComparisonRelatedTopics({
   links,
   locale,
 }: ComparisonRelatedTopicsProps) {
+  /*
+   * Three things were making this block read as clumsy on the framework
+   * guides, where it sits between "Related Articles" above and "Explore Other
+   * Framework Guides" below:
+   *
+   *   1. The heading was `text-[11px] text-mist-400` — a grey micro-label,
+   *      while the identical block on /i18n/doctor uses a real
+   *      `text-lg text-mist-950` h2. Between two properly-sized headings this
+   *      one looked like a leftover caption.
+   *   2. Each link carried `px-4 py-4` of its own. Listed items are not cards
+   *      (rule/listed-items-are-not-cards), and the horizontal padding pushed
+   *      every title 16px right of the heading above it, so nothing in the
+   *      section shared a left edge.
+   *   3. Four links in a three-column grid leaves one orphan on a second row,
+   *      and `py-4` on top of `gap-y-6` made that row's gap enormous. Four
+   *      columns fits the four links these pages actually pass, and matches
+   *      the related-topics grid on every other page.
+   */
   return (
-    <section>
-      <div className="section">
-        <h2 className="text-[11px] font-medium text-mist-400">{heading}</h2>
+    <Section labelledBy="related-topics">
+      <h2 id="related-topics" className="text-lg font-medium text-mist-950">
+        {heading}
+      </h2>
 
-        <div className="mt-8 grid gap-x-10 gap-y-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {links.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to as never}
-                params={{ locale } as never}
-                className="group flex items-start justify-between gap-3 px-4 py-4"
-              >
-                <span className="min-w-0">
-                  <span className="block text-[13px] font-medium text-mist-900">{link.title}</span>
-                  <span className="mt-1 block text-[12px] leading-relaxed text-mist-500">
-                    {link.description}
-                  </span>
-                </span>
-                <SpriteIcon
-                  name="arrow-right"
-                  className="size-3.5 shrink-0 text-mist-300 transition-colors group-hover:text-mist-600"
-                  aria-hidden="true"
-                />
-              </Link>
-            ))}
-          </div>
+      <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        {links.map((link) => (
+          <Link
+            key={link.to}
+            to={link.to as never}
+            params={{ locale } as never}
+            className="group flex flex-col gap-1"
+          >
+            <span className="flex items-center gap-1.5">
+              <span className="text-[15px] font-medium tracking-[-0.015em] text-mist-900 transition-colors group-hover:text-mist-600">
+                {link.title}
+              </span>
+              <SpriteIcon
+                name="arrow-right"
+                className="size-3.5 shrink-0 text-mist-300 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-mist-600"
+                aria-hidden="true"
+              />
+            </span>
+            <span className="text-[13px] leading-relaxed text-mist-600">{link.description}</span>
+          </Link>
+        ))}
       </div>
-    </section>
+    </Section>
   );
 }
 
