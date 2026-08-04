@@ -138,6 +138,7 @@ function MatrixCell({
 
 function PhraseComparisonPage() {
   const t = useT("marketing");
+  const tCta = useT("cta");
   /* The "what you get" list makes the same capability claim the matrix does,
      so it uses the same tile and the same accessible names. */
   const markLabels = useMarkLabels();
@@ -413,6 +414,12 @@ function PhraseComparisonPage() {
           label: t("compare.phrase.closing.ctaSecondary"),
           href: "https://cal.com/better-i18n/30min?overlayCalendar=true",
         }}
+        /* The customer wall on a comparison page: this is where a reader is
+           choosing between us and somebody else, which makes it the single
+           place on the site where "who already chose this" carries the most
+           weight. `trustedBy` is in the shared `cta` namespace, translated in
+           all 22 locales. */
+        customers={{ label: tCta("trustedBy") }}
       />
 
       <ComparisonDisclaimer />

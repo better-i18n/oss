@@ -5,6 +5,7 @@ import { featureIcon } from "@/components/icons/feature-icons";
 import { SupportMark, markState, useMarkLabels, type MarkState } from "@/components/ui/support-mark";
 import { StepNumber } from "@/components/ui/step-number";
 import { Link } from "@tanstack/react-router";
+import { ClosingCta } from "@/components/ui/page";
 import { useT } from "@/lib/i18n";
 
 /**
@@ -127,7 +128,7 @@ function NamedProduct({ name }: { name: string }) {
 /** The small "vs Crowdin" label above a comparison headline. */
 function VsBadge({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-6 inline-flex w-fit items-center gap-1.5 rounded-md border border-black/[0.07] bg-white px-2.5 py-1 text-[11px] font-medium text-mist-600">
+    <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-md border border-black/[0.07] bg-white px-2.5 py-1 text-[11px] font-medium text-mist-600">
       {children}
     </div>
   );
@@ -340,8 +341,14 @@ export function ComparisonHero({ competitorName, title, subtitle }: ComparisonHe
     <section>
       <div className="section">
         <div className="max-w-3xl">
+          {/* Both marks, ours first. The badge used to read "vs · [their logo]
+              Smartling", which names one party and marks one party — on a page
+              whose whole subject is a comparison, that makes the competitor the
+              subject and us the implied default. A comparison badge has two
+              sides (rule/name-a-thing-with-its-mark). */}
           <VsBadge>
-            <span className="text-mist-400">vs</span>
+            <NamedProduct name="Better I18N" />
+            <span className="text-mist-300">vs</span>
             <NamedProduct name={competitorName} />
           </VsBadge>
 
@@ -561,31 +568,31 @@ interface CTASectionProps {
   primaryHref: string;
 }
 
+/**
+ * The closing ask on a comparison page.
+ *
+ * Was a hand-rolled dark panel — `rounded-xl bg-mist-950 px-8 py-10` with its
+ * own h2 size, its own button and a white-on-dark inversion nothing else on the
+ * site uses. Five of the seven /compare/ pages had already moved to
+ * <ClosingCta>; smartling and xtm still rendered this, so the two oldest
+ * comparison pages closed differently from the five newer ones and from every
+ * other page.
+ *
+ * It now delegates, and carries the customer wall: a comparison page is where a
+ * reader is deciding between us and somebody else, which is the single place on
+ * the site where "who already chose this" does the most work. `trustedBy` comes
+ * from the shared `cta` namespace and is translated in all 22 locales.
+ */
 export function CTASection({ title, subtitle, primaryCTA, primaryHref }: CTASectionProps) {
+  const t = useT("cta");
+
   return (
-    <section>
-      <div className="section">
-        <div className="rounded-xl bg-mist-950 px-8 py-10">
-          <div className="max-w-2xl">
-            <h2
-              className="font-display font-medium tracking-[-0.03em] text-white"
-              style={{ fontSize: "var(--text-h2)", lineHeight: 1.1 }}
-            >
-              {title}
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-mist-300">{subtitle}</p>
-            <div className="mt-6">
-              <a
-                href={primaryHref}
-                className="inline-flex items-center rounded-md bg-white px-4 py-2 text-[13px] font-medium text-mist-950 transition-colors hover:bg-black/[0.03]"
-              >
-                {primaryCTA}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <ClosingCta
+      title={title}
+      subtitle={subtitle}
+      primary={{ label: primaryCTA, href: primaryHref }}
+      customers={{ label: t("trustedBy") }}
+    />
   );
 }
 
