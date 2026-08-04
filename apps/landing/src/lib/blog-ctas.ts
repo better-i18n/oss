@@ -5,18 +5,25 @@
  * so inline and floating CTAs are relevant to the reader's context.
  */
 
+/**
+ * `titleKey` / `descriptionKey` / `ctaTextKey` are `blog` namespace key
+ * SUFFIXES (e.g. "cta.default.title"), not copy — the caller already holds
+ * `useT("blog")` and resolves them with `t()`. See rule/i18n-nextjs-visual-
+ * timeline-keys-not-copy in nextjs.tsx for the same pattern: keeping the
+ * English literal here would render in English on all 21 non-default
+ * locales, exactly like the strings this file replaced.
+ */
 export interface BlogCTAConfig {
-  readonly title: string;
-  readonly description: string;
-  readonly ctaText: string;
+  readonly titleKey: string;
+  readonly descriptionKey: string;
+  readonly ctaTextKey: string;
   readonly ctaUrl: string;
 }
 
 const DEFAULT_CTA: BlogCTAConfig = {
-  title: "Ship multilingual products faster",
-  description:
-    "Better I18N automates translation workflows so you can focus on building, not translating.",
-  ctaText: "Start free trial",
+  titleKey: "cta.default.title",
+  descriptionKey: "cta.default.description",
+  ctaTextKey: "cta.default.ctaText",
   ctaUrl: "https://dash.better-i18n.com",
 } as const;
 
@@ -29,50 +36,45 @@ const SLUG_CTAS: ReadonlyArray<readonly [prefix: string, cta: BlogCTAConfig]> =
     [
       "icu-message-format",
       {
-        title: "Better I18N handles ICU natively",
-        description:
-          "Full ICU MessageFormat support with plurals, selects, and nested arguments out of the box.",
-        ctaText: "See pricing",
+        titleKey: "cta.icuMessageFormat.title",
+        descriptionKey: "cta.icuMessageFormat.description",
+        ctaTextKey: "cta.icuMessageFormat.ctaText",
         ctaUrl: "/pricing",
       },
     ],
     [
       "ai-translation-tools",
       {
-        title: "Compare AI engines in Better I18N",
-        description:
-          "Switch between GPT-4, Claude, DeepL, and Google Translate per project or per key.",
-        ctaText: "Explore features",
+        titleKey: "cta.aiTranslationTools.title",
+        descriptionKey: "cta.aiTranslationTools.description",
+        ctaTextKey: "cta.aiTranslationTools.ctaText",
         ctaUrl: "/features",
       },
     ],
     [
       "llm-translation-vs-nmt",
       {
-        title: "Switch between LLM and NMT per content type",
-        description:
-          "Use LLMs for marketing copy and NMT for UI strings — all from one dashboard.",
-        ctaText: "Explore features",
+        titleKey: "cta.llmVsNmt.title",
+        descriptionKey: "cta.llmVsNmt.description",
+        ctaTextKey: "cta.llmVsNmt.ctaText",
         ctaUrl: "/features",
       },
     ],
     [
       "open-source-tms-alternatives",
       {
-        title: "Generous free tier for open source",
-        description:
-          "Open-source projects get a free tier with unlimited keys and community support.",
-        ctaText: "See pricing",
+        titleKey: "cta.openSourceTms.title",
+        descriptionKey: "cta.openSourceTms.description",
+        ctaTextKey: "cta.openSourceTms.ctaText",
         ctaUrl: "/pricing",
       },
     ],
     [
       "multilingual-schema-markup",
       {
-        title: "Automated multilingual schema markup",
-        description:
-          "Better I18N generates hreflang tags, JSON-LD, and localized sitemaps automatically.",
-        ctaText: "Explore features",
+        titleKey: "cta.multilingualSchema.title",
+        descriptionKey: "cta.multilingualSchema.description",
+        ctaTextKey: "cta.multilingualSchema.ctaText",
         ctaUrl: "/features",
       },
     ],
@@ -84,24 +86,21 @@ const SLUG_CTAS: ReadonlyArray<readonly [prefix: string, cta: BlogCTAConfig]> =
  */
 const CATEGORY_CTAS: Readonly<Record<string, BlogCTAConfig>> = {
   engineering: {
-    title: "Built for developer workflows",
-    description:
-      "CLI, SDK, and CI/CD integrations that fit into your existing development pipeline.",
-    ctaText: "View developer docs",
+    titleKey: "cta.engineering.title",
+    descriptionKey: "cta.engineering.description",
+    ctaTextKey: "cta.engineering.ctaText",
     ctaUrl: "/features",
   },
   "product-updates": {
-    title: "Stay up to date with Better I18N",
-    description:
-      "New features ship every week. Try the latest improvements in your dashboard.",
-    ctaText: "Open dashboard",
+    titleKey: "cta.productUpdates.title",
+    descriptionKey: "cta.productUpdates.description",
+    ctaTextKey: "cta.productUpdates.ctaText",
     ctaUrl: "https://dash.better-i18n.com",
   },
   seo: {
-    title: "Multilingual SEO, automated",
-    description:
-      "Hreflang tags, localized sitemaps, and translated meta — generated automatically.",
-    ctaText: "Explore features",
+    titleKey: "cta.seo.title",
+    descriptionKey: "cta.seo.description",
+    ctaTextKey: "cta.seo.ctaText",
     ctaUrl: "/features",
   },
 } as const;

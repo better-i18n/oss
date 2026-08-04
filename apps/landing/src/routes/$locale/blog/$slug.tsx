@@ -362,9 +362,9 @@ function BlogPostPage() {
 
                 {/* Contextual CTA — matches blog post topic */}
                 <InlineCTA
-                  title={cta.title}
-                  description={cta.description}
-                  ctaText={cta.ctaText}
+                  title={t(cta.titleKey)}
+                  description={t(cta.descriptionKey)}
+                  ctaText={t(cta.ctaTextKey)}
                   ctaUrl={cta.ctaUrl.startsWith("http") ? cta.ctaUrl : `/${locale}${cta.ctaUrl}/`}
                   slug={post.slug}
                 />
@@ -444,7 +444,7 @@ function BlogPostPage() {
 
       {/* Floating CTA — appears after 40% scroll */}
       <FloatingCTA
-        ctaText={cta.ctaText}
+        ctaText={t(cta.ctaTextKey)}
         ctaUrl={cta.ctaUrl.startsWith("http") ? cta.ctaUrl : `/${locale}${cta.ctaUrl}/`}
         slug={post.slug}
       />

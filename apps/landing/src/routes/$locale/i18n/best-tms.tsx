@@ -173,34 +173,35 @@ function BestTmsPage() {
       {/* What to look for */}
       <Divider />
       <Section>
-          <h2 className="section-h2 mb-8">
-            What to look for in a TMS in 2026
-          </h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <SectionHeader
+            eyebrow={t("i18n.bestTms.criteria.eyebrow")}
+            title={t("i18n.bestTms.criteria.title")}
+          />
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
-                title: "Developer workflow",
-                description: "CLI for key scanning and sync, GitHub Actions integration, and type-safe SDKs. A TMS that integrates with code review prevents translation debt from accumulating.",
+                title: t("i18n.bestTms.criteria.developerWorkflow.title"),
+                description: t("i18n.bestTms.criteria.developerWorkflow.description"),
               },
               {
-                title: "AI translation quality",
-                description: "Context-aware AI (not just Google Translate) that understands your product terminology, maintains brand voice, and supports terminology glossaries. Look for human review workflows, not fully automated publishing.",
+                title: t("i18n.bestTms.criteria.aiQuality.title"),
+                description: t("i18n.bestTms.criteria.aiQuality.description"),
               },
               {
-                title: "CDN delivery",
-                description: "Translations served from the edge — not bundled in your JavaScript. Fast cold-start and instant OTA updates are only possible with CDN-first delivery. Important for mobile apps and SPAs.",
+                title: t("i18n.bestTms.criteria.cdnDelivery.title"),
+                description: t("i18n.bestTms.criteria.cdnDelivery.description"),
               },
               {
-                title: "Pricing transparency",
-                description: "Beware platforms that charge per word, per language, or per seat in ways that make costs unpredictable at scale. Prefer platforms with flat-rate pricing or generous free tiers for getting started.",
+                title: t("i18n.bestTms.criteria.pricingTransparency.title"),
+                description: t("i18n.bestTms.criteria.pricingTransparency.description"),
               },
               {
-                title: "MCP and AI agent support",
-                description: "In 2026, AI agents write code and manage content. A TMS with MCP (Model Context Protocol) support lets AI agents translate keys, review content, and publish changes directly — reducing manual overhead significantly.",
+                title: t("i18n.bestTms.criteria.mcpSupport.title"),
+                description: t("i18n.bestTms.criteria.mcpSupport.description"),
               },
               {
-                title: "Migration cost",
-                description: "Switching TMS is painful. Check if the platform supports import from your current format (JSON, XLIFF, PO files), has a clear migration guide, and doesn't lock you in with proprietary formats.",
+                title: t("i18n.bestTms.criteria.migrationCost.title"),
+                description: t("i18n.bestTms.criteria.migrationCost.description"),
               },
             ].map((item) => (
               <div key={item.title}>

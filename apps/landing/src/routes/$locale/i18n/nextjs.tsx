@@ -806,29 +806,29 @@ function NextjsI18nPage() {
         <div className="mt-8">
           <Step
             index={1}
-            title="Install"
-            description="Add @better-i18n/next and next-intl to your project."
+            title={t("i18n.nextjs.steps.install.title")}
+            description={t("i18n.nextjs.steps.install.description")}
           >
             <StepCode code={INSTALL_CODE} fileName="terminal" />
           </Step>
           <Step
             index={2}
-            title="Add middleware for locale detection"
-            description="The middleware reads the Accept-Language header and URL prefix to detect the user's locale and redirect accordingly."
+            title={t("i18n.nextjs.steps.middleware.title")}
+            description={t("i18n.nextjs.steps.middleware.description")}
           >
             <StepCode code={MIDDLEWARE_STEP_CODE} fileName="middleware.ts" />
           </Step>
           <Step
             index={3}
-            title="Load messages in a Server Component"
-            description="Use getMessages() in your root layout to fetch translations server-side and pass them to BetterI18nProvider."
+            title={t("i18n.nextjs.steps.serverComponent.title")}
+            description={t("i18n.nextjs.steps.serverComponent.description")}
           >
             <StepCode code={LAYOUT_STEP_CODE} fileName="app/[locale]/layout.tsx" />
           </Step>
           <Step
             index={4}
-            title="Use translations in Client Components"
-            description="Call useTranslations() in any Client Component. Messages are already hydrated from the server — no extra fetch."
+            title={t("i18n.nextjs.steps.clientComponent.title")}
+            description={t("i18n.nextjs.steps.clientComponent.description")}
           >
             <StepCode code={CLIENT_STEP_CODE} fileName="components/HeroSection.tsx" />
           </Step>
@@ -845,8 +845,8 @@ function NextjsI18nPage() {
         />
         <div className="mt-8 flex flex-col gap-10">
           <CodeCard
-            label="Middleware Setup"
-            description="Add locale detection and routing to your Next.js app with a single middleware file."
+            label={t("i18n.nextjs.codeCard.middlewareSetup.label")}
+            description={t("i18n.nextjs.codeCard.middlewareSetup.description")}
             code={MIDDLEWARE_CODE}
             fileName="middleware.ts"
           />
@@ -857,14 +857,14 @@ function NextjsI18nPage() {
             fileName="middleware.ts"
           />
           <CodeCard
-            label="Edge-Compatible Message Loading"
-            description="Cache translations at the edge with a lightweight in-memory TTL cache for instant responses."
+            label={t("i18n.nextjs.codeCard.edgeMessageLoading.label")}
+            description={t("i18n.nextjs.codeCard.edgeMessageLoading.description")}
             code={EDGE_MESSAGE_LOADING_CODE}
             fileName="lib/edge-messages.ts"
           />
           <CodeCard
-            label="Edge API Route with i18n"
-            description="Return translated API responses from edge functions with minimal cold start."
+            label={t("i18n.nextjs.codeCard.edgeApiRoute.label")}
+            description={t("i18n.nextjs.codeCard.edgeApiRoute.description")}
             code={EDGE_ROUTE_HANDLER_CODE}
             fileName="app/api/translate/route.ts"
           />
@@ -895,14 +895,14 @@ function NextjsI18nPage() {
             fileName="app/[locale]/layout.tsx"
           />
           <CodeCard
-            label="ISR with generateStaticParams"
-            description="Pre-render pages for every locale at build time, then refresh with ISR on a schedule."
+            label={t("i18n.nextjs.codeCard.isrStaticParams.label")}
+            description={t("i18n.nextjs.codeCard.isrStaticParams.description")}
             code={ISR_STATIC_PARAMS_CODE}
             fileName="app/[locale]/[slug]/page.tsx"
           />
           <CodeCard
-            label="On-Demand Revalidation"
-            description="Trigger ISR revalidation when translations are updated — hook into the Better I18N publish webhook."
+            label={t("i18n.nextjs.codeCard.onDemandRevalidation.label")}
+            description={t("i18n.nextjs.codeCard.onDemandRevalidation.description")}
             code={ISR_ON_DEMAND_CODE}
             fileName="app/api/revalidate/route.ts"
           />
@@ -924,14 +924,14 @@ function NextjsI18nPage() {
             fileName="app/[locale]/dashboard/layout.tsx"
           />
           <CodeCard
-            label="Parallel Routes with i18n"
-            description="Load translations independently in parallel route slots for modular, locale-aware layouts."
+            label={t("i18n.nextjs.codeCard.parallelRoutes.label")}
+            description={t("i18n.nextjs.codeCard.parallelRoutes.description")}
             code={PARALLEL_ROUTES_CODE}
             fileName="app/[locale]/@analytics/page.tsx"
           />
           <CodeCard
-            label="Server Actions with Translation"
-            description="Return translated validation errors and success messages from server actions."
+            label={t("i18n.nextjs.codeCard.serverActions.label")}
+            description={t("i18n.nextjs.codeCard.serverActions.description")}
             code={SERVER_ACTIONS_CODE}
             fileName="app/[locale]/contact/actions.ts"
           />
@@ -948,14 +948,14 @@ function NextjsI18nPage() {
             {/* Titled by the troubleshooting heading above (i18n.nextjs.troubleshooting.*). */}
             <CodeCard code={HYDRATION_FIX_CODE} />
             <CodeCard
-              label="Locale Fallback Chain"
-              description="Define fallback chains so regional variants like pt-BR fall back to pt, then en."
+              label={t("i18n.nextjs.codeCard.localeFallback.label")}
+              description={t("i18n.nextjs.codeCard.localeFallback.description")}
               code={FALLBACK_CODE}
               fileName="lib/i18n-config.ts"
             />
             <CodeCard
-              label="Consistent Date Formatting"
-              description="Avoid server/client date mismatches by explicitly setting timeZone to UTC."
+              label={t("i18n.nextjs.codeCard.dateFormatting.label")}
+              description={t("i18n.nextjs.codeCard.dateFormatting.description")}
               code={DATE_FORMAT_CODE}
               fileName="components/LocalizedDate.tsx"
             />
