@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { createPageLoader, getPageHead, getBreadcrumbItems } from "@/lib/page-seo";
+import { createPageLoader, getPageHead } from "@/lib/page-seo";
+import { toolBreadcrumbs } from "@/lib/tool-breadcrumbs";
 import { ToolLayout } from "@/components/tools/ToolLayout";
 import { FileUploadZone } from "@/components/tools/FileUploadZone";
 import { CodeOutput } from "@/components/tools/CodeOutput";
@@ -75,9 +76,10 @@ function ConverterPairPage() {
   const [error, setError] = useState<string | null>(null);
   const [isConverting, setIsConverting] = useState(false);
 
-  const breadcrumbs = getBreadcrumbItems(
+  const breadcrumbs = toolBreadcrumbs(
     `/tools/translation-file-converter/${formatPair.slug}`,
     messages,
+    locale,
   );
 
   const handleFileContent = (content: string) => {

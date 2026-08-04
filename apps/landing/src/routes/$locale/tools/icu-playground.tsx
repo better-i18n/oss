@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { ToolLayout } from "@/components/tools/ToolLayout";
-import { createPageLoader, getPageHead, getBreadcrumbItems } from "@/lib/page-seo";
+import { createPageLoader, getPageHead } from "@/lib/page-seo";
+import { toolBreadcrumbs } from "@/lib/tool-breadcrumbs";
 import {
   parseICUMessage,
   formatICUMessage,
@@ -412,7 +413,7 @@ function ICUPlaygroundPage() {
     [activeCodeTab, message, syncedValues],
   );
 
-  const breadcrumbs = getBreadcrumbItems("/tools/icu-playground", messages as Record<string, any>);
+  const breadcrumbs = toolBreadcrumbs("/tools/icu-playground", messages as Record<string, any>, locale);
 
   return (
     <ToolLayout

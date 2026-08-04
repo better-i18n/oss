@@ -20,26 +20,42 @@ interface ComplianceBadgeProps {
   icon: ReactNode;
   href: string;
   external?: boolean;
+  /** Qualifier shown after the label, e.g. "in progress". Omit for a claim that is already true. */
+  status?: string;
 }
 
-function ComplianceBadge({ label, icon, href, external }: ComplianceBadgeProps) {
+function ComplianceBadge({ label, icon, href, external, status }: ComplianceBadgeProps) {
   // Hairline chip, not a pill button — these are evidence, not calls to action.
   const className =
     "inline-flex items-center gap-1.5 rounded-sm border border-black/[0.06] bg-white px-2.5 py-1 text-[11px] font-medium text-mist-400 transition-colors hover:border-black/[0.1] hover:text-mist-600";
 
+  /* A badge with a `status` is NOT the same claim as one without.
+     Every other chip in this row states something already true. SOC 2 is not
+     issued yet, and a row of certifications is exactly where a reader stops
+     reading and starts trusting — so the qualifier travels with the label
+     rather than living on the security page a click away. Same wording as the
+     landing and the docs, corrected 2026-08-03. */
+  const body = (
+    <>
+      {icon}
+      {label}
+      {status && (
+        <span className="text-mist-300">&nbsp;· {status}</span>
+      )}
+    </>
+  );
+
   if (external) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
-        {icon}
-        {label}
+        {body}
       </a>
     );
   }
 
   return (
     <Link to={href} className={className}>
-      {icon}
-      {label}
+      {body}
     </Link>
   );
 }
@@ -132,6 +148,17 @@ const footerLinks: FooterLinkGroup[] = [
       { key: "lokalise", mark: "lokalise", label: "vs Lokalise", href: "/$locale/compare/lokalise/" },
       { key: "phrase", mark: "phrase", label: "vs Phrase", href: "/$locale/compare/phrase/" },
       { key: "transifex", mark: "transifex", label: "vs Transifex", href: "/$locale/compare/transifex/" },
+      /* Smartling, XTM and Locize had comparison pages and no link from the
+         footer, so three of our seven were reachable only from /compare/ or a
+         search result. The footer is on all 104 pages and is the strongest
+         internal link we can give a page; issue #196 measured that the /i18n/
+         guides Google skips were exactly the ones the hub did not link, and the
+         same logic applies to a vertical we want to win. Every one of the seven
+         has a mark, so the column stays all-or-nothing rather than showing a
+         logo on four rows and a gap on three. */
+      { key: "smartling", mark: "smartling", label: "vs Smartling", href: "/$locale/compare/smartling/" },
+      { key: "xtm", mark: "xtm", label: "vs XTM", href: "/$locale/compare/xtm/" },
+      { key: "locize", mark: "locize", label: "vs Locize", href: "/$locale/compare/locize/" },
     ],
   },
   {
@@ -328,6 +355,13 @@ export default function Footer() {
             label={t("badges.usStateLaws")}
             icon={<UsPrivacyIcon className="w-3.5 h-3.5 shrink-0" />}
             href={`/${currentLocale}/privacy/#us-state-laws`}
+          />
+          <ComplianceBadge
+            label="SOC 2 Type II"
+            icon={<TlsLockIcon className="w-3.5 h-3.5 shrink-0" />}
+            href="https://docs.better-i18n.com/security"
+            external
+            status={t("badges.inProgress")}
           />
           <ComplianceBadge
             label={t("badges.encryption")}

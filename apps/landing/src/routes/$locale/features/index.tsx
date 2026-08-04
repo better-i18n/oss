@@ -15,6 +15,7 @@ import {
   PageTestimonial,
   Divider,
   FeatureColumn,
+  FeatureGrid,
   FeatureRow,
   PageHero,
   Section,
@@ -264,8 +265,8 @@ function FeaturesPage() {
                 {Visual ? <Visual /> : null}
               </div>
 
-              <div className="mt-10 overflow-hidden rounded-xl border border-black/[0.07] bg-white">
-                <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2">
+              <div className="mt-10">
+                <FeatureGrid cols="sm:grid-cols-2">
                   {capability.items.map((item) => (
                     <FeatureItem
                       key={item.title}
@@ -273,7 +274,7 @@ function FeaturesPage() {
                       description={item.description}
                     />
                   ))}
-                </div>
+                </FeatureGrid>
               </div>
             </Section>
           </div>
@@ -290,45 +291,42 @@ function FeaturesPage() {
           title={t("additionalFeatures.title")}
           subtitle={t("additionalFeatures.description")}
         />
-        <div className="mt-8 overflow-hidden rounded-xl border border-black/[0.07] bg-white">
-          <ul role="list" className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            <li>
-              <FeatureItem
+        {/* A checklist, and the hairlines already say so. The frame around it
+            was a second container around one thing (rule/one-container), and it
+            was what pushed the first cell's text 29px off the section's edge. */}
+        <div className="mt-8">
+          <FeatureGrid as="ul" cols="sm:grid-cols-2 lg:grid-cols-3">
+            <FeatureItem
+                as="li"
                 title={t("additionalFeatures.glossary.title")}
                 description={t("additionalFeatures.glossary.description")}
               />
-            </li>
-            <li>
-              <FeatureItem
+            <FeatureItem
+                as="li"
                 title={t("additionalFeatures.memory.title")}
                 description={t("additionalFeatures.memory.description")}
               />
-            </li>
-            <li>
-              <FeatureItem
+            <FeatureItem
+                as="li"
                 title={t("additionalFeatures.collaboration.title")}
                 description={t("additionalFeatures.collaboration.description")}
               />
-            </li>
-            <li>
-              <FeatureItem
+            <FeatureItem
+                as="li"
                 title={t("additionalFeatures.versionControl.title")}
                 description={t("additionalFeatures.versionControl.description")}
               />
-            </li>
-            <li>
-              <FeatureItem
+            <FeatureItem
+                as="li"
                 title={t("additionalFeatures.qa.title")}
                 description={t("additionalFeatures.qa.description")}
               />
-            </li>
-            <li>
-              <FeatureItem
+            <FeatureItem
+                as="li"
                 title={t("additionalFeatures.analytics.title")}
                 description={t("additionalFeatures.analytics.description")}
               />
-            </li>
-          </ul>
+          </FeatureGrid>
         </div>
       </Section>
 
@@ -414,9 +412,14 @@ function FeaturePagesGrid({
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
-           <div className="-mt-px -ml-px grid sm:grid-cols-3">
-            <div className="border-t border-l border-black/[0.05] p-4">
+          {/* Three stats, split by hairlines. This one sits in the right column
+              of the two-column header, so its cells align to that column's left
+              edge rather than the section's; the frame is still one container
+              too many. `inset` is lowered because 28px of air around a 28px
+              number is what the dense-strip case is for. */}
+          <div>
+            <FeatureGrid cols="sm:grid-cols-3" inset={16} padY={16}>
+            <div className="feat-cell">
               <div className="text-[28px] font-medium leading-none tracking-[-0.03em] text-mist-900 tabular-nums">
                 {featurePages.length}
               </div>
@@ -424,7 +427,7 @@ function FeaturePagesGrid({
                 {t("deepDive.stats.guides")}
               </p>
             </div>
-            <div className="border-t border-l border-black/[0.05] p-4">
+            <div className="feat-cell">
               <h3 className="text-[13px] font-medium text-mist-900">
                 {t("deepDive.statExamples.title")}
               </h3>
@@ -432,7 +435,7 @@ function FeaturePagesGrid({
                 {t("deepDive.statExamples.description")}
               </p>
             </div>
-            <div className="border-t border-l border-black/[0.05] p-4">
+            <div className="feat-cell">
               <h3 className="text-[13px] font-medium text-mist-900">
                 {t("deepDive.statDocs.title")}
               </h3>
@@ -440,18 +443,21 @@ function FeaturePagesGrid({
                 {t("deepDive.statDocs.description")}
               </p>
             </div>
-           </div>
+            </FeatureGrid>
           </div>
         </div>
 
-        <div className="mt-6 overflow-hidden rounded-xl border border-black/[0.07] bg-white">
-         <div className="-mt-px -ml-px grid grid-cols-1 lg:grid-cols-2">
+        {/* The cards are links, so each one already reads as its own target.
+            The frame around them was a container around containers; the
+            hairlines do the separating (rule/one-container). */}
+        <div className="mt-6">
+          <FeatureGrid cols="lg:grid-cols-2">
           {featurePages.map((feature, index) => (
             <Link
               key={feature.slug}
               to="/$locale/features/$slug/"
               params={{ locale, slug: feature.slug }}
-              className="group flex flex-col justify-between gap-6 border-t border-l border-black/[0.05] p-5 transition-colors hover:bg-black/[0.02]"
+              className="feat-cell group flex flex-col justify-between gap-6 transition-colors hover:bg-black/[0.02]"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="inline-flex items-center gap-2 text-[11px] font-medium text-mist-400">
@@ -482,7 +488,7 @@ function FeaturePagesGrid({
               </span>
             </Link>
           ))}
-         </div>
+          </FeatureGrid>
         </div>
       </div>
     </Section>
@@ -494,14 +500,27 @@ function FeaturePagesGrid({
  * its own top + left rule and the parent grid is shifted -1px, so the outer
  * border absorbs the first row/column rules at every breakpoint.
  */
-function FeatureItem({ title, description }: { title: string; description: string }) {
+function FeatureItem({
+  title,
+  description,
+  as: As = "div",
+}: {
+  title: string;
+  description: string;
+  /**
+   * `li` when the grid is a `<ul>`. The class has to sit on the element itself:
+   * `.feat-grid > .feat-cell` matches direct children only, so wrapping the cell
+   * in an `<li>` would have dropped both the padding and the hairlines.
+   */
+  as?: "div" | "li";
+}) {
   return (
-    <div className="border-t border-l border-black/[0.05] px-5 py-4">
+    <As className="feat-cell">
       <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] text-mist-900">
         {title}
       </h3>
       <p className="mt-1.5 text-[13px] leading-relaxed text-mist-600">{description}</p>
-    </div>
+    </As>
   );
 }
 

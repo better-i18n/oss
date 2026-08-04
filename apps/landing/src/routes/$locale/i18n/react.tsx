@@ -13,6 +13,7 @@ import { useTranslations } from "@better-i18n/use-intl";
 import {
   ClosingCta,
   Divider,
+  FeatureGrid,
   PageHero,
   PageTestimonial,
   Section,
@@ -412,23 +413,21 @@ function ReactTestimonial() {
  */
 function RuntimeVisual({ t }: { t: (key: string) => string }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-white">
-      <div className="-mt-px -ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {RUNTIME_STEPS.map((s, i) => (
-          <div
-            key={s.id}
-            className="flex flex-col gap-2 border-t border-l border-black/[0.05] px-5 py-5"
-          >
-            <div className="flex items-center gap-2">
-              <StepNumber n={i + 1} />
-              <span className="truncate font-mono text-[12px] text-mist-900">{s.code}</span>
-            </div>
-            <p className="text-[13px] leading-relaxed text-mist-600">
-              {t(`i18n.react.visual.${s.id}`)}
-            </p>
+    /* The four steps are separated by their own hairlines, so the frame around
+       them was a second container around one thing (rule/one-container). Gone,
+       the first step's code line now starts on the section's left edge. */
+    <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-4">
+      {RUNTIME_STEPS.map((s, i) => (
+        <div key={s.id} className="feat-cell flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <StepNumber n={i + 1} />
+            <span className="truncate font-mono text-[12px] text-mist-900">{s.code}</span>
           </div>
-        ))}
-      </div>
-    </div>
+          <p className="text-[13px] leading-relaxed text-mist-600">
+            {t(`i18n.react.visual.${s.id}`)}
+          </p>
+        </div>
+      ))}
+    </FeatureGrid>
   );
 }

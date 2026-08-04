@@ -43,11 +43,18 @@ function TermsPage() {
         lastUpdated={t("terms.lastUpdatedDate")}
       >
         {/* Table of Contents */}
-        <div className="not-prose mb-10 rounded-xl border border-black/[0.07] bg-mist-50 p-5 text-sm">
-          <h2 className="mt-0 mb-3 text-[13px] font-medium text-mist-900">
+        {/* The contents list was a tinted, rounded, bordered box — the one
+            tinted surface left in a document that otherwise follows
+            rule/white-page-hairline-separation, and a frame around a plain
+            list of links. It is now opened by a hairline like every other
+            block, with the label at eyebrow size so the list itself is the
+            loudest thing in it. Two columns because sixteen anchors in one
+            column pushed the document's first sentence below the fold. */}
+        <div className="not-prose mb-10 border-t border-black/[0.07] pt-5 text-sm">
+          <h2 className="mt-0 mb-3 text-[11px] font-medium text-mist-500">
             {t("terms.toc.title")}
           </h2>
-          <ul className="space-y-2 list-none pl-0 m-0">
+          <ul className="m-0 grid list-none grid-cols-1 gap-x-8 gap-y-1.5 pl-0 sm:grid-cols-2">
             {[
               { id: "introduction" },
               { id: "acceptance" },

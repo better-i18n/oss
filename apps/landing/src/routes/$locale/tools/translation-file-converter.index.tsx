@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { createPageLoader, getPageHead, getBreadcrumbItems } from "@/lib/page-seo";
+import { createPageLoader, getPageHead } from "@/lib/page-seo";
+import { toolBreadcrumbs } from "@/lib/tool-breadcrumbs";
 import { ToolLayout } from "@/components/tools/ToolLayout";
 import { FORMATS } from "@/lib/tools/formats";
 
@@ -68,7 +69,7 @@ function TranslationFileConverterHubPage() {
   const loaderData = Route.useLoaderData();
   const messages = loaderData?.messages || {};
 
-  const breadcrumbs = getBreadcrumbItems("/tools/translation-file-converter", messages);
+  const breadcrumbs = toolBreadcrumbs("/tools/translation-file-converter", messages, locale);
 
   return (
     <ToolLayout

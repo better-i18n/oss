@@ -159,10 +159,14 @@ function HreflangGeneratorPage() {
       locale={locale}
       faqItems={FAQ_ITEMS}
       breadcrumbs={[
-        /* Locale-less on purpose. MarketingLayout's breadcrumb prepends the
-           locale itself, so `/${locale}/tools` renders as `/en/en/tools/`.
-           Measured before and after — this is why the href looks wrong here. */
-        { label: "Free Tools", href: "/tools" },
+        /* Full paths, including the locale. `MarketingBreadcrumb` used to
+           prepend the locale itself — which is why this href was deliberately
+           locale-less — but it stopped doing that, so the crumb was pointing at
+           `/tools` and losing the locale on every non-default language. Every
+           other tool page in this directory already passes `/${locale}/…`;
+           this was the last one still on the old contract. */
+        { label: "Home", href: `/${locale}` },
+        { label: "Free Tools", href: `/${locale}/tools` },
         { label: "Hreflang Generator" },
       ]}
       /* No closing-band props: ToolLayout now leaves `showCTA` at its default

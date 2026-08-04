@@ -8,6 +8,7 @@ import { useTranslations } from "@better-i18n/use-intl";
 import { RelatedPages } from "@/components/RelatedPages";
 import {
   Divider,
+  FeatureGrid,
   PageHero,
   PageTestimonial,
   Section,
@@ -264,13 +265,14 @@ function WhatIsPage() {
           title={t("covers.title")}
           subtitle={t("covers.subtitle")}
         />
-        <div className="mt-8 overflow-hidden rounded-xl border border-black/[0.07] bg-white">
-          <div className="-mt-px -ml-px grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {/* No frame around the grid: the hairlines already separate the cells,
+            and a border around them put two containers around one thing
+            (rule/one-container). Dropping it also moves the first cell's text
+            onto the section's left edge, which `-ml-px` never did. */}
+        <div className="mt-8">
+          <FeatureGrid cols="sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             {COVERS_ITEMS.map((item) => (
-              <div
-                key={item.key}
-                className="flex flex-col border-t border-l border-black/[0.05] px-5 py-5"
-              >
+              <div key={item.key} className="feat-cell flex flex-col">
                 <span className="flex size-7 items-center justify-center rounded-md border border-black/[0.06] text-mist-600">
                   <SpriteIcon name={item.icon} className="size-3.5" />
                 </span>
@@ -282,7 +284,7 @@ function WhatIsPage() {
                 </p>
               </div>
             ))}
-          </div>
+          </FeatureGrid>
         </div>
       </Section>
 

@@ -232,21 +232,21 @@ function ContentPage() {
         <div className="mt-8">
           <FeatureRow>
             <FeatureColumn
-              icon={<ProductTile product="i18n" size="sm" />}
+              icon={<ProductTile product="i18n" size="xs" />}
               plainIcon
               label={t("pair.i18n.label")}
               title={t("pair.i18n.title")}
               description={t("pair.i18n.description")}
             />
             <FeatureColumn
-              icon={<ProductTile product="content" size="sm" />}
+              icon={<ProductTile product="content" size="xs" />}
               plainIcon
               label={t("pair.content.label")}
               title={t("pair.content.title")}
               description={t("pair.content.description")}
             />
             <FeatureColumn
-              icon={<ProductTile product="analytics" size="sm" />}
+              icon={<ProductTile product="analytics" size="xs" />}
               plainIcon
               label={t("pair.analytics.label")}
               title={t("pair.analytics.title")}
