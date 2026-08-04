@@ -72,7 +72,7 @@ export const Route = createFileRoute("/$locale/i18n/nextjs")({
       structuredDataOptions: {
         framework: "Next.js",
         frameworkDescription: "Next.js internationalization with App Router, Server Components, ISR, and edge CDN delivery.",
-        dependencies: ["next", "react", "@better-i18n/use-intl"],
+        dependencies: ["next", "next-intl", "react", "@better-i18n/next"],
         proficiencyLevel: "Expert",
       },
     });
@@ -317,25 +317,32 @@ function StepCode({ code, fileName }: { code: string; fileName: string }) {
 /* ═══ Code samples — unchanged from the previous revision ═══════════════════
    Every string below is existing indexed page content. Kept verbatim. */
 
-const INSTALL_CODE = "npm install @better-i18n/use-intl use-intl";
+const INSTALL_CODE = "npm install @better-i18n/next next-intl";
 
-const MIDDLEWARE_STEP_CODE = `import { betterI18nMiddleware } from '@better-i18n/next';
-export const middleware = betterI18nMiddleware;
+const MIDDLEWARE_STEP_CODE = `import { createBetterI18nMiddleware } from '@better-i18n/next';
+
+export default createBetterI18nMiddleware({
+  project: 'your-org/your-project',
+  defaultLocale: 'en',
+  localePrefix: 'always',
+});
+
 export const config = { matcher: ['/((?!api|_next).*)'] };`;
 
 const LAYOUT_STEP_CODE = `// app/[locale]/layout.tsx
-import { BetterI18nProvider } from '@better-i18n/use-intl';
-import { getMessages } from '@better-i18n/use-intl/server';
+import { BetterI18nProvider } from '@better-i18n/next/client';
+import { getMessages } from '@better-i18n/next/server';
+
+const config = { project: 'your-org/your-project', defaultLocale: 'en' };
 
 export default async function RootLayout({ children, params }) {
-  const messages = await getMessages({
-    projectId: 'your-org/your-project',
-    locale: params.locale,
-  });
+  const { locale } = await params;
+  const messages = await getMessages(config, locale);
+
   return (
-    <html lang={params.locale}>
+    <html lang={locale}>
       <body>
-        <BetterI18nProvider messages={messages} locale={params.locale} projectId="your-org/your-project">
+        <BetterI18nProvider locale={locale} messages={messages} config={config}>
           {children}
         </BetterI18nProvider>
       </body>
@@ -344,7 +351,7 @@ export default async function RootLayout({ children, params }) {
 }`;
 
 const CLIENT_STEP_CODE = `'use client';
-import { useTranslations } from '@better-i18n/use-intl';
+import { useTranslations } from 'next-intl';
 
 export function HeroSection() {
   const t = useTranslations('home');
@@ -352,15 +359,22 @@ export function HeroSection() {
 }`;
 
 const MIDDLEWARE_CODE = `// middleware.ts — locale detection
-import { betterI18nMiddleware } from '@better-i18n/next'
-export const middleware = betterI18nMiddleware
+import { createBetterI18nMiddleware } from '@better-i18n/next'
+
+export default createBetterI18nMiddleware({
+  project: 'your-org/your-project',
+  defaultLocale: 'en',
+  localePrefix: 'always',
+})
+
 export const config = { matcher: ['/((?!api|_next).*)'] }`;
 
 const PAGE_CODE = `// app/[locale]/page.tsx
-import { getTranslations } from '@better-i18n/next';
+import { getTranslations } from 'next-intl/server';
 
-export default async function Page({ params }: { params: { locale: string } }) {
-  const t = await getTranslations(params.locale, 'home');
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'home' });
 
   return (
     <main>
@@ -371,32 +385,34 @@ export default async function Page({ params }: { params: { locale: string } }) {
 }`;
 
 const ISR_LAYOUT_CODE = `// app/[locale]/layout.tsx — ISR with i18n
-import { getMessages } from '@better-i18n/use-intl/server';
-import { BetterI18nProvider } from '@better-i18n/use-intl';
+import { getMessages } from '@better-i18n/next/server';
+import { BetterI18nProvider } from '@better-i18n/next/client';
 
 export const revalidate = 3600; // Revalidate every hour
+
+const config = { project: 'your-org/your-project', defaultLocale: 'en' };
 
 export default async function LocaleLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  const messages = await getMessages({
-    projectId: 'your-org/your-project',
-    locale: params.locale,
-  });
+  const { locale } = await params;
+  const messages = await getMessages(config, locale);
 
   return (
-    <BetterI18nProvider messages={messages} locale={params.locale}>
+    <BetterI18nProvider locale={locale} messages={messages} config={config}>
       {children}
     </BetterI18nProvider>
   );
 }`;
 
 const ISR_STATIC_PARAMS_CODE = `// app/[locale]/[slug]/page.tsx — Generate static pages per locale
-import { getMessages } from '@better-i18n/use-intl/server';
+import { getMessages } from '@better-i18n/next/server';
+
+const config = { project: 'your-org/your-project', defaultLocale: 'en' };
 
 export async function generateStaticParams() {
   const locales = ['en', 'de', 'fr', 'ja'];
@@ -411,31 +427,23 @@ export const revalidate = 1800; // ISR: refresh every 30 min
 export default async function Page({
   params,
 }: {
-  params: { locale: string; slug: string };
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const t = await getMessages({
-    projectId: 'your-org/your-project',
-    locale: params.locale,
-    namespace: 'blog',
-  });
-  return <article><h1>{t[params.slug + '.title']}</h1></article>;
+  const { locale, slug } = await params;
+  const messages = await getMessages(config, locale, { namespaces: ['blog'] });
+  return <article><h1>{messages.blog[slug + '.title']}</h1></article>;
 }`;
 
-const ISR_ON_DEMAND_CODE = `// app/api/revalidate/route.ts — On-demand ISR for translation updates
-import { revalidatePath } from 'next/cache';
-import { NextRequest, NextResponse } from 'next/server';
+const ISR_ON_DEMAND_CODE = `// app/api/i18n/revalidate/route.ts — On-demand ISR for translation updates
+import { createRevalidateHandler } from '@better-i18n/next/revalidate';
 
-export async function POST(request: NextRequest) {
-  const { locale, path, secret } = await request.json();
-
-  if (secret !== process.env.REVALIDATION_SECRET) {
-    return NextResponse.json({ error: 'Invalid secret' }, { status: 401 });
-  }
-
-  // Revalidate the specific locale path
-  revalidatePath(\`/\${locale}\${path}\`);
-  return NextResponse.json({ revalidated: true, locale, path });
-}`;
+// Called by the Better i18n publish webhook — verifies the HMAC signature,
+// then revalidates the paths/tags below.
+export const POST = createRevalidateHandler({
+  secret: process.env.BETTER_I18N_WEBHOOK_SECRET!,
+  revalidatePaths: ['/'],
+  revalidateTags: ['i18n-messages'],
+});`;
 
 const EDGE_MIDDLEWARE_CODE = `// middleware.ts — Edge-based locale detection
 import { NextRequest, NextResponse } from 'next/server';
@@ -531,20 +539,22 @@ export async function GET(request: Request) {
 
 const HYDRATION_FIX_CODE = `// Fix: Hydration mismatch with date/number formatting
 // Problem: Server renders "1,000" but client renders "1.000"
-// Solution: Ensure the same locale is used on both server and client
+// Solution: BetterI18nProvider already passes an explicit timeZone down to
+// NextIntlClientProvider, so server and client share the same formatting locale.
 
 // app/[locale]/layout.tsx
-import { getFormatter } from '@better-i18n/use-intl/server';
+import { getFormatter } from 'next-intl/server';
 
 export default async function Layout({ children, params }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
   // Pre-format on server with the explicit locale
-  const formatter = await getFormatter(params.locale);
+  const format = await getFormatter({ locale });
 
   return (
-    <html lang={params.locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );
@@ -552,11 +562,11 @@ export default async function Layout({ children, params }: {
 
 // components/Price.tsx — Client component
 'use client';
-import { useFormatter } from '@better-i18n/use-intl';
+import { useFormatter } from 'next-intl';
 
 export function Price({ amount }: { amount: number }) {
   const format = useFormatter();
-  // useFormatter automatically uses the locale from the provider
+  // useFormatter automatically uses the locale/timeZone from BetterI18nProvider
   // ensuring server and client render the same output
   return <span>{format.number(amount, { style: 'currency', currency: 'USD' })}</span>;
 }`;
@@ -588,7 +598,7 @@ export function resolveMessages(
 
 const DATE_FORMAT_CODE = `// components/LocalizedDate.tsx — Consistent date formatting
 'use client';
-import { useFormatter, useLocale } from '@better-i18n/use-intl';
+import { useFormatter, useLocale } from 'next-intl';
 
 export function LocalizedDate({ date }: { date: Date | string }) {
   const format = useFormatter();
@@ -609,27 +619,27 @@ export function LocalizedDate({ date }: { date: Date | string }) {
 }`;
 
 const NESTED_LAYOUT_CODE = `// app/[locale]/dashboard/layout.tsx — Nested layout with namespace
-import { getMessages } from '@better-i18n/use-intl/server';
-import { BetterI18nProvider } from '@better-i18n/use-intl';
+import { getMessages } from '@better-i18n/next/server';
+import { BetterI18nProvider } from '@better-i18n/next/client';
 import { DashboardNav } from '@/components/DashboardNav';
+
+const config = { project: 'your-org/your-project', defaultLocale: 'en' };
 
 export default async function DashboardLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  // Load dashboard-specific namespace alongside common messages
-  const [commonMessages, dashMessages] = await Promise.all([
-    getMessages({ projectId: 'your-org/your-project', locale: params.locale, namespace: 'common' }),
-    getMessages({ projectId: 'your-org/your-project', locale: params.locale, namespace: 'dashboard' }),
-  ]);
-
-  const messages = { ...commonMessages, ...dashMessages };
+  const { locale } = await params;
+  // Load the dashboard-specific namespace alongside common messages
+  const messages = await getMessages(config, locale, {
+    namespaces: ['common', 'dashboard'],
+  });
 
   return (
-    <BetterI18nProvider messages={messages} locale={params.locale}>
+    <BetterI18nProvider locale={locale} messages={messages} config={config}>
       <DashboardNav />
       <main>{children}</main>
     </BetterI18nProvider>
@@ -637,14 +647,15 @@ export default async function DashboardLayout({
 }`;
 
 const PARALLEL_ROUTES_CODE = `// app/[locale]/@analytics/page.tsx — Parallel route with i18n
-import { getTranslations } from '@better-i18n/next';
+import { getTranslations } from 'next-intl/server';
 
 export default async function AnalyticsSlot({
   params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  const t = await getTranslations(params.locale, 'analytics');
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'analytics' });
 
   return (
     <section aria-label={t('title')}>
@@ -675,13 +686,14 @@ export default function Layout({
 
 const SERVER_ACTIONS_CODE = `// app/[locale]/contact/actions.ts — Server action with i18n
 'use server';
-import { getTranslations } from '@better-i18n/next';
+import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 
 export async function submitContactForm(formData: FormData) {
-  const headersList = headers();
+  const headersList = await headers();
+  // Set by createBetterI18nMiddleware — see the routing section above
   const locale = headersList.get('x-locale') ?? 'en';
-  const t = await getTranslations(locale, 'contact');
+  const t = await getTranslations({ locale, namespace: 'contact' });
 
   const email = formData.get('email') as string;
   const message = formData.get('message') as string;
@@ -700,7 +712,7 @@ export async function submitContactForm(formData: FormData) {
 
 // app/[locale]/contact/page.tsx — Using the server action
 'use client';
-import { useTranslations } from '@better-i18n/use-intl';
+import { useTranslations } from 'next-intl';
 import { submitContactForm } from './actions';
 
 export default function ContactPage() {
@@ -790,7 +802,7 @@ function NextjsI18nPage() {
           <Step
             index={1}
             title="Install"
-            description="Add @better-i18n/use-intl, use-intl, and the Next.js adapter to your project."
+            description="Add @better-i18n/next and next-intl to your project."
           >
             <StepCode code={INSTALL_CODE} fileName="terminal" />
           </Step>
