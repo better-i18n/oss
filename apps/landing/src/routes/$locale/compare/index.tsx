@@ -82,7 +82,7 @@ const MATRIX_ROWS = [
   { key: "ota", values: ["\u2713", "\u2717", "\u2717", "\u2717", "\u2717", "~"] },
   { key: "typesafe", values: ["\u2713", "\u2717", "\u2717", "\u2717", "\u2717", "\u2717"] },
   { key: "mobile", values: ["\u2713", "\u2713", "\u2713", "\u2713", "~", "\u2713"] },
-  { key: "price", values: ["$0/mo", "$40/mo", "$140/mo", "$1,245/mo", "$150/mo", "$7/mo"] },
+  { key: "price", values: ["$0/mo", "$40/mo", "$140/mo", "$1,245/mo", "$160/mo", "$7/mo"] },
 ] as const;
 
 function ComparePage() {
