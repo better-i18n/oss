@@ -12,13 +12,21 @@ import { i18nConfig } from "@/i18n.config";
 import { filterMessages } from "@/lib/page-namespaces";
 import { Divider, FaqSection } from "@/components/ui/page";
 
+/* The head() payload and the CDN request are the same list: fetch only what
+   the filter keeps, instead of every namespace in the manifest. */
+const PRICING_HEAD_NAMESPACES = ["meta", "breadcrumbs", "pricingPage"];
+
 export const Route = createFileRoute("/$locale/pricing")({
   loader: async ({ context }) => {
     const [allMessages, plans] = await Promise.all([
-      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      getMessages({
+        project: i18nConfig.project,
+        locale: context.locale,
+        namespaces: PRICING_HEAD_NAMESPACES,
+      }),
       getPricingPlans(context.locale),
     ]);
-    const messages = filterMessages(allMessages, ["meta", "breadcrumbs", "pricingPage"]);
+    const messages = filterMessages(allMessages, PRICING_HEAD_NAMESPACES);
     return { messages, locale: context.locale, plans };
   },
   head: ({ loaderData }) => {

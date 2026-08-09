@@ -208,6 +208,7 @@ export function BetterI18nProvider({
   staticData,
   fetchTimeout,
   retryCount,
+  namespaces,
   initialLanguages: propInitialLanguages,
   localePrefix = "as-needed",
   getMessageFallback: customGetMessageFallback,
@@ -326,6 +327,7 @@ export function BetterI18nProvider({
   // Use initial messages only when they match the current locale.
   // After locale switch, fall through to clientMessages (CDN-fetched).
   const isInitialMessagesFresh = initialMessages && initialMessagesLocale === locale;
+  const hasFreshInitial = Boolean(isInitialMessagesFresh);
   const messages = isInitialMessagesFresh ? initialMessages : (clientMessages ?? initialMessages);
   const [languages, setLanguages] = useState<LanguageOption[]>(initialLanguages ?? []);
   const [isLoadingMessages, setIsLoadingMessages] = useState(initialMessages === undefined);
@@ -359,6 +361,17 @@ export function BetterI18nProvider({
     // `locale` intentionally excluded — see comment above.
   );
 
+  // Namespace scope for CDN fetches. Routers hand a fresh array on every
+  // navigation, so the identity changes even when the set does not. Keying the
+  // memo on the sorted contents gives the effects below a value they can hold
+  // in their dependency list honestly: same set → same reference → no re-run,
+  // different set → re-run, which is exactly when the scope really changed.
+  const namespacesKey = namespaces ? [...namespaces].sort().join(",") : "";
+  const scopedNamespaces = useMemo(
+    () => (namespacesKey ? namespacesKey.split(",") : undefined),
+    [namespacesKey],
+  );
+
   // Load languages on mount — skip if SSR already provided them
   useEffect(() => {
     if (initialLanguages) return;
@@ -387,31 +400,32 @@ export function BetterI18nProvider({
     };
   }, [i18nCore, initialLanguages]);
 
-  // Load messages on locale change AND whenever the provider mounts.
+  // Fetch messages only when the active locale has no payload on screen.
   //
-  // SWR semantics:
-  // - If SSR/prop messages already match the active locale, we DO NOT flip the
-  //   loading flag — the first paint stays FOUC-free. But we still hit
-  //   `getMessages()` so the core can (a) serve its own in-memory cache
-  //   instantly and (b) kick off a background revalidation against the CDN.
-  // - If the SSR blob is for a different locale than the user is actually on
-  //   (common on static builds: blob=en, URL=/tr/...), we show the loader
-  //   while fetching the correct locale's messages.
-  //
-  // The background revalidation result is delivered through
-  // `i18nCore.onMessagesUpdate` — see the subscribe effect below.
+  // - SSR/prop messages match the active locale → nothing to fetch. The payload
+  //   is already rendered, so downloading it again buys nothing. This effect
+  //   used to run `getMessages()` unconditionally, and because it passed no
+  //   `namespaces`, the client pulled EVERY namespace the manifest declares
+  //   even when the server had deliberately sent a narrow selection. On a
+  //   prerendered site each new document starts with an empty in-memory cache,
+  //   so that was a full re-download of data the user was already looking at.
+  //   Freshness is not lost: the revalidate effect below covers it with a
+  //   manifest version check instead of a payload download.
+  // - The SSR blob is for a different locale than the user is actually on
+  //   (common on static builds: blob=en, URL=/tr/...) → show the loader while
+  //   fetching the correct locale's messages.
   useEffect(() => {
-    const hasFreshInitial = Boolean(
-      initialMessages && initialMessagesLocale === locale,
-    );
+    if (hasFreshInitial) return;
 
     let cancelled = false;
 
     const loadMessages = async () => {
-      if (!hasFreshInitial) setIsLoadingMessages(true);
+      setIsLoadingMessages(true);
 
       try {
-        const msgs = await i18nCore.getMessages(locale);
+        const msgs = await i18nCore.getMessages(locale, {
+          namespaces: scopedNamespaces,
+        });
         if (!cancelled) {
           setClientMessages(msgs as Messages);
         }
@@ -421,7 +435,7 @@ export function BetterI18nProvider({
           error
         );
       } finally {
-        if (!cancelled && !hasFreshInitial) {
+        if (!cancelled) {
           setIsLoadingMessages(false);
         }
       }
@@ -432,7 +446,37 @@ export function BetterI18nProvider({
     return () => {
       cancelled = true;
     };
-  }, [locale, i18nCore, initialMessages, initialMessagesLocale]);
+  }, [locale, i18nCore, hasFreshInitial, scopedNamespaces]);
+
+  // Freshness on mount: a prerendered document can be hours or days old, so the
+  // messages baked into it may predate the latest publish. `revalidate()` is a
+  // manifest-version check (ETag-aware, typically a single 304) and only pulls
+  // messages when the published version actually moved — the result arrives
+  // through `onMessagesUpdate` below. Deferred to idle so it never competes
+  // with hydration.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let cancelled = false;
+    const run = () => {
+      if (cancelled) return;
+      i18nCore.revalidate(locale, { namespaces: scopedNamespaces }).catch(() => {
+        // Best-effort — the rendered copy keeps serving.
+      });
+    };
+
+    // `requestIdleCallback` is absent on Safari < 16.4 — fall back to a timer.
+    const hasIdle = typeof window.requestIdleCallback === "function";
+    const handle: number = hasIdle
+      ? window.requestIdleCallback(run, { timeout: 2000 })
+      : window.setTimeout(run, 200);
+
+    return () => {
+      cancelled = true;
+      if (hasIdle) window.cancelIdleCallback(handle);
+      else window.clearTimeout(handle);
+    };
+  }, [locale, i18nCore, scopedNamespaces]);
 
   // Subscribe to background revalidation updates from the core.
   // When a manifest-version-diff revalidation produces different messages for
@@ -460,7 +504,7 @@ export function BetterI18nProvider({
     if (typeof window === "undefined") return;
 
     const trigger = () => {
-      i18nCore.revalidate(locale).catch(() => {
+      i18nCore.revalidate(locale, { namespaces: scopedNamespaces }).catch(() => {
         // Revalidation is best-effort — the cached copy keeps serving.
       });
     };
@@ -474,7 +518,7 @@ export function BetterI18nProvider({
       window.removeEventListener("focus", trigger);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [i18nCore, locale]);
+  }, [i18nCore, locale, scopedNamespaces]);
 
   const contextValue = useMemo(
     () => ({

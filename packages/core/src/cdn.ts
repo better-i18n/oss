@@ -833,8 +833,13 @@ export const createI18nCore = (config: I18nCoreConfig): I18nCore => {
       };
     },
 
-    revalidate: (locale: string): Promise<void> =>
-      revalidateMessages(normalized, locale, fetchFn, normalized.namespaces),
+    revalidate: (locale: string, options?: { namespaces?: string[] }): Promise<void> =>
+      revalidateMessages(
+        normalized,
+        locale,
+        fetchFn,
+        options?.namespaces ?? normalized.namespaces,
+      ),
   };
 };
 

@@ -55,7 +55,12 @@ export const Route = createFileRoute("/$locale/changelog/$slug")({
 
     const { filterMessages } = await import("@/lib/page-namespaces");
     const [allMessages, entry, metaEntriesResult] = await Promise.all([
-      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      // Only the head() namespaces — the filter below keeps nothing else.
+      getMessages({
+        project: i18nConfig.project,
+        locale: context.locale,
+        namespaces: ["meta", "breadcrumbs"],
+      }),
       withTimeout(getChangelogBySlug(locale, slug), 4000, null),
       withTimeout(getChangelogsMeta(locale), 4000, []),
     ]);

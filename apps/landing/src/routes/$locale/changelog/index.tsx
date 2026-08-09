@@ -40,7 +40,12 @@ export const Route = createFileRoute("/$locale/changelog/")({
     // its own serial await in front of this batch.
     const [{ filterMessages }, allMessages, releases] = await Promise.all([
       import("@/lib/page-namespaces"),
-      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      // Only the head() namespaces — the filter below keeps nothing else.
+      getMessages({
+        project: i18nConfig.project,
+        locale: context.locale,
+        namespaces: ["meta", "breadcrumbs"],
+      }),
       /* `null` on timeout, not `[]`.
        *
        * `[]` is a claim — "this project has shipped nothing" — and it was being

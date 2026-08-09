@@ -299,7 +299,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
        the same path the router already walks. */
     const messages = filterMessagesByPath(allMessages, location.pathname);
 
-    return { locale, locales, requestId, messages };
+    /* The same namespace list travels to the provider, so a client-side fetch
+       (locale switch, or a manifest version bump) stays as narrow as this
+       server load. Without it the client asks the CDN for every namespace the
+       manifest declares — a fan-out the batch endpoint cannot serve in one
+       response, which then degrades into one request per namespace. */
+    return { locale, locales, requestId, messages, cdnNamespaces };
   },
 
   loader: async ({ context }) => {
@@ -493,6 +498,7 @@ function RootComponent() {
             project={i18nConfig.project}
             locale={locale}
             messages={messages}
+            namespaces={routeContext.cdnNamespaces}
             timeZone="UTC"
             localeCookie="preferred-locale"
             onLocaleChange={handleLocaleChange}

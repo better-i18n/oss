@@ -346,6 +346,14 @@ export interface I18nCore {
    *
    * Infrastructure-agnostic: only uses standard HTTP semantics (ETag,
    * Cache-Control). No CF/Worker/Vercel coupling.
+   *
+   * When the caller only renders a subset of namespaces (selective loading),
+   * pass them via `options.namespaces` so the refetch after a version change
+   * stays as narrow as the original load. Defaults to the `namespaces` given
+   * to {@link createI18nCore}, i.e. every namespace when that is unset.
    */
-  revalidate: (locale: string) => Promise<void>;
+  revalidate: (
+    locale: string,
+    options?: { namespaces?: string[] },
+  ) => Promise<void>;
 }

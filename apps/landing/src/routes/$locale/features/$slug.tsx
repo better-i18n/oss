@@ -48,7 +48,12 @@ export const Route = createFileRoute("/$locale/features/$slug")({
       loadRelatedFeatures({
         data: { slug: params.slug, locale: params.locale },
       }),
-      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      // Only the namespace the filter below keeps.
+      getMessages({
+        project: i18nConfig.project,
+        locale: context.locale,
+        namespaces: ["breadcrumbs"],
+      }),
     ]);
     if (!page) {
       throw notFound();

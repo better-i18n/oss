@@ -24,6 +24,7 @@ import { trackBlogView } from "@/lib/analytics-events";
 import { useEngagedTime } from "@/hooks/use-engaged-time";
 import { useTrackView } from "@better-i18n/content/adapters/react";
 import { getRelatedPages } from "@/seo/internal-links";
+import { extractPagePath, getCdnNamespacesForPage } from "@/lib/page-namespaces";
 // The visual breadcrumb is intentionally absent from this page; the crawlable
 // one is the BreadcrumbList JSON-LD built in `head` below.
 import ShareButtons from "@/components/blog/ShareButtons";
@@ -68,9 +69,17 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
   loader: async ({ params, context }) => {
     // Three independent fetches — the namespace helper import used to sit on its
     // own serial `await` behind this batch for no reason.
+    /* The namespace list comes from the same map `filterMessagesByPath` reads
+       below, so the CDN is asked for exactly what survives the filter instead
+       of every namespace in the manifest. */
+    const postPath = `/${params.locale}/blog/${params.slug}/`;
     const [post, allMessages, { filterMessagesByPath }] = await Promise.all([
       loadBlogPost({ data: { slug: params.slug, locale: params.locale } }),
-      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      getMessages({
+        project: i18nConfig.project,
+        locale: context.locale,
+        namespaces: getCdnNamespacesForPage(extractPagePath(postPath)) ?? undefined,
+      }),
       import("@/lib/page-namespaces"),
     ]);
     if (!post) {

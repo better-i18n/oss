@@ -9,6 +9,7 @@ import Header from "../../components/Header";
 import Hero from "../../components/Hero";
 import Footer from "../../components/Footer";
 import { Divider, FrameLines } from "@/components/ui/page";
+import { getCdnNamespacesForPage } from "@/lib/page-namespaces";
 // Below-the-fold (code-split): each section ships as its own chunk so the
 // initial JS bundle stays small and the browser can fetch + parse them in
 // parallel with the main bundle. SSG still resolves these Suspense
@@ -76,6 +77,9 @@ export const Route = createFileRoute("/$locale/")({
     const allMessages = readMessages(context.requestId) ?? await getMessages({
       project: i18nConfig.project,
       locale: context.locale,
+      // Same list root's beforeLoad used — the fallback path must not silently
+      // widen to every namespace in the manifest.
+      namespaces: getCdnNamespacesForPage("") ?? undefined,
     });
     const [releases, plans] = await Promise.all([
       withTimeout(getChangelogsMeta(locale), 3000, []),

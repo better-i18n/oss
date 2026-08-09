@@ -314,9 +314,15 @@ export function createPageLoader(extraNamespaces?: readonly string[]) {
      `unknown` is not assignable to it. Naming it at the source fixes every route
      at once instead of 93 routes casting their own loader. */
   return async ({ context }: { context: { locale: string; locales: string[] } }) => {
+    /* Ask the CDN for exactly what `filterMessages` is about to keep. Without
+       the `namespaces` argument this pulled every namespace the manifest
+       declares — around 110 files — and then threw all but two away, on every
+       one of the ~90 routes that use this loader, server-side and again on
+       each client navigation. */
     const allMessages = await getMessages({
       project: i18nConfig.project,
       locale: context.locale,
+      namespaces: namespaces.map((ns) => ns.split(".")[0]),
     });
     const messages = filterMessages(allMessages, namespaces);
 

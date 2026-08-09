@@ -338,11 +338,27 @@ interface NsGap {
   usedIn: string;
 }
 const nsGaps: NsGap[] = [];
+const unmappedPages: string[] = [];
+/**
+ * Routes that never render UI — they throw a redirect in `beforeLoad`. They
+ * load no messages and need no namespace map entry; listing them here keeps
+ * the exemption explicit instead of hiding it behind a silent skip.
+ */
+const NON_RENDERING_ROUTES = new Set(["signup"]);
 for (const file of files) {
   const pagePath = routePagePath(file);
   if (pagePath === null) continue;
+  if (NON_RENDERING_ROUTES.has(pagePath)) continue;
   const loaded = getCdnNamespacesForPage(pagePath);
-  if (!loaded) continue; // null = no filtering, every namespace is present
+  if (!loaded) {
+    /* No map entry. It used to be safe to skip: the page fell back to loading
+       every namespace, so nothing rendered humanised. That fallback is the
+       problem now — one unmapped route asks the CDN for ~110 namespaces, more
+       than the batch endpoint returns in one response, so it degrades into one
+       request per namespace. An unmapped page is a finding, not a skip. */
+    unmappedPages.push(`/${pagePath}`);
+    continue;
+  }
   const loadedSet = new Set(loaded);
   for (const dep of importGraph(file)) {
     const relDep = relative(ROOT, dep);
@@ -375,12 +391,14 @@ const fingerprint = {
   missing: (m: Usage) => `key ${m.ns}.${m.key} (${m.file})`,
   family: (d: Dynamic) => `family ${d.ns}.${d.prefix}*${d.suffix} (${d.file})`,
   gap: (g: NsGap) => `ns ${g.ns} not loaded on ${g.page} (${g.usedIn})`,
+  unmapped: (page: string) => `no namespace map entry for ${page}`,
 };
 
 const found = [
   ...missing.map(fingerprint.missing),
   ...emptyFamilies.map(fingerprint.family),
   ...uniqGaps.map(fingerprint.gap),
+  ...unmappedPages.map(fingerprint.unmapped),
 ].sort();
 
 if (process.argv.includes("--update-baseline")) {
@@ -406,6 +424,7 @@ p(`i18n key gate — ${files.length} files, ${usages.length} literal keys, ` +
 const newMissing = missing.filter((m) => isNew(fingerprint.missing(m)));
 const newFamilies = emptyFamilies.filter((d) => isNew(fingerprint.family(d)));
 const newGaps = uniqGaps.filter((g) => isNew(fingerprint.gap(g)));
+const newUnmapped = unmappedPages.filter((u) => isNew(fingerprint.unmapped(u)));
 
 if (newMissing.length) {
   p(`\n✖ ${newMissing.length} NEW key(s) missing from the CDN (source language: en)`);
@@ -419,6 +438,11 @@ if (newGaps.length) {
   p(`\n✖ ${newGaps.length} NEW namespace(s) used by a page that does not load them`);
   for (const g of newGaps) p(`   ${g.page}  needs "${g.ns}"  (used in ${g.usedIn})`);
 }
+if (newUnmapped.length) {
+  p(`\n\u2716 ${newUnmapped.length} NEW page(s) with no entry in PAGE_NAMESPACE_MAP`);
+  p(`   each one loads every namespace on the CDN instead of its own:`);
+  for (const u of newUnmapped) p(`   ${u}`);
+}
 if (known.size) {
   p(`\n· ${known.size} known finding(s) held in check-keys.baseline.json` +
     (fixed.length ? ` — ${fixed.length} now fixed, run with --update-baseline` : ""));
@@ -431,6 +455,7 @@ if (uncovered.length) {
   for (const [f, n] of [...byFile].sort((a, b) => b[1] - a[1])) p(`   ${f}  ×${n}`);
 }
 
-const failures = newMissing.length + newFamilies.length + newGaps.length;
+const failures =
+  newMissing.length + newFamilies.length + newGaps.length + newUnmapped.length;
 if (failures === 0) p(`\n✔ no new missing keys, no new unloaded namespaces`);
 process.exit(failures === 0 ? 0 : 1);

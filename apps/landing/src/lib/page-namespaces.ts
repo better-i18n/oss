@@ -145,6 +145,21 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   // heading resolved to nothing.
   ["changelog", { namespaces: ["changelogPage", "changelog", "relatedPages"] }],
 
+  /* The two second-product pages close with <RelatedPages /> and a
+     <PageTestimonial /> whose quote comes from the `testimonials` namespace —
+     both sit outside their own page namespace, so they have to be named here.
+     Missing entries are not silent: the page falls back to fetching every
+     namespace in the manifest, which is the exact fan-out this map exists to
+     prevent. */
+  [
+    "content",
+    { namespaces: ["contentPage", "testimonials", "relatedPages"] },
+  ],
+  [
+    "analytics",
+    { namespaces: ["analyticsPage", "testimonials", "relatedPages"] },
+  ],
+
   // ─── Legal ──────────────────────────────────────────────────
   /* The three legal documents now read everything from `legal`
      (`legal.privacy.*`, `legal.terms.*`, `legal.cookies.*`) — their 313 strings
@@ -155,7 +170,13 @@ const PAGE_NAMESPACE_MAP: ReadonlyMap<string, PageConfig> = new Map([
   ["cookies", { namespaces: ["legal"] }],
 
   // ─── Persona pages (hardcoded routes) ─────────────────────────
-  ["for-developers", { namespaces: ["developers", "relatedPages", "cta"] }],
+  /* `compare` travels with /for-developers: the page's support matrix renders
+     <SupportMark />, whose yes/no labels live in the top-level `compare`
+     namespace, so without it the marks lose their accessible names. */
+  [
+    "for-developers",
+    { namespaces: ["developers", "relatedPages", "cta", "compare"] },
+  ],
   ["for-translators", { namespaces: ["translators", "relatedPages", "cta"] }],
   [
     "for-product-teams",
@@ -309,6 +330,23 @@ function resolveDynamicConfig(pagePath: string): PageConfig | null {
   // /blog/*
   if (pagePath.startsWith("blog")) {
     return { namespaces: ["blog", "relatedPages"] };
+  }
+
+  // /careers/{slug} and /integrations/{slug} — CMS detail pages whose chrome
+  // reads the same namespace as their index.
+  if (pagePath.startsWith("careers/")) {
+    return { namespaces: ["careersPage", "relatedPages"] };
+  }
+  if (pagePath.startsWith("integrations/")) {
+    return { namespaces: ["integrationsPage", "integrations", "relatedPages"] };
+  }
+
+  /* /changelog/{version} — the entry body comes from the CMS, but the page
+     chrome (`changelogPage.seeAll`) and the closing <RelatedPages /> are
+     translated, and the index's own `changelog` namespace carries the shared
+     labels the detail view reuses. */
+  if (pagePath.startsWith("changelog/")) {
+    return { namespaces: ["changelogPage", "changelog", "relatedPages"] };
   }
 
   // /features/{slug}
