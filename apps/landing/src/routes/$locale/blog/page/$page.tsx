@@ -24,8 +24,7 @@ import {
   getWebSiteSchema,
   getCollectionPageSchema,
 } from "@/lib/structured-data";
-import { getMessages } from "@better-i18n/use-intl/server";
-import { i18nConfig } from "@/i18n.config";
+import { loadPageMessages } from "@/lib/page-seo";
 
 export const Route = createFileRoute("/$locale/blog/page/$page")({
   loader: async ({ params, context }) => {
@@ -49,10 +48,9 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
     // `index`, but messages don't need `index` — so they are fetched together
     // rather than queued behind it. The only cost is fetching messages for a
     // page number that turns out to be out of range, which is a 404 path.
-    const [index, { filterMessages }, allMessages] = await Promise.all([
+    const [index, messages] = await Promise.all([
       loadBlogIndex(params.locale),
-      import("@/lib/page-namespaces"),
-      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      loadPageMessages(context.locale, ["meta", "breadcrumbs"]),
     ]);
 
     const totalPages = Math.max(
@@ -68,7 +66,6 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
     const start = (pageNum - 1) * POSTS_PER_PAGE;
     const posts = index.allPosts.slice(start, start + POSTS_PER_PAGE);
 
-    const messages = filterMessages(allMessages, ["meta", "breadcrumbs"]);
     return {
       posts,
       totalPages,

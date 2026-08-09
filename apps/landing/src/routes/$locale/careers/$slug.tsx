@@ -4,7 +4,9 @@ import { useId, useRef, useState } from "react";
 import { SpriteIcon } from "@/components/SpriteIcon";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { PageHero, Section, SectionHeader, Divider } from "@/components/ui/page";
-import { getPageHead, getCareersPageStructuredData } from "@/lib/page-seo";
+import { getPageHead, getCareersPageStructuredData,
+  loadPageMessages,
+} from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import { getJobPosition, type JobPosition } from "@/lib/content";
 import { formatSalaryRange, toJobPostingOptions } from "@/lib/job-posting";
@@ -21,15 +23,11 @@ export const Route = createFileRoute("/$locale/careers/$slug")({
 
     if (!position && params.slug !== "general") throw notFound();
 
-    // The three module imports are independent of each other, so they resolve
-    // together instead of forming a three-step waterfall before the fetch.
-    const [{ getMessages }, { i18nConfig }, { filterMessages }] = await Promise.all([
-      import("@better-i18n/use-intl/server"),
-      import("@/i18n.config"),
-      import("@/lib/page-namespaces"),
+    const messages = await loadPageMessages(context.locale, [
+      "careersPage",
+      "meta",
+      "breadcrumbs",
     ]);
-    const allMessages = await getMessages({ project: i18nConfig.project, locale: context.locale });
-    const messages = filterMessages(allMessages, ["careersPage", "meta", "breadcrumbs"]);
     return { position, messages, locale: params.locale };
   },
   head: ({ loaderData }) => {

@@ -9,7 +9,7 @@ import {
 import { getLocaleTier } from "@/seo/locale-tiers";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "../i18n.config";
-import { filterMessages } from "./page-namespaces";
+import { filterMessages, type SerializableMessages } from "./page-namespaces";
 import {
   getDefaultStructuredData,
   getHomePageStructuredData,
@@ -304,6 +304,31 @@ const HEAD_NAMESPACES = ["meta", "breadcrumbs"] as const;
  *   beyond meta + breadcrumbs (e.g., ["pricingPage"] for FAQ schema extraction).
  */
 
+/**
+ * Fetch exactly the namespaces a loader keeps.
+ *
+ * The CDN request and the filter list are the same list, so they are written
+ * once. Every route used to call `getMessages()` with no scope and filter
+ * afterwards, which downloaded around 110 namespaces to keep two — enough
+ * files that the CDN batch endpoint could not answer in one response, so it
+ * degraded into one request per namespace. Routes that need messages for
+ * `head()` call this instead of composing the two steps themselves.
+ *
+ * Dot-path specs ("compare.marks") resolve to their root CDN file for the
+ * request while the filter still keeps only the named subtree.
+ */
+export async function loadPageMessages(
+  locale: string,
+  namespaces: readonly string[],
+): Promise<SerializableMessages> {
+  const messages = await getMessages({
+    project: i18nConfig.project,
+    locale,
+    namespaces: namespaces.map((ns) => ns.split(".")[0]),
+  });
+  return filterMessages(messages, namespaces);
+}
+
 export function createPageLoader(extraNamespaces?: readonly string[]) {
   const namespaces = extraNamespaces
     ? [...HEAD_NAMESPACES, ...extraNamespaces]
@@ -314,18 +339,7 @@ export function createPageLoader(extraNamespaces?: readonly string[]) {
      `unknown` is not assignable to it. Naming it at the source fixes every route
      at once instead of 93 routes casting their own loader. */
   return async ({ context }: { context: { locale: string; locales: string[] } }) => {
-    /* Ask the CDN for exactly what `filterMessages` is about to keep. Without
-       the `namespaces` argument this pulled every namespace the manifest
-       declares — around 110 files — and then threw all but two away, on every
-       one of the ~90 routes that use this loader, server-side and again on
-       each client navigation. */
-    const allMessages = await getMessages({
-      project: i18nConfig.project,
-      locale: context.locale,
-      namespaces: namespaces.map((ns) => ns.split(".")[0]),
-    });
-    const messages = filterMessages(allMessages, namespaces);
-
+    const messages = await loadPageMessages(context.locale, namespaces);
     return { messages, locale: context.locale };
   };
 }

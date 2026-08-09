@@ -12,7 +12,9 @@ import {
   BentoRow,
   ClosingCta,
 } from "@/components/ui/page";
-import { getPageHead, getCareersPageStructuredData } from "@/lib/page-seo";
+import { getPageHead, getCareersPageStructuredData,
+  loadPageMessages,
+} from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import { getJobPositions, type JobPosition } from "@/lib/content";
 import { formatSalaryRange, toJobPostingOptions } from "@/lib/job-posting";
@@ -33,19 +35,17 @@ const PERK_KEYS = [
 
 export const Route = createFileRoute("/$locale/careers/")({
   loader: async ({ params, context }) => {
-    // The three module imports do not depend on each other or on the fetches,
-    // so they join the same Promise.all rather than sitting in front of it as
-    // three serial round-trips (same shape as `blog/index.tsx`).
-    const [{ getMessages }, { i18nConfig }, { filterMessages }] = await Promise.all([
-      import("@better-i18n/use-intl/server"),
-      import("@/i18n.config"),
-      import("@/lib/page-namespaces"),
-    ]);
-    const [positions, allMessages] = await Promise.all([
+    const [positions, messages] = await Promise.all([
       loadPositions({ data: { locale: params.locale } }),
-      getMessages({ project: i18nConfig.project, locale: context.locale }),
+      loadPageMessages(context.locale, [
+        "careersPage",
+        "relatedPages",
+        "page-titles",
+        "page-descriptions",
+        "meta",
+        "breadcrumbs",
+      ]),
     ]);
-    const messages = filterMessages(allMessages, ["careersPage", "relatedPages", "page-titles", "page-descriptions", "meta", "breadcrumbs"]);
     return { positions, messages, locale: params.locale };
   },
   head: ({ loaderData }) => {

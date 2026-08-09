@@ -4,9 +4,9 @@ import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
 import { createServerFn } from "@tanstack/react-start";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RelatedPages } from "@/components/RelatedPages";
-import { getPageHead } from "@/lib/page-seo";
-import { getMessages } from "@better-i18n/use-intl/server";
-import { i18nConfig } from "@/i18n.config";
+import { getPageHead,
+  loadPageMessages,
+} from "@/lib/page-seo";
 import { useT } from "@/lib/i18n";
 import { testimonialAvatar } from "@/lib/testimonials";
 import { getMarketingPages, type MarketingPageListItem } from "@/lib/content";
@@ -30,13 +30,12 @@ const loadFeaturePages = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/$locale/features/")({
   loader: async ({ params, context }) => {
-    const [allMessages, featurePages] = await Promise.all([
-      getMessages({ project: i18nConfig.project, locale: context.locale }),
+    // Only meta + breadcrumbs travel to head(); the components read the root
+    // loader's provider.
+    const [messages, featurePages] = await Promise.all([
+      loadPageMessages(context.locale, ["meta", "breadcrumbs"]),
       loadFeaturePages({ data: { locale: params.locale } }),
     ]);
-    // Only serialize meta + breadcrumbs for head() — components use root loader's provider
-    const { filterMessages } = await import("@/lib/page-namespaces");
-    const messages = filterMessages(allMessages, ["meta", "breadcrumbs"]);
     return {
       messages,
       locale: context.locale,

@@ -25,20 +25,16 @@ import {
   getWebSiteSchema,
   getCollectionPageSchema,
 } from "@/lib/structured-data";
-import { getMessages } from "@better-i18n/use-intl/server";
-import { i18nConfig } from "@/i18n.config";
 import { getLocaleTier } from "@/seo/locale-tiers";
+import { loadPageMessages } from "@/lib/page-seo";
 
 export const Route = createFileRoute("/$locale/blog/")({
   loader: async ({ params, context }) => {
-    // The namespace helper import is independent of both fetches, so it joins
-    // the same Promise.all instead of adding a serial round-trip in front.
-    const [{ filterMessages }, allMessages, index] = await Promise.all([
-      import("@/lib/page-namespaces"),
-      getMessages({ project: i18nConfig.project, locale: context.locale }),
+    // Both fetches are independent, so they run together.
+    const [messages, index] = await Promise.all([
+      loadPageMessages(context.locale, ["meta", "breadcrumbs"]),
       loadBlogIndex(params.locale),
     ]);
-    const messages = filterMessages(allMessages, ["meta", "breadcrumbs"]);
     return {
       allPosts: index.allPosts,
       categories: index.categories,
