@@ -15,7 +15,9 @@ Open-source SDK ecosystem for the **Better i18n** localization platform. These p
 - **Language:** TypeScript 5.9, ESNext modules, `"moduleResolution": "Bundler"`
 - **NEVER introduce breaking changes** without explicit approval — customers depend on these packages
 - **ALWAYS run tests** after modifying any package: `bun test packages/{name}`
-- **ALWAYS use changesets** for version bumps: `bunx changeset`
+- **ALWAYS use changesets** for version bumps: `bunx changeset` — publishing is
+  local, see "Changesets & Releases (LOCAL)". Never hand-edit a version field,
+  and never call a release done without `npm view` confirming it.
 - **ALWAYS update Linear tickets after commit** — If the task has a Linear issue (BETTER-xxx), update its status to "Done" using `mcp__linear-server__save_issue` after committing. Reference the ticket ID in the commit message (e.g., `feat: add feature [BETTER-105]`). Tickets must not be left open after work is completed.
 
 ## Monorepo Structure
@@ -287,45 +289,68 @@ bun test packages/server      # Server adapter
 
 **After ANY package change:** Run tests, fix failures before considering done.
 
-## Changesets & Releases (CI/CD)
+## Changesets & Releases (LOCAL)
 
-Publishing is fully automated via GitHub Actions. **NEVER run `npm publish` or `bun run release` manually.**
+Publishing happens **from a maintainer's machine**, not from CI. `NPM_TOKEN` was
+removed from the repo secrets on 2026-08-09. The Release workflow still runs on
+push to `main`, but its publish step can no longer reach the registry — a red or
+no-op run there is expected, not a regression.
 
-### Release Flow
+### Why CI publishing was retired
+
+Three failures stacked, and the shape they share is that **a green CI run proved
+nothing about npm**:
+
+1. **Silent partial publish.** On 2026-08-09 `changesets/action` reported success
+   and pushed git tags for `core`, `use-intl`, `next`, `expo`, `remix`, `server`
+   and `vite`. Only `next@0.9.1` actually reached npm. The other four were tagged
+   as released and would never have been retried, because tags are what changesets
+   reads to decide "already published".
+2. **`bun publish` exits 0 on a failed publish.** Its own post-publish check
+   printed `404 Not Found: registry.npmjs.org/@better-i18n%2fvite` and
+   `'@better-i18n/vite@0.2.13' does not exist in this registry`, then returned
+   success anyway.
+3. **A missing devDependency silently emptied `dist/`.** `@better-i18n/remix`
+   ships React components but had no `@types/react`, so `tsc` failed with TS7016,
+   `dist/` was never written, and publish had nothing to send. Identical in shape
+   to the `@better-i18n/server` 0.2.2-0.2.9 incident, where a TypeScript error in
+   `node.ts` plus a `2>/dev/null || true` in the CI build produced the same
+   invisible skip.
+
+Automating this again is possible — it needs an **Automation**-type npm token
+(the account has 2FA, and a classic token makes authenticated registry reads
+return 404) plus a publish step that fails loudly. Until then, publish by hand.
+
+### Release Flow (local)
 
 ```
-1. Verify build passes       →  cd packages/{name} && bun run build (MUST pass before changeset!)
-2. Create changeset file      →  .changeset/descriptive-name.md
-3. Commit & push to main      →  CI detects pending changeset
-4. CI opens "Version Packages" PR  →  bumps versions, updates CHANGELOGs
-5. Merge that PR              →  CI runs `bun run release` → npm publish
+1. Build the changed package    →  cd packages/{name} && bun run build   (MUST pass)
+2. Write a changeset            →  .changeset/<descriptive-name>.md
+3. Version the workspace        →  bunx changeset version
+4. Rebuild every bumped package →  cd packages/{name} && bun run build
+5. Publish, dependencies first  →  cd packages/{name} && npm publish [--otp=<code>]
+6. VERIFY against the registry  →  npm view @better-i18n/{name}@{version} version
+7. Commit the version bumps + CHANGELOGs and push
 ```
 
-### ⚠️ CRITICAL: Verify Build Before Changeset
+Step 6 is not optional. `+ @better-i18n/x@1.2.3` in the publish output is the
+only trustworthy success signal, and even that is confirmed by asking npm.
+`npm view @better-i18n/x version` without the version suffix reads a cached
+`latest` and lied about `next@0.9.1` for several minutes.
 
-**ALWAYS run `bun run build` in the changed package BEFORE creating a changeset.** If `tsc` fails, the package's `dist/` won't be generated and npm publish will silently fail in CI (the build script swallows errors with `|| true`).
+Publish `core` before anything that depends on it, then `use-intl`, then the
+framework adapters. OTP codes expire in about 30 seconds, so expect a fresh code
+per package.
 
-```bash
-# REQUIRED before creating any changeset:
-cd packages/{name} && bun run build
+### ⚠️ CRITICAL: an empty `dist/` publishes silently
 
-# If tsc errors → fix them FIRST, then create the changeset
-# If build passes → proceed with changeset
-```
+**ALWAYS run `bun run build` in every package you are about to publish, and look
+at the output.** If `tsc` fails, `dist/` is stale or absent and npm happily
+publishes a package with no code in it. Check `ls packages/{name}/dist` when in
+doubt.
 
-**Incident context:** `@better-i18n/server` versions 0.2.2–0.2.9 were never published to npm because a TypeScript error in `node.ts` caused `tsc` to exit non-zero. The CI `build:packages` script suppressed the error with `2>/dev/null || true`, so no dist/ was generated and publish silently skipped the package.
+### Changeset file format
 
-### What YOU do (steps 1-3 only)
-
-```bash
-# Option A: Interactive (won't work in non-TTY like Claude Code)
-bunx changeset
-
-# Option B: Write the file directly (preferred in Claude Code)
-# File: .changeset/<descriptive-name>.md
-```
-
-**Changeset file format:**
 ```markdown
 ---
 "@better-i18n/cli": minor
@@ -336,29 +361,17 @@ Short description of what changed and why
 
 **Bump types:** `patch` for fixes, `minor` for new features, `major` for breaking changes.
 
-Then commit the `.changeset/*.md` file and push. That's it — CI handles the rest.
+### Rules
 
-### What you must NOT do
-
-- **NEVER run `bunx changeset version`** — CI does this in the "Version Packages" PR
-- **NEVER run `bun run release` or `npm publish`** — CI does this after the version PR is merged
-- **NEVER manually edit `package.json` version** — changesets manage this
-- **NEVER bump packages without source changes** — don't bump `use-intl` just because `core` changed internally
-
-### Changeset rules
-
-- Only include packages with **actual source code changes**
-- `core` changes do NOT require downstream packages to be bumped unless their own code changed
-- If only `core` changed → changeset for `core` only
-- If `use-intl` code also changed → include `use-intl` in the changeset too
-- One changeset per logical change — don't batch unrelated changes
-
-### CI Workflow (`.github/workflows/publish.yml`)
-
-- Triggers on push to `main`
-- Uses `changesets/action@v1` which:
-  - If pending `.changeset/*.md` files exist → opens/updates "Version Packages" PR
-  - If no pending changesets but version was bumped → runs `bun run release` (npm publish)
+- **NEVER hand-edit a `version` field in package.json** — `bunx changeset version`
+  owns it, and it also updates CHANGELOGs and internal dependency ranges.
+- Only write changesets for packages with **actual source code changes**.
+  `changeset version` derives the dependents' patch bumps on its own.
+- `core` changes do NOT require a changeset for downstream packages unless their
+  own code changed.
+- One changeset per logical change — don't batch unrelated work.
+- If a publish fails halfway, **do not** delete or move the git tags changesets
+  pushed; just publish the missing packages and verify each with `npm view`.
 
 ## Key Patterns and Conventions
 
