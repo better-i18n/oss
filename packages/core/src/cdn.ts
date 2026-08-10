@@ -39,6 +39,15 @@ const messagesETagCache = new TtlCache<string>();
 // Locales currently being revalidated — de-duplicates concurrent callers.
 const inFlightRevalidations = new Set<string>();
 
+// Manifest requests currently in flight, keyed the same way the cache is.
+// Concurrent callers share one round-trip instead of opening one each.
+const inFlightManifests = new Map<string, Promise<ManifestResponse>>();
+
+// Last manifest version each locale's messages were built from, keyed
+// `{cacheKey}|{locale}`. `revalidate` compares against this instead of
+// re-reading the manifest it is about to replace.
+const loadedMessageVersions = new Map<string, string>();
+
 // Global subscriber set (module-scoped: all cores/instances share the bus).
 // Listeners register themselves through createI18nCore(...).onMessagesUpdate.
 const messagesListeners = new Set<MessagesUpdateListener>();
@@ -232,15 +241,48 @@ const getManifestWithCache = async (
   fetchFn: typeof fetch,
   forceRefresh = false
 ): Promise<ManifestResponse> => {
-  const logger = createLogger(config, "manifest");
   const cacheKey = buildCacheKey(config.cdnBaseUrl, config.project);
-  const storageKey = buildManifestStorageKey(config.project);
 
   // 1. Memory cache
   if (!forceRefresh) {
     const cached = manifestCache.get(cacheKey);
     if (cached) return cached;
+
+    // 1b. Someone else is already asking for exactly this manifest. Join them.
+    //
+    // Without this, callers that start together each miss the empty cache and
+    // each open their own request: on a fresh page load the provider's
+    // `getLanguages()` and its revalidation both fire in the same tick, and
+    // the manifest was fetched twice for one page. The cache only helps
+    // callers that arrive after the first response, which is the one case
+    // that was never the problem.
+    const pending = inFlightManifests.get(cacheKey);
+    if (pending) return pending;
   }
+
+  const request = fetchManifestWithFallback(config, fetchFn, cacheKey);
+  // A forced refresh deliberately bypasses the cache, but it should still be
+  // shareable — two revalidations racing each other want the same answer.
+  inFlightManifests.set(cacheKey, request);
+  try {
+    return await request;
+  } finally {
+    inFlightManifests.delete(cacheKey);
+  }
+};
+
+/**
+ * Manifest fetch with the storage fallback chain. Separated from
+ * {@link getManifestWithCache} so the in-flight map wraps exactly one
+ * promise per cache key.
+ */
+const fetchManifestWithFallback = async (
+  config: NormalizedConfig,
+  fetchFn: typeof fetch,
+  cacheKey: string
+): Promise<ManifestResponse> => {
+  const logger = createLogger(config, "manifest");
+  const storageKey = buildManifestStorageKey(config.project);
 
   // 2. CDN fetch
   try {
@@ -523,17 +565,26 @@ const revalidateMessages = async (
   const logger = createLogger(config, "messages");
 
   try {
-    // Before-version: whatever the cached manifest reports (may itself be stale,
-    // that is the point — next step gets the authoritative answer from origin).
-    const oldManifest = await getManifestWithCache(config, fetchFn).catch(() => null);
-    const oldVersion = deriveLocaleVersion(oldManifest, safeLng);
+    // Before-version: the version the messages on screen were actually built
+    // from, recorded by `getMessagesWithFallback`. Reading the manifest again
+    // to discover it was a wasted round-trip — and a misleading one, since the
+    // cached manifest could already have moved past what the messages hold.
+    const baseCacheKey = `${buildCacheKey(config.cdnBaseUrl, config.project)}|${safeLng}`;
+    const oldVersion = loadedMessageVersions.get(baseCacheKey);
 
-    // Force a fresh manifest — this is the only real network call most of the
-    // time, and 304 when nothing changed. Platform-side cache invalidation
-    // (CF purge on publish, or any equivalent for non-CF CDNs) is what makes
-    // the CDN serve a new version here.
+    // Force a fresh manifest — this is the only real network call, and a 304
+    // when nothing changed. Platform-side cache invalidation (CF purge on
+    // publish, or any equivalent for non-CF CDNs) is what makes the CDN serve
+    // a new version here.
     const freshManifest = await getManifestWithCache(config, fetchFn, true).catch(() => null);
     const newVersion = deriveLocaleVersion(freshManifest, safeLng);
+
+    // Nothing has been loaded for this locale yet, so there is no "stale copy"
+    // to replace. Fetching messages here would race the initial load.
+    if (oldVersion === undefined) {
+      logger.debug(`revalidate: no loaded messages for "${safeLng}" yet`);
+      return;
+    }
 
     if (oldVersion === newVersion) {
       logger.debug(`revalidate: no version change for "${safeLng}" (${newVersion})`);
@@ -590,6 +641,12 @@ const getMessagesWithFallback = async (
   const manifest = await getManifestWithCache(config, fetchFn).catch(() => null);
   const version = deriveLocaleVersion(manifest, safeLng);
   const cacheKey = `${baseCacheKey}|v:${version}`;
+
+  // Remember which published version this locale's messages came from, so
+  // `revalidate` can answer "is there something newer?" with a single manifest
+  // read instead of reading one to learn the old version and another to learn
+  // the new one.
+  loadedMessageVersions.set(baseCacheKey, version);
 
   // 1. Memory cache — version-aware. A hit here means we already have the
   // exact published payload for this locale. Old versions are orphaned, so

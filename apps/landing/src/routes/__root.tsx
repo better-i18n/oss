@@ -24,7 +24,7 @@ import { filterMessagesByPath, getCdnNamespacesForPage, extractPagePath } from "
 import { NotFoundPage as StatusNotFound } from "@/components/ErrorPage";
 import { ClientErrorReporter } from "@/components/ClientErrorReporter";
 import { storeMessages } from "../lib/ssr-messages";
-import { fetchLocales } from "../lib/locales";
+import { fetchLanguages, fetchLocales } from "../lib/locales";
 import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
 import { SvgSprite } from "../components/SvgSprite";
@@ -183,7 +183,13 @@ const readRequestLocaleHints = createIsomorphicFn()
 export const Route = createRootRouteWithContext<RouterContext>()({
   staleTime: 0, // locale değişince loader'ın yeniden çalışması gerekiyor
   beforeLoad: async ({ location }) => {
-    const locales = await fetchLocales();
+    /* Both read the same manifest and the SDK caches it, so the second call is
+       free — but the provider gets `initialLanguages` out of it and stops
+       opening its own manifest request from the browser on every mount. */
+    const [locales, languages] = await Promise.all([
+      fetchLocales(),
+      fetchLanguages().catch(() => []),
+    ]);
     const localeConfig = {
       locales,
       defaultLocale: i18nConfig.defaultLocale,
@@ -304,7 +310,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
        server load. Without it the client asks the CDN for every namespace the
        manifest declares — a fan-out the batch endpoint cannot serve in one
        response, which then degrades into one request per namespace. */
-    return { locale, locales, requestId, messages, cdnNamespaces };
+    return { locale, locales, languages, requestId, messages, cdnNamespaces };
   },
 
   loader: async ({ context }) => {
@@ -415,7 +421,7 @@ function NotFoundPage() {
 }
 
 function RootComponent() {
-  const { locale, locales, requestId } = Route.useRouteContext();
+  const { locale, locales, languages, requestId } = Route.useRouteContext();
   const router = useRouter();
   // Per-mount QueryClient — prevents cross-request cache leak on CF Workers
   const [queryClient] = useState(createQueryClient);
@@ -480,6 +486,15 @@ function RootComponent() {
         >
           {safeJsonForScript(locales)}
         </script>
+        {/* SSR language list (code + name + flag) → the provider takes it as
+            `initialLanguages` and never opens its own manifest request. */}
+        <script
+          type="application/json"
+          id="__i18n_languages__"
+          suppressHydrationWarning
+        >
+          {safeJsonForScript(languages)}
+        </script>
       </head>
       <body className="no-dark text-mist-950">
         {/* SSR messages — keeps ~30-60 KB out of TSR's dehydration pipeline.
@@ -498,6 +513,7 @@ function RootComponent() {
             project={i18nConfig.project}
             locale={locale}
             messages={messages}
+            initialLanguages={languages}
             namespaces={routeContext.cdnNamespaces}
             timeZone="UTC"
             localeCookie="preferred-locale"
