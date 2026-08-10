@@ -2,7 +2,7 @@
 
 import { createI18nCore, getLocaleCookie } from "@better-i18n/core";
 import type { LanguageOption } from "@better-i18n/core";
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { IntlProvider, type IntlErrorCode } from "use-intl";
 import { BetterI18nContext } from "./context.js";
 import type { BetterI18nProviderConfig, Messages } from "./types.js";
@@ -372,6 +372,19 @@ export function BetterI18nProvider({
     [namespacesKey],
   );
 
+  /* The revalidation effects below must NOT re-run when the scope changes.
+     A router hands a different namespace set on every navigation, and
+     revalidation asks "has a new version been published?" — a question whose
+     answer does not depend on which page you are looking at. Keeping the scope
+     in their dependency list forced a manifest read per navigation. They read
+     the latest scope from this ref at call time instead; it matters only for
+     the refetch that follows a version change, which should cover whatever the
+     page needs when it fires. */
+  const revalidateScopeRef = useRef(scopedNamespaces);
+  useEffect(() => {
+    revalidateScopeRef.current = scopedNamespaces;
+  }, [scopedNamespaces]);
+
   // Load languages on mount — skip if SSR already provided them
   useEffect(() => {
     if (initialLanguages) return;
@@ -460,9 +473,11 @@ export function BetterI18nProvider({
     let cancelled = false;
     const run = () => {
       if (cancelled) return;
-      i18nCore.revalidate(locale, { namespaces: scopedNamespaces }).catch(() => {
-        // Best-effort — the rendered copy keeps serving.
-      });
+      i18nCore
+        .revalidate(locale, { namespaces: revalidateScopeRef.current })
+        .catch(() => {
+          // Best-effort — the rendered copy keeps serving.
+        });
     };
 
     // `requestIdleCallback` is absent on Safari < 16.4 — fall back to a timer.
@@ -476,7 +491,7 @@ export function BetterI18nProvider({
       if (hasIdle) window.cancelIdleCallback(handle);
       else window.clearTimeout(handle);
     };
-  }, [locale, i18nCore, scopedNamespaces]);
+  }, [locale, i18nCore]);
 
   // Subscribe to background revalidation updates from the core.
   // When a manifest-version-diff revalidation produces different messages for
@@ -504,7 +519,7 @@ export function BetterI18nProvider({
     if (typeof window === "undefined") return;
 
     const trigger = () => {
-      i18nCore.revalidate(locale, { namespaces: scopedNamespaces }).catch(() => {
+      i18nCore.revalidate(locale, { namespaces: revalidateScopeRef.current }).catch(() => {
         // Revalidation is best-effort — the cached copy keeps serving.
       });
     };
@@ -518,7 +533,7 @@ export function BetterI18nProvider({
       window.removeEventListener("focus", trigger);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [i18nCore, locale, scopedNamespaces]);
+  }, [i18nCore, locale]);
 
   const contextValue = useMemo(
     () => ({

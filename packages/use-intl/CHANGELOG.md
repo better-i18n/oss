@@ -1,5 +1,21 @@
 # @better-i18n/use-intl
 
+## 0.10.1
+
+### Patch Changes
+
+- Stop revalidating on every client navigation.
+
+  The revalidation effects listed the namespace scope in their dependency array. A
+  router hands a fresh scope on each navigation, so both effects tore down and
+  re-ran per page change, and each re-run forced a manifest read — one extra
+  round-trip on the navigation path, measured in production.
+
+  Revalidation asks "has a new version been published?", which does not depend on
+  which page is open. The effects now key on locale and core only, and read the
+  current scope from a ref when they fire, so the refetch that follows a version
+  change still covers whatever the page needs at that moment.
+
 ## 0.10.0
 
 ### Minor Changes
