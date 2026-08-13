@@ -133,6 +133,31 @@ export default defineConfig(async ({ mode, command }) => {
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
+        // Local widget development. Aliased to the SOURCE, not the built
+        // dist: every one of these packages already declares src as its
+        // entry, so Vite compiles them like any other file in this app —
+        // which means HMR on widget edits and no build step in the loop.
+        // Aliasing dist instead costs a tsup run and a full reload per
+        // change. The two transitive workspace packages have to be mapped
+        // too, or the source import graph dead-ends at node_modules.
+        // Opt-in via env so it can never reach a deploy:
+        //   HELPWAY_LOCAL=/abs/path/to/helpway
+        ...(env.HELPWAY_LOCAL
+          ? {
+              "@helpway/react": join(
+                env.HELPWAY_LOCAL,
+                "packages/widget-react/src/index.ts",
+              ),
+              "@helpway/widget-core": join(
+                env.HELPWAY_LOCAL,
+                "packages/widget-core/src/index.ts",
+              ),
+              "@helpway/types": join(
+                env.HELPWAY_LOCAL,
+                "packages/types/src/index.ts",
+              ),
+            }
+          : {}),
       },
     },
     // Ensure CJS modules are properly handled during Vite's pre-bundling.
@@ -146,6 +171,12 @@ export default defineConfig(async ({ mode, command }) => {
     //   pipelines for client and SSR — pre-bundle output never reaches SSR).
     optimizeDeps: {
       include: ["react-dom/server", "html-react-parser", "html-dom-parser"],
+      // While aliased to source these are first-party files, not deps.
+      // Pre-bundling them would freeze them behind the optimizer cache and
+      // kill HMR — edits would not show until the cache was cleared.
+      ...(env.HELPWAY_LOCAL
+        ? { exclude: ["@helpway/react", "@helpway/widget-core", "@helpway/types"] }
+        : {}),
     },
     // SSR build (Cloudflare Workers target). TanStack Start's worker pipeline
     // activates the "browser" condition during dependency resolution, which

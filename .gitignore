@@ -71,3 +71,6 @@ graphify-out/
 
 # OpenLogs (dev server logs for AI)
 .openlogs/
+
+# Agent scratch working files (local only)
+.scratch_ctx/
