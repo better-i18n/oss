@@ -1,0 +1,92 @@
+---
+title: Languages
+description: Add, update and archive a project's target languages
+icon: Languages
+---
+
+`admin.languages` manages the target languages of the project the client is
+scoped to. The source language is a project setting, changed under Settings,
+CDN Delivery, not through this namespace.
+
+## Add languages
+
+```ts
+await admin.languages.add({
+  languages: [
+    { languageCode: "en-gb" },
+    { languageCode: "en-ca" },
+    { languageCode: "en-au", status: "draft" },
+  ],
+});
+```
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `languageCode` | yes | BCP 47 code, 2 to 10 characters. Must exist in the language table |
+| `status` | no | `"active"` (default) or `"draft"` |
+
+`active` languages are published to the CDN. `draft` languages are visible in
+the editor and left out of delivery, which is how you stage a locale before
+announcing it.
+
+Up to 50 languages per call. The parameter also accepts a JSON string, for
+agents that serialize arrays that way:
+
+```ts
+await admin.languages.add({ languages: '[{"languageCode":"fr"}]' });
+```
+
+## Update status
+
+```ts
+await admin.languages.update({
+  updates: [{ languageCode: "en-au", status: "active" }],
+});
+```
+
+| Status | Effect |
+| --- | --- |
+| `active` | Published to the CDN |
+| `draft` | Visible in the editor, not deployed |
+| `archived` | Hidden from the editor and the CDN, translations kept |
+
+## Archive languages
+
+```ts
+await admin.languages.delete({ languageCodes: ["en-au"] });
+```
+
+Despite the name this archives rather than destroys: the status moves to
+`archived` and every translation is preserved. Re-adding the language brings
+its existing content back.
+
+## Regional locales
+
+Regional codes are first-class. A project can run `en-us` as its source with
+`en-gb`, `en-ca` and `en-au` as targets, and each locale gets its own file at
+`/<locale>/translations.json`.
+
+```ts
+await admin.languages.add({
+  languages: [{ languageCode: "en-gb" }, { languageCode: "en-ca" }, { languageCode: "en-au" }],
+});
+```
+
+<Callout type="warn">
+Codes are stored lowercase and matched exactly. Write `en-ca`, not `en-CA`.
+The SDK normalises what you pass, but anything hand-rolling HTTP calls has to
+send the lowercase form.
+</Callout>
+
+<Callout type="info">
+After changing your project's source language, update the locale your SDK asks
+for as well. A locale with no file returns an empty JSON object rather than an
+error, so a stale config shows up as missing strings instead of a clear
+failure.
+</Callout>
+
+## Errors
+
+An unsupported language code returns a 400 naming the code. If you get one,
+check it against the language list in the dashboard, since the code has to
+exist in the platform's language table before a project can target it.

@@ -11,12 +11,18 @@ import { createAdminClient } from '@better-i18n/admin'
 
 const admin = createAdminClient({
   apiKey: string,        // Required — server-side API key (bi- prefix)
-  projectId: string,     // Required — "org/project" slug format
+  projectId: string,     // Required — "org/project" slug, or the project UUID
   apiUrl?: string,       // Optional — default: "https://api.better-i18n.com"
   debug?: boolean,       // Optional — enable request logging
   fetch?: typeof fetch,  // Optional — custom fetch implementation
 })
 ```
+
+<Callout type="warn">
+Read endpoints answer in a compact shape: `keys.list()` returns `k`, not
+`keys`, and namespaces are an index into a `nss` lookup table. Every field is
+listed in [Response Shapes](/admin/responses).
+</Callout>
 
 ## admin.projects
 
@@ -29,20 +35,20 @@ const admin = createAdminClient({
 
 | Method | Input | Returns |
 |--------|-------|---------|
-| `list(opts?)` | `{ search?, namespace? }` | Key list |
-| `create(input)` | `{ k: [{ n, v, ns? }] }` | Created keys |
-| `update(input)` | `{ t: [{ id, l, t }] }` | Updated translations |
-| `delete(input)` | `{ keyIds: string[] }` | Deletion result |
+| `list(opts?)` | `{ search?, namespaces?, missingLanguage?, fields?, page?, limit? }` | `{ tot, ret, pg, lim, has_more, nss, k }` |
+| `create(input)` | `{ k: [{ n, ns?, v?, t?, nc? }], force? }` | `{ ok, cnt, new, ren, dup, k, warn? }` |
+| `update(input)` | `{ t: [{ id, l, t, s?, st? }] }` | `{ ok, cnt, upd, errors? }` |
+| `delete(input)` | `{ keyIds: string[] }` | `{ ok, cnt, mk, skip? }` |
 
 ## admin.translations
 
 | Method | Input | Returns |
 |--------|-------|---------|
-| `get(opts?)` | `{ namespaces?, keys? }` | Translation data |
-| `set(input)` | `{ t: [{ id, t: { lang: text } }] }` | Set result |
-| `publish(opts?)` | `{ translations? }` | Publish result |
-| `context(opts?)` | `{ keyIds? }` | Glossary + instructions |
-| `pendingChanges()` | — | Pending changes |
+| `get(opts?)` | `{ namespaces?, keys?, search?, languages?, status?, limit?, compact? }` | `{ prj, sl, ret, tot, has_more, keys }` |
+| `set(input)` | `{ t: [{ id, t: { lang: text } }] }` | `{ ok, cnt, wrote, upd, errors? }` |
+| `publish(opts?)` | `{ translations? }` | Publish result (full field names) |
+| `context(opts?)` | `{ keys?, languages?, kPerKey? }` | `{ prj, src, tgt, inst, ctx, gl, glt }` |
+| `pendingChanges()` | — | `{ prj, has_chg, sum, by_lng, del_k, pub_dst }` |
 
 ## admin.content.models
 
@@ -58,13 +64,13 @@ const admin = createAdminClient({
 
 | Method | Input |
 |--------|-------|
-| `list(opts?)` | `{ modelSlug, language?, search? }` |
-| `get(input)` | `{ modelSlug, entrySlug }` |
-| `create(input)` | `{ modelSlug, slug, title, body?, translations? }` |
-| `update(input)` | `{ modelSlug, entrySlug, ... }` |
-| `publish(input)` | `{ modelSlug, entrySlug }` |
-| `delete(input)` | `{ modelSlug, entrySlug }` |
-| `duplicate(input)` | `{ modelSlug, entrySlug }` |
+| `list(opts?)` | `{ models?, language?, search? }` |
+| `get(input)` | `{ entryId }` |
+| `create(input)` | `{ modelSlug, slug, title, bodyMarkdown?, sourceLanguageCode?, status?, customFields?, translations? }` |
+| `update(input)` | `{ entryId, ... }` |
+| `publish(input)` | `{ entryId }` |
+| `delete(input)` | `{ entryId }` |
+| `duplicate(input)` | `{ entryId, newSlug? }` |
 | `bulkCreate(input)` | `{ modelSlug, entries: [...] }` |
 | `bulkUpdate(input)` | `{ entries: [...] }` |
 | `bulkPublish(input)` | `{ entryIds: [...] }` |
@@ -78,16 +84,20 @@ const admin = createAdminClient({
 
 ## admin.sync
 
+Full guide: [Sync](/admin/sync).
+
 | Method | Input |
 |--------|-------|
-| `list(opts?)` | `{ limit? }` |
-| `get(input)` | `{ syncId }` |
+| `list(opts?)` | `{ limit?, status?, type? }` |
+| `get(input)` | `{ syncId, waitMs? }` |
 | `cancel(input)` | `{ syncId }` |
 
 ## admin.languages
 
+Full guide: [Languages](/admin/languages).
+
 | Method | Input |
 |--------|-------|
-| `add(input)` | `{ languages: [{ code }] }` |
+| `add(input)` | `{ languages: [{ languageCode, status? }] }` |
 | `update(input)` | `{ updates: [{ languageCode, status }] }` |
 | `delete(input)` | `{ languageCodes: [...] }` |

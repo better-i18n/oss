@@ -26,35 +26,54 @@ await admin.content.fields.add({
   modelSlug: 'blog-posts',
   name: 'author',
   displayName: 'Author',
-  type: 'short_text',
+  type: 'text',
   required: true
 })
 ```
 
+Valid `type` values: `text`, `textarea`, `richtext`, `number`, `boolean`,
+`date`, `datetime`, `enum`, `media`, `relation`. There is no array or group
+type. To model repeating content, see
+[Modeling repeating content](/sdk/models#modeling-repeating-content).
+
 ## Entries
 
+Entries are addressed by **UUID**, not by slug. `create` takes a `modelSlug`
+because the entry does not exist yet; every other method takes the `entryId`
+you get back from `create` or `list`.
+
 ```ts
-// List
-const entries = await admin.content.entries.list({ modelSlug: 'blog-posts' })
+// List — filter with `models`, singular slug or an array of them
+const entries = await admin.content.entries.list({ models: 'blog-posts' })
 
 // Get
-const entry = await admin.content.entries.get({
-  modelSlug: 'blog-posts',
-  entrySlug: 'my-first-post'
-})
+const entry = await admin.content.entries.get({ entryId })
 
 // Create with translations
-await admin.content.entries.create({
+const created = await admin.content.entries.create({
   modelSlug: 'blog-posts',
   slug: 'new-post',
   title: 'My New Post',
-  body: 'Content here...',
+  bodyMarkdown: '# Hello\nContent here...',
   translations: {
-    de: { title: 'Mein neuer Beitrag', body: 'Inhalt hier...' }
+    de: { title: 'Mein neuer Beitrag', bodyMarkdown: '# Hallo\nInhalt hier...' }
   }
 })
 
+// Update, publish, delete, duplicate — all by entryId
+await admin.content.entries.update({ entryId, title: 'Renamed' })
+await admin.content.entries.publish({ entryId })
+await admin.content.entries.duplicate({ entryId, newSlug: 'new-post-copy' })
+await admin.content.entries.delete({ entryId })
+
 // Bulk operations
-await admin.content.entries.bulkUpdate({ ... })
+await admin.content.entries.bulkCreate({ modelSlug: 'blog-posts', entries: [] })
 await admin.content.entries.bulkPublish({ entryIds: ['id1', 'id2'] })
 ```
+
+<Callout type="warn">
+The body field is `bodyMarkdown`, at the top level for the source language and
+inside each entry of `translations` for the rest. Top-level `title` and
+`bodyMarkdown` belong to the project's source language unless you set
+`sourceLanguageCode`.
+</Callout>

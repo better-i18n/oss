@@ -3,7 +3,7 @@
   "version": "0.0.12",
   "private": true,
   "scripts": {
-    "build": "next build && bun scripts/generate-mdx.ts",
+    "build": "fumadocs-mdx && next build && bun scripts/generate-mdx.ts",
     "dev": "next dev",
     "start": "serve out",
     "preview": "bun run build && wrangler pages dev out",

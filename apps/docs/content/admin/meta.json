@@ -12,9 +12,12 @@
     "projects",
     "keys",
     "translations",
+    "languages",
     "content",
+    "sync",
     "analytics",
     "---Reference---",
+    "responses",
     "api-reference"
   ]
 }

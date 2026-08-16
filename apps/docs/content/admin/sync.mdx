@@ -1,0 +1,64 @@
+---
+title: Sync
+description: Inspect and cancel sync jobs
+icon: RefreshCw
+---
+
+`admin.sync` reads the job queue behind imports, publishes and CDN uploads. It
+does not start jobs. Those are triggered by a publish, a GitHub webhook, or a
+CLI sync.
+
+## List jobs
+
+```ts
+const res = await admin.sync.list({ limit: 10, status: "failed" });
+
+for (const job of res.sy) {
+  console.log(job.id, job.tp, job.st, job.err_msg ?? "");
+}
+```
+
+| Option | Description |
+| --- | --- |
+| `limit` | How many jobs to return |
+| `status` | `pending`, `in_progress`, `completed`, `failed`, `cancelled` |
+| `type` | Filter by job type |
+
+See [Response Shapes](/admin/responses) for what each abbreviated field means.
+
+## Get one job, optionally waiting for it
+
+```ts
+const job = await admin.sync.get({ syncId, waitMs: 15000 });
+```
+
+`waitMs` blocks until the job reaches a terminal state (`completed`, `failed`
+or `cancelled`) or the timeout elapses, in which case you get the latest
+snapshot. Omit it, or pass `0`, for a plain non-blocking read.
+
+The ceiling is 25000 ms. That is a deliberate margin under the 30 second
+Cloudflare Worker wall-time limit, leaving room for HTTP overhead and the final
+database read.
+
+This is the difference between polling and not polling after a publish:
+
+```ts
+await admin.translations.publish();
+const [latest] = (await admin.sync.list({ limit: 1 })).sy;
+const done = await admin.sync.get({ syncId: latest.id, waitMs: 25000 });
+
+if (done.st === "failed") throw new Error(done.err_msg ?? "sync failed");
+```
+
+`get()` also returns `log` and `aff_k`, the affected keys as `{ k, act }`
+pairs, which is usually enough to see what a job actually changed.
+
+## Cancel a job
+
+```ts
+await admin.sync.cancel({ syncId });
+```
+
+Answers `{ id, can, prev, rsn }`: whether it was cancelled, the status it held
+beforehand, and the reason. A job already in a terminal state cannot be
+cancelled, and `rsn` tells you that rather than throwing.

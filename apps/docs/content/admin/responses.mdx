@@ -1,0 +1,129 @@
+---
+title: Response Shapes
+description: What the Admin SDK actually returns, field by field
+icon: Braces
+---
+
+Read endpoints answer in a **compact** shape: short field names, and namespaces
+stored once per page instead of once per key.
+
+The same endpoints back the MCP servers, where the abbreviation cuts token use
+by roughly half. The Admin SDK returns them unchanged rather than maintaining a
+second wire format, so `keys.list()` gives you `k`, not `keys`.
+
+<Callout type="warn">
+This is the part people trip over. A response is not `{ keys: [...] }`. Read
+the table for the endpoint you are calling, or hover the return type in your
+editor, which carries the same field docs.
+</Callout>
+
+## keys.list()
+
+```ts
+const res = await admin.keys.list({ limit: 50 });
+
+for (const key of res.k) {
+  console.log(res.nss[key.ns], key.k); // "common", "auth.login.title"
+}
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `tot` | number | Total matching keys, before pagination |
+| `ret` | number | Keys returned on this page |
+| `pg` | number | Current page, 1 indexed |
+| `lim` | number | Page size |
+| `has_more` | boolean | More pages exist, increment `pg` |
+| `nss` | string[] | Namespace lookup table |
+| `k` | array | The keys, see below |
+| `note` | string? | Hint, for example a large-project warning |
+
+Each entry in `k`:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `k` | string | Key name |
+| `ns` | number | **Index into `nss`**, not a namespace string |
+| `id` | string? | Key UUID, when `"id"` is in `fields` |
+| `src` | string? | Source text, when `"sourceText"` is in `fields` |
+| `tl` | string[]? | Language codes that have a translation |
+| `tlc` | number? | Count of translated languages, cheaper than `tl` |
+| `tr` | object? | Translations, when `"translations"` is in `fields` |
+| `p` | true? | Phantom key, a legacy duplicate worth deleting |
+
+`fields` defaults to `["id", "sourceText"]`. Ask for `translations` only when
+you need the text, since it dominates the response size.
+
+## translations.get()
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `prj` | string | Project slug |
+| `sl` | string | Source language code |
+| `ret` / `tot` | number | Returned, and total before pagination |
+| `has_more` | boolean | More results exist |
+| `keys` | array | `{ id, k, ns?, src, tr? }` per key |
+| `srch` / `lng` / `st` | — | Echo of the search, languages and status filters |
+| `nsd` | object? | Namespace descriptions |
+| `hint` | string? | Set when a filter was ignored, read it |
+
+Pass `compact: true` to get counts instead of text: each key becomes
+`{ id, k, ns?, tc }` where `tc` is the translation count.
+
+## translations.pendingChanges()
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `has_chg` | boolean | Anything waiting to publish |
+| `sum` | object | `{ tr, del_k, lng_chg, tot }` counts by kind |
+| `by_lng` | object | Pending counts per language |
+| `del_k` | array | Keys deleted but not yet published |
+| `pub_dst` | string | Where a publish would go |
+| `no_pub_rsn` | string? | Why publishing is currently blocked |
+
+## sync.list() and sync.get()
+
+`list()` returns `{ prj, tot, sy: [...] }`. Each job:
+
+| Field | Meaning |
+| --- | --- |
+| `id` | Sync job ID |
+| `tp` | Job type |
+| `st` | Status |
+| `st_at` / `cp_at` | Started at, completed at |
+| `err_msg` | Failure reason |
+| `trig_by` | What triggered it |
+| `meta` | `{ kp, tf?, pf? }` keys processed, target and pushed files |
+
+`get()` adds `log` and `aff_k`, the affected keys as `{ k, act }` pairs.
+
+## Write endpoints
+
+Writes answer with a receipt rather than the object you sent:
+
+| Method | Shape |
+| --- | --- |
+| `keys.create()` | `{ ok, cnt, new, ren, dup, k: [{ k, id, tr }], skip?, warn?, blocked?, hint? }` |
+| `keys.update()` | `{ ok, cnt, upd: [{ id?, k, lng, src }], errors?, hint? }` |
+| `keys.delete()` | `{ ok, cnt, mk: [{ id, k, ns }], skip?, hint? }` |
+| `translations.set()` | `{ ok, cnt, wrote, upd: [{ id, k, lng }], errors?, hint? }` |
+
+`cnt` is what the call touched, `errors` is per item, so a partial success is
+visible instead of being reported as a failure.
+
+<Callout type="info">
+`languages.*` and `translations.publish()` answer in full field names rather
+than the compact form. They were added later and were never on the token
+budget the read endpoints were shaped around.
+</Callout>
+
+## Always read `hint` and `warn`
+
+Several endpoints return a `hint` when a filter was silently ignored, or a
+`warn` when a write collided with something in another namespace. They are the
+only signal that a call did less than you asked.
+
+```ts
+const res = await admin.keys.create({ k: [{ n: "cta.title", v: "Get started" }] });
+if (res.warn) console.warn(res.warn);
+```
