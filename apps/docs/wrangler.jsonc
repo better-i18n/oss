@@ -1,5 +1,10 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "better-i18n-docs",
+  /* The project and its docs.better-i18n.com domain live in this account, not
+     in "Better i18n Org", which is the one you would guess. Without it
+     wrangler stops and asks, and picking the wrong account silently creates a
+     second, unlinked Pages project. */
+  "account_id": "f2dd7df8aa416a97b3ed6ae435476f66",
   "pages_build_output_dir": "out"
 }
