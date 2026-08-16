@@ -48,6 +48,40 @@ function coerceNumber(val: unknown): unknown {
   return val;
 }
 
+/**
+ * Array parameter that also accepts a JSON-stringified array.
+ *
+ * Why a union instead of `z.preprocess(coerceJsonArray, schema)`: in Zod 4 the
+ * input side of a preprocess is always `unknown` (`$ZodPreprocessInternals`
+ * takes its input from the transform, not from the annotated parameter), and
+ * that `unknown` propagates into every `z.input<>` derived from it. That is what
+ * left the admin SDK with nothing to infer on `languages.add` and nine other
+ * parameters — reported by a customer on 2026-08-16. Annotating the
+ * preprocessor's argument does not help; measured on zod 4.4.3, even the snippet
+ * in Zod's own docs still resolves to `unknown`.
+ *
+ * The union states both accepted shapes, so `z.input<>` is `T's input | string`.
+ * An array matches the first branch and is parsed once; a string is JSON-parsed
+ * and then validated by the same schema.
+ */
+function jsonArray<T extends z.ZodArray<z.ZodType>>(schema: T) {
+  return z.union([
+    schema,
+    z.string().transform((val): unknown => coerceJsonArray(val)).pipe(schema),
+  ]);
+}
+
+/**
+ * Numeric parameter that also accepts a stringified number.
+ * Same typing reason as `jsonArray`.
+ */
+function numeric<T extends z.ZodType<number>>(schema: T) {
+  return z.union([
+    schema,
+    z.string().transform((val): unknown => coerceNumber(val)).pipe(schema),
+  ]);
+}
+
 // ============================================================================
 // Base Schemas
 // ============================================================================
@@ -87,8 +121,7 @@ export const listKeysInput = projectIdentifierSchema.extend({
       "Search keys by name (partial match). Single string or array for multi-term search.",
     ),
   /** Filter by namespaces */
-  namespaces: z
-    .preprocess(coerceJsonArray, z.array(z.string()))
+  namespaces: jsonArray(z.array(z.string()))
     .optional()
     .describe("Only return keys from these namespaces"),
   /** Find keys missing translation for this language code (e.g., 'tr', 'de') */
@@ -101,17 +134,16 @@ export const listKeysInput = projectIdentifierSchema.extend({
    * Fields to include in response.
    * Default omits translation text (saves tokens) — add "translations" only when text is needed.
    */
-  fields: z
-    .preprocess(coerceJsonArray, z.array(z.enum(["id", "sourceText", "translations", "translatedLanguages", "translatedLanguageCount"])))
+  fields: jsonArray(z.array(z.enum(["id", "sourceText", "translations", "translatedLanguages", "translatedLanguageCount"])))
     .optional()
     .default(["id", "sourceText"])
     .describe(
       "Fields per key. Add 'translatedLanguages' for full list of translated lang codes, 'translatedLanguageCount' for just the count (fewer tokens). Default: id, sourceText.",
     ),
   /** Page number (1-indexed) */
-  page: z.preprocess(coerceNumber, z.number().int().min(1)).default(1),
+  page: numeric(z.number().int().min(1)).default(1),
   /** Number of results per page (max 250) */
-  limit: z.preprocess(coerceNumber, z.number().int().min(1).max(250)).default(20),
+  limit: numeric(z.number().int().min(1).max(250)).default(20),
 });
 /** Output type (after defaults applied - server side) */
 export type ListKeysOutput = z.infer<typeof listKeysInput>;
@@ -135,13 +167,11 @@ export type ListKeysInput = z.input<typeof listKeysInput>;
  */
 export const getTranslationsInput = projectIdentifierSchema.extend({
   /** Optional: filter by namespaces */
-  namespaces: z
-    .preprocess(coerceJsonArray, z.array(z.string()))
+  namespaces: jsonArray(z.array(z.string()))
     .optional()
     .describe("Only return keys from these namespaces"),
   /** Optional: specific key names to fetch */
-  keys: z
-    .preprocess(coerceJsonArray, z.array(z.string()))
+  keys: jsonArray(z.array(z.string()))
     .optional()
     .describe("Fetch specific keys by name (exact match)"),
   /** Optional: search text in source or translations (string or array) */
@@ -152,8 +182,7 @@ export const getTranslationsInput = projectIdentifierSchema.extend({
       "Text to search for in key names, source text, or translations (case-insensitive). Single string or array for multi-term search.",
     ),
   /** Optional: languages to search in AND return translations for */
-  languages: z
-    .preprocess(coerceJsonArray, z.array(z.string().transform(v => v.toLowerCase())))
+  languages: jsonArray(z.array(z.string().transform(v => v.toLowerCase())))
     .optional()
     .describe(
       "Language codes to search in and return (e.g., ['tr', 'de']). If omitted with search, searches source text. If omitted without search, returns all languages.",
@@ -166,8 +195,7 @@ export const getTranslationsInput = projectIdentifierSchema.extend({
       "Filter by status: 'missing' (no translation), 'draft', 'published', 'all'",
     ),
   /** Max keys to return (1–200, default 100) */
-  limit: z
-    .preprocess(coerceNumber, z.number().min(1).max(200))
+  limit: numeric(z.number().min(1).max(200))
     .default(100)
     .describe(
       "Max keys to return (1–200, default 100). Response includes: 'returned' (keys in this response after all filters), 'total' (DB count before in-memory status filter), 'hasMore' (true when total > limit). Use narrower filters (namespace, search, status, keys[]) to retrieve specific subsets of large projects.",
@@ -269,7 +297,7 @@ const compactCreateKeyItem = z.object({
  */
 export const createKeysInput = projectIdentifierSchema.extend({
   /** Array of keys to create */
-  k: z.preprocess(coerceJsonArray, z.array(compactCreateKeyItem).min(1)).describe("Array of keys to create"),
+  k: jsonArray(z.array(compactCreateKeyItem).min(1)).describe("Array of keys to create"),
   /** Force creation even if path collisions are detected OR strict duplicate-policy would block */
   force: z.boolean().optional().default(false).describe("Force creation despite path collisions OR strict duplicate-policy blocks. Without this: (1) keys causing leaf↔object JSON conflicts are rejected, (2) when project.duplicatePolicy='block', keys whose source_text already exists elsewhere are returned in 'blocked[]' instead of being created. Use force:true only for trusted bulk imports."),
 });
@@ -315,7 +343,7 @@ const compactUpdateItem = z.object({
  */
 export const updateKeysInput = projectIdentifierSchema.extend({
   /** Array of translation updates */
-  t: z.preprocess(coerceJsonArray, z.array(compactUpdateItem).min(1)).describe("Array of translation updates"),
+  t: jsonArray(z.array(compactUpdateItem).min(1)).describe("Array of translation updates"),
 });
 export type UpdateKeysOutput = z.infer<typeof updateKeysInput>;
 export type UpdateKeysInput = z.input<typeof updateKeysInput>;
@@ -370,8 +398,7 @@ const compactSetTranslationsItem = z.object({
  */
 export const setTranslationsInput = projectIdentifierSchema.extend({
   /** Array of per-key translation batches */
-  t: z
-    .preprocess(coerceJsonArray, z.array(compactSetTranslationsItem).min(1).max(500))
+  t: jsonArray(z.array(compactSetTranslationsItem).min(1).max(500))
     .describe(
       "Array of per-key translation batches. Each item: { id, t: { lang: text, ... } }. Max 500 keys per call.",
     ),
@@ -385,7 +412,7 @@ export type SetTranslationsInput = z.input<typeof setTranslationsInput>;
  */
 export const deleteKeysInput = projectIdentifierSchema.extend({
   /** Array of key IDs (UUIDs) to delete */
-  keyIds: z.preprocess(coerceJsonArray, z.array(z.string().uuid()).min(1).max(100)),
+  keyIds: jsonArray(z.array(z.string().uuid()).min(1).max(100)),
 });
 export type DeleteKeysInput = z.input<typeof deleteKeysInput>;
 
@@ -403,8 +430,7 @@ const languageEntrySchema = z.object({
  * Batch add new target languages to a project.
  */
 export const addLanguagesInput = projectIdentifierSchema.extend({
-  languages: z
-    .preprocess(coerceJsonArray, z.array(languageEntrySchema).min(1).max(50))
+  languages: jsonArray(z.array(languageEntrySchema).min(1).max(50))
     .describe("Languages to add — ISO 639-1 or BCP 47 locale codes (e.g. 'fr', 'zh-Hans', 'pt-BR'). Code must exist in language table."),
 });
 export type AddLanguagesInput = z.input<typeof addLanguagesInput>;
@@ -414,8 +440,8 @@ export type AddLanguagesInput = z.input<typeof addLanguagesInput>;
  * Batch update status of existing target languages.
  */
 export const updateLanguagesInput = projectIdentifierSchema.extend({
-  updates: z
-    .preprocess(coerceJsonArray, z.array(
+  updates: jsonArray(
+    z.array(
       z.object({
         languageCode: z.string().min(2).max(10).transform(v => v.toLowerCase()),
         status: z
@@ -424,7 +450,8 @@ export const updateLanguagesInput = projectIdentifierSchema.extend({
             "New status: active=published to CDN, draft=visible but not deployed, archived=hidden from editor and CDN",
           ),
       }),
-    ).min(1).max(50)),
+    ).min(1).max(50),
+  ),
 });
 export type UpdateLanguagesInput = z.input<typeof updateLanguagesInput>;
 
@@ -433,8 +460,7 @@ export type UpdateLanguagesInput = z.input<typeof updateLanguagesInput>;
  * Batch archive target languages (status → archived). Translations are preserved.
  */
 export const deleteLanguagesInput = projectIdentifierSchema.extend({
-  languageCodes: z
-    .preprocess(coerceJsonArray, z.array(z.string().min(2).max(10).transform(v => v.toLowerCase())).min(1).max(50))
+  languageCodes: jsonArray(z.array(z.string().min(2).max(10).transform(v => v.toLowerCase())).min(1).max(50))
     .describe(
       "Language codes to archive (status → archived). Translations are preserved.",
     ),
