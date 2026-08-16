@@ -401,7 +401,7 @@ Add a custom field to a content model. Field name must be snake_case.
 - `fieldConfig` (optional): Type-specific configuration
   - `targetModel`: Target model slug for relation fields
 
-There is no array or group field type. To model repeating content, do **not** create numbered fields (`feature_1`, `feature_2`, `tag_1_slug`…) — that is an anti-pattern. Use a body **block** (code-first, registered per project, backed by a JSON Schema that supports arrays/nested objects, inserted via the `/` slash picker) for page-composition repetition, or a `relation` field for references to other entries.
+There is no array or group field type. To model repeating content, do **not** create numbered fields (`feature_1`, `feature_2`, `tag_1_slug`…) — that is an anti-pattern. Model the repeated item as its own collection and point at it with a `relation` field, which is also how you reference entries that already exist. See [Modeling repeating content](/sdk/models#modeling-repeating-content). Body blocks are described in some older material but were never shipped, so do not plan around them.
 
 </AccordionItem>
 

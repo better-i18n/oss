@@ -37,9 +37,13 @@ There is **no array or group field type**, and `relation` points to a single ent
 
 When you need more than one of something, pick the right home for it instead of inventing extra fields:
 
-1. **Page-composition / repeating structured content → body blocks.** Hero sections, feature grids, FAQ lists, CTAs, and any repeating section belong in the entry **body**, not as sidebar fields. Blocks are code-first: you register them per project with a `defineBlock()`-style declaration backed by a JSON Schema — which **does** support arrays and nested objects — and editors insert them via the `/` slash picker.
-2. **References to other entries → a `relation` field.** A post pointing to its category, author, or tags is a relation; resolve it with `.expand()` (see [Relations](#relations)).
-3. **Never model repetition as numbered sidebar fields.** `Feature 1`, `Feature 2`, `Tag 1 Slug`… is an anti-pattern — it produces an unusable wall of fields and cannot scale. Use a body block (case 1) or a relation (case 2).
+1. **Repeating structured content → its own collection, linked by a `relation` field.** FAQ items, feature cards, testimonials and pricing rows are entries in their own right. Create a collection for the item (`faq-item`), give the parent model a multi-value `relation` field pointing at it, and resolve it with `.expand()` (see [Relations](#relations)). Editors add, remove and reorder the linked entries from the parent entry.
+2. **References to existing entries → the same `relation` field.** A post pointing at its category, author or tags is the same mechanism, the difference is only that those entries already exist for their own sake.
+3. **Never model repetition as numbered sidebar fields.** `Feature 1`, `Feature 2`, `Tag 1 Slug`… is an anti-pattern — it produces an unusable wall of fields and cannot scale. Use a relation.
+
+<Callout type="warning">
+**Body blocks are not available.** Earlier versions of this page described registering code-first blocks with a `defineBlock()` declaration and inserting them through a `/` slash picker. That workflow was never shipped: no package exports `defineBlock`, the editor has no block picker, and the delivery API does not return blocks. Use the relation approach above. We are sorry for the detour if you went looking for it.
+</Callout>
 
 ## Localized vs. universal fields
 
