@@ -6,8 +6,8 @@
     "build": "fumadocs-mdx && next build && bun scripts/generate-mdx.ts",
     "dev": "next dev",
     "start": "serve out",
-    "preview": "bun run build && wrangler pages dev out",
-    "deploy": "bun run build && wrangler pages deploy out",
+    "preview": "bun run build && CLOUDFLARE_ACCOUNT_ID=f2dd7df8aa416a97b3ed6ae435476f66 wrangler pages dev out",
+    "deploy": "bun run build && CLOUDFLARE_ACCOUNT_ID=f2dd7df8aa416a97b3ed6ae435476f66 wrangler pages deploy out",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
