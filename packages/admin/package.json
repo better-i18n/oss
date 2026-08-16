@@ -1,7 +1,7 @@
 {
   "name": "@better-i18n/admin",
   "version": "0.2.1",
-  "description": "Server-side admin SDK for Better i18n — manage projects, keys, translations, content, and analytics programmatically",
+  "description": "Server-side admin SDK for Better i18n \u2014 manage projects, keys, translations, content, and analytics programmatically",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -46,14 +46,11 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@better-i18n/mcp-types": "^0.17.0",
     "@trpc/client": "^11.0.0"
   },
   "devDependencies": {
-    "@better-i18n/mcp-types": "workspace:*",
     "typescript": "^5.7.0"
-  },
-  "peerDependencies": {
-    "@better-i18n/mcp-types": "workspace:*"
   },
   "keywords": [
     "better-i18n",
