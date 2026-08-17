@@ -1,3 +1,6 @@
 # Cloudflare Pages redirects
 # Redirect to Quick Start guide as the default entry point
 / /frameworks/quick-start 301
+
+# addLanguage never existed as a tool; the real one is proposeLanguages
+/api/add-language /api/propose-languages 301

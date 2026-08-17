@@ -1,0 +1,36 @@
+---
+title: proposeLanguages
+description: Add one or more target languages to a project.
+---
+
+Add one or more target languages to the project. Use ISO 639-1 codes (e.g. `fr`, `ja`, `de`) or BCP 47 locale codes (e.g. `zh-Hans`, `pt-BR`). Already-existing languages are silently skipped.
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | Yes | Project identifier in `org/project` format |
+| `languages` | object[] | Yes | Languages to add. Each item: `{ languageCode, status? }` |
+
+### `languages[]`
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `languageCode` | string | Yes | ISO 639-1 code (e.g. `fr`, `de`, `ja`) or BCP 47 locale (e.g. `zh-Hans`, `pt-BR`) |
+| `status` | `active` \| `draft` | No | `active` publishes the language to the CDN (default); `draft` keeps it visible but undeployed |
+
+## Example
+
+```json
+{
+  "project": "my-org/my-app",
+  "languages": [
+    { "languageCode": "ja" },
+    { "languageCode": "pt-BR", "status": "draft" }
+  ]
+}
+```
+
+## Related
+
+- [proposeLanguageEdits](/api/propose-language-edits) — change the status of a language that already exists
