@@ -1,5 +1,6 @@
 import type { HttpClient } from "./http.js";
 import type {
+  ContentBodyFormat,
   ContentEntry,
   ContentEntryListItem,
   ContentEntrySortField,
@@ -20,6 +21,7 @@ interface QueryParams {
   ascending: boolean | undefined;
   limitVal: number | undefined;
   pageVal: number | undefined;
+  bodyFormatVal: ContentBodyFormat | undefined;
 }
 
 function emptyParams(): QueryParams {
@@ -34,6 +36,7 @@ function emptyParams(): QueryParams {
     ascending: undefined,
     limitVal: undefined,
     pageVal: undefined,
+    bodyFormatVal: undefined,
   };
 }
 
@@ -43,7 +46,10 @@ function emptyParams(): QueryParams {
  * Terminal builder for fetching a single entry by slug.
  * Thenable — can be awaited directly.
  */
-export class SingleQueryBuilder<CF extends Record<string, string | null> = Record<string, string | null>> {
+export class SingleQueryBuilder<
+  CF extends Record<string, string | null> = Record<string, string | null>,
+  B = string,
+> {
   /** @internal */
   constructor(
     private readonly _http: HttpClient,
@@ -53,13 +59,14 @@ export class SingleQueryBuilder<CF extends Record<string, string | null> = Recor
   ) {}
 
   /** Execute the query. Prefer `await builder` over calling this directly. */
-  async execute(): Promise<SingleQueryResult<ContentEntry<CF>>> {
+  async execute(): Promise<SingleQueryResult<ContentEntry<CF, B>>> {
     const params = new URLSearchParams();
     if (this._params.language) params.set("language", this._params.language);
     if (this._params.fields.length) params.set("fields", this._params.fields.join(","));
     if (this._params.expand.length) params.set("expand", this._params.expand.join(","));
+    if (this._params.bodyFormatVal) params.set("bodyFormat", this._params.bodyFormatVal);
 
-    const result = await this._http.request<ContentEntry<CF>>(
+    const result = await this._http.request<ContentEntry<CF, B>>(
       `/models/${this._model}/entries/${this._slug}`,
       params,
     );
@@ -71,8 +78,8 @@ export class SingleQueryBuilder<CF extends Record<string, string | null> = Recor
   }
 
   /** Makes this object thenable so `await builder.single("slug")` works. */
-  then<TResult1 = SingleQueryResult<ContentEntry<CF>>, TResult2 = never>(
-    onfulfilled?: ((value: SingleQueryResult<ContentEntry<CF>>) => TResult1 | PromiseLike<TResult1>) | null,
+  then<TResult1 = SingleQueryResult<ContentEntry<CF, B>>, TResult2 = never>(
+    onfulfilled?: ((value: SingleQueryResult<ContentEntry<CF, B>>) => TResult1 | PromiseLike<TResult1>) | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
   ): Promise<TResult1 | TResult2> {
     return this.execute().then(onfulfilled, onrejected);
@@ -216,6 +223,21 @@ export class ContentQueryBuilder<T = ContentEntryListItem> {
     return this.clone({ expand: [...this._params.expand, ...fields] });
   }
 
+  /**
+   * Choose which representation of `body` to receive.
+   *
+   * `"markdown"` (the default) and `"html"` are projections of the stored
+   * document. Blocks that plain Markdown has no syntax for — callouts,
+   * toggles, columns, equations, media — are written as tags in Markdown and
+   * flatten in HTML. `"plate"` returns the document itself, unchanged, and is
+   * the only lossless option.
+   *
+   * @example `.bodyFormat("plate")`
+   */
+  bodyFormat(format: ContentBodyFormat): ContentQueryBuilder<T> {
+    return this.clone({ bodyFormatVal: format });
+  }
+
   // ─── Terminal methods ───────────────────────────────────────────
 
   /**
@@ -229,10 +251,11 @@ export class ContentQueryBuilder<T = ContentEntryListItem> {
    *   .single("hello-world");
    * ```
    */
-  single<CF extends Record<string, string | null> = Record<string, string | null>>(
-    slug: string,
-  ): SingleQueryBuilder<CF> {
-    return new SingleQueryBuilder<CF>(this._http, this._model, slug, this._params);
+  single<
+    CF extends Record<string, string | null> = Record<string, string | null>,
+    B = string,
+  >(slug: string): SingleQueryBuilder<CF, B> {
+    return new SingleQueryBuilder<CF, B>(this._http, this._model, slug, this._params);
   }
 
   /**
@@ -283,6 +306,7 @@ export class ContentQueryBuilder<T = ContentEntryListItem> {
     if (this._params.fields.length) params.set("fields", this._params.fields.join(","));
     if (this._params.expand.length) params.set("expand", this._params.expand.join(","));
     if (this._params.search) params.set("search", this._params.search);
+    if (this._params.bodyFormatVal) params.set("bodyFormat", this._params.bodyFormatVal);
 
     for (const [key, value] of Object.entries(this._params.filters)) {
       params.set(`filter[${key}]`, value);

@@ -6,6 +6,8 @@ export { extractLanguageCodes, hasLanguage } from "./utils.js";
 export { createContentAPIClient } from "./content-api.js";
 export type {
   ClientConfig,
+  ContentBodyFormat,
+  ContentBodyNode,
   ContentClient,
   ContentEntry,
   ContentEntryLanguage,

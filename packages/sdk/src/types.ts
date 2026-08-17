@@ -68,7 +68,14 @@ export interface ContentEntryLanguage {
  * post.category;    // string | null (typed!)
  * ```
  */
-export type ContentEntry<CF extends Record<string, string | null> = Record<string, string | null>> = {
+export type ContentEntry<
+  CF extends Record<string, string | null> = Record<string, string | null>,
+  /**
+   * Type of `body`. Defaults to `string` (Markdown). Pass `ContentBodyNode[]`
+   * when querying with `bodyFormat: "plate"`.
+   */
+  B = string,
+> = {
   id: string;
   slug: string;
   status: "draft" | "published" | "archived";
@@ -120,12 +127,37 @@ export type ContentEntry<CF extends Record<string, string | null> = Record<strin
   relations?: Record<string, RelationValue | null>;
   // Localized content
   title: string;
-  /** Rich text body as Markdown string. */
-  body: string | null;
+  /**
+   * Rich text body. A Markdown string by default; the stored document when the
+   * query asked for `bodyFormat: "plate"` (type it via the `B` parameter).
+   */
+  body: B | null;
 } & CF;
 
 /** Entry status filter values. */
 export type ContentEntryStatus = "draft" | "published" | "archived";
+
+/**
+ * Which representation of `body` the API should return.
+ *
+ * `"markdown"` (default) and `"html"` are projections of the stored document.
+ * Blocks that plain Markdown has no syntax for — callouts, toggles, columns,
+ * equations, media — are written as tags in Markdown and flatten in HTML.
+ * `"plate"` returns the stored document itself and is the only lossless option.
+ */
+export type ContentBodyFormat = "markdown" | "html" | "plate";
+
+/**
+ * A node of the stored body document, as returned by `bodyFormat: "plate"`.
+ * Either a text leaf (`text`) or an element (`type` + `children`), with any
+ * block-specific props alongside (a callout's `icon`, a column's `width`).
+ */
+export interface ContentBodyNode {
+  type?: string;
+  text?: string;
+  children?: ContentBodyNode[];
+  [key: string]: unknown;
+}
 
 /** A summary item for content entry lists. Custom fields are spread directly on the object. */
 export type ContentEntryListItem<CF extends Record<string, string | null> = Record<string, string | null>> = {

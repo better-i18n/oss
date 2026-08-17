@@ -196,7 +196,56 @@ const { data: post, error } = await client
 }
 ```
 
-The `body` field is always Markdown. Use `bodyHtml` when you need pre-rendered HTML.
+## Body formats
+
+The body is stored as a structured document and projected into Markdown and HTML. Pick the projection with `bodyFormat`:
+
+| `bodyFormat` | `body` contains | Lossless |
+|---|---|---|
+| omitted / `markdown` | Markdown string | Rich blocks appear as tags, see below |
+| `html` | Pre-rendered HTML string | No — rich blocks flatten |
+| `plate` | The stored document as JSON | Yes |
+
+```ts
+import type { ContentBodyNode } from "@better-i18n/sdk";
+
+const { data: post } = await client
+  .from("blog-posts")
+  .bodyFormat("plate")
+  .single<Record<string, string | null>, ContentBodyNode[]>("hello-world");
+
+// post.body is ContentBodyNode[] — feed it straight to your renderer
+```
+
+Over plain HTTP it is a query parameter:
+
+```
+GET /v1/content/{org}/{project}/models/{model}/entries/{slug}?bodyFormat=plate
+```
+
+### Rich blocks in Markdown
+
+The editor offers blocks that plain Markdown has no syntax for: callouts, toggles, columns, tables of contents, equations and media. In Markdown output these are written as balanced tags, with the block's own properties as attributes and its content as ordinary Markdown:
+
+```markdown
+<callout icon="💡" variant="warning">
+
+Regular **markdown** with [links](https://example.com) inside.
+
+A second paragraph stays a second paragraph.
+
+</callout>
+```
+
+Underscored block types are written with dashes (`column_group` → `<column-group>`), because a Markdown HTML block tag cannot contain underscores. Parsing the same Markdown back returns the original blocks, so reading a body and writing it again is safe.
+
+If you would rather not parse tags, request `bodyFormat=plate` and render the JSON document directly.
+
+<Callout type="warning">
+Bodies written before August 2026 may still hold the older, flattened Markdown, where a callout was reduced to a bare paragraph. Editing and saving the entry regenerates it. `bodyFormat=plate` is unaffected — the stored document was always intact.
+</Callout>
+
+`bodyHtml` remains available for pre-rendered HTML and carries the same limitation as `bodyFormat=html`.
 
 ## Slug vs localized slug
 

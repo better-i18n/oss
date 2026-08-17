@@ -352,7 +352,7 @@ Base fields (always included):
 | `sourceLanguage` | `string` | Project's source language code |
 | `availableLanguages` | `string[]` | Language codes with translations |
 | `title` | `string` | Localized title |
-| `body` | `string \| null` | Localized body as Markdown |
+| `body` | `string \| PlateNode[] \| null` | Localized body. Markdown by default, the stored JSON document when `bodyFormat: "plate"` — see [Body formats](/docs/sdk/models#body-formats) |
 | `relations` | `Record<string, RelationValue \| null>` | Expanded relations (only when `expand` is used) |
 
 Additional fields (present on single-entry responses):
