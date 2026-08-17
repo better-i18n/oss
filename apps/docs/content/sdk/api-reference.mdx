@@ -285,7 +285,7 @@ const models = await client.getModels();
   These methods are deprecated. Use `from()` for all new code. They will be removed in a future major version.
 </Callout>
 
-### `client.getEntries(modelSlug, options?)` — deprecated
+### `client.getEntries(modelSlug, options?)` (deprecated)
 
 Use `client.from(modelSlug)` instead.
 
@@ -301,7 +301,7 @@ const { data, total, hasMore } = await client
   .eq("status", "published");
 ```
 
-### `client.getEntry(modelSlug, entrySlug, options?)` — deprecated
+### `client.getEntry(modelSlug, entrySlug, options?)` (deprecated)
 
 Use `client.from(modelSlug).single(entrySlug)` instead.
 

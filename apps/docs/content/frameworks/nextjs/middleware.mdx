@@ -222,7 +222,7 @@ export default createBetterI18nMiddleware({
 
 The `localePrefix` option controls how locales appear in your URLs. Choose the mode that best fits your routing strategy.
 
-### `"always"` — Every URL Has a Locale Prefix
+### `"always"`: Every URL Has a Locale Prefix
 
 Every page includes the locale in the URL, including the default locale.
 
@@ -234,7 +234,7 @@ Every page includes the locale in the URL, including the default locale.
 
 Best for SEO-focused sites that want explicit locale signals in every URL.
 
-### `"as-needed"` (default) — Only Non-Default Locales Get a Prefix
+### `"as-needed"` (default): Only Non-Default Locales Get a Prefix
 
 The default locale has no prefix. Other locales get a prefix.
 
@@ -246,7 +246,7 @@ The default locale has no prefix. Other locales get a prefix.
 
 Recommended for most sites — clean URLs for the primary language, explicit prefixes for others.
 
-### `"never"` — No Locale in URLs
+### `"never"`: No Locale in URLs
 
 All locales share the same URL. The active locale is determined by cookie and `Accept-Language` header.
 
@@ -275,7 +275,7 @@ app/
 
 The middleware performs an **invisible rewrite** — it detects the locale from cookie/headers and rewrites the request internally to `/{locale}/...`. The `[locale]` segment never appears in the browser URL, but Next.js file-based routing still relies on it.
 
-#### Layout Validation — Use Dynamic Locales
+#### Layout Validation: Use Dynamic Locales
 
 Instead of hardcoding locales in `generateStaticParams`, fetch them dynamically from the CDN:
 

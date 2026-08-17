@@ -7,7 +7,7 @@ For projects with `fileStructure: "namespaced_folders"`, you can fetch only the 
 
 See [Core — Selective Loading](/docs/core/selective-loading) for the underlying behavior (per-namespace caching, batch endpoint, etc.). This page covers Next.js-specific integration.
 
-## Option A — Global Default via Config
+## Option A: Global Default via Config
 
 Set `namespaces` on `createI18n` and every `getMessages` call uses that list:
 
@@ -24,7 +24,7 @@ export const i18n = createI18n({
 
 Use this when your whole app shares a small fixed set of namespaces. ISR still applies — messages revalidate every 30s by default.
 
-## Option B — Per-Page Override (App Router)
+## Option B: Per-Page Override (App Router)
 
 For a multi-route marketing site where each page needs different namespaces, call the standalone `getMessages` directly from the route's Server Component:
 
@@ -56,7 +56,7 @@ export default async function PricingPage({
 
 This overrides the config-level default for that page only. ISR caching applies per-URL, so each page gets its own revalidation cycle.
 
-## Option C — Central Page-to-Namespace Map
+## Option C: Central Page-to-Namespace Map
 
 For larger sites, centralize the mapping so you can grep which pages use which namespaces:
 

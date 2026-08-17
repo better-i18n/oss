@@ -35,7 +35,7 @@ Client navigation
        ↓ shared namespaces (common, nav) hit SDK cache — 0 CDN requests
 ```
 
-## Step 1 — Page-to-Namespace Mapping
+## Step 1: Page-to-Namespace Mapping
 
 Create a manifest that maps URL paths to the namespaces each page needs. Keep it explicit — grep-able, reviewable in PRs, no runtime surprises.
 
@@ -80,7 +80,7 @@ export function getCdnNamespacesForPage(pagePath: string): string[] | null {
 }
 ```
 
-## Step 2 — Root Loader
+## Step 2: Root Loader
 
 The root route's `loader` resolves the page namespaces and calls `getMessages` with them. In SSR, messages are passed to React through a per-request side-channel (not loader data) so they don't balloon TanStack Router's dehydration payload.
 
@@ -139,7 +139,7 @@ export const Route = createRootRouteWithContext<{
 });
 ```
 
-## Step 3 — Hydration Bridge
+## Step 3: Hydration Bridge
 
 To avoid a loading flash on hydration, serialize the SSR messages into an inert `<script type="application/json">` tag. The client reads this synchronously — no fetch, no waterfall.
 
@@ -203,7 +203,7 @@ function RootComponent() {
 }
 ```
 
-## Step 4 — Verify in Dev
+## Step 4: Verify in Dev
 
 The SDK logs selective fetches in development. After starting the dev server, navigate to a route and check the console:
 

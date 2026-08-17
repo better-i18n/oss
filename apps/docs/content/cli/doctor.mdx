@@ -51,7 +51,7 @@ better-i18n doctor --verbose              # Detailed per-file diagnostic output
 
 `doctor` runs five categories of analysis in a single pass.
 
-### Code — hardcoded string detection
+### Code: hardcoded string detection
 
 Scans your source files with an AST parser to detect user-facing strings that are not wrapped in a translation function.
 
@@ -63,11 +63,11 @@ Scans your source files with an AST parser to detect user-facing strings that ar
 | `toast-message` | Hardcoded toast/notification text | `toast.error("Something went wrong")` |
 | `string-variable` | String variables assigned to UI text | `const label = "Submit"` |
 
-### Coverage — missing translations
+### Coverage: missing translations
 
 Compares keys present in your source locale against each target locale. Any key that exists in the source but is missing from a target locale is reported.
 
-### Quality — placeholder mismatch
+### Quality: placeholder mismatch
 
 Verifies that interpolation placeholders are consistent across locales. Supports all common formats:
 
@@ -81,11 +81,11 @@ Verifies that interpolation placeholders are consistent across locales. Supports
 
 A source key with `Hello, {name}!` and a translation with `Hola!` (placeholder removed) is a quality error.
 
-### Performance — orphan keys
+### Performance: orphan keys
 
 Detects keys that exist in your translation files (or remote CDN) but are never referenced in code. Orphan keys increase payload size and create maintenance debt.
 
-### Sync — CDN comparison
+### Sync: CDN comparison
 
 Compares keys extracted from your code against the published keys in the Better i18n CDN. Requires `workspaceId` and `projectSlug` in `i18n.config.ts`.
 
@@ -224,7 +224,7 @@ The JSON report follows this structure:
 
 ## CI Integration
 
-### GitHub Actions — automatic auth
+### GitHub Actions: automatic auth
 
 When running in GitHub Actions with OIDC enabled, `--report` authenticates automatically without requiring an explicit API key:
 
@@ -299,7 +299,7 @@ Use skip flags to run only the analysis layers you care about:
 # Only check translation file health (no code scan, no CDN)
 better-i18n doctor --skip-code --skip-sync
 
-# Only check CDN sync status (fast — no AST parsing)
+# Only check CDN sync status (fast, no AST parsing)
 better-i18n doctor --skip-code --skip-health
 
 # Only scan for hardcoded strings
