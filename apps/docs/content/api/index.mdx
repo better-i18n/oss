@@ -32,9 +32,9 @@ All API calls require an API key. Get yours from the [dashboard](https://dash.be
 # For MCP Server
 export BETTER_I18N_API_KEY="your-api-key"
 
-# For REST API
-curl -H "Authorization: Bearer your-api-key" \
-  https://dash.better-i18n.com/api/...
+# For direct HTTP calls (tRPC)
+curl -H "x-api-key: your-api-key" \
+  "https://dash.better-i18n.com/api/trpc/..."
 ```
 
 ## Project Identifier
