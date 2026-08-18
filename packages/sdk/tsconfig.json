@@ -20,5 +20,8 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Tests run through vitest from source; compiling them would ship test
+  // code inside the published package.
+  "exclude": ["src/**/*.test.ts"]
 }

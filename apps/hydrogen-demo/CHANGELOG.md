@@ -1,5 +1,12 @@
 # hydrogen-demo
 
+## 0.0.21
+
+### Patch Changes
+
+- Updated dependencies [1de790d]
+  - @better-i18n/sdk@3.5.0
+
 ## 0.0.20
 
 ### Patch Changes
