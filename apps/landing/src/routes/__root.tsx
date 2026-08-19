@@ -82,9 +82,19 @@ const DOCK_SUGGESTIONS: Record<
  *   VITE_HELPWAY_API_URL=http://localhost:52500
  *   VITE_HELPWAY_API_KEY=pk_live_...   (from that local website)
  */
-const HELPWAY_API_URL = import.meta.env.VITE_HELPWAY_API_URL || undefined;
+/* Both overrides are dropped in a production build. Vite reads VITE_* from the
+   process environment as well as from dotenv files, so deploying from the same
+   terminal that ran `bun run dev` would otherwise bake http://localhost:52500
+   into the shipped bundle — and the failure is silent, because a widget that
+   cannot reach its API simply never appears. PROD is substituted statically, so
+   the dev branch is not even present in the production output. Shell hygiene is
+   not a safeguard; this is. */
+const HELPWAY_API_URL = import.meta.env.PROD
+  ? undefined
+  : import.meta.env.VITE_HELPWAY_API_URL || undefined;
 const HELPWAY_KEY =
-  import.meta.env.VITE_HELPWAY_API_KEY || "pk_live_Nir-sHLl1_qc9S9EuV9RdNN5";
+  (import.meta.env.PROD ? "" : import.meta.env.VITE_HELPWAY_API_KEY) ||
+  "pk_live_Nir-sHLl1_qc9S9EuV9RdNN5";
 
 function HelpwayWidgetMount({ locale }: { locale: string }) {
   const [mounted, setMounted] = useState(false);
