@@ -44,6 +44,48 @@ const LazyHelpwayWidget = lazy(() =>
  * only — at that point React has already committed the matching server
  * tree, so there's no mismatch to detect.
  */
+/**
+ * Ways in offered above the docked bar before the visitor types. Authored
+ * here for now — these move to the workspace config once the API returns
+ * per-workspace suggestions, and eventually get generated per page.
+ */
+const DOCK_SUGGESTIONS: Record<
+  string,
+  readonly { label: string; question: string }[]
+> = {
+  en: [
+    { label: "Pricing", question: "How does pricing work?" },
+    { label: "Setup", question: "How long does setup take?" },
+    { label: "Languages", question: "Can it translate my help centre too?" },
+  ],
+  tr: [
+    { label: "Fiyat", question: "Fiyatlandırma nasıl işliyor?" },
+    { label: "Kurulum", question: "Kurulum ne kadar sürüyor?" },
+    { label: "Diller", question: "Yardım merkezimi de çevirebilir mi?" },
+  ],
+  de: [
+    { label: "Preise", question: "Wie funktioniert die Preisgestaltung?" },
+    { label: "Setup", question: "Wie lange dauert die Einrichtung?" },
+    { label: "Sprachen", question: "Übersetzt es auch mein Hilfe-Center?" },
+  ],
+};
+
+/**
+ * Point the widget at a local Helpway during development.
+ *
+ * Same shape as the HELPWAY_LOCAL alias in vite.config.ts: opt-in via env so it
+ * can never reach a deploy. Without it the widget talks to production, which
+ * means every message typed while testing lands in the real support inbox.
+ * The key has to move with the URL — a production key is meaningless to a local
+ * API, whose D1 has its own websites and its own keys.
+ *
+ *   VITE_HELPWAY_API_URL=http://localhost:52500
+ *   VITE_HELPWAY_API_KEY=pk_live_...   (from that local website)
+ */
+const HELPWAY_API_URL = import.meta.env.VITE_HELPWAY_API_URL || undefined;
+const HELPWAY_KEY =
+  import.meta.env.VITE_HELPWAY_API_KEY || "pk_live_Nir-sHLl1_qc9S9EuV9RdNN5";
+
 function HelpwayWidgetMount({ locale }: { locale: string }) {
   const [mounted, setMounted] = useState(false);
   const [deepLink, setDeepLink] = useState<{ convId?: string; token?: string }>({});
@@ -60,8 +102,12 @@ function HelpwayWidgetMount({ locale }: { locale: string }) {
   return (
     <Suspense fallback={null}>
       <LazyHelpwayWidget
-        apiKey="pk_live_Nir-sHLl1_qc9S9EuV9RdNN5"
+        apiKey={HELPWAY_KEY}
+        apiUrl={HELPWAY_API_URL}
         locale={locale}
+        placement="docked"
+        colorScheme="light"
+        dockSuggestions={DOCK_SUGGESTIONS[locale] ?? DOCK_SUGGESTIONS.en}
         initialConversationId={deepLink.convId}
         deepLinkToken={deepLink.token}
       />
