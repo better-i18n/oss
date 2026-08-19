@@ -74,3 +74,4 @@ graphify-out/
 
 # Agent scratch working files (local only)
 .scratch_ctx/
+.gstack/
