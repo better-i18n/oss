@@ -123,7 +123,13 @@ export async function pullCommand(options: PullOptions) {
   // ── Download translations ───────────────────────────────────────
   spinner.start(`Downloading ${bold(String(targetLocales.length))} locale(s)...`);
 
-  const results: { locale: string; keys: number; size: number; ok: boolean }[] = [];
+  const results: {
+    locale: string;
+    keys: number;
+    size: number;
+    ok: boolean;
+    reason?: string;
+  }[] = [];
 
   for (const locale of targetLocales) {
     try {
@@ -135,12 +141,24 @@ export async function pullCommand(options: PullOptions) {
         manifest,
       );
 
+      const namespaceCount = Object.keys(translations).length;
+      const keyCount = countNestedKeys(translations);
+
+      /* A locale the manifest counts as non-empty must not land on disk empty.
+         The CDN answers some wrong paths with 200 + `{}`, so "no keys" is not
+         proof of an empty project — writing it would ship an app with zero
+         strings behind a green exit code. Fail the locale instead. */
+      const expectedKeys =
+        manifest.languages.find((l) => l.code === locale)?.keyCount ?? 0;
+      if (keyCount === 0 && expectedKeys > 0) {
+        throw new Error(
+          `CDN returned no keys, but the manifest expects ${expectedKeys}`,
+        );
+      }
+
       const json = JSON.stringify(translations, null, 2) + "\n";
       const filePath = resolve(outputDir, `${locale}.json`);
       writeFileSync(filePath, json, "utf-8");
-
-      const namespaceCount = Object.keys(translations).length;
-      const keyCount = countNestedKeys(translations);
 
       results.push({ locale, keys: keyCount, size: json.length, ok: true });
 
@@ -148,10 +166,8 @@ export async function pullCommand(options: PullOptions) {
         spinner.text = `Downloaded ${bold(locale)} — ${namespaceCount} namespaces, ${keyCount} keys`;
       }
     } catch (err) {
-      results.push({ locale, keys: 0, size: 0, ok: false });
-      if (options.verbose) {
-        console.log(red(`  ✗ ${locale}: ${err instanceof Error ? err.message : err}`));
-      }
+      const reason = err instanceof Error ? err.message : String(err);
+      results.push({ locale, keys: 0, size: 0, ok: false, reason });
     }
   }
 
@@ -174,7 +190,9 @@ export async function pullCommand(options: PullOptions) {
   if (failed.length > 0) {
     console.log();
     for (const r of failed) {
-      console.log(`  ${red("✗")} ${bold(r.locale.padEnd(6))} ${red("failed")}`);
+      console.log(
+        `  ${red("✗")} ${bold(r.locale.padEnd(6))} ${red(r.reason ?? "failed")}`,
+      );
     }
   }
 

@@ -55,7 +55,12 @@ export async function fetchRemoteKeys(
   if (manifest?.files?.[locale]?.url) {
     url = manifest.files[locale].url;
   } else {
-    url = `${cdnBaseUrl}/${workspaceId}/${projectSlug}/translations/${locale}.json`;
+    /* The published layout is /{org}/{project}/{locale}/translations.json.
+       The previous fallback asked for /{org}/{project}/translations/{locale}.json,
+       which the CDN answers with 200 and an empty `{}` rather than a 404 — so a
+       wrong URL was indistinguishable from an unpublished project, and `pull`
+       wrote empty locale files while reporting success. */
+    url = `${cdnBaseUrl}/${workspaceId}/${projectSlug}/${locale}/translations.json`;
   }
 
   const response = await fetch(url);
