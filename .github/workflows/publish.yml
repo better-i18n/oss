@@ -27,6 +27,19 @@ jobs:
         with:
           bun-version: "1.3.10"
 
+      # npm reads publish credentials from a registry-scoped .npmrc key. The
+      # NPM_CONFIG_TOKEN env var on the changesets step sets npm's `token`
+      # config, which is NOT that key — so `changeset publish` went out
+      # unauthenticated and npm answers `404 Not Found - PUT`, which reads like a
+      # missing package but means "not allowed to write here". setup-bun writes no
+      # .npmrc for us the way actions/setup-node's registry-url would, so we write
+      # it here. (The repo's committed .npmrc is lifecycle-script hardening only.)
+      - name: Authenticate to npm
+        run: |
+          printf '//registry.npmjs.org/:_authToken=%s\n' "$NPM_TOKEN" >> "$HOME/.npmrc"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Install Dependencies
         run: bun install
 
