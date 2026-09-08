@@ -192,6 +192,13 @@ export interface ManifestFile {
   url: string;
   size: number;
   lastModified: string | null;
+  /**
+   * Immutable snapshot version for this language (platform #115). When
+   * present, the SDK fetches `{base}/v/{version}/{locale}/{ns}.json`, served
+   * with a one-year `immutable` Cache-Control. Absent → legacy
+   * `{base}/{locale}/{ns}.json`, exactly as before the field existed.
+   */
+  version?: string;
 }
 
 /**
