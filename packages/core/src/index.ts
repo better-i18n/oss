@@ -80,3 +80,5 @@ export type {
   LocaleDetectionResult,
   LocalePrefix,
 } from "./i18n/types.js";
+export { resolveTranslationUrl, localeSnapshotVersion, VERSION_PATTERN } from "./versioned-url.js";
+export type { ResolvedTranslationUrl } from "./versioned-url.js";

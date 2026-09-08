@@ -1,5 +1,6 @@
 import { TtlCache, buildCacheKey } from "./cache.js";
 import { getProjectBaseUrl, normalizeConfig } from "./config.js";
+import { localeSnapshotVersion, resolveTranslationUrl } from "./versioned-url.js";
 import { createLogger } from "./logger.js";
 import { extractLanguages } from "./manifest.js";
 import type {
@@ -326,10 +327,13 @@ const fetchMessagesFromCdn = async (
   config: NormalizedConfig,
   locale: string,
   fetchFn: typeof fetch,
-  ifNoneMatch?: string
+  ifNoneMatch?: string,
+  manifest?: ManifestResponse | null
 ): Promise<MessagesFetchResult> => {
   const logger = createLogger(config, "messages");
-  const url = `${getProjectBaseUrl(config)}/${locale}/translations.json`;
+  // Versioned snapshot when the manifest advertises one for this locale,
+  // legacy path otherwise (platform #115; see versioned-url.ts).
+  const { url } = resolveTranslationUrl(getProjectBaseUrl(config), manifest, locale, "translations");
 
   logger.debug("fetching", url);
 
@@ -501,7 +505,8 @@ const fetchNamespacedMessages = async (
   config: NormalizedConfig,
   locale: string,
   namespaces: string[],
-  fetchFn: typeof fetch
+  fetchFn: typeof fetch,
+  manifest?: ManifestResponse | null
 ): Promise<MessagesFetchResult> => {
   const logger = createLogger(config, "messages");
   const baseUrl = getProjectBaseUrl(config);
@@ -515,7 +520,7 @@ const fetchNamespacedMessages = async (
   // Fetch all namespace files in parallel — fail fast on any error
   const results = await Promise.all(
     namespaces.map((ns) => {
-      const url = `${baseUrl}/${locale}/${ns}.json`;
+      const { url } = resolveTranslationUrl(baseUrl, manifest, locale, ns);
       return fetchNamespaceFile(config, ns, url, fetchFn).then(
         (data) => [ns, data] as const
       );
@@ -716,14 +721,18 @@ const getMessagesWithFallback = async (
         // Like tRPC batching — N namespace requests merged into 1 round-trip.
         // Only attempted when CDN declares batch support (manifest.batch === true)
         // and there are 2+ namespaces to fetch (single ns = direct fetch is fine).
+        // A locale with a snapshot version skips the batch endpoint: batch.json
+        // has no immutable URL, while the per-namespace snapshot files are
+        // one-year cache hits after the first client in a colo — the
+        // request count is the price of never revalidating (platform #115).
         let fetchedMessages: Messages | null = null;
-        if (manifest?.batch && toFetch.length > 1) {
+        if (manifest?.batch && toFetch.length > 1 && !localeSnapshotVersion(manifest, safeLng)) {
           fetchedMessages = await fetchBatchNamespaces(config, safeLng, toFetch, fetchFn);
         }
 
         // Fallback: parallel individual fetches (always works, even without batch support)
         if (!fetchedMessages) {
-          const nsResult = await fetchNamespacedMessages(config, safeLng, toFetch, fetchFn);
+          const nsResult = await fetchNamespacedMessages(config, safeLng, toFetch, fetchFn, manifest);
           if (!nsResult.notModified) {
             fetchedMessages = nsResult.messages;
           }
@@ -751,16 +760,16 @@ const getMessagesWithFallback = async (
       // the selective `namespaces` option — single round-trip instead of N round-trips.
       const fullNs = [...availableNs];
       let batched: Messages | null = null;
-      if (manifest?.batch && fullNs.length > 1) {
+      if (manifest?.batch && fullNs.length > 1 && !localeSnapshotVersion(manifest, safeLng)) {
         batched = await fetchBatchNamespaces(config, safeLng, fullNs, fetchFn);
       }
       result = batched
         ? { messages: batched, notModified: false, etag: null }
-        : await fetchNamespacedMessages(config, safeLng, fullNs, fetchFn);
+        : await fetchNamespacedMessages(config, safeLng, fullNs, fetchFn, manifest);
     } else {
       // v1: single-file fetch with ETag support (unchanged path)
       const cachedETag = messagesETagCache.get(cacheKey);
-      result = await fetchMessagesFromCdn(config, safeLng, fetchFn, cachedETag);
+      result = await fetchMessagesFromCdn(config, safeLng, fetchFn, cachedETag, manifest);
 
       // 304 Not Modified — CDN confirmed content unchanged; refresh TTL with stored data
       if (result.notModified) {
@@ -771,7 +780,7 @@ const getMessagesWithFallback = async (
           return stored;
         }
         // No storage fallback — re-fetch without ETag to get fresh data
-        const freshResult = await fetchMessagesFromCdn(config, safeLng, fetchFn);
+        const freshResult = await fetchMessagesFromCdn(config, safeLng, fetchFn, undefined, manifest);
         if (!freshResult.notModified) {
           messagesCache.set(cacheKey, freshResult.messages, config.messagesCacheTtlMs);
           if (freshResult.etag) messagesETagCache.set(cacheKey, freshResult.etag, config.manifestCacheTtlMs);
