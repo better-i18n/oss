@@ -29,6 +29,7 @@ import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
 import { SvgSprite } from "../components/SvgSprite";
 import { CookieBanner } from "../components/CookieBanner";
+import { useConsentDecision } from "../hooks/use-consent-decision";
 import { WebMcpRegistrar } from "../components/WebMcpRegistrar";
 import { lazy, Suspense } from "react";
 
@@ -99,6 +100,9 @@ const HELPWAY_KEY =
 function HelpwayWidgetMount({ locale }: { locale: string }) {
   const [mounted, setMounted] = useState(false);
   const [deepLink, setDeepLink] = useState<{ convId?: string; token?: string }>({});
+  // The dock and the cookie banner share the bottom edge; the widget waits
+  // for the banner's answer so it never covers the consent buttons.
+  const consentDecided = useConsentDecision();
   useEffect(() => {
     const convId = new URLSearchParams(window.location.search).get("hw_conv") ?? undefined;
     const token = new URLSearchParams(window.location.hash.slice(1)).get("hw_token") ?? undefined;
@@ -108,7 +112,7 @@ function HelpwayWidgetMount({ locale }: { locale: string }) {
     setDeepLink({ convId, token });
     setMounted(true);
   }, []);
-  if (!mounted) return null;
+  if (!mounted || !consentDecided) return null;
   return (
     <Suspense fallback={null}>
       <LazyHelpwayWidget
