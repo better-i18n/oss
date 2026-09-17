@@ -14,7 +14,14 @@
  */
 
 import { describe, it, expect } from "vitest";
-import worker, { createBoundedSseStream, tokenFingerprint } from "./worker.js";
+import worker, {
+  createBoundedSseStream,
+  createServiceFetch,
+  ServiceTimeoutError,
+  SERVICE_FETCH_TIMEOUT_MS,
+  mcpErrorResponse,
+  tokenFingerprint,
+} from "./worker.js";
 import type { Env } from "./worker.js";
 
 // ---------------------------------------------------------------------------
@@ -454,5 +461,77 @@ describe("tokenFingerprint", () => {
 
   it("labels OAuth tokens separately from API keys", async () => {
     expect(await tokenFingerprint("eyJhbGciOi.oauth.token")).toMatch(/^oauth:[0-9a-f]{8}$/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Service binding timeout
+// ---------------------------------------------------------------------------
+
+/** A binding whose fetch never answers until the caller's signal aborts. */
+const hangingAuthApi = {
+  fetch: (input: Request | string) =>
+    new Promise<Response>((_resolve, reject) => {
+      const signal =
+        typeof input === "string" ? undefined : (input as Request).signal;
+      signal?.addEventListener("abort", () =>
+        reject(signal.reason ?? new DOMException("aborted", "AbortError")),
+      );
+    }),
+};
+
+describe("createServiceFetch", () => {
+  it("turns a wedged API worker into a typed timeout instead of hanging", async () => {
+    const call = createServiceFetch(hangingAuthApi, 20);
+    await expect(call("https://auth/api/auth/mcp/get-session")).rejects.toBeInstanceOf(
+      ServiceTimeoutError,
+    );
+  });
+
+  it("names the ceiling in the error so logs say what happened", async () => {
+    const call = createServiceFetch(hangingAuthApi, 15);
+    await expect(call("https://auth/whatever")).rejects.toThrow(/did not respond within 15ms/);
+  });
+
+  it("passes a healthy response straight through", async () => {
+    const ok = { fetch: async () => new Response("{}", { status: 200 }) };
+    const res = await createServiceFetch(ok, 1_000)("https://auth/health");
+    expect(res.status).toBe(200);
+  });
+
+  it("keeps a real error as itself", async () => {
+    const boom = {
+      fetch: async () => {
+        throw new TypeError("binding exploded");
+      },
+    };
+    await expect(createServiceFetch(boom, 1_000)("https://auth/x")).rejects.toBeInstanceOf(
+      TypeError,
+    );
+  });
+
+  it("defaults to a ceiling that is generous for a healthy call", () => {
+    expect(SERVICE_FETCH_TIMEOUT_MS).toBeGreaterThanOrEqual(10_000);
+    expect(SERVICE_FETCH_TIMEOUT_MS).toBeLessThanOrEqual(30_000);
+  });
+});
+
+describe("mcpErrorResponse", () => {
+  it("answers 504 with the reason when the API worker does not respond", () => {
+    expect(mcpErrorResponse(new ServiceTimeoutError(20_000))).toEqual({
+      status: 504,
+      error: expect.stringMatching(/did not respond within 20000ms/),
+    });
+  });
+
+  it("keeps the 401 mapping for an unauthorized upstream", () => {
+    expect(mcpErrorResponse(new Error("Unauthorized")).status).toBe(401);
+  });
+
+  it("falls back to 500 for anything else", () => {
+    expect(mcpErrorResponse(new Error("boom"))).toEqual({
+      status: 500,
+      error: "Internal server error",
+    });
   });
 });

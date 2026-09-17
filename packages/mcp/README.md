@@ -185,6 +185,19 @@ Ask your AI assistant:
 3. Changes sync to Better i18n dashboard via API
 4. CDN serves updated translations to your app
 
+## Deploying the hosted worker (mcp.better-i18n.com)
+
+Always deploy with:
+
+```bash
+npm run deploy   # from packages/mcp — builds, then wrangler deploy
+```
+
+`dist/` is gitignored and `wrangler.jsonc` sets `main: dist/worker.js`, so a
+bare `wrangler deploy` ships whatever bundle happens to be on that machine —
+in Sept 2026 that was a four-month-old build, and the deploy looked
+successful while changing nothing. `npm run deploy` runs `tsc` first.
+
 ## Environment Variables
 
 | Variable              | Required | Description                             |

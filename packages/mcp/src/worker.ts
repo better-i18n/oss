@@ -189,15 +189,74 @@ type ResolvedAuth =
  * Uses the MCP plugin's get-session endpoint via Service Binding
  * (direct Worker-to-Worker call, bypassing CF same-zone issue).
  */
+/**
+ * Ceiling on any call into the API worker over the AUTH_API service binding.
+ *
+ * Nothing upstream bounds these: a wedged API worker would hold an MCP
+ * request until the platform's own limit, with the client seeing a stall
+ * rather than an error. 20s is well past a healthy call (the session lookup
+ * and tRPC calls answer in tens of ms) and well inside a client's patience.
+ */
+export const SERVICE_FETCH_TIMEOUT_MS = 20_000;
+
+/** Thrown when the API worker does not answer within the ceiling. */
+export class ServiceTimeoutError extends Error {
+  constructor(timeoutMs: number) {
+    super(
+      `Better i18n API did not respond within ${timeoutMs}ms (service binding timeout)`,
+    );
+    this.name = "ServiceTimeoutError";
+  }
+}
+
+/**
+ * Wrap a service binding so every call carries an abort signal and a timeout
+ * surfaces as `ServiceTimeoutError` instead of a bare AbortError.
+ */
+export function createServiceFetch(
+  fetcher: Fetcher,
+  timeoutMs: number = SERVICE_FETCH_TIMEOUT_MS,
+): (input: Request | string | URL, init?: RequestInit) => Promise<Response> {
+  return async (input, init) => {
+    try {
+      return await fetcher.fetch(
+        new Request(input as string | URL, {
+          ...init,
+          signal: AbortSignal.timeout(timeoutMs),
+        }),
+      );
+    } catch (err) {
+      const name = err instanceof Error ? err.name : "";
+      if (name === "TimeoutError" || name === "AbortError") {
+        throw new ServiceTimeoutError(timeoutMs);
+      }
+      throw err;
+    }
+  };
+}
+
+/**
+ * Map an error from the MCP request path to a client response. Exported so
+ * the mapping is tested without waiting out a real 20s timeout.
+ */
+export function mcpErrorResponse(err: unknown): { status: number; error: string } {
+  if (err instanceof ServiceTimeoutError) {
+    return { status: 504, error: err.message };
+  }
+  if (err instanceof Error && err.message.includes("Unauthorized")) {
+    return { status: 401, error: "Invalid API key" };
+  }
+  return { status: 500, error: "Internal server error" };
+}
+
 async function resolveOAuthUserId(
   token: string,
   authApi: Fetcher,
 ): Promise<{ userId: string } | { error: string; status: number }> {
   try {
-    const res = await authApi.fetch(
-      new Request("https://auth/api/auth/mcp/get-session", {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
+    const res = await createServiceFetch(authApi)(
+      "https://auth/api/auth/mcp/get-session",
+      { headers: { Authorization: `Bearer ${token}` } },
     );
 
     if (!res.ok) {
@@ -218,7 +277,10 @@ async function resolveOAuthUserId(
     }
 
     return { userId };
-  } catch {
+  } catch (err) {
+    if (err instanceof ServiceTimeoutError) {
+      return { error: err.message, status: 504 };
+    }
     return { error: "Failed to validate OAuth token", status: 502 };
   }
 }
@@ -243,8 +305,7 @@ async function handleMcpRequest(
   // failed with `Unexpected token '<'` even for invalid keys (the request never
   // reached API auth). See worker.test.ts for the regression guard.
   const serviceFetch = env.AUTH_API
-    ? (input: Request | string | URL, init?: RequestInit) =>
-        env.AUTH_API!.fetch(new Request(input as string | URL, init))
+    ? createServiceFetch(env.AUTH_API)
     : undefined;
 
   const apiClient =
@@ -446,10 +507,8 @@ export default {
           return response;
         } catch (err) {
           console.error("[better-i18n-mcp] Error:", err);
-          if (err instanceof Error && err.message.includes("Unauthorized")) {
-            return corsResponse(401, { error: "Invalid API key" });
-          }
-          return corsResponse(500, { error: "Internal server error" });
+          const mapped = mcpErrorResponse(err);
+          return corsResponse(mapped.status, { error: mapped.error });
         }
       }
     }
