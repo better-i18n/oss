@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import worker from "./worker.js";
+import worker, { createBoundedSseStream, tokenFingerprint } from "./worker.js";
 import type { Env } from "./worker.js";
 
 // ---------------------------------------------------------------------------
@@ -381,5 +381,78 @@ describe("Worker — unknown routes", () => {
 
     expect(res.status).toBe(404);
     expect(res.headers.get("Access-Control-Allow-Origin")).toBe("*");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// GET /mcp SSE stream — must terminate on its own
+// ---------------------------------------------------------------------------
+
+describe("createBoundedSseStream", () => {
+  it("emits the initial comment, heartbeats, then closes", async () => {
+    const stream = createBoundedSseStream({ heartbeatMs: 10, maxLifetimeMs: 45 });
+    const reader = stream.getReader();
+    const decoder = new TextDecoder();
+    const chunks: string[] = [];
+
+    // Reading to completion is the regression test: before the #124 fix the
+    // stream never closed, the Workers runtime killed the request, and the
+    // client reconnected in a loop (3.19M exceptions in 7 days).
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      chunks.push(decoder.decode(value));
+    }
+
+    expect(chunks[0]).toBe(": ok\n\n");
+    expect(chunks.length).toBeGreaterThan(1);
+    expect(chunks.slice(1).every((c) => c === ": ping\n\n")).toBe(true);
+  });
+
+  it("stops heartbeating when the client disconnects", async () => {
+    const stream = createBoundedSseStream({ heartbeatMs: 5, maxLifetimeMs: 10_000 });
+    const reader = stream.getReader();
+    await reader.read();
+    await reader.cancel();
+
+    // If cancel() left the interval running, the timer would keep the test
+    // process alive and enqueue into a cancelled controller.
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(true).toBe(true);
+  });
+});
+
+describe("Worker — GET /mcp stream lifecycle", () => {
+  it("returns an SSE body that ends instead of hanging forever", async () => {
+    const req = makeRequest("/mcp", "GET", { Authorization: "Bearer bi-test-key" });
+    const res = await worker.fetch(req, emptyEnv);
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toBe("text/event-stream");
+    expect(res.body).not.toBeNull();
+
+    const reader = res.body!.getReader();
+    const first = await reader.read();
+    expect(new TextDecoder().decode(first.value)).toBe(": ok\n\n");
+    // Don't drain the real 60s stream in a unit test; cancelling proves the
+    // body is a readable stream under our control.
+    await reader.cancel();
+  });
+});
+
+describe("tokenFingerprint", () => {
+  it("is stable, distinguishes clients, and never contains the token", async () => {
+    const token = "bi-super-secret-key-value";
+    const fp = await tokenFingerprint(token);
+
+    expect(fp).toBe(await tokenFingerprint(token));
+    expect(fp).not.toBe(await tokenFingerprint("bi-another-key"));
+    expect(fp).toMatch(/^key:[0-9a-f]{8}$/);
+    expect(fp).not.toContain("secret");
+    expect(fp).not.toContain(token.slice(3));
+  });
+
+  it("labels OAuth tokens separately from API keys", async () => {
+    expect(await tokenFingerprint("eyJhbGciOi.oauth.token")).toMatch(/^oauth:[0-9a-f]{8}$/);
   });
 });

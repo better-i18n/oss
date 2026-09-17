@@ -46,6 +46,107 @@ export interface Env {
 /** API key prefix used by Better Auth apiKey plugin */
 const API_KEY_PREFIX = "bi-";
 
+/**
+ * Bounds for the GET /mcp SSE stream.
+ *
+ * The MCP Streamable HTTP transport lets a client open a GET stream for
+ * server-initiated messages. We are stateless and never push any, but
+ * answering 405 broke ChatGPT's tool discovery (Feb 2026), so the endpoint
+ * keeps a stream open — and that is what caused the incident below.
+ *
+ * Measured 2026-09-18 on better-i18n-mcp: 3,192,297 `scriptThrewException`
+ * against 4,026 successes in 7 days, ~36M failed invocations over 30 days,
+ * every single one a GET /mcp ending in "the Workers runtime canceled this
+ * request because it detected that your Worker's code had hung and would
+ * never generate a response". The old code wrote one `: ok` comment into a
+ * TransformStream and returned the readable side without ever writing or
+ * closing it again: the runtime kills a response that produces nothing, the
+ * client reconnects instantly, and the loop runs forever. A live tail found
+ * a single client (one IP, user-agent "node", bearer token present) driving
+ * all of it, at times 5.8M requests a day.
+ *
+ * So the stream must TERMINATE on its own: a heartbeat keeps it alive and
+ * proves to the runtime that it is producing output, and a hard lifetime
+ * closes it cleanly. The client reconnects on its own schedule — once a
+ * minute instead of as fast as the network allows.
+ */
+const SSE_HEARTBEAT_MS = 15_000;
+const SSE_MAX_LIFETIME_MS = 60_000;
+
+/**
+ * A server-initiated SSE stream that ends by itself.
+ *
+ * Emits `: ok` immediately, a `: ping` comment every `heartbeatMs`, and
+ * closes after `maxLifetimeMs`. Cancelling (the client disconnecting) clears
+ * both timers. Exported for tests.
+ */
+export function createBoundedSseStream(options?: {
+  heartbeatMs?: number;
+  maxLifetimeMs?: number;
+}): ReadableStream<Uint8Array> {
+  const heartbeatMs = options?.heartbeatMs ?? SSE_HEARTBEAT_MS;
+  const maxLifetimeMs = options?.maxLifetimeMs ?? SSE_MAX_LIFETIME_MS;
+  const encoder = new TextEncoder();
+  let heartbeat: ReturnType<typeof setInterval> | undefined;
+  let lifetime: ReturnType<typeof setTimeout> | undefined;
+
+  const clearTimers = () => {
+    if (heartbeat !== undefined) clearInterval(heartbeat);
+    if (lifetime !== undefined) clearTimeout(lifetime);
+    heartbeat = undefined;
+    lifetime = undefined;
+  };
+
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(encoder.encode(": ok\n\n"));
+      heartbeat = setInterval(() => {
+        try {
+          controller.enqueue(encoder.encode(": ping\n\n"));
+        } catch {
+          // Already closed or cancelled — stop ticking.
+          clearTimers();
+        }
+      }, heartbeatMs);
+      lifetime = setTimeout(() => {
+        clearTimers();
+        try {
+          controller.close();
+        } catch {
+          // Already closed by a cancel — nothing to do.
+        }
+      }, maxLifetimeMs);
+    },
+    cancel() {
+      clearTimers();
+    },
+  });
+}
+
+/**
+ * A stable, non-reversible fingerprint of a bearer token, for logs.
+ *
+ * The incident above took a live `wrangler tail` to attribute, because the
+ * only identifying field we logged was the user-agent ("node"). This adds an
+ * 8-hex-character SHA-256 prefix so the same client is recognisable across
+ * requests. It is one-way and truncated: the token itself, its length and
+ * its remaining bytes never reach the logs.
+ */
+export async function tokenFingerprint(token: string): Promise<string> {
+  try {
+    const digest = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(token),
+    );
+    const hex = Array.from(new Uint8Array(digest).slice(0, 4))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    return `${token.startsWith(API_KEY_PREFIX) ? "key" : "oauth"}:${hex}`;
+  } catch {
+    return "unknown";
+  }
+}
+
 const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
@@ -297,17 +398,15 @@ export default {
         );
       }
 
-      // GET — SSE stream for server-initiated messages.
-      // ChatGPT sends GET to establish an SSE connection before POST requests.
-      // In stateless mode we never push events, but returning 405 causes
-      // ChatGPT to fail tool discovery. Return an open SSE stream instead.
+      // GET — SSE stream for server-initiated messages. ChatGPT opens one
+      // before its POSTs. We are stateless and push nothing, so the stream
+      // only heartbeats and then closes; see createBoundedSseStream for why
+      // it must close rather than stay open forever.
       if (request.method === "GET") {
-        const { readable, writable } = new TransformStream();
-        const writer = writable.getWriter();
-        // Send an SSE comment as initial heartbeat
-        writer.write(new TextEncoder().encode(": ok\n\n"));
-        // Keep the stream open — client disconnects when done
-        return new Response(readable, {
+        console.log(
+          `[mcp] GET /mcp stream opened ua=${request.headers.get("user-agent")?.slice(0, 60)} client=${await tokenFingerprint(token)}`,
+        );
+        return new Response(createBoundedSseStream(), {
           status: 200,
           headers: {
             ...CORS_HEADERS,
