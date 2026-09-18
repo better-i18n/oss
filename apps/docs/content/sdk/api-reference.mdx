@@ -459,22 +459,6 @@ Returned for each key in `relations` when `.expand()` is used. Custom fields of 
 
 Additional `string | null` keys represent the referenced entry's custom fields.
 
-**Relations to the built-in `users` model** (for example a blog post's `author`) resolve to a team member instead of an entry. `title` is the member's name and `slug` is their id. Next to those you get `avatar` and the public author profile the member fills in under Settings, shaped after schema.org `Person`. Every key is `null` until the member sets it.
-
-| Field | Person property | Description |
-| --- | --- | --- |
-| `avatar` | `image` | Profile photo URL |
-| `job_title` | `jobTitle` | Role or title |
-| `company`, `company_url` | `worksFor` | Employer name and website |
-| `bio` | `description` | One or two sentences, for bylines and meta descriptions |
-| `about` | | Long form text for the body of an author page |
-| `website` | `url` | The author's own site |
-| `twitter`, `linkedin`, `github` | `sameAs` | Full profile URLs |
-| `location` | `homeLocation` | Free text, e.g. "Tallinn, Estonia" |
-| `knows_about`, `knows_language` | `knowsAbout`, `knowsLanguage` | Comma-separated lists |
-
-`job_title`, `bio`, `about`, `location`, `knows_about` and `knows_language` follow the `language` of the request. A member can translate them per language under Settings. A field they have not translated comes back in their default, so you never get a hole for a half-translated profile. Links and `company` are the same in every language.
-
 </AccordionItem>
 </Accordion>
 

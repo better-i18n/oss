@@ -128,48 +128,6 @@ export function getBreadcrumbSchema(items: BreadcrumbItem[]) {
   };
 }
 
-export interface PersonSchemaOptions {
-  name: string;
-  url?: string;
-  /** Social profile URLs for the author — helps Google resolve author identity */
-  sameAs?: string[];
-  image?: string;
-  jobTitle?: string;
-  /** Short bio. */
-  description?: string;
-  worksFor?: { name: string; url?: string };
-  /** As the author writes it, e.g. "Tallinn, Estonia". */
-  location?: string;
-  knowsAbout?: string[];
-  knowsLanguage?: string[];
-}
-
-/**
- * Person Schema - the author of an article, or the subject of an author page.
- * Only what is set is emitted; an empty property is worse than a missing one.
- */
-export function getPersonSchema(person: PersonSchemaOptions) {
-  return {
-    "@type": "Person",
-    name: person.name,
-    ...(person.url && { url: person.url }),
-    ...(person.image && { image: person.image }),
-    ...(person.jobTitle && { jobTitle: person.jobTitle }),
-    ...(person.description && { description: person.description }),
-    ...(person.worksFor?.name && {
-      worksFor: {
-        "@type": "Organization",
-        name: person.worksFor.name,
-        ...(person.worksFor.url && { url: person.worksFor.url }),
-      },
-    }),
-    ...(person.location && { homeLocation: { "@type": "Place", name: person.location } }),
-    ...(person.knowsAbout?.length && { knowsAbout: person.knowsAbout }),
-    ...(person.knowsLanguage?.length && { knowsLanguage: person.knowsLanguage }),
-    ...(person.sameAs?.length && { sameAs: person.sameAs }),
-  };
-}
-
 interface ArticleSchemaOptions {
   title: string;
   description: string;
@@ -177,7 +135,12 @@ interface ArticleSchemaOptions {
   image: string;
   publishedTime: string;
   modifiedTime?: string;
-  author: PersonSchemaOptions;
+  author: {
+    name: string;
+    url?: string;
+    /** Social profile URLs for the author — helps Google resolve author identity */
+    sameAs?: string[];
+  };
   wordCount?: number;
   timeRequired?: string; // ISO 8601 duration, e.g. "PT5M"
   articleSection?: string;
@@ -202,7 +165,12 @@ export function getArticleSchema(options: ArticleSchemaOptions) {
     url: options.url,
     datePublished: options.publishedTime,
     dateModified: options.modifiedTime || options.publishedTime,
-    author: getPersonSchema(options.author),
+    author: {
+      "@type": "Person",
+      name: options.author.name,
+      ...(options.author.url && { url: options.author.url }),
+      ...(options.author.sameAs?.length && { sameAs: options.author.sameAs }),
+    },
     publisher: {
       "@type": "Organization",
       name: SITE_NAME,
