@@ -14,6 +14,9 @@ export default defineConfig({
     include: [
       "packages/**/__tests__/**/*.test.ts",
       "packages/**/*.test.ts",
+      // Repo-wide policy tests: they assert things about the repo itself
+      // (deploy scripts, entrypoints), so they belong to no single package.
+      "tests/repo-policy/**/*.test.ts",
     ],
   },
 });
