@@ -184,10 +184,23 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       image: dynamicOgImage,
       publishedTime: post.publishedAt || post.createdAt || "",
       modifiedTime: post.updatedAt || post.publishedAt || post.createdAt || "",
+      // A CMS author with a profile describes themselves; without one the
+      // byline stands for the team, so it points at the company.
       author: {
         name: authorName,
-        url: `${SITE_URL}/en/about`,
-        sameAs: ["https://better-i18n.com", "https://twitter.com/betteri18n"],
+        url: post.author?.website ?? `${SITE_URL}/en/about`,
+        sameAs: post.author?.sameAs.length
+          ? post.author.sameAs
+          : ["https://better-i18n.com", "https://twitter.com/betteri18n"],
+        image: post.author?.avatar ?? undefined,
+        jobTitle: post.author?.jobTitle ?? undefined,
+        description: post.author?.bio ?? undefined,
+        worksFor: post.author?.company
+          ? { name: post.author.company, url: post.author.companyUrl ?? undefined }
+          : undefined,
+        location: post.author?.location ?? undefined,
+        knowsAbout: post.author?.knowsAbout,
+        knowsLanguage: post.author?.knowsLanguage,
       },
       wordCount,
       timeRequired,
@@ -422,9 +435,19 @@ function BlogPostPage() {
                       />
                     ) : null}
                     {post.authorName && (
-                      <p className="text-[13px] font-medium text-mist-900">{post.authorName}</p>
+                      <div>
+                        <p className="text-[13px] font-medium text-mist-900">{post.authorName}</p>
+                        {post.author?.jobTitle && (
+                          <p className="text-[12px] text-mist-500">
+                            {[post.author.jobTitle, post.author.company].filter(Boolean).join(", ")}
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
+                  {post.author?.bio && (
+                    <p className="mt-3 text-[13px] leading-relaxed text-mist-600">{post.author.bio}</p>
+                  )}
                 </div>
 
                 <div>
