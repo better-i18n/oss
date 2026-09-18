@@ -27,7 +27,29 @@ export interface BlogPost {
   category: string | null;
   authorName: string | null;
   authorAvatar: string | null;
+  /** The author's public profile from the CMS. Null when the post has no author. */
+  author: BlogAuthor | null;
   availableLanguages: readonly string[] | null;
+}
+
+/**
+ * The author of a post, as the CMS user filled their author profile in.
+ * Shaped after schema.org `Person`; every detail is optional.
+ */
+export interface BlogAuthor {
+  name: string;
+  avatar: string | null;
+  jobTitle: string | null;
+  company: string | null;
+  companyUrl: string | null;
+  bio: string | null;
+  about: string | null;
+  website: string | null;
+  location: string | null;
+  /** Social profile URLs (X, LinkedIn, GitHub), for `sameAs`. */
+  sameAs: string[];
+  knowsAbout: string[];
+  knowsLanguage: string[];
 }
 
 export interface BlogPostListItem {
@@ -179,6 +201,34 @@ function mapEntryBase(entry: {
     category: entry.relations?.category?.name ?? null,
     authorName: entry.relations?.author?.title ?? null,
     authorAvatar: entry.relations?.author?.avatar ?? null,
+  };
+}
+
+/** The CMS sends list-shaped profile fields as comma-separated text. */
+function splitList(value: string | null | undefined): string[] {
+  return (value ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function mapAuthor(author: RelationValue | null | undefined): BlogAuthor | null {
+  if (!author?.title) return null;
+  return {
+    name: author.title,
+    avatar: author.avatar ?? null,
+    jobTitle: author.job_title ?? null,
+    company: author.company ?? null,
+    companyUrl: author.company_url ?? null,
+    bio: author.bio ?? null,
+    about: author.about ?? null,
+    website: author.website ?? null,
+    location: author.location ?? null,
+    sameAs: [author.twitter, author.linkedin, author.github].filter(
+      (url): url is string => Boolean(url),
+    ),
+    knowsAbout: splitList(author.knows_about),
+    knowsLanguage: splitList(author.knows_language),
   };
 }
 
@@ -381,6 +431,7 @@ export async function getBlogPost(
       excerpt,
       availableLanguages,
       ...mapEntryBase(entry),
+      author: mapAuthor(entry.relations?.author),
     };
     return setCache(cacheKey, post);
   } catch {
