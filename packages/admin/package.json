@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@better-i18n/mcp-types": "^0.17.0",
-    "@trpc/client": "^11.0.0"
+    "@trpc/client": "^11.18.0"
   },
   "devDependencies": {
     "typescript": "^5.7.0"
