@@ -473,6 +473,8 @@ Additional `string | null` keys represent the referenced entry's custom fields.
 | `location` | `homeLocation` | Free text, e.g. "Tallinn, Estonia" |
 | `knows_about`, `knows_language` | `knowsAbout`, `knowsLanguage` | Comma-separated lists |
 
+`job_title`, `bio`, `about`, `location`, `knows_about` and `knows_language` follow the `language` of the request. A member can translate them per language under Settings. A field they have not translated comes back in their default, so you never get a hole for a half-translated profile. Links and `company` are the same in every language.
+
 </AccordionItem>
 </Accordion>
 
