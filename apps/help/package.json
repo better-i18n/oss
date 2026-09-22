@@ -13,12 +13,12 @@
     "@better-i18n/sdk": "^3.5.0",
     "@better-i18n/ui": "^0.2.0",
     "@better-i18n/use-intl": "^0.10.1",
-    "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.319",
+    "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.320",
     "@radix-ui/react-dialog": "^1.1.15",
     "@tailwindcss/vite": "^4.3.3",
-    "@tanstack/react-query": "^5.102.8",
-    "@tanstack/react-router": "~1.170.36",
-    "@tanstack/react-start": "~1.168.54",
+    "@tanstack/react-query": "^5.103.1",
+    "@tanstack/react-router": "~1.170.38",
+    "@tanstack/react-start": "~1.168.56",
     "@tanstack/router-plugin": "~1.168.23",
     "@tanstack/start-server-functions-server": "^1.131.2",
     "lucide-react": "^0.577.0",
@@ -41,6 +41,6 @@
     "typescript": "^5.7.2",
     "vite": "~7.3.6",
     "vite-plugin-minify": "^2.1.0",
-    "wrangler": "^4.132.0"
+    "wrangler": "^4.135.0"
   }
 }

@@ -56,7 +56,7 @@
   "dependencies": {
     "@better-i18n/mcp-types": "^0.17.0",
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@trpc/client": "^11.18.0",
+    "@trpc/client": "^11.19.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {

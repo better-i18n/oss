@@ -21,17 +21,17 @@
     "@better-i18n/sdk": "^3.5.0",
     "@better-i18n/ui": "^0.2.0",
     "@better-i18n/use-intl": "workspace:*",
-    "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.319",
+    "@central-icons-react/round-outlined-radius-2-stroke-2": "^1.1.320",
     "@getbrevo/brevo": "^5.0.4",
     "@helpway/react": "0.16.0",
     "@radix-ui/react-hover-card": "^1.1.23",
-    "@remotion/player": "^4.0.525",
+    "@remotion/player": "^4.0.526",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-devtools": "^0.10.12",
-    "@tanstack/react-query": "^5.102.8",
-    "@tanstack/react-router": "~1.170.36",
+    "@tanstack/react-query": "^5.103.1",
+    "@tanstack/react-router": "~1.170.38",
     "@tanstack/react-router-devtools": "~1.167.2",
-    "@tanstack/react-start": "~1.168.54",
+    "@tanstack/react-start": "~1.168.56",
     "@tanstack/router-plugin": "~1.168.23",
     "@tanstack/start-server-functions-server": "^1.131.2",
     "@unitalkai/icons": "^1.0.0",
@@ -65,6 +65,6 @@
     "vite": "~7.3.6",
     "vitest": "^3.0.5",
     "web-vitals": "^5.3.0",
-    "wrangler": "^4.132.0"
+    "wrangler": "^4.135.0"
   }
 }
