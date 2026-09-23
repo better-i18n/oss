@@ -327,7 +327,7 @@ export const updateContentEntryInput = projectIdentifierSchema.extend({
     .enum(["draft", "published", "archived"])
     .optional()
     .describe("Updated entry status"),
-  /** Explicit publish date (ISO 8601). Auto-set when status changes to "published" if omitted. Use to backdate or schedule entries. */
+  /** Explicit publish date (ISO 8601). Auto-set when status changes to "published" if omitted. Use to backdate entries; to publish later, use scheduleContentEntry. */
   publishedAt: z.string().datetime().optional().describe("Explicit publish date (ISO 8601). Auto-set to now when status → published if omitted."),
   /** Updated custom field values. Accepts string, number, or boolean — non-string values are coerced to string. */
   customFields: z
@@ -351,6 +351,37 @@ export const publishContentEntryInput = projectIdentifierSchema.extend({
   entryId: z.string().uuid().describe("Content entry UUID"),
 });
 export type PublishContentEntryInput = z.input<typeof publishContentEntryInput>;
+
+/**
+ * Input schema for scheduleContentEntry endpoint.
+ * The entry keeps its status until `publishAt`, then publishes exactly as
+ * publishContentEntry would (webhooks and cache purge included).
+ */
+export const scheduleContentEntryInput = projectIdentifierSchema.extend({
+  /** Content entry UUID */
+  entryId: z.string().uuid().describe("Content entry UUID"),
+  /** When to publish (ISO 8601 with offset). Must not be in the past. */
+  publishAt: z
+    .string()
+    .datetime({ offset: true })
+    .describe('When to publish, ISO 8601 with offset. Example: "2026-10-01T09:00:00Z" or "2026-10-01T12:00:00+03:00". Must be in the future.'),
+  /** Restrict the publish to these languages. Omit for every language. */
+  languages: z
+    .array(z.string().min(1))
+    .optional()
+    .describe("Language codes to publish at that time. Omit to publish every language that has content."),
+});
+export type ScheduleContentEntryInput = z.input<typeof scheduleContentEntryInput>;
+
+/**
+ * Input schema for unscheduleContentEntry endpoint.
+ * Cancels a pending scheduled publish. The entry's status is not touched.
+ */
+export const unscheduleContentEntryInput = projectIdentifierSchema.extend({
+  /** Content entry UUID */
+  entryId: z.string().uuid().describe("Content entry UUID"),
+});
+export type UnscheduleContentEntryInput = z.input<typeof unscheduleContentEntryInput>;
 
 /**
  * Input schema for deleteContentEntry endpoint.

@@ -33,6 +33,8 @@ import type {
   CreateContentEntryInput,
   UpdateContentEntryInput,
   PublishContentEntryInput,
+  ScheduleContentEntryInput,
+  UnscheduleContentEntryInput,
   DeleteContentEntryInput,
   CreateContentModelInput,
   UpdateContentModelInput,
@@ -79,6 +81,8 @@ import type {
   CompactCreateContentEntryResponse,
   CompactUpdateContentEntryResponse,
   CompactPublishContentEntryResponse,
+  CompactScheduleContentEntryResponse,
+  CompactUnscheduleContentEntryResponse,
   CompactDeleteContentEntryResponse,
   CompactContentModelField,
   CompactDeleteContentModelResponse,
@@ -219,6 +223,16 @@ export interface MCPContentClient {
     mutate: (
       input: PublishContentEntryInput,
     ) => Promise<CompactPublishContentEntryResponse>;
+  };
+  scheduleContentEntry: {
+    mutate: (
+      input: ScheduleContentEntryInput,
+    ) => Promise<CompactScheduleContentEntryResponse>;
+  };
+  unscheduleContentEntry: {
+    mutate: (
+      input: UnscheduleContentEntryInput,
+    ) => Promise<CompactUnscheduleContentEntryResponse>;
   };
   deleteContentEntry: {
     mutate: (
