@@ -27,6 +27,8 @@ import { getContentEntry } from "./tools/getContentEntry.js";
 import { createContentEntry } from "./tools/createContentEntry.js";
 import { updateContentEntry } from "./tools/updateContentEntry.js";
 import { publishContentEntry } from "./tools/publishContentEntry.js";
+import { scheduleContentEntry } from "./tools/scheduleContentEntry.js";
+import { unscheduleContentEntry } from "./tools/unscheduleContentEntry.js";
 import { deleteContentEntry } from "./tools/deleteContentEntry.js";
 import { duplicateContentEntry } from "./tools/duplicateContentEntry.js";
 import { bulkPublishEntries } from "./tools/bulkPublishEntries.js";
@@ -135,6 +137,10 @@ Never use language= when you want to find content that needs translating — alw
 2. bulkUpdateEntries with translations map        — update all at once (max 200 per call; 'failed' array reports partial fails, retry only those)
 3. bulkPublishEntries                             — publish if needed
 
+### Publishing later
+scheduleContentEntry({ entryId, publishAt })     — publish at a future time (ISO 8601 with offset)
+unscheduleContentEntry({ entryId })              — cancel it. Entries show a pending schedule as sch_at.
+
 ### Character encoding (UTF-8) — CRITICAL
 All string inputs are UTF-8. Send non-ASCII characters in every language (diacritics, CJK, Cyrillic, Arabic, Hebrew, emoji, etc.) exactly as the user wrote them. Do NOT transliterate, strip, or "simplify" them to ASCII — stored values are served verbatim and corrupt end-user content. If your JSON serializer mangles characters, use Unicode escapes (e.g. \u00f6) instead. Lossy encoding is always a client-side bug, never a limitation of this MCP.`,
     },
@@ -182,6 +188,8 @@ All string inputs are UTF-8. Send non-ASCII characters in every language (diacri
     createContentEntry,
     updateContentEntry,
     publishContentEntry,
+    scheduleContentEntry,
+    unscheduleContentEntry,
     deleteContentEntry,
     duplicateContentEntry,
     bulkPublishEntries,
@@ -215,6 +223,8 @@ All string inputs are UTF-8. Send non-ASCII characters in every language (diacri
       annotate(createContentEntry.definition, write),
       annotate(updateContentEntry.definition, write),
       annotate(publishContentEntry.definition, write),
+      annotate(scheduleContentEntry.definition, write),
+      annotate(unscheduleContentEntry.definition, write),
       annotate(duplicateContentEntry.definition, write),
       annotate(bulkPublishEntries.definition, write),
       annotate(bulkCreateEntries.definition, write),

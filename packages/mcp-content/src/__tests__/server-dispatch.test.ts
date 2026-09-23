@@ -15,6 +15,8 @@ import { getContentEntry } from "../tools/getContentEntry.js";
 import { createContentEntry } from "../tools/createContentEntry.js";
 import { updateContentEntry } from "../tools/updateContentEntry.js";
 import { publishContentEntry } from "../tools/publishContentEntry.js";
+import { scheduleContentEntry } from "../tools/scheduleContentEntry.js";
+import { unscheduleContentEntry } from "../tools/unscheduleContentEntry.js";
 import { deleteContentEntry } from "../tools/deleteContentEntry.js";
 import { duplicateContentEntry } from "../tools/duplicateContentEntry.js";
 import { bulkPublishEntries } from "../tools/bulkPublishEntries.js";
@@ -43,6 +45,8 @@ const ALL_TOOLS: Tool[] = [
   createContentEntry,
   updateContentEntry,
   publishContentEntry,
+  scheduleContentEntry,
+  unscheduleContentEntry,
   duplicateContentEntry,
   bulkPublishEntries,
   bulkCreateEntries,
@@ -69,6 +73,8 @@ const EXPECTED_TOOL_NAMES = [
   "createContentEntry",
   "updateContentEntry",
   "publishContentEntry",
+  "scheduleContentEntry",
+  "unscheduleContentEntry",
   "duplicateContentEntry",
   "bulkPublishEntries",
   "bulkCreateEntries",
@@ -94,6 +100,8 @@ const WRITE_TOOL_NAMES = [
   "createContentEntry",
   "updateContentEntry",
   "publishContentEntry",
+  "scheduleContentEntry",
+  "unscheduleContentEntry",
   "duplicateContentEntry",
   "bulkPublishEntries",
   "bulkCreateEntries",
@@ -116,14 +124,14 @@ const DESTRUCTIVE_TOOL_NAMES = [
 // ---------------------------------------------------------------------------
 
 describe("MCP content tool registry — completeness", () => {
-  it("exports exactly 19 tools", () => {
-    expect(ALL_TOOLS).toHaveLength(19);
+  it("exports exactly 21 tools", () => {
+    expect(ALL_TOOLS).toHaveLength(21);
   });
 
   it("all tools have unique names", () => {
     const names = ALL_TOOLS.map((t) => t.definition.name);
     const unique = new Set(names);
-    expect(unique.size).toBe(19);
+    expect(unique.size).toBe(21);
   });
 
   it("all tools have a definition with name, description, and inputSchema", () => {
@@ -159,6 +167,8 @@ describe("MCP content tool registry — name correctness", () => {
     expect(createContentEntry.definition.name).toBe("createContentEntry");
     expect(updateContentEntry.definition.name).toBe("updateContentEntry");
     expect(publishContentEntry.definition.name).toBe("publishContentEntry");
+    expect(scheduleContentEntry.definition.name).toBe("scheduleContentEntry");
+    expect(unscheduleContentEntry.definition.name).toBe("unscheduleContentEntry");
     expect(deleteContentEntry.definition.name).toBe("deleteContentEntry");
     expect(duplicateContentEntry.definition.name).toBe("duplicateContentEntry");
     expect(bulkPublishEntries.definition.name).toBe("bulkPublishEntries");
@@ -201,15 +211,15 @@ describe("MCP content tool registry — annotation categories", () => {
     }
   });
 
-  it("read-only, write, and destructive categories together cover all 19 tools", () => {
+  it("read-only, write, and destructive categories together cover all 21 tools", () => {
     const allCategorised = [
       ...READ_ONLY_TOOL_NAMES,
       ...WRITE_TOOL_NAMES,
       ...DESTRUCTIVE_TOOL_NAMES,
     ];
-    expect(allCategorised).toHaveLength(19);
+    expect(allCategorised).toHaveLength(21);
     const unique = new Set(allCategorised);
-    expect(unique.size).toBe(19);
+    expect(unique.size).toBe(21);
   });
 });
 

@@ -14,6 +14,7 @@
  * - tr: translations
  * - mdl: contentModel
  * - pub_at: publishedAt
+ * - sch_at: scheduledAt (only when a publish is scheduled)
  * - c_at: createdAt
  * - u_at: updatedAt
  * - desc: description
@@ -171,6 +172,7 @@ export interface CompactContentModelRef {
  * - sl: slug
  * - st: status
  * - pub_at: publishedAt
+ * - sch_at: scheduledAt (only when a publish is scheduled)
  * - c_at: createdAt
  * - u_at: updatedAt
  * - mdl: contentModel
@@ -185,6 +187,7 @@ export interface CompactContentEntrySummary {
   sl: string;
   st: string;
   pub_at: string | null;
+  sch_at?: string | null;
   c_at: string;
   u_at: string;
   mdl: CompactContentModelRef;
@@ -258,6 +261,7 @@ export interface CompactContentEntryVersionInfo {
  * - sl: slug
  * - st: status
  * - pub_at: publishedAt
+ * - sch_at: scheduledAt (only when a publish is scheduled)
  * - c_at: createdAt
  * - u_at: updatedAt
  * - slang: sourceLanguage
@@ -273,6 +277,8 @@ export interface CompactContentEntryDetail {
   sl: string;
   st: string;
   pub_at: string | null;
+  sch_at?: string | null;
+  sch_langs?: string[] | null;
   c_at: string;
   u_at: string;
   slang: string;
@@ -292,6 +298,8 @@ export interface CompactContentEntryDetail {
 export type CompactCreateContentEntryResponse = CompactContentEntryDetailMin;
 export type CompactUpdateContentEntryResponse = CompactContentEntryDetailMin;
 export type CompactPublishContentEntryResponse = CompactContentEntryDetailMin;
+export type CompactScheduleContentEntryResponse = CompactContentEntryDetailMin;
+export type CompactUnscheduleContentEntryResponse = CompactContentEntryDetailMin;
 
 /**
  * Compact response from deleteContentEntry.
@@ -424,6 +432,7 @@ export interface CompactListContentEntriesCompactResponse {
  * - sl: slug
  * - st: status
  * - pub_at: publishedAt
+ * - sch_at: scheduledAt (only when a publish is scheduled)
  * - c_at: createdAt
  * - u_at: updatedAt
  * - slang: sourceLanguage
@@ -436,6 +445,8 @@ export interface CompactContentEntryDetailMin {
   sl: string;
   st: string;
   pub_at: string | null;
+  sch_at?: string | null;
+  sch_langs?: string[] | null;
   c_at: string;
   u_at: string;
   slang: string;

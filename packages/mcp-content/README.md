@@ -115,6 +115,8 @@ All tools require a `project` parameter (format: `"org-slug/project-slug"`) to i
 | Tool | Description |
 | --- | --- |
 | `publishContentEntry` | Set entry status to published and approve translations |
+| `scheduleContentEntry` | Publish an entry at a future time (`publishAt`, ISO 8601 with offset), optionally for some languages only |
+| `unscheduleContentEntry` | Cancel a pending scheduled publish |
 
 ## Field Types & Options
 

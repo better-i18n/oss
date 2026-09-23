@@ -178,6 +178,8 @@ export interface ContentEntrySummary {
   status: string;
   /** Published timestamp (ISO) or null */
   publishedAt: string | null;
+  /** Pending scheduled publish time (ISO). Absent when nothing is scheduled. */
+  scheduledAt?: string | null;
   /** Created timestamp (ISO) */
   createdAt: string;
   /** Updated timestamp (ISO) */
@@ -256,6 +258,10 @@ export interface ContentEntryDetail {
   status: string;
   /** Published timestamp (ISO) or null */
   publishedAt: string | null;
+  /** Pending scheduled publish time (ISO). Absent when nothing is scheduled. */
+  scheduledAt?: string | null;
+  /** Languages the scheduled publish covers. Absent = every language. */
+  scheduledLanguages?: string[] | null;
   /** Created timestamp (ISO) */
   createdAt: string;
   /** Updated timestamp (ISO) */
