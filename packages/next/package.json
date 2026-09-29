@@ -74,8 +74,8 @@
     "react-dom": ">=18.0.0"
   },
   "devDependencies": {
-    "next": "^15.5.25",
-    "next-intl": "^4.14.5",
+    "next": "^15.5.26",
+    "next-intl": "^4.14.7",
     "@types/node": "^20.19.43",
     "@types/react": "^19.3.0",
     "typescript": "~5.9.2"

@@ -11,7 +11,7 @@
     "@better-i18n/vite": "workspace:^",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "use-intl": "^4.14.5"
+    "use-intl": "^4.14.7"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
