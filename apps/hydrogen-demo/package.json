@@ -15,7 +15,7 @@
     "@better-i18n/remix": "workspace:*",
     "@better-i18n/sdk": "workspace:*",
     "i18next": "^24.0.0",
-    "@shopify/hydrogen": "^2026.4.5",
+    "@shopify/hydrogen": "^2026.4.6",
     "@shopify/remix-oxygen": "^3.0.4",
     "graphql": "^16.14.2",
     "graphql-tag": "^2.12.7",
@@ -23,7 +23,7 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-i18next": "^15.0.0",
-    "react-router": "7.15.0"
+    "react-router": "7.18.4"
   },
   "devDependencies": {
     "@react-router/dev": "7.18.4",
@@ -31,7 +31,7 @@
     "@shopify/cli": "^3.94.3",
     "@shopify/cli-hydrogen": "^11.1.16",
     "@shopify/hydrogen-codegen": "^0.3.3",
-    "@shopify/mini-oxygen": "4.2.2",
+    "@shopify/mini-oxygen": "4.2.3",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -39,6 +39,6 @@
     "typescript": "~5.9.2",
     "vite": "^7.3.6",
     "vite-tsconfig-paths": "^4.3.2",
-    "wrangler": "^4.132.0"
+    "wrangler": "^4.145.0"
   }
 }
