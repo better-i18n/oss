@@ -73,9 +73,9 @@
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
-    "@tanstack/react-router": "^1.170.36",
+    "@tanstack/react-router": "^1.170.41",
     "react": "^19.3.0",
-    "use-intl": "^4.14.5",
+    "use-intl": "^4.14.8",
     "typescript": "~5.9.2"
   }
 }
