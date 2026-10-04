@@ -70,7 +70,7 @@ export async function executeTool<T extends { project: string }>(
     return await handler(input, parsed);
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return error(`Validation error: ${err.errors.map(e => e.message).join(", ")}`);
+      return error(`Validation error: ${err.issues.map((issue) => issue.message).join(", ")}`);
     }
     return error(err instanceof Error ? err.message : String(err));
   }
@@ -89,7 +89,7 @@ export async function executeSimpleTool<T>(
     return await handler(input);
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return error(`Validation error: ${err.errors.map(e => e.message).join(", ")}`);
+      return error(`Validation error: ${err.issues.map((issue) => issue.message).join(", ")}`);
     }
     return error(err instanceof Error ? err.message : String(err));
   }

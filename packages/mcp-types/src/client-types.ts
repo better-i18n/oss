@@ -26,6 +26,15 @@ import type {
 } from "./schemas";
 
 import type {
+  RegisterBlockInput,
+  BulkRegisterBlocksInput,
+  ListBlocksInput,
+  GetBlockInput,
+  ValidateBlockParamsInput,
+  DeleteBlockInput,
+} from "./content-block-schemas";
+
+import type {
   ListContentModelsInput,
   GetContentModelInput,
   ListContentEntriesInput,
@@ -295,6 +304,29 @@ export interface MCPContentClient {
     mutate: (
       input: ReorderFieldsInput,
     ) => Promise<CompactReorderFieldsResponse>;
+  };
+  /*
+   * Block catalog. The tools return these responses to the agent unchanged,
+   * so there is no compact type yet; the shapes live in
+   * apps/api/domains/ai/mcp/content-router.ts.
+   */
+  registerBlock: {
+    mutate: (input: RegisterBlockInput) => Promise<Record<string, unknown>>;
+  };
+  bulkRegisterBlocks: {
+    mutate: (input: BulkRegisterBlocksInput) => Promise<Record<string, unknown>>;
+  };
+  listBlocks: {
+    query: (input: ListBlocksInput) => Promise<Record<string, unknown>>;
+  };
+  getBlock: {
+    query: (input: GetBlockInput) => Promise<Record<string, unknown>>;
+  };
+  validateBlockParams: {
+    query: (input: ValidateBlockParamsInput) => Promise<Record<string, unknown>>;
+  };
+  deleteBlock: {
+    mutate: (input: DeleteBlockInput) => Promise<Record<string, unknown>>;
   };
 }
 
