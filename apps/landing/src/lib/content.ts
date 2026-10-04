@@ -298,6 +298,55 @@ export async function getBlogPosts(
   };
 }
 
+/**
+ * The newest `limit` published posts for a locale, one Content API page.
+ *
+ * Related posts and keyword matches only ever looked at the newest 30 posts,
+ * but went through getAllBlogPostsForLocale, which pages through EVERY post
+ * (~254) with its full body. The blog post page runs this on every view:
+ * 13.5K calls/day, ~725 KB each, 9.85 GB/day of database egress (#142).
+ *
+ * `withBody: false` asks the Content API for the card fields only, so no body
+ * column is read at all. The excerpt is then empty.
+ */
+async function getRecentBlogPosts(
+  locale: string,
+  { limit, withBody }: { limit: number; withBody: boolean },
+): Promise<BlogPostListItem[]> {
+  const cacheKey = `blog-posts-recent:${locale}:${limit}:${withBody ? "body" : "cards"}`;
+  const cached = getCached<BlogPostListItem[]>(cacheKey);
+  if (cached) return cached;
+
+  const result = await getContentClient().getEntries(BLOG_MODEL, {
+    language: locale,
+    status: "published",
+    sort: "publishedAt",
+    order: "desc",
+    limit,
+    expand: ["author", "category"],
+    ...(withBody
+      ? {}
+      : { fields: ["title", "read_time", "featured", "banner_image", "category", "author"] }),
+  });
+
+  const posts = result.items
+    .filter((item) => hasTranslation(item as Record<string, unknown>, locale))
+    .map((item) => ({
+      slug: item.slug as string,
+      title: item.title as string,
+      excerpt: withBody ? extractExcerpt(((item as Record<string, unknown>).body as string | null) ?? null) : "",
+      publishedAt: item.publishedAt as string | null,
+      ...mapEntryBase(
+        item as {
+          relations?: Record<string, RelationValue | null | undefined>;
+          [key: string]: unknown;
+        },
+      ),
+    }));
+
+  return setCache(cacheKey, posts);
+}
+
 /** Fetch related posts, prioritizing same category. */
 export async function getRelatedPosts(
   currentSlug: string,
@@ -306,7 +355,8 @@ export async function getRelatedPosts(
   limit: number = 3,
 ): Promise<BlogPostListItem[]> {
   try {
-    const { posts } = await getBlogPosts(locale, { limit: 30 });
+    // Cards only: the related-posts block shows no excerpt.
+    const posts = await getRecentBlogPosts(locale, { limit: 30, withBody: false });
     // Filter out current post
     const filtered = posts.filter((p) => p.slug !== currentSlug);
 
@@ -330,7 +380,8 @@ export async function getPostsByKeywords(
   limit: number = 3,
 ): Promise<BlogPostListItem[]> {
   try {
-    const { posts } = await getBlogPosts(locale, { limit: 30 });
+    // Keyword matching reads the excerpt, so these 30 keep their body.
+    const posts = await getRecentBlogPosts(locale, { limit: 30, withBody: true });
     const lowerKeywords = keywords.map((k) => k.toLowerCase());
 
     const scored = posts
