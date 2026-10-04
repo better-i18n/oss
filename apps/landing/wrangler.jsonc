@@ -1,6 +1,8 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "betteri18n-landing",
+  // Better i18n Org. Pinned so a deploy can never land on the old personal account.
+  "account_id": "453acd4b6e3ad2a6a652c9a51b9a7fc3",
   "main": "dist/worker-entry.js",
   "compatibility_date": "2025-01-15",
   "compatibility_flags": ["nodejs_compat"],
@@ -53,7 +55,7 @@
     {
       "binding": "DB",
       "database_name": "betteri18n-landing-db",
-      "database_id": "a1bd2dd6-0a2e-4047-b02c-0a0a5dc7fdd2"
+      "database_id": "16442040-941d-4a1e-b936-f02732c36149"
     }
   ],
   // R2 bucket for CV/resume file uploads
