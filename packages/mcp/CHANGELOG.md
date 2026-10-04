@@ -1,5 +1,11 @@
 # @better-i18n/mcp
 
+## 0.21.3
+
+### Patch Changes
+
+- a7d4534: Read validation messages from `ZodError.issues`. zod 4 removed `.errors`, so the packages no longer type-checked after the zod 4 upgrade. The block catalog tools in mcp-content are now typed on the client too.
+
 ## 0.21.2
 
 ### Patch Changes
