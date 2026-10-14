@@ -24,7 +24,10 @@ jobs:
           bun-version: "1.3.10"
 
       - name: Install Dependencies
-        run: bun install --frozen-lockfile
+        # Not --frozen-lockfile: bun 1.3.10 cannot read back a lockfile it wrote for
+        # this tree (the Expo/metro hoisting differs each run), so a frozen install
+        # fails on main (checked at a175e7b3). ci.yml and publish.yml install the same way.
+        run: bun install
 
       - name: Build Workspace Packages
         run: bun run build
