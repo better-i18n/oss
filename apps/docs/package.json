@@ -8,6 +8,7 @@
     "start": "serve out",
     "preview": "bun run build && CLOUDFLARE_ACCOUNT_ID=f2dd7df8aa416a97b3ed6ae435476f66 wrangler pages dev out",
     "deploy": "bun run build && CLOUDFLARE_ACCOUNT_ID=f2dd7df8aa416a97b3ed6ae435476f66 wrangler pages deploy out",
+    "test": "bun test tests",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },

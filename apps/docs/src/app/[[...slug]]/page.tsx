@@ -1,4 +1,5 @@
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
+import { canonicalDocsUrl } from "@/lib/seo-host";
 import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
@@ -76,6 +77,9 @@ export async function generateMetadata(
   return {
     title: page.data.title,
     description: page.data.description,
+    // The docs live on Helpway at /en/docs/*; this build must never compete
+    // with them (see src/lib/seo-host.ts).
+    alternates: { canonical: canonicalDocsUrl(page.url) },
     openGraph: {
       images: [{ url: ogUrl.toString(), width: 1200, height: 630 }],
     },
