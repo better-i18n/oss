@@ -25,6 +25,7 @@ import { NotFoundPage as StatusNotFound } from "@/components/ErrorPage";
 import { ClientErrorReporter } from "@/components/ClientErrorReporter";
 import { storeMessages } from "../lib/ssr-messages";
 import { fetchLanguages, fetchLocales } from "../lib/locales";
+import { withTrailingSlash } from "../lib/trailing-slash";
 import appCss from "../styles.css?url";
 import { MarketingLayout } from "../components/MarketingLayout";
 import { SvgSprite } from "../components/SvgSprite";
@@ -324,7 +325,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
          warmed does not exist. A guaranteed multi-second cost for a possible
          saving is the wrong trade on the most-requested URL of the site. */
 
-      const targetPath = location.pathname === "/" ? "" : location.pathname;
+      /* Land on the final URL in one hop: `/` → `/en/`, not `/en` and then a
+         307 to `/en/` (F7). */
+      const targetPath = withTrailingSlash(location.pathname);
       throw redirect({
         href: `/${detectedLocale}${targetPath}${search}${hash}`,
         // 302 (not 301) — locale redirect is personalized (cookie + geo).
