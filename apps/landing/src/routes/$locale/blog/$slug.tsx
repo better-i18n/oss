@@ -35,6 +35,7 @@ import {
   SITE_URL,
   getAlternateLinks,
   getCanonicalLink,
+  getCanonicalUrl,
   getLocalizedMeta,
   formatMetaTags,
   buildOgImageUrl,
@@ -47,6 +48,7 @@ import {
   getBreadcrumbSchema,
 } from "@/lib/structured-data";
 import { getLocaleTier } from "@/seo/locale-tiers";
+import { blogCanonicalLocale } from "@/seo/blog-seo";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 import { assetImage } from "@/lib/asset-image";
@@ -138,9 +140,14 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       },
     );
 
+    // English copy under a locale path → canonical is the English post (F3).
+    const availableLanguages = post?.availableLanguages ?? [];
+    const canonicalLocale = blogCanonicalLocale(locale, availableLanguages);
+
     // Override with blog-specific values (immutable spread)
     const blogMeta = {
       ...meta,
+      canonicalUrl: getCanonicalUrl(canonicalLocale, pathname),
       title: truncateTitle(`${postTitle} | Better I18N`),
       description: excerpt,
       ogTitle: postTitle,
@@ -148,7 +155,6 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     };
 
     // Use formatMetaTags for consistent meta tag generation
-    const availableLanguages = post?.availableLanguages ?? [];
     const baseTags = formatMetaTags(blogMeta, {
       locale,
       locales: availableLanguages.length > 0 ? [...availableLanguages] : undefined,
@@ -217,7 +223,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
             ? [...availableLanguages]
             : undefined,
         ),
-        getCanonicalLink(locale, pathname),
+        getCanonicalLink(canonicalLocale, pathname),
       ],
       scripts: formatStructuredData(schemas),
     };
