@@ -48,7 +48,7 @@ import {
   getBreadcrumbSchema,
 } from "@/lib/structured-data";
 import { getLocaleTier } from "@/seo/locale-tiers";
-import { blogCanonicalLocale } from "@/seo/blog-seo";
+import { blogCanonicalLocale, isOffTopicBlogSlug } from "@/seo/blog-seo";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 import { assetImage } from "@/lib/asset-image";
@@ -161,7 +161,8 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       publishedTime: post?.publishedAt || post?.createdAt || "",
       modifiedTime: post?.updatedAt || post?.publishedAt || post?.createdAt || "",
       author: authorName,
-      noindex: getLocaleTier(locale) === "tier3",
+      // Off-topic posts (F4) stay online but ask not to be indexed.
+      noindex: getLocaleTier(locale) === "tier3" || isOffTopicBlogSlug(post?.slug ?? ""),
     });
 
     // Article-specific tags that formatMetaTags does not cover
