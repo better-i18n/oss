@@ -22,6 +22,7 @@
 import tanstack from "./server/server.js";
 import { REDIRECT_MAP } from "./src/seo/redirects";
 import { unwrapMigrationProxy } from "./src/lib/migration-proxy";
+import { localeTrailingSlashRedirect } from "./src/lib/trailing-slash";
 
 /**
  * Static file extensions that should be served directly from ASSETS.
@@ -476,6 +477,21 @@ export default {
         status: 301,
         headers: { Location: `${url.origin}${redirectTarget}` },
       });
+    }
+
+    // 1b. Slash-less page URL under a served locale (`/en`, `/de/pricing`) →
+    // one permanent 308 to the slash URL. TanStack used to answer these with
+    // a 307 (temporary) after a full SSR start (SEO audit 2026-11-13, F7).
+    // GET/HEAD only: a 308 replays the method, and server-fn POSTs must not
+    // be redirected.
+    if (request.method === "GET" || request.method === "HEAD") {
+      const slashTarget = localeTrailingSlashRedirect(url.pathname);
+      if (slashTarget) {
+        return new Response(null, {
+          status: 308,
+          headers: { Location: `${url.origin}${slashTarget}${url.search}` },
+        });
+      }
     }
 
     // 2. Markdown content negotiation for agents (Cloudflare "Markdown for
