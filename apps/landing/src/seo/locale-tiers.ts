@@ -10,8 +10,18 @@
  * Any locale not listed in tier1 or tier2 is automatically assigned to tier3.
  */
 
+/*
+ * A tier is a promise that `/{locale}/…` is served. Routing only accepts the
+ * locales in the CDN manifest (`better-i18n/landing`), so a locale listed here
+ * but missing there advertises URLs that 404.
+ *
+ * `pt` was in tier1 without being in the manifest. Blog posts that have a
+ * Portuguese CMS translation then emitted `hreflang="pt"` → `/pt/…` → 302 →
+ * `/en/pt/…` 404, on 610 pages (SEO audit 2026-11-13, fix F3). Add it back
+ * here only together with `pt` in the manifest.
+ */
 export const LOCALE_TIERS = {
-  tier1: ["en", "de", "fr", "es", "pt", "ja"],
+  tier1: ["en", "de", "fr", "es", "ja"],
   tier2: ["tr", "it", "nl", "ko", "zh-hans"],
   tier3: [],
 } as const;
