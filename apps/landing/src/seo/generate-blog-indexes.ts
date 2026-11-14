@@ -76,16 +76,87 @@ interface ListResponse {
   readonly total?: number;
 }
 
-function hasLanguage(item: RawEntry, locale: string): boolean {
-  const langs = item.availableLanguages ?? item.langs;
-  if (!Array.isArray(langs)) return true;
-  return (langs as unknown[]).some((v) => {
-    if (typeof v === "string") return v === locale;
+// ─── Which locales really have a translation ─────────────────────────
+
+const SOURCE_LOCALE = "en";
+const TRANSLATION_LOOKUP_CONCURRENCY = 8;
+
+/** slug → locale codes the CMS has a real translation for. */
+export type BlogTranslations = ReadonlyMap<string, ReadonlySet<string>>;
+
+/** Language codes from `availableLanguages` / `langs`, both shapes. */
+export function languageCodes(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((v) => {
+    if (typeof v === "string") return [v];
     if (v !== null && typeof v === "object") {
-      return (v as Record<string, unknown>).code === locale;
+      const code = (v as Record<string, unknown>).code;
+      return typeof code === "string" ? [code] : [];
     }
-    return false;
+    return [];
   });
+}
+
+/**
+ * Does `slug` really exist in `locale`, or would the API serve the English
+ * source under that locale's URL?
+ *
+ * This used to read `langs` from the list response and return `true` when the
+ * field was missing. The list endpoint stopped returning `langs` (checked
+ * 2026-11-14: 256/256 posts without it, in every locale), so every locale index
+ * held every post, and the sitemap advertised ~1,474 English copies under
+ * /nl/, /it/, /zh-hans/… (SEO audit 2026-11-13, fix F3).
+ *
+ * Now it fails CLOSED: the source locale always counts, any other locale counts
+ * only if the single-entry lookup said so. An unknown post is English-only.
+ * A missing translation costs one locale URL; a wrong "yes" costs a duplicate
+ * page in Google.
+ */
+export function isRealTranslation(
+  translations: BlogTranslations,
+  slug: string,
+  locale: string,
+): boolean {
+  if (locale === SOURCE_LOCALE) return true;
+  return translations.get(slug)?.has(locale) ?? false;
+}
+
+/**
+ * One single-entry request per post: that endpoint does return
+ * `availableLanguages`, and it matches the CMS (e.g. `online-translation-tools-
+ * developers` → de, fr, tr, en, es, pt, with a real German title under `de`).
+ * Same approach as the changelog entries in `generate-pages.ts`. ~256 small
+ * requests once per build, bounded concurrency.
+ */
+export async function fetchBlogTranslations(
+  project: string,
+  apiKey: string,
+  slugs: readonly string[],
+): Promise<{ translations: BlogTranslations; failures: number }> {
+  const translations = new Map<string, ReadonlySet<string>>();
+  let failures = 0;
+  const queue = [...slugs];
+
+  async function worker(): Promise<void> {
+    while (queue.length > 0) {
+      const slug = queue.shift();
+      if (!slug) return;
+      const url = `${API_BASE}/${project}/models/blog-posts/entries/${encodeURIComponent(slug)}?language=${SOURCE_LOCALE}`;
+      try {
+        const res = await fetch(url, {
+          headers: { "x-api-key": apiKey, "Cache-Control": "no-cache", Pragma: "no-cache" },
+        });
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        const entry = (await res.json()) as RawEntry;
+        translations.set(slug, new Set(languageCodes(entry.availableLanguages ?? entry.langs)));
+      } catch {
+        failures++; // left out of the map → English-only, see isRealTranslation
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: TRANSLATION_LOOKUP_CONCURRENCY }, () => worker()));
+  return { translations, failures };
 }
 
 function parseCover(raw: unknown): { type: string; params: Record<string, unknown> } | null {
@@ -151,6 +222,7 @@ async function fetchPostsForLocale(
   project: string,
   apiKey: string,
   locale: string,
+  keep: (slug: string) => boolean = () => true,
 ): Promise<BlogPostListItem[]> {
   const collected: BlogPostListItem[] = [];
   const seen = new Set<string>();
@@ -163,16 +235,18 @@ async function fetchPostsForLocale(
 
     let addedThisPage = 0;
     for (const raw of result.items) {
-      if (!hasLanguage(raw, locale)) continue;
       if (seen.has(raw.slug)) continue;
       seen.add(raw.slug);
-      collected.push(mapEntry(raw));
+      // Counted as "new" even when filtered out, so a page of untranslated
+      // posts does not look like the stuck-pagination case below.
       addedThisPage++;
+      if (!keep(raw.slug)) continue;
+      collected.push(mapEntry(raw));
     }
 
     if (!result.hasMore) break;
     if (addedThisPage === 0) break;
-    if (apiTotal !== undefined && collected.length >= apiTotal) break;
+    if (apiTotal !== undefined && seen.size >= apiTotal) break;
 
     page++;
   }
@@ -203,7 +277,43 @@ export async function generateBlogIndexes(
   const { project, apiKey } = options;
   const ok: Array<{ locale: string; count: number }> = [];
   const failed: Array<{ locale: string; error: string }> = [];
-  const queue = [...locales];
+
+  /* The source-locale list is the slug list for the translation lookup, so
+     it is fetched first; the other locales are then filtered against it. */
+  let sourcePosts: BlogPostListItem[] | null = null;
+  try {
+    sourcePosts = await fetchPostsForLocale(project, apiKey, SOURCE_LOCALE);
+  } catch (error) {
+    failed.push({ locale: SOURCE_LOCALE, error: String(error) });
+  }
+  const { translations, failures } = sourcePosts
+    ? await fetchBlogTranslations(project, apiKey, sourcePosts.map((p) => p.slug))
+    : { translations: new Map() as BlogTranslations, failures: 0 };
+  if (failures > 0) {
+    console.warn(
+      `[SEO] Blog translations: ${failures}/${sourcePosts?.length ?? 0} lookups failed; those posts are listed in ${SOURCE_LOCALE} only`,
+    );
+  }
+
+  const queue = locales.filter((l) => l !== SOURCE_LOCALE || !sourcePosts);
+
+  async function writeIndex(locale: string, allPosts: readonly BlogPostListItem[]): Promise<void> {
+    const categories = [
+      ...new Set(allPosts.flatMap((p) => (p.category ? [p.category] : []))),
+    ].sort();
+    const index: BlogIndex = {
+      allPosts,
+      categories,
+      totalPages: Math.max(1, Math.ceil(allPosts.length / POSTS_PER_PAGE)),
+      generatedAt: new Date().toISOString(),
+    };
+    await writeFile(join(publicDir, `blog-index-${locale}.json`), JSON.stringify(index), "utf-8");
+    ok.push({ locale, count: allPosts.length });
+  }
+
+  if (sourcePosts && locales.includes(SOURCE_LOCALE)) {
+    await writeIndex(SOURCE_LOCALE, sourcePosts);
+  }
 
   async function worker(): Promise<void> {
     while (queue.length > 0) {
@@ -211,18 +321,10 @@ export async function generateBlogIndexes(
       if (!locale) return;
       const filePath = join(publicDir, `blog-index-${locale}.json`);
       try {
-        const allPosts = await fetchPostsForLocale(project, apiKey, locale);
-        const categories = [
-          ...new Set(allPosts.flatMap((p) => (p.category ? [p.category] : []))),
-        ].sort();
-        const index: BlogIndex = {
-          allPosts,
-          categories,
-          totalPages: Math.max(1, Math.ceil(allPosts.length / POSTS_PER_PAGE)),
-          generatedAt: new Date().toISOString(),
-        };
-        await writeFile(filePath, JSON.stringify(index), "utf-8");
-        ok.push({ locale, count: allPosts.length });
+        const allPosts = await fetchPostsForLocale(project, apiKey, locale, (slug) =>
+          isRealTranslation(translations, slug, locale),
+        );
+        await writeIndex(locale, allPosts);
       } catch (error) {
         failed.push({ locale, error: String(error) });
         const fallback: BlogIndex = {
