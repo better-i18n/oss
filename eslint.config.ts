@@ -104,4 +104,17 @@ export default ts.config(
       ],
     },
   },
+
+  {
+    // Audit scripts are fed to `aside repl` / the browser, not run by Node
+    // directly: `page`, `openTab`, `sleep`, `BATCH`, `document` are injected
+    // by that runtime, so `no-undef` cannot know them. Best-effort cleanup
+    // (closing a tab that may already be gone) uses empty catch blocks.
+    files: ["apps/landing/scripts/audit/**/*.js"],
+    languageOptions: { globals: { ...globals.browser } },
+    rules: {
+      "no-undef": "off",
+      "no-empty": ["error", { allowEmptyCatch: true }],
+    },
+  },
 );
