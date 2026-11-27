@@ -1,3 +1,4 @@
+import type { LooseMessages } from "@/lib/page-seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { testimonialAvatar } from "@/lib/testimonials";
 import { SpriteIcon, type SpriteIconName } from "@/components/SpriteIcon";
@@ -49,7 +50,7 @@ export const Route = createFileRoute("/$locale/what-is")({
         })
       : [];
 
-    const seoNs = whatIsPageNs?.seo as Record<string, any> | undefined;
+    const seoNs = whatIsPageNs?.seo as LooseMessages | undefined;
     const structuredTitle = seoNs?.structuredDataTitle || "What is i18n? Internationalization & Localization Guide";
     const structuredDescription = seoNs?.structuredDataDescription || "Learn the difference between internationalization (i18n) and localization (l10n). Covers key concepts, a comparison table, and how to get started.";
 

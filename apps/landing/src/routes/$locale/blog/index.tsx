@@ -1,3 +1,4 @@
+import type { LooseMessages } from "@/lib/page-seo";
 import { useState, useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { POSTS_PER_PAGE, type BlogPostListItem } from "@/lib/content";
@@ -56,7 +57,7 @@ export const Route = createFileRoute("/$locale/blog/")({
       }),
     });
 
-    const msgs = (loaderData?.messages ?? {}) as Record<string, any>;
+    const msgs = (loaderData?.messages ?? {}) as LooseMessages;
     const breadcrumbSchema = getBreadcrumbSchema([
       { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },
       { name: msgs["breadcrumbs.blog"] ?? "Blog", url: `${SITE_URL}/${locale}/blog/` },

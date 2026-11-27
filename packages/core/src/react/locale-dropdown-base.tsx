@@ -491,7 +491,6 @@ export function LocaleDropdownBase({
   const isServer = typeof window === "undefined";
   const clientFloating = isServer
     ? null
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     : useFloating({
         open: true,
         strategy: "absolute",

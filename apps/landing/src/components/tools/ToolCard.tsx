@@ -24,7 +24,7 @@ export function ToolCard({ tool, locale, headingLevel = 3 }: ToolCardProps) {
   return (
     <Link
       to={`/$locale/${tool.href}` as never}
-      params={{ locale } as any}
+      params={{ locale } as never}
       className="group block rounded-xl border border-mist-200 bg-white p-6 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.35)] transition-all duration-200 hover:shadow-md"
       aria-label={tool.fallbackTitle}
     >

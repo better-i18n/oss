@@ -1,3 +1,4 @@
+import type { LooseMessages } from "@/lib/page-seo";
 import { useEffect } from "react";
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
@@ -203,7 +204,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       inLanguage: locale,
     }) : null;
 
-    const msgs = (loaderData?.messages ?? {}) as Record<string, any>;
+    const msgs = (loaderData?.messages ?? {}) as LooseMessages;
     const breadcrumbSchema = getBreadcrumbSchema([
       { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },
       { name: msgs["breadcrumbs.blog"] ?? "Blog", url: `${SITE_URL}/${locale}/blog/` },

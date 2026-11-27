@@ -45,9 +45,17 @@ export {
 
 type PageType = "default" | "home" | "pricing" | "comparison" | "framework" | "educational" | "tool";
 
+/**
+ * Translation messages as the router/loader hands them over. Loosely typed on
+ * purpose: callers read nested namespaces by key and the shape is only known
+ * per page. Declared once so the `any` lives in one place.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type LooseMessages = Record<string, any>;
+
 interface PageSEOOptions {
   /** i18n messages object */
-  messages: Record<string, any>;
+  messages: LooseMessages;
   /** Current locale */
   locale: string;
   /** Page key for meta namespace (e.g., "features", "pricing") */

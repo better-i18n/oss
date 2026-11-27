@@ -1,3 +1,4 @@
+import type { LooseMessages } from "@/lib/page-seo";
 import { createFileRoute, redirect, notFound, Link } from "@tanstack/react-router";
 import { POSTS_PER_PAGE, type BlogPostListItem } from "@/lib/content";
 import { loadBlogIndex } from "@/lib/blog-index";
@@ -90,7 +91,7 @@ export const Route = createFileRoute("/$locale/blog/page/$page")({
       }),
     });
 
-    const msgs = (loaderData?.messages ?? {}) as Record<string, any>;
+    const msgs = (loaderData?.messages ?? {}) as LooseMessages;
     const breadcrumbSchema = getBreadcrumbSchema([
       { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },
       { name: msgs["breadcrumbs.blog"] ?? "Blog", url: `${SITE_URL}/${locale}/blog/` },

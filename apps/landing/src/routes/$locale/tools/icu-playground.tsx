@@ -1,3 +1,4 @@
+import type { LooseMessages } from "@/lib/page-seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { ToolLayout } from "@/components/tools/ToolLayout";
@@ -413,7 +414,7 @@ function ICUPlaygroundPage() {
     [activeCodeTab, message, syncedValues],
   );
 
-  const breadcrumbs = toolBreadcrumbs("/tools/icu-playground", messages as Record<string, any>, locale);
+  const breadcrumbs = toolBreadcrumbs("/tools/icu-playground", messages as LooseMessages, locale);
 
   return (
     <ToolLayout
