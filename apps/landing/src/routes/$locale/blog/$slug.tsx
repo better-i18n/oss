@@ -195,7 +195,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       author: {
         name: authorName,
         url: `${SITE_URL}/en/about`,
-        sameAs: ["https://better-i18n.com", "https://twitter.com/betteri18n"],
+        sameAs: ["https://twitter.com/betteri18n"],
       },
       wordCount,
       timeRequired,
