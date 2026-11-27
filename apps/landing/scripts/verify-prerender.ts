@@ -19,9 +19,10 @@
  * missing locale is a different (much louder) failure; what this guards is the
  * page-level decision, and if `/en/x/` exists the route was a candidate.
  */
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { MARKETING_PAGES } from "../src/seo/pages";
+import { assertEnoughBlogUrls } from "../src/seo/sitemap-guard";
 
 const DEFAULT_LOCALE = "en";
 const clientDir = path.join(process.cwd(), "dist", "client");
@@ -55,4 +56,21 @@ if (missing.length > 0) {
       `\n  plugin sees it — that array is the prerender candidate list.\n`,
   );
   process.exit(1);
+}
+
+/* Sitemap gate: if page generation broke, the sitemap loses its blog posts and
+   the site ships without them. Only checked when a sitemap was produced (a build
+   without Content API keys writes none). */
+const sitemapXmls = readdirSync(clientDir)
+  .filter((f) => f.startsWith("sitemap") && f.endsWith(".xml"))
+  .map((f) => readFileSync(path.join(clientDir, f), "utf-8"));
+
+if (sitemapXmls.length > 0) {
+  try {
+    const n = assertEnoughBlogUrls(sitemapXmls);
+    console.log(`[prerender] sitemap lists ${n} blog URLs`);
+  } catch (e) {
+    console.error(String(e instanceof Error ? e.message : e));
+    process.exit(1);
+  }
 }

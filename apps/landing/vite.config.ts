@@ -98,6 +98,9 @@ export default defineConfig(async ({ mode, command }) => {
       );
     } catch (error) {
       console.error("[SEO] Build-time generation failed:", error);
+      // A production build with no generated pages deploys a site with a
+      // near-empty sitemap (it shipped that way once). Fail the build instead.
+      throw error;
     }
   } else if (mode === "production") {
     const missing = [
