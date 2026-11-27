@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAlternateLinks } from "@/lib/meta";
+import { getAlternateLinks } from "../lib/meta";
 import { SUPPORTED_LOCALES, getLocaleTier } from "./locale-tiers";
 
 describe("locale tiers", () => {
