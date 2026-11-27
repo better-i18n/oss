@@ -2,6 +2,10 @@ name: Deploy Landing
 
 on:
   workflow_dispatch:
+  # Fired by the Content CMS webhook (or `gh api repos/<repo>/dispatches -f event_type=content-published`)
+  # so new posts reach the sitemap, blog index and llms.txt, which are built at deploy time.
+  repository_dispatch:
+    types: [content-published]
 
 concurrency:
   group: deploy-landing-${{ github.ref }}
