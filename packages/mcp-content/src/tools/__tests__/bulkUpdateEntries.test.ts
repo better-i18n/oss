@@ -8,7 +8,7 @@ describe("bulkUpdateEntries", () => {
     it("rejects missing project", async () => {
       const client = createMockClient();
       const result = await bulkUpdateEntries.execute(client, {
-        entries: [{ entryId: "00000000-0000-0000-0000-000000000001" }],
+        entries: [{ entryId: "00000000-0000-4000-8000-000000000001" }],
       });
       expect(result.isError).toBe(true);
     });
@@ -33,7 +33,7 @@ describe("bulkUpdateEntries", () => {
     it("rejects more than 20 entries", async () => {
       const client = createMockClient();
       const manyEntries = Array.from({ length: 21 }, (_, i) => ({
-        entryId: `00000000-0000-0000-0000-${String(i + 1).padStart(12, "0")}`,
+        entryId: `00000000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`,
       }));
       const result = await bulkUpdateEntries.execute(client, {
         project: "org/proj",
@@ -63,7 +63,7 @@ describe("bulkUpdateEntries", () => {
         project: "org/proj",
         entries: [
           {
-            entryId: "00000000-0000-0000-0000-000000000001",
+            entryId: "00000000-0000-4000-8000-000000000001",
             translations: {
               TR: { title: "Merhaba" },
               DE: { title: "Hallo" },
@@ -90,7 +90,7 @@ describe("bulkUpdateEntries", () => {
         project: "org/proj",
         entries: [
           {
-            entryId: "00000000-0000-0000-0000-000000000001",
+            entryId: "00000000-0000-4000-8000-000000000001",
             languageCode: "TR",
             title: "Merhaba",
           },
@@ -112,8 +112,8 @@ describe("bulkUpdateEntries", () => {
       await bulkUpdateEntries.execute(client, {
         project: "my-org/my-proj",
         entries: [
-          { entryId: "00000000-0000-0000-0000-000000000001", languageCode: "tr", title: "Başlık" },
-          { entryId: "00000000-0000-0000-0000-000000000002", languageCode: "tr", title: "İkinci" },
+          { entryId: "00000000-0000-4000-8000-000000000001", languageCode: "tr", title: "Başlık" },
+          { entryId: "00000000-0000-4000-8000-000000000002", languageCode: "tr", title: "İkinci" },
         ],
       });
 
@@ -132,8 +132,8 @@ describe("bulkUpdateEntries", () => {
       const apiResponse = {
         updated: 2,
         entries: [
-          { id: "00000000-0000-0000-0000-000000000001", st: "published" },
-          { id: "00000000-0000-0000-0000-000000000002", st: "published" },
+          { id: "00000000-0000-4000-8000-000000000001", st: "published" },
+          { id: "00000000-0000-4000-8000-000000000002", st: "published" },
         ],
         failed: [],
       };
@@ -145,8 +145,8 @@ describe("bulkUpdateEntries", () => {
       const result = await bulkUpdateEntries.execute(client, {
         project: "org/proj",
         entries: [
-          { entryId: "00000000-0000-0000-0000-000000000001", languageCode: "tr", title: "A" },
-          { entryId: "00000000-0000-0000-0000-000000000002", languageCode: "tr", title: "B" },
+          { entryId: "00000000-0000-4000-8000-000000000001", languageCode: "tr", title: "A" },
+          { entryId: "00000000-0000-4000-8000-000000000002", languageCode: "tr", title: "B" },
         ],
       });
 
@@ -158,8 +158,8 @@ describe("bulkUpdateEntries", () => {
     it("reflects partial success: failed array populated", async () => {
       const apiResponse = {
         updated: 1,
-        entries: [{ id: "00000000-0000-0000-0000-000000000001", st: "published" }],
-        failed: [{ idx: 1, id: "00000000-0000-0000-0000-000000000002", err: "Not found" }],
+        entries: [{ id: "00000000-0000-4000-8000-000000000001", st: "published" }],
+        failed: [{ idx: 1, id: "00000000-0000-4000-8000-000000000002", err: "Not found" }],
       };
       const mutateMock = vi.fn().mockResolvedValue(apiResponse);
       const client = createMockClient({
@@ -169,8 +169,8 @@ describe("bulkUpdateEntries", () => {
       const result = await bulkUpdateEntries.execute(client, {
         project: "org/proj",
         entries: [
-          { entryId: "00000000-0000-0000-0000-000000000001", languageCode: "tr", title: "A" },
-          { entryId: "00000000-0000-0000-0000-000000000002", languageCode: "tr", title: "B" },
+          { entryId: "00000000-0000-4000-8000-000000000001", languageCode: "tr", title: "A" },
+          { entryId: "00000000-0000-4000-8000-000000000002", languageCode: "tr", title: "B" },
         ],
       });
 
@@ -189,7 +189,7 @@ describe("bulkUpdateEntries", () => {
 
       const result = await bulkUpdateEntries.execute(client, {
         project: "org/proj",
-        entries: [{ entryId: "00000000-0000-0000-0000-000000000001" }],
+        entries: [{ entryId: "00000000-0000-4000-8000-000000000001" }],
       });
 
       const msg = expectError(result);
