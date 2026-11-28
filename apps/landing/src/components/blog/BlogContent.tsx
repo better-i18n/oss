@@ -10,6 +10,7 @@ import * as React from "react";
 import * as htmlReactParser from "html-react-parser";
 import type { DOMNode, HTMLReactParserOptions } from "html-react-parser";
 import { HighlightedCode, type CodeLang } from "@/components/CodeBlock";
+import { resolveCmsPath } from "@/lib/cms-links";
 type HRPElement = import("html-react-parser").Element;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,7 +64,6 @@ export function slugify(text: string): string {
 // ─── Internal link rewriting helpers ─────────────────────────────────
 
 const SITE_DOMAIN = "better-i18n.com";
-const LOCALE_PREFIX_REGEX = /^\/[a-z]{2}(-[a-z]+)?\//;
 
 function isInternalLink(href: string): boolean {
   if (href.startsWith("/")) return true;
@@ -75,28 +75,19 @@ function isInternalLink(href: string): boolean {
   }
 }
 
-function rewritePath(path: string, locale: string): string {
-  // If path already has a locale prefix, replace it
-  if (LOCALE_PREFIX_REGEX.test(path)) {
-    return path.replace(LOCALE_PREFIX_REGEX, `/${locale}/`);
-  }
-  // If no locale prefix, add one
-  return `/${locale}${path.startsWith("/") ? path : `/${path}`}`;
-}
-
+/* Locale prefixing, plus docs-only paths (/mcp, /frameworks/…) sent to the
+   docs site instead of a /{locale}/… 404 — see src/lib/cms-links.ts. */
 function rewriteInternalLink(href: string, locale: string): string {
-  // Handle absolute URLs
   if (href.startsWith("http")) {
     try {
       const url = new URL(href);
-      const rewritten = rewritePath(url.pathname, locale);
-      return `${url.origin}${rewritten}${url.search}${url.hash}`;
+      const resolved = resolveCmsPath(`${url.pathname}${url.search}${url.hash}`, locale);
+      return resolved.startsWith("http") ? resolved : `${url.origin}${resolved}`;
     } catch {
       return href;
     }
   }
-  // Handle relative paths
-  return rewritePath(href, locale);
+  return resolveCmsPath(href, locale);
 }
 
 // ─── Blog Code Block ────────────────────────────────────────────────

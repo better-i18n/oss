@@ -1,3 +1,4 @@
+import type { LooseMessages } from "@/lib/page-seo";
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getMarketingPage, getMarketingPages, type MarketingPageListItem } from "@/lib/content";
@@ -80,7 +81,7 @@ export const Route = createFileRoute("/$locale/features/$slug")({
       url: canonicalUrl,
     });
 
-    const msgs = (loaderData?.messages ?? {}) as Record<string, any>;
+    const msgs = (loaderData?.messages ?? {}) as LooseMessages;
     const breadcrumbScripts = formatStructuredData(
       getBreadcrumbSchema([
         { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },

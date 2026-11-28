@@ -12,6 +12,7 @@
  * React or any browser-only API.
  */
 
+import { isOffTopicBlogSlug } from "./blog-seo";
 import type { BlogPostMeta } from "./generate-pages";
 import { SITE_URL } from "./pages";
 
@@ -542,11 +543,14 @@ export function generateLlmsFullTxtContent(
  * Pure function — no I/O.
  */
 export function generateAllLlmsTxtFiles(
-  blogPosts: readonly BlogPostMeta[],
+  allBlogPosts: readonly BlogPostMeta[],
   locales: readonly string[],
   i18nMessages?: ReadonlyMap<string, Readonly<Record<string, string>>>,
 ): ReadonlyMap<string, string> {
   const files = new Map<string, string>();
+
+  // Off-topic posts (F4) are noindex; do not point AI tools at them either.
+  const blogPosts = allBlogPosts.filter((post) => !isOffTopicBlogSlug(post.slug));
 
   // Root files are always English
   const enMessages = i18nMessages?.get("en");

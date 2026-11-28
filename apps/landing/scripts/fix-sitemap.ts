@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import path from "node:path";
+import { fixSitemapXml } from "../src/seo/sitemap-xml";
 
 const distDir = path.join(process.cwd(), "dist", "client");
 
@@ -37,23 +38,6 @@ const excludedPaths: string[] = existsSync(excludeFile)
   ? (JSON.parse(readFileSync(excludeFile, "utf-8")) as string[])
   : [];
 
-/**
- * The `<url>` block for one already-locale-prefixed path (e.g. `/en/about/`).
- *
- * Anchored on the exact `<loc>` so `/en/about/` cannot also match a longer path
- * that merely starts with it, and the `(?!</url>)` guard keeps the match inside
- * a single block instead of swallowing everything up to the last `</url>` in
- * the file.
- */
-const urlBlockPattern = (p: string) =>
-  new RegExp(
-    `\\s*<url>(?:(?!</url>)[\\s\\S])*?<loc>https://better-i18n\\.com${p.replace(
-      /[.*+?^${}()|[\]\\]/g,
-      "\\$&",
-    )}</loc>(?:(?!</url>)[\\s\\S])*?</url>`,
-    "g",
-  );
-
 let fixedCount = 0;
 let droppedUrls = 0;
 
@@ -61,34 +45,10 @@ for (const file of sitemapFiles) {
   const filePath = path.join(distDir, file);
   const xml = readFileSync(filePath, "utf-8");
 
-  let fixed = xml
-    .replaceAll(
-      '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">',
-      '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
-    )
-    .replaceAll(/ xmlns=""/g, "");
-
-  /* Remove the bare root URL: it 302-redirects to /{locale}/, so listing it
-     asks Google to index a redirect.
-
-     The rule this replaces required the block to be exactly
-     `<url><loc>…</loc></url>` and matched nothing, because the real entry also
-     carries lastmod, changefreq, priority and a set of xhtml:link alternates.
-     Verified against the deployed sitemap, which still contained the bare root.
-     `urlBlockPattern` tolerates any children. */
-  {
-    const before = fixed;
-    fixed = fixed.replace(urlBlockPattern("/"), "");
-    if (fixed !== before) droppedUrls++;
-  }
-
-  // Remove the built-but-unadvertised paths.
-  for (const p of excludedPaths) {
-    if (!p || p === "/") continue; // bare root is handled by the rule above
-    const before = fixed;
-    fixed = fixed.replace(urlBlockPattern(p), "");
-    if (fixed !== before) droppedUrls++;
-  }
+  /* Namespace fix, bare-root removal and excluded paths all live in
+     src/seo/sitemap-xml.ts, where they are unit-tested. */
+  const { xml: fixed, droppedUrls: dropped } = fixSitemapXml(xml, excludedPaths);
+  droppedUrls += dropped;
 
   if (fixed !== xml) {
     writeFileSync(filePath, fixed);
@@ -97,7 +57,7 @@ for (const file of sitemapFiles) {
 }
 
 console.log(
-  `[SEO] Sitemap xhtml namespace düzeltildi: ${fixedCount}/${sitemapFiles.length} dosya`,
+  `[SEO] Sitemap namespace (http://www.sitemaps.org) fixed: ${fixedCount}/${sitemapFiles.length} dosya`,
 );
 console.log(
   `[SEO] built but kept out of sitemap: ${excludedPaths.length} paths, ${droppedUrls} <url> blocks removed`,

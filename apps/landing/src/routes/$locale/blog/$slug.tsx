@@ -1,3 +1,4 @@
+import type { LooseMessages } from "@/lib/page-seo";
 import { useEffect } from "react";
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { SpriteIcon } from "@/components/SpriteIcon";
@@ -35,6 +36,7 @@ import {
   SITE_URL,
   getAlternateLinks,
   getCanonicalLink,
+  getCanonicalUrl,
   getLocalizedMeta,
   formatMetaTags,
   buildOgImageUrl,
@@ -47,6 +49,7 @@ import {
   getBreadcrumbSchema,
 } from "@/lib/structured-data";
 import { getLocaleTier } from "@/seo/locale-tiers";
+import { blogCanonicalLocale, isOffTopicBlogSlug } from "@/seo/blog-seo";
 import { getMessages } from "@better-i18n/use-intl/server";
 import { i18nConfig } from "@/i18n.config";
 import { assetImage } from "@/lib/asset-image";
@@ -138,9 +141,14 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       },
     );
 
+    // English copy under a locale path → canonical is the English post (F3).
+    const availableLanguages = post?.availableLanguages ?? [];
+    const canonicalLocale = blogCanonicalLocale(locale, availableLanguages);
+
     // Override with blog-specific values (immutable spread)
     const blogMeta = {
       ...meta,
+      canonicalUrl: getCanonicalUrl(canonicalLocale, pathname),
       title: truncateTitle(`${postTitle} | Better I18N`),
       description: excerpt,
       ogTitle: postTitle,
@@ -148,14 +156,14 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
     };
 
     // Use formatMetaTags for consistent meta tag generation
-    const availableLanguages = post?.availableLanguages ?? [];
     const baseTags = formatMetaTags(blogMeta, {
       locale,
       locales: availableLanguages.length > 0 ? [...availableLanguages] : undefined,
       publishedTime: post?.publishedAt || post?.createdAt || "",
       modifiedTime: post?.updatedAt || post?.publishedAt || post?.createdAt || "",
       author: authorName,
-      noindex: getLocaleTier(locale) === "tier3",
+      // Off-topic posts (F4) stay online but ask not to be indexed.
+      noindex: getLocaleTier(locale) === "tier3" || isOffTopicBlogSlug(post?.slug ?? ""),
     });
 
     // Article-specific tags that formatMetaTags does not cover
@@ -196,7 +204,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
       inLanguage: locale,
     }) : null;
 
-    const msgs = (loaderData?.messages ?? {}) as Record<string, any>;
+    const msgs = (loaderData?.messages ?? {}) as LooseMessages;
     const breadcrumbSchema = getBreadcrumbSchema([
       { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },
       { name: msgs["breadcrumbs.blog"] ?? "Blog", url: `${SITE_URL}/${locale}/blog/` },
@@ -217,7 +225,7 @@ export const Route = createFileRoute("/$locale/blog/$slug")({
             ? [...availableLanguages]
             : undefined,
         ),
-        getCanonicalLink(locale, pathname),
+        getCanonicalLink(canonicalLocale, pathname),
       ],
       scripts: formatStructuredData(schemas),
     };

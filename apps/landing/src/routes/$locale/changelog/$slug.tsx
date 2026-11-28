@@ -1,3 +1,4 @@
+import type { LooseMessages } from "@/lib/page-seo";
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { useTranslations } from "@better-i18n/use-intl";
 import Header from "@/components/Header";
@@ -157,7 +158,7 @@ export const Route = createFileRoute("/$locale/changelog/$slug")({
       locale,
     });
 
-    const msgs = (loaderData?.messages ?? {}) as Record<string, any>;
+    const msgs = (loaderData?.messages ?? {}) as LooseMessages;
     const breadcrumbSchema = getBreadcrumbSchema([
       { name: msgs["breadcrumbs.home"] ?? "Home", url: `${SITE_URL}/${locale}/` },
       { name: msgs["breadcrumbs.changelog"] ?? "Changelog", url: `${SITE_URL}/${locale}/changelog/` },

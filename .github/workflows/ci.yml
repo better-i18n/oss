@@ -28,7 +28,11 @@ jobs:
           bun-version: "1.3.10"
       - run: bun install
       - run: bun run build
-      - run: bun test
+      # Three runners live in this repo: vitest (packages, landing), vitest+jsdom
+      # (packages/content) and bun:test (cli, expo, docs). A bare `bun test`
+      # runs vitest-style files under bun's runner (no vi.stubGlobal, no
+      # jsdom) and fails them all. See the test:ci script.
+      - run: bun run test:ci
 
   landing-i18n:
     name: Landing i18n keys

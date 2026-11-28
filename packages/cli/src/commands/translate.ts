@@ -14,7 +14,7 @@ interface CommonOptions {
 
 // ── translate (setTranslations) ──────────────────────────────────────
 
-export interface TranslateOptions extends CommonOptions {}
+export type TranslateOptions = CommonOptions;
 
 export async function translateCommand(options: TranslateOptions): Promise<void> {
   const { trpc } = requireAuth(options);
@@ -84,7 +84,7 @@ export async function translateCommand(options: TranslateOptions): Promise<void>
 
 // ── publish ──────────────────────────────────────────────────────────
 
-export interface PublishOptions extends CommonOptions {}
+export type PublishOptions = CommonOptions;
 
 export async function publishCommand(options: PublishOptions): Promise<void> {
   const { trpc } = requireAuth(options);
@@ -143,7 +143,7 @@ export async function publishCommand(options: PublishOptions): Promise<void> {
 
 // ── publish status ───────────────────────────────────────────────────
 
-export interface PublishStatusOptions extends CommonOptions {}
+export type PublishStatusOptions = CommonOptions;
 
 export async function publishStatusCommand(options: PublishStatusOptions): Promise<void> {
   const { trpc } = requireAuth(options);

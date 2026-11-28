@@ -57,7 +57,7 @@ export async function loadBlogIndex(locale: string): Promise<BlogIndex> {
   }
 
   // CF Worker SSR: read from ASSETS binding directly (avoids worker-to-self fetch loop)
-  const cfAssets = (globalThis as any).__cf_assets as { fetch: (req: Request | string) => Promise<Response> } | undefined;
+  const cfAssets = (globalThis as { __cf_assets?: unknown }).__cf_assets as { fetch: (req: Request | string) => Promise<Response> } | undefined;
   if (cfAssets) {
     try {
       const res = await cfAssets.fetch(new Request(`${SITE_URL}/blog-index-${locale}.json`));

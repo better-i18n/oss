@@ -17,6 +17,7 @@ import type { ChangeFreq } from "./pages";
 import { getLocaleTier, TIER_PRIORITY_MULTIPLIER } from "./locale-tiers";
 import type { LocaleTier } from "./locale-tiers";
 import { ALL_FORMAT_PAIR_SLUGS } from "../lib/tools/formats";
+import { isOffTopicBlogSlug } from "./blog-seo";
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -344,6 +345,21 @@ function generateBlogDetailPages(
     post.availableLanguages && post.availableLanguages.length > 0
       ? post.availableLanguages
       : ["en"];
+
+  // Off-topic post (F4): every locale is noindex → out of the sitemap and out
+  // of prerender. The page still renders on demand; see blog-seo.ts.
+  if (isOffTopicBlogSlug(post.slug)) {
+    return rawLocales.map((locale): PageEntry => ({
+      path: buildPagePath(locale, `blog/${post.slug}`),
+      sitemap: {
+        priority: 0,
+        changefreq: "weekly",
+        lastmod: post.publishedAt ?? undefined,
+        alternateRefs: [],
+        noindex: true,
+      },
+    }));
+  }
 
   // Apply locale tier filtering: tier 3 locales are excluded from sitemap
   // and marked noindex, same as marketing pages. Without this filter, blog

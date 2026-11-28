@@ -9,6 +9,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { apiDevPlugin } from "./vite-api-plugin";
 
+type BlogIndexPost = { slug: string; title: string; publishedAt: string };
+
 export default defineConfig(async ({ mode, command }) => {
   const env = loadEnv(mode, process.cwd(), "");
   // "build" → Rollup bundles the SSR output; "serve" → Vite's dev module runner
@@ -51,13 +53,13 @@ export default defineConfig(async ({ mode, command }) => {
           } catch { /* locale index missing — skip */ }
         }
         const enIndex = JSON.parse(readFileSync(join(publicDir, "blog-index-en.json"), "utf-8"));
-        const blogPostsFromIndex = (enIndex.allPosts as any[]).map((p: any) => ({
+        const blogPostsFromIndex = (enIndex.allPosts as BlogIndexPost[]).map((p) => ({
           slug: p.slug,
           title: p.title,
           publishedAt: p.publishedAt,
           availableLanguages: slugLocales.get(p.slug) ?? ["en"],
         }));
-        (data as any).blogPosts = blogPostsFromIndex;
+        (data as { blogPosts: unknown }).blogPosts = blogPostsFromIndex;
         console.log(`[SEO] Blog posts from index: ${blogPostsFromIndex.length} (SDK returned ${data.blogPosts.length})`);
       } catch (e) {
         console.warn("[SEO] Failed to read blog indexes, using SDK data:", e);
