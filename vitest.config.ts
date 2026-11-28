@@ -8,6 +8,8 @@ export default defineConfig({
       "**/node_modules/**",
       "**/dist/**",
       "packages/cli/**",         // bun:test
+      "packages/expo/**",        // bun:test
+      "packages/content/**",     // own vitest.config.ts (jsdom)
       "tests/expo-native/**",    // React Native
       "apps/**",
     ],
