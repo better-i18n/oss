@@ -413,6 +413,9 @@ export async function getBlogPost(
       language: locale,
       expand: ["author", "category"],
     });
+    // The Content API returns drafts when asked for a slug. Without this check a
+    // draft or scheduled post renders as an indexable 200 page (seen 2026-11-28).
+    if (entry.status !== "published") return setCache(cacheKey, null);
     const bodyHtml = entry.body ? String(await marked(entry.body)) : null;
     const excerpt = extractExcerpt(entry.body);
     const raw = entry as unknown as Record<string, unknown>;
