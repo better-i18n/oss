@@ -12,8 +12,10 @@ on:
   schedule:
     - cron: "11,41 * * * *"
 
+# Scheduled polls get their own group. Sharing one would let a 30-minute poll that
+# deploys nothing still cancel a deploy that is already running.
 concurrency:
-  group: deploy-landing-${{ github.ref }}
+  group: deploy-landing-${{ github.event_name == 'schedule' && 'poll' || 'push' }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
