@@ -89,7 +89,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.43",
-    "@types/react": "^19.3.0",
+    "@types/react": "^19.3.1",
     "typescript": "~5.9.2"
   }
 }
