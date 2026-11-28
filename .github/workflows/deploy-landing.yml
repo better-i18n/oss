@@ -6,14 +6,57 @@ on:
   # so new posts reach the sitemap, blog index and llms.txt, which are built at deploy time.
   repository_dispatch:
     types: [content-published]
+  # The CMS webhook cannot send a GitHub token, so poll instead: every 30 minutes the
+  # `check` job compares published CMS posts with the live sitemap and only deploys
+  # when a post is missing from it.
+  schedule:
+    - cron: "11,41 * * * *"
 
 concurrency:
   group: deploy-landing-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  check:
+    name: Check for unpublished-to-site posts
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.diff.outputs.deploy }}
+    steps:
+      - name: Compare CMS blog slugs with live sitemap
+        id: diff
+        env:
+          KEY: ${{ secrets.BETTER_I18N_CONTENT_API_KEY }}
+          PROJECT: ${{ secrets.BETTER_I18N_PROJECT }}
+        run: |
+          set -euo pipefail
+          : > cms.txt
+          page=1
+          while :; do
+            res=$(curl -fsS --retry 3 -H "x-api-key: $KEY" \
+              "https://content.better-i18n.com/v1/content/$PROJECT/models/blog-posts/entries?language=en&status=published&limit=100&page=$page")
+            echo "$res" | jq -r '.items[].slug' >> cms.txt
+            [ "$(echo "$res" | jq -r '.hasMore')" = "true" ] || break
+            page=$((page+1))
+            [ "$page" -le 20 ] || break
+          done
+          sort -u cms.txt -o cms.txt
+          echo "CMS published (en): $(wc -l < cms.txt)"
+          [ "$(wc -l < cms.txt)" -ge 100 ] || { echo "CMS returned too few posts; not deploying"; echo "deploy=false" >> "$GITHUB_OUTPUT"; exit 0; }
+          curl -fsS --retry 3 https://better-i18n.com/sitemap.xml | grep -o 'better-i18n.com/en/blog/[^/<]*/' | sed 's#.*/blog/##; s#/$##' | sort -u > live.txt
+          missing=$(comm -23 cms.txt live.txt | head -20)
+          if [ -n "$missing" ]; then
+            echo "Missing from live sitemap:"; echo "$missing"
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
   deploy:
     name: Deploy to Cloudflare Workers
+    needs: check
+    if: always() && (github.event_name != 'schedule' || needs.check.outputs.deploy == 'true')
     runs-on: ubuntu-latest
     environment:
       name: production
