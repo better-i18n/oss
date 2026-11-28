@@ -11,7 +11,7 @@ type Vendor = (typeof VENDORS)[number];
  * Cell semantics:
  *   true            → <SupportMark state="yes">  (full support)
  *   false           → <SupportMark state="no">   (not available)
- *   string          → literal text, NOT translated (e.g. prices "$290 / mo", counts "8+")
+ *   string          → literal text, NOT translated (e.g. prices "$149 / mo", counts "8+")
  *   { i18n, fb }    → translated cell value via `comparison.values.{i18n}` key
  */
 type Cell = true | false | string | { i18n: string; fb: string };
@@ -100,6 +100,10 @@ const VAL = {
 
 const ITEMS: Item[] = [
   // ── Pricing ────────────────────────────────────────────────────────
+  // Competitor prices: each vendor's public pricing page, read 2026-11-28, annual billing,
+  // USD, entry plan for software localization. Lokalise Explorer $149, Crowdin Team from
+  // $450 (annual only), Phrase Strings Professional $525. Re-check before editing; the
+  // /compare/lokalise page must show the same Lokalise numbers.
   { type: "section", key: "sections.pricing", fb: "Pricing" },
   {
     type: "row",
@@ -107,9 +111,9 @@ const ITEMS: Item[] = [
     fb: "Starting price",
     cells: {
       betterI18n: v("free", "Free"),
-      lokalise: "$290 / mo",
-      crowdin: "$400 / mo",
-      phrase: "$2,100 / mo",
+      lokalise: "$149 / mo",
+      crowdin: "$450 / mo",
+      phrase: "$525 / mo",
     },
   },
   {
@@ -118,9 +122,9 @@ const ITEMS: Item[] = [
     fb: "Pro tier",
     cells: {
       betterI18n: "$20 / mo",
-      lokalise: "$290 / mo",
-      crowdin: "$400 / mo",
-      phrase: "$2,100 / mo",
+      lokalise: "$149 / mo",
+      crowdin: "$450 / mo",
+      phrase: "$525 / mo",
     },
   },
   {
