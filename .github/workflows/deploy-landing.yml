@@ -35,7 +35,7 @@ jobs:
           page=1
           while :; do
             res=$(curl -fsS --retry 3 -H "x-api-key: $KEY" \
-              "https://content.better-i18n.com/v1/content/$PROJECT/models/blog-posts/entries?language=en&status=published&limit=100&page=$page")
+              "https://content.better-i18n.com/v1/content/$PROJECT/models/blog-posts/entries?language=en&status=published&limit=100&page=$page&fields=title")
             echo "$res" | jq -r '.items[].slug' >> cms.txt
             [ "$(echo "$res" | jq -r '.hasMore')" = "true" ] || break
             page=$((page+1))
