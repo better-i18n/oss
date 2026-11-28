@@ -7,7 +7,7 @@ on:
   repository_dispatch:
     types: [content-published]
   # The CMS webhook cannot send a GitHub token, so poll instead: every 30 minutes the
-  # `check` job compares published CMS posts with the live sitemap and only deploys
+  # `check` job compares published CMS posts with the live blog index and only deploys
   # when a post is missing from it.
   schedule:
     - cron: "11,41 * * * *"
@@ -24,7 +24,7 @@ jobs:
     outputs:
       deploy: ${{ steps.diff.outputs.deploy }}
     steps:
-      - name: Compare CMS blog slugs with live sitemap
+      - name: Compare CMS blog slugs with live blog index
         id: diff
         env:
           KEY: ${{ secrets.BETTER_I18N_CONTENT_API_KEY }}
@@ -44,10 +44,12 @@ jobs:
           sort -u cms.txt -o cms.txt
           echo "CMS published (en): $(wc -l < cms.txt)"
           [ "$(wc -l < cms.txt)" -ge 100 ] || { echo "CMS returned too few posts; not deploying"; echo "deploy=false" >> "$GITHUB_OUTPUT"; exit 0; }
-          curl -fsS --retry 3 https://better-i18n.com/sitemap.xml | grep -o 'better-i18n.com/en/blog/[^/<]*/' | sed 's#.*/blog/##; s#/$##' | sort -u > live.txt
+          # blog-index-en.json is written at deploy time from the same CMS list. (The sitemap is
+          # not usable here: off-topic posts are published but deliberately kept out of it.)
+          curl -fsS --retry 3 https://better-i18n.com/blog-index-en.json | jq -r '.allPosts[].slug' | sort -u > live.txt
           missing=$(comm -23 cms.txt live.txt | head -20)
           if [ -n "$missing" ]; then
-            echo "Missing from live sitemap:"; echo "$missing"
+            echo "Missing from live blog index:"; echo "$missing"
             echo "deploy=true" >> "$GITHUB_OUTPUT"
           else
             echo "deploy=false" >> "$GITHUB_OUTPUT"
