@@ -31,17 +31,17 @@ import { useT } from "@/lib/i18n";
  * is gone from these pages.
  *
  * WHAT THE COMPETITOR CLAIMS BELOW REST ON (Lokalise's own public pricing page,
- * fetched 2026-07-31 — these ARE verifiable, unlike most of what this page
+ * re-read 2026-11-28; first fetched 2026-07-31 — these ARE verifiable, unlike most of what this page
  * carried before):
- *   - Published plans: Explorer $144/mo, Growth $375/mo, Advanced $999/mo,
+ *   - Published plans: Explorer $149/mo, Growth $379/mo, Advanced $1,049/mo (all with annual billing),
  *     Enterprise "Book a demo" with no listed price.
  *   - "All plans come with a free 14-day trial, no credit card required."
  *   - Explorer and Growth are self-serve ("Try free"); Advanced and Enterprise
  *     route to "Book a demo" — the top half of the ladder goes through sales.
  *   - Monthly and yearly billing are both offered.
  *
- * The $144 entry point matches the already-published `features.pricingLokalise`
- * key, so that existing claim checks out. Anything not readable off a public page
+ * The $149 entry point must match `features.pricingLokalise` in the CDN messages
+ * and the Lokalise column in components/PricingComparison.tsx. Anything not readable off a public page
  * is an em dash rather than a guess, and the `defaultValue` fallbacks were
  * removed — the CDN source_text is the only source of truth in this project.
  */
@@ -80,9 +80,9 @@ const MATRIX_ROWS: { key: string; emphasis?: boolean }[] = [
 
 /** Their published ladder, read off their own pricing page on the date above. */
 const LOKALISE_TIERS = [
-  { plan: "Explorer", price: "$144/mo", access: "self" },
-  { plan: "Growth", price: "$375/mo", access: "self" },
-  { plan: "Advanced", price: "$999/mo", access: "sales" },
+  { plan: "Explorer", price: "$149/mo", access: "self" },
+  { plan: "Growth", price: "$379/mo", access: "self" },
+  { plan: "Advanced", price: "$1,049/mo", access: "sales" },
   { plan: "Enterprise", price: "—", access: "sales" },
 ];
 
