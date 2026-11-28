@@ -730,7 +730,6 @@ export function getJobPostingSchema(jobs: JobPostingOptions[], locale?: string) 
     hiringOrganization: {
       "@type": "Organization",
       name: SITE_NAME,
-      sameAs: SITE_URL,
       logo: `${SITE_URL}/logo.png`,
     },
     jobLocation: {

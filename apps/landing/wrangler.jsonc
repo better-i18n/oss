@@ -34,16 +34,12 @@
     },
     "enabled": true
   },
-  "routes": [
-    {
-      "pattern": "better-i18n.com/*",
-      "zone_name": "better-i18n.com"
-    },
-    {
-      "pattern": "www.better-i18n.com/*",
-      "zone_name": "better-i18n.com"
-    }
-  ],
+  // No "routes" on purpose. The better-i18n.com zone lives in a different Cloudflare
+  // account (Dlsmnosman, zone 0e19dff8...) than this worker (Better i18n Org), and a
+  // worker can't bind a route across accounts: wrangler fails with "zone does not exist
+  // on your account [10084]". Traffic reaches this worker through the
+  // `better-i18n-migration-proxy` worker that owns the zone's routes. Re-add routes only
+  // after the zone moves into the Better i18n Org account.
   "vars": {
     "ENVIRONMENT": "production",
     "APP_ORIGIN": "https://better-i18n.com",
